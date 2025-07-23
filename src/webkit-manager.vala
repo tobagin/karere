@@ -12,10 +12,12 @@
  * GNU General Public License for more details.
  */
 
-namespace Config {
-    public const string APP_ID = "@APP_ID@";
-    public const string APP_NAME = "@APP_NAME@";
-    public const string VERSION = "@VERSION@";
-    public const string GETTEXT_PACKAGE = "@GETTEXT_PACKAGE@";
-    public const string LOCALEDIR = "@LOCALEDIR@";
+namespace Karere {
+
+    public class WebKitManager : GLib.Object {
+        
+        public WebKitManager() {
+            // TODO: Initialize WebKit manager
+        }
+    }
 }

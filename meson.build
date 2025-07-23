@@ -2,7 +2,7 @@ project(
     'karere',
     'vala', 'c',
     version: '0.1.0',
-    meson_version: '>= 1.8.0',
+    meson_version: '>= 1.0.0',
     default_options: [
         'warning_level=2',
         'werror=false',
@@ -18,13 +18,13 @@ gnome = import('gnome')
 i18n = import('i18n')
 
 # Dependencies
-gtk_dep = dependency('gtk4', version: '>= 4.19.0')
-adwaita_dep = dependency('libadwaita-1', version: '>= 1.7.0')
-webkit_dep = dependency('webkit2gtk-6.0', version: '>= 2.44.0')
-soup_dep = dependency('libsoup-3.0', version: '>= 3.4.0')
-gio_dep = dependency('gio-2.0', version: '>= 2.78.0')
-glib_dep = dependency('glib-2.0', version: '>= 2.78.0')
-json_glib_dep = dependency('json-glib-1.0', version: '>= 1.8.0')
+gtk_dep = dependency('gtk4', version: '>= 4.14.0')
+adwaita_dep = dependency('libadwaita-1', version: '>= 1.5.0')
+webkit_dep = dependency('webkitgtk-6.0', version: '>= 2.40.0')
+soup_dep = dependency('libsoup-3.0', version: '>= 3.0.0')
+gio_dep = dependency('gio-2.0', version: '>= 2.74.0')
+glib_dep = dependency('glib-2.0', version: '>= 2.74.0')
+json_glib_dep = dependency('json-glib-1.0', version: '>= 1.6.0')
 
 # Build configuration
 cc = meson.get_compiler('c')
@@ -38,17 +38,12 @@ conf_data.set_quoted('VERSION', meson.project_version())
 conf_data.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 conf_data.set_quoted('LOCALEDIR', get_option('prefix') / get_option('localedir'))
 
-# Generate config.vala
-config_vala = configure_file(
-    input: 'src/config.vala.in',
-    output: 'config.vala',
-    configuration: conf_data
-)
+# Use static config file for now
+# config_vala = files('src/config.vala')
 
 # Vala arguments
 vala_args = [
     '--target-glib=2.78',
-    '--gresources', 'data/resources.xml',
 ]
 
 # C arguments
@@ -61,29 +56,26 @@ c_args = [
 blueprint_compiler = find_program('blueprint-compiler', required: true)
 
 # Compile blueprints
-blueprints_dir = 'data/ui'
-blueprints = custom_target(
-    'blueprints',
-    input: files(
-        blueprints_dir / 'window.blp',
-        blueprints_dir / 'preferences.blp',
-    ),
-    output: [
-        'window.ui',
-        'preferences.ui',
-    ],
-    command: [
-        blueprint_compiler,
-        'batch-compile',
-        '@OUTPUT_DIR@',
-        '@CURRENT_SOURCE_DIR@' / blueprints_dir,
-        '@INPUT@'
-    ],
-    depend_files: files(
-        blueprints_dir / 'window.blp',
-        blueprints_dir / 'preferences.blp',
+blueprints = []
+blueprint_files = {
+    'window.blp': 'window.ui',
+    'preferences.blp': 'preferences.ui',
+}
+
+foreach blueprint_file, ui_file : blueprint_files
+    blueprint_target = custom_target(
+        ui_file,
+        input: files('data/ui' / blueprint_file),
+        output: ui_file,
+        command: [
+            blueprint_compiler,
+            'compile',
+            '--output', '@OUTPUT@',
+            '@INPUT@'
+        ]
     )
-)
+    blueprints += blueprint_target
+endforeach
 
 # Generate resources
 resources = gnome.compile_resources(
@@ -104,13 +96,13 @@ sources = files(
     'src/logger.vala',
     'src/crash-reporter.vala',
     'src/utils.vala',
+    'src/config.vala',
 )
 
 # Build executable
 executable(
     meson.project_name(),
     sources,
-    config_vala,
     resources,
     dependencies: [
         gtk_dep,
@@ -127,13 +119,18 @@ executable(
     install_dir: get_option('bindir')
 )
 
-# Install helper script
-karere_in = configure_file(
-    input: 'karere.in',
-    output: 'karere-dev',
-    configuration: conf_data,
-    install: false
-)
+# Configure development script (commented out for now)
+# dev_conf_data = configuration_data()
+# dev_conf_data.merge_from(conf_data)
+# dev_conf_data.set('BUILD_DIR', meson.current_build_dir())
+# dev_conf_data.set('PROJECT_NAME', meson.project_name())
+
+# karere_in = configure_file(
+#     input: 'karere.in',
+#     output: 'karere-dev',
+#     configuration: dev_conf_data,
+#     install: false
+# )
 
 # Desktop file
 desktop_file = i18n.merge_file(
@@ -169,10 +166,10 @@ foreach size : icon_sizes
     )
 endforeach
 
-install_data(
-    'data/icons/hicolor/scalable/apps/' + app_id + '.svg',
-    install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps'
-)
+# install_data(
+#     'data/icons/hicolor/scalable/apps/' + app_id + '.svg',
+#     install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps'
+# )
 
 # Build script
 install_data(
@@ -201,6 +198,51 @@ if get_option('tests')
             workdir: meson.current_source_dir()
         )
     endif
+    
+    # Vala unit tests
+    test_sources = files(
+        'tests/test_application.vala',
+        'tests/test_window.vala',
+        'tests/test_runner.vala',
+    )
+    
+    # Sources for tests (excluding main.vala to avoid conflicts)
+    test_lib_sources = files(
+        'src/application.vala',
+        'src/window.vala',
+        'src/preferences.vala',
+        'src/webkit-manager.vala',
+        'src/notification-manager.vala',
+        'src/logger.vala',
+        'src/crash-reporter.vala',
+        'src/utils.vala',
+        'src/config.vala',
+    )
+    
+    test_executable = executable(
+        'test-runner',
+        test_sources,
+        test_lib_sources,
+        resources,
+        dependencies: [
+            gtk_dep,
+            adwaita_dep,
+            webkit_dep,
+            soup_dep,
+            gio_dep,
+            glib_dep,
+            json_glib_dep,
+        ],
+        vala_args: vala_args,
+        c_args: c_args,
+        install: false
+    )
+    
+    test(
+        'unit-tests',
+        test_executable,
+        env: test_env
+    )
 endif
 
 # Print summary

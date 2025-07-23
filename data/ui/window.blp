@@ -1,5 +1,6 @@
 using Gtk 4.0;
 using Adw 1;
+using WebKit 6.0;
 
 template $KarereWindow : Adw.ApplicationWindow {
   width-request: 800;
@@ -7,54 +8,109 @@ template $KarereWindow : Adw.ApplicationWindow {
   default-width: 1200;
   default-height: 800;
 
-  Adw.ToolbarView {
-    [top]
+  Gtk.Box {
+    orientation: vertical;
+    
     Adw.HeaderBar header_bar {
+      title-widget: Adw.WindowTitle {
+        title: _("Karere");
+        subtitle: _("WhatsApp Web");
+      };
+
       [start]
-      Gtk.Button {
+      Gtk.Button back_button {
         icon-name: "go-previous-symbolic";
         tooltip-text: _("Go Back");
+        sensitive: false;
         clicked => $on_back_clicked();
       }
 
       [start]
-      Gtk.Button {
+      Gtk.Button forward_button {
         icon-name: "go-next-symbolic";
         tooltip-text: _("Go Forward");
+        sensitive: false;
         clicked => $on_forward_clicked();
       }
 
       [start]
-      Gtk.Button {
+      Gtk.Button reload_button {
         icon-name: "view-refresh-symbolic";
         tooltip-text: _("Reload");
         clicked => $on_reload_clicked();
       }
 
       [end]
-      Gtk.MenuButton {
+      Gtk.MenuButton menu_button {
         icon-name: "open-menu-symbolic";
         tooltip-text: _("Main Menu");
         menu-model: primary_menu;
       }
     }
 
-    content: Gtk.Box {
-      orientation: vertical;
-
+    Adw.ToastOverlay toast_overlay {
+      vexpand: true;
+      
       WebKit.WebView web_view {
         vexpand: true;
         hexpand: true;
+        
+        settings: WebKit.Settings {
+          enable-javascript: true;
+          enable-javascript-markup: true;
+          enable-html5-database: true;
+          enable-html5-local-storage: true;
+          enable-offline-web-application-cache: true;
+          enable-page-cache: true;
+          user-agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Karere/0.1.0";
+        };
       }
-    };
+    }
   }
 }
 
 menu primary_menu {
   section {
     item {
+      label: _("_New Window");
+      action: "app.new-window";
+      accel: "<primary>n";
+    }
+  }
+  
+  section {
+    item {
+      label: _("_Zoom In");
+      action: "win.zoom-in";
+      accel: "<primary>plus";
+    }
+    
+    item {
+      label: _("_Zoom Out");
+      action: "win.zoom-out";
+      accel: "<primary>minus";
+    }
+    
+    item {
+      label: _("_Actual Size");
+      action: "win.zoom-reset";
+      accel: "<primary>0";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Find in Page");
+      action: "win.find";
+      accel: "<primary>f";
+    }
+  }
+  
+  section {
+    item {
       label: _("_Preferences");
       action: "app.preferences";
+      accel: "<primary>comma";
     }
   }
 
@@ -62,6 +118,7 @@ menu primary_menu {
     item {
       label: _("_Keyboard Shortcuts");
       action: "win.show-help-overlay";
+      accel: "<primary>question";
     }
 
     item {

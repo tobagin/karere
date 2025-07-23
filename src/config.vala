@@ -13,9 +13,9 @@
  */
 
 namespace Config {
-    public const string APP_ID = "@APP_ID@";
-    public const string APP_NAME = "@APP_NAME@";
-    public const string VERSION = "@VERSION@";
-    public const string GETTEXT_PACKAGE = "@GETTEXT_PACKAGE@";
-    public const string LOCALEDIR = "@LOCALEDIR@";
+    public const string APP_ID = "io.github.tobagin.karere";
+    public const string APP_NAME = "Karere";
+    public const string VERSION = "0.1.0";
+    public const string GETTEXT_PACKAGE = "karere";
+    public const string LOCALEDIR = "/usr/local/share/locale";
 }
