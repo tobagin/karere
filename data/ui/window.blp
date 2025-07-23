@@ -1,0 +1,72 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $KarereWindow : Adw.ApplicationWindow {
+  width-request: 800;
+  height-request: 600;
+  default-width: 1200;
+  default-height: 800;
+
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar header_bar {
+      [start]
+      Gtk.Button {
+        icon-name: "go-previous-symbolic";
+        tooltip-text: _("Go Back");
+        clicked => $on_back_clicked();
+      }
+
+      [start]
+      Gtk.Button {
+        icon-name: "go-next-symbolic";
+        tooltip-text: _("Go Forward");
+        clicked => $on_forward_clicked();
+      }
+
+      [start]
+      Gtk.Button {
+        icon-name: "view-refresh-symbolic";
+        tooltip-text: _("Reload");
+        clicked => $on_reload_clicked();
+      }
+
+      [end]
+      Gtk.MenuButton {
+        icon-name: "open-menu-symbolic";
+        tooltip-text: _("Main Menu");
+        menu-model: primary_menu;
+      }
+    }
+
+    content: Gtk.Box {
+      orientation: vertical;
+
+      WebKit.WebView web_view {
+        vexpand: true;
+        hexpand: true;
+      }
+    };
+  }
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("_Preferences");
+      action: "app.preferences";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "win.show-help-overlay";
+    }
+
+    item {
+      label: _("_About Karere");
+      action: "app.about";
+    }
+  }
+}

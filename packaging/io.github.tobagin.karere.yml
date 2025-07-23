@@ -1,0 +1,61 @@
+app-id: io.github.tobagin.karere
+runtime: org.gnome.Platform
+runtime-version: '48'
+sdk: org.gnome.Sdk
+command: karere
+
+finish-args:
+  # Network access for WhatsApp Web
+  - --share=network
+  # IPC access for desktop integration
+  - --share=ipc
+  # Wayland socket for modern display server
+  - --socket=wayland
+  # X11 fallback for compatibility
+  - --socket=fallback-x11
+  # Audio for notification sounds
+  - --socket=pulseaudio
+  # Desktop notifications
+  - --talk-name=org.freedesktop.Notifications
+  # Application data directory
+  - --persist=.var/app/io.github.tobagin.karere
+  # Access to user downloads for file sharing
+  - --filesystem=xdg-download
+  # WebKit process sandbox permissions
+  - --allow=devel
+  # Hardware acceleration
+  - --device=dri
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /man
+  - /share/doc
+  - /share/gtk-doc
+  - /share/man
+  - /share/pkgconfig
+  - /share/vala
+  - '*.la'
+  - '*.a'
+
+modules:
+  - name: blueprint-compiler
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/jwestman/blueprint-compiler.git
+        tag: v0.18.0
+        commit: 07c9c9df9cd1b6b4454ecba21ee58211e9144a4b
+
+  - name: karere
+    buildsystem: meson
+    config-opts:
+      - -Dtests=true
+    sources:
+      - type: git
+        url: https://github.com/tobagin/karere-vala.git
+        tag: v0.1.0
+        commit: HEAD
+    post-install:
+      - desktop-file-validate /app/share/applications/io.github.tobagin.karere.desktop
+      - appstream-util validate-relax /app/share/metainfo/io.github.tobagin.karere.appdata.xml

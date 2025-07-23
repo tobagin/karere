@@ -1,0 +1,41 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $KarerePreferences : Adw.PreferencesDialog {
+  title: _("Preferences");
+
+  Adw.PreferencesPage {
+    title: _("General");
+    icon-name: "applications-system-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Appearance");
+
+      Adw.ComboRow theme_row {
+        title: _("Theme");
+        subtitle: _("Choose the application theme");
+        model: StringList {
+          strings [
+            _("System Preference"),
+            _("Light"),
+            _("Dark")
+          ]
+        };
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Privacy");
+
+      Adw.SwitchRow crash_reporter_row {
+        title: _("Crash Reporter");
+        subtitle: _("Help improve Karere by automatically reporting crashes");
+      }
+
+      Adw.SwitchRow debug_logging_row {
+        title: _("Debug Logging");
+        subtitle: _("Enable detailed logging for troubleshooting");
+      }
+    }
+  }
+}
