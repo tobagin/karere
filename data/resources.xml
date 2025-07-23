@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/io/github/tobagin/karere">
+    <file>ui/window.ui</file>
+    <file>ui/preferences.ui</file>
+  </gresource>
+</gresources>

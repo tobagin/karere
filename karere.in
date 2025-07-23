@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Development launcher script for Karere
+# This script runs the application from the build directory without installation
+
+BUILD_DIR="@BUILD_DIR@"
+PROJECT_NAME="@PROJECT_NAME@"
+
+if [ ! -d "$BUILD_DIR" ]; then
+    echo "Build directory not found: $BUILD_DIR"
+    echo "Please run 'meson setup build' first"
+    exit 1
+fi
+
+if [ ! -f "$BUILD_DIR/$PROJECT_NAME" ]; then
+    echo "Executable not found: $BUILD_DIR/$PROJECT_NAME"
+    echo "Please run 'meson compile -C build' first"
+    exit 1
+fi
+
+# Set up environment for development
+export G_MESSAGES_DEBUG=all
+export GSETTINGS_SCHEMA_DIR="$BUILD_DIR/data"
+
+# Run the application
+exec "$BUILD_DIR/$PROJECT_NAME" "$@"

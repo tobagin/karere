@@ -1,0 +1,9 @@
+# List of source files which contain translatable strings
+src/main.vala
+src/application.vala
+src/window.vala
+src/preferences.vala
+data/ui/window.blp
+data/ui/preferences.blp
+data/io.github.tobagin.karere.desktop.in
+data/io.github.tobagin.karere.appdata.xml.in
