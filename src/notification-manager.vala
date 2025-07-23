@@ -12,10 +12,16 @@
  * GNU General Public License for more details.
  */
 
-namespace Config {
-    public const string APP_ID = "@APP_ID@";
-    public const string APP_NAME = "@APP_NAME@";
-    public const string VERSION = "@VERSION@";
-    public const string GETTEXT_PACKAGE = "@GETTEXT_PACKAGE@";
-    public const string LOCALEDIR = "@LOCALEDIR@";
+namespace Karere {
+
+    public class NotificationManager : GLib.Object {
+        
+        public NotificationManager() {
+            // TODO: Initialize notification manager
+        }
+        
+        public void send_notification(string title, string body, string icon) {
+            // TODO: Implement native notification sending
+        }
+    }
 }

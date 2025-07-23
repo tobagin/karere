@@ -26,7 +26,7 @@ def test_meson_dependencies():
     required_deps = [
         "gtk4",
         "libadwaita-1",
-        "webkit2gtk-6.0",
+        "webkitgtk-6.0",
         "libsoup-3.0"
     ]
     
