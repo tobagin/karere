@@ -1,0 +1,905 @@
+# Italian translations for karere.
+# Copyright (C) 2025 Thiago Fernandes
+# This file is distributed under the same license as the karere package.
+# Assistant <assistant@anthropic.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: karere 0.6.0\n"
+"Report-Msgid-Bugs-To: https://github.com/tobagin/karere-vala/issues\n"
+"POT-Creation-Date: 2025-07-25 12:00+0000\n"
+"PO-Revision-Date: 2025-07-25 12:00+0000\n"
+"Last-Translator: Assistant <assistant@anthropic.com>\n"
+"Language-Team: Italian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: data/ui/window.blp:15
+msgid "Karere"
+msgstr "Karere"
+
+#: data/ui/window.blp:16
+msgid "GTK4 WhatsApp Web"
+msgstr "GTK4 WhatsApp Web"
+
+#: data/ui/window.blp:23
+msgid "Main Menu"
+msgstr "Menu Principale"
+
+#: data/ui/window.blp:43
+msgid "_Preferences"
+msgstr "_Preferenze"
+
+#: data/ui/window.blp:51
+msgid "_Keyboard Shortcuts"
+msgstr "Scorciatoie da _Tastiera"
+
+#: data/ui/window.blp:57
+msgid "_About Karere"
+msgstr "_Informazioni su Karere"
+
+#: data/ui/window.blp:64
+msgid "_Quit"
+msgstr "_Esci"
+
+#: data/ui/preferences.blp:5
+msgid "Preferences"
+msgstr "Preferenze"
+
+#: data/ui/preferences.blp:9
+msgid "General"
+msgstr "Generale"
+
+#: data/ui/preferences.blp:13
+msgid "Appearance"
+msgstr "Aspetto"
+
+#: data/ui/preferences.blp:16
+msgid "Theme"
+msgstr "Tema"
+
+#: data/ui/preferences.blp:17
+msgid "Choose the application theme"
+msgstr "Scegli il tema dell'applicazione"
+
+#: data/ui/preferences.blp:20
+msgid "System Preference"
+msgstr "Preferenza di Sistema"
+
+#: data/ui/preferences.blp:21
+msgid "Light"
+msgstr "Chiaro"
+
+#: data/ui/preferences.blp:22
+msgid "Dark"
+msgstr "Scuro"
+
+#: data/ui/preferences.blp:29
+msgid "Spell Checking"
+msgstr "Controllo Ortografico"
+
+#: data/ui/preferences.blp:32
+msgid "Enable Spell Checking"
+msgstr "Abilita Controllo Ortografico"
+
+#: data/ui/preferences.blp:33
+msgid "Check spelling while typing messages"
+msgstr "Controlla l'ortografia durante la digitazione dei messaggi"
+
+#: data/ui/preferences.blp:37
+msgid "Auto-detect Language"
+msgstr "Rileva Automaticamente la Lingua"
+
+#: data/ui/preferences.blp:38
+msgid "Automatically detect system language for spell checking"
+msgstr ""
+"Rileva automaticamente la lingua del sistema per il controllo ortografico"
+
+#: data/ui/preferences.blp:43
+msgid "Languages"
+msgstr "Lingue"
+
+#: data/ui/preferences.blp:46
+msgid "Spell Check Languages"
+msgstr "Lingue del Controllo Ortografico"
+
+#: data/ui/preferences.blp:47
+msgid "Configure enabled languages for spell checking"
+msgstr "Configura le lingue abilitate per il controllo ortografico"
+
+#: data/ui/preferences.blp:50
+msgid "Current Languages"
+msgstr "Lingue Attuali"
+
+#: data/ui/preferences.blp:51
+msgid "Languages currently enabled for spell checking"
+msgstr "Lingue attualmente abilitate per il controllo ortografico"
+
+#: data/ui/preferences.blp:55
+msgid "Auto-detected"
+msgstr "Rilevata automaticamente"
+
+#: data/ui/preferences.blp:62
+msgid "Add Language"
+msgstr "Aggiungi Lingua"
+
+#: data/ui/preferences.blp:63
+msgid "Add a new language for spell checking"
+msgstr "Aggiungi una nuova lingua per il controllo ortografico"
+
+#: data/ui/preferences.blp:68
+msgid "Add"
+msgstr "Aggiungi"
+
+#: data/ui/preferences.blp:76
+msgid "Developer Tools"
+msgstr "Strumenti per Sviluppatori"
+
+#: data/ui/preferences.blp:79
+msgid "Enable Developer Tools"
+msgstr "Abilita Strumenti per Sviluppatori"
+
+#: data/ui/preferences.blp:80
+msgid "Enable access to web developer tools for debugging"
+msgstr "Abilita l'accesso agli strumenti per sviluppatori web per il debug"
+
+#: data/ui/preferences.blp:84
+msgid "Open Developer Tools"
+msgstr "Apri Strumenti per Sviluppatori"
+
+#: data/ui/preferences.blp:85
+msgid "Open the web inspector to debug WhatsApp Web"
+msgstr "Apri l'ispettore web per il debug di WhatsApp Web"
+
+#: data/ui/preferences.blp:90
+msgid "Open"
+msgstr "Apri"
+
+#: data/ui/preferences.blp:99
+msgid "Accessibility"
+msgstr "Accessibilità"
+
+#: data/ui/preferences.blp:103
+msgid "Keyboard Navigation"
+msgstr "Navigazione da Tastiera"
+
+#: data/ui/preferences.blp:106
+msgid "Enable Keyboard Shortcuts"
+msgstr "Abilita Scorciatoie da Tastiera"
+
+#: data/ui/preferences.blp:107
+msgid "Enable application-wide keyboard shortcuts"
+msgstr "Abilita le scorciatoie da tastiera per tutta l'applicazione"
+
+#: data/ui/preferences.blp:111
+msgid "Focus Indicators"
+msgstr "Indicatori di Focus"
+
+#: data/ui/preferences.blp:112
+msgid "Show visual focus indicators for keyboard navigation"
+msgstr "Mostra indicatori visivi di focus per la navigazione da tastiera"
+
+#: data/ui/preferences.blp:116
+msgid "View Keyboard Shortcuts"
+msgstr "Visualizza Scorciatoie da Tastiera"
+
+#: data/ui/preferences.blp:117
+msgid "Display all available keyboard shortcuts"
+msgstr "Mostra tutte le scorciatoie da tastiera disponibili"
+
+#: data/ui/preferences.blp:122
+msgid "View"
+msgstr "Visualizza"
+
+#: data/ui/preferences.blp:129
+msgid "Visual Accessibility"
+msgstr "Accessibilità Visiva"
+
+#: data/ui/preferences.blp:132
+msgid "High Contrast Mode"
+msgstr "Modalità Alto Contrasto"
+
+#: data/ui/preferences.blp:133
+msgid "Use high contrast colors for better visibility"
+msgstr "Usa colori ad alto contrasto per una migliore visibilità"
+
+#: data/ui/preferences.blp:137
+msgid "Reduce Motion"
+msgstr "Riduci Movimento"
+
+#: data/ui/preferences.blp:138
+msgid "Reduce animations and transitions"
+msgstr "Riduci animazioni e transizioni"
+
+#: data/ui/preferences.blp:142
+msgid "Interface Zoom Level"
+msgstr "Livello di Zoom dell'Interfaccia"
+
+#: data/ui/preferences.blp:143
+msgid "Zoom level for the entire application interface"
+msgstr "Livello di zoom per tutta l'interfaccia dell'applicazione"
+
+#: data/ui/preferences.blp:156
+msgid "Screen Reader Support"
+msgstr "Supporto per Screen Reader"
+
+#: data/ui/preferences.blp:159
+msgid "Screen Reader Optimizations"
+msgstr "Ottimizzazioni per Screen Reader"
+
+#: data/ui/preferences.blp:160
+msgid "Optimize interface for screen reader usage"
+msgstr "Ottimizza l'interfaccia per l'uso dello screen reader"
+
+#: data/ui/preferences.blp:164
+msgid "Screen Reader Status"
+msgstr "Stato Screen Reader"
+
+#: data/ui/preferences.blp:165
+msgid "Current accessibility technology detected"
+msgstr "Tecnologia di accessibilità attuale rilevata"
+
+#: data/ui/preferences.blp:169
+msgid "Not detected"
+msgstr "Non rilevato"
+
+#: data/ui/preferences.blp:177
+msgid "Accessibility Shortcuts"
+msgstr "Scorciatoie di Accessibilità"
+
+#: data/ui/preferences.blp:180
+msgid "Enable zoom and contrast keyboard shortcuts"
+msgstr "Abilita scorciatoie da tastiera per zoom e contrasto"
+
+#: data/ui/preferences.blp:184
+msgid "Developer Shortcuts"
+msgstr "Scorciatoie per Sviluppatori"
+
+#: data/ui/preferences.blp:185
+msgid "Enable developer tool keyboard shortcuts"
+msgstr "Abilita scorciatoie da tastiera per strumenti per sviluppatori"
+
+#: data/ui/preferences.blp:189
+msgid "Notification Shortcuts"
+msgstr "Scorciatoie per Notifiche"
+
+#: data/ui/preferences.blp:190
+msgid "Enable notification management shortcuts"
+msgstr "Abilita scorciatoie per la gestione delle notifiche"
+
+#: data/ui/preferences.blp:196
+msgid "WebView Accessibility"
+msgstr "Accessibilità WebView"
+
+#: data/ui/preferences.blp:199
+msgid "WebView Zoom Level"
+msgstr "Livello di Zoom WebView"
+
+#: data/ui/preferences.blp:200
+msgid "Zoom level for WhatsApp Web content"
+msgstr "Livello di zoom per il contenuto di WhatsApp Web"
+
+#: data/ui/preferences.blp:212
+msgid "Zoom Step Size"
+msgstr "Dimensione Passo Zoom"
+
+#: data/ui/preferences.blp:213
+msgid "Amount to change zoom with each step"
+msgstr "Quantità per cambiare lo zoom ad ogni passo"
+
+#: data/ui/preferences.blp:228
+msgid "Notifications"
+msgstr "Notifiche"
+
+#: data/ui/preferences.blp:235
+msgid "Message Notifications"
+msgstr "Notifiche Messaggi"
+
+#: data/ui/preferences.blp:236
+msgid "Show desktop notifications for new messages"
+msgstr "Mostra notifiche del desktop per nuovi messaggi"
+
+#: data/ui/preferences.blp:240
+msgid "Background Notifications"
+msgstr "Notifiche in Background"
+
+#: data/ui/preferences.blp:241
+msgid "When to show notifications in background"
+msgstr "Quando mostrare le notifiche in background"
+
+#: data/ui/preferences.blp:244
+msgid "Always"
+msgstr "Sempre"
+
+#: data/ui/preferences.blp:245
+msgid "First time only"
+msgstr "Solo la prima volta"
+
+#: data/ui/preferences.blp:246
+msgid "Never"
+msgstr "Mai"
+
+#: data/ui/preferences.blp:252
+msgid "System Notifications"
+msgstr "Notifiche di Sistema"
+
+#: data/ui/preferences.blp:253
+msgid "Use system notification settings"
+msgstr "Usa impostazioni di notifica del sistema"
+
+#: data/ui/preferences.blp:257
+msgid "Notification Sounds"
+msgstr "Suoni di Notifica"
+
+#: data/ui/preferences.blp:258
+msgid "Play sounds for notifications"
+msgstr "Riproduci suoni per le notifiche"
+
+#: data/ui/preferences.blp:263
+msgid "Message Preview"
+msgstr "Anteprima Messaggio"
+
+#: data/ui/preferences.blp:266
+msgid "Show Message Preview"
+msgstr "Mostra Anteprima Messaggio"
+
+#: data/ui/preferences.blp:267
+msgid "Display message content in notifications"
+msgstr "Mostra il contenuto del messaggio nelle notifiche"
+
+#: data/ui/preferences.blp:271
+msgid "Preview Length"
+msgstr "Lunghezza Anteprima"
+
+#: data/ui/preferences.blp:272
+msgid "Maximum number of characters to show in preview"
+msgstr "Numero massimo di caratteri da mostrare nell'anteprima"
+
+#: data/ui/preferences.blp:284
+msgid "Background"
+msgstr "Sfondo"
+
+#: data/ui/preferences.blp:287
+msgid "Check Frequency"
+msgstr "Frequenza di Controllo"
+
+#: data/ui/preferences.blp:288
+msgid "Minutes between background notification checks"
+msgstr "Minuti tra i controlli delle notifiche in background"
+
+#: data/ui/preferences.blp:302
+msgid "Do Not Disturb"
+msgstr "Non Disturbare"
+
+#: data/ui/preferences.blp:306
+msgid "Do Not Disturb Mode"
+msgstr "Modalità Non Disturbare"
+
+#: data/ui/preferences.blp:309
+msgid "Enable Do Not Disturb"
+msgstr "Abilita Non Disturbare"
+
+#: data/ui/preferences.blp:310
+msgid "Temporarily disable all notifications"
+msgstr "Disabilita temporaneamente tutte le notifiche"
+
+#: data/ui/preferences.blp:315
+msgid "Allow background notifications during Do Not Disturb"
+msgstr "Consenti notifiche in background durante Non Disturbare"
+
+#: data/ui/preferences.blp:320
+msgid "Scheduled Do Not Disturb"
+msgstr "Non Disturbare Programmato"
+
+#: data/ui/preferences.blp:324
+msgid "Automatically enable Do Not Disturb at specific times"
+msgstr "Abilita automaticamente Non Disturbare in orari specifici"
+
+#: data/ui/preferences.blp:328
+msgid "Start Time"
+msgstr "Ora di Inizio"
+
+#: data/ui/preferences.blp:329
+msgid "Time when Do Not Disturb begins"
+msgstr "Ora in cui inizia Non Disturbare"
+
+#: data/ui/preferences.blp:333
+msgid "22:00"
+msgstr "22:00"
+
+#: data/ui/preferences.blp:340
+msgid "End Time"
+msgstr "Ora di Fine"
+
+#: data/ui/preferences.blp:341
+msgid "Time when Do Not Disturb ends"
+msgstr "Ora in cui finisce Non Disturbare"
+
+#: data/ui/preferences.blp:345
+msgid "08:00"
+msgstr "08:00"
+
+#: data/ui/preferences.blp:356
+msgid "Crash Reporting"
+msgstr "Segnalazione Crash"
+
+#: data/ui/preferences.blp:363
+msgid "Enable Crash Reporter"
+msgstr "Abilita Segnalatore Crash"
+
+#: data/ui/preferences.blp:364
+msgid "Help improve Karere by automatically reporting crashes"
+msgstr "Aiuta a migliorare Karere segnalando automaticamente i crash"
+
+#: data/ui/preferences.blp:368
+msgid "Include System Information"
+msgstr "Includi Informazioni di Sistema"
+
+#: data/ui/preferences.blp:369
+msgid "Include system details in crash reports"
+msgstr "Includi dettagli di sistema nei rapporti di crash"
+
+#: data/ui/preferences.blp:373
+msgid "Include Application Logs"
+msgstr "Includi Log dell'Applicazione"
+
+#: data/ui/preferences.blp:374
+msgid "Include application logs in crash reports for better debugging"
+msgstr ""
+"Includi log dell'applicazione nei rapporti di crash per un debug migliore"
+
+#: data/ui/preferences.blp:379
+msgid "Crash Statistics"
+msgstr "Statistiche Crash"
+
+#: data/ui/preferences.blp:382
+msgid "Crash Reports Generated"
+msgstr "Rapporti di Crash Generati"
+
+#: data/ui/preferences.blp:383
+msgid "Total number of crash reports sent"
+msgstr "Numero totale di rapporti di crash inviati"
+
+#: data/ui/preferences.blp:393
+msgid "Clear Statistics"
+msgstr "Cancella Statistiche"
+
+#: data/ui/preferences.blp:394
+msgid "Reset crash report counter"
+msgstr "Reimposta contatore rapporti di crash"
+
+#: data/ui/preferences.blp:398
+msgid "Clear"
+msgstr "Cancella"
+
+#: data/ui/preferences.blp:407
+msgid "Logging"
+msgstr "Log"
+
+#: data/ui/preferences.blp:411
+msgid "Log Levels"
+msgstr "Livelli di Log"
+
+#: data/ui/preferences.blp:414
+msgid "Log Level"
+msgstr "Livello di Log"
+
+#: data/ui/preferences.blp:415
+msgid "Set the minimum log level to display"
+msgstr "Imposta il livello minimo di log da visualizzare"
+
+#: data/ui/preferences.blp:418
+msgid "Critical"
+msgstr "Critico"
+
+#: data/ui/preferences.blp:419
+msgid "Error"
+msgstr "Errore"
+
+#: data/ui/preferences.blp:420
+msgid "Warning"
+msgstr "Avviso"
+
+#: data/ui/preferences.blp:421
+msgid "Info"
+msgstr "Informazioni"
+
+#: data/ui/preferences.blp:422
+msgid "Debug"
+msgstr "Debug"
+
+#: data/ui/preferences.blp:428
+msgid "Console Logging"
+msgstr "Log Console"
+
+#: data/ui/preferences.blp:429
+msgid "Output logs to console/terminal"
+msgstr "Invia log alla console/terminal"
+
+#: data/ui/preferences.blp:433
+msgid "File Logging"
+msgstr "Log su File"
+
+#: data/ui/preferences.blp:434
+msgid "Save logs to file for debugging"
+msgstr "Salva log su file per il debug"
+
+#: data/ui/preferences.blp:439
+msgid "Log File Management"
+msgstr "Gestione File di Log"
+
+#: data/ui/preferences.blp:442
+msgid "Log File Location"
+msgstr "Posizione File di Log"
+
+#: data/ui/preferences.blp:443
+msgid "Where log files are stored"
+msgstr "Dove sono memorizzati i file di log"
+
+#: data/ui/preferences.blp:447
+msgid "Open Folder"
+msgstr "Apri Cartella"
+
+#: data/ui/preferences.blp:453
+msgid "Maximum Log File Size"
+msgstr "Dimensione Massima File di Log"
+
+#: data/ui/preferences.blp:454
+msgid "Maximum size of individual log files (MB)"
+msgstr "Dimensione massima dei singoli file di log (MB)"
+
+#: data/ui/preferences.blp:465
+msgid "Log File Retention"
+msgstr "Conservazione File di Log"
+
+#: data/ui/preferences.blp:466
+msgid "Number of old log files to keep"
+msgstr "Numero di vecchi file di log da mantenere"
+
+#: data/ui/preferences.blp:478
+msgid "Log Management"
+msgstr "Gestione Log"
+
+#: data/ui/preferences.blp:481
+msgid "View Current Log"
+msgstr "Visualizza Log Corrente"
+
+#: data/ui/preferences.blp:482
+msgid "Open current log file in text editor"
+msgstr "Apri il file di log corrente nell'editor di testo"
+
+#: data/ui/preferences.blp:486
+msgid "View Log"
+msgstr "Visualizza Log"
+
+#: data/ui/preferences.blp:492
+msgid "Clear All Logs"
+msgstr "Cancella Tutti i Log"
+
+#: data/ui/preferences.blp:493
+msgid "Delete all existing log files"
+msgstr "Elimina tutti i file di log esistenti"
+
+#: data/ui/preferences.blp:497
+msgid "Clear Logs"
+msgstr "Cancella Log"
+
+# Desktop file strings
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "Client WhatsApp"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Client nativo WhatsApp Web per desktop Linux"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;chat;messaggi;web;comunicazione;"
+
+# Application source strings
+#: src/application.vala
+msgid "Karere %s\n"
+msgstr "Karere %s\n"
+
+#: src/application.vala
+msgid "Usage: karere [OPTIONS]\n"
+msgstr "Utilizzo: karere [OPZIONI]\n"
+
+#: src/application.vala
+msgid "  --version    Show version information\n"
+msgstr "  --version    Mostra informazioni sulla versione\n"
+
+#: src/application.vala
+msgid "  --help       Show this help message\n"
+msgstr "  --help       Mostra questo messaggio di aiuto\n"
+
+#: src/application.vala
+msgid "Thiago Fernandes"
+msgstr "Thiago Fernandes"
+
+#: src/application.vala
+msgid "© 2025 Thiago Fernandes"
+msgstr "© 2025 Thiago Fernandes"
+
+#: src/application.vala
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities."
+msgstr ""
+"Un wrapper moderno e nativo GTK4/LibAdwaita per WhatsApp Web che fornisce "
+"un'integrazione desktop senza soluzione di continuità con funzionalità "
+"complete di log e segnalazione crash."
+
+#: src/application.vala
+msgid "Credits"
+msgstr "Crediti"
+
+#: src/application.vala
+msgid "Special Thanks"
+msgstr "Ringraziamenti Speciali"
+
+#: src/preferences.vala
+msgid "Enter a language code (e.g., en_US, fr_FR, de_DE):"
+msgstr "Inserisci un codice lingua (es. it_IT, en_US, fr_FR):"
+
+#: src/preferences.vala
+msgid "en_US"
+msgstr "it_IT"
+
+#: src/preferences.vala
+msgid "Cancel"
+msgstr "Annulla"
+
+#: src/preferences.vala
+msgid "Language '%s' is already added"
+msgstr "La lingua '%s' è già stata aggiunta"
+
+#: src/preferences.vala
+msgid "Language '%s' added successfully"
+msgstr "Lingua '%s' aggiunta con successo"
+
+#: src/preferences.vala
+msgid "Disabled"
+msgstr "Disabilitato"
+
+#: src/preferences.vala
+msgid "Auto: %s"
+msgstr "Automatico: %s"
+
+#: src/preferences.vala
+msgid "Auto: en_US"
+msgstr "Automatico: it_IT"
+
+#: src/preferences.vala
+msgid "Detected"
+msgstr "Rilevato"
+
+#: src/main.vala
+msgid "Show version information"
+msgstr "Mostra informazioni sulla versione"
+
+#: src/main.vala
+msgid "Show help information"
+msgstr "Mostra informazioni di aiuto"
+
+#: src/keyboard-shortcuts.vala
+msgid "Zoomed in"
+msgstr "Ingrandito"
+
+#: src/keyboard-shortcuts.vala
+msgid "Zoomed out"
+msgstr "Rimpicciolito"
+
+#: src/keyboard-shortcuts.vala
+msgid "Zoom reset to default"
+msgstr "Zoom ripristinato al predefinito"
+
+#: src/keyboard-shortcuts.vala
+msgid "High contrast disabled"
+msgstr "Alto contrasto disabilitato"
+
+#: src/keyboard-shortcuts.vala
+msgid "High contrast enabled"
+msgstr "Alto contrasto abilitato"
+
+#: src/keyboard-shortcuts.vala
+msgid "Focus indicators disabled"
+msgstr "Indicatori di focus disabilitati"
+
+#: src/keyboard-shortcuts.vala
+msgid "Focus indicators enabled"
+msgstr "Indicatori di focus abilitati"
+
+#: src/keyboard-shortcuts.vala
+msgid "Notifications disabled"
+msgstr "Notifiche disabilitate"
+
+#: src/keyboard-shortcuts.vala
+msgid "Notifications enabled"
+msgstr "Notifiche abilitate"
+
+#: src/keyboard-shortcuts.vala
+msgid "Do Not Disturb disabled"
+msgstr "Non Disturbare disabilitato"
+
+#: src/keyboard-shortcuts.vala
+msgid "Do Not Disturb enabled"
+msgstr "Non Disturbare abilitato"
+
+#: src/keyboard-shortcuts.vala
+msgid "Force reloading WhatsApp Web..."
+msgstr "Forzando ricaricamento di WhatsApp Web..."
+
+#: src/keyboard-shortcuts.vala
+msgid "Reloading WhatsApp Web..."
+msgstr "Ricaricando WhatsApp Web..."
+
+#: src/keyboard-shortcuts.vala
+msgid "Use WhatsApp Web's search feature (🔍)"
+msgstr "Usa la funzione di ricerca di WhatsApp Web (🔍)"
+
+#: src/keyboard-shortcuts.vala
+msgid "Opening chat search..."
+msgstr "Aprendo ricerca chat..."
+
+#: src/keyboard-shortcuts.vala
+msgid "Opening new chat..."
+msgstr "Aprendo nuova chat..."
+
+#: src/keyboard-shortcuts.vala
+msgid "Archiving current chat..."
+msgstr "Archiviando chat corrente..."
+
+#: src/keyboard-shortcuts.vala
+msgid "Opening profile..."
+msgstr "Aprendo profilo..."
+
+#: src/keyboard-shortcuts.vala
+msgid "Quit"
+msgstr "Esci"
+
+#: src/keyboard-shortcuts.vala
+msgid "About"
+msgstr "Informazioni"
+
+#: src/keyboard-shortcuts.vala
+msgid "Keyboard Shortcuts"
+msgstr "Scorciatoie da Tastiera"
+
+#: src/keyboard-shortcuts.vala
+msgid "Window"
+msgstr "Finestra"
+
+#: src/keyboard-shortcuts.vala
+msgid "Minimize"
+msgstr "Minimizza"
+
+#: src/keyboard-shortcuts.vala
+msgid "Fullscreen"
+msgstr "Schermo Intero"
+
+#: src/keyboard-shortcuts.vala
+msgid "Zoom In"
+msgstr "Ingrandisci"
+
+#: src/keyboard-shortcuts.vala
+msgid "Zoom Out"
+msgstr "Rimpicciolisci"
+
+#: src/keyboard-shortcuts.vala
+msgid "Reset Zoom"
+msgstr "Ripristina Zoom"
+
+#: src/keyboard-shortcuts.vala
+msgid "Toggle High Contrast"
+msgstr "Attiva/Disattiva Alto Contrasto"
+
+#: src/keyboard-shortcuts.vala
+msgid "Developer"
+msgstr "Sviluppatore"
+
+#: src/keyboard-shortcuts.vala
+msgid "Reload"
+msgstr "Ricarica"
+
+#: src/keyboard-shortcuts.vala
+msgid "Force Reload"
+msgstr "Forza Ricaricamento"
+
+#: src/keyboard-shortcuts.vala
+msgid "WhatsApp Web"
+msgstr "WhatsApp Web"
+
+#: src/keyboard-shortcuts.vala
+msgid "Find in Chat"
+msgstr "Trova nella Chat"
+
+#: src/keyboard-shortcuts.vala
+msgid "Search Chats"
+msgstr "Cerca nelle Chat"
+
+#: src/keyboard-shortcuts.vala
+msgid "New Chat"
+msgstr "Nuova Chat"
+
+#: src/keyboard-shortcuts.vala
+msgid "Archive Chat"
+msgstr "Archivia Chat"
+
+#: src/notification-manager.vala
+msgid "New message"
+msgstr "Nuovo messaggio"
+
+#: src/notification-manager.vala
+msgid "Karere is running in the background. Notifications are active."
+msgstr "Karere è in esecuzione in background. Le notifiche sono attive."
+
+#: src/notification-manager.vala
+msgid ""
+"Karere is now running in the background. You'll receive notifications for "
+"new messages."
+msgstr ""
+"Karere ora è in esecuzione in background. Riceverai notifiche per i nuovi "
+"messaggi."
+
+#: src/window.vala
+msgid "Failed to load WhatsApp Web. Please check your internet connection."
+msgstr ""
+"Impossibile caricare WhatsApp Web. Controlla la tua connessione internet."
+
+#: src/window.vala
+msgid "File does not exist"
+msgstr "Il file non esiste"
+
+#: src/window.vala
+msgid "File is too large for WhatsApp (max 100MB)"
+msgstr "Il file è troppo grande per WhatsApp (max 100MB)"
+
+#: src/window.vala
+msgid "Developer tools are disabled in preferences"
+msgstr "Gli strumenti per sviluppatori sono disabilitati nelle preferenze"
+
+#: src/crash-reporter.vala
+msgid "Crash Report Submitted"
+msgstr "Rapporto di Crash Inviato"
+
+#: src/crash-reporter.vala
+msgid ""
+"Thank you for helping improve Karere. The crash report has been submitted "
+"successfully and will help us fix this issue."
+msgstr ""
+"Grazie per aver aiutato a migliorare Karere. Il rapporto di crash è stato "
+"inviato con successo e ci aiuterà a risolvere questo problema."
+
+#: src/crash-reporter.vala
+msgid "Failed to submit crash report"
+msgstr "Invio del rapporto di crash fallito"
+
+#: src/crash-reporter.vala
+msgid "Close"
+msgstr "Chiudi"
+
+#: src/utils.vala
+msgid "OK"
+msgstr "OK"
+
+#: src/utils.vala
+msgid "Critical Error"
+msgstr "Errore Critico"
+
+#: src/utils.vala
+msgid "The application may need to be restarted."
+msgstr "L'applicazione potrebbe dover essere riavviata."
+
+#: src/utils.vala
+msgid "Restart"
+msgstr "Riavvia"
+
+#: src/utils.vala
+msgid "Continue"
+msgstr "Continua"

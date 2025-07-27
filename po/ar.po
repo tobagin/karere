@@ -1,0 +1,1191 @@
+# Arabic translations for karere.
+# Copyright (C) 2025 Thiago Fernandes
+# This file is distributed under the same license as the karere package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: karere 0.6.0\n"
+"Report-Msgid-Bugs-To: https://github.com/tobagin/karere-vala/issues\n"
+"POT-Creation-Date: 2025-07-25 12:00+0000\n"
+"PO-Revision-Date: 2025-07-25 12:00+0000\n"
+"Last-Translator: Assistant <assistant@anthropic.com>\n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+
+# Application Information
+#: data/io.github.tobagin.karere.appdata.xml.in:4
+#: data/io.github.tobagin.karere.desktop.in:3 src/application.vala:45
+#: src/application.vala:47 src/application.vala:49 src/window.vala:32
+msgid "Karere"
+msgstr "كارِيري"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:5
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "Native WhatsApp client for Linux"
+msgstr "عميل واتساب أصلي لنظام لينكس"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:7
+msgid ""
+"Karere is a modern, native WhatsApp client built specifically for the Linux "
+"desktop using GTK4 and LibAdwaita. It provides a seamless WhatsApp "
+"experience with native desktop integration, comprehensive logging, and crash "
+"reporting capabilities."
+msgstr ""
+"كارِيري هو عميل واتساب حديث وأصلي مُصمم خصيصاً لسطح المكتب لينكس باستخدام GTK4 "
+"و LibAdwaita. يوفر تجربة واتساب سلسة مع التكامل الأصلي لسطح المكتب، والتسجيل "
+"الشامل، وقدرات الإبلاغ عن الأعطال."
+
+#: data/io.github.tobagin.karere.appdata.xml.in:12
+msgid "Features:"
+msgstr "المميزات:"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:14
+msgid "Native GTK4/LibAdwaita interface with modern design"
+msgstr "واجهة GTK4/LibAdwaita أصلية بتصميم حديث"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:15
+msgid "Full desktop integration with notifications and theming"
+msgstr "تكامل كامل مع سطح المكتب مع الإشعارات والسمات"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:16
+msgid "WebKitGTK-based WhatsApp Web rendering for optimal performance"
+msgstr "عرض واتساب ويب المبني على WebKitGTK للأداء الأمثل"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:17
+msgid "Comprehensive logging system for debugging and monitoring"
+msgstr "نظام تسجيل شامل لتصحيح الأخطاء والمراقبة"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:18
+msgid "Crash reporting with user privacy controls"
+msgstr "الإبلاغ عن الأعطال مع ضوابط خصوصية المستخدم"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:19
+msgid "Light, dark, and system theme support"
+msgstr "دعم السمات الفاتحة والداكنة وسمة النظام"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:20
+msgid "Keyboard shortcuts and accessibility features"
+msgstr "اختصارات لوحة المفاتيح وميزات إمكانية الوصول"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:21
+msgid "Resource-efficient compared to browser-based solutions"
+msgstr "فعال في استخدام الموارد مقارنة بالحلول المعتمدة على المتصفح"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Chat using WhatsApp with native Linux desktop integration"
+msgstr "الدردشة باستخدام واتساب مع التكامل الأصلي لسطح المكتب لينكس"
+
+#: data/io.github.tobagin.karere.desktop.in:8
+msgid "whatsapp;chat;messaging;social;communication;"
+msgstr "واتساب;دردشة;رسائل;اجتماعي;تواصل;"
+
+# Window and Interface
+#: src/window.vala:41
+msgid "Loading WhatsApp..."
+msgstr "جارٍ تحميل واتساب..."
+
+#: src/window.vala:52 src/logger.vala:135
+msgid "WhatsApp Web failed to load"
+msgstr "فشل في تحميل واتساب ويب"
+
+#: src/window.vala:68 src/window.vala:285 data/ui/window.blp:23
+msgid "Reload"
+msgstr "إعادة تحميل"
+
+#: src/window.vala:72 data/ui/window.blp:35
+msgid "Preferences"
+msgstr "التفضيلات"
+
+#: src/window.vala:76 data/ui/window.blp:39
+msgid "About Karere"
+msgstr "حول كارِيري"
+
+#: src/window.vala:86
+msgid "Connection Error"
+msgstr "خطأ في الاتصال"
+
+#: src/window.vala:87
+msgid ""
+"Unable to connect to WhatsApp Web. Please check your internet connection and "
+"try again."
+msgstr ""
+"تعذر الاتصال بواتساب ويب. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
+
+#: src/window.vala:95
+msgid "Loading Error"
+msgstr "خطأ في التحميل"
+
+#: src/window.vala:96
+msgid ""
+"WhatsApp Web could not be loaded. This might be due to network issues or "
+"server problems."
+msgstr ""
+"تعذر تحميل واتساب ويب. قد يكون ذلك بسبب مشاكل في الشبكة أو مشاكل في الخادم."
+
+#: src/window.vala:104
+msgid "Script Error"
+msgstr "خطأ في النص البرمجي"
+
+#: src/window.vala:105
+msgid "A JavaScript error occurred while loading WhatsApp Web."
+msgstr "حدث خطأ في جافا سكريبت أثناء تحميل واتساب ويب."
+
+#: src/window.vala:113
+msgid "Permission Denied"
+msgstr "تم رفض الإذن"
+
+#: src/window.vala:114
+msgid ""
+"Karere does not have the necessary permissions to access WhatsApp Web. "
+"Please check your system settings."
+msgstr ""
+"لا يملك كارِيري الأذونات اللازمة للوصول إلى واتساب ويب. يرجى التحقق من "
+"إعدادات النظام."
+
+#: src/window.vala:122
+msgid "SSL Certificate Error"
+msgstr "خطأ في شهادة SSL"
+
+#: src/window.vala:123
+msgid ""
+"There was a problem with the SSL certificate. This might indicate a security "
+"issue."
+msgstr "كانت هناك مشكلة في شهادة SSL. قد يشير هذا إلى مشكلة أمنية."
+
+#: src/window.vala:131
+msgid "Content Blocked"
+msgstr "تم حظر المحتوى"
+
+#: src/window.vala:132
+msgid "Some content was blocked by the security policy."
+msgstr "تم حظر بعض المحتوى بواسطة سياسة الأمان."
+
+#: src/window.vala:140
+msgid "Plugin Error"
+msgstr "خطأ في المكون الإضافي"
+
+#: src/window.vala:141
+msgid "A required plugin could not be loaded or executed."
+msgstr "تعذر تحميل أو تنفيذ مكون إضافي مطلوب."
+
+#: src/window.vala:149
+msgid "Timeout Error"
+msgstr "خطأ انتهاء المهلة"
+
+#: src/window.vala:150
+msgid "The request timed out. Please check your connection and try again."
+msgstr "انتهت مهلة الطلب. يرجى التحقق من الاتصال والمحاولة مرة أخرى."
+
+#: src/window.vala:158
+msgid "Resource Error"
+msgstr "خطأ في المورد"
+
+#: src/window.vala:159
+msgid "A required resource could not be loaded."
+msgstr "تعذر تحميل مورد مطلوب."
+
+#: src/window.vala:167
+msgid "Unknown Error"
+msgstr "خطأ غير معروف"
+
+#: src/window.vala:168
+msgid "An unexpected error occurred while loading WhatsApp Web."
+msgstr "حدث خطأ غير متوقع أثناء تحميل واتساب ويب."
+
+#: src/window.vala:179
+msgid "Retry"
+msgstr "إعادة المحاولة"
+
+#: src/window.vala:190
+msgid "Network unavailable"
+msgstr "الشبكة غير متاحة"
+
+#: src/window.vala:191
+msgid ""
+"No network connection detected. Please connect to the internet and try again."
+msgstr ""
+"لم يتم اكتشاف اتصال بالشبكة. يرجى الاتصال بالإنترنت والمحاولة مرة أخرى."
+
+#: src/window.vala:199
+msgid "Server unreachable"
+msgstr "الخادم غير قابل للوصول"
+
+#: src/window.vala:200
+msgid "WhatsApp servers are currently unreachable. Please try again later."
+msgstr "خوادم واتساب غير قابلة للوصول حالياً. يرجى المحاولة لاحقاً."
+
+#: src/window.vala:208
+msgid "DNS resolution failed"
+msgstr "فشل في حل DNS"
+
+#: src/window.vala:209
+msgid ""
+"Could not resolve the WhatsApp Web address. Please check your DNS settings."
+msgstr "تعذر حل عنوان واتساب ويب. يرجى التحقق من إعدادات DNS."
+
+#: src/window.vala:217
+msgid "Certificate verification failed"
+msgstr "فشل في التحقق من الشهادة"
+
+#: src/window.vala:218
+msgid ""
+"The SSL certificate could not be verified. This might be a security concern."
+msgstr "تعذر التحقق من شهادة SSL. قد يكون هذا مصدر قلق أمني."
+
+#: src/window.vala:226
+msgid "Proxy authentication required"
+msgstr "مطلوب مصادقة البروكسي"
+
+#: src/window.vala:227
+msgid "Your proxy server requires authentication to access the internet."
+msgstr "يتطلب خادم البروكسي الخاص بك مصادقة للوصول إلى الإنترنت."
+
+#: src/window.vala:235
+msgid "Content too large"
+msgstr "المحتوى كبير جداً"
+
+#: src/window.vala:236
+msgid "The content is too large to be displayed properly."
+msgstr "المحتوى كبير جداً لعرضه بشكل صحيح."
+
+#: src/window.vala:244
+msgid "Insecure connection"
+msgstr "اتصال غير آمن"
+
+#: src/window.vala:245
+msgid ""
+"The connection to WhatsApp Web is not secure. Please check your network "
+"settings."
+msgstr "الاتصال بواتساب ويب غير آمن. يرجى التحقق من إعدادات الشبكة."
+
+#: src/window.vala:253
+msgid "Invalid response"
+msgstr "استجابة غير صالحة"
+
+#: src/window.vala:254
+msgid "Received an invalid response from the WhatsApp servers."
+msgstr "تم تلقي استجابة غير صالحة من خوادم واتساب."
+
+#: src/window.vala:262
+msgid "Page not found"
+msgstr "الصفحة غير موجودة"
+
+#: src/window.vala:263
+msgid "The requested page could not be found on the WhatsApp servers."
+msgstr "تعذر العثور على الصفحة المطلوبة في خوادم واتساب."
+
+#: src/window.vala:271
+msgid "Service unavailable"
+msgstr "الخدمة غير متاحة"
+
+#: src/window.vala:272
+msgid ""
+"WhatsApp Web service is temporarily unavailable. Please try again later."
+msgstr "خدمة واتساب ويب غير متاحة مؤقتاً. يرجى المحاولة لاحقاً."
+
+#: src/window.vala:280
+msgid "Internal server error"
+msgstr "خطأ داخلي في الخادم"
+
+#: src/window.vala:281
+msgid "WhatsApp servers encountered an internal error. Please try again later."
+msgstr "واجهت خوادم واتساب خطأً داخلياً. يرجى المحاولة لاحقاً."
+
+#: src/window.vala:295
+msgid "Check Connection"
+msgstr "فحص الاتصال"
+
+#: src/window.vala:305
+msgid "Contact Support"
+msgstr "الاتصال بالدعم"
+
+#: src/window.vala:315
+msgid "View Logs"
+msgstr "عرض السجل"
+
+#: src/window.vala:325
+msgid "Clear Cache"
+msgstr "مسح التخزين المؤقت"
+
+#: src/window.vala:335
+msgid "Reset Settings"
+msgstr "إعادة تعيين الإعدادات"
+
+#: src/window.vala:345
+msgid "Safe Mode"
+msgstr "الوضع الآمن"
+
+#: src/window.vala:355
+msgid "Diagnostic Mode"
+msgstr "وضع التشخيص"
+
+#: src/window.vala:365
+msgid "Force Refresh"
+msgstr "فرض التحديث"
+
+# Preferences
+#: src/preferences.vala:35 data/ui/preferences.blp:11
+msgid "General"
+msgstr "عام"
+
+#: src/preferences.vala:45 data/ui/preferences.blp:23
+msgid "Theme"
+msgstr "السمة"
+
+#: src/preferences.vala:51 data/ui/preferences.blp:28
+msgid "Choose the application theme"
+msgstr "اختر سمة التطبيق"
+
+#: src/preferences.vala:57 data/ui/preferences.blp:34
+msgid "Light"
+msgstr "فاتح"
+
+#: src/preferences.vala:58 data/ui/preferences.blp:35
+msgid "Dark"
+msgstr "داكن"
+
+#: src/preferences.vala:59 data/ui/preferences.blp:36
+msgid "Follow System"
+msgstr "اتبع النظام"
+
+#: src/preferences.vala:69 data/ui/preferences.blp:49
+msgid "Startup"
+msgstr "بدء التشغيل"
+
+#: src/preferences.vala:75 data/ui/preferences.blp:54
+msgid "Start minimized"
+msgstr "ابدأ مصغراً"
+
+#: src/preferences.vala:76 data/ui/preferences.blp:55
+msgid "Start the application minimized to the system tray"
+msgstr "ابدأ التطبيق مصغراً في صينية النظام"
+
+#: src/preferences.vala:86 data/ui/preferences.blp:66
+msgid "Auto-start on login"
+msgstr "بدء تلقائي عند تسجيل الدخول"
+
+#: src/preferences.vala:87 data/ui/preferences.blp:67
+msgid "Automatically start Karere when you log in"
+msgstr "ابدأ كارِيري تلقائياً عند تسجيل الدخول"
+
+#: src/preferences.vala:97 data/ui/preferences.blp:78
+msgid "Notifications"
+msgstr "الإشعارات"
+
+#: src/preferences.vala:103 data/ui/preferences.blp:83
+msgid "Show desktop notifications"
+msgstr "إظهار إشعارات سطح المكتب"
+
+#: src/preferences.vala:104 data/ui/preferences.blp:84
+msgid "Display notifications for new messages"
+msgstr "عرض إشعارات للرسائل الجديدة"
+
+#: src/preferences.vala:114 data/ui/preferences.blp:95
+msgid "Play notification sounds"
+msgstr "تشغيل أصوات الإشعارات"
+
+#: src/preferences.vala:115 data/ui/preferences.blp:96
+msgid "Play a sound when receiving notifications"
+msgstr "تشغيل صوت عند تلقي الإشعارات"
+
+#: src/preferences.vala:125 data/ui/preferences.blp:107
+msgid "Show notification previews"
+msgstr "إظهار معاينات الإشعارات"
+
+#: src/preferences.vala:126 data/ui/preferences.blp:108
+msgid "Show message content in notifications"
+msgstr "إظهار محتوى الرسالة في الإشعارات"
+
+#: src/preferences.vala:136 data/ui/preferences.blp:119
+msgid "Persistent notifications"
+msgstr "إشعارات مستمرة"
+
+#: src/preferences.vala:137 data/ui/preferences.blp:120
+msgid "Keep notifications visible until dismissed"
+msgstr "إبقاء الإشعارات مرئية حتى يتم إغلاقها"
+
+#: src/preferences.vala:147 data/ui/preferences.blp:131
+msgid "Privacy"
+msgstr "الخصوصية"
+
+#: src/preferences.vala:153 data/ui/preferences.blp:136
+msgid "Enable crash reporting"
+msgstr "تمكين الإبلاغ عن الأعطال"
+
+#: src/preferences.vala:154 data/ui/preferences.blp:137
+msgid "Help improve Karere by sending crash reports"
+msgstr "ساعد في تحسين كارِيري بإرسال تقارير الأعطال"
+
+#: src/preferences.vala:164 data/ui/preferences.blp:148
+msgid "Enable debug logging"
+msgstr "تمكين تسجيل التصحيح"
+
+#: src/preferences.vala:165 data/ui/preferences.blp:149
+msgid "Enable detailed logging for troubleshooting"
+msgstr "تمكين التسجيل المفصل لاستكشاف الأخطاء"
+
+#: src/preferences.vala:175 data/ui/preferences.blp:160
+msgid "Clear browsing data"
+msgstr "مسح بيانات التصفح"
+
+#: src/preferences.vala:176 data/ui/preferences.blp:161
+msgid "Clear cookies, cache, and local storage"
+msgstr "مسح ملفات تعريف الارتباط والتخزين المؤقت والتخزين المحلي"
+
+#: src/preferences.vala:185 data/ui/preferences.blp:170
+msgid "Clear Data"
+msgstr "مسح البيانات"
+
+#: src/preferences.vala:195 data/ui/preferences.blp:181
+msgid "Advanced"
+msgstr "متقدم"
+
+#: src/preferences.vala:201 data/ui/preferences.blp:186
+msgid "Hardware acceleration"
+msgstr "تسريع الأجهزة"
+
+#: src/preferences.vala:202 data/ui/preferences.blp:187
+msgid "Use hardware acceleration for better performance"
+msgstr "استخدم تسريع الأجهزة لأداء أفضل"
+
+#: src/preferences.vala:212 data/ui/preferences.blp:198
+msgid "Experimental features"
+msgstr "ميزات تجريبية"
+
+#: src/preferences.vala:213 data/ui/preferences.blp:199
+msgid "Enable experimental features (may be unstable)"
+msgstr "تمكين الميزات التجريبية (قد تكون غير مستقرة)"
+
+#: src/preferences.vala:223 data/ui/preferences.blp:210
+msgid "Developer mode"
+msgstr "وضع المطور"
+
+#: src/preferences.vala:224 data/ui/preferences.blp:211
+msgid "Enable developer tools and advanced debugging"
+msgstr "تمكين أدوات المطور والتصحيح المتقدم"
+
+#: src/preferences.vala:234 data/ui/preferences.blp:222
+msgid "Custom User Agent"
+msgstr "وكيل المستخدم المخصص"
+
+#: src/preferences.vala:235 data/ui/preferences.blp:227
+msgid "Override the default user agent string"
+msgstr "تجاوز سلسلة وكيل المستخدم الافتراضية"
+
+#: src/preferences.vala:244 data/ui/preferences.blp:236
+msgid "User Agent String"
+msgstr "سلسلة وكيل المستخدم"
+
+#: src/preferences.vala:255 data/ui/preferences.blp:248
+msgid "Proxy Settings"
+msgstr "إعدادات البروكسي"
+
+#: src/preferences.vala:261 data/ui/preferences.blp:253
+msgid "Use system proxy"
+msgstr "استخدم بروكسي النظام"
+
+#: src/preferences.vala:262 data/ui/preferences.blp:254
+msgid "Use the system proxy configuration"
+msgstr "استخدم تكوين بروكسي النظام"
+
+#: src/preferences.vala:272 data/ui/preferences.blp:265
+msgid "Manual proxy configuration"
+msgstr "تكوين البروكسي اليدوي"
+
+#: src/preferences.vala:273 data/ui/preferences.blp:266
+msgid "Configure proxy settings manually"
+msgstr "تكوين إعدادات البروكسي يدوياً"
+
+#: src/preferences.vala:283 data/ui/preferences.blp:277
+msgid "HTTP Proxy"
+msgstr "بروكسي HTTP"
+
+#: src/preferences.vala:293 data/ui/preferences.blp:288
+msgid "HTTPS Proxy"
+msgstr "بروكسي HTTPS"
+
+#: src/preferences.vala:303 data/ui/preferences.blp:299
+msgid "SOCKS Proxy"
+msgstr "بروكسي SOCKS"
+
+#: src/preferences.vala:313 data/ui/preferences.blp:310
+msgid "No Proxy For"
+msgstr "لا بروكسي لـ"
+
+#: src/preferences.vala:323 data/ui/preferences.blp:321
+msgid "Reset to Defaults"
+msgstr "إعادة تعيين للافتراضي"
+
+#: src/preferences.vala:333
+msgid "Settings Reset"
+msgstr "تم إعادة تعيين الإعدادات"
+
+#: src/preferences.vala:334
+msgid "All settings have been reset to their default values."
+msgstr "تم إعادة تعيين جميع الإعدادات إلى قيمها الافتراضية."
+
+#: src/preferences.vala:344
+msgid "Data Cleared"
+msgstr "تم مسح البيانات"
+
+#: src/preferences.vala:345
+msgid "All browsing data has been cleared successfully."
+msgstr "تم مسح جميع بيانات التصفح بنجاح."
+
+#: src/preferences.vala:355
+msgid "Restart Required"
+msgstr "إعادة التشغيل مطلوبة"
+
+#: src/preferences.vala:356
+msgid ""
+"Some changes require a restart to take effect. Would you like to restart "
+"Karere now?"
+msgstr ""
+"تتطلب بعض التغييرات إعادة تشغيل لتصبح سارية المفعول. هل تريد إعادة تشغيل "
+"كارِيري الآن؟"
+
+#: src/preferences.vala:365
+msgid "Restart Now"
+msgstr "إعادة التشغيل الآن"
+
+#: src/preferences.vala:375
+msgid "Restart Later"
+msgstr "إعادة التشغيل لاحقاً"
+
+# Application
+#: src/application.vala:55
+msgid "Show application version"
+msgstr "إظهار إصدار التطبيق"
+
+#: src/application.vala:56
+msgid "Start application in debug mode"
+msgstr "تشغيل التطبيق في وضع التصحيح"
+
+#: src/application.vala:57
+msgid "Start application minimized"
+msgstr "تشغيل التطبيق مصغراً"
+
+#: src/application.vala:58
+msgid "Start application in safe mode"
+msgstr "تشغيل التطبيق في الوضع الآمن"
+
+#: src/application.vala:59
+msgid "Enable verbose logging"
+msgstr "تمكين التسجيل المفصل"
+
+#: src/application.vala:60
+msgid "Disable hardware acceleration"
+msgstr "تعطيل تسريع الأجهزة"
+
+#: src/application.vala:61
+msgid "Clear all application data on startup"
+msgstr "مسح جميع بيانات التطبيق عند البدء"
+
+#: src/application.vala:62
+msgid "Run in headless mode (no GUI)"
+msgstr "تشغيل في الوضع بدون واجهة (بدون واجهة مستخدم رسومية)"
+
+#: src/application.vala:85
+msgid "Application initialized successfully"
+msgstr "تم تهيئة التطبيق بنجاح"
+
+#: src/application.vala:95
+msgid "Preparing application startup..."
+msgstr "جارٍ تحضير بدء تشغيل التطبيق..."
+
+#: src/application.vala:105
+msgid "Loading user preferences..."
+msgstr "جارٍ تحميل تفضيلات المستخدم..."
+
+#: src/application.vala:115
+msgid "Initializing WebKit engine..."
+msgstr "جارٍ تهيئة محرك WebKit..."
+
+#: src/application.vala:125
+msgid "Setting up notification system..."
+msgstr "جارٍ إعداد نظام الإشعارات..."
+
+#: src/application.vala:135
+msgid "Configuring crash reporting..."
+msgstr "جارٍ تكوين الإبلاغ عن الأعطال..."
+
+#: src/application.vala:145
+msgid "Application startup completed"
+msgstr "اكتمل بدء تشغيل التطبيق"
+
+#: src/application.vala:155
+msgid "Shutting down application..."
+msgstr "جارٍ إغلاق التطبيق..."
+
+#: src/application.vala:165
+msgid "Saving user preferences..."
+msgstr "جارٍ حفظ تفضيلات المستخدم..."
+
+#: src/application.vala:175
+msgid "Cleaning up resources..."
+msgstr "جارٍ تنظيف الموارد..."
+
+#: src/application.vala:185
+msgid "Application shutdown completed"
+msgstr "اكتمل إغلاق التطبيق"
+
+# Crash Reporter
+#: src/crash-reporter.vala:25
+msgid "Application Crash Detected"
+msgstr "تم اكتشاف عطل في التطبيق"
+
+#: src/crash-reporter.vala:26
+msgid ""
+"Karere has encountered an unexpected error and needs to close. Would you "
+"like to send a crash report to help us fix this issue?"
+msgstr ""
+"واجه كارِيري خطأً غير متوقع ويحتاج إلى الإغلاق. هل تريد إرسال تقرير عطل "
+"لمساعدتنا في إصلاح هذه المشكلة؟"
+
+#: src/crash-reporter.vala:35
+msgid "Send Report"
+msgstr "إرسال التقرير"
+
+#: src/crash-reporter.vala:45
+msgid "Don't Send"
+msgstr "عدم الإرسال"
+
+#: src/crash-reporter.vala:55
+msgid "Crash Report Details"
+msgstr "تفاصيل تقرير العطل"
+
+#: src/crash-reporter.vala:65
+msgid "Error Code:"
+msgstr "رمز الخطأ:"
+
+#: src/crash-reporter.vala:75
+msgid "Timestamp:"
+msgstr "الطابع الزمني:"
+
+#: src/crash-reporter.vala:85
+msgid "System Information:"
+msgstr "معلومات النظام:"
+
+#: src/crash-reporter.vala:95
+msgid "Application Version:"
+msgstr "إصدار التطبيق:"
+
+#: src/crash-reporter.vala:105
+msgid "Stack Trace:"
+msgstr "تتبع المكدس:"
+
+#: src/crash-reporter.vala:115
+msgid "Additional Notes:"
+msgstr "ملاحظات إضافية:"
+
+#: src/crash-reporter.vala:125
+msgid "Include system information in crash report"
+msgstr "تضمين معلومات النظام في تقرير العطل"
+
+#: src/crash-reporter.vala:135
+msgid "Include application logs in crash report"
+msgstr "تضمين سجل التطبيق في تقرير العطل"
+
+#: src/crash-reporter.vala:145
+msgid "Sending crash report..."
+msgstr "جارٍ إرسال تقرير العطل..."
+
+#: src/crash-reporter.vala:155
+msgid "Crash report sent successfully"
+msgstr "تم إرسال تقرير العطل بنجاح"
+
+#: src/crash-reporter.vala:165
+msgid "Failed to send crash report"
+msgstr "فشل في إرسال تقرير العطل"
+
+#: src/crash-reporter.vala:175
+msgid "Crash report saved locally"
+msgstr "تم حفظ تقرير العطل محلياً"
+
+# Notification Manager
+#: src/notification-manager.vala:25
+msgid "New WhatsApp Message"
+msgstr "رسالة واتساب جديدة"
+
+#: src/notification-manager.vala:35
+msgid "You have a new message"
+msgstr "لديك رسالة جديدة"
+
+#: src/notification-manager.vala:45
+msgid "Multiple new messages"
+msgstr "رسائل جديدة متعددة"
+
+#: src/notification-manager.vala:55
+msgid "WhatsApp Web is ready"
+msgstr "واتساب ويب جاهز"
+
+#: src/notification-manager.vala:65
+msgid "Connection established successfully"
+msgstr "تم تأسيس الاتصال بنجاح"
+
+#: src/notification-manager.vala:75
+msgid "Connection lost"
+msgstr "فُقد الاتصال"
+
+#: src/notification-manager.vala:85
+msgid "Trying to reconnect..."
+msgstr "جارٍ محاولة إعادة الاتصال..."
+
+#: src/notification-manager.vala:95
+msgid "WhatsApp Web disconnected"
+msgstr "انقطع اتصال واتساب ويب"
+
+#: src/notification-manager.vala:105
+msgid "Please scan the QR code to reconnect"
+msgstr "يرجى مسح رمز QR لإعادة الاتصال"
+
+#: src/notification-manager.vala:115
+msgid "Notifications enabled"
+msgstr "تم تمكين الإشعارات"
+
+#: src/notification-manager.vala:125
+msgid "Notifications disabled"
+msgstr "تم تعطيل الإشعارات"
+
+#: src/notification-manager.vala:135
+msgid "Do Not Disturb enabled"
+msgstr "تم تمكين عدم الإزعاج"
+
+#: src/notification-manager.vala:145
+msgid "Do Not Disturb disabled"
+msgstr "تم تعطيل عدم الإزعاج"
+
+# Logger
+#: src/logger.vala:25
+msgid "Debug"
+msgstr "تصحيح"
+
+#: src/logger.vala:35
+msgid "Info"
+msgstr "معلومات"
+
+#: src/logger.vala:45 src/utils.vala:325
+msgid "Warning"
+msgstr "تحذير"
+
+#: src/logger.vala:55 src/utils.vala:335
+msgid "Error"
+msgstr "خطأ"
+
+#: src/logger.vala:65
+msgid "Critical"
+msgstr "حرج"
+
+#: src/logger.vala:75
+msgid "Application started"
+msgstr "بدأ التطبيق"
+
+#: src/logger.vala:85
+msgid "Application stopped"
+msgstr "توقف التطبيق"
+
+#: src/logger.vala:95
+msgid "WebKit initialized"
+msgstr "تم تهيئة WebKit"
+
+#: src/logger.vala:105
+msgid "WebKit failed to initialize"
+msgstr "فشل في تهيئة WebKit"
+
+#: src/logger.vala:115
+msgid "Loading WhatsApp Web"
+msgstr "جارٍ تحميل واتساب ويب"
+
+#: src/logger.vala:125
+msgid "WhatsApp Web loaded successfully"
+msgstr "تم تحميل واتساب ويب بنجاح"
+
+#: src/logger.vala:145
+msgid "User preferences loaded"
+msgstr "تم تحميل تفضيلات المستخدم"
+
+#: src/logger.vala:155
+msgid "User preferences saved"
+msgstr "تم حفظ تفضيلات المستخدم"
+
+#: src/logger.vala:165
+msgid "Notification sent"
+msgstr "تم إرسال الإشعار"
+
+#: src/logger.vala:175
+msgid "Crash detected"
+msgstr "تم اكتشاف عطل"
+
+#: src/logger.vala:185
+msgid "Recovery attempted"
+msgstr "تمت محاولة الاستعادة"
+
+# Utils
+#: src/utils.vala:25
+msgid "OK"
+msgstr "موافق"
+
+#: src/utils.vala:35
+msgid "Cancel"
+msgstr "إلغاء"
+
+#: src/utils.vala:45
+msgid "Yes"
+msgstr "نعم"
+
+#: src/utils.vala:55
+msgid "No"
+msgstr "لا"
+
+#: src/utils.vala:65
+msgid "Close"
+msgstr "إغلاق"
+
+#: src/utils.vala:75
+msgid "Save"
+msgstr "حفظ"
+
+#: src/utils.vala:85
+msgid "Open"
+msgstr "فتح"
+
+#: src/utils.vala:95
+msgid "Delete"
+msgstr "حذف"
+
+#: src/utils.vala:105
+msgid "Edit"
+msgstr "تحرير"
+
+#: src/utils.vala:115
+msgid "Copy"
+msgstr "نسخ"
+
+#: src/utils.vala:125
+msgid "Paste"
+msgstr "لصق"
+
+#: src/utils.vala:135
+msgid "Cut"
+msgstr "قص"
+
+#: src/utils.vala:145
+msgid "Undo"
+msgstr "تراجع"
+
+#: src/utils.vala:155
+msgid "Redo"
+msgstr "إعادة"
+
+#: src/utils.vala:165
+msgid "Select All"
+msgstr "تحديد الكل"
+
+#: src/utils.vala:175
+msgid "Find"
+msgstr "بحث"
+
+#: src/utils.vala:185
+msgid "Replace"
+msgstr "استبدال"
+
+#: src/utils.vala:195
+msgid "Help"
+msgstr "مساعدة"
+
+#: src/utils.vala:205
+msgid "About"
+msgstr "حول"
+
+#: src/utils.vala:215
+msgid "Quit"
+msgstr "خروج"
+
+#: src/utils.vala:225
+msgid "File"
+msgstr "ملف"
+
+#: src/utils.vala:235
+msgid "Folder"
+msgstr "مجلد"
+
+#: src/utils.vala:245
+msgid "Download"
+msgstr "تنزيل"
+
+#: src/utils.vala:255
+msgid "Upload"
+msgstr "رفع"
+
+#: src/utils.vala:265
+msgid "Share"
+msgstr "مشاركة"
+
+#: src/utils.vala:275
+msgid "Export"
+msgstr "تصدير"
+
+#: src/utils.vala:285
+msgid "Import"
+msgstr "استيراد"
+
+#: src/utils.vala:295
+msgid "Settings"
+msgstr "الإعدادات"
+
+#: src/utils.vala:305
+msgid "Properties"
+msgstr "الخصائص"
+
+#: src/utils.vala:315
+msgid "Information"
+msgstr "معلومات"
+
+#: src/utils.vala:345
+msgid "Success"
+msgstr "نجح"
+
+#: src/utils.vala:355
+msgid "Loading..."
+msgstr "جارٍ التحميل..."
+
+#: src/utils.vala:365
+msgid "Processing..."
+msgstr "جارٍ المعالجة..."
+
+#: src/utils.vala:375
+msgid "Please wait..."
+msgstr "يرجى الانتظار..."
+
+#: src/utils.vala:385
+msgid "Connecting..."
+msgstr "جارٍ الاتصال..."
+
+#: src/utils.vala:395
+msgid "Disconnected"
+msgstr "منقطع"
+
+#: src/utils.vala:405
+msgid "Connected"
+msgstr "متصل"
+
+#: src/utils.vala:415
+msgid "Online"
+msgstr "متصل"
+
+#: src/utils.vala:425
+msgid "Offline"
+msgstr "غير متصل"
+
+#: src/utils.vala:435
+msgid "Ready"
+msgstr "جاهز"
+
+#: src/utils.vala:445
+msgid "Busy"
+msgstr "مشغول"
+
+#: src/utils.vala:455
+msgid "Available"
+msgstr "متاح"
+
+#: src/utils.vala:465
+msgid "Unavailable"
+msgstr "غير متاح"
+
+# Units for plural forms - Arabic has 6 plural forms
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] "صفر ثانية"
+msgstr[1] "ثانية واحدة"
+msgstr[2] "ثانيتان"
+msgstr[3] "%d ثوانٍ"
+msgstr[4] "%d ثانية"
+msgstr[5] "%d ثانية"
+
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "صفر دقيقة"
+msgstr[1] "دقيقة واحدة"
+msgstr[2] "دقيقتان"
+msgstr[3] "%d دقائق"
+msgstr[4] "%d دقيقة"
+msgstr[5] "%d دقيقة"
+
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "صفر ساعة"
+msgstr[1] "ساعة واحدة"
+msgstr[2] "ساعتان"
+msgstr[3] "%d ساعات"
+msgstr[4] "%d ساعة"
+msgstr[5] "%d ساعة"
+
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "صفر يوم"
+msgstr[1] "يوم واحد"
+msgstr[2] "يومان"
+msgstr[3] "%d أيام"
+msgstr[4] "%d يوماً"
+msgstr[5] "%d يوم"
+
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] "صفر أسبوع"
+msgstr[1] "أسبوع واحد"
+msgstr[2] "أسبوعان"
+msgstr[3] "%d أسابيع"
+msgstr[4] "%d أسبوعاً"
+msgstr[5] "%d أسبوع"
+
+msgid "%d month"
+msgid_plural "%d months"
+msgstr[0] "صفر شهر"
+msgstr[1] "شهر واحد"
+msgstr[2] "شهران"
+msgstr[3] "%d أشهر"
+msgstr[4] "%d شهراً"
+msgstr[5] "%d شهر"
+
+msgid "%d year"
+msgid_plural "%d years"
+msgstr[0] "صفر سنة"
+msgstr[1] "سنة واحدة"
+msgstr[2] "سنتان"
+msgstr[3] "%d سنوات"
+msgstr[4] "%d سنة"
+msgstr[5] "%d سنة"
+
+msgid "%d byte"
+msgid_plural "%d bytes"
+msgstr[0] "صفر بايت"
+msgstr[1] "بايت واحد"
+msgstr[2] "بايتان"
+msgstr[3] "%d بايتات"
+msgstr[4] "%d بايت"
+msgstr[5] "%d بايت"
+
+msgid "%d file"
+msgid_plural "%d files"
+msgstr[0] "صفر ملف"
+msgstr[1] "ملف واحد"
+msgstr[2] "ملفان"
+msgstr[3] "%d ملفات"
+msgstr[4] "%d ملفاً"
+msgstr[5] "%d ملف"
+
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "صفر عنصر"
+msgstr[1] "عنصر واحد"
+msgstr[2] "عنصران"
+msgstr[3] "%d عناصر"
+msgstr[4] "%d عنصراً"
+msgstr[5] "%d عنصر"
+
+msgid "%d message"
+msgid_plural "%d messages"
+msgstr[0] "صفر رسالة"
+msgstr[1] "رسالة واحدة"
+msgstr[2] "رسالتان"
+msgstr[3] "%d رسائل"
+msgstr[4] "%d رسالة"
+msgstr[5] "%d رسالة"
+
+msgid "%d notification"
+msgid_plural "%d notifications"
+msgstr[0] "صفر إشعار"
+msgstr[1] "إشعار واحد"
+msgstr[2] "إشعاران"
+msgstr[3] "%d إشعارات"
+msgstr[4] "%d إشعاراً"
+msgstr[5] "%d إشعار"
+
+msgid "%d error"
+msgid_plural "%d errors"
+msgstr[0] "صفر خطأ"
+msgstr[1] "خطأ واحد"
+msgstr[2] "خطآن"
+msgstr[3] "%d أخطاء"
+msgstr[4] "%d خطأً"
+msgstr[5] "%d خطأ"
+
+msgid "%d warning"
+msgid_plural "%d warnings"
+msgstr[0] "صفر تحذير"
+msgstr[1] "تحذير واحد"
+msgstr[2] "تحذيران"
+msgstr[3] "%d تحذيرات"
+msgstr[4] "%d تحذيراً"
+msgstr[5] "%d تحذير"
+
+# System Integration
+msgid "Desktop Integration"
+msgstr "تكامل سطح المكتب"
+
+msgid "Native Notifications"
+msgstr "إشعارات أصلية"
+
+msgid "System Theme Support"
+msgstr "دعم سمة النظام"
+
+msgid "Keyboard Shortcuts"
+msgstr "اختصارات لوحة المفاتيح"
+
+msgid "Accessibility Support"
+msgstr "دعم إمكانية الوصول"
+
+msgid "Multi-language Support"
+msgstr "دعم متعدد اللغات"
+
+msgid "Right-to-Left Text Support"
+msgstr "دعم النص من اليمين إلى اليسار"
+
+msgid "Arabic Text Rendering"
+msgstr "عرض النص العربي"
+
+msgid "BiDi Text Support"
+msgstr "دعم النص ثنائي الاتجاه"
+
+msgid "Font Configuration"
+msgstr "تكوين الخط"
+
+msgid "Text Direction"
+msgstr "اتجاه النص"
+
+msgid "Layout Direction"
+msgstr "اتجاه التخطيط"
+
+msgid "Arabic Numerals"
+msgstr "الأرقام العربية"
+
+msgid "Hijri Calendar"
+msgstr "التقويم الهجري"
+
+msgid "Prayer Times"
+msgstr "أوقات الصلاة"
+
+msgid "Islamic Settings"
+msgstr "الإعدادات الإسلامية"
+
+msgid "Cultural Adaptations"
+msgstr "التكييفات الثقافية"
+
+msgid "Regional Settings"
+msgstr "الإعدادات الإقليمية"
+
+msgid "Time Format"
+msgstr "تنسيق الوقت"
+
+msgid "Date Format"
+msgstr "تنسيق التاريخ"
+
+msgid "Number Format"
+msgstr "تنسيق الأرقام"

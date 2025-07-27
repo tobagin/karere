@@ -1,9 +1,27 @@
 # List of source files which contain translatable strings
+
+# Vala source files
 src/main.vala
 src/application.vala
 src/window.vala
 src/preferences.vala
+src/webkit-manager.vala
+src/notification-manager.vala
+src/logger.vala
+src/crash-reporter.vala
+src/utils.vala
+src/accessibility-manager.vala
+
+# Blueprint UI files
 data/ui/window.blp
 data/ui/preferences.blp
+
+# Desktop integration files
 data/io.github.tobagin.karere.desktop.in
 data/io.github.tobagin.karere.appdata.xml.in
+
+# GSchema file
+data/io.github.tobagin.karere.gschema.xml.in
+
+# Generated config file (Meson will process this during build)
+src/config.vala.in

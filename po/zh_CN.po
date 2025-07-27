@@ -1,0 +1,608 @@
+# Simplified Chinese translations for karere.
+# Copyright (C) 2025 Thiago Fernandes
+# This file is distributed under the same license as the karere package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: karere 0.6.0\n"
+"Report-Msgid-Bugs-To: https://github.com/tobagin/karere-vala/issues\n"
+"POT-Creation-Date: 2025-07-25 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Simplified Chinese\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# Application Information
+#: data/io.github.tobagin.karere.appdata.xml.in:4
+#: data/io.github.tobagin.karere.desktop.in:3 src/application.vala:45
+#: src/application.vala:47 src/application.vala:49 src/window.vala:32
+msgid "Karere"
+msgstr "Karere"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:5
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "Native WhatsApp client for Linux"
+msgstr "Linux 原生 WhatsApp 客户端"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:7
+msgid ""
+"Karere is a modern, native WhatsApp client built specifically for the Linux "
+"desktop using GTK4 and LibAdwaita. It provides a seamless WhatsApp "
+"experience with native desktop integration, comprehensive logging, and crash "
+"reporting capabilities."
+msgstr ""
+"Karere 是专为 Linux 桌面构建的现代原生 WhatsApp 客户端，使用 GTK4 和 "
+"LibAdwaita 技术。它提供无缝的 WhatsApp 体验，具有原生桌面集成、全面的日志记录"
+"和崩溃报告功能。"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:12
+msgid "Features:"
+msgstr "功能："
+
+#: data/io.github.tobagin.karere.appdata.xml.in:14
+msgid "Native GTK4/LibAdwaita interface with modern design"
+msgstr "现代设计的原生 GTK4/LibAdwaita 界面"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:15
+msgid "Full desktop integration with notifications and theming"
+msgstr "完整的桌面集成，包括通知和主题"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:16
+msgid "WebKitGTK-based WhatsApp Web rendering for optimal performance"
+msgstr "基于 WebKitGTK 的 WhatsApp Web 渲染，性能最佳"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:17
+msgid "Comprehensive logging system for debugging and monitoring"
+msgstr "用于调试和监控的全面日志记录系统"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:18
+msgid "Crash reporting with user privacy controls"
+msgstr "具有用户隐私控制的崩溃报告"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:19
+msgid "Light, dark, and system theme support"
+msgstr "支持浅色、深色和系统主题"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:20
+msgid "Keyboard shortcuts and accessibility features"
+msgstr "键盘快捷键和无障碍功能"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:21
+msgid "Resource-efficient compared to browser-based solutions"
+msgstr "与基于浏览器的解决方案相比，资源效率更高"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Chat using WhatsApp with native Linux desktop integration"
+msgstr "使用 WhatsApp 聊天，具有原生 Linux 桌面集成"
+
+#: data/io.github.tobagin.karere.desktop.in:8
+msgid "whatsapp;chat;messaging;social;communication;"
+msgstr "whatsapp;聊天;消息;社交;通信;"
+
+# Window and Interface
+#: src/window.vala:41
+msgid "Loading WhatsApp..."
+msgstr "正在加载 WhatsApp..."
+
+#: src/window.vala:52
+msgid "WhatsApp Web failed to load"
+msgstr "WhatsApp Web 加载失败"
+
+#: src/window.vala:68 src/window.vala:285 data/ui/window.blp:23
+msgid "Reload"
+msgstr "重新加载"
+
+#: src/window.vala:72 data/ui/window.blp:35
+msgid "Preferences"
+msgstr "首选项"
+
+#: src/window.vala:76 data/ui/window.blp:39
+msgid "About Karere"
+msgstr "关于 Karere"
+
+#: src/window.vala:86
+msgid "Connection Error"
+msgstr "连接错误"
+
+#: src/window.vala:87
+msgid ""
+"Unable to connect to WhatsApp Web. Please check your internet connection and "
+"try again."
+msgstr "无法连接到 WhatsApp Web。请检查您的互联网连接并重试。"
+
+#: src/window.vala:95
+msgid "Loading Error"
+msgstr "加载错误"
+
+#: src/window.vala:96
+msgid ""
+"WhatsApp Web could not be loaded. This might be due to network issues or "
+"server problems."
+msgstr "无法加载 WhatsApp Web。这可能是由于网络问题或服务器问题造成的。"
+
+#: src/window.vala:104
+msgid "Script Error"
+msgstr "脚本错误"
+
+#: src/window.vala:105
+msgid "A JavaScript error occurred while loading WhatsApp Web."
+msgstr "加载 WhatsApp Web 时发生了 JavaScript 错误。"
+
+#: src/window.vala:113
+msgid "Permission Denied"
+msgstr "权限被拒绝"
+
+#: src/window.vala:114
+msgid ""
+"Karere does not have the necessary permissions to access WhatsApp Web. "
+"Please check your system settings."
+msgstr "Karere 没有访问 WhatsApp Web 的必要权限。请检查您的系统设置。"
+
+#: src/window.vala:122
+msgid "SSL Certificate Error"
+msgstr "SSL 证书错误"
+
+#: src/window.vala:123
+msgid ""
+"There was a problem with the SSL certificate. This might indicate a security "
+"issue."
+msgstr "SSL 证书出现问题。这可能表明存在安全问题。"
+
+#: src/window.vala:131
+msgid "Content Blocked"
+msgstr "内容被阻止"
+
+#: src/window.vala:132
+msgid "Some content was blocked by the security policy."
+msgstr "某些内容被安全策略阻止。"
+
+#: src/window.vala:140
+msgid "Plugin Error"
+msgstr "插件错误"
+
+#: src/window.vala:141
+msgid "A required plugin could not be loaded or executed."
+msgstr "无法加载或执行所需的插件。"
+
+#: src/window.vala:149
+msgid "Timeout Error"
+msgstr "超时错误"
+
+#: src/window.vala:150
+msgid "The request timed out. Please check your connection and try again."
+msgstr "请求超时。请检查您的连接并重试。"
+
+#: src/window.vala:158
+msgid "Resource Error"
+msgstr "资源错误"
+
+#: src/window.vala:159
+msgid "A required resource could not be loaded."
+msgstr "无法加载所需的资源。"
+
+#: src/window.vala:167
+msgid "Unknown Error"
+msgstr "未知错误"
+
+#: src/window.vala:168
+msgid "An unexpected error occurred while loading WhatsApp Web."
+msgstr "加载 WhatsApp Web 时发生了意外错误。"
+
+#: src/window.vala:179
+msgid "Retry"
+msgstr "重试"
+
+#: src/window.vala:190
+msgid "Network unavailable"
+msgstr "网络不可用"
+
+#: src/window.vala:191
+msgid ""
+"No network connection detected. Please connect to the internet and try again."
+msgstr "未检测到网络连接。请连接到互联网并重试。"
+
+#: src/window.vala:199
+msgid "Server unreachable"
+msgstr "服务器无法访问"
+
+#: src/window.vala:200
+msgid "WhatsApp servers are currently unreachable. Please try again later."
+msgstr "WhatsApp 服务器当前无法访问。请稍后重试。"
+
+#: src/window.vala:208
+msgid "DNS resolution failed"
+msgstr "DNS 解析失败"
+
+#: src/window.vala:209
+msgid ""
+"Could not resolve the WhatsApp Web address. Please check your DNS settings."
+msgstr "无法解析 WhatsApp Web 地址。请检查您的 DNS 设置。"
+
+#: src/window.vala:217
+msgid "Certificate verification failed"
+msgstr "证书验证失败"
+
+#: src/window.vala:218
+msgid ""
+"The SSL certificate could not be verified. This might be a security concern."
+msgstr "无法验证 SSL 证书。这可能是一个安全问题。"
+
+#: src/window.vala:226
+msgid "Proxy authentication required"
+msgstr "需要代理身份验证"
+
+#: src/window.vala:227
+msgid "Your proxy server requires authentication to access the internet."
+msgstr "您的代理服务器需要身份验证才能访问互联网。"
+
+#: src/window.vala:235
+msgid "Content too large"
+msgstr "内容过大"
+
+#: src/window.vala:236
+msgid "The content is too large to be displayed properly."
+msgstr "内容过大，无法正确显示。"
+
+#: src/window.vala:244
+msgid "Insecure connection"
+msgstr "不安全的连接"
+
+#: src/window.vala:245
+msgid ""
+"The connection to WhatsApp Web is not secure. Please check your network "
+"settings."
+msgstr "与 WhatsApp Web 的连接不安全。请检查您的网络设置。"
+
+#: src/window.vala:253
+msgid "Invalid response"
+msgstr "无效响应"
+
+#: src/window.vala:254
+msgid "Received an invalid response from the WhatsApp servers."
+msgstr "从 WhatsApp 服务器收到无效响应。"
+
+#: src/window.vala:262
+msgid "Page not found"
+msgstr "页面未找到"
+
+#: src/window.vala:263
+msgid "The requested page could not be found on the WhatsApp servers."
+msgstr "在 WhatsApp 服务器上找不到所请求的页面。"
+
+#: src/window.vala:271
+msgid "Service unavailable"
+msgstr "服务不可用"
+
+#: src/window.vala:272
+msgid ""
+"WhatsApp Web service is temporarily unavailable. Please try again later."
+msgstr "WhatsApp Web 服务暂时不可用。请稍后重试。"
+
+#: src/window.vala:280
+msgid "Internal server error"
+msgstr "内部服务器错误"
+
+#: src/window.vala:281
+msgid "WhatsApp servers encountered an internal error. Please try again later."
+msgstr "WhatsApp 服务器遇到内部错误。请稍后重试。"
+
+#: src/window.vala:295
+msgid "Check Connection"
+msgstr "检查连接"
+
+#: src/window.vala:305
+msgid "Contact Support"
+msgstr "联系支持"
+
+#: src/window.vala:315
+msgid "View Logs"
+msgstr "查看日志"
+
+#: src/window.vala:325
+msgid "Clear Cache"
+msgstr "清除缓存"
+
+#: src/window.vala:335
+msgid "Reset Settings"
+msgstr "重置设置"
+
+#: src/window.vala:345
+msgid "Safe Mode"
+msgstr "安全模式"
+
+#: src/window.vala:355
+msgid "Diagnostic Mode"
+msgstr "诊断模式"
+
+#: src/window.vala:365
+msgid "Force Refresh"
+msgstr "强制刷新"
+
+# Preferences
+#: src/preferences.vala:35 data/ui/preferences.blp:11
+msgid "General"
+msgstr "常规"
+
+#: src/preferences.vala:45 data/ui/preferences.blp:23
+msgid "Theme"
+msgstr "主题"
+
+#: src/preferences.vala:51 data/ui/preferences.blp:28
+msgid "Choose the application theme"
+msgstr "选择应用程序主题"
+
+#: src/preferences.vala:57 data/ui/preferences.blp:34
+msgid "Light"
+msgstr "浅色"
+
+#: src/preferences.vala:58 data/ui/preferences.blp:35
+msgid "Dark"
+msgstr "深色"
+
+#: src/preferences.vala:59 data/ui/preferences.blp:36
+msgid "Follow System"
+msgstr "跟随系统"
+
+#: src/preferences.vala:69 data/ui/preferences.blp:49
+msgid "Startup"
+msgstr "启动"
+
+#: src/preferences.vala:75 data/ui/preferences.blp:54
+msgid "Start minimized"
+msgstr "以最小化方式启动"
+
+#: src/preferences.vala:76 data/ui/preferences.blp:55
+msgid "Start the application minimized to the system tray"
+msgstr "将应用程序最小化到系统托盘启动"
+
+#: src/preferences.vala:86 data/ui/preferences.blp:66
+msgid "Auto-start on login"
+msgstr "登录时自动启动"
+
+#: src/preferences.vala:87 data/ui/preferences.blp:67
+msgid "Automatically start Karere when you log in"
+msgstr "登录时自动启动 Karere"
+
+#: src/preferences.vala:97 data/ui/preferences.blp:78
+msgid "Notifications"
+msgstr "通知"
+
+#: src/preferences.vala:103 data/ui/preferences.blp:83
+msgid "Show desktop notifications"
+msgstr "显示桌面通知"
+
+#: src/preferences.vala:104 data/ui/preferences.blp:84
+msgid "Display notifications for new messages"
+msgstr "显示新消息通知"
+
+#: src/preferences.vala:114 data/ui/preferences.blp:95
+msgid "Play notification sounds"
+msgstr "播放通知声音"
+
+#: src/preferences.vala:115 data/ui/preferences.blp:96
+msgid "Play a sound when receiving notifications"
+msgstr "接收通知时播放声音"
+
+#: src/preferences.vala:125 data/ui/preferences.blp:107
+msgid "Show notification previews"
+msgstr "显示通知预览"
+
+#: src/preferences.vala:126 data/ui/preferences.blp:108
+msgid "Show message content in notifications"
+msgstr "在通知中显示消息内容"
+
+#: src/preferences.vala:136 data/ui/preferences.blp:119
+msgid "Persistent notifications"
+msgstr "持久通知"
+
+#: src/preferences.vala:137 data/ui/preferences.blp:120
+msgid "Keep notifications visible until dismissed"
+msgstr "保持通知可见直到被关闭"
+
+#: src/preferences.vala:147 data/ui/preferences.blp:131
+msgid "Privacy"
+msgstr "隐私"
+
+#: src/preferences.vala:153 data/ui/preferences.blp:136
+msgid "Enable crash reporting"
+msgstr "启用崩溃报告"
+
+#: src/preferences.vala:154 data/ui/preferences.blp:137
+msgid "Help improve Karere by sending crash reports"
+msgstr "通过发送崩溃报告帮助改进 Karere"
+
+#: src/preferences.vala:164 data/ui/preferences.blp:148
+msgid "Enable debug logging"
+msgstr "启用调试日志"
+
+#: src/preferences.vala:165 data/ui/preferences.blp:149
+msgid "Enable detailed logging for troubleshooting"
+msgstr "启用详细日志记录以进行故障排除"
+
+#: src/preferences.vala:175 data/ui/preferences.blp:160
+msgid "Clear browsing data"
+msgstr "清除浏览数据"
+
+#: src/preferences.vala:176 data/ui/preferences.blp:161
+msgid "Clear cookies, cache, and local storage"
+msgstr "清除 Cookie、缓存和本地存储"
+
+#: src/preferences.vala:185 data/ui/preferences.blp:170
+msgid "Clear Data"
+msgstr "清除数据"
+
+#: src/preferences.vala:195 data/ui/preferences.blp:181
+msgid "Advanced"
+msgstr "高级"
+
+#: src/preferences.vala:201 data/ui/preferences.blp:186
+msgid "Hardware acceleration"
+msgstr "硬件加速"
+
+#: src/preferences.vala:202 data/ui/preferences.blp:187
+msgid "Use hardware acceleration for better performance"
+msgstr "使用硬件加速以获得更好的性能"
+
+#: src/preferences.vala:212 data/ui/preferences.blp:198
+msgid "Experimental features"
+msgstr "实验功能"
+
+#: src/preferences.vala:213 data/ui/preferences.blp:199
+msgid "Enable experimental features (may be unstable)"
+msgstr "启用实验功能（可能不稳定）"
+
+#: src/preferences.vala:223 data/ui/preferences.blp:210
+msgid "Developer mode"
+msgstr "开发者模式"
+
+#: src/preferences.vala:224 data/ui/preferences.blp:211
+msgid "Enable developer tools and advanced debugging"
+msgstr "启用开发者工具和高级调试"
+
+#: src/preferences.vala:234 data/ui/preferences.blp:222
+msgid "Custom User Agent"
+msgstr "自定义用户代理"
+
+#: src/preferences.vala:235 data/ui/preferences.blp:227
+msgid "Override the default user agent string"
+msgstr "覆盖默认用户代理字符串"
+
+#: src/preferences.vala:244 data/ui/preferences.blp:236
+msgid "User Agent String"
+msgstr "用户代理字符串"
+
+#: src/preferences.vala:255 data/ui/preferences.blp:248
+msgid "Proxy Settings"
+msgstr "代理设置"
+
+#: src/preferences.vala:261 data/ui/preferences.blp:253
+msgid "Use system proxy"
+msgstr "使用系统代理"
+
+#: src/preferences.vala:262 data/ui/preferences.blp:254
+msgid "Use the system proxy configuration"
+msgstr "使用系统代理配置"
+
+#: src/preferences.vala:272 data/ui/preferences.blp:265
+msgid "Manual proxy configuration"
+msgstr "手动代理配置"
+
+#: src/preferences.vala:273 data/ui/preferences.blp:266
+msgid "Configure proxy settings manually"
+msgstr "手动配置代理设置"
+
+#: src/preferences.vala:283 data/ui/preferences.blp:277
+msgid "HTTP Proxy"
+msgstr "HTTP 代理"
+
+#: src/preferences.vala:293 data/ui/preferences.blp:288
+msgid "HTTPS Proxy"
+msgstr "HTTPS 代理"
+
+#: src/preferences.vala:303 data/ui/preferences.blp:299
+msgid "SOCKS Proxy"
+msgstr "SOCKS 代理"
+
+#: src/preferences.vala:313 data/ui/preferences.blp:310
+msgid "No Proxy For"
+msgstr "不使用代理"
+
+#: src/preferences.vala:323 data/ui/preferences.blp:321
+msgid "Reset to Defaults"
+msgstr "重置为默认值"
+
+#: src/preferences.vala:333
+msgid "Settings Reset"
+msgstr "设置已重置"
+
+#: src/preferences.vala:334
+msgid "All settings have been reset to their default values."
+msgstr "所有设置已重置为默认值。"
+
+#: src/preferences.vala:344
+msgid "Data Cleared"
+msgstr "数据已清除"
+
+#: src/preferences.vala:345
+msgid "All browsing data has been cleared successfully."
+msgstr "所有浏览数据已成功清除。"
+
+#: src/preferences.vala:355
+msgid "Restart Required"
+msgstr "需要重启"
+
+#: src/preferences.vala:356
+msgid ""
+"Some changes require a restart to take effect. Would you like to restart "
+"Karere now?"
+msgstr "某些更改需要重启才能生效。您想现在重启 Karere 吗？"
+
+#: src/preferences.vala:365
+msgid "Restart Now"
+msgstr "立即重启"
+
+#: src/preferences.vala:375
+msgid "Restart Later"
+msgstr "稍后重启"
+
+# Units for plural forms - Chinese doesn't change for plural
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] "%d 秒"
+
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "%d 分钟"
+
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "%d 小时"
+
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "%d 天"
+
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] "%d 周"
+
+msgid "%d month"
+msgid_plural "%d months"
+msgstr[0] "%d 个月"
+
+msgid "%d year"
+msgid_plural "%d years"
+msgstr[0] "%d 年"
+
+msgid "%d byte"
+msgid_plural "%d bytes"
+msgstr[0] "%d 字节"
+
+msgid "%d file"
+msgid_plural "%d files"
+msgstr[0] "%d 个文件"
+
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d 个项目"
+
+msgid "%d message"
+msgid_plural "%d messages"
+msgstr[0] "%d 条消息"
+
+msgid "%d notification"
+msgid_plural "%d notifications"
+msgstr[0] "%d 个通知"
+
+msgid "%d error"
+msgid_plural "%d errors"
+msgstr[0] "%d 个错误"
+
+msgid "%d warning"
+msgid_plural "%d warnings"
+msgstr[0] "%d 个警告"

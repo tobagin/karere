@@ -1,0 +1,660 @@
+# Japanese translations for karere.
+# Copyright (C) 2025 Thiago Fernandes
+# This file is distributed under the same license as the karere package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: karere 0.6.0\n"
+"Report-Msgid-Bugs-To: https://github.com/tobagin/karere-vala/issues\n"
+"POT-Creation-Date: 2025-07-25 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# Application Information
+#: data/io.github.tobagin.karere.appdata.xml.in:4
+#: data/io.github.tobagin.karere.desktop.in:3 src/application.vala:45
+#: src/application.vala:47 src/application.vala:49 src/window.vala:32
+msgid "Karere"
+msgstr "Karere"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:5
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "Native WhatsApp client for Linux"
+msgstr "Linux用ネイティブWhatsAppクライアント"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:7
+msgid ""
+"Karere is a modern, native WhatsApp client built specifically for the Linux "
+"desktop using GTK4 and LibAdwaita. It provides a seamless WhatsApp "
+"experience with native desktop integration, comprehensive logging, and crash "
+"reporting capabilities."
+msgstr ""
+"KarereはGTK4とLibAdwaitaを使用してLinuxデスクトップ専用に構築された、モダンで"
+"ネイティブなWhatsAppクライアントです。ネイティブなデスクトップ統合、包括的な"
+"ログ記録、クラッシュレポート機能により、シームレスなWhatsApp体験を提供しま"
+"す。"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:12
+msgid "Features:"
+msgstr "機能："
+
+#: data/io.github.tobagin.karere.appdata.xml.in:14
+msgid "Native GTK4/LibAdwaita interface with modern design"
+msgstr "モダンなデザインのネイティブGTK4/LibAdwaitaインターフェース"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:15
+msgid "Full desktop integration with notifications and theming"
+msgstr "通知とテーマの完全なデスクトップ統合"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:16
+msgid "WebKitGTK-based WhatsApp Web rendering for optimal performance"
+msgstr "最適なパフォーマンスのためのWebKitGTKベースのWhatsApp Webレンダリング"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:17
+msgid "Comprehensive logging system for debugging and monitoring"
+msgstr "デバッグと監視のための包括的なログシステム"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:18
+msgid "Crash reporting with user privacy controls"
+msgstr "ユーザープライバシー制御付きクラッシュレポート"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:19
+msgid "Light, dark, and system theme support"
+msgstr "ライト、ダーク、システムテーマのサポート"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:20
+msgid "Keyboard shortcuts and accessibility features"
+msgstr "キーボードショートカットとアクセシビリティ機能"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:21
+msgid "Resource-efficient compared to browser-based solutions"
+msgstr "ブラウザベースのソリューションと比較してリソース効率的"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Chat using WhatsApp with native Linux desktop integration"
+msgstr "ネイティブLinuxデスクトップ統合でWhatsAppを使用してチャット"
+
+#: data/io.github.tobagin.karere.desktop.in:8
+msgid "whatsapp;chat;messaging;social;communication;"
+msgstr "whatsapp;チャット;メッセージング;ソーシャル;コミュニケーション;"
+
+# Window and Interface
+#: src/window.vala:41
+msgid "Loading WhatsApp..."
+msgstr "WhatsAppを読み込み中..."
+
+#: src/window.vala:52
+msgid "WhatsApp Web failed to load"
+msgstr "WhatsApp Webの読み込みに失敗しました"
+
+#: src/window.vala:68 src/window.vala:285 data/ui/window.blp:23
+msgid "Reload"
+msgstr "再読み込み"
+
+#: src/window.vala:72 data/ui/window.blp:35
+msgid "Preferences"
+msgstr "設定"
+
+#: src/window.vala:76 data/ui/window.blp:39
+msgid "About Karere"
+msgstr "Karereについて"
+
+#: src/window.vala:86
+msgid "Connection Error"
+msgstr "接続エラー"
+
+#: src/window.vala:87
+msgid ""
+"Unable to connect to WhatsApp Web. Please check your internet connection and "
+"try again."
+msgstr ""
+"WhatsApp Webに接続できません。インターネット接続を確認して、もう一度お試しく"
+"ださい。"
+
+#: src/window.vala:95
+msgid "Loading Error"
+msgstr "読み込みエラー"
+
+#: src/window.vala:96
+msgid ""
+"WhatsApp Web could not be loaded. This might be due to network issues or "
+"server problems."
+msgstr ""
+"WhatsApp Webを読み込めませんでした。ネットワークの問題またはサーバーの問題が"
+"原因の可能性があります。"
+
+#: src/window.vala:104
+msgid "Script Error"
+msgstr "スクリプトエラー"
+
+#: src/window.vala:105
+msgid "A JavaScript error occurred while loading WhatsApp Web."
+msgstr "WhatsApp Webの読み込み中にJavaScriptエラーが発生しました。"
+
+#: src/window.vala:113
+msgid "Permission Denied"
+msgstr "権限が拒否されました"
+
+#: src/window.vala:114
+msgid ""
+"Karere does not have the necessary permissions to access WhatsApp Web. "
+"Please check your system settings."
+msgstr ""
+"KarereにはWhatsApp Webにアクセスするために必要な権限がありません。システム設"
+"定を確認してください。"
+
+#: src/window.vala:122
+msgid "SSL Certificate Error"
+msgstr "SSL証明書エラー"
+
+#: src/window.vala:123
+msgid ""
+"There was a problem with the SSL certificate. This might indicate a security "
+"issue."
+msgstr ""
+"SSL証明書に問題がありました。これはセキュリティの問題を示している可能性があり"
+"ます。"
+
+#: src/window.vala:131
+msgid "Content Blocked"
+msgstr "コンテンツがブロックされました"
+
+#: src/window.vala:132
+msgid "Some content was blocked by the security policy."
+msgstr "一部のコンテンツがセキュリティポリシーによってブロックされました。"
+
+#: src/window.vala:140
+msgid "Plugin Error"
+msgstr "プラグインエラー"
+
+#: src/window.vala:141
+msgid "A required plugin could not be loaded or executed."
+msgstr "必要なプラグインを読み込みまたは実行できませんでした。"
+
+#: src/window.vala:149
+msgid "Timeout Error"
+msgstr "タイムアウトエラー"
+
+#: src/window.vala:150
+msgid "The request timed out. Please check your connection and try again."
+msgstr ""
+"リクエストがタイムアウトしました。接続を確認して、もう一度お試しください。"
+
+#: src/window.vala:158
+msgid "Resource Error"
+msgstr "リソースエラー"
+
+#: src/window.vala:159
+msgid "A required resource could not be loaded."
+msgstr "必要なリソースを読み込めませんでした。"
+
+#: src/window.vala:167
+msgid "Unknown Error"
+msgstr "不明なエラー"
+
+#: src/window.vala:168
+msgid "An unexpected error occurred while loading WhatsApp Web."
+msgstr "WhatsApp Webの読み込み中に予期しないエラーが発生しました。"
+
+#: src/window.vala:179
+msgid "Retry"
+msgstr "再試行"
+
+#: src/window.vala:190
+msgid "Network unavailable"
+msgstr "ネットワークが利用できません"
+
+#: src/window.vala:191
+msgid ""
+"No network connection detected. Please connect to the internet and try again."
+msgstr ""
+"ネットワーク接続が検出されませんでした。インターネットに接続して、もう一度お"
+"試しください。"
+
+#: src/window.vala:199
+msgid "Server unreachable"
+msgstr "サーバーに到達できません"
+
+#: src/window.vala:200
+msgid "WhatsApp servers are currently unreachable. Please try again later."
+msgstr "現在WhatsAppサーバーに到達できません。後でもう一度お試しください。"
+
+#: src/window.vala:208
+msgid "DNS resolution failed"
+msgstr "DNS解決に失敗しました"
+
+#: src/window.vala:209
+msgid ""
+"Could not resolve the WhatsApp Web address. Please check your DNS settings."
+msgstr ""
+"WhatsApp Webアドレスを解決できませんでした。DNS設定を確認してください。"
+
+#: src/window.vala:217
+msgid "Certificate verification failed"
+msgstr "証明書の検証に失敗しました"
+
+#: src/window.vala:218
+msgid ""
+"The SSL certificate could not be verified. This might be a security concern."
+msgstr ""
+"SSL証明書を検証できませんでした。これはセキュリティ上の懸念かもしれません。"
+
+#: src/window.vala:226
+msgid "Proxy authentication required"
+msgstr "プロキシ認証が必要です"
+
+#: src/window.vala:227
+msgid "Your proxy server requires authentication to access the internet."
+msgstr "プロキシサーバーはインターネットアクセスに認証が必要です。"
+
+#: src/window.vala:235
+msgid "Content too large"
+msgstr "コンテンツが大きすぎます"
+
+#: src/window.vala:236
+msgid "The content is too large to be displayed properly."
+msgstr "コンテンツが大きすぎて適切に表示できません。"
+
+#: src/window.vala:244
+msgid "Insecure connection"
+msgstr "安全でない接続"
+
+#: src/window.vala:245
+msgid ""
+"The connection to WhatsApp Web is not secure. Please check your network "
+"settings."
+msgstr ""
+"WhatsApp Webへの接続が安全ではありません。ネットワーク設定を確認してくださ"
+"い。"
+
+#: src/window.vala:253
+msgid "Invalid response"
+msgstr "無効な応答"
+
+#: src/window.vala:254
+msgid "Received an invalid response from the WhatsApp servers."
+msgstr "WhatsAppサーバーから無効な応答を受信しました。"
+
+#: src/window.vala:262
+msgid "Page not found"
+msgstr "ページが見つかりません"
+
+#: src/window.vala:263
+msgid "The requested page could not be found on the WhatsApp servers."
+msgstr "要求されたページがWhatsAppサーバーで見つかりませんでした。"
+
+#: src/window.vala:271
+msgid "Service unavailable"
+msgstr "サービスが利用できません"
+
+#: src/window.vala:272
+msgid ""
+"WhatsApp Web service is temporarily unavailable. Please try again later."
+msgstr ""
+"WhatsApp Webサービスは一時的に利用できません。後でもう一度お試しください。"
+
+#: src/window.vala:280
+msgid "Internal server error"
+msgstr "内部サーバーエラー"
+
+#: src/window.vala:281
+msgid "WhatsApp servers encountered an internal error. Please try again later."
+msgstr ""
+"WhatsAppサーバーで内部エラーが発生しました。後でもう一度お試しください。"
+
+#: src/window.vala:295
+msgid "Check Connection"
+msgstr "接続を確認"
+
+#: src/window.vala:305
+msgid "Contact Support"
+msgstr "サポートに連絡"
+
+#: src/window.vala:315
+msgid "View Logs"
+msgstr "ログを表示"
+
+#: src/window.vala:325
+msgid "Clear Cache"
+msgstr "キャッシュをクリア"
+
+#: src/window.vala:335
+msgid "Reset Settings"
+msgstr "設定をリセット"
+
+#: src/window.vala:345
+msgid "Safe Mode"
+msgstr "セーフモード"
+
+#: src/window.vala:355
+msgid "Diagnostic Mode"
+msgstr "診断モード"
+
+#: src/window.vala:365
+msgid "Force Refresh"
+msgstr "強制更新"
+
+# Preferences
+#: src/preferences.vala:35 data/ui/preferences.blp:11
+msgid "General"
+msgstr "一般"
+
+#: src/preferences.vala:45 data/ui/preferences.blp:23
+msgid "Theme"
+msgstr "テーマ"
+
+#: src/preferences.vala:51 data/ui/preferences.blp:28
+msgid "Choose the application theme"
+msgstr "アプリケーションテーマを選択"
+
+#: src/preferences.vala:57 data/ui/preferences.blp:34
+msgid "Light"
+msgstr "ライト"
+
+#: src/preferences.vala:58 data/ui/preferences.blp:35
+msgid "Dark"
+msgstr "ダーク"
+
+#: src/preferences.vala:59 data/ui/preferences.blp:36
+msgid "Follow System"
+msgstr "システムに従う"
+
+#: src/preferences.vala:69 data/ui/preferences.blp:49
+msgid "Startup"
+msgstr "起動"
+
+#: src/preferences.vala:75 data/ui/preferences.blp:54
+msgid "Start minimized"
+msgstr "最小化して起動"
+
+#: src/preferences.vala:76 data/ui/preferences.blp:55
+msgid "Start the application minimized to the system tray"
+msgstr "アプリケーションをシステムトレイに最小化して起動"
+
+#: src/preferences.vala:86 data/ui/preferences.blp:66
+msgid "Auto-start on login"
+msgstr "ログイン時に自動起動"
+
+#: src/preferences.vala:87 data/ui/preferences.blp:67
+msgid "Automatically start Karere when you log in"
+msgstr "ログイン時にKarereを自動的に起動"
+
+#: src/preferences.vala:97 data/ui/preferences.blp:78
+msgid "Notifications"
+msgstr "通知"
+
+#: src/preferences.vala:103 data/ui/preferences.blp:83
+msgid "Show desktop notifications"
+msgstr "デスクトップ通知を表示"
+
+#: src/preferences.vala:104 data/ui/preferences.blp:84
+msgid "Display notifications for new messages"
+msgstr "新しいメッセージの通知を表示"
+
+#: src/preferences.vala:114 data/ui/preferences.blp:95
+msgid "Play notification sounds"
+msgstr "通知音を再生"
+
+#: src/preferences.vala:115 data/ui/preferences.blp:96
+msgid "Play a sound when receiving notifications"
+msgstr "通知を受信したときに音を再生"
+
+#: src/preferences.vala:125 data/ui/preferences.blp:107
+msgid "Show notification previews"
+msgstr "通知のプレビューを表示"
+
+#: src/preferences.vala:126 data/ui/preferences.blp:108
+msgid "Show message content in notifications"
+msgstr "通知にメッセージ内容を表示"
+
+#: src/preferences.vala:136 data/ui/preferences.blp:119
+msgid "Persistent notifications"
+msgstr "持続的な通知"
+
+#: src/preferences.vala:137 data/ui/preferences.blp:120
+msgid "Keep notifications visible until dismissed"
+msgstr "通知を閉じるまで表示し続ける"
+
+#: src/preferences.vala:147 data/ui/preferences.blp:131
+msgid "Privacy"
+msgstr "プライバシー"
+
+#: src/preferences.vala:153 data/ui/preferences.blp:136
+msgid "Enable crash reporting"
+msgstr "クラッシュレポートを有効にする"
+
+#: src/preferences.vala:154 data/ui/preferences.blp:137
+msgid "Help improve Karere by sending crash reports"
+msgstr "クラッシュレポートを送信してKarereの改善にご協力ください"
+
+#: src/preferences.vala:164 data/ui/preferences.blp:148
+msgid "Enable debug logging"
+msgstr "デバッグログを有効にする"
+
+#: src/preferences.vala:165 data/ui/preferences.blp:149
+msgid "Enable detailed logging for troubleshooting"
+msgstr "トラブルシューティングのための詳細ログを有効にする"
+
+#: src/preferences.vala:175 data/ui/preferences.blp:160
+msgid "Clear browsing data"
+msgstr "閲覧データをクリア"
+
+#: src/preferences.vala:176 data/ui/preferences.blp:161
+msgid "Clear cookies, cache, and local storage"
+msgstr "Cookie、キャッシュ、ローカルストレージをクリア"
+
+#: src/preferences.vala:185 data/ui/preferences.blp:170
+msgid "Clear Data"
+msgstr "データをクリア"
+
+#: src/preferences.vala:195 data/ui/preferences.blp:181
+msgid "Advanced"
+msgstr "詳細"
+
+#: src/preferences.vala:201 data/ui/preferences.blp:186
+msgid "Hardware acceleration"
+msgstr "ハードウェアアクセラレーション"
+
+#: src/preferences.vala:202 data/ui/preferences.blp:187
+msgid "Use hardware acceleration for better performance"
+msgstr "パフォーマンス向上のためハードウェアアクセラレーションを使用"
+
+#: src/preferences.vala:212 data/ui/preferences.blp:198
+msgid "Experimental features"
+msgstr "実験的機能"
+
+#: src/preferences.vala:213 data/ui/preferences.blp:199
+msgid "Enable experimental features (may be unstable)"
+msgstr "実験的機能を有効にする（不安定な場合があります）"
+
+#: src/preferences.vala:223 data/ui/preferences.blp:210
+msgid "Developer mode"
+msgstr "開発者モード"
+
+#: src/preferences.vala:224 data/ui/preferences.blp:211
+msgid "Enable developer tools and advanced debugging"
+msgstr "開発者ツールと高度なデバッグを有効にする"
+
+#: src/preferences.vala:234 data/ui/preferences.blp:222
+msgid "Custom User Agent"
+msgstr "カスタムユーザーエージェント"
+
+#: src/preferences.vala:235 data/ui/preferences.blp:227
+msgid "Override the default user agent string"
+msgstr "デフォルトのユーザーエージェント文字列を上書き"
+
+#: src/preferences.vala:244 data/ui/preferences.blp:236
+msgid "User Agent String"
+msgstr "ユーザーエージェント文字列"
+
+#: src/preferences.vala:255 data/ui/preferences.blp:248
+msgid "Proxy Settings"
+msgstr "プロキシ設定"
+
+#: src/preferences.vala:261 data/ui/preferences.blp:253
+msgid "Use system proxy"
+msgstr "システムプロキシを使用"
+
+#: src/preferences.vala:262 data/ui/preferences.blp:254
+msgid "Use the system proxy configuration"
+msgstr "システムプロキシ設定を使用"
+
+#: src/preferences.vala:272 data/ui/preferences.blp:265
+msgid "Manual proxy configuration"
+msgstr "手動プロキシ設定"
+
+#: src/preferences.vala:273 data/ui/preferences.blp:266
+msgid "Configure proxy settings manually"
+msgstr "プロキシ設定を手動で設定"
+
+#: src/preferences.vala:283 data/ui/preferences.blp:277
+msgid "HTTP Proxy"
+msgstr "HTTPプロキシ"
+
+#: src/preferences.vala:293 data/ui/preferences.blp:288
+msgid "HTTPS Proxy"
+msgstr "HTTPSプロキシ"
+
+#: src/preferences.vala:303 data/ui/preferences.blp:299
+msgid "SOCKS Proxy"
+msgstr "SOCKSプロキシ"
+
+#: src/preferences.vala:313 data/ui/preferences.blp:310
+msgid "No Proxy For"
+msgstr "プロキシを使用しない"
+
+#: src/preferences.vala:323 data/ui/preferences.blp:321
+msgid "Reset to Defaults"
+msgstr "デフォルトにリセット"
+
+#: src/preferences.vala:333
+msgid "Settings Reset"
+msgstr "設定をリセットしました"
+
+#: src/preferences.vala:334
+msgid "All settings have been reset to their default values."
+msgstr "すべての設定がデフォルト値にリセットされました。"
+
+#: src/preferences.vala:344
+msgid "Data Cleared"
+msgstr "データをクリアしました"
+
+#: src/preferences.vala:345
+msgid "All browsing data has been cleared successfully."
+msgstr "すべての閲覧データが正常にクリアされました。"
+
+#: src/preferences.vala:355
+msgid "Restart Required"
+msgstr "再起動が必要です"
+
+#: src/preferences.vala:356
+msgid ""
+"Some changes require a restart to take effect. Would you like to restart "
+"Karere now?"
+msgstr ""
+"一部の変更を有効にするには再起動が必要です。今すぐKarereを再起動しますか？"
+
+#: src/preferences.vala:365
+msgid "Restart Now"
+msgstr "今すぐ再起動"
+
+#: src/preferences.vala:375
+msgid "Restart Later"
+msgstr "後で再起動"
+
+# Application
+#: src/application.vala:55
+msgid "Show application version"
+msgstr "アプリケーションバージョンを表示"
+
+#: src/application.vala:56
+msgid "Start application in debug mode"
+msgstr "デバッグモードでアプリケーションを起動"
+
+#: src/application.vala:57
+msgid "Start application minimized"
+msgstr "アプリケーションを最小化して起動"
+
+#: src/application.vala:58
+msgid "Start application in safe mode"
+msgstr "アプリケーションをセーフモードで起動"
+
+#: src/application.vala:59
+msgid "Enable verbose logging"
+msgstr "詳細ログを有効にする"
+
+#: src/application.vala:60
+msgid "Disable hardware acceleration"
+msgstr "ハードウェアアクセラレーションを無効にする"
+
+#: src/application.vala:61
+msgid "Clear all application data on startup"
+msgstr "起動時にすべてのアプリケーションデータをクリア"
+
+#: src/application.vala:62
+msgid "Run in headless mode (no GUI)"
+msgstr "ヘッドレスモードで実行（GUIなし）"
+
+#: src/application.vala:85
+msgid "Application initialized successfully"
+msgstr "アプリケーションが正常に初期化されました"
+
+#: src/application.vala:95
+msgid "Preparing application startup..."
+msgstr "アプリケーション起動を準備中..."
+
+#: src/application.vala:105
+msgid "Loading user preferences..."
+msgstr "ユーザー設定を読み込み中..."
+
+#: src/application.vala:115
+msgid "Initializing WebKit engine..."
+msgstr "WebKitエンジンを初期化中..."
+
+#: src/application.vala:125
+msgid "Setting up notification system..."
+msgstr "通知システムをセットアップ中..."
+
+#: src/application.vala:135
+msgid "Configuring crash reporting..."
+msgstr "クラッシュレポートを設定中..."
+
+#: src/application.vala:145
+msgid "Application startup completed"
+msgstr "アプリケーション起動完了"
+
+#: src/application.vala:155
+msgid "Shutting down application..."
+msgstr "アプリケーションをシャットダウン中..."
+
+#: src/application.vala:165
+msgid "Saving user preferences..."
+msgstr "ユーザー設定を保存中..."
+
+#: src/application.vala:175
+msgid "Cleaning up resources..."
+msgstr "リソースをクリーンアップ中..."
+
+#: src/application.vala:185
+msgid "Application shutdown completed"
+msgstr "アプリケーションシャットダウン完了"
+
+# Units for plural forms - Japanese doesn't change for plural
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] "%d秒"
+
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "%d分"
+
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "%d時間"

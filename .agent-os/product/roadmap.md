@@ -101,16 +101,16 @@
 
 ### Must-Have Features
 
-- [ ] Production Flatpak manifest (io.github.tobagin.karere.yml) - `M`
-- [ ] Development Flatpak manifest (io.github.tobagin.karere.Devel.yml) - `M`
-- [ ] AppData metadata file with screenshots - `M`
-- [ ] Desktop entry file - `S`
-- [ ] Application icons (16x16 to 512x512) - `L`
+- [x] Production Flatpak manifest (io.github.tobagin.karere.yml) - `M`
+- [x] Development Flatpak manifest (io.github.tobagin.karere.Devel.yml) - `M`
+- [x] AppData metadata file with screenshots - `M`
+- [x] Desktop entry file - `S`
+- [x] Application icons (16x16 to 512x512) - `L`
 
 ### Should-Have Features
 
 - [ ] Keyboard shortcuts and accessibility improvements - `L`
-- [ ] About dialog with application information - `S`
+- [x] About dialog with application information - `S`
 - [ ] Help documentation - `M`
 - [ ] CI/CD pipeline for automated builds - `XL`
 

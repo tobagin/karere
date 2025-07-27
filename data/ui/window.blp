@@ -1,6 +1,5 @@
 using Gtk 4.0;
 using Adw 1;
-using WebKit 6.0;
 
 template $KarereWindow : Adw.ApplicationWindow {
   width-request: 800;
@@ -14,30 +13,33 @@ template $KarereWindow : Adw.ApplicationWindow {
     Adw.HeaderBar header_bar {
       title-widget: Adw.WindowTitle {
         title: _("Karere");
-        subtitle: _("WhatsApp Web");
+        subtitle: _("GTK4 WhatsApp Web");
       };
 
       [start]
-      Gtk.Button back_button {
-        icon-name: "go-previous-symbolic";
-        tooltip-text: _("Go Back");
-        sensitive: false;
-        clicked => $on_back_clicked();
-      }
+      Gtk.Box zoom_controls_box {
+        orientation: horizontal;
+        spacing: 6;
+        css-classes: ["linked"];
+        visible: false;
 
-      [start]
-      Gtk.Button forward_button {
-        icon-name: "go-next-symbolic";
-        tooltip-text: _("Go Forward");
-        sensitive: false;
-        clicked => $on_forward_clicked();
-      }
+        Gtk.Button zoom_out_button {
+          icon-name: "zoom-out-symbolic";
+          tooltip-text: _("Zoom Out");
+          action-name: "win.zoom-out";
+        }
 
-      [start]
-      Gtk.Button reload_button {
-        icon-name: "view-refresh-symbolic";
-        tooltip-text: _("Reload");
-        clicked => $on_reload_clicked();
+        Gtk.Button zoom_reset_button {
+          icon-name: "zoom-original-symbolic";
+          tooltip-text: _("Reset Zoom");
+          action-name: "win.zoom-reset";
+        }
+
+        Gtk.Button zoom_in_button {
+          icon-name: "zoom-in-symbolic";
+          tooltip-text: _("Zoom In");
+          action-name: "win.zoom-in";
+        }
       }
 
       [end]
@@ -51,61 +53,16 @@ template $KarereWindow : Adw.ApplicationWindow {
     Adw.ToastOverlay toast_overlay {
       vexpand: true;
       
-      WebKit.WebView web_view {
+      Gtk.Box web_container {
         vexpand: true;
         hexpand: true;
-        
-        settings: WebKit.Settings {
-          enable-javascript: true;
-          enable-javascript-markup: true;
-          enable-html5-database: true;
-          enable-html5-local-storage: true;
-          enable-offline-web-application-cache: true;
-          enable-page-cache: true;
-          user-agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Karere/0.1.0";
-        };
+        orientation: vertical;
       }
     }
   }
 }
 
 menu primary_menu {
-  section {
-    item {
-      label: _("_New Window");
-      action: "app.new-window";
-      accel: "<primary>n";
-    }
-  }
-  
-  section {
-    item {
-      label: _("_Zoom In");
-      action: "win.zoom-in";
-      accel: "<primary>plus";
-    }
-    
-    item {
-      label: _("_Zoom Out");
-      action: "win.zoom-out";
-      accel: "<primary>minus";
-    }
-    
-    item {
-      label: _("_Actual Size");
-      action: "win.zoom-reset";
-      accel: "<primary>0";
-    }
-  }
-
-  section {
-    item {
-      label: _("_Find in Page");
-      action: "win.find";
-      accel: "<primary>f";
-    }
-  }
-  
   section {
     item {
       label: _("_Preferences");
@@ -124,6 +81,14 @@ menu primary_menu {
     item {
       label: _("_About Karere");
       action: "app.about";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Quit");
+      action: "app.quit";
+      accel: "<primary>q";
     }
   }
 }

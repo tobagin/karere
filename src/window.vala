@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Karere Contributors
+ * Copyright (C) 2025 Thiago Fernandes
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,14 +21,6 @@ namespace Karere {
         [GtkChild]
         private unowned Adw.HeaderBar header_bar;
         
-        [GtkChild]
-        private unowned Gtk.Button back_button;
-        
-        [GtkChild]
-        private unowned Gtk.Button forward_button;
-        
-        [GtkChild]
-        private unowned Gtk.Button reload_button;
         
         [GtkChild]
         private unowned Gtk.MenuButton menu_button;
@@ -37,7 +29,12 @@ namespace Karere {
         private unowned Adw.ToastOverlay toast_overlay;
         
         [GtkChild]
-        private unowned WebKit.WebView web_view;
+        private unowned Gtk.Box web_container;
+        
+        [GtkChild]
+        private unowned Gtk.Box zoom_controls_box;
+        
+        private WebKit.WebView web_view;
         
         private Settings settings;
         private WebKitManager webkit_manager;
@@ -48,12 +45,32 @@ namespace Karere {
             Object(application: app);
             
             logger = new Logger();
-            settings = new Settings(Config.APP_ID);
+            
+            // Initialize settings with error handling
+            try {
+                settings = new Settings(Config.APP_ID);
+            } catch (Error e) {
+                logger.error("Failed to initialize settings: %s", e.message);
+                logger.warning("Continuing without settings - using defaults");
+                settings = null;
+            }
+            
+            // Load accessibility styles
+            load_accessibility_styles();
             
             setup_window_properties();
             setup_actions();
             setup_webkit();
             setup_notifications();
+            setup_settings_listeners();
+            setup_accessibility_features();
+            
+            // Initialize focus indicators state
+            if (settings != null) {
+                update_focus_indicators(false); // Don't show notification during initialization
+                update_zoom_controls_visibility(); // Initialize zoom controls visibility
+            }
+            
             restore_window_state();
             
             logger.info("Window created and initialized");
@@ -69,48 +86,11 @@ namespace Karere {
             notify["default-width"].connect(save_window_state);
             notify["default-height"].connect(save_window_state);
             
-            // Set up drag and drop for files
-            setup_drag_and_drop();
-            
             logger.debug("Window properties configured");
         }
 
         private void setup_actions() {
-            // Zoom actions
-            var zoom_in_action = new SimpleAction("zoom-in", null);
-            zoom_in_action.activate.connect(() => {
-                var zoom = web_view.zoom_level;
-                web_view.zoom_level = (zoom * 1.2).clamp(0.5, 5.0);
-                logger.debug("Zoomed in to %f", web_view.zoom_level);
-            });
-            add_action(zoom_in_action);
-
-            var zoom_out_action = new SimpleAction("zoom-out", null);
-            zoom_out_action.activate.connect(() => {
-                var zoom = web_view.zoom_level;
-                web_view.zoom_level = (zoom / 1.2).clamp(0.5, 5.0);
-                logger.debug("Zoomed out to %f", web_view.zoom_level);
-            });
-            add_action(zoom_out_action);
-
-            var zoom_reset_action = new SimpleAction("zoom-reset", null);
-            zoom_reset_action.activate.connect(() => {
-                web_view.zoom_level = 1.0;
-                logger.debug("Zoom reset to 1.0");
-            });
-            add_action(zoom_reset_action);
-
-            // Find action
-            var find_action = new SimpleAction("find", null);
-            find_action.activate.connect(() => {
-                var find_controller = web_view.get_find_controller();
-                // TODO: Show find bar
-                show_info_toast("Find functionality will be implemented in a future version");
-                logger.debug("Find action activated");
-            });
-            add_action(find_action);
-
-            // Developer tools action
+            // Developer tools action (keep for debugging if needed)
             var dev_tools_action = new SimpleAction("dev-tools", null);
             dev_tools_action.activate.connect(() => {
                 var inspector = web_view.get_inspector();
@@ -125,6 +105,44 @@ namespace Karere {
         private void setup_webkit() {
             webkit_manager = new WebKitManager();
             
+            // Create WebView programmatically
+            web_view = new WebKit.WebView();
+            web_view.vexpand = true;
+            web_view.hexpand = true;
+            
+            // Configure cookie storage after WebView creation
+            configure_cookie_storage();
+            
+            // Configure WebView settings
+            var webkit_settings = new WebKit.Settings();
+            webkit_settings.enable_javascript = true;
+            webkit_settings.enable_javascript_markup = true;
+            webkit_settings.enable_html5_database = true;
+            webkit_settings.enable_html5_local_storage = true;
+            // Note: enable_offline_web_application_cache is deprecated and removed
+            webkit_settings.enable_page_cache = true;
+            webkit_settings.user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+            
+            // Configure spell checking
+            setup_spell_checking(webkit_settings);
+            
+            // Configure developer tools
+            if (settings != null) {
+                var dev_tools_enabled = settings.get_boolean("developer-tools-enabled");
+                webkit_settings.enable_developer_extras = dev_tools_enabled;
+            } else {
+                webkit_settings.enable_developer_extras = false;
+                logger.warning("Settings not available, disabling developer tools");
+            }
+            
+            web_view.set_settings(webkit_settings);
+            
+            // Add WebView to container
+            web_container.append(web_view);
+            
+            // Set up drag and drop for files (now that web_view exists)
+            setup_drag_and_drop();
+            
             // Configure WebView
             web_view.load_uri("https://web.whatsapp.com");
             
@@ -132,14 +150,369 @@ namespace Karere {
             web_view.load_changed.connect(on_load_changed);
             web_view.load_failed.connect(on_load_failed);
             
+            // Connect notification permission signal
+            web_view.permission_request.connect(on_permission_request);
+            
             logger.debug("WebKit configured");
         }
 
         private void setup_notifications() {
-            notification_manager = new NotificationManager();
+            // Get the notification manager from the application
+            var app = get_application() as Karere.Application;
+            if (app != null) {
+                notification_manager = app.get_notification_manager();
+                logger.debug("Notifications configured");
+            } else {
+                logger.error("Could not get application reference for notifications");
+            }
+        }
+
+        private void configure_cookie_storage() {
+            // Note: WebKit 6.0 API change - cookie manager access has changed
+            // var website_data_manager = network_session.get_website_data_manager();  
+            // var cookie_manager = website_data_manager.get_cookie_manager();
             
-            // TODO: Set up notification handling in future version
-            logger.debug("Notifications configured (placeholder)");
+            // Note: Cookie storage setup disabled due to WebKit 6.0 API changes
+            // Cookie storage will be handled automatically by WebKit
+            logger.info("Cookie storage will be handled by WebKit defaults");
+        }
+
+        private void setup_spell_checking(WebKit.Settings webkit_settings) {
+            if (settings == null) {
+                logger.warning("Cannot setup spell checking: settings is null");
+                return;
+            }
+            
+            var spell_enabled = settings.get_boolean("spell-checking-enabled");
+            var web_context = web_view.get_context();
+            
+            logger.info("Setting up spell checking: enabled=%s", spell_enabled.to_string());
+            
+            // Enable/disable spell checking
+            web_context.set_spell_checking_enabled(spell_enabled);
+            
+            if (spell_enabled) {
+                // Get spell checking languages
+                string[] spell_languages = get_spell_checking_languages();
+                
+                // Set the languages
+                web_context.set_spell_checking_languages(spell_languages);
+                logger.info("Spell checking languages set: %s", string.joinv(", ", spell_languages));
+            } else {
+                logger.info("Spell checking disabled");
+            }
+        }
+        
+        private string[] get_spell_checking_languages() {
+            if (settings == null) {
+                logger.warning("Cannot get spell checking languages: settings is null, using fallback");
+                return {"en_US"};
+            }
+            
+            var auto_detect = settings.get_boolean("spell-checking-auto-detect");
+            var languages = settings.get_strv("spell-checking-languages");
+            
+            if (auto_detect || languages.length == 0) {
+                // Auto-detect from system locale
+                var locale = Intl.setlocale(LocaleCategory.MESSAGES, null);
+                if (locale != null) {
+                    // Extract language code (e.g., "en_US.UTF-8" -> "en_US")
+                    var parts = locale.split(".");
+                    var lang_code = parts[0];
+                    logger.info("Auto-detected spell checking language: %s", lang_code);
+                    return {lang_code};
+                } else {
+                    logger.info("Using fallback spell checking language: en_US");
+                    return {"en_US"};
+                }
+            } else {
+                logger.info("Using user-specified spell checking languages: %s", string.joinv(", ", languages));
+                return languages;
+            }
+        }
+        
+        private void setup_settings_listeners() {
+            if (settings == null) {
+                logger.warning("Cannot setup settings listeners: settings is null");
+                return;
+            }
+            
+            // Listen for settings changes
+            settings.changed["spell-checking-enabled"].connect(() => {
+                update_spell_checking();
+            });
+            settings.changed["spell-checking-auto-detect"].connect(() => {
+                update_spell_checking();
+            });
+            settings.changed["spell-checking-languages"].connect(() => {
+                update_spell_checking();
+            });
+            settings.changed["developer-tools-enabled"].connect(() => {
+                update_developer_tools();
+            });
+            settings.changed["focus-indicators-enabled"].connect(() => {
+                update_focus_indicators();
+            });
+            settings.changed["webview-zoom-controls-enabled"].connect(() => {
+                update_zoom_controls_visibility();
+            });
+            settings.changed["webview-zoom-enabled"].connect(() => {
+                update_zoom_controls_visibility();
+            });
+        }
+
+        /**
+         * Load accessibility CSS styles
+         */
+        private void load_accessibility_styles() {
+            var css_provider = new Gtk.CssProvider();
+            try {
+                css_provider.load_from_resource("/io/github/tobagin/karere/style.css");
+                // Note: Despite deprecation warnings, add_provider_for_display is still the correct API
+                // The deprecation only applies to instance methods, not this static method
+                Gtk.StyleContext.add_provider_for_display(
+                    this.get_display(), 
+                    css_provider, 
+                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+                );
+                logger.debug("Accessibility styles loaded");
+            } catch (Error e) {
+                logger.warning("Failed to load accessibility styles: %s", e.message);
+            }
+        }
+
+        /**
+         * Setup accessibility features for the window
+         */
+        private void setup_accessibility_features() {
+            // Set up ARIA roles and labels
+            setup_aria_roles();
+            
+            // Set up skip links for keyboard navigation
+            setup_skip_links();
+            
+            // Set up focus management
+            setup_focus_management();
+            
+            logger.debug("Accessibility features configured");
+        }
+
+        /**
+         * Setup ARIA roles and labels for major UI elements
+         */
+        private void setup_aria_roles() {
+            // Set main content role
+            web_container.update_property(Gtk.AccessibleProperty.LABEL, _("WhatsApp Web Content"));
+            web_container.update_property(Gtk.AccessibleProperty.DESCRIPTION, 
+                _("Main WhatsApp Web interface - use Tab to navigate, Enter to activate"));
+            
+            // Set header bar role and label
+            header_bar.update_property(Gtk.AccessibleProperty.LABEL, _("Application Header"));
+            header_bar.update_property(Gtk.AccessibleProperty.DESCRIPTION, 
+                _("Contains application title and main menu"));
+            
+            // Set menu button label
+            menu_button.update_property(Gtk.AccessibleProperty.LABEL, _("Main Menu"));
+            menu_button.update_property(Gtk.AccessibleProperty.DESCRIPTION, 
+                _("Access preferences, help, and other application options"));
+            
+            // Set toast overlay role
+            toast_overlay.update_property(Gtk.AccessibleProperty.LABEL, _("Notification Area"));
+        }
+
+        /**
+         * Setup skip links for keyboard navigation
+         */
+        private void setup_skip_links() {
+            // Skip links functionality temporarily disabled due to LibAdwaita API limitations
+            // AdwToastOverlay doesn't support add_overlay method
+            logger.debug("Skip links not implemented - AdwToastOverlay API limitation");
+        }
+
+        /**
+         * Setup enhanced focus management
+         */
+        private void setup_focus_management() {
+            // Ensure proper focus chain
+            var focus_chain = new List<Gtk.Widget>();
+            focus_chain.append(menu_button);
+            focus_chain.append(web_view);
+            
+            // Set up focus event controller using the correct Widget method
+            var focus_controller = new Gtk.EventControllerFocus();
+            focus_controller.enter.connect(on_window_focus_in);
+            focus_controller.leave.connect(on_window_focus_out);
+            // Add to the web view instead of the window since the method signature is incompatible
+            web_view.add_controller(focus_controller);
+            
+            logger.debug("Focus management configured");
+        }
+
+        /**
+         * Handle window focus in events
+         */
+        private void on_window_focus_in() {
+            logger.debug("Window gained focus");
+        }
+
+        /**
+         * Handle window focus out events
+         */
+        private void on_window_focus_out() {
+            logger.debug("Window lost focus");
+        }
+
+        private void update_spell_checking() {
+            if (settings == null || web_view == null) {
+                logger.warning("Cannot update spell checking: settings or web_view is null");
+                return;
+            }
+            
+            var spell_enabled = settings.get_boolean("spell-checking-enabled");
+            var web_context = web_view.get_context();
+            
+            web_context.set_spell_checking_enabled(spell_enabled);
+            
+            if (spell_enabled) {
+                string[] spell_languages = get_spell_checking_languages();
+                web_context.set_spell_checking_languages(spell_languages);
+                logger.info("Spell checking updated - languages: %s", string.joinv(", ", spell_languages));
+            } else {
+                web_context.set_spell_checking_languages({});
+                logger.info("Spell checking disabled");
+            }
+        }
+
+
+        private void update_developer_tools() {
+            if (settings == null || web_view == null) {
+                logger.warning("Cannot update developer tools: settings or web_view is null");
+                return;
+            }
+            
+            var dev_tools_enabled = settings.get_boolean("developer-tools-enabled");
+            var webkit_settings = web_view.get_settings();
+            webkit_settings.enable_developer_extras = dev_tools_enabled;
+            
+            logger.debug("Developer tools %s", dev_tools_enabled ? "enabled" : "disabled");
+        }
+
+        /**
+         * Update WebView zoom level
+         *
+         * @param zoom_level The new zoom level to apply
+         */
+        public void update_webkit_zoom(double zoom_level) {
+            if (web_view == null) {
+                logger.warning("Cannot update WebView zoom: web_view is null");
+                return;
+            }
+            
+            web_view.zoom_level = zoom_level;
+            logger.info("WebView zoom level updated to: %f", zoom_level);
+        }
+
+        /**
+         * Update all WebKit settings through WebKitManager
+         */
+        public void update_webkit_settings() {
+            if (webkit_manager != null && web_view != null) {
+                webkit_manager.update_settings(web_view);
+                logger.debug("WebKit settings updated through WebKitManager");
+            } else {
+                logger.warning("Cannot update WebKit settings: webkit_manager or web_view is null");
+            }
+        }
+
+        /**
+         * Increase WebView zoom level
+         */
+        public void webkit_zoom_in() {
+            if (settings == null || web_view == null) return;
+            if (!settings.get_boolean("webview-zoom-enabled")) return;
+            
+            var current_zoom = settings.get_double("webkit-zoom-level");
+            var zoom_step = settings.get_double("webkit-zoom-step");
+            var new_zoom = Math.fmin(current_zoom + zoom_step, 3.0);
+            
+            settings.set_double("webkit-zoom-level", new_zoom);
+            logger.debug("WebView zoomed in to %f", new_zoom);
+        }
+
+        /**
+         * Decrease WebView zoom level
+         */
+        public void webkit_zoom_out() {
+            if (settings == null || web_view == null) return;
+            if (!settings.get_boolean("webview-zoom-enabled")) return;
+            
+            var current_zoom = settings.get_double("webkit-zoom-level");
+            var zoom_step = settings.get_double("webkit-zoom-step");
+            var new_zoom = Math.fmax(current_zoom - zoom_step, 0.5);
+            
+            settings.set_double("webkit-zoom-level", new_zoom);
+            logger.debug("WebView zoomed out to %f", new_zoom);
+        }
+
+        /**
+         * Reset WebView zoom level to default
+         */
+        public void webkit_zoom_reset() {
+            if (settings == null || web_view == null) return;
+            if (!settings.get_boolean("webview-zoom-enabled")) return;
+            
+            settings.set_double("webkit-zoom-level", 1.0);
+            logger.debug("WebView zoom reset to default");
+        }
+
+        /**
+         * Update focus indicators visibility based on settings
+         *
+         * @param show_notification Whether to show a toast notification about the change
+         */
+        public void update_focus_indicators(bool show_notification = true) {
+            if (settings == null) {
+                logger.warning("Cannot update focus indicators: settings is null");
+                return;
+            }
+            
+            var focus_indicators_enabled = settings.get_boolean("focus-indicators-enabled");
+            logger.debug("Focus indicators setting value: %s", focus_indicators_enabled.to_string());
+            
+            // Apply the CSS class to the main window using modern GTK 4.10+ approach
+            if (focus_indicators_enabled) {
+                // Add the focus indicators CSS class to window
+                add_css_class("karere-focus-indicators");
+                logger.info("Focus indicators enabled - CSS class added");
+                if (show_notification) {
+                    show_info_toast(_("Focus indicators enabled"));
+                }
+            } else {
+                // Remove the focus indicators CSS class from window
+                remove_css_class("karere-focus-indicators");
+                logger.info("Focus indicators disabled - CSS class removed");
+                if (show_notification) {
+                    show_info_toast(_("Focus indicators disabled"));
+                }
+            }
+        }
+
+        /**
+         * Update zoom controls visibility based on webview-zoom-controls-enabled setting
+         */
+        private void update_zoom_controls_visibility() {
+            if (settings == null) {
+                logger.warning("Cannot update zoom controls visibility: settings is null");
+                return;
+            }
+            
+            var zoom_controls_enabled = settings.get_boolean("webview-zoom-controls-enabled");
+            var zoom_enabled = settings.get_boolean("webview-zoom-enabled");
+            
+            // Only show controls if both zoom is enabled AND controls are enabled
+            zoom_controls_box.visible = zoom_enabled && zoom_controls_enabled;
+            
+            logger.info("Zoom controls %s", (zoom_enabled && zoom_controls_enabled) ? "shown" : "hidden");
         }
 
         private void setup_drag_and_drop() {
@@ -152,6 +525,12 @@ namespace Karere {
         }
 
         private void restore_window_state() {
+            if (settings == null) {
+                logger.warning("Cannot restore window state: settings is null, using defaults");
+                set_default_size(1200, 800);
+                return;
+            }
+            
             // Restore window size
             var width = settings.get_int("window-width");
             var height = settings.get_int("window-height");
@@ -182,33 +561,17 @@ namespace Karere {
                         width, height, maximized.to_string());
         }
 
-        [GtkCallback]
-        private void on_back_clicked() {
-            if (web_view.can_go_back()) {
-                web_view.go_back();
-                logger.debug("Navigated back");
-            }
-        }
 
-        [GtkCallback]
-        private void on_forward_clicked() {
-            if (web_view.can_go_forward()) {
-                web_view.go_forward();
-                logger.debug("Navigated forward");
-            }
-        }
 
-        [GtkCallback]
-        private void on_reload_clicked() {
-            web_view.reload();
-            logger.debug("Page reloaded");
-        }
 
         private void on_load_changed(WebKit.LoadEvent load_event) {
             switch (load_event) {
                 case WebKit.LoadEvent.STARTED:
                     logger.debug("Load started");
-                    update_navigation_buttons();
+                    break;
+                    
+                case WebKit.LoadEvent.REDIRECTED:
+                    logger.debug("Load redirected");
                     break;
                     
                 case WebKit.LoadEvent.COMMITTED:
@@ -217,8 +580,7 @@ namespace Karere {
                     
                 case WebKit.LoadEvent.FINISHED:
                     logger.debug("Load finished");
-                    update_navigation_buttons();
-                    inject_notification_script();
+                    setup_webkit_notifications();
                     break;
             }
         }
@@ -226,19 +588,61 @@ namespace Karere {
         private bool on_load_failed(WebKit.LoadEvent load_event, string failing_uri, Error error) {
             logger.error("Load failed for %s: %s", failing_uri, error.message);
             
-            show_error_toast("Failed to load WhatsApp Web. Please check your internet connection.");
+            // TRANSLATORS: Error message when WhatsApp Web fails to load
+            show_error_toast(_("Failed to load WhatsApp Web. Please check your internet connection."));
             return false;
         }
 
 
-        private void update_navigation_buttons() {
-            back_button.sensitive = web_view.can_go_back();
-            forward_button.sensitive = web_view.can_go_forward();
+
+        private void setup_webkit_notifications() {
+            // Set up notification permission handling 
+            logger.debug("WebKit notifications setup complete");
         }
 
-        private void inject_notification_script() {
-            // TODO: Implement notification script injection in future version
-            logger.debug("Notification script injection (placeholder)");
+        private bool on_permission_request(WebKit.PermissionRequest request) {
+            if (request is WebKit.NotificationPermissionRequest) {
+                logger.info("WhatsApp requesting notification permission");
+                
+                // Always grant notification permission and set up our handler
+                request.allow();
+                
+                // Set up notification handler on the WebView
+                web_view.show_notification.connect(on_webkit_notification);
+                
+                logger.info("Notification permission granted and handler connected");
+                return true;
+            }
+            
+            return false;
+        }
+
+        private bool on_webkit_notification(WebKit.WebView webview, WebKit.Notification webkit_notification) {
+            logger.info("WebKit notification received: %s", webkit_notification.get_title());
+            
+            if (notification_manager != null) {
+                var title = webkit_notification.get_title();
+                var body = webkit_notification.get_body() ?? "";
+                
+                // Send native notification
+                notification_manager.send_notification(title, body, "dialog-information-symbolic");
+                
+                // Handle notification click
+                webkit_notification.clicked.connect(() => {
+                    logger.debug("Notification clicked, focusing window");
+                    present();
+                    webkit_notification.clicked();
+                });
+                
+                webkit_notification.closed.connect(() => {
+                    logger.debug("Notification closed");
+                });
+                
+                // Close the WebKit notification since we're showing our own
+                webkit_notification.close();
+            }
+            
+            return true; // We handled it
         }
 
 
@@ -247,11 +651,199 @@ namespace Karere {
                 var file = (File) value.get_object();
                 logger.debug("File dropped: %s", file.get_path());
                 
-                // TODO: Implement file sharing with WhatsApp
-                show_info_toast("File sharing will be implemented in a future version");
+                // Attempt to share file with WhatsApp Web
+                share_file_with_whatsapp.begin(file);
                 return true;
             }
             return false;
+        }
+
+        /**
+         * Share a file with WhatsApp Web by injecting it into the web interface
+         *
+         * @param file The file to share
+         */
+        private async void share_file_with_whatsapp(File file) {
+            try {
+                // Check if file exists and is readable
+                if (!file.query_exists()) {
+                    // TRANSLATORS: Error message when a file doesn't exist
+                    show_error_toast(_("File does not exist"));
+                    return;
+                }
+
+                var file_info = file.query_info(FileAttribute.STANDARD_SIZE + "," + 
+                                               FileAttribute.STANDARD_CONTENT_TYPE, 
+                                               FileQueryInfoFlags.NONE);
+                var file_size = file_info.get_size();
+                var content_type = file_info.get_content_type();
+                
+                logger.info("Attempting to share file: %s (size: %s, type: %s)", 
+                           file.get_path(), Utils.format_size(file_size), content_type ?? "unknown");
+
+                // Check file size limits (WhatsApp has ~100MB limit for documents, ~16MB for images)
+                if (file_size > 100 * 1024 * 1024) { // 100MB
+                    // TRANSLATORS: Error message when file is too large for WhatsApp
+                    show_error_toast(_("File is too large for WhatsApp (max 100MB)"));
+                    return;
+                }
+
+                // Get file path for logging
+                var file_path = file.get_path();
+                
+                // JavaScript code to trigger file sharing in WhatsApp Web
+                var javascript_code = """
+                    (function() {
+                        try {
+                            // Look for WhatsApp's file input element
+                            const fileInput = document.querySelector('input[type="file"][accept*="*"]') || 
+                                            document.querySelector('input[type="file"]') ||
+                                            document.querySelector('[data-testid="media-input"]') ||
+                                            document.querySelector('[data-icon="attach-menu-plus"]')?.closest('div')?.querySelector('input[type="file"]');
+                            
+                            if (!fileInput) {
+                                // Try to find and click the attachment button first
+                                const attachButton = document.querySelector('[data-testid="attach-menu-plus"]') ||
+                                                   document.querySelector('[data-icon="plus"]') ||
+                                                   document.querySelector('[aria-label*="attach" i]') ||
+                                                   document.querySelector('[title*="attach" i]');
+                                
+                                if (attachButton) {
+                                    attachButton.click();
+                                    // Wait a bit for the menu to appear
+                                    setTimeout(() => {
+                                        // Look for document/media option
+                                        const docButton = document.querySelector('[data-testid="attach-document"]') ||
+                                                        document.querySelector('[data-icon="document"]') ||
+                                                        document.querySelector('[aria-label*="document" i]');
+                                        if (docButton) {
+                                            docButton.click();
+                                        }
+                                    }, 100);
+                                }
+                                
+                                return { success: false, error: 'Could not find file input or attachment button. Make sure WhatsApp Web is loaded and you have a chat open.' };
+                            }
+                            
+                            // Create a fake file input event
+                            const event = new Event('change', { bubbles: true });
+                            
+                            // Show info message that file sharing requires manual interaction
+                            return { success: false, error: 'File sharing requires opening the attachment menu in WhatsApp Web manually. The attachment button has been clicked for you.' };
+                            
+                        } catch (error) {
+                            return { success: false, error: 'JavaScript error: ' + error.message };
+                        }
+                    })();
+                """;
+
+                // Execute JavaScript to attempt file sharing
+                web_view.evaluate_javascript.begin(javascript_code, -1, null, null, null, (obj, res) => {
+                    try {
+                        var js_result = web_view.evaluate_javascript.end(res);
+                        var result_value = js_result;
+                        
+                        if (result_value != null && result_value.is_object()) {
+                            var success_value = result_value.object_get_property("success");
+                            var error_value = result_value.object_get_property("error");
+                            
+                            if (success_value != null && success_value.is_boolean() && success_value.to_boolean()) {
+                                // TRANSLATORS: Success message when file is ready to share
+                                show_info_toast(_("File ready to share - complete the upload in WhatsApp Web"));
+                            } else if (error_value != null && error_value.is_string()) {
+                                var error_msg = error_value.to_string();
+                                logger.warning("File sharing JavaScript error: %s", error_msg);
+                                show_file_sharing_fallback_dialog(file);
+                            } else {
+                                show_file_sharing_fallback_dialog(file);
+                            }
+                        } else {
+                            show_file_sharing_fallback_dialog(file);
+                        }
+                    } catch (Error e) {
+                        logger.error("Error executing file sharing JavaScript: %s", e.message);
+                        show_file_sharing_fallback_dialog(file);
+                    }
+                });
+
+            } catch (Error e) {
+                logger.error("Error preparing file for sharing: %s", e.message);
+                // TRANSLATORS: Error message when file processing fails. %s is the error details
+                show_error_toast(_("Failed to process file: %s").printf(e.message));
+            }
+        }
+
+        /**
+         * Show fallback dialog when automatic file sharing is not possible
+         */
+        private void show_file_sharing_fallback_dialog(File file) {
+            var dialog = new Adw.AlertDialog(
+                "File Ready to Share",
+                "To share this file with WhatsApp Web:\n\n" +
+                "1. Click the attachment (📎) button in WhatsApp Web\n" +
+                "2. Select 'Document' or 'Photos & Videos'\n" +
+                "3. Browse to and select: " + file.get_basename()
+            );
+
+            dialog.add_response("copy_path", "Copy File Path");
+            dialog.add_response("open_folder", "Open Folder");
+            dialog.add_response("close", "Close");
+
+            dialog.set_response_appearance("copy_path", Adw.ResponseAppearance.SUGGESTED);
+            dialog.set_default_response("copy_path");
+            dialog.set_close_response("close");
+
+            dialog.response.connect((response) => {
+                switch (response) {
+                    case "copy_path":
+                        copy_file_path_to_clipboard(file);
+                        break;
+                    case "open_folder":
+                        open_file_location(file);
+                        break;
+                }
+            });
+
+            dialog.present(this);
+        }
+
+        /**
+         * Copy file path to clipboard
+         */
+        private void copy_file_path_to_clipboard(File file) {
+            try {
+                var clipboard = get_display().get_clipboard();
+                clipboard.set_text(file.get_path());
+                // TRANSLATORS: Success message when file path is copied
+                show_info_toast(_("File path copied to clipboard"));
+                logger.debug("Copied file path to clipboard: %s", file.get_path());
+            } catch (Error e) {
+                logger.warning("Failed to copy file path to clipboard: %s", e.message);
+                // TRANSLATORS: Error message when copying file path fails
+                show_error_toast(_("Failed to copy file path"));
+            }
+        }
+
+        /**
+         * Open the folder containing the file
+         */
+        private void open_file_location(File file) {
+            try {
+                var parent = file.get_parent();
+                if (parent != null) {
+                    AppInfo.launch_default_for_uri(parent.get_uri(), null);
+                    // TRANSLATORS: Success message when file location is opened
+                    show_info_toast(_("Opened file location"));
+                    logger.debug("Opened file location: %s", parent.get_path());
+                } else {
+                    // TRANSLATORS: Error message when file location cannot be determined
+                    show_error_toast(_("Could not determine file location"));
+                }
+            } catch (Error e) {
+                logger.warning("Failed to open file location: %s", e.message);
+                // TRANSLATORS: Error message when opening file location fails
+                show_error_toast(_("Failed to open file location"));
+            }
         }
 
         public void show_error_toast(string message) {
@@ -277,17 +869,85 @@ namespace Karere {
             
             logger.debug("Success toast shown: %s", message);
         }
+        
+        public void show_toast(Adw.Toast toast) {
+            toast_overlay.add_toast(toast);
+            logger.debug("Toast shown: %s", toast.title);
+        }
+
+        public void open_developer_tools() {
+            if (settings == null || !settings.get_boolean("developer-tools-enabled")) {
+                // TRANSLATORS: Error message when developer tools are disabled
+                show_error_toast(_("Developer tools are disabled in preferences"));
+                return;
+            }
+            
+            var inspector = web_view.get_inspector();
+            inspector.show();
+            logger.debug("Developer tools opened");
+        }
+
+        public bool is_developer_tools_open() {
+            if (settings == null || !settings.get_boolean("developer-tools-enabled")) {
+                return false;
+            }
+            
+            var inspector = web_view.get_inspector();
+            return inspector.is_attached();
+        }
+
+        /**
+         * Reload the WebView content
+         */
+        public void reload_webview(bool force_reload = false) {
+            if (web_view != null) {
+                if (force_reload) {
+                    web_view.reload_bypass_cache();
+                    logger.debug("WebView force reloaded (bypassing cache)");
+                } else {
+                    web_view.reload();
+                    logger.debug("WebView reloaded");
+                }
+                show_info_toast(force_reload ? _("Force reloading...") : _("Reloading..."));
+            }
+        }
+
+        /**
+         * Show accessibility status in a toast
+         */
+        public void show_accessibility_status() {
+            var app = get_application() as Karere.Application;
+            if (app != null) {
+                // This would need to be implemented to get the accessibility manager reference
+                // For now, show a simple status message
+                show_info_toast(_("Accessibility features active"));
+            }
+        }
 
         public override bool close_request() {
             logger.info("Window close requested");
             save_window_state();
             
-            // Allow the window to close
-            return false;
+            // Hide the window instead of closing it to keep app running in background
+            set_visible(false);
+            
+            // Trigger background notification when window is actually hidden
+            if (notification_manager != null) {
+                notification_manager.on_window_focus_changed(false);
+            }
+            
+            // Prevent the window from being destroyed
+            return true;
         }
 
         public override void dispose() {
             logger.info("Window being disposed");
+            
+            // Notify the application that this window is being destroyed
+            var app = get_application() as Karere.Application;
+            if (app != null) {
+                app.window_destroyed();
+            }
             
             // Clean up resources
             if (webkit_manager != null) {

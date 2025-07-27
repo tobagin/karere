@@ -1,0 +1,281 @@
+/* Karere Accessibility and UI Styles */
+
+/* Focus indicators - highlight on hover and focus for interactive elements */
+.karere-focus-indicators headerbar button:hover,
+.karere-focus-indicators headerbar button:focus,
+.karere-focus-indicators headerbar menubutton:hover,
+.karere-focus-indicators headerbar menubutton:focus,
+.karere-focus-indicators dialog button:hover,
+.karere-focus-indicators dialog button:focus,
+.karere-focus-indicators preferencesdialog button:hover,
+.karere-focus-indicators preferencesdialog button:focus,
+.karere-focus-indicators preferencesdialog switch:hover,
+.karere-focus-indicators preferencesdialog switch:focus,
+.karere-focus-indicators preferencesdialog comborow:hover,
+.karere-focus-indicators preferencesdialog comborow:focus,
+.karere-focus-indicators preferencesdialog actionrow:hover,
+.karere-focus-indicators preferencesdialog actionrow:focus,
+.karere-focus-indicators aboutdialog button:hover,
+.karere-focus-indicators aboutdialog button:focus {
+    outline: 2px solid @accent_color;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Always disable outlines for WebView to prevent artifacts */
+webview {
+    outline: none;
+}
+
+webview * {
+    outline: none;
+}
+
+.karere-focus-visible {
+    outline: 2px solid @accent_color;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.karere-focus-ring {
+    animation: focus-pulse 0.3s ease-in-out;
+    outline: 3px solid @accent_color;
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+@keyframes focus-pulse {
+    0% { outline-width: 1px; }
+    50% { outline-width: 4px; }
+    100% { outline-width: 3px; }
+}
+
+/* High contrast mode */
+.karere-high-contrast {
+    background-color: white;
+    color: black;
+}
+
+.karere-high-contrast headerbar {
+    background-color: white;
+    color: black;
+    border-bottom: 2px solid black;
+}
+
+.karere-high-contrast button {
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+}
+
+.karere-high-contrast button:hover {
+    background-color: black;
+    color: white;
+}
+
+.karere-high-contrast entry {
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+}
+
+.karere-high-contrast toast {
+    background-color: black;
+    color: white;
+    border: 2px solid white;
+}
+
+/* Reduced motion */
+.karere-reduced-motion * {
+    transition: none;
+    animation: none;
+}
+
+.karere-reduced-motion toast {
+    animation: none;
+    transition: opacity 0.1s ease;
+}
+
+/* Screen reader optimizations */
+.karere-screen-reader .decorative {
+    /* Hide decorative elements from screen readers - handled via accessible properties in Vala */
+}
+
+.karere-screen-reader button {
+    /* Ensure buttons have clear labels for screen readers - handled via accessible properties in Vala */
+}
+
+.karere-screen-reader toast {
+    /* Make toasts more accessible for screen readers - handled via accessible properties in Vala */
+}
+
+/* Zoom styles */
+.karere-zoomed {
+    transform-origin: top left;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Skip links for keyboard navigation */
+.skip-link {
+    background: @accent_bg_color;
+    color: @accent_fg_color;
+    padding: 8px;
+    border-radius: 4px;
+    margin: 4px;
+}
+
+.skip-link:focus {
+    outline: 2px solid @accent_color;
+    outline-offset: 2px;
+}
+
+/* Improved button focus states */
+button:focus {
+    outline: 2px solid @accent_color;
+    outline-offset: 2px;
+}
+
+button:focus:not(:focus-visible) {
+    outline: none;
+}
+
+button:focus-visible {
+    outline: 2px solid @accent_color;
+    outline-offset: 2px;
+}
+
+/* Menu button improvements */
+menubutton button:focus {
+    outline: 2px solid @accent_color;
+    outline-offset: 2px;
+}
+
+/* Entry focus improvements */
+entry:focus {
+    outline: 2px solid @accent_color;
+    outline-offset: 2px;
+}
+
+/* Switch focus improvements */
+switch:focus {
+    outline: 2px solid @accent_color;
+    outline-offset: 2px;
+}
+
+/* ComboRow focus improvements */
+comborow:focus {
+    outline: 2px solid @accent_color;
+    outline-offset: 2px;
+}
+
+/* ActionRow focus improvements */
+actionrow:focus {
+    outline: 2px solid @accent_color;
+    outline-offset: 2px;
+}
+
+/* Ensure sufficient color contrast */
+.low-contrast-warning {
+    background-color: #ffeb3b;
+    color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Keyboard navigation hints */
+.keyboard-hint {
+    font-size: 0.8em;
+    color: @dim_label_color;
+    margin-top: 4px;
+}
+
+/* Accessibility status indicators */
+.a11y-status {
+    background-color: @success_bg_color;
+    color: @success_fg_color;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 500;
+}
+
+.a11y-status.disabled {
+    background-color: @warning_bg_color;
+    color: @warning_fg_color;
+}
+
+/* Toast improvements for accessibility */
+toast.a11y-toast {
+    /* Longer timeout for accessibility-related toasts */
+    --toast-timeout: 5000;
+}
+
+toast.a11y-toast label {
+    font-weight: 500;
+}
+
+/* WebView focus improvements */
+.webview-container:focus-within {
+    outline: 2px solid @accent_color;
+    outline-offset: -2px;
+}
+
+/* Header bar accessibility improvements */
+headerbar {
+    /* Styling for header bar - accessibility roles handled in Vala code */
+}
+
+headerbar .title {
+    /* Styling for title - accessibility roles handled in Vala code */
+}
+
+/* Main content area */
+.main-content {
+    /* Styling for main content - accessibility roles handled in Vala code */
+}
+
+/* Menu improvements */
+popover.menu {
+    /* Menu styling - accessibility roles handled automatically by GTK */
+}
+
+popover.menu modelbutton {
+    /* Menu button styling - accessibility roles handled automatically by GTK */
+}
+
+/* Dialog improvements */
+dialog {
+    /* Dialog styling - accessibility roles handled automatically by GTK */
+}
+
+alertdialog {
+    /* Alert dialog styling - accessibility roles handled automatically by GTK */
+}
+
+/* Preferences dialog improvements */
+preferencesdialog {
+    /* Preferences dialog styling - accessibility handled in Vala code */
+}
+
+preferencespage {
+    /* Preferences page styling - accessibility handled automatically by GTK */
+}
+
+/* List improvements */
+listbox {
+    /* List styling - accessibility roles handled automatically by GTK */
+}
+
+listboxrow {
+    /* List row styling - accessibility roles handled automatically by GTK */
+}
+
+/* Status information */
+.status-info {
+    /* Status info styling - accessibility handled in Vala code */
+}
+
+.status-alert {
+    /* Status alert styling - accessibility handled in Vala code */
+}

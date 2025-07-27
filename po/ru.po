@@ -1,0 +1,1047 @@
+# Russian translations for karere.
+# Copyright (C) 2025 Thiago Fernandes
+# This file is distributed under the same license as the karere package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: karere 0.6.0\n"
+"Report-Msgid-Bugs-To: https://github.com/tobagin/karere-vala/issues\n"
+"POT-Creation-Date: 2025-07-25 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+# Application Information
+#: data/io.github.tobagin.karere.appdata.xml.in:4
+#: data/io.github.tobagin.karere.desktop.in:3 src/application.vala:45
+#: src/application.vala:47 src/application.vala:49 src/window.vala:32
+msgid "Karere"
+msgstr "Karere"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:5
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "Native WhatsApp client for Linux"
+msgstr "Нативный клиент WhatsApp для Linux"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:7
+msgid ""
+"Karere is a modern, native WhatsApp client built specifically for the Linux "
+"desktop using GTK4 and LibAdwaita. It provides a seamless WhatsApp "
+"experience with native desktop integration, comprehensive logging, and crash "
+"reporting capabilities."
+msgstr ""
+"Karere — это современный нативный клиент WhatsApp, созданный специально для "
+"рабочего стола Linux с использованием GTK4 и LibAdwaita. Он обеспечивает "
+"бесперебойную работу с WhatsApp с нативной интеграцией с рабочим столом, "
+"комплексным ведением журналов и возможностями отчётов о сбоях."
+
+#: data/io.github.tobagin.karere.appdata.xml.in:12
+msgid "Features:"
+msgstr "Возможности:"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:14
+msgid "Native GTK4/LibAdwaita interface with modern design"
+msgstr "Нативный интерфейс GTK4/LibAdwaita с современным дизайном"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:15
+msgid "Full desktop integration with notifications and theming"
+msgstr "Полная интеграция с рабочим столом с уведомлениями и темами"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:16
+msgid "WebKitGTK-based WhatsApp Web rendering for optimal performance"
+msgstr ""
+"Рендеринг WhatsApp Web на основе WebKitGTK для оптимальной производительности"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:17
+msgid "Comprehensive logging system for debugging and monitoring"
+msgstr "Комплексная система ведения журналов для отладки и мониторинга"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:18
+msgid "Crash reporting with user privacy controls"
+msgstr "Отчёты о сбоях с контролем конфиденциальности пользователя"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:19
+msgid "Light, dark, and system theme support"
+msgstr "Поддержка светлой, тёмной и системной тем"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:20
+msgid "Keyboard shortcuts and accessibility features"
+msgstr "Сочетания клавиш и возможности доступности"
+
+#: data/io.github.tobagin.karere.appdata.xml.in:21
+msgid "Resource-efficient compared to browser-based solutions"
+msgstr "Ресурсоэффективно по сравнению с браузерными решениями"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Chat using WhatsApp with native Linux desktop integration"
+msgstr "Общайтесь через WhatsApp с нативной интеграцией рабочего стола Linux"
+
+#: data/io.github.tobagin.karere.desktop.in:8
+msgid "whatsapp;chat;messaging;social;communication;"
+msgstr "whatsapp;чат;сообщения;социальные;общение;"
+
+# Window and Interface
+#: src/window.vala:41
+msgid "Loading WhatsApp..."
+msgstr "Загрузка WhatsApp..."
+
+#: src/window.vala:52
+msgid "WhatsApp Web failed to load"
+msgstr "Не удалось загрузить WhatsApp Web"
+
+#: src/window.vala:68 src/window.vala:285 data/ui/window.blp:23
+msgid "Reload"
+msgstr "Перезагрузить"
+
+#: src/window.vala:72 data/ui/window.blp:35
+msgid "Preferences"
+msgstr "Настройки"
+
+#: src/window.vala:76 data/ui/window.blp:39
+msgid "About Karere"
+msgstr "О Karere"
+
+#: src/window.vala:86
+msgid "Connection Error"
+msgstr "Ошибка подключения"
+
+#: src/window.vala:87
+msgid ""
+"Unable to connect to WhatsApp Web. Please check your internet connection and "
+"try again."
+msgstr ""
+"Не удаётся подключиться к WhatsApp Web. Пожалуйста, проверьте подключение к "
+"интернету и повторите попытку."
+
+#: src/window.vala:95
+msgid "Loading Error"
+msgstr "Ошибка загрузки"
+
+#: src/window.vala:96
+msgid ""
+"WhatsApp Web could not be loaded. This might be due to network issues or "
+"server problems."
+msgstr ""
+"WhatsApp Web не удалось загрузить. Это может быть из-за проблем с сетью или "
+"серверов."
+
+#: src/window.vala:104
+msgid "Script Error"
+msgstr "Ошибка скрипта"
+
+#: src/window.vala:105
+msgid "A JavaScript error occurred while loading WhatsApp Web."
+msgstr "Произошла ошибка JavaScript при загрузке WhatsApp Web."
+
+#: src/window.vala:113
+msgid "Permission Denied"
+msgstr "Доступ запрещён"
+
+#: src/window.vala:114
+msgid ""
+"Karere does not have the necessary permissions to access WhatsApp Web. "
+"Please check your system settings."
+msgstr ""
+"Karere не имеет необходимых разрешений для доступа к WhatsApp Web. "
+"Пожалуйста, проверьте настройки системы."
+
+#: src/window.vala:122
+msgid "SSL Certificate Error"
+msgstr "Ошибка SSL-сертификата"
+
+#: src/window.vala:123
+msgid ""
+"There was a problem with the SSL certificate. This might indicate a security "
+"issue."
+msgstr ""
+"Возникла проблема с SSL-сертификатом. Это может указывать на проблему "
+"безопасности."
+
+#: src/window.vala:131
+msgid "Content Blocked"
+msgstr "Контент заблокирован"
+
+#: src/window.vala:132
+msgid "Some content was blocked by the security policy."
+msgstr "Некоторый контент был заблокирован политикой безопасности."
+
+#: src/window.vala:140
+msgid "Plugin Error"
+msgstr "Ошибка плагина"
+
+#: src/window.vala:141
+msgid "A required plugin could not be loaded or executed."
+msgstr "Требуемый плагин не может быть загружен или выполнен."
+
+#: src/window.vala:149 src/errors.vala:18
+msgid "Timeout Error"
+msgstr "Ошибка тайм-аута"
+
+#: src/window.vala:150
+msgid "The request timed out. Please check your connection and try again."
+msgstr ""
+"Запрос превысил время ожидания. Проверьте соединение и повторите попытку."
+
+#: src/window.vala:158 src/errors.vala:19
+msgid "Resource Error"
+msgstr "Ошибка ресурса"
+
+#: src/window.vala:159
+msgid "A required resource could not be loaded."
+msgstr "Требуемый ресурс не может быть загружен."
+
+#: src/window.vala:167
+msgid "Unknown Error"
+msgstr "Неизвестная ошибка"
+
+#: src/window.vala:168
+msgid "An unexpected error occurred while loading WhatsApp Web."
+msgstr "Произошла неожиданная ошибка при загрузке WhatsApp Web."
+
+#: src/window.vala:179
+msgid "Retry"
+msgstr "Повторить"
+
+#: src/window.vala:190
+msgid "Network unavailable"
+msgstr "Сеть недоступна"
+
+#: src/window.vala:191
+msgid ""
+"No network connection detected. Please connect to the internet and try again."
+msgstr ""
+"Сетевое подключение не обнаружено. Подключитесь к интернету и повторите "
+"попытку."
+
+#: src/window.vala:199
+msgid "Server unreachable"
+msgstr "Сервер недоступен"
+
+#: src/window.vala:200
+msgid "WhatsApp servers are currently unreachable. Please try again later."
+msgstr ""
+"Серверы WhatsApp в настоящее время недоступны. Повторите попытку позже."
+
+#: src/window.vala:208
+msgid "DNS resolution failed"
+msgstr "Ошибка разрешения DNS"
+
+#: src/window.vala:209
+msgid ""
+"Could not resolve the WhatsApp Web address. Please check your DNS settings."
+msgstr "Не удалось разрешить адрес WhatsApp Web. Проверьте настройки DNS."
+
+#: src/window.vala:217
+msgid "Certificate verification failed"
+msgstr "Ошибка проверки сертификата"
+
+#: src/window.vala:218
+msgid ""
+"The SSL certificate could not be verified. This might be a security concern."
+msgstr ""
+"SSL-сертификат не удалось проверить. Это может быть проблемой безопасности."
+
+#: src/window.vala:226
+msgid "Proxy authentication required"
+msgstr "Требуется аутентификация прокси"
+
+#: src/window.vala:227
+msgid "Your proxy server requires authentication to access the internet."
+msgstr "Ваш прокси-сервер требует аутентификации для доступа в интернет."
+
+#: src/window.vala:235
+msgid "Content too large"
+msgstr "Контент слишком большой"
+
+#: src/window.vala:236
+msgid "The content is too large to be displayed properly."
+msgstr "Контент слишком большой для правильного отображения."
+
+#: src/window.vala:244
+msgid "Insecure connection"
+msgstr "Небезопасное соединение"
+
+#: src/window.vala:245
+msgid ""
+"The connection to WhatsApp Web is not secure. Please check your network "
+"settings."
+msgstr ""
+"Соединение с WhatsApp Web не является безопасным. Проверьте настройки сети."
+
+#: src/window.vala:253
+msgid "Invalid response"
+msgstr "Недействительный ответ"
+
+#: src/window.vala:254
+msgid "Received an invalid response from the WhatsApp servers."
+msgstr "Получен недействительный ответ от серверов WhatsApp."
+
+#: src/window.vala:262
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+#: src/window.vala:263
+msgid "The requested page could not be found on the WhatsApp servers."
+msgstr "Запрошенная страница не найдена на серверах WhatsApp."
+
+#: src/window.vala:271
+msgid "Service unavailable"
+msgstr "Сервис недоступен"
+
+#: src/window.vala:272
+msgid ""
+"WhatsApp Web service is temporarily unavailable. Please try again later."
+msgstr "Сервис WhatsApp Web временно недоступен. Повторите попытку позже."
+
+#: src/window.vala:280
+msgid "Internal server error"
+msgstr "Внутренняя ошибка сервера"
+
+#: src/window.vala:281
+msgid "WhatsApp servers encountered an internal error. Please try again later."
+msgstr ""
+"Серверы WhatsApp столкнулись с внутренней ошибкой. Повторите попытку позже."
+
+#: src/window.vala:295
+msgid "Check Connection"
+msgstr "Проверить соединение"
+
+#: src/window.vala:305
+msgid "Contact Support"
+msgstr "Обратиться в поддержку"
+
+#: src/window.vala:315
+msgid "View Logs"
+msgstr "Просмотреть журналы"
+
+#: src/window.vala:325
+msgid "Clear Cache"
+msgstr "Очистить кэш"
+
+#: src/window.vala:335
+msgid "Reset Settings"
+msgstr "Сбросить настройки"
+
+#: src/window.vala:345
+msgid "Safe Mode"
+msgstr "Безопасный режим"
+
+#: src/window.vala:355
+msgid "Diagnostic Mode"
+msgstr "Режим диагностики"
+
+#: src/window.vala:365
+msgid "Force Refresh"
+msgstr "Принудительное обновление"
+
+# Preferences
+#: src/preferences.vala:35 data/ui/preferences.blp:11
+msgid "General"
+msgstr "Общие"
+
+#: src/preferences.vala:45 data/ui/preferences.blp:23
+msgid "Theme"
+msgstr "Тема"
+
+#: src/preferences.vala:51 data/ui/preferences.blp:28
+msgid "Choose the application theme"
+msgstr "Выберите тему приложения"
+
+#: src/preferences.vala:57 data/ui/preferences.blp:34
+msgid "Light"
+msgstr "Светлая"
+
+#: src/preferences.vala:58 data/ui/preferences.blp:35
+msgid "Dark"
+msgstr "Тёмная"
+
+#: src/preferences.vala:59 data/ui/preferences.blp:36
+msgid "Follow System"
+msgstr "Следовать системной"
+
+#: src/preferences.vala:69 data/ui/preferences.blp:49
+msgid "Startup"
+msgstr "Запуск"
+
+#: src/preferences.vala:75 data/ui/preferences.blp:54
+msgid "Start minimized"
+msgstr "Запускать свёрнутым"
+
+#: src/preferences.vala:76 data/ui/preferences.blp:55
+msgid "Start the application minimized to the system tray"
+msgstr "Запускать приложение свёрнутым в системный трей"
+
+#: src/preferences.vala:86 data/ui/preferences.blp:66
+msgid "Auto-start on login"
+msgstr "Автозапуск при входе"
+
+#: src/preferences.vala:87 data/ui/preferences.blp:67
+msgid "Automatically start Karere when you log in"
+msgstr "Автоматически запускать Karere при входе в систему"
+
+#: src/preferences.vala:97 data/ui/preferences.blp:78
+msgid "Notifications"
+msgstr "Уведомления"
+
+#: src/preferences.vala:103 data/ui/preferences.blp:83
+msgid "Show desktop notifications"
+msgstr "Показывать уведомления на рабочем столе"
+
+#: src/preferences.vala:104 data/ui/preferences.blp:84
+msgid "Display notifications for new messages"
+msgstr "Отображать уведомления о новых сообщениях"
+
+#: src/preferences.vala:114 data/ui/preferences.blp:95
+msgid "Play notification sounds"
+msgstr "Воспроизводить звуки уведомлений"
+
+#: src/preferences.vala:115 data/ui/preferences.blp:96
+msgid "Play a sound when receiving notifications"
+msgstr "Воспроизводить звук при получении уведомлений"
+
+#: src/preferences.vala:125 data/ui/preferences.blp:107
+msgid "Show notification previews"
+msgstr "Показывать предварительный просмотр уведомлений"
+
+#: src/preferences.vala:126 data/ui/preferences.blp:108
+msgid "Show message content in notifications"
+msgstr "Показывать содержимое сообщения в уведомлениях"
+
+#: src/preferences.vala:136 data/ui/preferences.blp:119
+msgid "Persistent notifications"
+msgstr "Постоянные уведомления"
+
+#: src/preferences.vala:137 data/ui/preferences.blp:120
+msgid "Keep notifications visible until dismissed"
+msgstr "Сохранять уведомления видимыми до их закрытия"
+
+#: src/preferences.vala:147 data/ui/preferences.blp:131
+msgid "Privacy"
+msgstr "Конфиденциальность"
+
+#: src/preferences.vala:153 data/ui/preferences.blp:136
+msgid "Enable crash reporting"
+msgstr "Включить отчёты о сбоях"
+
+#: src/preferences.vala:154 data/ui/preferences.blp:137
+msgid "Help improve Karere by sending crash reports"
+msgstr "Помочь улучшить Karere, отправляя отчёты о сбоях"
+
+#: src/preferences.vala:164 data/ui/preferences.blp:148
+msgid "Enable debug logging"
+msgstr "Включить отладочное ведение журнала"
+
+#: src/preferences.vala:165 data/ui/preferences.blp:149
+msgid "Enable detailed logging for troubleshooting"
+msgstr "Включить подробное ведение журнала для устранения неполадок"
+
+#: src/preferences.vala:175 data/ui/preferences.blp:160
+msgid "Clear browsing data"
+msgstr "Очистить данные просмотра"
+
+#: src/preferences.vala:176 data/ui/preferences.blp:161
+msgid "Clear cookies, cache, and local storage"
+msgstr "Очистить файлы cookie, кэш и локальное хранилище"
+
+#: src/preferences.vala:185 data/ui/preferences.blp:170
+msgid "Clear Data"
+msgstr "Очистить данные"
+
+#: src/preferences.vala:195 data/ui/preferences.blp:181
+msgid "Advanced"
+msgstr "Дополнительно"
+
+#: src/preferences.vala:201 data/ui/preferences.blp:186
+msgid "Hardware acceleration"
+msgstr "Аппаратное ускорение"
+
+#: src/preferences.vala:202 data/ui/preferences.blp:187
+msgid "Use hardware acceleration for better performance"
+msgstr "Использовать аппаратное ускорение для лучшей производительности"
+
+#: src/preferences.vala:212 data/ui/preferences.blp:198
+msgid "Experimental features"
+msgstr "Экспериментальные возможности"
+
+#: src/preferences.vala:213 data/ui/preferences.blp:199
+msgid "Enable experimental features (may be unstable)"
+msgstr "Включить экспериментальные возможности (могут быть нестабильными)"
+
+#: src/preferences.vala:223 data/ui/preferences.blp:210
+msgid "Developer mode"
+msgstr "Режим разработчика"
+
+#: src/preferences.vala:224 data/ui/preferences.blp:211
+msgid "Enable developer tools and advanced debugging"
+msgstr "Включить инструменты разработчика и расширенную отладку"
+
+#: src/preferences.vala:234 data/ui/preferences.blp:222
+msgid "Custom User Agent"
+msgstr "Пользовательский User Agent"
+
+#: src/preferences.vala:235 data/ui/preferences.blp:227
+msgid "Override the default user agent string"
+msgstr "Переопределить строку пользовательского агента по умолчанию"
+
+#: src/preferences.vala:244 data/ui/preferences.blp:236
+msgid "User Agent String"
+msgstr "Строка User Agent"
+
+#: src/preferences.vala:255 data/ui/preferences.blp:248
+msgid "Proxy Settings"
+msgstr "Настройки прокси"
+
+#: src/preferences.vala:261 data/ui/preferences.blp:253
+msgid "Use system proxy"
+msgstr "Использовать системный прокси"
+
+#: src/preferences.vala:262 data/ui/preferences.blp:254
+msgid "Use the system proxy configuration"
+msgstr "Использовать системную конфигурацию прокси"
+
+#: src/preferences.vala:272 data/ui/preferences.blp:265
+msgid "Manual proxy configuration"
+msgstr "Ручная настройка прокси"
+
+#: src/preferences.vala:273 data/ui/preferences.blp:266
+msgid "Configure proxy settings manually"
+msgstr "Настроить параметры прокси вручную"
+
+#: src/preferences.vala:283 data/ui/preferences.blp:277
+msgid "HTTP Proxy"
+msgstr "HTTP-прокси"
+
+#: src/preferences.vala:293 data/ui/preferences.blp:288
+msgid "HTTPS Proxy"
+msgstr "HTTPS-прокси"
+
+#: src/preferences.vala:303 data/ui/preferences.blp:299
+msgid "SOCKS Proxy"
+msgstr "SOCKS-прокси"
+
+#: src/preferences.vala:313 data/ui/preferences.blp:310
+msgid "No Proxy For"
+msgstr "Не использовать прокси для"
+
+#: src/preferences.vala:323 data/ui/preferences.blp:321
+msgid "Reset to Defaults"
+msgstr "Сбросить к значениям по умолчанию"
+
+#: src/preferences.vala:333
+msgid "Settings Reset"
+msgstr "Настройки сброшены"
+
+#: src/preferences.vala:334
+msgid "All settings have been reset to their default values."
+msgstr "Все настройки были сброшены к значениям по умолчанию."
+
+#: src/preferences.vala:344
+msgid "Data Cleared"
+msgstr "Данные очищены"
+
+#: src/preferences.vala:345
+msgid "All browsing data has been cleared successfully."
+msgstr "Все данные просмотра были успешно очищены."
+
+#: src/preferences.vala:355
+msgid "Restart Required"
+msgstr "Требуется перезапуск"
+
+#: src/preferences.vala:356
+msgid ""
+"Some changes require a restart to take effect. Would you like to restart "
+"Karere now?"
+msgstr ""
+"Некоторые изменения требуют перезапуска для вступления в силу. Хотите "
+"перезапустить Karere сейчас?"
+
+#: src/preferences.vala:365
+msgid "Restart Now"
+msgstr "Перезапустить сейчас"
+
+#: src/preferences.vala:375
+msgid "Restart Later"
+msgstr "Перезапустить позже"
+
+# Application
+#: src/application.vala:55
+msgid "Show application version"
+msgstr "Показать версию приложения"
+
+#: src/application.vala:56
+msgid "Start application in debug mode"
+msgstr "Запустить приложение в режиме отладки"
+
+#: src/application.vala:57
+msgid "Start application minimized"
+msgstr "Запустить приложение свёрнутым"
+
+#: src/application.vala:58
+msgid "Start application in safe mode"
+msgstr "Запустить приложение в безопасном режиме"
+
+#: src/application.vala:59
+msgid "Enable verbose logging"
+msgstr "Включить подробное ведение журнала"
+
+#: src/application.vala:60
+msgid "Disable hardware acceleration"
+msgstr "Отключить аппаратное ускорение"
+
+#: src/application.vala:61
+msgid "Clear all application data on startup"
+msgstr "Очистить все данные приложения при запуске"
+
+#: src/application.vala:62
+msgid "Run in headless mode (no GUI)"
+msgstr "Запустить в режиме без интерфейса (без графического интерфейса)"
+
+#: src/application.vala:85
+msgid "Application initialized successfully"
+msgstr "Приложение успешно инициализировано"
+
+#: src/application.vala:95
+msgid "Preparing application startup..."
+msgstr "Подготовка запуска приложения..."
+
+#: src/application.vala:105
+msgid "Loading user preferences..."
+msgstr "Загрузка пользовательских настроек..."
+
+#: src/application.vala:115
+msgid "Initializing WebKit engine..."
+msgstr "Инициализация движка WebKit..."
+
+#: src/application.vala:125
+msgid "Setting up notification system..."
+msgstr "Настройка системы уведомлений..."
+
+#: src/application.vala:135
+msgid "Configuring crash reporting..."
+msgstr "Настройка отчётов о сбоях..."
+
+#: src/application.vala:145
+msgid "Application startup completed"
+msgstr "Запуск приложения завершён"
+
+#: src/application.vala:155
+msgid "Shutting down application..."
+msgstr "Завершение работы приложения..."
+
+#: src/application.vala:165
+msgid "Saving user preferences..."
+msgstr "Сохранение пользовательских настроек..."
+
+#: src/application.vala:175
+msgid "Cleaning up resources..."
+msgstr "Очистка ресурсов..."
+
+#: src/application.vala:185
+msgid "Application shutdown completed"
+msgstr "Завершение работы приложения завершено"
+
+# Notifications
+#: src/notification-manager.vala:45
+msgid "Notification System"
+msgstr "Система уведомлений"
+
+#: src/notification-manager.vala:55
+msgid "New message received"
+msgstr "Получено новое сообщение"
+
+#: src/notification-manager.vala:65
+msgid "Message from WhatsApp"
+msgstr "Сообщение из WhatsApp"
+
+#: src/notification-manager.vala:75
+msgid "WhatsApp notification"
+msgstr "Уведомление WhatsApp"
+
+#: src/notification-manager.vala:85
+msgid "Click to open Karere"
+msgstr "Щёлкните, чтобы открыть Karere"
+
+#: src/notification-manager.vala:95
+msgid "Show message"
+msgstr "Показать сообщение"
+
+#: src/notification-manager.vala:105
+msgid "Mark as read"
+msgstr "Отметить как прочитанное"
+
+#: src/notification-manager.vala:115
+msgid "Reply"
+msgstr "Ответить"
+
+#: src/notification-manager.vala:125
+msgid "Dismiss"
+msgstr "Скрыть"
+
+#: src/notification-manager.vala:135
+msgid "Notification permissions required"
+msgstr "Требуются разрешения уведомлений"
+
+#: src/notification-manager.vala:136
+msgid ""
+"Karere needs permission to display notifications. Please enable "
+"notifications in your system settings."
+msgstr ""
+"Karere требуется разрешение для отображения уведомлений. Пожалуйста, "
+"включите уведомления в настройках системы."
+
+#: src/notification-manager.vala:145
+msgid "Enable Notifications"
+msgstr "Включить уведомления"
+
+#: src/notification-manager.vala:155
+msgid "Not Now"
+msgstr "Не сейчас"
+
+# WebKit Manager
+#: src/webkit-manager.vala:45
+msgid "WebKit Engine"
+msgstr "Движок WebKit"
+
+#: src/webkit-manager.vala:55
+msgid "Initializing web engine..."
+msgstr "Инициализация веб-движка..."
+
+#: src/webkit-manager.vala:65
+msgid "Loading WhatsApp Web interface..."
+msgstr "Загрузка интерфейса WhatsApp Web..."
+
+#: src/webkit-manager.vala:75
+msgid "Configuring web settings..."
+msgstr "Настройка веб-параметров..."
+
+#: src/webkit-manager.vala:85
+msgid "Setting up user scripts..."
+msgstr "Настройка пользовательских скриптов..."
+
+#: src/webkit-manager.vala:95
+msgid "Enabling developer tools..."
+msgstr "Включение инструментов разработчика..."
+
+#: src/webkit-manager.vala:105
+msgid "Web engine initialized successfully"
+msgstr "Веб-движок успешно инициализирован"
+
+#: src/webkit-manager.vala:115
+msgid "JavaScript injection successful"
+msgstr "Внедрение JavaScript успешно"
+
+#: src/webkit-manager.vala:125
+msgid "User script loaded"
+msgstr "Пользовательский скрипт загружен"
+
+#: src/webkit-manager.vala:135
+msgid "Web page loaded successfully"
+msgstr "Веб-страница успешно загружена"
+
+#: src/webkit-manager.vala:145
+msgid "Web content ready"
+msgstr "Веб-контент готов"
+
+# Crash Reporter
+#: src/crash-reporter.vala:45
+msgid "Crash Reporter"
+msgstr "Отчёт о сбое"
+
+#: src/crash-reporter.vala:55
+msgid "Application Crash Detected"
+msgstr "Обнаружен сбой приложения"
+
+#: src/crash-reporter.vala:56
+msgid ""
+"Karere has encountered an unexpected error and needs to close. Would you "
+"like to send a crash report to help us fix this issue?"
+msgstr ""
+"Karere столкнулся с неожиданной ошибкой и должен закрыться. Хотите отправить "
+"отчёт о сбое, чтобы помочь нам исправить эту проблему?"
+
+#: src/crash-reporter.vala:65
+msgid "Crash Details"
+msgstr "Подробности сбоя"
+
+#: src/crash-reporter.vala:75
+msgid "Stack Trace"
+msgstr "Трассировка стека"
+
+#: src/crash-reporter.vala:85
+msgid "System Information"
+msgstr "Информация о системе"
+
+#: src/crash-reporter.vala:95
+msgid "Application Version"
+msgstr "Версия приложения"
+
+#: src/crash-reporter.vala:105
+msgid "Operating System"
+msgstr "Операционная система"
+
+#: src/crash-reporter.vala:115
+msgid "Desktop Environment"
+msgstr "Среда рабочего стола"
+
+#: src/crash-reporter.vala:125
+msgid "Memory Usage"
+msgstr "Использование памяти"
+
+#: src/crash-reporter.vala:135
+msgid "CPU Usage"
+msgstr "Использование процессора"
+
+#: src/crash-reporter.vala:145
+msgid "Available Disk Space"
+msgstr "Доступное место на диске"
+
+#: src/crash-reporter.vala:155
+msgid "Network Status"
+msgstr "Состояние сети"
+
+#: src/crash-reporter.vala:165
+msgid "Last Actions"
+msgstr "Последние действия"
+
+#: src/crash-reporter.vala:175
+msgid "Error Message"
+msgstr "Сообщение об ошибке"
+
+#: src/crash-reporter.vala:185
+msgid "Additional Information"
+msgstr "Дополнительная информация"
+
+#: src/crash-reporter.vala:195
+msgid "Please describe what you were doing when the crash occurred:"
+msgstr "Пожалуйста, опишите, что вы делали, когда произошёл сбой:"
+
+#: src/crash-reporter.vala:205
+msgid "Contact Information (Optional)"
+msgstr "Контактная информация (необязательно)"
+
+#: src/crash-reporter.vala:215
+msgid "Email address for follow-up (optional):"
+msgstr "Адрес электронной почты для связи (необязательно):"
+
+#: src/crash-reporter.vala:225
+msgid "Send Report"
+msgstr "Отправить отчёт"
+
+#: src/crash-reporter.vala:235
+msgid "Don't Send"
+msgstr "Не отправлять"
+
+#: src/crash-reporter.vala:245
+msgid "Save Report"
+msgstr "Сохранить отчёт"
+
+#: src/crash-reporter.vala:255
+msgid "View Report"
+msgstr "Просмотреть отчёт"
+
+#: src/crash-reporter.vala:265
+msgid "Privacy Notice"
+msgstr "Уведомление о конфиденциальности"
+
+#: src/crash-reporter.vala:266
+msgid ""
+"The crash report contains technical information about your system and the "
+"error that occurred. No personal data or chat contents are included."
+msgstr ""
+"Отчёт о сбое содержит технические сведения о вашей системе и произошедшей "
+"ошибке. Персональные данные или содержимое чатов не включаются."
+
+#: src/crash-reporter.vala:275
+msgid "Sending crash report..."
+msgstr "Отправка отчёта о сбое..."
+
+#: src/crash-reporter.vala:285
+msgid "Crash report sent successfully"
+msgstr "Отчёт о сбое успешно отправлен"
+
+#: src/crash-reporter.vala:295
+msgid "Failed to send crash report"
+msgstr "Не удалось отправить отчёт о сбое"
+
+#: src/crash-reporter.vala:305
+msgid "Crash report saved locally"
+msgstr "Отчёт о сбое сохранён локально"
+
+#: src/crash-reporter.vala:315
+msgid "Restart Application"
+msgstr "Перезапустить приложение"
+
+#: src/crash-reporter.vala:325
+msgid "Close Application"
+msgstr "Закрыть приложение"
+
+# Logger
+#: src/logger.vala:45
+msgid "Debug"
+msgstr "Отладка"
+
+#: src/logger.vala:46
+msgid "Information"
+msgstr "Информация"
+
+#: src/logger.vala:47
+msgid "Warning"
+msgstr "Предупреждение"
+
+#: src/logger.vala:48
+msgid "Error"
+msgstr "Ошибка"
+
+#: src/logger.vala:49
+msgid "Critical"
+msgstr "Критическая"
+
+#: src/logger.vala:59
+msgid "Logging System"
+msgstr "Система ведения журнала"
+
+#: src/logger.vala:69
+msgid "Log file created"
+msgstr "Файл журнала создан"
+
+#: src/logger.vala:79
+msgid "Log file rotated"
+msgstr "Файл журнала ротирован"
+
+#: src/logger.vala:89
+msgid "Log level changed"
+msgstr "Уровень журнала изменён"
+
+#: src/logger.vala:99
+msgid "Logging to file"
+msgstr "Ведение журнала в файл"
+
+#: src/logger.vala:109
+msgid "Logging to console"
+msgstr "Ведение журнала в консоль"
+
+#: src/logger.vala:119
+msgid "Log entry recorded"
+msgstr "Запись журнала записана"
+
+#: src/logger.vala:129
+msgid "Maximum log file size reached"
+msgstr "Достигнут максимальный размер файла журнала"
+
+#: src/logger.vala:139
+msgid "Log file compression started"
+msgstr "Началось сжатие файла журнала"
+
+#: src/logger.vala:149
+msgid "Log file compression completed"
+msgstr "Сжатие файла журнала завершено"
+
+#: src/logger.vala:159
+msgid "Old log files cleaned up"
+msgstr "Старые файлы журнала очищены"
+
+# Utils
+#: src/utils.vala:45
+msgid "Utilities"
+msgstr "Утилиты"
+
+#: src/utils.vala:55
+msgid "System information gathered"
+msgstr "Информация о системе собрана"
+
+#: src/utils.vala:65
+msgid "Configuration file loaded"
+msgstr "Файл конфигурации загружен"
+
+#: src/utils.vala:75
+msgid "Configuration file saved"
+msgstr "Файл конфигурации сохранён"
+
+#: src/utils.vala:85
+msgid "Cache cleared successfully"
+msgstr "Кэш успешно очищен"
+
+#: src/utils.vala:95
+msgid "Temporary files cleaned"
+msgstr "Временные файлы очищены"
+
+#: src/utils.vala:105
+msgid "Database connection established"
+msgstr "Соединение с базой данных установлено"
+
+#: src/utils.vala:115
+msgid "Database connection closed"
+msgstr "Соединение с базой данных закрыто"
+
+#: src/utils.vala:125
+msgid "Network connectivity check completed"
+msgstr "Проверка сетевого подключения завершена"
+
+#: src/utils.vala:135
+msgid "System resources monitored"
+msgstr "Системные ресурсы отслеживаются"
+
+#: src/utils.vala:145
+msgid "Performance metrics collected"
+msgstr "Метрики производительности собраны"
+
+# Error Messages
+#: src/errors.vala:10
+msgid "Application Error"
+msgstr "Ошибка приложения"
+
+#: src/errors.vala:11
+msgid "Configuration Error"
+msgstr "Ошибка конфигурации"
+
+#: src/errors.vala:12
+msgid "Network Error"
+msgstr "Ошибка сети"
+
+#: src/errors.vala:13
+msgid "File System Error"
+msgstr "Ошибка файловой системы"
+
+#: src/errors.vala:14
+msgid "Database Error"
+msgstr "Ошибка базы данных"
+
+#: src/errors.vala:15
+msgid "Permission Error"
+msgstr "Ошибка разрешений"
+
+#: src/errors.vala:16
+msgid "Security Error"
+msgstr "Ошибка безопасности"
+
+#: src/errors.vala:17
+msgid "Validation Error"
+msgstr "Ошибка проверки"
+
+#: src/main.vala:25
+msgid "Starting Karere application..."
+msgstr "Запуск приложения Karere..."
+
+#: src/main.vala:35
+msgid "Command line arguments processed"
+msgstr "Аргументы командной строки обработаны"
+
+#: src/main.vala:45
+msgid "Application instance created"
+msgstr "Экземпляр приложения создан"
+
+#: src/main.vala:55
+msgid "Entering main event loop"
+msgstr "Вход в основной цикл событий"
+
+#: src/main.vala:65
+msgid "Application terminated"
+msgstr "Приложение завершено"

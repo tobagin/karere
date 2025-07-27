@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Karere Contributors
+ * Copyright (C) 2025 Thiago Fernandes
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@ int main(string[] args) {
     // Register all test suites
     KarereTests.register_application_tests();
     KarereTests.register_window_tests();
+    KarereTests.register_logger_tests();
+    KarereTests.register_notification_manager_tests();
+    KarereTests.register_crash_reporter_tests();
     
     return Test.run();
 }

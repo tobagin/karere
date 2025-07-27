@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Karere Contributors
+ * Copyright (C) 2025 Thiago Fernandes
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,11 +120,13 @@ namespace Karere.Utils {
                     null
                 );
                 
-                // Exit current instance
-                Process.exit(1);
+                logger.info("Successfully spawned new instance, exiting current instance");
             } catch (Error e) {
                 logger.error("Failed to restart application: %s", e.message);
             }
+            
+            // Exit current instance after try-catch block
+            Process.exit(1);
         }
     }
 
@@ -186,5 +188,28 @@ namespace Karere.Utils {
             }
             return Source.REMOVE;
         });
+    }
+
+    /**
+     * Format a file size in bytes to a human-readable string
+     *
+     * @param size The size in bytes
+     * @return A formatted string like "1.2 MB", "345 KB", etc.
+     */
+    public string format_size(int64 size) {
+        const string[] units = {"B", "KB", "MB", "GB", "TB"};
+        double size_d = (double) size;
+        int unit_index = 0;
+
+        while (size_d >= 1024.0 && unit_index < units.length - 1) {
+            size_d /= 1024.0;
+            unit_index++;
+        }
+
+        if (unit_index == 0) {
+            return "%.0f %s".printf(size_d, units[unit_index]);
+        } else {
+            return "%.1f %s".printf(size_d, units[unit_index]);
+        }
     }
 }

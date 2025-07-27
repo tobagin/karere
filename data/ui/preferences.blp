@@ -4,7 +4,8 @@ using Adw 1;
 template $KarerePreferences : Adw.PreferencesDialog {
   title: _("Preferences");
 
-  Adw.PreferencesPage {
+  // General Settings Page
+  Adw.PreferencesPage general_page {
     title: _("General");
     icon-name: "applications-system-symbolic";
 
@@ -25,16 +26,481 @@ template $KarerePreferences : Adw.PreferencesDialog {
     }
 
     Adw.PreferencesGroup {
-      title: _("Privacy");
+      title: _("Spell Checking");
+
+      Adw.SwitchRow spell_enabled_row {
+        title: _("Enable Spell Checking");
+        subtitle: _("Check spelling while typing messages");
+      }
+
+      Adw.SwitchRow spell_auto_detect_row {
+        title: _("Auto-detect Language");
+        subtitle: _("Automatically detect system language for spell checking");
+      }
+    }
+
+    Adw.PreferencesGroup spell_languages_group {
+      title: _("Languages");
+
+      Adw.ExpanderRow spell_languages_expander {
+        title: _("Spell Check Languages");
+        subtitle: _("Configure enabled languages for spell checking");
+
+        Adw.ActionRow current_languages_row {
+          title: _("Current Languages");
+          subtitle: _("Languages currently enabled for spell checking");
+
+          [suffix]
+          Gtk.Label current_languages_label {
+            label: _("Auto-detected");
+            valign: center;
+            css-classes: ["dim-label"];
+          }
+        }
+
+        Adw.ActionRow add_language_row {
+          title: _("Add Language");
+          subtitle: _("Add a new language for spell checking");
+          activatable: true;
+
+          [suffix]
+          Gtk.Button add_language_button {
+            label: _("Add");
+            valign: center;
+          }
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Developer Tools");
+
+      Adw.SwitchRow developer_tools_row {
+        title: _("Enable Developer Tools");
+        subtitle: _("Enable access to web developer tools for debugging");
+      }
+
+      Adw.ActionRow open_dev_tools_row {
+        title: _("Open Developer Tools");
+        subtitle: _("Open the web inspector to debug WhatsApp Web");
+        activatable: true;
+        
+        [suffix]
+        Gtk.Button dev_tools_button {
+          label: _("Open");
+          valign: center;
+        }
+      }
+    }
+  }
+
+  // Accessibility Settings Page
+  Adw.PreferencesPage accessibility_page {
+    title: _("Accessibility");
+    icon-name: "preferences-desktop-accessibility-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Keyboard Navigation");
+
+      Adw.SwitchRow keyboard_shortcuts_row {
+        title: _("Enable Keyboard Shortcuts");
+        subtitle: _("Enable application-wide keyboard shortcuts");
+      }
+
+      Adw.SwitchRow focus_indicators_row {
+        title: _("Focus Indicators");
+        subtitle: _("Show visual focus indicators for keyboard navigation");
+      }
+
+      Adw.ActionRow shortcuts_help_row {
+        title: _("View Keyboard Shortcuts");
+        subtitle: _("Display all available keyboard shortcuts");
+        activatable: true;
+
+        [suffix]
+        Gtk.Button shortcuts_help_button {
+          label: _("View");
+          valign: center;
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Visual Accessibility");
+
+      Adw.SwitchRow high_contrast_row {
+        title: _("High Contrast Mode");
+        subtitle: _("Use high contrast colors for better visibility");
+      }
+
+      Adw.SwitchRow reduced_motion_row {
+        title: _("Reduce Motion");
+        subtitle: _("Reduce animations and transitions");
+      }
+    }
+
+    Adw.PreferencesGroup webview_zoom_group {
+      title: _("WebView Zoom");
+
+      Adw.SwitchRow webview_zoom_enabled_row {
+        title: _("Enable WebView Zoom");
+        subtitle: _("Enable zoom functionality for WhatsApp Web content");
+      }
+
+      Adw.SpinRow webkit_zoom_level_row {
+        title: _("Zoom Level");
+        subtitle: _("Current zoom level for WhatsApp Web content");
+        adjustment: Adjustment {
+          lower: 0.5;
+          upper: 3.0;
+          step-increment: 0.1;
+          page-increment: 0.2;
+          value: 1.0;
+        };
+        digits: 1;
+        visible: false;
+      }
+
+      Adw.SpinRow webkit_zoom_step_row {
+        title: _("Zoom Step Size");
+        subtitle: _("Amount to change zoom level with each zoom action");
+        adjustment: Adjustment {
+          lower: 0.1;
+          upper: 0.5;
+          step-increment: 0.05;
+          page-increment: 0.1;
+          value: 0.1;
+        };
+        digits: 2;
+        visible: false;
+      }
+
+      Adw.SwitchRow webview_zoom_controls_row {
+        title: _("Show Zoom Controls");
+        subtitle: _("Display zoom buttons in the application header bar");
+        visible: false;
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Screen Reader Support");
+
+      Adw.SwitchRow screen_reader_row {
+        title: _("Screen Reader Optimizations");
+        subtitle: _("Optimize interface for screen reader usage");
+      }
+
+      Adw.ActionRow screen_reader_status_row {
+        title: _("Screen Reader Status");
+        subtitle: _("Current accessibility technology detected");
+
+        [suffix]
+        Gtk.Label screen_reader_status_label {
+          label: _("Not detected");
+          valign: center;
+          css-classes: ["dim-label"];
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Accessibility Shortcuts");
+
+      Adw.SwitchRow accessibility_shortcuts_row {
+        title: _("Accessibility Shortcuts");
+        subtitle: _("Enable zoom and contrast keyboard shortcuts");
+      }
+
+      Adw.SwitchRow developer_shortcuts_row {
+        title: _("Developer Shortcuts");
+        subtitle: _("Enable developer tool keyboard shortcuts");
+      }
+
+      Adw.SwitchRow notification_shortcuts_row {
+        title: _("Notification Shortcuts");
+        subtitle: _("Enable notification management shortcuts");
+      }
+    }
+
+  }
+
+  // Notifications Settings Page
+  Adw.PreferencesPage notifications_page {
+    title: _("Notifications");
+    icon-name: "preferences-system-notifications-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Notifications");
+
+      Adw.SwitchRow notifications_enabled_row {
+        title: _("Message Notifications");
+        subtitle: _("Show desktop notifications for new messages");
+      }
+
+      Adw.ComboRow background_notifications_row {
+        title: _("Background Notifications");
+        subtitle: _("When to show notifications in background");
+        model: StringList {
+          strings [
+            _("Always"),
+            _("First time only"),
+            _("Never")
+          ]
+        };
+      }
+
+      Adw.SwitchRow system_notifications_row {
+        title: _("System Notifications");
+        subtitle: _("Use system notification settings");
+      }
+
+      Adw.SwitchRow notification_sound_row {
+        title: _("Notification Sounds");
+        subtitle: _("Play sounds for notifications");
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Message Preview");
+
+      Adw.SwitchRow notification_preview_row {
+        title: _("Show Message Preview");
+        subtitle: _("Display message content in notifications");
+      }
+
+      Adw.SpinRow notification_preview_length_row {
+        title: _("Preview Length");
+        subtitle: _("Maximum number of characters to show in preview");
+        adjustment: Adjustment {
+          lower: 10;
+          upper: 200;
+          step-increment: 5;
+          page-increment: 10;
+          value: 50;
+        };
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Background");
+
+      Adw.SpinRow background_frequency_row {
+        title: _("Check Frequency");
+        subtitle: _("Minutes between background notification checks");
+        adjustment: Adjustment {
+          lower: 1;
+          upper: 60;
+          step-increment: 1;
+          page-increment: 5;
+          value: 5;
+        };
+      }
+    }
+  }
+
+  // Do Not Disturb Settings Page
+  Adw.PreferencesPage dnd_page {
+    title: _("Do Not Disturb");
+    icon-name: "notification-disabled-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Do Not Disturb Mode");
+
+      Adw.SwitchRow dnd_enabled_row {
+        title: _("Enable Do Not Disturb");
+        subtitle: _("Temporarily disable all notifications");
+      }
+
+      Adw.SwitchRow dnd_background_row {
+        title: _("Background Notifications");
+        subtitle: _("Allow background notifications during Do Not Disturb");
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Scheduled Do Not Disturb");
+
+      Adw.SwitchRow dnd_scheduled_row {
+        title: _("Scheduled Do Not Disturb");
+        subtitle: _("Automatically enable Do Not Disturb at specific times");
+      }
+
+      Adw.ActionRow dnd_start_time_row {
+        title: _("Start Time");
+        subtitle: _("Time when Do Not Disturb begins");
+
+        [suffix]
+        Gtk.Entry dnd_start_time_entry {
+          placeholder-text: _("22:00");
+          max-width-chars: 5;
+          input-purpose: digits;
+          valign: center;
+        }
+      }
+
+      Adw.ActionRow dnd_end_time_row {
+        title: _("End Time");
+        subtitle: _("Time when Do Not Disturb ends");
+
+        [suffix]
+        Gtk.Entry dnd_end_time_entry {
+          placeholder-text: _("08:00");
+          max-width-chars: 5;
+          input-purpose: digits;
+          valign: center;
+        }
+      }
+    }
+  }
+
+
+  // Crash Reporting Settings Page
+  Adw.PreferencesPage crash_page {
+    title: _("Crash Reporting");
+    icon-name: "dialog-error-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Crash Reporting");
 
       Adw.SwitchRow crash_reporter_row {
-        title: _("Crash Reporter");
+        title: _("Enable Crash Reporter");
         subtitle: _("Help improve Karere by automatically reporting crashes");
       }
 
-      Adw.SwitchRow debug_logging_row {
-        title: _("Debug Logging");
-        subtitle: _("Enable detailed logging for troubleshooting");
+      Adw.SwitchRow crash_system_info_row {
+        title: _("Include System Information");
+        subtitle: _("Include system details in crash reports");
+      }
+
+      Adw.SwitchRow crash_logs_row {
+        title: _("Include Application Logs");
+        subtitle: _("Include application logs in crash reports for better debugging");
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Crash Statistics");
+
+      Adw.ActionRow crash_stats_row {
+        title: _("Crash Reports Generated");
+        subtitle: _("Total number of crash reports sent");
+
+        [suffix]
+        Gtk.Label crash_count_label {
+          label: "0"; // Numbers don't need translation
+          valign: center;
+        }
+      }
+
+      Adw.ActionRow crash_clear_row {
+        title: _("Clear Statistics");
+        subtitle: _("Reset crash report counter");
+
+        [suffix]
+        Gtk.Button crash_clear_button {
+          label: _("Clear");
+          valign: center;
+        }
+      }
+    }
+  }
+
+  // Logging Settings Page
+  Adw.PreferencesPage logging_page {
+    title: _("Logging");
+    icon-name: "utilities-terminal-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Log Levels");
+
+      Adw.ComboRow log_level_row {
+        title: _("Log Level");
+        subtitle: _("Set the minimum log level to display");
+        model: StringList {
+          strings [
+            _("Critical"),
+            _("Error"),
+            _("Warning"),
+            _("Info"),
+            _("Debug")
+          ]
+        };
+      }
+
+      Adw.SwitchRow console_logging_row {
+        title: _("Console Logging");
+        subtitle: _("Output logs to console/terminal");
+      }
+
+      Adw.SwitchRow file_logging_row {
+        title: _("File Logging");
+        subtitle: _("Save logs to file for debugging");
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Log File Management");
+
+      Adw.ActionRow log_file_location_row {
+        title: _("Log File Location");
+        subtitle: _("Where log files are stored");
+
+        [suffix]
+        Gtk.Button log_location_button {
+          label: _("Open Folder");
+          valign: center;
+        }
+      }
+
+      Adw.SpinRow log_file_max_size_row {
+        title: _("Maximum Log File Size");
+        subtitle: _("Maximum size of individual log files (MB)");
+        adjustment: Adjustment {
+          lower: 1;
+          upper: 100;
+          step-increment: 1;
+          page-increment: 5;
+          value: 10;
+        };
+      }
+
+      Adw.SpinRow log_file_retention_row {
+        title: _("Log File Retention");
+        subtitle: _("Number of old log files to keep");
+        adjustment: Adjustment {
+          lower: 1;
+          upper: 30;
+          step-increment: 1;
+          page-increment: 5;
+          value: 5;
+        };
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Log Management");
+
+      Adw.ActionRow log_view_row {
+        title: _("View Current Log");
+        subtitle: _("Open current log file in text editor");
+
+        [suffix]
+        Gtk.Button log_view_button {
+          label: _("View Log");
+          valign: center;
+        }
+      }
+
+      Adw.ActionRow log_clear_row {
+        title: _("Clear All Logs");
+        subtitle: _("Delete all existing log files");
+
+        [suffix]
+        Gtk.Button log_clear_button {
+          label: _("Clear Logs");
+          valign: center;
+          css-classes: ["destructive-action"];
+        }
       }
     }
   }

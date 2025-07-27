@@ -1,0 +1,6 @@
+.agent-os/
+.claude/
+.flatpak-builder/
+.git
+build
+CLAUDE.md

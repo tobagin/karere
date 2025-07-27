@@ -1,17 +1,22 @@
 project(
     'karere',
     'vala', 'c',
-    version: '0.1.0',
+    version: '0.6.0',
     meson_version: '>= 1.0.0',
     default_options: [
-        'warning_level=2',
+        'warning_level=1',
         'werror=false',
     ],
     license: 'GPL-3.0-or-later'
 )
 
-app_id = 'io.github.tobagin.karere'
-app_name = 'Karere'
+if get_option('profile') == 'development'
+    app_id = 'io.github.tobagin.karere.Devel'
+    app_name = 'Karere (Devel)'
+else
+    app_id = 'io.github.tobagin.karere'
+    app_name = 'Karere'
+endif
 
 # Import modules
 gnome = import('gnome')
@@ -29,21 +34,30 @@ json_glib_dep = dependency('json-glib-1.0', version: '>= 1.6.0')
 # Build configuration
 cc = meson.get_compiler('c')
 valac = meson.get_compiler('vala')
+math_dep = cc.find_library('m', required: false)
 
 # Configuration data
 conf_data = configuration_data()
-conf_data.set_quoted('APP_ID', app_id)
-conf_data.set_quoted('APP_NAME', app_name)
-conf_data.set_quoted('VERSION', meson.project_version())
-conf_data.set_quoted('GETTEXT_PACKAGE', meson.project_name())
-conf_data.set_quoted('LOCALEDIR', get_option('prefix') / get_option('localedir'))
+# For config.vala template (which includes quotes in the template)
+conf_data.set('APP_ID', app_id)
+conf_data.set('APP_NAME', app_name)
+conf_data.set('VERSION', meson.project_version())
+conf_data.set('GETTEXT_PACKAGE', meson.project_name())
+conf_data.set('LOCALEDIR', get_option('prefix') / get_option('localedir'))
+# For GSchema path (convert dots to slashes)
+conf_data.set('APP_PATH', app_id.replace('.', '/'))
 
-# Use static config file for now
-# config_vala = files('src/config.vala')
+# Generate dynamic config file
+config_vala = configure_file(
+    input: 'src/config.vala.in',
+    output: 'config.vala',
+    configuration: conf_data
+)
 
 # Vala arguments
 vala_args = [
     '--target-glib=2.78',
+    '--pkg=posix',
 ]
 
 # C arguments
@@ -71,6 +85,7 @@ foreach blueprint_file, ui_file : blueprint_files
             blueprint_compiler,
             'compile',
             '--output', '@OUTPUT@',
+            '--typelib-path', '/usr/lib/x86_64-linux-gnu/girepository-1.0',
             '@INPUT@'
         ]
     )
@@ -81,6 +96,7 @@ endforeach
 resources = gnome.compile_resources(
     'resources',
     'data/resources.xml',
+    source_dir: 'data',
     dependencies: blueprints,
     c_name: 'karere'
 )
@@ -96,8 +112,10 @@ sources = files(
     'src/logger.vala',
     'src/crash-reporter.vala',
     'src/utils.vala',
-    'src/config.vala',
-)
+    'src/accessibility-manager.vala',
+    'src/keyboard-shortcuts.vala',
+    'src/shortcuts-window.vala',
+) + [config_vala]
 
 # Build executable
 executable(
@@ -112,6 +130,7 @@ executable(
         gio_dep,
         glib_dep,
         json_glib_dep,
+        math_dep,
     ],
     vala_args: vala_args,
     c_args: c_args,
@@ -133,8 +152,14 @@ executable(
 # )
 
 # Desktop file
+desktop_configured = configure_file(
+    input: 'data/io.github.tobagin.karere.desktop.in',
+    output: app_id + '.desktop.in.configured',
+    configuration: conf_data
+)
+
 desktop_file = i18n.merge_file(
-    input: 'data' / app_id + '.desktop.in',
+    input: desktop_configured,
     output: app_id + '.desktop',
     type: 'desktop',
     po_dir: 'po',
@@ -142,18 +167,40 @@ desktop_file = i18n.merge_file(
     install_dir: get_option('datadir') / 'applications'
 )
 
-# AppData file
-appdata_file = i18n.merge_file(
-    input: 'data' / app_id + '.appdata.xml.in',
-    output: app_id + '.appdata.xml',
-    po_dir: 'po',
-    install: true,
-    install_dir: get_option('datadir') / 'metainfo'
-)
+# AppData file (skip i18n for development builds to avoid ITS rules issues)
+if get_option('profile') == 'development'
+    appdata_file = configure_file(
+        input: 'data/io.github.tobagin.karere.appdata.xml.in',
+        output: app_id + '.appdata.xml',
+        configuration: conf_data,
+        install: true,
+        install_dir: get_option('datadir') / 'metainfo'
+    )
+else
+    appdata_configured = configure_file(
+        input: 'data/io.github.tobagin.karere.appdata.xml.in',
+        output: app_id + '.appdata.xml.in',
+        configuration: conf_data
+    )
+    
+    appdata_file = i18n.merge_file(
+        input: appdata_configured,
+        output: app_id + '.appdata.xml',
+        po_dir: 'po',
+        install: true,
+        install_dir: get_option('datadir') / 'metainfo'
+    )
+endif
 
 # GSchema
+gschema_file = configure_file(
+    input: 'data/io.github.tobagin.karere.gschema.xml.in',
+    output: app_id + '.gschema.xml',
+    configuration: conf_data
+)
+
 install_data(
-    'data' / app_id + '.gschema.xml',
+    gschema_file,
     install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
 )
 
@@ -161,8 +208,9 @@ install_data(
 icon_sizes = ['16', '32', '48', '64', '128', '256', '512']
 foreach size : icon_sizes
     install_data(
-        'data/icons/hicolor/' + size + 'x' + size + '/apps/' + app_id + '.png',
-        install_dir: get_option('datadir') / 'icons' / 'hicolor' / size + 'x' + size + '/apps'
+        'data/icons/hicolor/' + size + 'x' + size + '/apps/io.github.tobagin.karere.png',
+        install_dir: get_option('datadir') / 'icons' / 'hicolor' / size + 'x' + size + '/apps',
+        rename: app_id + '.png'
     )
 endforeach
 
@@ -203,6 +251,9 @@ if get_option('tests')
     test_sources = files(
         'tests/test_application.vala',
         'tests/test_window.vala',
+        'tests/test_logger.vala',
+        'tests/test_notification_manager.vala',
+        'tests/test_crash_reporter.vala',
         'tests/test_runner.vala',
     )
     
@@ -216,8 +267,10 @@ if get_option('tests')
         'src/logger.vala',
         'src/crash-reporter.vala',
         'src/utils.vala',
-        'src/config.vala',
-    )
+        'src/accessibility-manager.vala',
+        'src/keyboard-shortcuts.vala',
+        'src/shortcuts-window.vala',
+    ) + [config_vala]
     
     test_executable = executable(
         'test-runner',
@@ -232,6 +285,7 @@ if get_option('tests')
             gio_dep,
             glib_dep,
             json_glib_dep,
+            math_dep,
         ],
         vala_args: vala_args,
         c_args: c_args,

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="karere">
+  <schema id="@APP_ID@" path="/@APP_PATH@/">
+    
+    <!-- Window state -->
+    <key name="window-width" type="i">
+      <default>1200</default>
+      <summary>Default window width</summary>
+      <description>The default width of the main window</description>
+    </key>
+    
+    <key name="window-height" type="i">
+      <default>800</default>
+      <summary>Default window height</summary>
+      <description>The default height of the main window</description>
+    </key>
+    
+    <key name="window-maximized" type="b">
+      <default>false</default>
+      <summary>Whether the window is maximized</summary>
+      <description>Whether the main window should start maximized</description>
+    </key>
+    
+    <!-- Appearance settings -->
+    <key name="theme-preference" type="i">
+      <range min="0" max="2"/>
+      <default>0</default>
+      <summary>Theme preference</summary>
+      <description>The preferred theme for the application (0=System, 1=Light, 2=Dark)</description>
+    </key>
+    
+    <!-- Privacy settings -->
+    <key name="crash-reporter-enabled" type="b">
+      <default>false</default>
+      <summary>Enable crash reporter</summary>
+      <description>Whether to enable automatic crash reporting</description>
+    </key>
+    
+    <!-- WebKit settings -->
+    <key name="webkit-user-agent" type="s">
+      <default>""</default>
+      <summary>Custom WebKit user agent</summary>
+      <description>Custom user agent string for WebKit (empty for default)</description>
+    </key>
+    
+    <key name="webkit-zoom-level" type="d">
+      <default>1.0</default>
+      <summary>WebKit zoom level</summary>
+      <description>The zoom level for the WebKit web view</description>
+    </key>
+    
+    <!-- General settings -->
+    <key name="developer-tools-enabled" type="b">
+      <default>false</default>
+      <summary>Enable developer tools</summary>
+      <description>Whether to allow access to developer tools</description>
+    </key>
+    
+    <!-- Notification settings -->
+    <key name="notifications-enabled" type="b">
+      <default>true</default>
+      <summary>Enable notifications</summary>
+      <description>Whether to show desktop notifications</description>
+    </key>
+    
+    <key name="notification-sound-enabled" type="b">
+      <default>true</default>
+      <summary>Enable notification sounds</summary>
+      <description>Whether to play sounds for notifications</description>
+    </key>
+    
+    <key name="background-notifications-mode" type="i">
+      <range min="0" max="2"/>
+      <default>0</default>
+      <summary>Background notifications mode</summary>
+      <description>When to show background notifications (0=Always, 1=First time only, 2=Never)</description>
+    </key>
+    
+    <key name="system-notifications-enabled" type="b">
+      <default>true</default>
+      <summary>Use system notifications</summary>
+      <description>Whether to use system notification settings</description>
+    </key>
+    
+    <key name="notification-preview-enabled" type="b">
+      <default>true</default>
+      <summary>Show notification previews</summary>
+      <description>Whether to show message previews in notifications</description>
+    </key>
+    
+    <key name="notification-preview-length" type="i">
+      <range min="10" max="200"/>
+      <default>50</default>
+      <summary>Notification preview length</summary>
+      <description>Maximum length of message preview in notifications</description>
+    </key>
+    
+    <key name="background-notification-frequency" type="i">
+      <range min="1" max="60"/>
+      <default>5</default>
+      <summary>Background notification frequency</summary>
+      <description>Minutes between background notification checks</description>
+    </key>
+    
+    <!-- Do Not Disturb settings -->
+    <key name="dnd-enabled" type="b">
+      <default>false</default>
+      <summary>Do Not Disturb mode</summary>
+      <description>Whether Do Not Disturb mode is enabled</description>
+    </key>
+    
+    <key name="dnd-background-notifications" type="b">
+      <default>false</default>
+      <summary>Background notifications during DND</summary>
+      <description>Whether to allow background notifications during Do Not Disturb</description>
+    </key>
+    
+    <key name="dnd-scheduled" type="b">
+      <default>false</default>
+      <summary>Scheduled Do Not Disturb</summary>
+      <description>Whether to enable scheduled Do Not Disturb mode</description>
+    </key>
+    
+    <key name="dnd-start-time" type="s">
+      <default>"22:00"</default>
+      <summary>DND start time</summary>
+      <description>Time when scheduled Do Not Disturb begins (HH:MM format)</description>
+    </key>
+    
+    <key name="dnd-end-time" type="s">
+      <default>"08:00"</default>
+      <summary>DND end time</summary>
+      <description>Time when scheduled Do Not Disturb ends (HH:MM format)</description>
+    </key>
+    
+    <!-- Spell checking settings -->
+    <key name="spell-checking-enabled" type="b">
+      <default>true</default>
+      <summary>Enable spell checking</summary>
+      <description>Whether to enable spell checking in text input</description>
+    </key>
+    
+    <key name="spell-checking-auto-detect" type="b">
+      <default>true</default>
+      <summary>Auto-detect spell checking language</summary>
+      <description>Whether to automatically detect the system language for spell checking</description>
+    </key>
+    
+    <key name="spell-checking-languages" type="as">
+      <default>[]</default>
+      <summary>Spell checking languages</summary>
+      <description>List of enabled languages for spell checking</description>
+    </key>
+    
+    <!-- Enhanced crash reporting settings -->
+    <key name="crash-include-system-info" type="b">
+      <default>true</default>
+      <summary>Include system information in crash reports</summary>
+      <description>Whether to include system information in crash reports</description>
+    </key>
+    
+    <key name="crash-include-logs" type="b">
+      <default>false</default>
+      <summary>Include application logs in crash reports</summary>
+      <description>Whether to include application logs in crash reports</description>
+    </key>
+    
+    <key name="crash-reports-count" type="i">
+      <default>0</default>
+      <summary>Number of crash reports generated</summary>
+      <description>Total count of crash reports generated by the application</description>
+    </key>
+    
+    <key name="crash-report-endpoint" type="s">
+      <default>"https://crash-reports.karere.app/api/v1/reports"</default>
+      <summary>Crash report submission endpoint</summary>
+      <description>URL endpoint for submitting crash reports</description>
+    </key>
+    
+    <key name="crash-report-timeout" type="i">
+      <range min="5" max="60"/>
+      <default>30</default>
+      <summary>Crash report submission timeout</summary>
+      <description>Timeout in seconds for crash report submission requests</description>
+    </key>
+    
+    <!-- Logging settings -->
+    <key name="log-level" type="i">
+      <range min="0" max="4"/>
+      <default>4</default>
+      <summary>Log level</summary>
+      <description>Minimum log level to display (0=Critical, 1=Error, 2=Warning, 3=Info, 4=Debug)</description>
+    </key>
+    
+    <key name="console-logging-enabled" type="b">
+      <default>true</default>
+      <summary>Enable console logging</summary>
+      <description>Whether to output logs to console/terminal</description>
+    </key>
+    
+    <key name="file-logging-enabled" type="b">
+      <default>true</default>
+      <summary>Enable file logging</summary>
+      <description>Whether to save logs to file for debugging</description>
+    </key>
+    
+    <key name="log-file-max-size" type="i">
+      <range min="1" max="100"/>
+      <default>10</default>
+      <summary>Maximum log file size in MB</summary>
+      <description>Maximum size of individual log files before rotation</description>
+    </key>
+    
+    <key name="log-file-retention" type="i">
+      <range min="1" max="30"/>
+      <default>5</default>
+      <summary>Number of log files to retain</summary>
+      <description>Number of old log files to keep after rotation</description>
+    </key>
+    
+    <!-- Keyboard shortcuts and accessibility settings -->
+    <key name="keyboard-shortcuts-enabled" type="b">
+      <default>true</default>
+      <summary>Enable keyboard shortcuts</summary>
+      <description>Whether to enable application keyboard shortcuts</description>
+    </key>
+    
+    <key name="focus-indicators-enabled" type="b">
+      <default>false</default>
+      <summary>Enable focus indicators</summary>
+      <description>Whether to show visual focus indicators for keyboard navigation</description>
+    </key>
+    
+    <key name="high-contrast-mode" type="b">
+      <default>false</default>
+      <summary>Enable high contrast mode</summary>
+      <description>Whether to use high contrast theme for better visibility</description>
+    </key>
+    
+    <key name="reduced-motion-enabled" type="b">
+      <default>false</default>
+      <summary>Enable reduced motion</summary>
+      <description>Whether to reduce animations and transitions for accessibility</description>
+    </key>
+    
+    <key name="screen-reader-optimized" type="b">
+      <default>false</default>
+      <summary>Optimize for screen readers</summary>
+      <description>Whether to optimize interface for screen reader usage</description>
+    </key>
+    
+    <key name="webview-zoom-enabled" type="b">
+      <default>true</default>
+      <summary>Enable WebView zoom functionality</summary>
+      <description>Whether to enable zoom functionality for the WhatsApp Web content</description>
+    </key>
+    
+    <key name="webview-zoom-controls-enabled" type="b">
+      <default>true</default>
+      <summary>Show zoom controls in header bar</summary>
+      <description>Whether to show zoom control buttons in the application header bar</description>
+    </key>
+    
+    <key name="webkit-zoom-step" type="d">
+      <range min="0.1" max="0.5"/>
+      <default>0.1</default>
+      <summary>WebView zoom step</summary>
+      <description>Amount to change zoom level with each zoom in/out action</description>
+    </key>
+    
+    <key name="accessibility-shortcuts-enabled" type="b">
+      <default>true</default>
+      <summary>Enable accessibility shortcuts</summary>
+      <description>Whether to enable accessibility-specific keyboard shortcuts</description>
+    </key>
+    
+    <key name="developer-shortcuts-enabled" type="b">
+      <default>false</default>
+      <summary>Enable developer shortcuts</summary>
+      <description>Whether to enable developer-specific keyboard shortcuts</description>
+    </key>
+    
+    <key name="notification-shortcuts-enabled" type="b">
+      <default>true</default>
+      <summary>Enable notification shortcuts</summary>
+      <description>Whether to enable keyboard shortcuts for notification management</description>
+    </key>
+
+  </schema>
+</schemalist>
