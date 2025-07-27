@@ -268,11 +268,6 @@ namespace Karere {
             toggle_focus_indicators_action.activate.connect(() => {
                 var current = settings.get_boolean("focus-indicators-enabled");
                 settings.set_boolean("focus-indicators-enabled", !current);
-                if (main_window != null) {
-                    main_window.show_info_toast(
-                        current ? _("Focus indicators disabled") : _("Focus indicators enabled")
-                    );
-                }
                 logger.debug("Focus indicators toggled: %s", (!current).to_string());
             });
             main_window.add_action(toggle_focus_indicators_action);

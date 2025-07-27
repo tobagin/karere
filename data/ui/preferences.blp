@@ -239,7 +239,7 @@ template $KarerePreferences : Adw.PreferencesDialog {
 
       Adw.ComboRow background_notifications_row {
         title: _("Background Notifications");
-        subtitle: _("When to show notifications in background");
+        subtitle: _("Whether to notify you that the app is still running when minimized");
         model: StringList {
           strings [
             _("Always"),
@@ -304,16 +304,11 @@ template $KarerePreferences : Adw.PreferencesDialog {
     icon-name: "notification-disabled-symbolic";
 
     Adw.PreferencesGroup {
-      title: _("Do Not Disturb Mode");
+      title: _("Do Not Disturb");
 
       Adw.SwitchRow dnd_enabled_row {
         title: _("Enable Do Not Disturb");
         subtitle: _("Temporarily disable all notifications");
-      }
-
-      Adw.SwitchRow dnd_background_row {
-        title: _("Background Notifications");
-        subtitle: _("Allow background notifications during Do Not Disturb");
       }
     }
 
@@ -328,6 +323,7 @@ template $KarerePreferences : Adw.PreferencesDialog {
       Adw.ActionRow dnd_start_time_row {
         title: _("Start Time");
         subtitle: _("Time when Do Not Disturb begins");
+        visible: false;
 
         [suffix]
         Gtk.Entry dnd_start_time_entry {
@@ -341,12 +337,100 @@ template $KarerePreferences : Adw.PreferencesDialog {
       Adw.ActionRow dnd_end_time_row {
         title: _("End Time");
         subtitle: _("Time when Do Not Disturb ends");
+        visible: false;
 
         [suffix]
         Gtk.Entry dnd_end_time_entry {
           placeholder-text: _("08:00");
           max-width-chars: 5;
           input-purpose: digits;
+          valign: center;
+        }
+      }
+    }
+
+    Adw.PreferencesGroup dnd_notifications_group {
+      title: _("DND Notifications");
+      visible: false;
+
+      Adw.SwitchRow dnd_background_row {
+        title: _("Background Notifications");
+        subtitle: _("Allow background notifications during Do Not Disturb");
+      }
+
+      Adw.ActionRow dnd_contact_messages_row {
+        title: _("Contact Messages");
+        subtitle: _("Allow direct messages from contacts");
+        visible: false;
+
+        [suffix]
+        Gtk.CheckButton dnd_contact_messages_check {
+          valign: center;
+        }
+      }
+
+      Adw.ActionRow dnd_group_messages_row {
+        title: _("Group Messages");
+        subtitle: _("Allow messages from group chats");
+        visible: false;
+
+        [suffix]
+        Gtk.CheckButton dnd_group_messages_check {
+          valign: center;
+        }
+      }
+
+      Adw.ActionRow dnd_mentions_row {
+        title: _("Mentions");
+        subtitle: _("Allow notifications when you are mentioned");
+        visible: false;
+
+        [suffix]
+        Gtk.CheckButton dnd_mentions_check {
+          valign: center;
+        }
+      }
+
+      Adw.ActionRow dnd_voice_calls_row {
+        title: _("Voice Calls");
+        subtitle: _("Allow incoming voice call notifications");
+        visible: false;
+
+        [suffix]
+        Gtk.CheckButton dnd_voice_calls_check {
+          valign: center;
+        }
+      }
+
+      Adw.ActionRow dnd_video_calls_row {
+        title: _("Video Calls");
+        subtitle: _("Allow incoming video call notifications");
+        visible: false;
+
+        [suffix]
+        Gtk.CheckButton dnd_video_calls_check {
+          valign: center;
+        }
+      }
+
+      Adw.ActionRow dnd_media_messages_row {
+        title: _("Media Messages");
+        subtitle: _("Allow notifications for photos, videos, and files");
+        visible: false;
+
+        [suffix]
+        Gtk.CheckButton dnd_media_messages_check {
+          valign: center;
+        }
+      }
+
+      Adw.ActionRow dnd_status_updates_row {
+        title: _("Status Updates");
+        subtitle: _("Allow notifications for status updates from contacts");
+        visible: false;
+
+        [suffix]
+        Gtk.CheckButton dnd_status_updates_check {
           valign: center;
         }
       }

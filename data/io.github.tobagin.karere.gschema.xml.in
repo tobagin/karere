@@ -115,6 +115,48 @@
       <description>Whether to allow background notifications during Do Not Disturb</description>
     </key>
     
+    <key name="dnd-contact-messages" type="b">
+      <default>false</default>
+      <summary>Allow contact messages during DND</summary>
+      <description>Whether to allow direct messages from contacts during Do Not Disturb</description>
+    </key>
+    
+    <key name="dnd-group-messages" type="b">
+      <default>false</default>
+      <summary>Allow group messages during DND</summary>
+      <description>Whether to allow messages from group chats during Do Not Disturb</description>
+    </key>
+    
+    <key name="dnd-mentions" type="b">
+      <default>true</default>
+      <summary>Allow mentions during DND</summary>
+      <description>Whether to allow notifications when mentioned during Do Not Disturb</description>
+    </key>
+    
+    <key name="dnd-voice-calls" type="b">
+      <default>true</default>
+      <summary>Allow voice calls during DND</summary>
+      <description>Whether to allow incoming voice call notifications during Do Not Disturb</description>
+    </key>
+    
+    <key name="dnd-video-calls" type="b">
+      <default>true</default>
+      <summary>Allow video calls during DND</summary>
+      <description>Whether to allow incoming video call notifications during Do Not Disturb</description>
+    </key>
+    
+    <key name="dnd-media-messages" type="b">
+      <default>false</default>
+      <summary>Allow media messages during DND</summary>
+      <description>Whether to allow notifications for photos, videos, and files during Do Not Disturb</description>
+    </key>
+    
+    <key name="dnd-status-updates" type="b">
+      <default>false</default>
+      <summary>Allow status updates during DND</summary>
+      <description>Whether to allow notifications for status updates during Do Not Disturb</description>
+    </key>
+    
     <key name="dnd-scheduled" type="b">
       <default>false</default>
       <summary>Scheduled Do Not Disturb</summary>

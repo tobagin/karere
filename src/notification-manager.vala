@@ -274,6 +274,24 @@ namespace Karere {
             
             logger.debug("Background notification check: mode=%d, session_shown=%s", mode, session_background_notification_shown.to_string());
             
+            // Check mode first
+            switch (mode) {
+                case 2: // Never
+                    logger.debug("Background notifications disabled (Never)");
+                    return false;
+                case 1: // First time only
+                    if (session_background_notification_shown) {
+                        logger.debug("Background notification already shown this session (First time only)");
+                        return false;
+                    }
+                    break;
+                case 0: // Always
+                    break;
+                default:
+                    logger.warning("Unknown background notification mode: %d", mode);
+                    return false;
+            }
+            
             // First do basic checks
             if (!should_show_background_notification_basic_check()) {
                 return false;

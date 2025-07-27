@@ -67,7 +67,7 @@ namespace Karere {
             
             // Initialize focus indicators state
             if (settings != null) {
-                update_focus_indicators(false); // Don't show notification during initialization
+                update_focus_indicators();
                 update_zoom_controls_visibility(); // Initialize zoom controls visibility
             }
             
@@ -467,10 +467,8 @@ namespace Karere {
 
         /**
          * Update focus indicators visibility based on settings
-         *
-         * @param show_notification Whether to show a toast notification about the change
          */
-        public void update_focus_indicators(bool show_notification = true) {
+        public void update_focus_indicators() {
             if (settings == null) {
                 logger.warning("Cannot update focus indicators: settings is null");
                 return;
@@ -484,16 +482,10 @@ namespace Karere {
                 // Add the focus indicators CSS class to window
                 add_css_class("karere-focus-indicators");
                 logger.info("Focus indicators enabled - CSS class added");
-                if (show_notification) {
-                    show_info_toast(_("Focus indicators enabled"));
-                }
             } else {
                 // Remove the focus indicators CSS class from window
                 remove_css_class("karere-focus-indicators");
                 logger.info("Focus indicators disabled - CSS class removed");
-                if (show_notification) {
-                    show_info_toast(_("Focus indicators disabled"));
-                }
             }
         }
 
