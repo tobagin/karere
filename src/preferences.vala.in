@@ -14,7 +14,7 @@
 
 namespace Karere {
 
-    [GtkTemplate (ui = "/io/github/tobagin/karere/preferences.ui")]
+    [GtkTemplate (ui = "/@APP_PATH@/preferences.ui")]
     public class Preferences : Adw.PreferencesDialog {
         
         // General page widgets

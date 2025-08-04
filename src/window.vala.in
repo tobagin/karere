@@ -14,7 +14,7 @@
 
 namespace Karere {
 
-    [GtkTemplate (ui = "/io/github/tobagin/karere/window.ui")]
+    [GtkTemplate (ui = "/@APP_PATH@/window.ui")]
     public class Window : Adw.ApplicationWindow {
         
         

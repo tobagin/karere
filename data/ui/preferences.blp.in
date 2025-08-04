@@ -227,7 +227,7 @@ template $KarerePreferences : Adw.PreferencesDialog {
   // Notifications Settings Page
   Adw.PreferencesPage notifications_page {
     title: _("Notifications");
-    icon-name: "preferences-system-notifications-symbolic";
+    icon-name: "@APP_ID@-notification-symbolic";
 
     Adw.PreferencesGroup {
       title: _("Notifications");
@@ -301,7 +301,7 @@ template $KarerePreferences : Adw.PreferencesDialog {
   // Do Not Disturb Settings Page
   Adw.PreferencesPage dnd_page {
     title: _("Do Not Disturb");
-    icon-name: "notification-disabled-symbolic";
+    icon-name: "@APP_ID@-do-not-disturb-symbolic";
 
     Adw.PreferencesGroup {
       title: _("Do Not Disturb");

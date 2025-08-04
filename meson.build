@@ -54,6 +54,19 @@ config_vala = configure_file(
     configuration: conf_data
 )
 
+# Generate template files
+window_vala = configure_file(
+    input: 'src/window.vala.in',
+    output: 'window.vala',
+    configuration: conf_data
+)
+
+preferences_vala = configure_file(
+    input: 'src/preferences.vala.in',
+    output: 'preferences.vala',
+    configuration: conf_data
+)
+
 # Vala arguments
 vala_args = [
     '--target-glib=2.78',
@@ -69,35 +82,78 @@ c_args = [
 # Blueprint compiler
 blueprint_compiler = find_program('blueprint-compiler', required: true)
 
+# Symbolic icons list (needed early for resources)
+symbolic_icons = [
+    'io.github.tobagin.karere-notification-symbolic.svg',
+    'io.github.tobagin.karere-do-not-disturb-symbolic.svg',
+]
+
+# Generate preferences.blp from template
+preferences_blp = configure_file(
+    input: 'data/ui/preferences.blp.in',
+    output: 'preferences.blp',
+    configuration: conf_data
+)
+
 # Compile blueprints
 blueprints = []
-blueprint_files = {
-    'window.blp': 'window.ui',
-    'preferences.blp': 'preferences.ui',
-}
 
-foreach blueprint_file, ui_file : blueprint_files
-    blueprint_target = custom_target(
-        ui_file,
-        input: files('data/ui' / blueprint_file),
-        output: ui_file,
-        command: [
-            blueprint_compiler,
-            'compile',
-            '--output', '@OUTPUT@',
-            '--typelib-path', '/usr/lib/x86_64-linux-gnu/girepository-1.0',
-            '@INPUT@'
-        ]
+# Compile window.blp
+window_ui = custom_target(
+    'window.ui',
+    input: files('data/ui/window.blp'),
+    output: 'window.ui',
+    command: [
+        blueprint_compiler,
+        'compile',
+        '--output', '@OUTPUT@',
+        '--typelib-path', '/usr/lib/x86_64-linux-gnu/girepository-1.0',
+        '@INPUT@'
+    ]
+)
+blueprints += window_ui
+
+# Compile generated preferences.blp
+preferences_ui = custom_target(
+    'preferences.ui',
+    input: preferences_blp,
+    output: 'preferences.ui',
+    command: [
+        blueprint_compiler,
+        'compile',
+        '--output', '@OUTPUT@',
+        '--typelib-path', '/usr/lib/x86_64-linux-gnu/girepository-1.0',
+        '@INPUT@'
+    ]
+)
+blueprints += preferences_ui
+
+# Copy icons with app-specific names for resources
+icon_copies = []
+foreach icon : symbolic_icons
+    base_name = icon.replace('io.github.tobagin.karere-', '').replace('-symbolic.svg', '')
+    icon_copy = custom_target(
+        'icon_' + base_name,
+        input: 'data/icons/hicolor/symbolic/apps/' + icon,
+        output: app_id + '-' + base_name + '-symbolic.svg',
+        command: ['cp', '@INPUT@', '@OUTPUT@']
     )
-    blueprints += blueprint_target
+    icon_copies += icon_copy
 endforeach
+
+# Generate resources.xml from template
+resources_xml = configure_file(
+    input: 'data/resources.xml.in',
+    output: 'resources.xml',
+    configuration: conf_data
+)
 
 # Generate resources
 resources = gnome.compile_resources(
     'resources',
-    'data/resources.xml',
-    source_dir: 'data',
-    dependencies: blueprints,
+    resources_xml,
+    source_dir: [meson.current_build_dir(), 'data'],
+    dependencies: blueprints + icon_copies,
     c_name: 'karere'
 )
 
@@ -105,8 +161,6 @@ resources = gnome.compile_resources(
 sources = files(
     'src/main.vala',
     'src/application.vala',
-    'src/window.vala',
-    'src/preferences.vala',
     'src/webkit-manager.vala',
     'src/notification-manager.vala',
     'src/logger.vala',
@@ -115,7 +169,7 @@ sources = files(
     'src/accessibility-manager.vala',
     'src/keyboard-shortcuts.vala',
     'src/shortcuts-window.vala',
-) + [config_vala]
+) + [config_vala, window_vala, preferences_vala]
 
 # Build executable
 executable(
@@ -214,10 +268,20 @@ foreach size : icon_sizes
     )
 endforeach
 
-# install_data(
-#     'data/icons/hicolor/scalable/apps/' + app_id + '.svg',
-#     install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps'
-# )
+# Scalable icon
+install_data(
+    'data/icons/hicolor/scalable/apps/io.github.tobagin.karere.svg',
+    install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps',
+    rename: app_id + '.svg'
+)
+
+foreach icon : symbolic_icons
+    install_data(
+        'data/icons/hicolor/symbolic/apps/' + icon,
+        install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'symbolic' / 'apps',
+        rename: icon.replace('io.github.tobagin.karere', app_id)
+    )
+endforeach
 
 # Build script
 install_data(
@@ -260,8 +324,6 @@ if get_option('tests')
     # Sources for tests (excluding main.vala to avoid conflicts)
     test_lib_sources = files(
         'src/application.vala',
-        'src/window.vala',
-        'src/preferences.vala',
         'src/webkit-manager.vala',
         'src/notification-manager.vala',
         'src/logger.vala',
@@ -270,7 +332,7 @@ if get_option('tests')
         'src/accessibility-manager.vala',
         'src/keyboard-shortcuts.vala',
         'src/shortcuts-window.vala',
-    ) + [config_vala]
+    ) + [config_vala, window_vala, preferences_vala]
     
     test_executable = executable(
         'test-runner',
