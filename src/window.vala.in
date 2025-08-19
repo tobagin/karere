@@ -113,29 +113,12 @@ namespace Karere {
             // Configure cookie storage after WebView creation
             configure_cookie_storage();
             
-            // Configure WebView settings
-            var webkit_settings = new WebKit.Settings();
-            webkit_settings.enable_javascript = true;
-            webkit_settings.enable_javascript_markup = true;
-            webkit_settings.enable_html5_database = true;
-            webkit_settings.enable_html5_local_storage = true;
-            // Note: enable_offline_web_application_cache is deprecated and removed
-            webkit_settings.enable_page_cache = true;
-            webkit_settings.user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+            // Use WebKitManager to configure WebView settings properly
+            webkit_manager.configure_web_view(web_view);
             
             // Configure spell checking
+            var webkit_settings = web_view.get_settings();
             setup_spell_checking(webkit_settings);
-            
-            // Configure developer tools
-            if (settings != null) {
-                var dev_tools_enabled = settings.get_boolean("developer-tools-enabled");
-                webkit_settings.enable_developer_extras = dev_tools_enabled;
-            } else {
-                webkit_settings.enable_developer_extras = false;
-                logger.warning("Settings not available, disabling developer tools");
-            }
-            
-            web_view.set_settings(webkit_settings);
             
             // Add WebView to container
             web_container.append(web_view);
@@ -573,6 +556,7 @@ namespace Karere {
                 case WebKit.LoadEvent.FINISHED:
                     logger.debug("Load finished");
                     setup_webkit_notifications();
+                    inject_user_agent_override();
                     break;
             }
         }
@@ -590,6 +574,41 @@ namespace Karere {
         private void setup_webkit_notifications() {
             // Set up notification permission handling 
             logger.debug("WebKit notifications setup complete");
+        }
+
+        private void inject_user_agent_override() {
+            // Override navigator.userAgent with our Linux user agent via JavaScript
+            var linux_user_agent = webkit_manager.get_default_user_agent();
+            var javascript_code = """
+                // Override navigator.userAgent to ensure it shows Linux
+                Object.defineProperty(navigator, 'userAgent', {
+                    get: function() {
+                        return '%s';
+                    },
+                    configurable: false,
+                    enumerable: true
+                });
+                
+                // Also override navigator.platform to be consistent
+                Object.defineProperty(navigator, 'platform', {
+                    get: function() {
+                        return 'Linux x86_64';
+                    },
+                    configurable: false,
+                    enumerable: true
+                });
+                
+                console.log('User agent overridden to:', navigator.userAgent);
+            """.printf(linux_user_agent);
+            
+            web_view.evaluate_javascript.begin(javascript_code, -1, null, null, null, (obj, res) => {
+                try {
+                    web_view.evaluate_javascript.end(res);
+                    logger.info("User agent JavaScript override injected successfully");
+                } catch (Error e) {
+                    logger.warning("Failed to inject user agent override: %s", e.message);
+                }
+            });
         }
 
         private bool on_permission_request(WebKit.PermissionRequest request) {

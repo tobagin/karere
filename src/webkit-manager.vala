@@ -62,16 +62,26 @@ namespace Karere {
             // Enable hardware acceleration
             web_settings.hardware_acceleration_policy = WebKit.HardwareAccelerationPolicy.ALWAYS;
             
-            // Set user agent
+            // Set user agent - Use more explicit user agent setting
             var user_agent = get_user_agent();
+            string final_user_agent;
             if (user_agent != null && user_agent.strip() != "") {
-                web_settings.user_agent = user_agent;
-                logger.debug("Using custom user agent: %s", user_agent);
+                final_user_agent = user_agent;
+                logger.info("Using custom user agent: %s", user_agent);
             } else {
                 // Use default user agent optimized for WhatsApp Web
-                web_settings.user_agent = get_default_user_agent();
-                logger.debug("Using default optimized user agent");
+                final_user_agent = get_default_user_agent();
+                logger.info("Using default Linux user agent: %s", final_user_agent);
             }
+            
+            // Set user agent with explicit property setting
+            web_settings.set_property("user-agent", final_user_agent);
+            
+            // Verify it was set correctly
+            logger.info("Final user agent set on WebView: %s", web_settings.user_agent);
+            
+            // Also try setting it via JavaScript injection as a fallback
+            logger.debug("Will inject user agent override after page load");
             
             // Configure zoom level
             var zoom_level = settings.get_double("webkit-zoom-level");
@@ -118,8 +128,8 @@ namespace Karere {
          */
         public string get_default_user_agent() {
             // Use a user agent that ensures WhatsApp Web works properly
-            // Based on Chrome to ensure maximum compatibility
-            return "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Karere/%s".printf(Config.VERSION);
+            // Based on Safari on Linux for a more native feel
+            return "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15 Karere/%s".printf(Config.VERSION);
         }
         
         /**
