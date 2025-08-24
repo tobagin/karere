@@ -3,9 +3,6 @@
   <id>@APP_ID@</id>
   
   <!-- Flatpak ID transition support -->
-  <provides>
-    <id>com.mudeprolinux.whakarere</id>
-  </provides>
   <replaces>
     <id>com.mudeprolinux.whakarere</id>
   </replaces>
@@ -117,8 +114,8 @@
     <release version="0.8.0" date="2025-08-24">
       <description>
         <p>🚀 Major Architecture Migration: Python to Vala/GTK4</p>
-        <p><strong>BREAKING CHANGE:</strong> Complete rewrite from Python to native Vala for better performance and integration.</p>
-        <p><strong>⚠️ Important:</strong> After upgrading, you will need to re-sync your mobile device with WhatsApp Web as this is a completely new application implementation.</p>
+        <p>BREAKING CHANGE: Complete rewrite from Python to native Vala for better performance and integration.</p>
+        <p>⚠️ Important: After upgrading, you will need to re-sync your mobile device with WhatsApp Web as this is a completely new application implementation.</p>
         <p>New Features:</p>
         <ul>
           <li>Native Vala/GTK4 implementation for optimal performance</li>
