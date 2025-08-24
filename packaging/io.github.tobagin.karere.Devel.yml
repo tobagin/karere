@@ -65,18 +65,6 @@ cleanup:
   - '*.a'
 
 modules:
-  - name: appstream
-    buildsystem: meson
-    config-opts:
-      - -Dstemming=false
-      - -Dapidocs=false
-      - -Dinstall-docs=false
-    sources:
-      - type: git
-        url: https://github.com/ximion/appstream.git
-        tag: v1.0.5
-        commit: 8af1b8b61c5682751cec21c5b644cb1b8d20d5c6
-
   - name: blueprint-compiler
     buildsystem: meson
     sources:
@@ -106,7 +94,3 @@ modules:
     sources:
       - type: dir
         path: ..
-    post-install:
-      - desktop-file-validate /app/share/applications/io.github.tobagin.karere.Devel.desktop
-      - appstreamcli validate --no-net /app/share/metainfo/io.github.tobagin.karere.Devel.appdata.xml
-      - glib-compile-schemas /app/share/glib-2.0/schemas

@@ -225,6 +225,16 @@ desktop_file = i18n.merge_file(
     install_dir: get_option('datadir') / 'applications'
 )
 
+# Validation tests
+desktop_file_validate = find_program('desktop-file-validate', required: false)
+if desktop_file_validate.found()
+    test('Validate desktop file',
+        desktop_file_validate,
+        args: [desktop_file],
+        suite: 'validation'
+    )
+endif
+
 # AppData file (skip i18n for development builds to avoid ITS rules issues)
 if get_option('profile') == 'development'
     appdata_file = configure_file(
@@ -247,6 +257,16 @@ else
         po_dir: 'po',
         install: true,
         install_dir: get_option('datadir') / 'metainfo'
+    )
+endif
+
+# AppData validation
+appstreamcli = find_program('appstreamcli', required: false)
+if appstreamcli.found()
+    test('Validate appdata',
+        appstreamcli,
+        args: ['validate', '--no-net', appdata_file],
+        suite: 'validation'
     )
 endif
 
@@ -383,3 +403,10 @@ summary({
     'LibSoup': soup_dep.version(),
     'GLib': glib_dep.version(),
 }, section: 'Dependencies')
+
+# Post-install tasks
+gnome.post_install(
+    glib_compile_schemas: true,
+    gtk_update_icon_cache: true,
+    update_desktop_database: true,
+)
