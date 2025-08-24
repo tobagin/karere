@@ -46,28 +46,20 @@
   
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/tobagin/karere/blob/main/screenshots/main-window.png?raw=true</image>
+      <image>https://github.com/tobagin/karere/blob/main/main-window.png?raw=true</image>
       <caption>Main application window with WhatsApp Web integration</caption>
     </screenshot>
     <screenshot>
-      <image>https://github.com/tobagin/karere/blob/main/screenshots/about.png?raw=true</image>
+      <image>https://github.com/tobagin/karere/blob/main/about.png?raw=true</image>
       <caption>About dialog showing application information</caption>
     </screenshot>
     <screenshot>
-      <image>https://github.com/tobagin/karere/blob/main/screenshots/preferences-general.png?raw=true</image>
-      <caption>General preferences and theme settings</caption>
+      <image>https://github.com/tobagin/karere/blob/main/preferences.png?raw=true</image>
+      <caption>Application preferences and settings dialog</caption>
     </screenshot>
     <screenshot>
-      <image>https://github.com/tobagin/karere/blob/main/screenshots/preferences-notifications.png?raw=true</image>
-      <caption>Notification preferences and background settings</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://github.com/tobagin/karere/blob/main/screenshots/preferences-spell-checking.png?raw=true</image>
-      <caption>Spell checking configuration options</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://github.com/tobagin/karere/blob/main/screenshots/preferences-crash-reporting.png?raw=true</image>
-      <caption>Crash reporting and privacy settings</caption>
+      <image>https://github.com/tobagin/karere/blob/main/shortcuts.png?raw=true</image>
+      <caption>Keyboard shortcuts and productivity features</caption>
     </screenshot>
   </screenshots>
   
@@ -110,6 +102,19 @@
   
   <releases>
     <release version="@VERSION@" date="2025-08-24">
+      <description>
+        <p>Visual Documentation Update</p>
+        <ul>
+          <li>Added 4 comprehensive screenshots showcasing application features</li>
+          <li>Updated main window screenshot with current Vala implementation</li>
+          <li>Added about dialog screenshot showing version information</li>
+          <li>Added preferences dialog screenshot displaying settings options</li>
+          <li>Added keyboard shortcuts reference screenshot for productivity</li>
+          <li>Enhanced visual documentation for better user onboarding</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.8.0" date="2025-08-24">
       <description>
         <p>🚀 Major Architecture Migration: Python to Vala/GTK4</p>
         <p><strong>BREAKING CHANGE:</strong> Complete rewrite from Python to native Vala for better performance and integration.</p>
