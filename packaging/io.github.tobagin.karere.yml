@@ -17,24 +17,10 @@ finish-args:
   - --socket=pulseaudio
   # Desktop notifications
   - --talk-name=org.freedesktop.Notifications
-  # Application data directory
-  - --persist=.var/app/io.github.tobagin.karere
   # Access to user downloads for file sharing
   - --filesystem=xdg-download
-  # Access to documents for media files
-  - --filesystem=xdg-documents
-  # Access to music for audio files
-  - --filesystem=xdg-music
-  # Access to videos for video files
-  - --filesystem=xdg-videos
-  # Access to pictures for images
-  - --filesystem=xdg-pictures
-  # Temporary file access for media downloads
-  - --filesystem=/tmp
   # Hardware acceleration
   - --device=dri
-  # Enable spell checking support
-  - --talk-name=org.freedesktop.portal.SpellCheck
 
 add-extensions:
   org.freedesktop.Platform.ffmpeg-full:

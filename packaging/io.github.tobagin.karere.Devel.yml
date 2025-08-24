@@ -29,16 +29,12 @@ finish-args:
   - --filesystem=xdg-videos
   # Access to pictures for images
   - --filesystem=xdg-pictures
-  # Temporary file access for media downloads
-  - --filesystem=/tmp
   # WebKit process sandbox permissions
   - --allow=devel
   # Hardware acceleration
   - --device=dri
   # Development debugging permissions
   - --env=G_MESSAGES_DEBUG=all
-  # Enable spell checking support
-  - --talk-name=org.freedesktop.portal.SpellCheck
 
 add-extensions:
   org.freedesktop.Platform.ffmpeg-full:
