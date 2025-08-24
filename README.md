@@ -4,6 +4,24 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere-vala/main/data/screenshots/main-window.png)
 
+## 🚀 Version 0.8.0 - Major Architecture Migration
+
+**BREAKING CHANGE NOTICE:** Karere v0.8.0 represents a complete rewrite from Python to native Vala/GTK4 for superior performance and integration.
+
+### ⚠️ Important Migration Information
+
+- **Mobile Re-sync Required**: After upgrading to v0.8.0, you **must re-sync your mobile device** with WhatsApp Web as this is a completely new application implementation
+- **Settings Reset**: Previous application settings will not be transferred - you'll need to reconfigure preferences
+- **Performance Boost**: Expect significantly improved startup time, memory usage, and overall responsiveness
+- **Enhanced Features**: New native notification system, accessibility support, and keyboard shortcuts
+
+### What Changed
+- **Language**: Python 3 → Native Vala compilation
+- **UI Framework**: GTK4 with modern LibAdwaita and Blueprint declarative UI
+- **Build System**: setuptools → Meson with comprehensive toolchain
+- **Performance**: Interpreted → Compiled native binary
+- **Integration**: Enhanced desktop integration and accessibility
+
 ## Features
 
 - **Native Desktop Integration**: True native notifications using GNotification, not browser notifications

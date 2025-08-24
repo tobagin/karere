@@ -100,8 +100,8 @@ modules:
       - -Dprofile=production
     sources:
       - type: git
-        url: https://github.com/tobagin/karere-vala.git
-        tag: v0.6.0
+        url: https://github.com/tobagin/karere.git
+        tag: v0.8.0
     post-install:
       - desktop-file-validate /app/share/applications/io.github.tobagin.karere.desktop
       - appstreamcli validate /app/share/metainfo/io.github.tobagin.karere.appdata.xml

@@ -109,15 +109,33 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
-    <release version="@VERSION@" date="2025-07-23">
+    <release version="@VERSION@" date="2025-08-24">
       <description>
-        <p>Initial release with core functionality:</p>
+        <p>🚀 Major Architecture Migration: Python to Vala/GTK4</p>
+        <p><strong>BREAKING CHANGE:</strong> Complete rewrite from Python to native Vala for better performance and integration.</p>
+        <p><strong>⚠️ Important:</strong> After upgrading, you will need to re-sync your mobile device with WhatsApp Web as this is a completely new application implementation.</p>
+        <p>New Features:</p>
         <ul>
-          <li>WebKitGTK integration for WhatsApp Web</li>
-          <li>Native desktop notifications</li>
-          <li>LibAdwaita theming support</li>
-          <li>Comprehensive logging system</li>
-          <li>Crash reporting functionality</li>
+          <li>Native Vala/GTK4 implementation for optimal performance</li>
+          <li>Modern LibAdwaita UI with Blueprint declarative interface</li>
+          <li>Enhanced WebKitGTK 6.0 integration</li>
+          <li>Advanced notification system with native desktop integration</li>
+          <li>Comprehensive accessibility support</li>
+          <li>Professional logging and crash reporting system</li>
+          <li>Keyboard shortcuts and productivity features</li>
+          <li>Multi-language spell checking support</li>
+          <li>Granular privacy and notification controls</li>
+          <li>Hardware-accelerated rendering</li>
+          <li>Improved memory efficiency and startup performance</li>
+        </ul>
+        <p>Technical Improvements:</p>
+        <ul>
+          <li>Migrated from Python 3 to native Vala compilation</li>
+          <li>Modern Meson build system with Blueprint UI compilation</li>
+          <li>Comprehensive test suite with unit and integration tests</li>
+          <li>Production-ready error handling and crash recovery</li>
+          <li>Enhanced security with proper sandboxing</li>
+          <li>Complete internationalization support</li>
         </ul>
       </description>
     </release>
