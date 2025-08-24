@@ -73,7 +73,7 @@ modules:
     buildsystem: meson
     config-opts:
       - -Dtests=false
-      - -Dprofile=production
+      - -Dprofile=default
     sources:
       - type: git
         url: https://github.com/tobagin/karere.git
