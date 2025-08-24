@@ -515,10 +515,10 @@ public class NotificationManager : GLib.Object {
      * 
      * @param title The notification title
      * @param body The notification body text
-     * @param icon The notification icon name
+     * @param icon The notification icon
      * @return true if notification was sent successfully
      */
-    public bool send_notification (string title, string body, string? icon = null) {
+    public bool send_notification (string title, string body, Icon icon) {
         // Implementation
     }
 }

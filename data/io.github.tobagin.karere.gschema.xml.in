@@ -196,7 +196,7 @@
     
     <!-- Enhanced crash reporting settings -->
     <key name="crash-include-system-info" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Include system information in crash reports</summary>
       <description>Whether to include system information in crash reports</description>
     </key>
@@ -326,6 +326,26 @@
       <default>true</default>
       <summary>Enable notification shortcuts</summary>
       <description>Whether to enable keyboard shortcuts for notification management</description>
+    </key>
+    
+    <!-- Web notification permission state -->
+    <key name="web-notification-permission-granted" type="b">
+      <default>false</default>
+      <summary>Web notification permission granted</summary>
+      <description>Whether the user has granted notification permission to WhatsApp Web</description>
+    </key>
+    
+    <key name="web-notification-permission-asked" type="b">
+      <default>false</default>
+      <summary>Web notification permission has been asked</summary>
+      <description>Whether the user has been asked for notification permission</description>
+    </key>
+
+    <!-- Version alert settings -->
+    <key name="last-shown-version" type="s">
+      <default>""</default>
+      <summary>Last version shown in version alert</summary>
+      <description>The version number of the last version alert shown to the user</description>
     </key>
 
   </schema>

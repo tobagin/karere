@@ -219,9 +219,6 @@ namespace Karere {
                 var zoom_in_action = new GLib.SimpleAction("zoom-in", null);
                 zoom_in_action.activate.connect(() => {
                     main_window.webkit_zoom_in();
-                    if (main_window != null) {
-                        main_window.show_info_toast(_("Zoomed in"));
-                    }
                 });
                 main_window.add_action(zoom_in_action);
 
@@ -229,9 +226,6 @@ namespace Karere {
                 var zoom_out_action = new GLib.SimpleAction("zoom-out", null);
                 zoom_out_action.activate.connect(() => {
                     main_window.webkit_zoom_out();
-                    if (main_window != null) {
-                        main_window.show_info_toast(_("Zoomed out"));
-                    }
                 });
                 main_window.add_action(zoom_out_action);
 
@@ -239,9 +233,6 @@ namespace Karere {
                 var zoom_reset_action = new GLib.SimpleAction("zoom-reset", null);
                 zoom_reset_action.activate.connect(() => {
                     main_window.webkit_zoom_reset();
-                    if (main_window != null) {
-                        main_window.show_info_toast(_("Zoom reset to default"));
-                    }
                 });
                 main_window.add_action(zoom_reset_action);
             }

@@ -136,6 +136,9 @@ namespace Karere {
             // Connect notification permission signal
             web_view.permission_request.connect(on_permission_request);
             
+            // Set up WebKit notification permissions persistence
+            setup_webkit_permission_persistence();
+            
             logger.debug("WebKit configured");
         }
 
@@ -159,6 +162,14 @@ namespace Karere {
             // Cookie storage will be handled automatically by WebKit
             logger.info("Cookie storage will be handled by WebKit defaults");
         }
+
+        private void setup_webkit_permission_persistence() {
+            // The key insight: WebKit persists permissions automatically when using the default
+            // WebContext with persistent storage. Our native dialog approach should work
+            // because the permission decision gets stored in WebKit's internal database.
+            logger.info("WebKit permission persistence relies on native permission handling");
+        }
+
 
         private void setup_spell_checking(WebKit.Settings webkit_settings) {
             if (settings == null) {
@@ -377,6 +388,11 @@ namespace Karere {
             var webkit_settings = web_view.get_settings();
             webkit_settings.enable_developer_extras = dev_tools_enabled;
             
+            // Close developer tools if they're being disabled
+            if (!dev_tools_enabled) {
+                close_developer_tools();
+            }
+            
             logger.debug("Developer tools %s", dev_tools_enabled ? "enabled" : "disabled");
         }
 
@@ -419,6 +435,7 @@ namespace Karere {
             var new_zoom = Math.fmin(current_zoom + zoom_step, 3.0);
             
             settings.set_double("webkit-zoom-level", new_zoom);
+            web_view.zoom_level = new_zoom;
             logger.debug("WebView zoomed in to %f", new_zoom);
         }
 
@@ -434,6 +451,7 @@ namespace Karere {
             var new_zoom = Math.fmax(current_zoom - zoom_step, 0.5);
             
             settings.set_double("webkit-zoom-level", new_zoom);
+            web_view.zoom_level = new_zoom;
             logger.debug("WebView zoomed out to %f", new_zoom);
         }
 
@@ -445,6 +463,7 @@ namespace Karere {
             if (!settings.get_boolean("webview-zoom-enabled")) return;
             
             settings.set_double("webkit-zoom-level", 1.0);
+            web_view.zoom_level = 1.0;
             logger.debug("WebView zoom reset to default");
         }
 
@@ -615,17 +634,77 @@ namespace Karere {
             if (request is WebKit.NotificationPermissionRequest) {
                 logger.info("WhatsApp requesting notification permission");
                 
-                // Always grant notification permission and set up our handler
-                request.allow();
+                // Check if we have a saved permission decision
+                if (settings != null) {
+                    bool permission_asked = settings.get_boolean("web-notification-permission-asked");
+                    bool permission_granted = settings.get_boolean("web-notification-permission-granted");
+                    
+                    if (permission_asked) {
+                        // We have a previous decision, use it
+                        if (permission_granted) {
+                            logger.info("Using saved permission: granted");
+                            request.allow();
+                            setup_notification_handler();
+                        } else {
+                            logger.info("Using saved permission: denied");
+                            request.deny();
+                        }
+                        return true;
+                    }
+                }
                 
-                // Set up notification handler on the WebView
-                web_view.show_notification.connect(on_webkit_notification);
-                
-                logger.info("Notification permission granted and handler connected");
+                // No previous decision, show native dialog
+                show_notification_permission_dialog(request);
                 return true;
             }
             
             return false;
+        }
+        
+        private void show_notification_permission_dialog(WebKit.PermissionRequest request) {
+            var dialog = new Adw.AlertDialog(
+                // TRANSLATORS: Title for notification permission dialog
+                _("WhatsApp Web Notification Permission"),
+                // TRANSLATORS: Body text for notification permission dialog
+                _("WhatsApp Web wants to show desktop notifications for new messages. Would you like to allow notifications?")
+            );
+            
+            // TRANSLATORS: Button text to deny notifications
+            dialog.add_response("deny", _("Deny"));
+            // TRANSLATORS: Button text to allow notifications
+            dialog.add_response("allow", _("Allow"));
+            
+            dialog.set_response_appearance("allow", Adw.ResponseAppearance.SUGGESTED);
+            dialog.set_default_response("allow");
+            dialog.set_close_response("deny");
+            
+            dialog.response.connect((response) => {
+                bool granted = (response == "allow");
+                
+                // Save the user's decision
+                if (settings != null) {
+                    settings.set_boolean("web-notification-permission-asked", true);
+                    settings.set_boolean("web-notification-permission-granted", granted);
+                }
+                
+                // Handle the WebKit permission request
+                if (granted) {
+                    logger.info("User granted notification permission");
+                    request.allow();
+                    setup_notification_handler();
+                } else {
+                    logger.info("User denied notification permission");
+                    request.deny();
+                }
+            });
+            
+            dialog.present(this);
+        }
+        
+        private void setup_notification_handler() {
+            // Set up notification handler on the WebView
+            web_view.show_notification.connect(on_webkit_notification);
+            logger.info("Notification handler connected");
         }
 
         private bool on_webkit_notification(WebKit.WebView webview, WebKit.Notification webkit_notification) {
@@ -636,7 +715,7 @@ namespace Karere {
                 var body = webkit_notification.get_body() ?? "";
                 
                 // Send native notification
-                notification_manager.send_notification(title, body, "dialog-information-symbolic");
+                notification_manager.send_notification(title, body, new ThemedIcon("dialog-information-symbolic"));
                 
                 // Handle notification click
                 webkit_notification.clicked.connect(() => {
@@ -905,6 +984,18 @@ namespace Karere {
             
             var inspector = web_view.get_inspector();
             return inspector.is_attached();
+        }
+
+        public void close_developer_tools() {
+            if (web_view == null) {
+                return;
+            }
+            
+            var inspector = web_view.get_inspector();
+            if (inspector.is_attached()) {
+                inspector.close();
+                logger.debug("Developer tools closed");
+            }
         }
 
         /**

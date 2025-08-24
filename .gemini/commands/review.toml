@@ -1,0 +1,21 @@
+description="Reviews a pull request based on issue number."
+prompt = """
+Please provide a detailed pull request review on GitHub issue: {{args}}.
+
+Follow these steps:
+
+1. Use `gh pr view {{args}}` to pull the information of the PR.
+2. Use `gh pr diff {{args}}` to view the diff of the PR.
+3. Understand the intent of the PR using the PR description.
+4. If PR description is not detailed enough to understand the intent of the PR,
+   make sure to note it in your review.
+5. Make sure the PR title follows Conventional Commits, here are the last five 
+   commits to the repo as examples: !{git log --pretty=format:"%s" -n 5}
+6. Search the codebase if required.
+7. Write a concise review of the PR, keeping in mind to encourage strong code
+   quality and best practices.
+8. Use `gh pr comment {{args}} --body {{review}}` to post the review to the PR.
+
+Remember to use the GitHub CLI (`gh`) with the Shell tool for all
+GitHub-related tasks.
+"""

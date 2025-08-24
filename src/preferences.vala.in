@@ -43,6 +43,8 @@ namespace Karere {
         [GtkChild]
         private unowned Adw.SpinRow webkit_zoom_level_row;
         [GtkChild]
+        private unowned Adw.SpinRow webkit_zoom_step_row;
+        [GtkChild]
         private unowned Adw.SwitchRow webview_zoom_controls_row;
         [GtkChild]
         private unowned Adw.SwitchRow screen_reader_row;
@@ -211,6 +213,7 @@ namespace Karere {
             // WebView zoom settings
             settings.bind("webview-zoom-enabled", webview_zoom_enabled_row, "active", SettingsBindFlags.DEFAULT);
             settings.bind("webkit-zoom-level", webkit_zoom_level_row, "value", SettingsBindFlags.DEFAULT);
+            settings.bind("webkit-zoom-step", webkit_zoom_step_row, "value", SettingsBindFlags.DEFAULT);
             settings.bind("webview-zoom-controls-enabled", webview_zoom_controls_row, "active", SettingsBindFlags.DEFAULT);
             
             // Screen reader settings
@@ -649,6 +652,7 @@ namespace Karere {
             // Update UI visibility for webview zoom settings
             var enabled = settings.get_boolean("webview-zoom-enabled");
             webkit_zoom_level_row.visible = enabled;
+            webkit_zoom_step_row.visible = enabled;
             webview_zoom_controls_row.visible = enabled;
         }
         

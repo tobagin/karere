@@ -30,6 +30,7 @@ soup_dep = dependency('libsoup-3.0', version: '>= 3.0.0')
 gio_dep = dependency('gio-2.0', version: '>= 2.74.0')
 glib_dep = dependency('glib-2.0', version: '>= 2.74.0')
 json_glib_dep = dependency('json-glib-1.0', version: '>= 1.6.0')
+gee_dep = dependency('gee-0.8', version: '>= 0.20.0')
 
 # Build configuration
 cc = meson.get_compiler('c')
@@ -66,6 +67,7 @@ preferences_vala = configure_file(
     output: 'preferences.vala',
     configuration: conf_data
 )
+
 
 # Vala arguments
 vala_args = [
@@ -128,6 +130,7 @@ preferences_ui = custom_target(
 )
 blueprints += preferences_ui
 
+
 # Copy icons with app-specific names for resources
 icon_copies = []
 foreach icon : symbolic_icons
@@ -184,6 +187,7 @@ executable(
         gio_dep,
         glib_dep,
         json_glib_dep,
+        gee_dep,
         math_dep,
     ],
     vala_args: vala_args,
@@ -347,6 +351,7 @@ if get_option('tests')
             gio_dep,
             glib_dep,
             json_glib_dep,
+            gee_dep,
             math_dep,
         ],
         vala_args: vala_args,

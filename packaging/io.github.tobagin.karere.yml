@@ -13,7 +13,7 @@ finish-args:
   - --socket=wayland
   # X11 fallback for compatibility
   - --socket=fallback-x11
-  # Audio for notification sounds
+  # Audio for notification sounds and media
   - --socket=pulseaudio
   # Desktop notifications
   - --talk-name=org.freedesktop.Notifications
@@ -21,10 +21,29 @@ finish-args:
   - --persist=.var/app/io.github.tobagin.karere
   # Access to user downloads for file sharing
   - --filesystem=xdg-download
+  # Access to documents for media files
+  - --filesystem=xdg-documents
+  # Access to music for audio files
+  - --filesystem=xdg-music
+  # Access to videos for video files
+  - --filesystem=xdg-videos
+  # Access to pictures for images
+  - --filesystem=xdg-pictures
+  # Temporary file access for media downloads
+  - --filesystem=/tmp
   # Hardware acceleration
   - --device=dri
   # Enable spell checking support
   - --talk-name=org.freedesktop.portal.SpellCheck
+
+add-extensions:
+  org.freedesktop.Platform.ffmpeg-full:
+    directory: lib/ffmpeg
+    version: '24.08'
+    add-ld-path: .
+
+cleanup-commands:
+  - mkdir -p ${FLATPAK_DEST}/lib/ffmpeg
 
 cleanup:
   - /include
@@ -61,6 +80,18 @@ modules:
         url: https://gitlab.gnome.org/jwestman/blueprint-compiler.git
         tag: v0.18.0
         commit: 07c9c9df9cd1b6b4454ecba21ee58211e9144a4b
+
+  - name: libgee
+    buildsystem: autotools
+    config-opts:
+      - --disable-introspection
+    sources:
+      - type: archive
+        url: https://download.gnome.org/sources/libgee/0.20/libgee-0.20.8.tar.xz
+        sha256: 189815ac143d89867193b0c52b7dc31f3aa108a15f04d6b5dca2b6adfad0b0ee
+        x-checker-data:
+          type: gnome
+          name: libgee
 
   - name: karere
     buildsystem: meson

@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>@APP_ID@</id>
+  
+  <!-- Flatpak ID transition support -->
+  <provides>
+    <id>com.mudeprolinux.whakarere</id>
+  </provides>
+  <replaces>
+    <id>com.mudeprolinux.whakarere</id>
+  </replaces>
+  
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <name>@APP_NAME@</name>
-  <summary>Native WhatsApp Web client</summary>
+  <summary>GTK4 WhatsApp Client</summary>
   
   <branding>
     <color type="primary" scheme_preference="light">#25D366</color>
@@ -13,34 +22,60 @@
   
   <description>
     <p>
-      Karere is a modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides
-      a seamless integration with the Linux desktop environment. Unlike browser-based
-      solutions, Karere offers native desktop notifications, proper theme support,
-      and comprehensive logging capabilities.
+      Karere is a production-ready GTK4 WhatsApp client that provides a native desktop experience
+      for WhatsApp Web. Built with Vala, GTK4, and Libadwaita, it offers a clean and
+      intuitive interface that integrates seamlessly with your Linux desktop.
     </p>
-    <p>Features:</p>
+    <p>
+      Features:
+    </p>
     <ul>
-      <li>Native desktop notifications through GNotification</li>
-      <li>Full LibAdwaita theming support (Light, Dark, System)</li>
-      <li>Comprehensive logging system for debugging</li>
-      <li>Opt-in crash reporting for improved stability</li>
-      <li>Optimized resource usage with WebKitGTK</li>
-      <li>Spell checking support for multiple languages</li>
-      <li>Background notification system with privacy controls</li>
+      <li>Native GTK4 interface with Libadwaita styling</li>
+      <li>Blueprint UI with declarative interface design</li>
+      <li>Persistent login data and cookie management</li>
+      <li>Settings dialog with theme selection and privacy controls</li>
+      <li>Full WhatsApp Web functionality with desktop integration</li>
+      <li>Hardware-accelerated WebKit rendering</li>
+      <li>Comprehensive crash reporting with privacy controls</li>
+      <li>Graceful shutdown with window state persistence</li>
+      <li>Production hardening with security enhancements</li>
+      <li>Professional logging system with rotation</li>
+      <li>Signal handling for proper system integration</li>
     </ul>
   </description>
   
-  <!-- Screenshots will be added in a future release once the application UI is finalized -->
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/tobagin/karere/blob/main/screenshots/main-window.png?raw=true</image>
+      <caption>Main application window with WhatsApp Web integration</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/tobagin/karere/blob/main/screenshots/about.png?raw=true</image>
+      <caption>About dialog showing application information</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/tobagin/karere/blob/main/screenshots/preferences-general.png?raw=true</image>
+      <caption>General preferences and theme settings</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/tobagin/karere/blob/main/screenshots/preferences-notifications.png?raw=true</image>
+      <caption>Notification preferences and background settings</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/tobagin/karere/blob/main/screenshots/preferences-spell-checking.png?raw=true</image>
+      <caption>Spell checking configuration options</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/tobagin/karere/blob/main/screenshots/preferences-crash-reporting.png?raw=true</image>
+      <caption>Crash reporting and privacy settings</caption>
+    </screenshot>
+  </screenshots>
   
-  <url type="homepage">https://github.com/tobagin/karere-vala</url>
-  <url type="bugtracker">https://github.com/tobagin/karere-vala/issues</url>
-  <url type="help">https://github.com/tobagin/karere-vala#readme</url>
-  <url type="donation">https://github.com/sponsors/tobagin</url>
+  <url type="homepage">https://github.com/tobagin/karere</url>
+  <url type="bugtracker">https://github.com/tobagin/karere/issues</url>
+  <url type="help">https://github.com/tobagin/karere/</url>
   
-  <developer id="io.github.tobagin">
-    <name>Thiago Fernandes</name>
-  </developer>
-  <update_contact>noreply@github.com</update_contact>
+  <developer_name>Thiago Fernandes</developer_name>
   
   <provides>
     <binary>karere</binary>
@@ -89,9 +124,7 @@
   </releases>
   
   <content_rating type="oars-1.1">
-    <content_attribute id="social-chat">intense</content_attribute>
+    <content_attribute id="social-chat">moderate</content_attribute>
     <content_attribute id="social-info">mild</content_attribute>
-    <content_attribute id="social-contacts">intense</content_attribute>
-    <content_attribute id="social-audio">none</content_attribute>
   </content_rating>
 </component>

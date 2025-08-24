@@ -62,6 +62,11 @@ namespace Karere {
             // Enable hardware acceleration
             web_settings.hardware_acceleration_policy = WebKit.HardwareAccelerationPolicy.ALWAYS;
             
+            // Enable media with auto-loading
+            web_settings.enable_media = true;
+            web_settings.media_playback_requires_user_gesture = false;
+            web_settings.media_playback_allows_inline = true;
+            
             // Set user agent - Use more explicit user agent setting
             var user_agent = get_user_agent();
             string final_user_agent;

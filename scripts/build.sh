@@ -1,13 +1,12 @@
 #!/bin/bash
 
 # Karere build script
-# Usage: ./build.sh [--dev|--install]
+# Usage: ./build.sh [--dev]
 
 set -e
 
-# Default to development build
-BUILD_TYPE="dev"
-INSTALL=false
+# Default to production build
+BUILD_TYPE="prod"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -16,14 +15,12 @@ while [[ $# -gt 0 ]]; do
             BUILD_TYPE="dev"
             shift
             ;;
-        --install)
-            INSTALL=true
-            shift
-            ;;
         --help)
-            echo "Usage: $0 [--dev] [--install]"
-            echo "  --dev      Build development version (default)"
-            echo "  --install  Install the Flatpak after building"
+            echo "Usage: $0 [--dev]"
+            echo "  --dev      Build development version (uses Devel manifest)"
+            echo "Default: Build production version"
+            echo ""
+            echo "The Flatpak will always be installed after building."
             exit 0
             ;;
         *)
@@ -45,25 +42,15 @@ else
     echo "Building production version..."
 fi
 
-# Create build directory
-BUILD_DIR="build-flatpak"
-mkdir -p "$BUILD_DIR"
+# Build directory (always 'build')
+BUILD_DIR="build"
 
 echo "Using manifest: $MANIFEST"
 echo "Build directory: $BUILD_DIR"
 
-# Build with Flatpak
-echo "Running flatpak-builder..."
-flatpak-builder --force-clean --user --install-deps-from=flathub "$BUILD_DIR" "$MANIFEST"
+# Build and install with Flatpak (always install)
+echo "Running flatpak-builder (build and install)..."
+flatpak-builder --force-clean --user --install --install-deps-from=flathub "$BUILD_DIR" "$MANIFEST"
 
-# Install if requested
-if [ "$INSTALL" = true ]; then
-    echo "Installing $APP_ID..."
-    flatpak-builder --user --install --force-clean "$BUILD_DIR" "$MANIFEST"
-    echo "Installation complete!"
-    echo "Run with: flatpak run $APP_ID"
-else
-    echo "Build complete!"
-    echo "To install, run: $0 --install"
-    echo "Or install manually: flatpak-builder --user --install --force-clean $BUILD_DIR $MANIFEST"
-fi
+echo "Build and installation complete!"
+echo "Run with: flatpak run $APP_ID"

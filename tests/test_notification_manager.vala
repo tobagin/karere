@@ -375,28 +375,7 @@ namespace KarereTests {
             teardown();
         }
 
-        public void test_nullable_parameters() {
-            setup();
-            
-            // Test handling of nullable parameters (like icon parameter)
-            string? icon = "dialog-information-symbolic";
-            assert(icon != null);
-            assert(icon.length > 0);
-            
-            string? null_icon = null;
-            assert(null_icon == null);
-            
-            // Test null checks
-            if (icon != null && icon.length > 0) {
-                assert(true); // Icon is valid
-            }
-            
-            if (null_icon == null || null_icon.length == 0) {
-                assert(true); // Null icon properly handled
-            }
-            
-            teardown();
-        }
+        
 
         public void test_signal_connection() {
             setup();
@@ -507,10 +486,7 @@ namespace KarereTests {
             test.test_constants_definition();
         });
 
-        Test.add_func("/karere/notification_manager/nullable_parameters", () => {
-            var test = new NotificationManagerTest();
-            test.test_nullable_parameters();
-        });
+        
 
         Test.add_func("/karere/notification_manager/signal_connection", () => {
             var test = new NotificationManagerTest();

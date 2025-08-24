@@ -1,0 +1,77 @@
+description = "Identifies and suggests cleanup opportunities including unused code, dependencies, and optimization possibilities."
+
+prompt = """
+Perform comprehensive cleanup analysis for: {{args}}
+
+Please conduct the following cleanup assessment:
+
+1. **Unused Code Detection:**
+   - Find unused imports and dependencies
+   - Identify unreferenced variables and functions
+   - Look for dead code and commented-out sections
+   - Check for unused CSS classes and styles
+   - Scan for orphaned files and resources
+
+2. **Dependency Cleanup:**
+   - Check package.json for unused dependencies: !{test -f package.json && npm ls --depth=0 2>/dev/null | grep -E "extraneous|UNMET" || echo "No package.json found"}
+   - Identify outdated packages: !{npm outdated 2>/dev/null || echo "npm not available"}
+   - Look for duplicate dependencies and version conflicts
+   - Find development dependencies that could be removed
+
+3. **Code Duplication:**
+   - Identify similar code blocks that could be refactored
+   - Look for repeated logic across files
+   - Find duplicated constants and configuration
+   - Suggest opportunities for code extraction
+
+4. **File and Directory Cleanup:**
+   - Find empty files and directories: !{find . -type d -empty -not -path "./.git/*" 2>/dev/null | head -10}
+   - Identify temporary files and build artifacts
+   - Look for old backup files and unused assets
+   - Check for large files that could be optimized: !{find . -type f -size +1M -not -path "./.git/*" -not -path "./node_modules/*" 2>/dev/null | head -10}
+
+5. **Configuration Cleanup:**
+   - Review configuration files for unused settings
+   - Check environment variables and their usage
+   - Look for outdated configuration options
+   - Identify conflicting or redundant settings
+
+6. **Documentation Cleanup:**
+   - Find outdated documentation references
+   - Look for broken links and missing files
+   - Identify incomplete or inconsistent docs
+   - Check for outdated API documentation
+
+7. **Git Repository Cleanup:**
+   - Check for large files in git history: !{git rev-list --objects --all | git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | sed -n 's/^blob //p' | sort --numeric-sort --key=2 | tail -10}
+   - Look for merged branches that can be deleted: !{git branch --merged | grep -v main|master|develop | head -10}
+   - Identify stale branches: !{git for-each-ref --format='%(refname:short) %(committerdate:relative)' refs/heads | sort -k2 | head -10}
+
+8. **Performance Optimization Opportunities:**
+   - Identify large bundle sizes and optimization opportunities
+   - Look for inefficient algorithms or data structures
+   - Find opportunities for lazy loading
+   - Check for unnecessary re-renders or computations
+
+9. **Security Cleanup:**
+   - Find exposed secrets or sensitive data
+   - Check for insecure temporary files
+   - Look for debugging code left in production
+   - Identify overly permissive file permissions
+
+10. **Cleanup Recommendations:**
+    For each category, provide:
+    - **Priority Level:** High/Medium/Low impact
+    - **Safety Assessment:** Risk level of performing cleanup
+    - **Automated vs Manual:** What can be safely automated
+    - **Verification Steps:** How to confirm cleanup was successful
+    - **Backup Recommendations:** What to backup before cleanup
+
+11. **Cleanup Script Generation:**
+    - Provide safe cleanup commands that can be executed
+    - Include verification steps before and after cleanup
+    - Suggest staging the cleanup in phases
+    - Include rollback procedures for safety
+
+Please provide a comprehensive cleanup plan with prioritized recommendations and safe execution steps.
+"""

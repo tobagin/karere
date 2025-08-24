@@ -100,6 +100,9 @@ namespace Karere {
                 
                 main_window.present();
                 logger.info("Main window created and presented with accessibility support");
+                
+                // Check if we should show What's New dialog
+                check_and_show_whats_new();
             } else {
                 // Show the existing window (it might be hidden)
                 main_window.set_visible(true);
@@ -314,49 +317,220 @@ namespace Karere {
         private void on_about_activate() {
             logger.debug("About action activated");
             
+            string[] developers = { "Thiago Fernandes" };
+            string[] designers = { "Thiago Fernandes" };
+            string[] artists = { "Thiago Fernandes" };
+            
+            string app_name = "Karere";
+            string comments = "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities";
+            
+            if (Config.APP_ID.contains("Devel")) {
+                app_name = "Karere (Development)";
+                comments = "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities (Development Version)";
+            }
+
             var about = new Adw.AboutDialog() {
-                application_name = Config.APP_NAME,
+                application_name = app_name,
                 application_icon = Config.APP_ID,
+                developer_name = "Thiago Fernandes",
                 version = Config.VERSION,
-                // TRANSLATORS: Developer name in About dialog
-                developer_name = _("Thiago Fernandes"),
+                developers = developers,
+                designers = designers,
+                artists = artists,
                 license_type = Gtk.License.GPL_3_0,
-                website = "https://github.com/tobagin/karere-vala",
-                issue_url = "https://github.com/tobagin/karere-vala/issues",
-                support_url = "https://github.com/tobagin/karere-vala/discussions",
-                // TRANSLATORS: Copyright notice in About dialog
-                copyright = _("© 2025 Thiago Fernandes"),
-                // TRANSLATORS: Application description in About dialog
-                comments = _("A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities.")
+                website = "https://tobagin.github.io/apps/karere",
+                issue_url = "https://github.com/tobagin/karere/issues",
+                support_url = "https://github.com/tobagin/karere/discussions",
+                comments = comments
             };
-            
-            // Add Credits section
-            // TRANSLATORS: Credits section title in About dialog
-            about.add_credit_section(
-                _("Credits"),
-                {
-                    "Thiago Fernandes https://github.com/tobagin",
-                    "GNOME Contributors https://gitlab.gnome.org/GNOME",
-                    "WebKitGTK Developers https://webkitgtk.org"
+
+            // Load and set release notes from appdata
+            try {
+                string[] possible_paths = {
+                    Path.build_filename("/app/share/metainfo", @"$(Config.APP_ID).metainfo.xml"),
+                    Path.build_filename("/usr/share/metainfo", @"$(Config.APP_ID).metainfo.xml"),
+                    Path.build_filename(Environment.get_user_data_dir(), "metainfo", @"$(Config.APP_ID).metainfo.xml")
+                };
+                
+                foreach (string appdata_path in possible_paths) {
+                    var file = File.new_for_path(appdata_path);
+                    
+                    if (file.query_exists()) {
+                        uint8[] contents;
+                        file.load_contents(null, out contents, null);
+                        string xml_content = (string) contents;
+                        
+                        // Parse the XML to find the release matching Config.VERSION
+                        var parser = new Regex("<release version=\"%s\"[^>]*>(.*?)</release>".printf(Regex.escape_string(Config.VERSION)), 
+                                               RegexCompileFlags.DOTALL | RegexCompileFlags.MULTILINE);
+                        MatchInfo match_info;
+                        
+                        if (parser.match(xml_content, 0, out match_info)) {
+                            string release_section = match_info.fetch(1);
+                            
+                            // Extract description content
+                            var desc_parser = new Regex("<description>(.*?)</description>", 
+                                                        RegexCompileFlags.DOTALL | RegexCompileFlags.MULTILINE);
+                            MatchInfo desc_match;
+                            
+                            if (desc_parser.match(release_section, 0, out desc_match)) {
+                                string release_notes = desc_match.fetch(1).strip();
+                                about.set_release_notes(release_notes);
+                                about.set_release_notes_version(Config.VERSION);
+                            }
+                        }
+                        break;
+                    }
                 }
-            );
-            
-            // Add Special Thanks section
-            // TRANSLATORS: Special Thanks section title in About dialog
+            } catch (Error e) {
+                // If we can't load release notes from appdata, that's okay
+                logger.warning("Could not load release notes from appdata: %s", e.message);
+            }
+
+            // Set copyright
+            about.set_copyright("© 2025 Thiago Fernandes");
+
+            // Add acknowledgement section
             about.add_acknowledgement_section(
-                _("Special Thanks"),
+                "Special Thanks",
                 {
                     "The GNOME Project",
-                    "The WebKitGTK Team", 
+                    "The WebKitGTK Team",
                     "WhatsApp Inc.",
                     "LibAdwaita Contributors",
                     "Vala Programming Language Team"
                 }
             );
+
+            // Set translator credits
+            about.set_translator_credits("Thiago Fernandes");
             
+            // Add Source link
+            about.add_link("Source", "https://github.com/tobagin/karere");
+
             if (main_window != null && !main_window.in_destruction()) {
                 about.present(main_window);
             }
+        }
+
+        private void check_and_show_whats_new() {
+            if (should_show_version_alert()) {
+                // Use a short delay to ensure the main window is fully loaded
+                Timeout.add(500, () => {
+                    if (main_window != null && !main_window.in_destruction()) {
+                        logger.info("Showing version update alert for new version");
+                        show_version_alert();
+                    }
+                    return false; // Remove the timeout
+                });
+            }
+        }
+
+        private bool should_show_version_alert() {
+            if (settings == null) {
+                return false;
+            }
+            
+            try {
+                string last_version = settings.get_string("last-shown-version");
+                if (last_version != Config.VERSION) {
+                    return true;
+                }
+            } catch (Error e) {
+                logger.warning("Failed to check last shown version: %s", e.message);
+            }
+            
+            return false;
+        }
+
+        private void show_version_alert() {
+            if (main_window == null || main_window.in_destruction()) {
+                return;
+            }
+            
+            // Get release notes from AppData
+            string release_notes = get_current_release_notes();
+            if (release_notes == "") {
+                release_notes = "New version available with improvements and bug fixes.";
+            }
+            
+            var alert = new Adw.AlertDialog(
+                "What's New in Karere %s".printf(Config.VERSION),
+                release_notes
+            );
+            
+            alert.add_response("ok", "Got it");
+            alert.set_response_appearance("ok", Adw.ResponseAppearance.SUGGESTED);
+            alert.set_default_response("ok");
+            
+            alert.response.connect(() => {
+                // Mark this version as shown
+                if (settings != null) {
+                    try {
+                        settings.set_string("last-shown-version", Config.VERSION);
+                        logger.debug("Marked version %s as shown", Config.VERSION);
+                    } catch (Error e) {
+                        logger.warning("Failed to save last shown version: %s", e.message);
+                    }
+                }
+            });
+            
+            alert.present(main_window);
+        }
+
+        private string get_current_release_notes() {
+            try {
+                string[] possible_paths = {
+                    Path.build_filename("/app/share/metainfo", @"$(Config.APP_ID).metainfo.xml"),
+                    Path.build_filename("/usr/share/metainfo", @"$(Config.APP_ID).metainfo.xml"),
+                    Path.build_filename(Environment.get_user_data_dir(), "metainfo", @"$(Config.APP_ID).metainfo.xml")
+                };
+                
+                foreach (string appdata_path in possible_paths) {
+                    var file = File.new_for_path(appdata_path);
+                    
+                    if (file.query_exists()) {
+                        uint8[] contents;
+                        file.load_contents(null, out contents, null);
+                        string xml_content = (string) contents;
+                        
+                        // Parse the XML to find the release matching Config.VERSION
+                        var parser = new Regex("<release version=\"%s\"[^>]*>(.*?)</release>".printf(Regex.escape_string(Config.VERSION)), 
+                                               RegexCompileFlags.DOTALL | RegexCompileFlags.MULTILINE);
+                        MatchInfo match_info;
+                        
+                        if (parser.match(xml_content, 0, out match_info)) {
+                            string release_section = match_info.fetch(1);
+                            
+                            // Extract description content and convert to plain text
+                            var desc_parser = new Regex("<description>(.*?)</description>", 
+                                                        RegexCompileFlags.DOTALL | RegexCompileFlags.MULTILINE);
+                            MatchInfo desc_match;
+                            
+                            if (desc_parser.match(release_section, 0, out desc_match)) {
+                                string release_notes = desc_match.fetch(1).strip();
+                                
+                                // Convert HTML to plain text for alert dialog
+                                release_notes = release_notes.replace("<p>", "").replace("</p>", "\n");
+                                release_notes = release_notes.replace("<ul>", "").replace("</ul>", "");
+                                release_notes = release_notes.replace("<li>", "• ").replace("</li>", "\n");
+                                
+                                // Clean up extra whitespace
+                                while (release_notes.contains("\n\n\n")) {
+                                    release_notes = release_notes.replace("\n\n\n", "\n\n");
+                                }
+                                
+                                return release_notes;
+                            }
+                        }
+                        break;
+                    }
+                }
+            } catch (Error e) {
+                logger.warning("Could not load release notes from appdata: %s", e.message);
+            }
+            
+            return "";
         }
 
         private void save_application_state() {

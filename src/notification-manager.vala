@@ -50,7 +50,7 @@ namespace Karere {
             }
         }
         
-        public void send_notification(string title, string body, string icon = "dialog-information-symbolic") {
+        public void send_notification(string title, string body, Icon icon) {
             // Check if notifications are enabled
             if (!should_show_notification()) {
                 logger.debug("Notification blocked by settings: %s", title);
@@ -83,9 +83,8 @@ namespace Karere {
                 notification.set_body(notification_body);
                 
                 // Set icon
-                if (icon != null && icon.length > 0) {
-                    var gicon = new ThemedIcon(icon);
-                    notification.set_icon(gicon);
+                if (icon != null) {
+                    notification.set_icon(icon);
                 }
                 
                 // Add default action to focus window
@@ -326,7 +325,7 @@ namespace Karere {
             }
             
             // TRANSLATORS: Application name in background notifications
-            send_notification(_("Karere"), message, "dialog-information-symbolic");
+            send_notification(_("Karere"), message, new ThemedIcon("dialog-information-symbolic"));
             
             // Update tracking variables
             last_background_notification_time = new DateTime.now_local();
