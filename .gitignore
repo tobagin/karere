@@ -1,6 +1,66 @@
+# Development and Agent OS directories
 .agent-os/
 .claude/
+.gemini/
+
+# Build directories and artifacts
+build/
+builddir/
+_build/
+build-dir/
+build-flatpak/
 .flatpak-builder/
-.git
-build
-CLAUDE.md
+*.o
+*.so
+*.so.*
+*.a
+
+# Generated files
+*.c
+*.h
+resources.c
+resources.h
+config.vala
+window.vala
+preferences.vala
+preferences.blp
+resources.xml
+
+# Desktop files
+*.desktop
+*.desktop.in.configured
+
+# AppData files
+*.appdata.xml
+*.metainfo.xml
+
+# GSchema files
+*.gschema.xml
+
+# Compiled UI files
+*.ui
+
+# Development scripts (optional - uncomment if needed)
+# *.py
+# test_*.sh
+# quick_*.sh
+
+# Temporary and backup files
+*~
+*.bak
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Documentation build artifacts
+docs/_build/
+
+# Test artifacts
+test-runner
+*.test
