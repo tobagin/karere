@@ -348,5 +348,11 @@
       <description>The version number of the last version alert shown to the user</description>
     </key>
 
+    <key name="last-version-shown" type="s">
+      <default>""</default>
+      <summary>Last version for which release notes were shown</summary>
+      <description>Tracks the last application version for which release notes were displayed to avoid showing them repeatedly</description>
+    </key>
+
   </schema>
 </schemalist>

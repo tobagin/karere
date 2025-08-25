@@ -414,16 +414,39 @@ namespace Karere {
         }
 
         private void check_and_show_whats_new() {
-            if (should_show_version_alert()) {
-                // Use a short delay to ensure the main window is fully loaded
+            // Check if this is a new version and show release notes automatically
+            if (should_show_release_notes()) {
+                // Small delay to ensure main window is fully presented
                 Timeout.add(500, () => {
                     if (main_window != null && !main_window.in_destruction()) {
-                        logger.info("Showing version update alert for new version");
-                        show_version_alert();
+                        logger.info("Showing automatic release notes for new version");
+                        show_about_with_release_notes();
                     }
-                    return false; // Remove the timeout
+                    return false;
                 });
             }
+        }
+
+        private bool should_show_release_notes() {
+            if (settings == null) {
+                return false;
+            }
+            
+            try {
+                string last_version = settings.get_string("last-version-shown");
+                string current_version = Config.VERSION;
+
+                // Show if this is the first run (empty last version) or version has changed
+                if (last_version == "" || last_version != current_version) {
+                    settings.set_string("last-version-shown", current_version);
+                    logger.info("New version detected: %s (was: %s)", current_version, last_version == "" ? "first run" : last_version);
+                    return true;
+                }
+            } catch (Error e) {
+                logger.warning("Failed to check last version shown: %s", e.message);
+            }
+            
+            return false;
         }
 
         private bool should_show_version_alert() {
@@ -476,6 +499,83 @@ namespace Karere {
             });
             
             alert.present(main_window);
+        }
+
+        private void simulate_tab_navigation() {
+            // Get the currently focused window (should be the about dialog)
+            var focused_window = get_active_window();
+            if (focused_window != null) {
+                logger.debug("Attempting tab navigation on window: %s", focused_window.get_type().name());
+                
+                // Try multiple approaches to navigate to the release notes button
+                var success = focused_window.child_focus(Gtk.DirectionType.TAB_FORWARD);
+                if (success) {
+                    logger.debug("Tab navigation successful");
+                } else {
+                    logger.debug("Tab navigation failed - focus might need manual adjustment");
+                    // For LibAdwaita dialogs, the focus should automatically navigate
+                    // to the appropriate elements when tabbing
+                }
+            } else {
+                logger.warning("No focused window for tab navigation");
+            }
+        }
+
+        private void simulate_enter_activation() {
+            // Get the currently active window (should be the about dialog)
+            var focused_window = get_active_window();
+            if (focused_window != null) {
+                // Get the focused widget within the active window
+                var focused_widget = focused_window.get_focus();
+                logger.debug("Attempting enter activation on widget: %s", 
+                           focused_widget != null ? focused_widget.get_type().name() : "null");
+                
+                if (focused_widget != null) {
+                    // If it's a button, click it
+                    if (focused_widget is Gtk.Button) {
+                        ((Gtk.Button)focused_widget).activate();
+                        logger.debug("Enter activation simulated on Button");
+                    }
+                    // For other widgets, try to activate the default action
+                    else {
+                        focused_widget.activate_default();
+                        logger.debug("Enter activation simulated on widget: %s", focused_widget.get_type().name());
+                    }
+                } else {
+                    // Try to activate the default widget of the window
+                    if (focused_window is Gtk.Window) {
+                        var default_widget = ((Gtk.Window)focused_window).get_default_widget();
+                        if (default_widget != null) {
+                            default_widget.activate();
+                            logger.debug("Activated default widget: %s", default_widget.get_type().name());
+                        } else {
+                            logger.debug("No default widget found in window");
+                        }
+                    }
+                }
+            } else {
+                logger.warning("No active window for enter activation");
+            }
+        }
+
+        private void show_about_with_release_notes() {
+            // Open the about dialog first (regular method)
+            on_about_activate();
+            logger.debug("About dialog opened, preparing automatic navigation");
+            
+            // Wait for the dialog to appear and be fully rendered
+            Timeout.add(500, () => {
+                logger.debug("Starting automatic navigation to release notes");
+                simulate_tab_navigation();
+                
+                // Simulate Enter key press after another delay to open release notes
+                Timeout.add(300, () => {
+                    simulate_enter_activation();
+                    logger.info("Automatic navigation to release notes completed");
+                    return false;
+                });
+                return false;
+            });
         }
 
         private string get_current_release_notes() {
