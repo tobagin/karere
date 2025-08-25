@@ -55,18 +55,7 @@ config_vala = configure_file(
     configuration: conf_data
 )
 
-# Generate template files
-window_vala = configure_file(
-    input: 'src/window.vala.in',
-    output: 'window.vala',
-    configuration: conf_data
-)
-
-preferences_vala = configure_file(
-    input: 'src/preferences.vala.in',
-    output: 'preferences.vala',
-    configuration: conf_data
-)
+# No more template files - using preprocessor directives instead
 
 
 # Vala arguments
@@ -74,6 +63,11 @@ vala_args = [
     '--target-glib=2.78',
     '--pkg=posix',
 ]
+
+# Add development flag for preprocessor directives
+if get_option('profile') == 'development'
+    vala_args += ['-D', 'DEVELOPMENT']
+endif
 
 # C arguments
 c_args = [
@@ -164,6 +158,8 @@ resources = gnome.compile_resources(
 sources = files(
     'src/main.vala',
     'src/application.vala',
+    'src/window.vala',
+    'src/preferences.vala',
     'src/webkit-manager.vala',
     'src/notification-manager.vala',
     'src/logger.vala',
@@ -172,7 +168,7 @@ sources = files(
     'src/accessibility-manager.vala',
     'src/keyboard-shortcuts.vala',
     'src/shortcuts-window.vala',
-) + [config_vala, window_vala, preferences_vala]
+) + [config_vala]
 
 # Build executable
 executable(
@@ -348,6 +344,8 @@ if get_option('tests')
     # Sources for tests (excluding main.vala to avoid conflicts)
     test_lib_sources = files(
         'src/application.vala',
+        'src/window.vala',
+        'src/preferences.vala',
         'src/webkit-manager.vala',
         'src/notification-manager.vala',
         'src/logger.vala',
@@ -356,7 +354,7 @@ if get_option('tests')
         'src/accessibility-manager.vala',
         'src/keyboard-shortcuts.vala',
         'src/shortcuts-window.vala',
-    ) + [config_vala, window_vala, preferences_vala]
+    ) + [config_vala]
     
     test_executable = executable(
         'test-runner',
