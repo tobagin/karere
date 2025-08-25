@@ -97,6 +97,23 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="0.8.3" date="2025-08-25">
+      <description>
+        <p>🔧 Metadata and Standards Compliance</p>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed duplicate provides tags in metainfo validation</li>
+          <li>Corrected AppStream metainfo format compliance</li>
+          <li>Resolved invalid markup in release descriptions</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Updated all references from appdata to metainfo format</li>
+          <li>Enhanced Flathub compliance and validation</li>
+          <li>Improved translation file consistency</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.8.2" date="2025-08-25">
       <description>
         <p>🐛 Bug Fixes and Improvements</p>
