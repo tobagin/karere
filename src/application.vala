@@ -344,7 +344,7 @@ namespace Karere {
                 comments = comments
             };
 
-            // Load and set release notes from appdata
+            // Load and set release notes from metainfo
             try {
                 string[] possible_paths = {
                     Path.build_filename("/app/share/metainfo", @"$(Config.APP_ID).metainfo.xml"),
@@ -352,8 +352,8 @@ namespace Karere {
                     Path.build_filename(Environment.get_user_data_dir(), "metainfo", @"$(Config.APP_ID).metainfo.xml")
                 };
                 
-                foreach (string appdata_path in possible_paths) {
-                    var file = File.new_for_path(appdata_path);
+                foreach (string metainfo_path in possible_paths) {
+                    var file = File.new_for_path(metainfo_path);
                     
                     if (file.query_exists()) {
                         uint8[] contents;
@@ -383,8 +383,8 @@ namespace Karere {
                     }
                 }
             } catch (Error e) {
-                // If we can't load release notes from appdata, that's okay
-                logger.warning("Could not load release notes from appdata: %s", e.message);
+                // If we can't load release notes from metainfo, that's okay
+                logger.warning("Could not load release notes from metainfo: %s", e.message);
             }
 
             // Set copyright
@@ -586,8 +586,8 @@ namespace Karere {
                     Path.build_filename(Environment.get_user_data_dir(), "metainfo", @"$(Config.APP_ID).metainfo.xml")
                 };
                 
-                foreach (string appdata_path in possible_paths) {
-                    var file = File.new_for_path(appdata_path);
+                foreach (string metainfo_path in possible_paths) {
+                    var file = File.new_for_path(metainfo_path);
                     
                     if (file.query_exists()) {
                         uint8[] contents;
@@ -627,7 +627,7 @@ namespace Karere {
                     }
                 }
             } catch (Error e) {
-                logger.warning("Could not load release notes from appdata: %s", e.message);
+                logger.warning("Could not load release notes from metainfo: %s", e.message);
             }
             
             return "";

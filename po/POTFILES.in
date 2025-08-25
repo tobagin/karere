@@ -18,7 +18,7 @@ data/ui/preferences.blp
 
 # Desktop integration files
 data/io.github.tobagin.karere.desktop.in
-data/io.github.tobagin.karere.appdata.xml.in
+data/io.github.tobagin.karere.metainfo.xml.in
 
 # GSchema file
 data/io.github.tobagin.karere.gschema.xml.in

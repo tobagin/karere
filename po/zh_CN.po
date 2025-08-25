@@ -18,18 +18,18 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 # Application Information
-#: data/io.github.tobagin.karere.appdata.xml.in:4
+#: data/io.github.tobagin.karere.metainfo.xml.in:4
 #: data/io.github.tobagin.karere.desktop.in:3 src/application.vala:45
 #: src/application.vala:47 src/application.vala:49 src/window.vala:32
 msgid "Karere"
 msgstr "Karere"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:5
+#: data/io.github.tobagin.karere.metainfo.xml.in:5
 #: data/io.github.tobagin.karere.desktop.in:4
 msgid "Native WhatsApp client for Linux"
 msgstr "Linux 原生 WhatsApp 客户端"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:7
+#: data/io.github.tobagin.karere.metainfo.xml.in:7
 msgid ""
 "Karere is a modern, native WhatsApp client built specifically for the Linux "
 "desktop using GTK4 and LibAdwaita. It provides a seamless WhatsApp "
@@ -40,39 +40,39 @@ msgstr ""
 "LibAdwaita 技术。它提供无缝的 WhatsApp 体验，具有原生桌面集成、全面的日志记录"
 "和崩溃报告功能。"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:12
+#: data/io.github.tobagin.karere.metainfo.xml.in:12
 msgid "Features:"
 msgstr "功能："
 
-#: data/io.github.tobagin.karere.appdata.xml.in:14
+#: data/io.github.tobagin.karere.metainfo.xml.in:14
 msgid "Native GTK4/LibAdwaita interface with modern design"
 msgstr "现代设计的原生 GTK4/LibAdwaita 界面"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:15
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
 msgid "Full desktop integration with notifications and theming"
 msgstr "完整的桌面集成，包括通知和主题"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:16
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
 msgid "WebKitGTK-based WhatsApp Web rendering for optimal performance"
 msgstr "基于 WebKitGTK 的 WhatsApp Web 渲染，性能最佳"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:17
+#: data/io.github.tobagin.karere.metainfo.xml.in:17
 msgid "Comprehensive logging system for debugging and monitoring"
 msgstr "用于调试和监控的全面日志记录系统"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:18
+#: data/io.github.tobagin.karere.metainfo.xml.in:18
 msgid "Crash reporting with user privacy controls"
 msgstr "具有用户隐私控制的崩溃报告"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:19
+#: data/io.github.tobagin.karere.metainfo.xml.in:19
 msgid "Light, dark, and system theme support"
 msgstr "支持浅色、深色和系统主题"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:20
+#: data/io.github.tobagin.karere.metainfo.xml.in:20
 msgid "Keyboard shortcuts and accessibility features"
 msgstr "键盘快捷键和无障碍功能"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:21
+#: data/io.github.tobagin.karere.metainfo.xml.in:21
 msgid "Resource-efficient compared to browser-based solutions"
 msgstr "与基于浏览器的解决方案相比，资源效率更高"
 

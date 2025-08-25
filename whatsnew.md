@@ -139,10 +139,10 @@ private void on_about_action() {
         // ... other properties
     };
 
-    // Load release notes from appdata (standard LibAdwaita approach)
+    // Load release notes from metainfo (standard LibAdwaita approach)
     try {
-        var appdata_path = Path.build_filename(Config.DATADIR, "metainfo", "%s.metainfo.xml".printf(Config.APP_ID));
-        var file = File.new_for_path(appdata_path);
+        var metainfo_path = Path.build_filename(Config.DATADIR, "metainfo", "%s.metainfo.xml".printf(Config.APP_ID));
+        var file = File.new_for_path(metainfo_path);
         
         if (file.query_exists()) {
             uint8[] contents;
@@ -162,9 +162,9 @@ private void on_about_action() {
 }
 ```
 
-### 7. AppData Integration
+### 7. Metainfo Integration
 
-Ensure your `appdata.xml` contains release information:
+Ensure your `metainfo.xml` contains release information:
 
 ```xml
 <releases>

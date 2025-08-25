@@ -9,7 +9,7 @@ This document tracks the changes made to ensure full Flathub compliance accordin
 
 ## Changes Made
 
-### AppData Metadata (`data/io.github.tobagin.karere.appdata.xml.in`)
+### Metainfo Metadata (`data/io.github.tobagin.karere.metainfo.xml.in`)
 
 #### ✅ Fixed Issues:
 - **Summary Length**: Shortened from "Modern WhatsApp Web wrapper for Linux desktop" (54 characters) to "Native WhatsApp Web client" (27 characters) to meet the 35-character guideline
@@ -35,7 +35,7 @@ This document tracks the changes made to ensure full Flathub compliance accordin
 #### Development Manifest (`packaging/io.github.tobagin.karere.Devel.yml`)
 - **Permissions**: Removed potentially unsafe `--filesystem=host-etc` permission
 - **Cleanup Rules**: Applied same enhancements as production manifest
-- **Validation**: Added AppData validation step that was missing
+- **Validation**: Added Metainfo validation step that was missing
 
 ### Desktop Entry (`data/io.github.tobagin.karere.desktop.in`)
 - **Comment**: Updated to match new shorter summary for consistency
@@ -47,7 +47,7 @@ This document tracks the changes made to ensure full Flathub compliance accordin
 
 ## Validation Checklist
 
-### ✅ AppData Requirements
+### ✅ Metainfo Requirements
 - [x] Summary under 35 characters
 - [x] Brand colors specified (light/dark)
 - [x] Proper categorization
@@ -92,7 +92,7 @@ Screenshots should:
 ## Flathub Submission Readiness
 
 ### Current Status: 🟡 Nearly Ready
-- **AppData**: ✅ Compliant
+- **Metainfo**: ✅ Compliant
 - **Manifests**: ✅ Compliant  
 - **Desktop Entry**: ✅ Compliant
 - **Icons**: ✅ Basic compliance (SVG provided)

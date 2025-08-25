@@ -20,18 +20,18 @@ msgstr ""
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 # Application Information
-#: data/io.github.tobagin.karere.appdata.xml.in:4
+#: data/io.github.tobagin.karere.metainfo.xml.in:4
 #: data/io.github.tobagin.karere.desktop.in:3 src/application.vala:45
 #: src/application.vala:47 src/application.vala:49 src/window.vala:32
 msgid "Karere"
 msgstr "Karere"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:5
+#: data/io.github.tobagin.karere.metainfo.xml.in:5
 #: data/io.github.tobagin.karere.desktop.in:4
 msgid "Native WhatsApp client for Linux"
 msgstr "Нативный клиент WhatsApp для Linux"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:7
+#: data/io.github.tobagin.karere.metainfo.xml.in:7
 msgid ""
 "Karere is a modern, native WhatsApp client built specifically for the Linux "
 "desktop using GTK4 and LibAdwaita. It provides a seamless WhatsApp "
@@ -43,40 +43,40 @@ msgstr ""
 "бесперебойную работу с WhatsApp с нативной интеграцией с рабочим столом, "
 "комплексным ведением журналов и возможностями отчётов о сбоях."
 
-#: data/io.github.tobagin.karere.appdata.xml.in:12
+#: data/io.github.tobagin.karere.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Возможности:"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:14
+#: data/io.github.tobagin.karere.metainfo.xml.in:14
 msgid "Native GTK4/LibAdwaita interface with modern design"
 msgstr "Нативный интерфейс GTK4/LibAdwaita с современным дизайном"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:15
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
 msgid "Full desktop integration with notifications and theming"
 msgstr "Полная интеграция с рабочим столом с уведомлениями и темами"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:16
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
 msgid "WebKitGTK-based WhatsApp Web rendering for optimal performance"
 msgstr ""
 "Рендеринг WhatsApp Web на основе WebKitGTK для оптимальной производительности"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:17
+#: data/io.github.tobagin.karere.metainfo.xml.in:17
 msgid "Comprehensive logging system for debugging and monitoring"
 msgstr "Комплексная система ведения журналов для отладки и мониторинга"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:18
+#: data/io.github.tobagin.karere.metainfo.xml.in:18
 msgid "Crash reporting with user privacy controls"
 msgstr "Отчёты о сбоях с контролем конфиденциальности пользователя"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:19
+#: data/io.github.tobagin.karere.metainfo.xml.in:19
 msgid "Light, dark, and system theme support"
 msgstr "Поддержка светлой, тёмной и системной тем"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:20
+#: data/io.github.tobagin.karere.metainfo.xml.in:20
 msgid "Keyboard shortcuts and accessibility features"
 msgstr "Сочетания клавиш и возможности доступности"
 
-#: data/io.github.tobagin.karere.appdata.xml.in:21
+#: data/io.github.tobagin.karere.metainfo.xml.in:21
 msgid "Resource-efficient compared to browser-based solutions"
 msgstr "Ресурсоэффективно по сравнению с браузерными решениями"
 
