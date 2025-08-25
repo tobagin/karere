@@ -97,6 +97,25 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="0.8.5" date="2025-08-25">
+      <description>
+        <p>🔧 Code Refactoring and Architecture Improvements</p>
+        <p>Improvements:</p>
+        <ul>
+          <li>Converted template files to preprocessor directives for cleaner code</li>
+          <li>Eliminated .vala.in template substitution system</li>
+          <li>Added compile-time conditional compilation using DEVELOPMENT flag</li>
+          <li>Improved build system maintainability and type safety</li>
+          <li>Added contributors Aman Das and Cameo to about dialog</li>
+        </ul>
+        <p>Technical Changes:</p>
+        <ul>
+          <li>Replaced window.vala.in and preferences.vala.in with direct .vala files</li>
+          <li>Updated meson.build to use Vala preprocessor directives</li>
+          <li>Simplified source file management in build system</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.8.4" date="2025-08-25">
       <description>
         <p>🐛 Bug Fixes and Improvements</p>
