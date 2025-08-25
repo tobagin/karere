@@ -317,7 +317,7 @@ namespace Karere {
         private void on_about_activate() {
             logger.debug("About action activated");
             
-            string[] developers = { "Thiago Fernandes" };
+            string[] developers = { "Thiago Fernandes", "Aman Das", "Cameo" };
             string[] designers = { "Thiago Fernandes" };
             string[] artists = { "Thiago Fernandes" };
             
