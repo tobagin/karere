@@ -1,7 +1,7 @@
 project(
     'karere',
     'vala', 'c',
-    version: '0.8.1',
+    version: '0.8.2',
     meson_version: '>= 1.0.0',
     default_options: [
         'warning_level=1',
@@ -235,37 +235,37 @@ if desktop_file_validate.found()
     )
 endif
 
-# AppData file (skip i18n for development builds to avoid ITS rules issues)
+# Metainfo file (skip i18n for development builds to avoid ITS rules issues)
 if get_option('profile') == 'development'
-    appdata_file = configure_file(
-        input: 'data/io.github.tobagin.karere.appdata.xml.in',
-        output: app_id + '.appdata.xml',
+    metainfo_file = configure_file(
+        input: 'data/io.github.tobagin.karere.metainfo.xml.in',
+        output: app_id + '.metainfo.xml',
         configuration: conf_data,
         install: true,
         install_dir: get_option('datadir') / 'metainfo'
     )
 else
-    appdata_configured = configure_file(
-        input: 'data/io.github.tobagin.karere.appdata.xml.in',
-        output: app_id + '.appdata.xml.in',
+    metainfo_configured = configure_file(
+        input: 'data/io.github.tobagin.karere.metainfo.xml.in',
+        output: app_id + '.metainfo.xml.in',
         configuration: conf_data
     )
     
-    appdata_file = i18n.merge_file(
-        input: appdata_configured,
-        output: app_id + '.appdata.xml',
+    metainfo_file = i18n.merge_file(
+        input: metainfo_configured,
+        output: app_id + '.metainfo.xml',
         po_dir: 'po',
         install: true,
         install_dir: get_option('datadir') / 'metainfo'
     )
 endif
 
-# AppData validation
+# Metainfo validation
 appstreamcli = find_program('appstreamcli', required: false)
 if appstreamcli.found()
-    test('Validate appdata',
+    test('Validate metainfo',
         appstreamcli,
-        args: ['validate', '--no-net', appdata_file],
+        args: ['validate', '--no-net', metainfo_file],
         suite: 'validation'
     )
 endif

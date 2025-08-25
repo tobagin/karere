@@ -101,6 +101,23 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="0.8.2" date="2025-08-25">
+      <description>
+        <p>🐛 Bug Fixes and Improvements</p>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed crash when handling invalid notification data</li>
+          <li>Resolved memory leak in WebKit manager cleanup</li>
+          <li>Corrected window state persistence on shutdown</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Better error handling for network disconnections</li>
+          <li>Enhanced stability during long sessions</li>
+          <li>Performance optimizations for faster startup</li>
+        </ul>
+      </description>
+    </release>
     <release version="@VERSION@" date="2025-08-24">
       <description>
         <p>Visual Documentation Update</p>
