@@ -131,19 +131,6 @@
         </ul>
       </description>
     </release>
-    <release version="@VERSION@" date="2025-08-24">
-      <description>
-        <p>Visual Documentation Update</p>
-        <ul>
-          <li>Added 4 comprehensive screenshots showcasing application features</li>
-          <li>Updated main window screenshot with current Vala implementation</li>
-          <li>Added about dialog screenshot showing version information</li>
-          <li>Added preferences dialog screenshot displaying settings options</li>
-          <li>Added keyboard shortcuts reference screenshot for productivity</li>
-          <li>Enhanced visual documentation for better user onboarding</li>
-        </ul>
-      </description>
-    </release>
     <release version="0.8.0" date="2025-08-24">
       <description>
         <p>🚀 Major Architecture Migration: Python to Vala/GTK4</p>
