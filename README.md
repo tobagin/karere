@@ -40,7 +40,7 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 ```bash
 # Clone the repository
 git clone https://github.com/tobagin/karere.git
-cd karere-vala
+cd karere
 
 # Build and install development version
 ./scripts/build.sh --dev --install
