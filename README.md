@@ -47,7 +47,7 @@ cd karere
 ```
 
 #### Production Version (Coming Soon)
-Karere will be available on Flathub once released.
+Karere is available on Flathub.
 
 ## Usage
 
