@@ -49,35 +49,6 @@ cd karere-vala
 #### Production Version (Coming Soon)
 Karere will be available on Flathub once released.
 
-## Building from Source
-
-### Prerequisites
-
-- GTK4 4.14+
-- LibAdwaita 1.5+
-- WebKitGTK 6.0
-- Vala compiler
-- Meson build system
-- Blueprint compiler 0.18+
-
-### Build Steps
-
-```bash
-# Install dependencies (Ubuntu/Debian)
-sudo apt install valac meson build-essential libgtk-4-dev libadwaita-1-dev libwebkitgtk-6.0-dev blueprint-compiler
-
-# Clone and build
-git clone https://github.com/tobagin/karere-vala.git
-cd karere-vala
-
-# Configure and build
-meson setup build --prefix=/usr
-meson compile -C build
-
-# Install (optional)
-sudo meson install -C build
-```
-
 ## Usage
 
 ### Basic Usage
