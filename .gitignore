@@ -20,22 +20,6 @@ build-flatpak/
 *.h
 resources.c
 resources.h
-config.vala
-window.vala
-preferences.vala
-preferences.blp
-resources.xml
-
-# Desktop files
-*.desktop
-*.desktop.in.configured
-
-# AppData files
-*.appdata.xml
-*.metainfo.xml
-
-# GSchema files
-*.gschema.xml
 
 # Compiled UI files
 *.ui
