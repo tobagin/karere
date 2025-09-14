@@ -97,6 +97,34 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="0.9.0" date="2025-09-14">
+      <description>
+        <p>✨ Enhanced Emoji Support and Rendering Improvements</p>
+        <p>New Features:</p>
+        <ul>
+          <li>Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)</li>
+          <li>Enhanced WebKit rendering with maximum hardware acceleration</li>
+          <li>Improved emoji consistency with bundled font system</li>
+          <li>Optimized font loading to eliminate display conflicts</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Fixed random emoji display issues and blank emoji problems</li>
+          <li>Eliminated WebKit cache corruption affecting emoji rendering</li>
+          <li>Streamlined font stack for consistent emoji appearance</li>
+          <li>Enhanced 2D canvas acceleration for better graphics performance</li>
+          <li>Improved font loading stability and reduced race conditions</li>
+        </ul>
+        <p>Technical Changes:</p>
+        <ul>
+          <li>Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-only)</li>
+          <li>Disabled problematic WebKit caches causing font corruption</li>
+          <li>Simplified emoji font configuration to single high-quality source</li>
+          <li>Restored Safari Linux user agent for native WebKit experience</li>
+          <li>Added subpixel font scaling and advanced rendering optimizations</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.8.5" date="2025-08-25">
       <description>
         <p>🔧 Code Refactoring and Architecture Improvements</p>

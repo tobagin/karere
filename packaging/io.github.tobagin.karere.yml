@@ -54,8 +54,8 @@ modules:
     sources:
       - type: git
         url: https://gitlab.gnome.org/jwestman/blueprint-compiler.git
-        tag: v0.18.0
-        commit: 07c9c9df9cd1b6b4454ecba21ee58211e9144a4b
+        tag: v0.9.0
+        commit: 748f42522894d0b8b2efbcd849ee687e869355c4
 
   - name: libgee
     buildsystem: autotools
@@ -77,5 +77,5 @@ modules:
     sources:
       - type: git
         url: https://github.com/tobagin/karere.git
-        tag: v0.8.4
-        commit: 4a732407edd4b3bb9dcd9b3430c7a9b9313d973b
+        tag: v0.9.0
+        commit: 748f42522894d0b8b2efbcd849ee687e869355c4

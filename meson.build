@@ -1,8 +1,8 @@
 project(
     'karere',
     'vala', 'c',
-    version: '0.8.5',
-    meson_version: '>= 1.0.0',
+    version: '0.9.0',
+    meson_version: '0.9.0',
     default_options: [
         'warning_level=1',
         'werror=false',
@@ -23,14 +23,14 @@ gnome = import('gnome')
 i18n = import('i18n')
 
 # Dependencies
-gtk_dep = dependency('gtk4', version: '>= 4.14.0')
-adwaita_dep = dependency('libadwaita-1', version: '>= 1.5.0')
-webkit_dep = dependency('webkitgtk-6.0', version: '>= 2.40.0')
-soup_dep = dependency('libsoup-3.0', version: '>= 3.0.0')
-gio_dep = dependency('gio-2.0', version: '>= 2.74.0')
-glib_dep = dependency('glib-2.0', version: '>= 2.74.0')
-json_glib_dep = dependency('json-glib-1.0', version: '>= 1.6.0')
-gee_dep = dependency('gee-0.8', version: '>= 0.20.0')
+gtk_dep = dependency('gtk4', version: '0.9.0')
+adwaita_dep = dependency('libadwaita-1', version: '0.9.0')
+webkit_dep = dependency('webkitgtk-6.0', version: '0.9.0')
+soup_dep = dependency('libsoup-3.0', version: '0.9.0')
+gio_dep = dependency('gio-2.0', version: '0.9.0')
+glib_dep = dependency('glib-2.0', version: '0.9.0')
+json_glib_dep = dependency('json-glib-1.0', version: '0.9.0')
+gee_dep = dependency('gee-0.8', version: '0.9.0')
 
 # Build configuration
 cc = meson.get_compiler('c')

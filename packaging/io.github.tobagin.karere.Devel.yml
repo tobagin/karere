@@ -65,7 +65,7 @@ modules:
     buildsystem: meson
     sources:
       - type: git
-        url: https://gitlab.gnome.org/jwestman/blueprint-compiler.git
+        url: https://gitlab.gnome.org/GNOME/blueprint-compiler.git
         tag: v0.18.0
         commit: 07c9c9df9cd1b6b4454ecba21ee58211e9144a4b
 
@@ -81,6 +81,16 @@ modules:
         x-checker-data:
           type: gnome
           name: libgee
+
+  - name: noto-emoji
+    buildsystem: simple
+    build-commands:
+      - install -Dm644 fonts/NotoColorEmoji.ttf /app/share/fonts/NotoColorEmoji.ttf
+    sources:
+      - type: archive
+        url: https://github.com/googlefonts/noto-emoji/archive/refs/tags/v2.047.tar.gz
+        sha256: 2cfaf5a427eb26334cdb30d98e4a0c005b660504a339249dc54373e566f09b50
+        strip-components: 1
 
   - name: karere
     buildsystem: meson
