@@ -97,6 +97,23 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="0.9.1" date="2025-09-14">
+      <description>
+        <p>🐛 Bug Fixes and Build Improvements</p>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed invalid meson version requirement preventing builds</li>
+          <li>Corrected dependency version specifications in meson.build</li>
+          <li>Resolved flatpak-builder compatibility issues</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Better build system compatibility with different environments</li>
+          <li>Enhanced CI/CD pipeline stability</li>
+          <li>More robust dependency handling</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.9.0" date="2025-09-14">
       <description>
         <p>✨ Enhanced Emoji Support and Rendering Improvements</p>
