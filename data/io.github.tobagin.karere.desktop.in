@@ -1,13 +1,13 @@
 [Desktop Entry]
 Type=Application
 Name=@APP_NAME@
-_GenericName=WhatsApp Client
-_Comment=Native WhatsApp Web client for Linux desktop
+GenericName=WhatsApp Client
+Comment=Native WhatsApp Web client for Linux desktop
 Icon=@APP_ID@
 Exec=karere %U
 StartupNotify=true
 Categories=Network;InstantMessaging;Chat;
-_Keywords=whatsapp;chat;messaging;web;communication;
+Keywords=whatsapp;chat;messaging;web;communication;
 MimeType=x-scheme-handler/whatsapp;
 Terminal=false
 StartupWMClass=karere

@@ -168,6 +168,7 @@ sources = files(
     'src/accessibility-manager.vala',
     'src/keyboard-shortcuts.vala',
     'src/shortcuts-window.vala',
+    'src/about-dialog.vala',
 ) + [config_vala]
 
 # Build executable
@@ -354,6 +355,7 @@ if get_option('tests')
         'src/accessibility-manager.vala',
         'src/keyboard-shortcuts.vala',
         'src/shortcuts-window.vala',
+        'src/about-dialog.vala',
     ) + [config_vala]
     
     test_executable = executable(
