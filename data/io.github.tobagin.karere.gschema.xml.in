@@ -48,7 +48,8 @@
       <summary>WebKit zoom level</summary>
       <description>The zoom level for the WebKit web view</description>
     </key>
-    
+
+
     <!-- General settings -->
     <key name="developer-tools-enabled" type="b">
       <default>false</default>
@@ -60,7 +61,7 @@
     <key name="notifications-enabled" type="b">
       <default>true</default>
       <summary>Enable notifications</summary>
-      <description>Whether to show desktop notifications</description>
+      <description>Whether to show notifications for new WhatsApp messages</description>
     </key>
     
     <key name="notification-sound-enabled" type="b">
@@ -73,13 +74,13 @@
       <range min="0" max="2"/>
       <default>0</default>
       <summary>Background notifications mode</summary>
-      <description>When to show background notifications (0=Always, 1=First time only, 2=Never)</description>
+      <description>When to show notifications about app running in background (0=Always, 1=First time only, 2=Never)</description>
     </key>
     
     <key name="system-notifications-enabled" type="b">
       <default>true</default>
       <summary>Use system notifications</summary>
-      <description>Whether to use system notification settings</description>
+      <description>Whether to enable all notifications from this application</description>
     </key>
     
     <key name="notification-preview-enabled" type="b">

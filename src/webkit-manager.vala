@@ -66,6 +66,47 @@ namespace Karere {
             web_settings.enable_media = true;
             web_settings.media_playback_requires_user_gesture = false;
             web_settings.media_playback_allows_inline = true;
+
+            // Improve font and emoji rendering quality
+            web_settings.enable_smooth_scrolling = true;
+            web_settings.allow_file_access_from_file_urls = false;
+            web_settings.allow_universal_access_from_file_urls = false;
+
+            // Enable 2D canvas acceleration for better emoji rendering
+            web_settings.set_property("enable-2d-canvas-acceleration", true);
+
+            // Enable additional graphics acceleration
+            web_settings.set_property("enable-accelerated-2d-canvas", true);
+
+            // Try to improve font rendering with single emoji font to avoid conflicts
+            web_settings.set_property("enable-subpixel-font-scaling", true);
+            web_settings.set_property("font-family-fantasy", "NotoColorEmoji, system-ui, -apple-system, sans-serif");
+            web_settings.set_property("font-family-serif", "NotoColorEmoji, system-ui, -apple-system, serif");
+            web_settings.set_property("font-family-sans-serif", "NotoColorEmoji, system-ui, -apple-system, sans-serif");
+
+            // Additional rendering improvements
+            web_settings.set_property("enable-site-specific-quirks", true);
+            web_settings.set_property("enable-page-cache", false);
+            web_settings.set_property("enable-offline-web-application-cache", false);
+            web_settings.set_property("enable-html5-database", true);
+            web_settings.set_property("enable-html5-local-storage", true);
+            web_settings.set_property("enable-xss-auditor", false);
+            web_settings.set_property("enable-hyperlink-auditing", false);
+
+            // Advanced font and rendering settings
+            web_settings.set_property("enable-back-forward-navigation-gestures", true);
+            web_settings.set_property("enable-mock-capture-devices", false);
+            web_settings.set_property("enable-spatial-navigation", false);
+            web_settings.set_property("enable-tabs-to-links", true);
+            web_settings.set_property("enable-caret-browsing", false);
+
+            // Font quality settings with single emoji font
+            web_settings.set_property("font-family-monospace", "NotoColorEmoji, SF Mono, Monaco, Inconsolata, 'Roboto Mono', Consolas, 'Courier New', monospace");
+
+            // Set minimum font size for better readability
+            web_settings.minimum_font_size = 9;
+            web_settings.default_font_size = 16;
+            web_settings.default_monospace_font_size = 13;
             
             // Set user agent - Use more explicit user agent setting
             var user_agent = get_user_agent();
@@ -136,6 +177,7 @@ namespace Karere {
             // Based on Safari on Linux for a more native feel
             return "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15 Karere/%s".printf(Config.VERSION);
         }
+
         
         /**
          * Update WebView settings when preferences change
@@ -199,6 +241,54 @@ namespace Karere {
             // The WebKit 6.0 API no longer exposes website data manager from context
             
             logger.debug("WebKit context configured");
+        }
+
+
+        /**
+         * Inject user agent override into the page with current user agent
+         */
+        public void inject_user_agent_override(WebKit.WebView web_view) {
+            // Check if user has custom desktop user agent
+            var custom_user_agent = get_user_agent();
+            var current_user_agent = custom_user_agent ?? get_default_user_agent();
+            inject_user_agent_override_with_agent(web_view, current_user_agent);
+        }
+
+        /**
+         * Inject user agent override into the page
+         */
+        private void inject_user_agent_override_with_agent(WebKit.WebView web_view, string user_agent) {
+            var javascript_code = """
+                // Override navigator.userAgent
+                Object.defineProperty(navigator, 'userAgent', {
+                    get: function() {
+                        return '%s';
+                    },
+                    configurable: false,
+                    enumerable: true
+                });
+
+                // Update platform to match user agent
+                var platform = '%s';
+                Object.defineProperty(navigator, 'platform', {
+                    get: function() {
+                        return platform;
+                    },
+                    configurable: false,
+                    enumerable: true
+                });
+
+                console.log('User agent overridden to:', navigator.userAgent);
+            """.printf(user_agent, "Linux x86_64");
+
+            web_view.evaluate_javascript.begin(javascript_code, -1, null, null, null, (obj, res) => {
+                try {
+                    web_view.evaluate_javascript.end(res);
+                    logger.debug("User agent JavaScript override injected successfully");
+                } catch (Error e) {
+                    logger.warning("Failed to inject user agent override: %s", e.message);
+                }
+            });
         }
     }
 }

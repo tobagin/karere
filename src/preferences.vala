@@ -166,6 +166,7 @@ namespace Karere {
         private unowned Gtk.Button log_view_button;
         [GtkChild]
         private unowned Gtk.Button log_clear_button;
+
         
         private Settings settings;
         
@@ -179,6 +180,7 @@ namespace Karere {
             setup_spell_checking_settings();
             
             // Initialize UI visibility
+            on_system_notifications_changed();
             on_notifications_changed();
             on_dnd_changed();
             on_dnd_scheduled_changed();
@@ -313,6 +315,7 @@ namespace Karere {
             log_clear_button.clicked.connect(on_log_clear_clicked);
             
             // Listen for settings changes that affect UI
+            settings.changed["system-notifications-enabled"].connect(on_system_notifications_changed);
             settings.changed["notifications-enabled"].connect(on_notifications_changed);
             settings.changed["background-notifications-mode"].connect(on_notifications_changed);
             settings.changed["dnd-enabled"].connect(on_dnd_changed);
@@ -482,15 +485,30 @@ namespace Karere {
             crash_count_label.set_text(count.to_string());
         }
         
+        private void on_system_notifications_changed() {
+            // Update UI sensitivity based on system notifications enabled - master toggle
+            var system_enabled = settings.get_boolean("system-notifications-enabled");
+            notifications_enabled_row.sensitive = system_enabled;
+            background_notifications_row.sensitive = system_enabled;
+            notification_sound_row.sensitive = system_enabled;
+            notification_preview_row.sensitive = system_enabled;
+            notification_preview_length_row.sensitive = system_enabled && settings.get_boolean("notification-preview-enabled");
+            background_frequency_row.sensitive = system_enabled && settings.get_int("background-notifications-mode") == 0; // Always
+        }
+
         private void on_notifications_changed() {
-            // Update UI sensitivity based on notifications enabled
-            var enabled = settings.get_boolean("notifications-enabled");
-            background_notifications_row.sensitive = enabled;
-            system_notifications_row.sensitive = enabled;
-            notification_sound_row.sensitive = enabled;
-            notification_preview_row.sensitive = enabled;
-            notification_preview_length_row.sensitive = enabled && settings.get_boolean("notification-preview-enabled");
-            background_frequency_row.sensitive = enabled && settings.get_int("background-notifications-mode") == 0; // Always
+            // Update UI sensitivity based on message notifications enabled (secondary toggle)
+            var system_enabled = settings.get_boolean("system-notifications-enabled");
+            var message_enabled = settings.get_boolean("notifications-enabled");
+
+            // Only update sensitivity if system notifications are enabled
+            if (system_enabled) {
+                background_notifications_row.sensitive = message_enabled;
+                notification_sound_row.sensitive = message_enabled;
+                notification_preview_row.sensitive = message_enabled;
+                notification_preview_length_row.sensitive = message_enabled && settings.get_boolean("notification-preview-enabled");
+                background_frequency_row.sensitive = message_enabled && settings.get_int("background-notifications-mode") == 0; // Always
+            }
         }
         
         private void on_dnd_changed() {
@@ -692,5 +710,6 @@ namespace Karere {
                 main_window.update_webkit_settings();
             }
         }
+
     }
 }

@@ -39,11 +39,12 @@ namespace Karere {
         private unowned Gtk.Box zoom_controls_box;
         
         private WebKit.WebView web_view;
-        
+
         private Settings settings;
         private WebKitManager webkit_manager;
         private NotificationManager notification_manager;
         private Logger logger;
+        private Gdk.Clipboard clipboard;
 
         public Window(Gtk.Application app) {
             Object(application: app);
@@ -68,6 +69,7 @@ namespace Karere {
             setup_notifications();
             setup_settings_listeners();
             setup_accessibility_features();
+            setup_clipboard_paste();
             
             // Initialize focus indicators state
             if (settings != null) {
@@ -84,12 +86,13 @@ namespace Karere {
             // Set window properties
             set_title(Config.APP_NAME);
             set_icon_name(Config.APP_ID);
-            
+
             // Connect window state change signals
             notify["maximized"].connect(save_window_state);
             notify["default-width"].connect(save_window_state);
             notify["default-height"].connect(save_window_state);
-            
+
+
             logger.debug("Window properties configured");
         }
 
@@ -127,16 +130,18 @@ namespace Karere {
             // Add WebView to container
             web_container.append(web_view);
             
-            // Set up drag and drop for files (now that web_view exists)
-            setup_drag_and_drop();
+            // Note: Removed custom drag and drop handling to allow native WebKit behavior
+            // This lets WhatsApp Web handle file drops directly, just like copy-paste
             
             // Configure WebView
             web_view.load_uri("https://web.whatsapp.com");
-            
+
+
             // Connect WebView signals
             web_view.load_changed.connect(on_load_changed);
             web_view.load_failed.connect(on_load_failed);
-            
+            web_view.decide_policy.connect(on_navigation_policy_decision);
+
             // Connect notification permission signal
             web_view.permission_request.connect(on_permission_request);
             
@@ -364,6 +369,244 @@ namespace Karere {
             logger.debug("Window lost focus");
         }
 
+        /**
+         * Setup clipboard image paste functionality
+         */
+        private void setup_clipboard_paste() {
+            // Get the display clipboard
+            clipboard = this.get_clipboard();
+
+            // Set up key event controller to detect Ctrl+V
+            var key_controller = new Gtk.EventControllerKey();
+            key_controller.key_pressed.connect(on_key_pressed);
+
+            // Add the controller to the web view so it can intercept paste events
+            web_view.add_controller(key_controller);
+
+            logger.debug("Clipboard paste functionality configured");
+        }
+
+        /**
+         * Handle key press events to detect Ctrl+V for image paste
+         */
+        private bool on_key_pressed(uint keyval, uint keycode, Gdk.ModifierType state) {
+            // Check for Ctrl+V (paste)
+            if (keyval == Gdk.Key.v && (state & Gdk.ModifierType.CONTROL_MASK) != 0) {
+                logger.debug("Ctrl+V detected, checking clipboard for image");
+                handle_paste_event();
+                return true; // Consume the event to prevent default paste
+            }
+
+            return false; // Let other key events pass through
+        }
+
+        /**
+         * Handle paste events by checking clipboard for images
+         */
+        private void handle_paste_event() {
+            if (clipboard == null) {
+                logger.warning("Clipboard not available");
+                return;
+            }
+
+            // Check if clipboard contains an image
+            var formats = clipboard.get_formats();
+
+            if (formats.contain_gtype(typeof(Gdk.Texture))) {
+                // Clipboard contains an image texture
+                clipboard.read_texture_async.begin(null, (obj, res) => {
+                    try {
+                        var texture = clipboard.read_texture_async.end(res);
+                        if (texture != null) {
+                            process_clipboard_image(texture);
+                        }
+                    } catch (Error e) {
+                        logger.error("Failed to read texture from clipboard: %s", e.message);
+                    }
+                });
+            } else if (formats.contain_mime_type("image/png") ||
+                       formats.contain_mime_type("image/jpeg") ||
+                       formats.contain_mime_type("image/gif")) {
+                // Clipboard contains image data
+                string[] mime_types = {"image/png", "image/jpeg", "image/gif"};
+                clipboard.read_async.begin(mime_types, GLib.Priority.DEFAULT, null, (obj, res) => {
+                    try {
+                        string mime_type;
+                        var input_stream = clipboard.read_async.end(res, out mime_type);
+                        if (input_stream != null) {
+                            process_clipboard_image_stream(input_stream, mime_type);
+                        }
+                    } catch (Error e) {
+                        logger.error("Failed to read image stream from clipboard: %s", e.message);
+                    }
+                });
+            } else {
+                logger.debug("No image found in clipboard");
+                // Let the default paste behavior handle text or other content
+                inject_default_paste();
+            }
+        }
+
+        /**
+         * Process a clipboard image texture
+         */
+        private void process_clipboard_image(Gdk.Texture texture) {
+            logger.info("Processing clipboard image texture: %dx%d", texture.get_width(), texture.get_height());
+
+            try {
+                // Convert texture to PNG bytes
+                var bytes = texture.save_to_png_bytes();
+                inject_image_into_whatsapp(bytes, "image/png");
+            } catch (Error e) {
+                logger.error("Failed to convert texture to PNG: %s", e.message);
+                show_error_toast(_("Failed to process clipboard image"));
+            }
+        }
+
+        /**
+         * Process a clipboard image stream
+         */
+        private void process_clipboard_image_stream(GLib.InputStream input_stream, string mime_type) {
+            logger.info("Processing clipboard image stream with MIME type: %s", mime_type);
+
+            try {
+                // Read the entire stream into memory
+                var output_stream = new MemoryOutputStream(null, GLib.realloc, GLib.free);
+                output_stream.splice(input_stream, OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET);
+
+                var data = output_stream.steal_data();
+                var bytes = new Bytes(data);
+
+                inject_image_into_whatsapp(bytes, mime_type);
+            } catch (Error e) {
+                logger.error("Failed to process clipboard image stream: %s", e.message);
+                show_error_toast(_("Failed to process clipboard image"));
+            }
+        }
+
+        /**
+         * Inject image data into WhatsApp Web
+         */
+        private void inject_image_into_whatsapp(Bytes image_bytes, string mime_type) {
+            logger.info("Injecting %s image (%zu bytes) into WhatsApp Web", mime_type, image_bytes.get_size());
+
+            // Convert bytes to base64 data URL
+            var base64_data = Base64.encode(image_bytes.get_data());
+            var data_url = "data:%s;base64,%s".printf(mime_type, base64_data);
+
+            // JavaScript to inject the image into WhatsApp Web
+            var javascript = """
+                (function() {
+                    try {
+                        // Find the message input area
+                        const messageBox = document.querySelector('[contenteditable="true"][data-tab="10"]') ||
+                                          document.querySelector('[contenteditable="true"]') ||
+                                          document.querySelector('div[contenteditable="true"]');
+
+                        if (!messageBox) {
+                            console.log('WhatsApp message box not found');
+                            return;
+                        }
+
+                        // Focus the message box
+                        messageBox.focus();
+
+                        // Create a File object from the data URL
+                        fetch('%s')
+                            .then(res => res.blob())
+                            .then(blob => {
+                                const file = new File([blob], 'clipboard_image.png', { type: '%s' });
+
+                                // Create a DataTransfer object to simulate drag and drop
+                                const dt = new DataTransfer();
+                                dt.items.add(file);
+
+                                // Create and dispatch a paste event
+                                const pasteEvent = new ClipboardEvent('paste', {
+                                    clipboardData: dt,
+                                    bubbles: true,
+                                    cancelable: true
+                                });
+
+                                // Dispatch to the message box
+                                messageBox.dispatchEvent(pasteEvent);
+
+                                console.log('Image paste event dispatched to WhatsApp');
+                            })
+                            .catch(err => {
+                                console.error('Failed to create file from data URL:', err);
+
+                                // Fallback: try to trigger file input click
+                                const fileInput = document.querySelector('input[type="file"][accept*="image"]');
+                                if (fileInput) {
+                                    // Create a new file input with our image
+                                    const newFileInput = document.createElement('input');
+                                    newFileInput.type = 'file';
+                                    newFileInput.accept = 'image/*';
+                                    newFileInput.style.display = 'none';
+                                    document.body.appendChild(newFileInput);
+
+                                    // We can't programmatically set files on input elements for security reasons
+                                    // So this approach won't work either
+                                    console.log('Cannot programmatically set file input - security restriction');
+                                    document.body.removeChild(newFileInput);
+                                }
+                            });
+                    } catch (error) {
+                        console.error('Error injecting image into WhatsApp:', error);
+                    }
+                })();
+            """.printf(data_url, mime_type);
+
+            // Execute the JavaScript
+            web_view.evaluate_javascript.begin(javascript, -1, null, null, null, (obj, res) => {
+                try {
+                    web_view.evaluate_javascript.end(res);
+                    logger.info("Image injection JavaScript executed successfully");
+                    show_success_toast(_("Image pasted to WhatsApp"));
+                } catch (Error e) {
+                    logger.error("Failed to execute image injection JavaScript: %s", e.message);
+                    show_error_toast(_("Failed to paste image to WhatsApp"));
+                }
+            });
+        }
+
+        /**
+         * Inject default paste behavior (for non-image content)
+         */
+        private void inject_default_paste() {
+            logger.debug("Executing default paste behavior");
+
+            var javascript = """
+                (function() {
+                    // Find the message input area
+                    const messageBox = document.querySelector('[contenteditable="true"][data-tab="10"]') ||
+                                      document.querySelector('[contenteditable="true"]') ||
+                                      document.querySelector('div[contenteditable="true"]');
+
+                    if (messageBox) {
+                        // Focus the message box
+                        messageBox.focus();
+
+                        // Execute paste command
+                        document.execCommand('paste');
+                        console.log('Default paste executed');
+                    } else {
+                        console.log('WhatsApp message box not found for default paste');
+                    }
+                })();
+            """;
+
+            web_view.evaluate_javascript.begin(javascript, -1, null, null, null, (obj, res) => {
+                try {
+                    web_view.evaluate_javascript.end(res);
+                    logger.debug("Default paste JavaScript executed");
+                } catch (Error e) {
+                    logger.warning("Failed to execute default paste JavaScript: %s", e.message);
+                }
+            });
+        }
+
         private void update_spell_checking() {
             if (settings == null || web_view == null) {
                 logger.warning("Cannot update spell checking: settings or web_view is null");
@@ -517,14 +760,8 @@ namespace Karere {
             logger.info("Zoom controls %s", (zoom_enabled && zoom_controls_enabled) ? "shown" : "hidden");
         }
 
-        private void setup_drag_and_drop() {
-            // Set up drag and drop for file sharing
-            var drop_target = new Gtk.DropTarget(typeof(File), Gdk.DragAction.COPY);
-            drop_target.drop.connect(on_file_dropped);
-            web_view.add_controller(drop_target);
-            
-            logger.debug("Drag and drop configured");
-        }
+        // Removed: setup_drag_and_drop() method
+        // Native WebKit drag and drop now handles file drops directly to WhatsApp Web
 
         private void restore_window_state() {
             if (settings == null) {
@@ -583,17 +820,91 @@ namespace Karere {
                 case WebKit.LoadEvent.FINISHED:
                     logger.debug("Load finished");
                     setup_webkit_notifications();
-                    inject_user_agent_override();
+                    webkit_manager.inject_user_agent_override(web_view);
                     break;
             }
         }
 
         private bool on_load_failed(WebKit.LoadEvent load_event, string failing_uri, Error error) {
             logger.error("Load failed for %s: %s", failing_uri, error.message);
-            
+
             // TRANSLATORS: Error message when WhatsApp Web fails to load
             show_error_toast(_("Failed to load WhatsApp Web. Please check your internet connection."));
             return false;
+        }
+
+        private bool on_navigation_policy_decision(WebKit.PolicyDecision decision, WebKit.PolicyDecisionType decision_type) {
+            if (decision_type == WebKit.PolicyDecisionType.NAVIGATION_ACTION) {
+                var navigation_decision = decision as WebKit.NavigationPolicyDecision;
+                if (navigation_decision != null) {
+                    var navigation_action = navigation_decision.get_navigation_action();
+                    var request = navigation_action.get_request();
+                    var uri = request.get_uri();
+
+                    logger.debug("Navigation policy decision for URI: %s", uri);
+
+                    // Allow internal WhatsApp Web navigation
+                    if (is_whatsapp_internal_uri(uri)) {
+                        logger.debug("Allowing internal WhatsApp navigation: %s", uri);
+                        decision.use();
+                        return true;
+                    }
+
+                    // For external links, open in system browser
+                    if (is_external_link(uri)) {
+                        logger.info("Opening external link in system browser: %s", uri);
+
+                        try {
+                            AppInfo.launch_default_for_uri(uri, null);
+                            // TRANSLATORS: Info message when external link is opened
+                            show_info_toast(_("Link opened in external browser"));
+                        } catch (Error e) {
+                            logger.error("Failed to open external link: %s", e.message);
+                            // TRANSLATORS: Error message when external link fails to open
+                            show_error_toast(_("Failed to open link in external browser"));
+                        }
+
+                        // Ignore the navigation in the WebView
+                        decision.ignore();
+                        return true;
+                    }
+
+                    // Default: allow navigation
+                    decision.use();
+                    return true;
+                }
+            }
+
+            // For other decision types, use default behavior
+            decision.use();
+            return false;
+        }
+
+        /**
+         * Check if URI is internal to WhatsApp Web
+         */
+        private bool is_whatsapp_internal_uri(string uri) {
+            // Allow WhatsApp Web domains and related services
+            return uri.has_prefix("https://web.whatsapp.com/") ||
+                   uri.has_prefix("https://whatsapp.com/") ||
+                   uri.has_prefix("https://www.whatsapp.com/") ||
+                   uri.has_prefix("https://static.whatsapp.net/") ||
+                   uri.has_prefix("https://mmg.whatsapp.net/") ||
+                   uri.has_prefix("wss://web.whatsapp.com/") ||
+                   uri.has_prefix("blob:https://web.whatsapp.com/") ||
+                   // Allow data URIs for inline content
+                   uri.has_prefix("data:") ||
+                   // Allow about: URIs for internal pages
+                   uri.has_prefix("about:");
+        }
+
+        /**
+         * Check if URI is an external link that should open in browser
+         */
+        private bool is_external_link(string uri) {
+            // Consider HTTP/HTTPS links that are not WhatsApp internal as external
+            return (uri.has_prefix("http://") || uri.has_prefix("https://")) &&
+                   !is_whatsapp_internal_uri(uri);
         }
 
 
@@ -603,40 +914,6 @@ namespace Karere {
             logger.debug("WebKit notifications setup complete");
         }
 
-        private void inject_user_agent_override() {
-            // Override navigator.userAgent with our Linux user agent via JavaScript
-            var linux_user_agent = webkit_manager.get_default_user_agent();
-            var javascript_code = """
-                // Override navigator.userAgent to ensure it shows Linux
-                Object.defineProperty(navigator, 'userAgent', {
-                    get: function() {
-                        return '%s';
-                    },
-                    configurable: false,
-                    enumerable: true
-                });
-                
-                // Also override navigator.platform to be consistent
-                Object.defineProperty(navigator, 'platform', {
-                    get: function() {
-                        return 'Linux x86_64';
-                    },
-                    configurable: false,
-                    enumerable: true
-                });
-                
-                console.log('User agent overridden to:', navigator.userAgent);
-            """.printf(linux_user_agent);
-            
-            web_view.evaluate_javascript.begin(javascript_code, -1, null, null, null, (obj, res) => {
-                try {
-                    web_view.evaluate_javascript.end(res);
-                    logger.info("User agent JavaScript override injected successfully");
-                } catch (Error e) {
-                    logger.warning("Failed to inject user agent override: %s", e.message);
-                }
-            });
-        }
 
         private bool on_permission_request(WebKit.PermissionRequest request) {
             if (request is WebKit.NotificationPermissionRequest) {
@@ -744,205 +1021,20 @@ namespace Karere {
         }
 
 
-        private bool on_file_dropped(Gtk.DropTarget target, Value value, double x, double y) {
-            if (value.holds(typeof(File))) {
-                var file = (File) value.get_object();
-                logger.debug("File dropped: %s", file.get_path());
-                
-                // Attempt to share file with WhatsApp Web
-                share_file_with_whatsapp.begin(file);
-                return true;
-            }
-            return false;
-        }
+        // Removed: on_file_dropped() method
+        // Files are now handled natively by WebKit and WhatsApp Web
 
-        /**
-         * Share a file with WhatsApp Web by injecting it into the web interface
-         *
-         * @param file The file to share
-         */
-        private async void share_file_with_whatsapp(File file) {
-            try {
-                // Check if file exists and is readable
-                if (!file.query_exists()) {
-                    // TRANSLATORS: Error message when a file doesn't exist
-                    show_error_toast(_("File does not exist"));
-                    return;
-                }
+        // Removed: share_file_with_whatsapp() method
+        // File sharing now handled natively by WebKit and WhatsApp Web
 
-                var file_info = file.query_info(FileAttribute.STANDARD_SIZE + "," + 
-                                               FileAttribute.STANDARD_CONTENT_TYPE, 
-                                               FileQueryInfoFlags.NONE);
-                var file_size = file_info.get_size();
-                var content_type = file_info.get_content_type();
-                
-                logger.info("Attempting to share file: %s (size: %s, type: %s)", 
-                           file.get_path(), Utils.format_size(file_size), content_type ?? "unknown");
+        // Removed: show_file_sharing_fallback_dialog() method
+        // No longer needed as files are handled natively by WebKit
 
-                // Check file size limits (WhatsApp has ~100MB limit for documents, ~16MB for images)
-                if (file_size > 100 * 1024 * 1024) { // 100MB
-                    // TRANSLATORS: Error message when file is too large for WhatsApp
-                    show_error_toast(_("File is too large for WhatsApp (max 100MB)"));
-                    return;
-                }
+        // Removed: copy_file_path_to_clipboard() method
+        // No longer needed as files are handled natively by WebKit
 
-                // Get file path for logging
-                var file_path = file.get_path();
-                
-                // JavaScript code to trigger file sharing in WhatsApp Web
-                var javascript_code = """
-                    (function() {
-                        try {
-                            // Look for WhatsApp's file input element
-                            const fileInput = document.querySelector('input[type="file"][accept*="*"]') || 
-                                            document.querySelector('input[type="file"]') ||
-                                            document.querySelector('[data-testid="media-input"]') ||
-                                            document.querySelector('[data-icon="attach-menu-plus"]')?.closest('div')?.querySelector('input[type="file"]');
-                            
-                            if (!fileInput) {
-                                // Try to find and click the attachment button first
-                                const attachButton = document.querySelector('[data-testid="attach-menu-plus"]') ||
-                                                   document.querySelector('[data-icon="plus"]') ||
-                                                   document.querySelector('[aria-label*="attach" i]') ||
-                                                   document.querySelector('[title*="attach" i]');
-                                
-                                if (attachButton) {
-                                    attachButton.click();
-                                    // Wait a bit for the menu to appear
-                                    setTimeout(() => {
-                                        // Look for document/media option
-                                        const docButton = document.querySelector('[data-testid="attach-document"]') ||
-                                                        document.querySelector('[data-icon="document"]') ||
-                                                        document.querySelector('[aria-label*="document" i]');
-                                        if (docButton) {
-                                            docButton.click();
-                                        }
-                                    }, 100);
-                                }
-                                
-                                return { success: false, error: 'Could not find file input or attachment button. Make sure WhatsApp Web is loaded and you have a chat open.' };
-                            }
-                            
-                            // Create a fake file input event
-                            const event = new Event('change', { bubbles: true });
-                            
-                            // Show info message that file sharing requires manual interaction
-                            return { success: false, error: 'File sharing requires opening the attachment menu in WhatsApp Web manually. The attachment button has been clicked for you.' };
-                            
-                        } catch (error) {
-                            return { success: false, error: 'JavaScript error: ' + error.message };
-                        }
-                    })();
-                """;
-
-                // Execute JavaScript to attempt file sharing
-                web_view.evaluate_javascript.begin(javascript_code, -1, null, null, null, (obj, res) => {
-                    try {
-                        var js_result = web_view.evaluate_javascript.end(res);
-                        var result_value = js_result;
-                        
-                        if (result_value != null && result_value.is_object()) {
-                            var success_value = result_value.object_get_property("success");
-                            var error_value = result_value.object_get_property("error");
-                            
-                            if (success_value != null && success_value.is_boolean() && success_value.to_boolean()) {
-                                // TRANSLATORS: Success message when file is ready to share
-                                show_info_toast(_("File ready to share - complete the upload in WhatsApp Web"));
-                            } else if (error_value != null && error_value.is_string()) {
-                                var error_msg = error_value.to_string();
-                                logger.warning("File sharing JavaScript error: %s", error_msg);
-                                show_file_sharing_fallback_dialog(file);
-                            } else {
-                                show_file_sharing_fallback_dialog(file);
-                            }
-                        } else {
-                            show_file_sharing_fallback_dialog(file);
-                        }
-                    } catch (Error e) {
-                        logger.error("Error executing file sharing JavaScript: %s", e.message);
-                        show_file_sharing_fallback_dialog(file);
-                    }
-                });
-
-            } catch (Error e) {
-                logger.error("Error preparing file for sharing: %s", e.message);
-                // TRANSLATORS: Error message when file processing fails. %s is the error details
-                show_error_toast(_("Failed to process file: %s").printf(e.message));
-            }
-        }
-
-        /**
-         * Show fallback dialog when automatic file sharing is not possible
-         */
-        private void show_file_sharing_fallback_dialog(File file) {
-            var dialog = new Adw.AlertDialog(
-                "File Ready to Share",
-                "To share this file with WhatsApp Web:\n\n" +
-                "1. Click the attachment (📎) button in WhatsApp Web\n" +
-                "2. Select 'Document' or 'Photos & Videos'\n" +
-                "3. Browse to and select: " + file.get_basename()
-            );
-
-            dialog.add_response("copy_path", "Copy File Path");
-            dialog.add_response("open_folder", "Open Folder");
-            dialog.add_response("close", "Close");
-
-            dialog.set_response_appearance("copy_path", Adw.ResponseAppearance.SUGGESTED);
-            dialog.set_default_response("copy_path");
-            dialog.set_close_response("close");
-
-            dialog.response.connect((response) => {
-                switch (response) {
-                    case "copy_path":
-                        copy_file_path_to_clipboard(file);
-                        break;
-                    case "open_folder":
-                        open_file_location(file);
-                        break;
-                }
-            });
-
-            dialog.present(this);
-        }
-
-        /**
-         * Copy file path to clipboard
-         */
-        private void copy_file_path_to_clipboard(File file) {
-            try {
-                var clipboard = get_display().get_clipboard();
-                clipboard.set_text(file.get_path());
-                // TRANSLATORS: Success message when file path is copied
-                show_info_toast(_("File path copied to clipboard"));
-                logger.debug("Copied file path to clipboard: %s", file.get_path());
-            } catch (Error e) {
-                logger.warning("Failed to copy file path to clipboard: %s", e.message);
-                // TRANSLATORS: Error message when copying file path fails
-                show_error_toast(_("Failed to copy file path"));
-            }
-        }
-
-        /**
-         * Open the folder containing the file
-         */
-        private void open_file_location(File file) {
-            try {
-                var parent = file.get_parent();
-                if (parent != null) {
-                    AppInfo.launch_default_for_uri(parent.get_uri(), null);
-                    // TRANSLATORS: Success message when file location is opened
-                    show_info_toast(_("Opened file location"));
-                    logger.debug("Opened file location: %s", parent.get_path());
-                } else {
-                    // TRANSLATORS: Error message when file location cannot be determined
-                    show_error_toast(_("Could not determine file location"));
-                }
-            } catch (Error e) {
-                logger.warning("Failed to open file location: %s", e.message);
-                // TRANSLATORS: Error message when opening file location fails
-                show_error_toast(_("Failed to open file location"));
-            }
-        }
+        // Removed: open_file_location() method
+        // No longer needed as files are handled natively by WebKit
 
         public void show_error_toast(string message) {
             var toast = new Adw.Toast(message);
@@ -1070,5 +1162,6 @@ namespace Karere {
             
             base.dispose();
         }
+
     }
 }

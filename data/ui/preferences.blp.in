@@ -232,14 +232,19 @@ template $KarerePreferences : Adw.PreferencesDialog {
     Adw.PreferencesGroup {
       title: _("Notifications");
 
+      Adw.SwitchRow system_notifications_row {
+        title: _("System Notifications");
+        subtitle: _("Enable all notifications from this application");
+      }
+
       Adw.SwitchRow notifications_enabled_row {
         title: _("Message Notifications");
-        subtitle: _("Show desktop notifications for new messages");
+        subtitle: _("Show notifications for new WhatsApp messages");
       }
 
       Adw.ComboRow background_notifications_row {
         title: _("Background Notifications");
-        subtitle: _("Whether to notify you that the app is still running when minimized");
+        subtitle: _("Show notifications when app is running in background");
         model: StringList {
           strings [
             _("Always"),
@@ -247,11 +252,6 @@ template $KarerePreferences : Adw.PreferencesDialog {
             _("Never")
           ]
         };
-      }
-
-      Adw.SwitchRow system_notifications_row {
-        title: _("System Notifications");
-        subtitle: _("Use system notification settings");
       }
 
       Adw.SwitchRow notification_sound_row {

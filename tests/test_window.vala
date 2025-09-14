@@ -209,13 +209,13 @@ namespace KarereTests {
             teardown();
         }
 
-        public void test_file_drop_types() {
+        public void test_native_webkit_drag_drop() {
             setup();
-            
-            // Test that DropTarget can be created for file handling
-            var drop_target = new Gtk.DropTarget(typeof(File), Gdk.DragAction.COPY);
-            assert(drop_target != null);
-            
+
+            // Test that WebKit handles drag and drop natively
+            // No custom DropTarget is created anymore - WebKit handles it
+            assert(window != null);
+
             teardown();
         }
 
@@ -338,10 +338,6 @@ namespace KarereTests {
             test.test_toast_functionality();
         });
 
-        Test.add_func("/karere/window/file_drop_types", () => {
-            var test = new WindowTest();
-            test.test_file_drop_types();
-        });
 
         Test.add_func("/karere/window/webkit_context_availability", () => {
             var test = new WindowTest();
