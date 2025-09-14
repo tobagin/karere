@@ -855,7 +855,8 @@ namespace Karere {
                         logger.info("Opening external link in system browser: %s", uri);
 
                         try {
-                            AppInfo.launch_default_for_uri(uri, null);
+                            // Try to open with portal first (for Flatpak compatibility)
+                            open_uri_external(uri);
                             // TRANSLATORS: Info message when external link is opened
                             show_info_toast(_("Link opened in external browser"));
                         } catch (Error e) {
@@ -905,6 +906,44 @@ namespace Karere {
             // Consider HTTP/HTTPS links that are not WhatsApp internal as external
             return (uri.has_prefix("http://") || uri.has_prefix("https://")) &&
                    !is_whatsapp_internal_uri(uri);
+        }
+
+        /**
+         * Open URI externally using Flatpak portal system
+         */
+        private void open_uri_external(string uri) throws Error {
+            // Always use the portal system since this is a Flatpak-only application
+            logger.debug("Opening URI via Flatpak portal: %s", uri);
+            open_uri_with_portal(uri);
+        }
+
+        /**
+         * Open URI using the Flatpak portal system
+         */
+        private void open_uri_with_portal(string uri) throws Error {
+            // Use flatpak-spawn to open the URI on the host system
+            string[] spawn_command = {
+                "flatpak-spawn", "--host", "xdg-open", uri
+            };
+
+            Subprocess process = new Subprocess.newv(
+                spawn_command,
+                SubprocessFlags.STDOUT_SILENCE | SubprocessFlags.STDERR_SILENCE
+            );
+
+            // Wait for the process to complete
+            process.wait_async.begin(null, (obj, res) => {
+                try {
+                    process.wait_async.end(res);
+                    if (process.get_exit_status() == 0) {
+                        logger.debug("URI opened successfully via portal: %s", uri);
+                    } else {
+                        logger.warning("Portal URI opening failed with exit code: %d", process.get_exit_status());
+                    }
+                } catch (Error e) {
+                    logger.error("Error waiting for portal process: %s", e.message);
+                }
+            });
         }
 
 

@@ -31,3 +31,4 @@ When asked to work on this codebase:
 - User's specific instructions override (or amend) instructions found in `.agent-os/specs/...`
 - Always adhere to established patterns, code style, and best practices documented above.
 - we should not be injecting javascript unless its the last resort to prevent addings bugs/quirks to the web.whatsapp.com.
+- always build dev using ./scripts/build.sh --dev and prod by ./scripts/build.sh
