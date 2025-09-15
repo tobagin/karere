@@ -49,6 +49,16 @@
       <description>The zoom level for the WebKit web view</description>
     </key>
 
+    <key name="webkit-cache-mode" type="s">
+      <choices>
+        <choice value="web-browser"/>
+        <choice value="disabled"/>
+      </choices>
+      <default>"disabled"</default>
+      <summary>WebKit cache mode</summary>
+      <description>WebKit cache behavior: web-browser (normal caching) or disabled (no cache)</description>
+    </key>
+
 
     <!-- General settings -->
     <key name="developer-tools-enabled" type="b">

@@ -226,9 +226,20 @@ namespace Karere {
          */
         public void configure_web_context(WebKit.WebContext context) {
             logger.debug("Configuring WebKit context");
-            
-            // Set cache model for better performance
-            context.set_cache_model(WebKit.CacheModel.WEB_BROWSER);
+
+            // Set cache model based on user preference
+            var cache_mode = settings.get_string("webkit-cache-mode");
+            switch (cache_mode) {
+                case "disabled":
+                    context.set_cache_model(WebKit.CacheModel.DOCUMENT_VIEWER);
+                    logger.debug("WebKit cache disabled");
+                    break;
+                case "web-browser":
+                default:
+                    context.set_cache_model(WebKit.CacheModel.WEB_BROWSER);
+                    logger.debug("WebKit cache enabled (web browser mode)");
+                    break;
+            }
             
             // Configure security settings
             var security_manager = context.get_security_manager();
@@ -290,5 +301,6 @@ namespace Karere {
                 }
             });
         }
+
     }
 }

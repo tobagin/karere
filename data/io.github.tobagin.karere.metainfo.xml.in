@@ -110,6 +110,8 @@
           <li>Enhanced WebKit rendering with maximum hardware acceleration</li>
           <li>Improved emoji consistency with bundled font system</li>
           <li>Optimized font loading to eliminate display conflicts</li>
+          <li>Added WebKit cache control setting for improved rendering consistency</li>
+          <li>Cache disabled by default to prevent emoji rendering issues</li>
         </ul>
         <p>Bug Fixes:</p>
         <ul>
