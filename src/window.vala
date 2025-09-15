@@ -141,6 +141,7 @@ namespace Karere {
             web_view.load_changed.connect(on_load_changed);
             web_view.load_failed.connect(on_load_failed);
             web_view.decide_policy.connect(on_navigation_policy_decision);
+            web_view.create.connect(on_create_new_web_view);
 
             // Connect notification permission signal
             web_view.permission_request.connect(on_permission_request);
@@ -834,14 +835,18 @@ namespace Karere {
         }
 
         private bool on_navigation_policy_decision(WebKit.PolicyDecision decision, WebKit.PolicyDecisionType decision_type) {
-            if (decision_type == WebKit.PolicyDecisionType.NAVIGATION_ACTION) {
+            // Handle both navigation actions and new window requests
+            if (decision_type == WebKit.PolicyDecisionType.NAVIGATION_ACTION ||
+                decision_type == WebKit.PolicyDecisionType.NEW_WINDOW_ACTION) {
+
                 var navigation_decision = decision as WebKit.NavigationPolicyDecision;
                 if (navigation_decision != null) {
                     var navigation_action = navigation_decision.get_navigation_action();
                     var request = navigation_action.get_request();
                     var uri = request.get_uri();
 
-                    logger.debug("Navigation policy decision for URI: %s", uri);
+                    logger.debug("Navigation policy decision (type: %s) for URI: %s",
+                               decision_type.to_string(), uri);
 
                     // Allow internal WhatsApp Web navigation
                     if (is_whatsapp_internal_uri(uri)) {
@@ -857,8 +862,6 @@ namespace Karere {
                         try {
                             // Try to open with portal first (for Flatpak compatibility)
                             open_uri_external(uri);
-                            // TRANSLATORS: Info message when external link is opened
-                            show_info_toast(_("Link opened in external browser"));
                         } catch (Error e) {
                             logger.error("Failed to open external link: %s", e.message);
                             // TRANSLATORS: Error message when external link fails to open
@@ -879,6 +882,35 @@ namespace Karere {
             // For other decision types, use default behavior
             decision.use();
             return false;
+        }
+
+        /**
+         * Handle requests to create new web views (new windows/tabs)
+         */
+        private Gtk.Widget on_create_new_web_view(WebKit.NavigationAction navigation_action) {
+            var request = navigation_action.get_request();
+            var uri = request.get_uri();
+
+            logger.info("New web view creation requested for URI: %s", uri);
+
+            // For external links, open in system browser instead of creating new web view
+            if (is_external_link(uri)) {
+                logger.info("Intercepting new window for external link: %s", uri);
+
+                try {
+                    open_uri_external(uri);
+                } catch (Error e) {
+                    logger.error("Failed to open external link in new window: %s", e.message);
+                    show_error_toast(_("Failed to open link in external browser"));
+                }
+
+                // Return null to prevent new window creation
+                return null;
+            }
+
+            // For internal links, allow default behavior (shouldn't normally happen)
+            logger.debug("Allowing new window creation for internal URI: %s", uri);
+            return null;
         }
 
         /**
@@ -921,27 +953,14 @@ namespace Karere {
          * Open URI using the Flatpak portal system
          */
         private void open_uri_with_portal(string uri) throws Error {
-            // Use flatpak-spawn to open the URI on the host system
-            string[] spawn_command = {
-                "flatpak-spawn", "--host", "xdg-open", uri
-            };
-
-            Subprocess process = new Subprocess.newv(
-                spawn_command,
-                SubprocessFlags.STDOUT_SILENCE | SubprocessFlags.STDERR_SILENCE
-            );
-
-            // Wait for the process to complete
-            process.wait_async.begin(null, (obj, res) => {
+            // Use the proper portal API through GLib's AppInfo.launch_default_for_uri_async
+            // This automatically uses the portal when running in Flatpak
+            AppInfo.launch_default_for_uri_async.begin(uri, null, null, (obj, res) => {
                 try {
-                    process.wait_async.end(res);
-                    if (process.get_exit_status() == 0) {
-                        logger.debug("URI opened successfully via portal: %s", uri);
-                    } else {
-                        logger.warning("Portal URI opening failed with exit code: %d", process.get_exit_status());
-                    }
+                    AppInfo.launch_default_for_uri_async.end(res);
+                    logger.debug("URI opened successfully via portal: %s", uri);
                 } catch (Error e) {
-                    logger.error("Error waiting for portal process: %s", e.message);
+                    logger.error("Portal URI opening failed: %s", e.message);
                 }
             });
         }

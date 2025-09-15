@@ -65,10 +65,14 @@
   
   <url type="homepage">https://github.com/tobagin/karere</url>
   <url type="bugtracker">https://github.com/tobagin/karere/issues</url>
-  <url type="help">https://github.com/tobagin/karere/</url>
-  
-  <developer_name>Thiago Fernandes</developer_name>
+  <url type="help">https://github.com/tobagin/karere/discussions</url>
+  <url type="donation">https://github.com/sponsors/tobagin</url>
+  <url type="contact">https://github.com/tobagin</url>
+  <url type="contribute">https://github.com/tobagin/karere</url>
 
+  <developer id="io.github.tobagin">
+    <name>Thiago Fernandes</name>
+  </developer>
   
   <requires>
     <display_length compare="ge">768</display_length>
@@ -97,43 +101,9 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
-    <release version="0.9.2" date="2025-09-14">
+    <release version="0.9.3" date="2025-09-15">
       <description>
-        <p>🐛 Bug Fixes and External Link Handling</p>
-        <p>Bug Fixes:</p>
-        <ul>
-          <li>Fixed external links not opening in default browser when running in Flatpak</li>
-          <li>Improved external link handling with proper Flatpak portal support</li>
-          <li>Enhanced URL validation for external link detection</li>
-        </ul>
-        <p>Improvements:</p>
-        <ul>
-          <li>Better sandboxed environment compatibility</li>
-          <li>More reliable link opening mechanism</li>
-          <li>Enhanced logging for external link operations</li>
-        </ul>
-      </description>
-    </release>
-    <release version="0.9.1" date="2025-09-14">
-      <description>
-        <p>🐛 Bug Fixes and Build Improvements</p>
-        <p>Bug Fixes:</p>
-        <ul>
-          <li>Fixed invalid meson version requirement preventing builds</li>
-          <li>Corrected dependency version specifications in meson.build</li>
-          <li>Resolved flatpak-builder compatibility issues</li>
-        </ul>
-        <p>Improvements:</p>
-        <ul>
-          <li>Better build system compatibility with different environments</li>
-          <li>Enhanced CI/CD pipeline stability</li>
-          <li>More robust dependency handling</li>
-        </ul>
-      </description>
-    </release>
-    <release version="0.9.0" date="2025-09-14">
-      <description>
-        <p>✨ Enhanced Emoji Support and Rendering Improvements</p>
+        <p>✨ Enhanced Emoji Support, External Link Handling, and Build Improvements</p>
         <p>New Features:</p>
         <ul>
           <li>Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)</li>
@@ -141,13 +111,28 @@
           <li>Improved emoji consistency with bundled font system</li>
           <li>Optimized font loading to eliminate display conflicts</li>
         </ul>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed external links not opening in default browser when running in Flatpak</li>
+          <li>Improved external link handling with proper Flatpak portal support</li>
+          <li>Fixed random emoji display issues and blank emoji problems</li>
+          <li>Fixed invalid meson version requirement preventing builds</li>
+          <li>Corrected dependency version specifications in meson.build</li>
+          <li>Resolved flatpak-builder compatibility issues</li>
+          <li>Enhanced URL validation for external link detection</li>
+        </ul>
         <p>Improvements:</p>
         <ul>
-          <li>Fixed random emoji display issues and blank emoji problems</li>
           <li>Eliminated WebKit cache corruption affecting emoji rendering</li>
           <li>Streamlined font stack for consistent emoji appearance</li>
           <li>Enhanced 2D canvas acceleration for better graphics performance</li>
           <li>Improved font loading stability and reduced race conditions</li>
+          <li>Better sandboxed environment compatibility</li>
+          <li>More reliable link opening mechanism</li>
+          <li>Enhanced logging for external link operations</li>
+          <li>Better build system compatibility with different environments</li>
+          <li>Enhanced CI/CD pipeline stability</li>
+          <li>More robust dependency handling</li>
         </ul>
         <p>Technical Changes:</p>
         <ul>
@@ -156,6 +141,7 @@
           <li>Simplified emoji font configuration to single high-quality source</li>
           <li>Restored Safari Linux user agent for native WebKit experience</li>
           <li>Added subpixel font scaling and advanced rendering optimizations</li>
+          <li>Implemented Flatpak portal system for external link handling</li>
         </ul>
       </description>
     </release>
