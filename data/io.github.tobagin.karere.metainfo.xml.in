@@ -101,6 +101,24 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="0.9.4" date="2025-09-18">
+      <description>
+        <p>🐛 Runtime Update and Bug Fixes</p>
+        <p>Improvements:</p>
+        <ul>
+          <li>Updated GNOME runtime to version 49 for enhanced compatibility</li>
+          <li>Improved system integration with latest platform libraries</li>
+          <li>Better support for modern desktop environments</li>
+          <li>Enhanced stability and performance optimizations</li>
+        </ul>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Resolved compatibility issues with newer GNOME environments</li>
+          <li>Fixed potential rendering inconsistencies</li>
+          <li>Improved error handling and recovery mechanisms</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.9.3" date="2025-09-15">
       <description>
         <p>✨ Enhanced Emoji Support, External Link Handling, and Build Improvements</p>

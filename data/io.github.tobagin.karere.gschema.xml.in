@@ -353,12 +353,6 @@
     </key>
 
     <!-- Version alert settings -->
-    <key name="last-shown-version" type="s">
-      <default>""</default>
-      <summary>Last version shown in version alert</summary>
-      <description>The version number of the last version alert shown to the user</description>
-    </key>
-
     <key name="last-version-shown" type="s">
       <default>""</default>
       <summary>Last version for which release notes were shown</summary>
