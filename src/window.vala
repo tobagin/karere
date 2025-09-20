@@ -60,9 +60,6 @@ namespace Karere {
                 settings = null;
             }
             
-            // Load accessibility styles
-            load_accessibility_styles();
-            
             setup_window_properties();
             setup_actions();
             setup_webkit();
@@ -265,29 +262,6 @@ namespace Karere {
             });
         }
 
-        /**
-         * Load accessibility CSS styles
-         */
-        private void load_accessibility_styles() {
-            var css_provider = new Gtk.CssProvider();
-            try {
-#if DEVELOPMENT
-                css_provider.load_from_resource("/io/github/tobagin/karere/Devel/style.css");
-#else
-                css_provider.load_from_resource("/io/github/tobagin/karere/style.css");
-#endif
-                // Note: Despite deprecation warnings, add_provider_for_display is still the correct API
-                // The deprecation only applies to instance methods, not this static method
-                Gtk.StyleContext.add_provider_for_display(
-                    this.get_display(), 
-                    css_provider, 
-                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-                );
-                logger.debug("Accessibility styles loaded");
-            } catch (Error e) {
-                logger.warning("Failed to load accessibility styles: %s", e.message);
-            }
-        }
 
         /**
          * Setup accessibility features for the window
