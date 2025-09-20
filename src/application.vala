@@ -45,8 +45,12 @@ namespace Karere {
 
         public override void startup() {
             base.startup();
-            
+
             logger.info("Application starting up");
+
+            // Register icon theme resource path to make custom icons available
+            var icon_theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
+            icon_theme.add_resource_path("/" + Config.APP_ID.replace(".", "/"));
             
             // Initialize Settings now that GTK is initialized
             settings = new Settings(Config.APP_ID);

@@ -50,7 +50,7 @@ echo "Build directory: $BUILD_DIR"
 
 # Build and install with Flatpak (always install)
 echo "Running flatpak-builder (build and install)..."
-flatpak-builder --force-clean --user --install --install-deps-from=flathub "$BUILD_DIR" "$MANIFEST"
+flatpak-builder --force-clean --user --install --install-deps-from=flathub "$BUILD_DIR" "$MANIFEST" --disable-rofiles-fuse
 
 echo "Build and installation complete!"
 echo "Run with: flatpak run $APP_ID"
