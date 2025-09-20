@@ -289,12 +289,6 @@ foreach size : icon_sizes
     )
 endforeach
 
-# Scalable icon
-install_data(
-    'data/icons/hicolor/scalable/apps/io.github.tobagin.karere.svg',
-    install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps',
-    rename: app_id + '.svg'
-)
 
 foreach icon : symbolic_icons
     install_data(
