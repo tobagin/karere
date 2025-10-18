@@ -26,11 +26,8 @@ i18n = import('i18n')
 gtk_dep = dependency('gtk4', version: '>=4.10.0')
 adwaita_dep = dependency('libadwaita-1', version: '>=1.8.0')
 webkit_dep = dependency('webkitgtk-6.0', version: '>=2.40.0')
-soup_dep = dependency('libsoup-3.0', version: '>=3.0.0')
 gio_dep = dependency('gio-2.0', version: '>=2.70.0')
 glib_dep = dependency('glib-2.0', version: '>=2.70.0')
-json_glib_dep = dependency('json-glib-1.0', version: '>=1.6.0')
-gee_dep = dependency('gee-0.8', version: '>=0.20.0')
 
 # Build configuration
 cc = meson.get_compiler('c')
@@ -197,11 +194,8 @@ executable(
         gtk_dep,
         adwaita_dep,
         webkit_dep,
-        soup_dep,
         gio_dep,
         glib_dep,
-        json_glib_dep,
-        gee_dep,
         math_dep,
     ],
     vala_args: vala_args,
@@ -350,6 +344,7 @@ if get_option('tests')
         'tests/test_notification_manager.vala',
         'tests/test_runner.vala',
     )
+    # Note: test_crash_reporter.vala and test_logger.vala removed (obsolete)
     
     # Sources for tests (excluding Main.vala to avoid conflicts)
     test_lib_sources = files(
@@ -378,11 +373,8 @@ if get_option('tests')
             gtk_dep,
             adwaita_dep,
             webkit_dep,
-            soup_dep,
             gio_dep,
             glib_dep,
-            json_glib_dep,
-            gee_dep,
             math_dep,
         ],
         vala_args: vala_args,
@@ -411,7 +403,6 @@ summary({
     'GTK4': gtk_dep.version(),
     'LibAdwaita': adwaita_dep.version(),
     'WebKitGTK': webkit_dep.version(),
-    'LibSoup': soup_dep.version(),
     'GLib': glib_dep.version(),
 }, section: 'Dependencies')
 

@@ -19,7 +19,7 @@ namespace Karere {
         private NotificationManager notification_manager;
         private AccessibilityManager accessibility_manager;
         private KeyboardShortcuts keyboard_shortcuts;
-        private Settings? settings = null;
+        private SettingsManager settings_manager;
 
         public Application() {
             Object(
@@ -30,6 +30,9 @@ namespace Karere {
             // Set the application to quit when the last window is closed
             set_option_context_description(_("A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web"));
             register_session = true;
+
+            // Get SettingsManager singleton instance
+            settings_manager = SettingsManager.get_instance();
 
             notification_manager = new NotificationManager(this);
             accessibility_manager = new AccessibilityManager();
@@ -48,8 +51,8 @@ namespace Karere {
             var icon_theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
             icon_theme.add_resource_path("/" + Config.APP_ID.replace(".", "/"));
 
-            // Initialize Settings now that GTK is initialized
-            settings = new Settings(Config.APP_ID);
+            // Initialize SettingsManager now that GTK is initialized
+            settings_manager.initialize();
 
             // Initialize notification manager settings now that GTK is initialized
             notification_manager.initialize_settings();
