@@ -122,21 +122,8 @@ namespace Karere {
             web_view.zoom_level = zoom_level;
             debug("Set zoom level to: %f", zoom_level);
 
-            // Note: enable_spell_checking property is not available in this WebKitGTK version
-            // Spell checking will use system defaults
             if (settings_manager.get_boolean_with_fallback("spell-checking-enabled", false)) {
-
-                if (settings_manager.get_boolean_with_fallback("spell-checking-auto-detect", true)) {
-                    // Note: spell_checking_languages property is not available in this WebKitGTK version
-                    // Spell checking will use system defaults
-                    debug("Using system defaults for spell checking");
-                } else {
-                    // Note: spell_checking_languages property is not available in this WebKitGTK version
-                    // Spell checking will use system defaults
-                    debug("Using system defaults for spell checking");
-                }
-            } else {
-                // Spell checking disabled in settings
+                debug("Spell checking enabled (using system defaults)");
             }
 
             info("WebKit WebView configured successfully");

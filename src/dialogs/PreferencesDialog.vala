@@ -76,53 +76,7 @@ namespace Karere {
         private unowned Adw.SpinRow notification_preview_length_row;
         [GtkChild]
         private unowned Adw.SpinRow background_frequency_row;
-        
-        // Do Not Disturb page widgets
-        [GtkChild]
-        private unowned Adw.SwitchRow dnd_enabled_row;
-        [GtkChild]
-        private unowned Adw.SwitchRow dnd_scheduled_row;
-        [GtkChild]
-        private unowned Adw.ActionRow dnd_start_time_row;
-        [GtkChild]
-        private unowned Adw.ActionRow dnd_end_time_row;
-        [GtkChild]
-        private unowned Gtk.Entry dnd_start_time_entry;
-        [GtkChild]
-        private unowned Gtk.Entry dnd_end_time_entry;
-        [GtkChild]
-        private unowned Adw.PreferencesGroup dnd_notifications_group;
-        [GtkChild]
-        private unowned Adw.SwitchRow dnd_background_row;
-        [GtkChild]
-        private unowned Adw.ActionRow dnd_contact_messages_row;
-        [GtkChild]
-        private unowned Gtk.CheckButton dnd_contact_messages_check;
-        [GtkChild]
-        private unowned Adw.ActionRow dnd_group_messages_row;
-        [GtkChild]
-        private unowned Gtk.CheckButton dnd_group_messages_check;
-        [GtkChild]
-        private unowned Adw.ActionRow dnd_mentions_row;
-        [GtkChild]
-        private unowned Gtk.CheckButton dnd_mentions_check;
-        [GtkChild]
-        private unowned Adw.ActionRow dnd_voice_calls_row;
-        [GtkChild]
-        private unowned Gtk.CheckButton dnd_voice_calls_check;
-        [GtkChild]
-        private unowned Adw.ActionRow dnd_video_calls_row;
-        [GtkChild]
-        private unowned Gtk.CheckButton dnd_video_calls_check;
-        [GtkChild]
-        private unowned Adw.ActionRow dnd_media_messages_row;
-        [GtkChild]
-        private unowned Gtk.CheckButton dnd_media_messages_check;
-        [GtkChild]
-        private unowned Adw.ActionRow dnd_status_updates_row;
-        [GtkChild]
-        private unowned Gtk.CheckButton dnd_status_updates_check;
-        
+
         // Spell checking page widgets
         [GtkChild]
         private unowned Adw.SwitchRow spell_enabled_row;
@@ -146,15 +100,10 @@ namespace Karere {
             setup_general_settings();
             setup_accessibility_settings();
             setup_notification_settings();
-            setup_dnd_settings();
             setup_spell_checking_settings();
 
-            // Initialize UI visibility
             on_system_notifications_changed();
             on_notifications_changed();
-            on_dnd_changed();
-            on_dnd_scheduled_changed();
-            on_dnd_background_changed();
             on_spell_checking_changed();
             on_developer_tools_changed();
             on_webview_zoom_changed();
@@ -214,29 +163,7 @@ namespace Karere {
             // Background frequency
             settings.bind("background-notification-frequency", background_frequency_row, "value", SettingsBindFlags.DEFAULT);
         }
-        
-        private void setup_dnd_settings() {
-            // DND main settings
-            settings.bind("dnd-enabled", dnd_enabled_row, "active", SettingsBindFlags.DEFAULT);
-            settings.bind("dnd-scheduled", dnd_scheduled_row, "active", SettingsBindFlags.DEFAULT);
-            
-            // DND time settings
-            settings.bind("dnd-start-time", dnd_start_time_entry, "text", SettingsBindFlags.DEFAULT);
-            settings.bind("dnd-end-time", dnd_end_time_entry, "text", SettingsBindFlags.DEFAULT);
-            
-            // DND background notifications master toggle
-            settings.bind("dnd-background-notifications", dnd_background_row, "active", SettingsBindFlags.DEFAULT);
-            
-            // DND notification type checkboxes
-            settings.bind("dnd-contact-messages", dnd_contact_messages_check, "active", SettingsBindFlags.DEFAULT);
-            settings.bind("dnd-group-messages", dnd_group_messages_check, "active", SettingsBindFlags.DEFAULT);
-            settings.bind("dnd-mentions", dnd_mentions_check, "active", SettingsBindFlags.DEFAULT);
-            settings.bind("dnd-voice-calls", dnd_voice_calls_check, "active", SettingsBindFlags.DEFAULT);
-            settings.bind("dnd-video-calls", dnd_video_calls_check, "active", SettingsBindFlags.DEFAULT);
-            settings.bind("dnd-media-messages", dnd_media_messages_check, "active", SettingsBindFlags.DEFAULT);
-            settings.bind("dnd-status-updates", dnd_status_updates_check, "active", SettingsBindFlags.DEFAULT);
-        }
-        
+
         private void setup_spell_checking_settings() {
             // Spell checking settings
             settings.bind("spell-checking-enabled", spell_enabled_row, "active", SettingsBindFlags.DEFAULT);
@@ -254,9 +181,6 @@ namespace Karere {
             settings.changed["system-notifications-enabled"].connect(on_system_notifications_changed);
             settings.changed["notifications-enabled"].connect(on_notifications_changed);
             settings.changed["background-notifications-mode"].connect(on_notifications_changed);
-            settings.changed["dnd-enabled"].connect(on_dnd_changed);
-            settings.changed["dnd-scheduled"].connect(on_dnd_scheduled_changed);
-            settings.changed["dnd-background-notifications"].connect(on_dnd_background_changed);
             settings.changed["spell-checking-enabled"].connect(on_spell_checking_changed);
             settings.changed["spell-checking-auto-detect"].connect(on_spell_checking_changed);
             settings.changed["spell-checking-languages"].connect(on_spell_checking_changed);
@@ -431,49 +355,6 @@ namespace Karere {
                 notification_preview_length_row.sensitive = message_enabled && settings.get_boolean("notification-preview-enabled");
                 background_frequency_row.sensitive = message_enabled && settings.get_int("background-notifications-mode") == 0; // Always
             }
-        }
-        
-        private void on_dnd_changed() {
-            // Update DND Notifications group visibility based on either DND mode being enabled
-            var manual_enabled = settings.get_boolean("dnd-enabled");
-            var scheduled_enabled = settings.get_boolean("dnd-scheduled");
-            var any_dnd_enabled = manual_enabled || scheduled_enabled;
-            
-            // Show DND Notifications group if either DND mode is active
-            dnd_notifications_group.visible = any_dnd_enabled;
-            
-            // Also update scheduled DND time controls visibility
-            on_dnd_scheduled_changed();
-        }
-        
-        private void on_dnd_scheduled_changed() {
-            // Update UI visibility for scheduled DND time controls
-            var scheduled = settings.get_boolean("dnd-scheduled");
-            
-            // Show time controls only when scheduled DND is enabled
-            dnd_start_time_row.visible = scheduled;
-            dnd_end_time_row.visible = scheduled;
-            
-            // Keep entry sensitivity for when controls are visible
-            dnd_start_time_entry.sensitive = scheduled;
-            dnd_end_time_entry.sensitive = scheduled;
-            
-            // Update DND Notifications group visibility (called from on_dnd_changed too)
-            var manual_enabled = settings.get_boolean("dnd-enabled");
-            var any_dnd_enabled = manual_enabled || scheduled;
-            dnd_notifications_group.visible = any_dnd_enabled;
-        }
-        
-        private void on_dnd_background_changed() {
-            // Update visibility of individual notification type checkboxes based on background notifications toggle
-            var background_enabled = settings.get_boolean("dnd-background-notifications");
-            dnd_contact_messages_row.visible = background_enabled;
-            dnd_group_messages_row.visible = background_enabled;
-            dnd_mentions_row.visible = background_enabled;
-            dnd_voice_calls_row.visible = background_enabled;
-            dnd_video_calls_row.visible = background_enabled;
-            dnd_media_messages_row.visible = background_enabled;
-            dnd_status_updates_row.visible = background_enabled;
         }
         
         private void on_spell_checking_changed() {

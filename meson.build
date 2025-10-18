@@ -100,7 +100,6 @@ window_ui = custom_target(
         blueprint_compiler,
         'compile',
         '--output', '@OUTPUT@',
-        '--typelib-path', '/usr/lib/x86_64-linux-gnu/girepository-1.0',
         '@INPUT@'
     ]
 )
@@ -115,7 +114,6 @@ preferences_ui = custom_target(
         blueprint_compiler,
         'compile',
         '--output', '@OUTPUT@',
-        '--typelib-path', '/usr/lib/x86_64-linux-gnu/girepository-1.0',
         '@INPUT@'
     ]
 )
@@ -130,7 +128,6 @@ shortcuts_dialog_ui = custom_target(
         blueprint_compiler,
         'compile',
         '--output', '@OUTPUT@',
-        '--typelib-path', '/usr/lib/x86_64-linux-gnu/girepository-1.0',
         '@INPUT@'
     ]
 )

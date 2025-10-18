@@ -103,46 +103,8 @@ namespace Karere {
             if (!settings_manager.get_boolean_with_fallback("system-notifications-enabled", true)) {
                 return false;
             }
-            
-            // Check Do Not Disturb mode
-            if (is_dnd_active()) {
-                debug("Notification blocked by Do Not Disturb mode");
-                return false;
-            }
-            
+
             return true;
-        }
-        
-        private bool is_dnd_active() {
-            if (!settings_manager.is_initialized()) {
-                // Default to DND not active if settings not available
-                return false;
-            }
-
-            if (!settings_manager.get_boolean_with_fallback("dnd-enabled", false)) {
-                return false;
-            }
-
-            // If scheduled DND is not enabled, DND is manually active
-            if (!settings_manager.get_boolean_with_fallback("dnd-scheduled", false)) {
-                return true;
-            }
-
-            // Check if we're in scheduled DND time
-            var now = new DateTime.now_local();
-            var current_time = "%02d:%02d".printf(now.get_hour(), now.get_minute());
-
-            var start_time = settings_manager.get_string_with_fallback("dnd-start-time", "22:00");
-            var end_time = settings_manager.get_string_with_fallback("dnd-end-time", "08:00");
-            
-            // Simple time comparison - this could be improved for cross-midnight schedules
-            if (start_time < end_time) {
-                // Same day schedule (e.g., 09:00 to 17:00)
-                return current_time >= start_time && current_time < end_time;
-            } else {
-                // Cross-midnight schedule (e.g., 22:00 to 08:00 next day)
-                return current_time >= start_time || current_time < end_time;
-            }
         }
         
         public void on_window_focus_changed(bool is_active) {
