@@ -45,6 +45,7 @@ namespace Karere {
         private WindowStateManager window_state_manager;
         private ClipboardManager clipboard_manager;
         private WebKitNotificationBridge notification_bridge;
+        private DownloadManager download_manager;
         private Gdk.Clipboard clipboard;
 
         public Window(Gtk.Application app) {
@@ -63,6 +64,7 @@ namespace Karere {
             setup_actions();
             setup_webkit();
             setup_notifications();
+            setup_downloads();
             setup_settings_listeners();
             setup_accessibility_features();
 
@@ -109,6 +111,17 @@ namespace Karere {
             });
             add_action(dev_tools_action);
 
+            // Open downloaded file action
+            var open_file_action = new SimpleAction("open-downloaded-file", VariantType.STRING);
+            open_file_action.activate.connect((parameter) => {
+                if (parameter != null) {
+                    var file_path = parameter.get_string();
+                    debug("Opening downloaded file: %s", file_path);
+                    download_manager.open_file(file_path);
+                }
+            });
+            add_action(open_file_action);
+
             debug("Window actions configured");
         }
 
@@ -150,6 +163,75 @@ namespace Karere {
             } else {
                 critical("Could not get application reference for notifications");
             }
+        }
+
+        private void setup_downloads() {
+            // Get the download manager from the application
+            var app = get_application() as Karere.Application;
+            if (app != null) {
+                download_manager = app.get_download_manager();
+
+                // Set initial download directory in WebViewManager
+                var download_dir = download_manager.get_download_directory();
+                webview_manager.set_download_directory(download_dir);
+
+                // Update WebViewManager when download directory changes
+                if (settings != null) {
+                    settings.changed["custom-download-directory"].connect(() => {
+                        var new_dir = download_manager.get_download_directory();
+                        webview_manager.set_download_directory(new_dir);
+                        debug("Download directory updated to: %s", new_dir);
+                    });
+                }
+
+                // Connect to WebViewManager download signal
+                webview_manager.download_detected.connect((uri, filename) => {
+                    debug("Download detected in Window: %s -> %s", uri, filename);
+                    on_download_detected(uri, filename);
+                });
+
+                // Connect to DownloadManager signals for toasts
+                download_manager.error_opening_file.connect((error_msg) => {
+                    show_error_toast(error_msg);
+                });
+
+                download_manager.directory_fallback.connect((reason) => {
+                    show_info_toast(_("Download directory unavailable, using default"));
+                });
+
+                debug("Downloads configured");
+            } else {
+                critical("Could not get application reference for downloads");
+            }
+        }
+
+        /**
+         * Handle download detection
+         */
+        private void on_download_detected(string uri, string filename) {
+            debug("Handling download: %s", filename);
+
+            // Check if notifications are enabled
+            if (settings == null || !settings.get_boolean("download-notifications-enabled")) {
+                return;
+            }
+
+            // Get download directory
+            var download_dir = download_manager.get_download_directory();
+            var file_path = Path.build_filename(download_dir, filename);
+
+            // Show toast notification with "Open" button
+            var message = _("Downloaded: %s").printf(filename);
+            var toast = new Adw.Toast(message);
+            toast.timeout = 5;
+            toast.button_label = _("Open");
+
+            // Connect toast button to open file action
+            toast.action_name = "win.open-downloaded-file";
+            toast.action_target = new Variant.string(file_path);
+
+            toast_overlay.add_toast(toast);
+            debug("Download toast shown for: %s", filename);
         }
 
         private void setup_spell_checking(WebKit.Settings webkit_settings) {

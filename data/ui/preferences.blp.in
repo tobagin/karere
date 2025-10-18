@@ -73,6 +73,27 @@ template $KarerePreferencesDialog : Adw.PreferencesDialog {
     }
 
     Adw.PreferencesGroup {
+      title: _("Downloads");
+
+      Adw.ActionRow download_directory_row {
+        title: _("Download Directory");
+        subtitle: _("Default (Downloads)");
+
+        [suffix]
+        Gtk.Button choose_directory_button {
+          label: _("Choose Folder");
+          valign: center;
+        }
+
+        [suffix]
+        Gtk.Button reset_directory_button {
+          label: _("Reset");
+          valign: center;
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
       title: _("Developer Tools");
 
       Adw.SwitchRow developer_tools_row {
@@ -257,6 +278,11 @@ template $KarerePreferencesDialog : Adw.PreferencesDialog {
       Adw.SwitchRow notification_sound_row {
         title: _("Notification Sounds");
         subtitle: _("Play sounds for notifications");
+      }
+
+      Adw.SwitchRow download_notifications_row {
+        title: _("Download Notifications");
+        subtitle: _("Show notifications when downloads complete");
       }
     }
 

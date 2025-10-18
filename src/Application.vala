@@ -20,6 +20,7 @@ namespace Karere {
         private AccessibilityManager accessibility_manager;
         private KeyboardShortcuts keyboard_shortcuts;
         private SettingsManager settings_manager;
+        private DownloadManager download_manager;
 
         public Application() {
             Object(
@@ -62,6 +63,10 @@ namespace Karere {
 
             // Initialize keyboard shortcuts settings now that GTK is initialized
             keyboard_shortcuts.initialize_settings();
+
+            // Initialize download manager with settings
+            var settings = settings_manager.get_settings();
+            download_manager = new DownloadManager(settings);
 
             // Update log handlers with user preferences now that settings are available
             setup_log_handlers_with_preferences();
@@ -481,6 +486,10 @@ namespace Karere {
 
         public KeyboardShortcuts get_keyboard_shortcuts() {
             return keyboard_shortcuts;
+        }
+
+        public DownloadManager get_download_manager() {
+            return download_manager;
         }
     }
 }

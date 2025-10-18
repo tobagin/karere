@@ -219,5 +219,18 @@
       <description>Tracks the last application version for which release notes were displayed to avoid showing them repeatedly</description>
     </key>
 
+    <!-- Download settings -->
+    <key name="custom-download-directory" type="s">
+      <default>""</default>
+      <summary>Custom download directory</summary>
+      <description>User-selected directory for downloads (empty for default xdg-download)</description>
+    </key>
+
+    <key name="download-notifications-enabled" type="b">
+      <default>true</default>
+      <summary>Enable download notifications</summary>
+      <description>Whether to show toast notifications when downloads complete</description>
+    </key>
+
   </schema>
 </schemalist>

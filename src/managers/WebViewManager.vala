@@ -27,12 +27,14 @@ namespace Karere {
         public signal void load_finished();
         public signal void load_failed(string uri, string error_message);
         public signal void external_link_clicked(string uri);
+        public signal void download_detected(string uri, string suggested_filename);
 
         // Properties
         public WebKit.WebView web_view { get; private set; }
 
         private Settings? settings;
         private WebKitManager webkit_manager;
+        private string download_directory;
 
         /**
          * Create a new WebViewManager
@@ -44,10 +46,22 @@ namespace Karere {
             this.settings = settings;
             this.webkit_manager = webkit_manager;
 
+            // Initialize with default download directory
+            download_directory = Environment.get_user_special_dir(UserDirectory.DOWNLOAD) ??
+                                Path.build_filename(Environment.get_home_dir(), "Downloads");
+
             // Create WebView programmatically
             web_view = new WebKit.WebView();
             web_view.vexpand = true;
             web_view.hexpand = true;
+        }
+
+        /**
+         * Set the download directory
+         */
+        public void set_download_directory(string directory) {
+            download_directory = directory;
+            debug("Download directory set to: %s", directory);
         }
 
         /**
@@ -70,6 +84,10 @@ namespace Karere {
             web_view.load_failed.connect(on_load_failed);
             web_view.decide_policy.connect(on_navigation_policy_decision);
             web_view.create.connect(on_create_new_web_view);
+
+            // Connect download signal to WebView's network session
+            var network_session = web_view.get_network_session();
+            network_session.download_started.connect(on_download_started);
 
             // Load WhatsApp Web
             web_view.load_uri("https://web.whatsapp.com");
@@ -202,9 +220,110 @@ namespace Karere {
         }
 
         /**
+         * Handle download started
+         */
+        private void on_download_started(WebKit.Download download) {
+            var request = download.get_request();
+            var uri = request.get_uri();
+
+            debug("Download started for URI: %s", uri);
+
+            // Connect to decide-destination signal - this is called BEFORE WebKit chooses destination
+            download.decide_destination.connect((suggested_filename) => {
+                debug("decide_destination called with: %s", suggested_filename);
+
+                // Ensure we have a valid absolute download directory
+                string final_download_dir = download_directory;
+
+                // Check if download_directory is null, empty, or not absolute
+                if (final_download_dir == null || final_download_dir == "" || !Path.is_absolute(final_download_dir)) {
+                    warning("Download directory is invalid: '%s', using fallback", final_download_dir ?? "null");
+                    final_download_dir = Environment.get_user_special_dir(UserDirectory.DOWNLOAD);
+                    if (final_download_dir == null || final_download_dir == "") {
+                        final_download_dir = Path.build_filename(Environment.get_home_dir(), "Downloads");
+                    }
+                }
+
+                // Build absolute destination path
+                var destination_path = Path.build_filename(final_download_dir, suggested_filename);
+
+                // WebKit.Download.set_destination() expects an absolute PATH, not a URI!
+                // Even though the documentation says "URI", it actually validates with g_path_is_absolute()
+                download.set_destination(destination_path);
+
+                debug("Download destination set: %s", destination_path);
+
+                // Emit signal for toast notification
+                download_detected(uri, suggested_filename);
+
+                return true; // Return true to indicate we handled the destination
+            });
+
+            // Monitor download completion
+            download.finished.connect(() => {
+                debug("Download finished");
+            });
+
+            download.failed.connect((error) => {
+                warning("Download failed: %s", error.message);
+            });
+        }
+
+        /**
+         * Extract filename from URI
+         */
+        private string extract_filename_from_uri(string uri) {
+            var filename = Path.get_basename(uri);
+
+            // Remove query parameters
+            var query_pos = filename.index_of_char('?');
+            if (query_pos > 0) {
+                filename = filename.substring(0, query_pos);
+            }
+
+            // If no extension, add timestamp
+            if (filename == "" || filename == "/" || !filename.contains(".")) {
+                var timestamp = new DateTime.now_local().format("%Y%m%d_%H%M%S");
+                filename = "download_%s".printf(timestamp);
+            }
+
+            return filename;
+        }
+
+        /**
          * Handle navigation policy decisions
          */
         private bool on_navigation_policy_decision(WebKit.PolicyDecision decision, WebKit.PolicyDecisionType decision_type) {
+            // Handle download responses
+            if (decision_type == WebKit.PolicyDecisionType.RESPONSE) {
+                var response_decision = decision as WebKit.ResponsePolicyDecision;
+                if (response_decision != null) {
+                    var response = response_decision.get_response();
+                    var uri = response.get_uri();
+                    var mime_type = response.get_mime_type();
+
+                    // Check if this should be downloaded
+                    if (should_download_mime_type(mime_type)) {
+                        // Extract filename from Content-Disposition or URI
+                        var suggested_filename = extract_filename(response, uri);
+
+                        info("Download detected: %s (MIME: %s, filename: %s)",
+                             uri, mime_type ?? "unknown", suggested_filename);
+
+                        // Emit signal for DownloadManager
+                        download_detected(uri, suggested_filename);
+
+                        // Tell WebKit to download this
+                        decision.download();
+                        return true;
+                    }
+                }
+
+                // Not a download, allow normal handling
+                decision.use();
+                return false;
+            }
+
             // Handle both navigation actions and new window requests
             if (decision_type == WebKit.PolicyDecisionType.NAVIGATION_ACTION ||
                 decision_type == WebKit.PolicyDecisionType.NEW_WINDOW_ACTION) {
@@ -251,6 +370,74 @@ namespace Karere {
             // For other decision types, use default behavior
             decision.use();
             return false;
+        }
+
+        /**
+         * Check if a MIME type should be downloaded
+         */
+        private bool should_download_mime_type(string? mime_type) {
+            if (mime_type == null) {
+                return false;
+            }
+
+            // Common downloadable MIME types
+            return mime_type.has_prefix("application/") ||
+                   mime_type.has_prefix("image/") ||
+                   mime_type.has_prefix("video/") ||
+                   mime_type.has_prefix("audio/") ||
+                   mime_type == "text/plain";
+        }
+
+        /**
+         * Extract filename from response or URI
+         */
+        private string extract_filename(WebKit.URIResponse response, string uri) {
+            // Try to get filename from Content-Disposition header
+            // Note: WebKit 6.0 doesn't expose Content-Disposition easily, so we'll
+            // extract from URI as fallback
+
+            // Get filename from URI
+            var filename = Path.get_basename(uri);
+
+            // Remove query parameters if present
+            var query_pos = filename.index_of_char('?');
+            if (query_pos > 0) {
+                filename = filename.substring(0, query_pos);
+            }
+
+            // If no extension or generic filename, add timestamp
+            if (filename == "" || filename == "/" || !filename.contains(".")) {
+                var timestamp = new DateTime.now_local().format("%Y%m%d_%H%M%S");
+                var mime_type = response.get_mime_type();
+                var extension = get_extension_for_mime(mime_type);
+                filename = "download_%s%s".printf(timestamp, extension);
+            }
+
+            return filename;
+        }
+
+        /**
+         * Get file extension for common MIME types
+         */
+        private string get_extension_for_mime(string? mime_type) {
+            if (mime_type == null) {
+                return "";
+            }
+
+            // Common MIME types to extensions
+            if (mime_type.has_prefix("image/jpeg")) return ".jpg";
+            if (mime_type.has_prefix("image/png")) return ".png";
+            if (mime_type.has_prefix("image/gif")) return ".gif";
+            if (mime_type.has_prefix("image/webp")) return ".webp";
+            if (mime_type.has_prefix("video/mp4")) return ".mp4";
+            if (mime_type.has_prefix("video/webm")) return ".webm";
+            if (mime_type.has_prefix("audio/mpeg")) return ".mp3";
+            if (mime_type.has_prefix("audio/ogg")) return ".ogg";
+            if (mime_type.has_prefix("application/pdf")) return ".pdf";
+            if (mime_type.has_prefix("application/zip")) return ".zip";
+            if (mime_type.has_prefix("text/plain")) return ".txt";
+
+            return "";
         }
 
         /**

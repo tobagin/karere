@@ -25,6 +25,12 @@ namespace Karere {
         [GtkChild]
         private unowned Adw.ComboRow theme_row;
         [GtkChild]
+        private unowned Adw.ActionRow download_directory_row;
+        [GtkChild]
+        private unowned Gtk.Button choose_directory_button;
+        [GtkChild]
+        private unowned Gtk.Button reset_directory_button;
+        [GtkChild]
         private unowned Adw.SwitchRow developer_tools_row;
         [GtkChild]
         private unowned Adw.ActionRow open_dev_tools_row;
@@ -71,6 +77,8 @@ namespace Karere {
         [GtkChild]
         private unowned Adw.SwitchRow notification_sound_row;
         [GtkChild]
+        private unowned Adw.SwitchRow download_notifications_row;
+        [GtkChild]
         private unowned Adw.SwitchRow notification_preview_row;
         [GtkChild]
         private unowned Adw.SpinRow notification_preview_length_row;
@@ -91,12 +99,11 @@ namespace Karere {
         [GtkChild]
         private unowned Gtk.Button add_language_button;
 
-        
         private Settings settings;
 
         public PreferencesDialog() {
             settings = new Settings(Config.APP_ID);
-            
+
             setup_general_settings();
             setup_accessibility_settings();
             setup_notification_settings();
@@ -114,10 +121,16 @@ namespace Karere {
         private void setup_general_settings() {
             // Theme setting
             settings.bind("theme-preference", theme_row, "selected", SettingsBindFlags.DEFAULT);
-            
+
+            // Download directory settings
+            update_download_directory_label();
+            update_reset_button_visibility();
+            choose_directory_button.clicked.connect(on_choose_directory_clicked);
+            reset_directory_button.clicked.connect(on_reset_directory_clicked);
+
             // General settings
             settings.bind("developer-tools-enabled", developer_tools_row, "active", SettingsBindFlags.DEFAULT);
-            
+
             // Connect developer tools button
             dev_tools_button.clicked.connect(on_open_dev_tools_clicked);
         }
@@ -155,11 +168,12 @@ namespace Karere {
             settings.bind("background-notifications-mode", background_notifications_row, "selected", SettingsBindFlags.DEFAULT);
             settings.bind("system-notifications-enabled", system_notifications_row, "active", SettingsBindFlags.DEFAULT);
             settings.bind("notification-sound-enabled", notification_sound_row, "active", SettingsBindFlags.DEFAULT);
-            
+            settings.bind("download-notifications-enabled", download_notifications_row, "active", SettingsBindFlags.DEFAULT);
+
             // Preview settings
             settings.bind("notification-preview-enabled", notification_preview_row, "active", SettingsBindFlags.DEFAULT);
             settings.bind("notification-preview-length", notification_preview_length_row, "value", SettingsBindFlags.DEFAULT);
-            
+
             // Background frequency
             settings.bind("background-notification-frequency", background_frequency_row, "value", SettingsBindFlags.DEFAULT);
         }
@@ -172,7 +186,53 @@ namespace Karere {
             // Update current languages display
             update_current_languages_display();
         }
-        
+
+        private void update_download_directory_label() {
+            var custom_dir = settings.get_string("custom-download-directory");
+            if (custom_dir == "" || custom_dir == null) {
+                download_directory_row.subtitle = _("Default (Downloads)");
+            } else {
+                download_directory_row.subtitle = custom_dir;
+            }
+        }
+
+        private void update_reset_button_visibility() {
+            var custom_dir = settings.get_string("custom-download-directory");
+            reset_directory_button.sensitive = (custom_dir != "" && custom_dir != null);
+        }
+
+        private async void on_choose_directory_clicked() {
+            var dialog = new Gtk.FileDialog();
+            dialog.title = _("Select Download Directory");
+            dialog.modal = true;
+
+            // Get the root window for the dialog parent
+            var root = this.get_root() as Gtk.Window;
+
+            try {
+                var file = yield dialog.select_folder(root, null);
+                var path = file.get_path();
+
+                if (path != null) {
+                    settings.set_string("custom-download-directory", path);
+                    update_download_directory_label();
+                    update_reset_button_visibility();
+                    debug("Custom download directory set to: %s", path);
+                }
+            } catch (Error e) {
+                if (!(e is Gtk.DialogError.DISMISSED)) {
+                    warning("Failed to select directory: %s", e.message);
+                }
+            }
+        }
+
+        private void on_reset_directory_clicked() {
+            settings.set_string("custom-download-directory", "");
+            update_download_directory_label();
+            update_reset_button_visibility();
+            debug("Download directory reset to default");
+        }
+
         private void connect_signals() {
             // Spell checking language buttons
             add_language_button.clicked.connect(on_add_language_clicked);
