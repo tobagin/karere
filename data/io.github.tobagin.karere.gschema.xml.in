@@ -59,6 +59,12 @@
       <summary>Enable developer tools</summary>
       <description>Whether to allow access to developer tools</description>
     </key>
+
+    <key name="console-logging-enabled" type="b">
+      <default>false</default>
+      <summary>Enable console logging</summary>
+      <description>Whether to enable console logging for debugging</description>
+    </key>
     
     <!-- Notification settings -->
     <key name="notifications-enabled" type="b">

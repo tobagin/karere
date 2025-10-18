@@ -24,7 +24,7 @@ i18n = import('i18n')
 
 # Dependencies
 gtk_dep = dependency('gtk4', version: '>=4.10.0')
-adwaita_dep = dependency('libadwaita-1', version: '>=1.3.0')
+adwaita_dep = dependency('libadwaita-1', version: '>=1.8.0')
 webkit_dep = dependency('webkitgtk-6.0', version: '>=2.40.0')
 soup_dep = dependency('libsoup-3.0', version: '>=3.0.0')
 gio_dep = dependency('gio-2.0', version: '>=2.70.0')
@@ -123,6 +123,21 @@ preferences_ui = custom_target(
     ]
 )
 blueprints += preferences_ui
+
+# Compile shortcuts-dialog.blp
+shortcuts_dialog_ui = custom_target(
+    'shortcuts-dialog.ui',
+    input: files('data/ui/shortcuts-dialog.blp'),
+    output: 'shortcuts-dialog.ui',
+    command: [
+        blueprint_compiler,
+        'compile',
+        '--output', '@OUTPUT@',
+        '--typelib-path', '/usr/lib/x86_64-linux-gnu/girepository-1.0',
+        '@INPUT@'
+    ]
+)
+blueprints += shortcuts_dialog_ui
 
 
 # Copy icons with app-specific names for resources

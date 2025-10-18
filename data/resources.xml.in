@@ -3,6 +3,7 @@
   <gresource prefix="/@APP_PATH@">
     <file>window.ui</file>
     <file>preferences.ui</file>
+    <file>shortcuts-dialog.ui</file>
     <file>@APP_ID@-notification-symbolic.svg</file>
     <file>@APP_ID@-do-not-disturb-symbolic.svg</file>
   </gresource>
