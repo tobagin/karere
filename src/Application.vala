@@ -300,7 +300,7 @@ namespace Karere {
             debug("Preferences action activated");
 
             if (main_window != null && !main_window.in_destruction()) {
-                var preferences = new Preferences();
+                var preferences = new PreferencesDialog();
                 preferences.present(main_window);
             }
         }

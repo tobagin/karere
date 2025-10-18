@@ -162,7 +162,7 @@ namespace Karere {
             var help_overlay_action = new GLib.SimpleAction("show-help-overlay", null);
             help_overlay_action.activate.connect(() => {
                 if (main_window != null) {
-                    show_shortcuts_window();
+                    show_shortcuts_dialog();
                 }
             });
             main_window.add_action(help_overlay_action);
@@ -500,18 +500,18 @@ namespace Karere {
          */
         public Gtk.ShortcutsSection[] get_shortcuts_sections() {
             // Note: This method is deprecated in GTK4 due to non-public constructors
-            // The ShortcutsWindow class should be used instead.
+            // The ShortcutsDialog class should be used instead.
             return new Gtk.ShortcutsSection[0];
         }
 
         /**
-         * Show the keyboard shortcuts help window
+         * Show the keyboard shortcuts help dialog
          */
-        private void show_shortcuts_window() {
+        private void show_shortcuts_dialog() {
             if (main_window != null) {
-                var shortcuts_window = new ShortcutsWindow(main_window);
-                shortcuts_window.present(main_window);
-                debug("Shortcuts help window shown");
+                var shortcuts_dialog = new ShortcutsDialog(main_window);
+                shortcuts_dialog.present(main_window);
+                debug("Shortcuts help dialog shown");
             }
         }
 

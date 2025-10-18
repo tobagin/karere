@@ -21,14 +21,14 @@ namespace Karere {
      * Note: We use a factory pattern here because AdwShortcutsDialog must be
      * loaded from a UI file and cannot be easily subclassed with content.
      */
-    public class ShortcutsWindow : GLib.Object {
+    public class ShortcutsDialog : GLib.Object {
         private Adw.ShortcutsDialog dialog;
         private GLib.Settings settings;
 
-        public ShortcutsWindow(Gtk.Window parent) {
+        public ShortcutsDialog(Gtk.Window parent) {
             settings = new GLib.Settings(Config.APP_ID);
             dialog = load_shortcuts_dialog();
-            debug("ShortcutsWindow created with AdwShortcutsDialog");
+            debug("ShortcutsDialog created with AdwShortcutsDialog");
         }
 
         /**

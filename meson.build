@@ -50,8 +50,8 @@ conf_data.set('APP_PATH', app_id.replace('.', '/'))
 
 # Generate dynamic config file
 config_vala = configure_file(
-    input: 'src/config.vala.in',
-    output: 'config.vala',
+    input: 'src/Config.vala.in',
+    output: 'Config.vala',
     configuration: conf_data
 )
 
@@ -171,17 +171,21 @@ resources = gnome.compile_resources(
 
 # Source files
 sources = files(
-    'src/main.vala',
-    'src/application.vala',
-    'src/window.vala',
-    'src/preferences.vala',
-    'src/webkit-manager.vala',
-    'src/notification-manager.vala',
-    'src/utils.vala',
-    'src/accessibility-manager.vala',
-    'src/keyboard-shortcuts.vala',
-    'src/shortcuts-window.vala',
-    'src/about-dialog.vala',
+    'src/Main.vala',
+    'src/Application.vala',
+    'src/Window.vala',
+    'src/dialogs/PreferencesDialog.vala',
+    'src/dialogs/AboutDialog.vala',
+    'src/dialogs/ShortcutsDialog.vala',
+    'src/managers/WebKitManager.vala',
+    'src/managers/NotificationManager.vala',
+    'src/managers/AccessibilityManager.vala',
+    'src/managers/KeyboardShortcuts.vala',
+    'src/managers/SettingsManager.vala',
+    'src/managers/WhatsAppIntegration.vala',
+    'src/utils/Utils.vala',
+    'src/utils/Constants.vala',
+    'src/utils/DependencyContainer.vala',
 ) + [config_vala]
 
 # Build executable
@@ -347,18 +351,22 @@ if get_option('tests')
         'tests/test_runner.vala',
     )
     
-    # Sources for tests (excluding main.vala to avoid conflicts)
+    # Sources for tests (excluding Main.vala to avoid conflicts)
     test_lib_sources = files(
-        'src/application.vala',
-        'src/window.vala',
-        'src/preferences.vala',
-        'src/webkit-manager.vala',
-        'src/notification-manager.vala',
-        'src/utils.vala',
-        'src/accessibility-manager.vala',
-        'src/keyboard-shortcuts.vala',
-        'src/shortcuts-window.vala',
-        'src/about-dialog.vala',
+        'src/Application.vala',
+        'src/Window.vala',
+        'src/dialogs/PreferencesDialog.vala',
+        'src/dialogs/AboutDialog.vala',
+        'src/dialogs/ShortcutsDialog.vala',
+        'src/managers/WebKitManager.vala',
+        'src/managers/NotificationManager.vala',
+        'src/managers/AccessibilityManager.vala',
+        'src/managers/KeyboardShortcuts.vala',
+        'src/managers/SettingsManager.vala',
+        'src/managers/WhatsAppIntegration.vala',
+        'src/utils/Utils.vala',
+        'src/utils/Constants.vala',
+        'src/utils/DependencyContainer.vala',
     ) + [config_vala]
     
     test_executable = executable(

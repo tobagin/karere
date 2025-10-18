@@ -41,7 +41,7 @@ Karere is a modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provide
 ### Code Style
 
 **Vala Conventions:**
-- Class names: PascalCase (e.g., `NotificationManager`, `WebkitManager`)
+- Class names: PascalCase (e.g., `NotificationManager`, `WebKitManager`)
 - Method names: snake_case (e.g., `setup_actions()`, `initialize_settings()`)
 - Private fields: snake_case with nullable suffix when appropriate (e.g., `private Window? main_window = null`)
 - Constants: SCREAMING_SNAKE_CASE (defined in Config namespace)
@@ -49,8 +49,13 @@ Karere is a modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provide
 - Copyright header: Include GPL-3.0-or-later license header in all source files
 
 **File Organization:**
-- One class per file (e.g., `application.vala`, `window.vala`)
-- Template files use `.in` extension (e.g., `config.vala.in`, `preferences.blp.in`)
+- One class per file with PascalCase naming (e.g., `Application.vala`, `Window.vala`)
+- Files organized into logical subdirectories:
+  - `src/dialogs/` - Dialog classes (AboutDialog, PreferencesDialog, ShortcutsDialog)
+  - `src/managers/` - Manager classes (AccessibilityManager, NotificationManager, etc.)
+  - `src/utils/` - Utility classes and constants
+  - Root `src/` - Core application files (Application, Window, Main)
+- Template files use `.in` extension (e.g., `Config.vala.in`, `preferences.blp.in`)
 - UI files in Blueprint format (`.blp`) compiled to GTK UI (`.ui`)
 
 **Indentation & Formatting:**
@@ -83,11 +88,13 @@ Karere is a modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provide
 **Component Responsibilities:**
 - `Application`: Application lifecycle, settings, managers
 - `Window`: Main UI container, WebView integration
-- `WebkitManager`: WebKit configuration and web content handling
+- `WebKitManager`: WebKit configuration and web content handling
 - `NotificationManager`: Desktop notification integration
 - `AccessibilityManager`: Screen reader and accessibility support
 - `KeyboardShortcuts`: Keyboard shortcut handling
-- `Preferences`: Settings UI dialog
+- `PreferencesDialog`: Settings UI dialog
+- `ShortcutsDialog`: Keyboard shortcuts help dialog
+- `AboutDialog`: About/credits dialog
 
 ### Testing Strategy
 

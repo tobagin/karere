@@ -19,7 +19,7 @@ namespace Karere {
 #else
     [GtkTemplate (ui = "/io/github/tobagin/karere/preferences.ui")]
 #endif
-    public class Preferences : Adw.PreferencesDialog {
+    public class PreferencesDialog : Adw.PreferencesDialog {
         
         // General page widgets
         [GtkChild]
@@ -139,8 +139,8 @@ namespace Karere {
 
         
         private Settings settings;
-        
-        public Preferences() {
+
+        public PreferencesDialog() {
             settings = new Settings(Config.APP_ID);
             
             setup_general_settings();
@@ -506,9 +506,9 @@ namespace Karere {
         }
         
         private void on_shortcuts_help_clicked() {
-            // Show keyboard shortcuts help window
-            var shortcuts_window = new ShortcutsWindow(this.get_root() as Gtk.Window);
-            shortcuts_window.present(this.get_root() as Gtk.Window);
+            // Show keyboard shortcuts help dialog
+            var shortcuts_dialog = new ShortcutsDialog(this.get_root() as Gtk.Window);
+            shortcuts_dialog.present(this.get_root() as Gtk.Window);
         }
         
         private void update_screen_reader_status() {

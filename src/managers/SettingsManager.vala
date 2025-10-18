@@ -46,7 +46,7 @@ namespace Karere {
                 return true;
             }
 
-            return Utils.ErrorHandling.try_execute(() => {
+            try {
                 _settings = new Settings(Config.APP_ID);
                 _is_initialized = true;
 
@@ -54,7 +54,12 @@ namespace Karere {
 
                 // Notify all registered listeners
                 notify_listeners();
-            }, new Utils.ErrorHandler(), "settings initialization");
+
+                return true;
+            } catch (Error e) {
+                critical("Failed to initialize settings: %s", e.message);
+                return false;
+            }
         }
 
         /**
