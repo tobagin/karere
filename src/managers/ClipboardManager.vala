@@ -64,11 +64,32 @@ namespace Karere {
             // Check for Ctrl+V (paste)
             if (keyval == Gdk.Key.v && (state & Gdk.ModifierType.CONTROL_MASK) != 0) {
                 debug("Ctrl+V detected, checking clipboard for image");
-                handle_paste_request();
-                return true; // Consume the event to prevent default paste
+                // Check synchronously if we have an image
+                if (has_image_in_clipboard()) {
+                    handle_paste_request();
+                    return true; // Consume the event only if we have an image
+                } else {
+                    debug("No image in clipboard, allowing default paste");
+                    return false; // Let default paste behavior happen
+                }
             }
 
             return false; // Let other key events pass through
+        }
+
+        /**
+         * Check if clipboard contains an image (synchronous check)
+         */
+        private bool has_image_in_clipboard() {
+            if (clipboard == null) {
+                return false;
+            }
+
+            var formats = clipboard.get_formats();
+            return formats.contain_gtype(typeof(Gdk.Texture)) ||
+                   formats.contain_mime_type("image/png") ||
+                   formats.contain_mime_type("image/jpeg") ||
+                   formats.contain_mime_type("image/gif");
         }
 
         /**
@@ -116,9 +137,8 @@ namespace Karere {
                     }
                 });
             } else {
-                debug("No image found in clipboard");
-                // Let the default paste behavior handle text or other content
-                inject_default_paste();
+                debug("No image found in clipboard, this shouldn't be reached");
+                // This code path shouldn't be reached since we check has_image_in_clipboard() first
             }
         }
 
@@ -246,40 +266,5 @@ namespace Karere {
             });
         }
 
-        /**
-         * Inject default paste behavior (for non-image content)
-         */
-        private void inject_default_paste() {
-            debug("Executing default paste behavior");
-
-            var javascript = """
-                (function() {
-                    // Find the message input area
-                    const messageBox = document.querySelector('[contenteditable="true"][data-tab="10"]') ||
-                                      document.querySelector('[contenteditable="true"]') ||
-                                      document.querySelector('div[contenteditable="true"]');
-
-                    if (messageBox) {
-                        // Focus the message box
-                        messageBox.focus();
-
-                        // Execute paste command
-                        document.execCommand('paste');
-                        console.log('Default paste executed');
-                    } else {
-                        console.log('WhatsApp message box not found for default paste');
-                    }
-                })();
-            """;
-
-            web_view.evaluate_javascript.begin(javascript, -1, null, null, null, (obj, res) => {
-                try {
-                    web_view.evaluate_javascript.end(res);
-                    debug("Default paste JavaScript executed");
-                } catch (Error e) {
-                    warning("Failed to execute default paste JavaScript: %s", e.message);
-                }
-            });
-        }
     }
 }
