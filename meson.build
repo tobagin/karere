@@ -200,19 +200,6 @@ executable(
     install_dir: get_option('bindir')
 )
 
-# Configure development script (commented out for now)
-# dev_conf_data = configuration_data()
-# dev_conf_data.merge_from(conf_data)
-# dev_conf_data.set('BUILD_DIR', meson.current_build_dir())
-# dev_conf_data.set('PROJECT_NAME', meson.project_name())
-
-# karere_in = configure_file(
-#     input: 'karere.in',
-#     output: 'karere-dev',
-#     configuration: dev_conf_data,
-#     install: false
-# )
-
 # Desktop file
 desktop_configured = configure_file(
     input: 'data/io.github.tobagin.karere.desktop.in',

@@ -26,11 +26,16 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 - **Native Desktop Integration**: True native notifications using GNotification, not browser notifications
 - **LibAdwaita Theming**: Full support for Light, Dark, and System themes with native styling
-- **Comprehensive Logging**: Structured logging system with configurable levels and file/console output
-- **Crash Reporting**: Optional crash detection and reporting system for improved stability
 - **WebKitGTK Optimization**: Efficient resource usage compared to browser-based solutions
 - **Spell Checking**: Multi-language spell checking support
-- **Privacy Controls**: Granular settings for logging, notifications, and crash reporting
+- **Accessibility Support**: Comprehensive a11y features including:
+  - Screen reader optimization with ARIA labels
+  - Keyboard navigation support with focus indicators
+  - High contrast mode support
+  - Reduced motion support for animations
+  - Configurable keyboard shortcuts
+  - Focus chain management for keyboard-only navigation
+- **Privacy Controls**: Granular settings for notifications and logging
 
 ## Installation
 
@@ -62,17 +67,43 @@ The application will load WhatsApp Web and provide native desktop integration.
 
 ### Preferences
 
-Access preferences through the application menu or keyboard shortcut to configure:
+Access preferences through the application menu or keyboard shortcut (`Ctrl+,`) to configure:
 
-- **Appearance**: Theme selection (Light, Dark, System)
-- **Privacy**: Logging controls and crash reporting settings
-- **Notifications**: Native notification preferences
+- **General**: Theme selection, developer tools
+- **Accessibility**: Keyboard shortcuts, focus indicators, high contrast, reduced motion, zoom settings, screen reader optimization
+- **Notifications**: Native notification preferences, preview settings, background notifications
+- **Spell Checking**: Multi-language spell checking with auto-detect
 
 ### Keyboard Shortcuts
 
+#### Standard
 - `Ctrl+,` - Open Preferences
 - `Ctrl+Q` - Quit Application
-- `F11` - Toggle Fullscreen
+- `F1` - Show Keyboard Shortcuts Help
+
+#### Zoom
+- `Ctrl++` - Zoom In
+- `Ctrl+-` - Zoom Out
+- `Ctrl+0` - Reset Zoom
+
+#### Developer (when enabled)
+- `Ctrl+Shift+D` - Open Developer Tools
+- `Ctrl+R` - Reload Page
+
+#### WhatsApp Web
+- `Ctrl+F` - Find in Chat
+- `Ctrl+Shift+F` - Search Chats
+
+### Accessibility Features
+
+Karere includes comprehensive accessibility support:
+
+- **Screen Reader Support**: Full ARIA labels and semantic HTML
+- **Keyboard Navigation**: Complete keyboard-only navigation with visible focus indicators
+- **High Contrast Mode**: Automatic detection and adaptation
+- **Reduced Motion**: Respects system reduce-motion preferences
+- **Configurable Shortcuts**: All keyboard shortcuts can be enabled/disabled
+- **Focus Management**: 82 focusable elements in a logical focus chain
 
 ## Architecture
 
