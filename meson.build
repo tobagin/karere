@@ -162,8 +162,6 @@ sources = files(
     'src/preferences.vala',
     'src/webkit-manager.vala',
     'src/notification-manager.vala',
-    'src/logger.vala',
-    'src/crash-reporter.vala',
     'src/utils.vala',
     'src/accessibility-manager.vala',
     'src/keyboard-shortcuts.vala',
@@ -330,9 +328,7 @@ if get_option('tests')
     test_sources = files(
         'tests/test_application.vala',
         'tests/test_window.vala',
-        'tests/test_logger.vala',
         'tests/test_notification_manager.vala',
-        'tests/test_crash_reporter.vala',
         'tests/test_runner.vala',
     )
     
@@ -343,8 +339,6 @@ if get_option('tests')
         'src/preferences.vala',
         'src/webkit-manager.vala',
         'src/notification-manager.vala',
-        'src/logger.vala',
-        'src/crash-reporter.vala',
         'src/utils.vala',
         'src/accessibility-manager.vala',
         'src/keyboard-shortcuts.vala',

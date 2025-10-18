@@ -23,24 +23,22 @@ namespace Karere.Utils {
     }
 
     public class ErrorHandler : GLib.Object {
-        private Logger logger;
         private weak Gtk.Window? parent_window;
 
-        public ErrorHandler(Logger logger, Gtk.Window? parent = null) {
-            this.logger = logger;
+        public ErrorHandler(Gtk.Window? parent = null) {
             this.parent_window = parent;
         }
 
         public void handle_error(Error error, string context = "") {
-            logger.error("Error in %s: %s", context.length > 0 ? context : "application", error.message);
-            
+            critical("Error in %s: %s", context.length > 0 ? context : "application", error.message);
+
             // Show user-friendly error dialog
             show_error_dialog(error, context);
         }
 
         public void handle_critical_error(Error error, string context = "") {
-            logger.critical("Critical error in %s: %s", context.length > 0 ? context : "application", error.message);
-            
+            critical("Critical error in %s: %s", context.length > 0 ? context : "application", error.message);
+
             // Show critical error dialog with option to restart
             show_critical_error_dialog(error, context);
         }
@@ -107,8 +105,8 @@ namespace Karere.Utils {
         }
 
         private void restart_application() {
-            logger.info("Restarting application due to critical error");
-            
+            info("Restarting application due to critical error");
+
             try {
                 var app_path = Environment.get_current_dir() + "/" + Config.APP_NAME.down();
                 Process.spawn_async(
@@ -119,22 +117,20 @@ namespace Karere.Utils {
                     null,
                     null
                 );
-                
-                logger.info("Successfully spawned new instance, exiting current instance");
+
+                info("Successfully spawned new instance, exiting current instance");
             } catch (Error e) {
-                logger.error("Failed to restart application: %s", e.message);
+                critical("Failed to restart application: %s", e.message);
             }
-            
+
             // Exit current instance after try-catch block
             Process.exit(1);
         }
     }
 
     public class ResourceManager : GLib.Object {
-        private Logger logger;
 
-        public ResourceManager(Logger logger) {
-            this.logger = logger;
+        public ResourceManager() {
         }
 
         public bool ensure_user_directories() {
@@ -142,15 +138,15 @@ namespace Karere.Utils {
                 var config_dir = Path.build_filename(Environment.get_user_config_dir(), Config.APP_NAME);
                 var data_dir = Path.build_filename(Environment.get_user_data_dir(), Config.APP_NAME);
                 var cache_dir = Path.build_filename(Environment.get_user_cache_dir(), Config.APP_NAME);
-                
+
                 DirUtils.create_with_parents(config_dir, 0755);
                 DirUtils.create_with_parents(data_dir, 0755);
                 DirUtils.create_with_parents(cache_dir, 0755);
-                
-                logger.debug("User directories ensured: config=%s, data=%s, cache=%s", config_dir, data_dir, cache_dir);
+
+                debug("User directories ensured: config=%s, data=%s, cache=%s", config_dir, data_dir, cache_dir);
                 return true;
             } catch (Error e) {
-                logger.error("Failed to create user directories: %s", e.message);
+                critical("Failed to create user directories: %s", e.message);
                 return false;
             }
         }
@@ -168,10 +164,10 @@ namespace Karere.Utils {
         }
     }
 
-    public void setup_signal_handlers(Logger logger) {
+    public void setup_signal_handlers() {
         // Handle SIGINT (Ctrl+C)
         Unix.signal_add(2, () => { // SIGINT
-            logger.info("Received SIGINT, shutting down gracefully");
+            info("Received SIGINT, shutting down gracefully");
             var app = GLib.Application.get_default();
             if (app != null) {
                 app.quit();
@@ -181,7 +177,7 @@ namespace Karere.Utils {
 
         // Handle SIGTERM
         Unix.signal_add(15, () => { // SIGTERM
-            logger.info("Received SIGTERM, shutting down gracefully");
+            info("Received SIGTERM, shutting down gracefully");
             var app = GLib.Application.get_default();
             if (app != null) {
                 app.quit();

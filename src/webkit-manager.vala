@@ -22,13 +22,11 @@ namespace Karere {
      */
     public class WebKitManager : GLib.Object {
         private Settings settings;
-        private Logger logger;
-        
+
         public WebKitManager() {
             settings = new Settings(Config.APP_ID);
-            logger = new Logger();
-            
-            logger.debug("WebKitManager initialized");
+
+            debug("WebKitManager initialized");
         }
         
         /**
@@ -37,7 +35,7 @@ namespace Karere {
          * @param web_view The WebKit.WebView to configure
          */
         public void configure_web_view(WebKit.WebView web_view) {
-            logger.debug("Configuring WebKit WebView for WhatsApp Web");
+            debug("Configuring WebKit WebView for WhatsApp Web");
             
             var web_settings = web_view.get_settings();
             
@@ -72,17 +70,8 @@ namespace Karere {
             web_settings.allow_file_access_from_file_urls = false;
             web_settings.allow_universal_access_from_file_urls = false;
 
-            // Enable 2D canvas acceleration for better emoji rendering
-            web_settings.set_property("enable-2d-canvas-acceleration", true);
-
-            // Enable additional graphics acceleration
-            web_settings.set_property("enable-accelerated-2d-canvas", true);
-
-            // Try to improve font rendering with single emoji font to avoid conflicts
-            web_settings.set_property("enable-subpixel-font-scaling", true);
-            web_settings.set_property("font-family-fantasy", "NotoColorEmoji, system-ui, -apple-system, sans-serif");
-            web_settings.set_property("font-family-serif", "NotoColorEmoji, system-ui, -apple-system, serif");
-            web_settings.set_property("font-family-sans-serif", "NotoColorEmoji, system-ui, -apple-system, sans-serif");
+            // Note: Canvas acceleration properties are deprecated in this WebKit version
+            // Modern WebKitGTK handles hardware acceleration automatically
 
             // Additional rendering improvements
             web_settings.set_property("enable-site-specific-quirks", true);
@@ -90,8 +79,7 @@ namespace Karere {
             web_settings.set_property("enable-offline-web-application-cache", false);
             web_settings.set_property("enable-html5-database", true);
             web_settings.set_property("enable-html5-local-storage", true);
-            web_settings.set_property("enable-xss-auditor", false);
-            web_settings.set_property("enable-hyperlink-auditing", false);
+            // Note: XSS auditor and hyperlink auditing are deprecated in modern WebKit
 
             // Advanced font and rendering settings
             web_settings.set_property("enable-back-forward-navigation-gestures", true);
@@ -100,8 +88,8 @@ namespace Karere {
             web_settings.set_property("enable-tabs-to-links", true);
             web_settings.set_property("enable-caret-browsing", false);
 
-            // Font quality settings with single emoji font
-            web_settings.set_property("font-family-monospace", "NotoColorEmoji, SF Mono, Monaco, Inconsolata, 'Roboto Mono', Consolas, 'Courier New', monospace");
+            // Note: Font family properties are deprecated in this WebKit version
+            // Font settings are handled by the system and CSS
 
             // Set minimum font size for better readability
             web_settings.minimum_font_size = 9;
@@ -113,45 +101,45 @@ namespace Karere {
             string final_user_agent;
             if (user_agent != null && user_agent.strip() != "") {
                 final_user_agent = user_agent;
-                logger.info("Using custom user agent: %s", user_agent);
+                info("Using custom user agent: %s", user_agent);
             } else {
                 // Use default user agent optimized for WhatsApp Web
                 final_user_agent = get_default_user_agent();
-                logger.info("Using default Linux user agent: %s", final_user_agent);
+                info("Using default Linux user agent: %s", final_user_agent);
             }
-            
+
             // Set user agent with explicit property setting
             web_settings.set_property("user-agent", final_user_agent);
-            
+
             // Verify it was set correctly
-            logger.info("Final user agent set on WebView: %s", web_settings.user_agent);
-            
+            info("Final user agent set on WebView: %s", web_settings.user_agent);
+
             // Also try setting it via JavaScript injection as a fallback
-            logger.debug("Will inject user agent override after page load");
+            debug("Will inject user agent override after page load");
             
             // Configure zoom level
             var zoom_level = settings.get_double("webkit-zoom-level");
             web_view.zoom_level = zoom_level;
-            logger.debug("Set zoom level to: %f", zoom_level);
-            
+            debug("Set zoom level to: %f", zoom_level);
+
             // Note: enable_spell_checking property is not available in this WebKitGTK version
             // Spell checking will use system defaults
             if (settings.get_boolean("spell-checking-enabled")) {
-                
+
                 if (settings.get_boolean("spell-checking-auto-detect")) {
                     // Note: spell_checking_languages property is not available in this WebKitGTK version
                     // Spell checking will use system defaults
-                    logger.debug("Using system defaults for spell checking");
+                    debug("Using system defaults for spell checking");
                 } else {
                     // Note: spell_checking_languages property is not available in this WebKitGTK version
                     // Spell checking will use system defaults
-                    logger.debug("Using system defaults for spell checking");
+                    debug("Using system defaults for spell checking");
                 }
             } else {
                 // Spell checking disabled in settings
             }
-            
-            logger.info("WebKit WebView configured successfully");
+
+            info("WebKit WebView configured successfully");
         }
         
         /**
@@ -185,29 +173,29 @@ namespace Karere {
          * @param web_view The WebKit.WebView to update
          */
         public void update_settings(WebKit.WebView web_view) {
-            logger.debug("Updating WebKit settings");
-            
+            debug("Updating WebKit settings");
+
             var web_settings = web_view.get_settings();
-            
+
             // Note: enable_notifications property is not available in this WebKitGTK version
             // Notifications handled through JavaScript injection
-            
+
             // Update developer tools
             web_settings.enable_developer_extras = settings.get_boolean("developer-tools-enabled");
-            
+
             // Update zoom level
             var zoom_level = settings.get_double("webkit-zoom-level");
             web_view.zoom_level = zoom_level;
-            
+
             // Note: enable_spell_checking property is not available in this WebKitGTK version
             // Spell checking uses system defaults
-            
+
             if (settings.get_boolean("spell-checking-enabled")) {
                 // Note: spell_checking_languages property is not available in this WebKitGTK version
                 // Spell checking will use system defaults
-                logger.debug("Spell checking enabled with system defaults");
+                debug("Spell checking enabled with system defaults");
             }
-            
+
             // Update user agent if changed
             var user_agent = get_user_agent();
             if (user_agent != null && user_agent.strip() != "") {
@@ -215,8 +203,8 @@ namespace Karere {
             } else {
                 web_settings.user_agent = get_default_user_agent();
             }
-            
-            logger.debug("WebKit settings updated");
+
+            debug("WebKit settings updated");
         }
         
         /**
@@ -225,33 +213,33 @@ namespace Karere {
          * @param context The WebKit.WebContext to configure
          */
         public void configure_web_context(WebKit.WebContext context) {
-            logger.debug("Configuring WebKit context");
+            debug("Configuring WebKit context");
 
             // Set cache model based on user preference
             var cache_mode = settings.get_string("webkit-cache-mode");
             switch (cache_mode) {
                 case "disabled":
                     context.set_cache_model(WebKit.CacheModel.DOCUMENT_VIEWER);
-                    logger.debug("WebKit cache disabled");
+                    debug("WebKit cache disabled");
                     break;
                 case "web-browser":
                 default:
                     context.set_cache_model(WebKit.CacheModel.WEB_BROWSER);
-                    logger.debug("WebKit cache enabled (web browser mode)");
+                    debug("WebKit cache enabled (web browser mode)");
                     break;
             }
-            
+
             // Configure security settings
             var security_manager = context.get_security_manager();
-            
+
             // Allow HTTPS content only (WhatsApp Web uses HTTPS)
             security_manager.register_uri_scheme_as_secure("https");
             security_manager.register_uri_scheme_as_cors_enabled("https");
-            
+
             // Note: Cookie storage configuration moved to per-WebView setup
             // The WebKit 6.0 API no longer exposes website data manager from context
-            
-            logger.debug("WebKit context configured");
+
+            debug("WebKit context configured");
         }
 
 
@@ -295,9 +283,9 @@ namespace Karere {
             web_view.evaluate_javascript.begin(javascript_code, -1, null, null, null, (obj, res) => {
                 try {
                     web_view.evaluate_javascript.end(res);
-                    logger.debug("User agent JavaScript override injected successfully");
+                    debug("User agent JavaScript override injected successfully");
                 } catch (Error e) {
-                    logger.warning("Failed to inject user agent override: %s", e.message);
+                    warning("Failed to inject user agent override: %s", e.message);
                 }
             });
         }

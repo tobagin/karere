@@ -16,26 +16,24 @@ namespace Karere {
 
     public class NotificationManager : GLib.Object {
         private Settings? settings = null;
-        private Logger logger;
         private Application app;
         private bool initialization_deferred = true;
-        
+
         // Background notification tracking
         private DateTime? window_background_start_time = null;
         private DateTime? last_background_notification_time = null;
         private bool session_background_notification_shown = false;
         private uint background_notification_timer_id = 0;
-        
+
         // Constants from Python version
         private const int BACKGROUND_NOTIFICATION_GRACE_PERIOD_SECONDS = 0;
         private const int BACKGROUND_NOTIFICATION_COOLDOWN_SECONDS = 30;
-        
-        public NotificationManager(Application app, Logger logger) {
+
+        public NotificationManager(Application app) {
             this.app = app;
-            this.logger = logger;
             // Note: Settings initialization is deferred until GTK is initialized
-            
-            logger.debug("NotificationManager initialized");
+
+            debug("NotificationManager initialized");
         }
         
         public void initialize_settings() {
@@ -53,24 +51,24 @@ namespace Karere {
         public void send_notification(string title, string body, Icon icon) {
             // Check if notifications are enabled
             if (!should_show_notification()) {
-                logger.debug("Notification blocked by settings: %s", title);
+                debug("Notification blocked by settings: %s", title);
                 return;
             }
-            
+
             try {
                 // Create GNotification
                 var notification = new Notification(title);
-                
+
                 // Set body with preview handling
                 string notification_body = body;
                 var preview_enabled = true; // Default to enabled if settings not available
                 var max_length = 100; // Default preview length
-                
+
                 if (settings != null) {
                     preview_enabled = settings.get_boolean("notification-preview-enabled");
                     max_length = settings.get_int("notification-preview-length");
                 }
-                
+
                 if (preview_enabled) {
                     if (body.length > max_length) {
                         notification_body = body.substring(0, max_length) + "…";
@@ -79,24 +77,24 @@ namespace Karere {
                     // TRANSLATORS: Default notification text when preview is disabled
                     notification_body = _("New message");
                 }
-                
+
                 notification.set_body(notification_body);
-                
+
                 // Set icon
                 if (icon != null) {
                     notification.set_icon(icon);
                 }
-                
+
                 // Add default action to focus window
                 notification.set_default_action("app.notification-clicked");
-                
+
                 // Send notification
                 app.send_notification(null, notification);
-                
-                logger.info("Notification sent: %s", title);
-                
+
+                info("Notification sent: %s", title);
+
             } catch (Error e) {
-                logger.error("Failed to send notification: %s", e.message);
+                critical("Failed to send notification: %s", e.message);
             }
         }
         
@@ -118,7 +116,7 @@ namespace Karere {
             
             // Check Do Not Disturb mode
             if (is_dnd_active()) {
-                logger.debug("Notification blocked by Do Not Disturb mode");
+                debug("Notification blocked by Do Not Disturb mode");
                 return false;
             }
             
@@ -162,21 +160,21 @@ namespace Karere {
                 // Window gained focus (came to foreground)
                 if (window_background_start_time != null) {
                     var background_duration = get_window_background_duration();
-                    logger.debug("Window returned to foreground after %d seconds", (int)background_duration);
+                    debug("Window returned to foreground after %d seconds", (int)background_duration);
                     window_background_start_time = null;
                 }
-                
+
                 // Cancel any pending background notification
                 if (background_notification_timer_id != 0) {
                     Source.remove(background_notification_timer_id);
                     background_notification_timer_id = 0;
-                    logger.debug("Cancelled pending background notification");
+                    debug("Cancelled pending background notification");
                 }
             } else {
                 // Window lost focus (went to background)
                 window_background_start_time = new DateTime.now_local();
-                logger.debug("Window went to background at %s", window_background_start_time.to_string());
-                
+                debug("Window went to background at %s", window_background_start_time.to_string());
+
                 // Schedule background notification after grace period
                 schedule_background_notification();
             }
@@ -190,23 +188,23 @@ namespace Karere {
             
             // Check if we should schedule a notification
             if (!should_show_background_notification_basic_check()) {
-                logger.debug("Background notification not scheduled due to basic check failure");
+                debug("Background notification not scheduled due to basic check failure");
                 return;
             }
-            
+
             // Schedule the notification after grace period
             background_notification_timer_id = Timeout.add_seconds(BACKGROUND_NOTIFICATION_GRACE_PERIOD_SECONDS, () => {
                 background_notification_timer_id = 0;
-                
+
                 // Check again if we should still send the notification
                 if (should_show_background_notification()) {
                     send_background_notification();
                 }
-                
+
                 return false; // Don't repeat
             });
-            
-            logger.debug("Background notification scheduled in %d seconds", BACKGROUND_NOTIFICATION_GRACE_PERIOD_SECONDS);
+
+            debug("Background notification scheduled in %d seconds", BACKGROUND_NOTIFICATION_GRACE_PERIOD_SECONDS);
         }
         
         private double get_window_background_duration() {
@@ -228,37 +226,37 @@ namespace Karere {
             // Check mode-specific conditions
             switch (mode) {
                 case 2: // Never
-                    logger.debug("Background notifications disabled by user preference");
+                    debug("Background notifications disabled by user preference");
                     return false;
-                    
+
                 case 1: // First time only
                     if (session_background_notification_shown) {
-                        logger.debug("Background notification already shown this session");
+                        debug("Background notification already shown this session");
                         return false;
                     }
                     break;
-                    
+
                 case 0: // Always
                     // Check cooldown period
                     if (last_background_notification_time != null) {
                         var now = new DateTime.now_local();
                         var time_since_last = now.difference(last_background_notification_time) / 1000000.0;
                         if (time_since_last < BACKGROUND_NOTIFICATION_COOLDOWN_SECONDS) {
-                            logger.debug("Background notification cooldown active (%.1f seconds remaining)", 
+                            debug("Background notification cooldown active (%.1f seconds remaining)",
                                         BACKGROUND_NOTIFICATION_COOLDOWN_SECONDS - time_since_last);
                             return false;
                         }
                     }
                     break;
-                    
+
                 default:
-                    logger.warning("Unknown background notification mode: %d", mode);
+                    warning("Unknown background notification mode: %d", mode);
                     return false;
             }
-            
+
             // Check if general notifications are enabled
             if (!should_show_notification()) {
-                logger.debug("Background notification blocked by general notification settings");
+                debug("Background notification blocked by general notification settings");
                 return false;
             }
             
@@ -271,38 +269,38 @@ namespace Karere {
                 mode = settings.get_int("background-notifications-mode");
             }
             
-            logger.debug("Background notification check: mode=%d, session_shown=%s", mode, session_background_notification_shown.to_string());
-            
+            debug("Background notification check: mode=%d, session_shown=%s", mode, session_background_notification_shown.to_string());
+
             // Check mode first
             switch (mode) {
                 case 2: // Never
-                    logger.debug("Background notifications disabled (Never)");
+                    debug("Background notifications disabled (Never)");
                     return false;
                 case 1: // First time only
                     if (session_background_notification_shown) {
-                        logger.debug("Background notification already shown this session (First time only)");
+                        debug("Background notification already shown this session (First time only)");
                         return false;
                     }
                     break;
                 case 0: // Always
                     break;
                 default:
-                    logger.warning("Unknown background notification mode: %d", mode);
+                    warning("Unknown background notification mode: %d", mode);
                     return false;
             }
-            
+
             // First do basic checks
             if (!should_show_background_notification_basic_check()) {
                 return false;
             }
-            
+
             // Check if window is still in background (grace period is handled by timer)
             if (window_background_start_time == null) {
-                logger.debug("Window is not in background anymore");
+                debug("Window is not in background anymore");
                 return false;
             }
-            
-            logger.debug("Background notification approved");
+
+            debug("Background notification approved");
             return true;
         }
         
@@ -320,18 +318,18 @@ namespace Karere {
                     message = _("Karere is now running in the background. You'll receive notifications for new messages.");
                     break;
                 default:
-                    logger.warning("Attempting to send background notification with mode: %d", mode);
+                    warning("Attempting to send background notification with mode: %d", mode);
                     return;
             }
-            
+
             // TRANSLATORS: Application name in background notifications
             send_notification(_("Karere"), message, new ThemedIcon("dialog-information-symbolic"));
-            
+
             // Update tracking variables
             last_background_notification_time = new DateTime.now_local();
             session_background_notification_shown = true;
-            
-            logger.info("Background notification sent (mode=%d)", mode);
+
+            info("Background notification sent (mode=%d)", mode);
         }
     }
 }

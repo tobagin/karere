@@ -43,23 +43,20 @@ namespace Karere {
         private Settings settings;
         private WebKitManager webkit_manager;
         private NotificationManager notification_manager;
-        private Logger logger;
         private Gdk.Clipboard clipboard;
 
         public Window(Gtk.Application app) {
             Object(application: app);
-            
-            logger = new Logger();
-            
+
             // Initialize settings with error handling
             try {
                 settings = new Settings(Config.APP_ID);
             } catch (Error e) {
-                logger.error("Failed to initialize settings: %s", e.message);
-                logger.warning("Continuing without settings - using defaults");
+                critical("Failed to initialize settings: %s", e.message);
+                warning("Continuing without settings - using defaults");
                 settings = null;
             }
-            
+
             setup_window_properties();
             setup_actions();
             setup_webkit();
@@ -67,16 +64,16 @@ namespace Karere {
             setup_settings_listeners();
             setup_accessibility_features();
             setup_clipboard_paste();
-            
+
             // Initialize focus indicators state
             if (settings != null) {
                 update_focus_indicators();
                 update_zoom_controls_visibility(); // Initialize zoom controls visibility
             }
-            
+
             restore_window_state();
-            
-            logger.info("Window created and initialized");
+
+            info("Window created and initialized");
         }
 
         private void setup_window_properties() {
@@ -90,7 +87,7 @@ namespace Karere {
             notify["default-height"].connect(save_window_state);
 
 
-            logger.debug("Window properties configured");
+            debug("Window properties configured");
         }
 
         private void setup_actions() {
@@ -99,11 +96,11 @@ namespace Karere {
             dev_tools_action.activate.connect(() => {
                 var inspector = web_view.get_inspector();
                 inspector.show();
-                logger.debug("Developer tools opened");
+                debug("Developer tools opened");
             });
             add_action(dev_tools_action);
 
-            logger.debug("Window actions configured");
+            debug("Window actions configured");
         }
 
         private void setup_webkit() {
@@ -142,11 +139,11 @@ namespace Karere {
 
             // Connect notification permission signal
             web_view.permission_request.connect(on_permission_request);
-            
+
             // Set up WebKit notification permissions persistence
             setup_webkit_permission_persistence();
-            
-            logger.debug("WebKit configured");
+
+            debug("WebKit configured");
         }
 
         private void setup_notifications() {
@@ -154,65 +151,65 @@ namespace Karere {
             var app = get_application() as Karere.Application;
             if (app != null) {
                 notification_manager = app.get_notification_manager();
-                logger.debug("Notifications configured");
+                debug("Notifications configured");
             } else {
-                logger.error("Could not get application reference for notifications");
+                critical("Could not get application reference for notifications");
             }
         }
 
         private void configure_cookie_storage() {
             // Note: WebKit 6.0 API change - cookie manager access has changed
-            // var website_data_manager = network_session.get_website_data_manager();  
+            // var website_data_manager = network_session.get_website_data_manager();
             // var cookie_manager = website_data_manager.get_cookie_manager();
-            
+
             // Note: Cookie storage setup disabled due to WebKit 6.0 API changes
             // Cookie storage will be handled automatically by WebKit
-            logger.info("Cookie storage will be handled by WebKit defaults");
+            info("Cookie storage will be handled by WebKit defaults");
         }
 
         private void setup_webkit_permission_persistence() {
             // The key insight: WebKit persists permissions automatically when using the default
             // WebContext with persistent storage. Our native dialog approach should work
             // because the permission decision gets stored in WebKit's internal database.
-            logger.info("WebKit permission persistence relies on native permission handling");
+            info("WebKit permission persistence relies on native permission handling");
         }
 
 
         private void setup_spell_checking(WebKit.Settings webkit_settings) {
             if (settings == null) {
-                logger.warning("Cannot setup spell checking: settings is null");
+                warning("Cannot setup spell checking: settings is null");
                 return;
             }
-            
+
             var spell_enabled = settings.get_boolean("spell-checking-enabled");
             var web_context = web_view.get_context();
-            
-            logger.info("Setting up spell checking: enabled=%s", spell_enabled.to_string());
-            
+
+            info("Setting up spell checking: enabled=%s", spell_enabled.to_string());
+
             // Enable/disable spell checking
             web_context.set_spell_checking_enabled(spell_enabled);
-            
+
             if (spell_enabled) {
                 // Get spell checking languages
                 string[] spell_languages = get_spell_checking_languages();
-                
+
                 // Set the languages
                 web_context.set_spell_checking_languages(spell_languages);
-                logger.info("Spell checking languages set: %s", string.joinv(", ", spell_languages));
+                info("Spell checking languages set: %s", string.joinv(", ", spell_languages));
             } else {
-                logger.info("Spell checking disabled");
+                info("Spell checking disabled");
             }
         }
-        
+
         private string[] get_spell_checking_languages() {
             if (settings == null) {
-                logger.warning("Cannot get spell checking languages: settings is null, using fallback");
+                warning("Cannot get spell checking languages: settings is null, using fallback");
                 return {"en_US"};
             }
-            
+
             var auto_detect = settings.get_boolean("spell-checking-auto-detect");
             var languages = settings.get_strv("spell-checking-languages");
-            
+
             if (auto_detect || languages.length == 0) {
                 // Auto-detect from system locale
                 var locale = Intl.setlocale(LocaleCategory.MESSAGES, null);
@@ -220,21 +217,21 @@ namespace Karere {
                     // Extract language code (e.g., "en_US.UTF-8" -> "en_US")
                     var parts = locale.split(".");
                     var lang_code = parts[0];
-                    logger.info("Auto-detected spell checking language: %s", lang_code);
+                    info("Auto-detected spell checking language: %s", lang_code);
                     return {lang_code};
                 } else {
-                    logger.info("Using fallback spell checking language: en_US");
+                    info("Using fallback spell checking language: en_US");
                     return {"en_US"};
                 }
             } else {
-                logger.info("Using user-specified spell checking languages: %s", string.joinv(", ", languages));
+                info("Using user-specified spell checking languages: %s", string.joinv(", ", languages));
                 return languages;
             }
         }
-        
+
         private void setup_settings_listeners() {
             if (settings == null) {
-                logger.warning("Cannot setup settings listeners: settings is null");
+                warning("Cannot setup settings listeners: settings is null");
                 return;
             }
             
@@ -276,7 +273,7 @@ namespace Karere {
             // Set up focus management
             setup_focus_management();
             
-            logger.debug("Accessibility features configured");
+            debug("Accessibility features configured");
         }
 
         /**
@@ -308,7 +305,7 @@ namespace Karere {
         private void setup_skip_links() {
             // Skip links functionality temporarily disabled due to LibAdwaita API limitations
             // AdwToastOverlay doesn't support add_overlay method
-            logger.debug("Skip links not implemented - AdwToastOverlay API limitation");
+            debug("Skip links not implemented - AdwToastOverlay API limitation");
         }
 
         /**
@@ -327,21 +324,21 @@ namespace Karere {
             // Add to the web view instead of the window since the method signature is incompatible
             web_view.add_controller(focus_controller);
             
-            logger.debug("Focus management configured");
+            debug("Focus management configured");
         }
 
         /**
          * Handle window focus in events
          */
         private void on_window_focus_in() {
-            logger.debug("Window gained focus");
+            debug("Window gained focus");
         }
 
         /**
          * Handle window focus out events
          */
         private void on_window_focus_out() {
-            logger.debug("Window lost focus");
+            debug("Window lost focus");
         }
 
         /**
@@ -358,7 +355,7 @@ namespace Karere {
             // Add the controller to the web view so it can intercept paste events
             web_view.add_controller(key_controller);
 
-            logger.debug("Clipboard paste functionality configured");
+            debug("Clipboard paste functionality configured");
         }
 
         /**
@@ -367,7 +364,7 @@ namespace Karere {
         private bool on_key_pressed(uint keyval, uint keycode, Gdk.ModifierType state) {
             // Check for Ctrl+V (paste)
             if (keyval == Gdk.Key.v && (state & Gdk.ModifierType.CONTROL_MASK) != 0) {
-                logger.debug("Ctrl+V detected, checking clipboard for image");
+                debug("Ctrl+V detected, checking clipboard for image");
                 handle_paste_event();
                 return true; // Consume the event to prevent default paste
             }
@@ -380,7 +377,7 @@ namespace Karere {
          */
         private void handle_paste_event() {
             if (clipboard == null) {
-                logger.warning("Clipboard not available");
+                warning("Clipboard not available");
                 return;
             }
 
@@ -396,7 +393,7 @@ namespace Karere {
                             process_clipboard_image(texture);
                         }
                     } catch (Error e) {
-                        logger.error("Failed to read texture from clipboard: %s", e.message);
+                        critical("Failed to read texture from clipboard: %s", e.message);
                     }
                 });
             } else if (formats.contain_mime_type("image/png") ||
@@ -412,11 +409,11 @@ namespace Karere {
                             process_clipboard_image_stream(input_stream, mime_type);
                         }
                     } catch (Error e) {
-                        logger.error("Failed to read image stream from clipboard: %s", e.message);
+                        critical("Failed to read image stream from clipboard: %s", e.message);
                     }
                 });
             } else {
-                logger.debug("No image found in clipboard");
+                debug("No image found in clipboard");
                 // Let the default paste behavior handle text or other content
                 inject_default_paste();
             }
@@ -426,14 +423,14 @@ namespace Karere {
          * Process a clipboard image texture
          */
         private void process_clipboard_image(Gdk.Texture texture) {
-            logger.info("Processing clipboard image texture: %dx%d", texture.get_width(), texture.get_height());
+            info("Processing clipboard image texture: %dx%d", texture.get_width(), texture.get_height());
 
             try {
                 // Convert texture to PNG bytes
                 var bytes = texture.save_to_png_bytes();
                 inject_image_into_whatsapp(bytes, "image/png");
             } catch (Error e) {
-                logger.error("Failed to convert texture to PNG: %s", e.message);
+                critical("Failed to convert texture to PNG: %s", e.message);
                 show_error_toast(_("Failed to process clipboard image"));
             }
         }
@@ -442,7 +439,7 @@ namespace Karere {
          * Process a clipboard image stream
          */
         private void process_clipboard_image_stream(GLib.InputStream input_stream, string mime_type) {
-            logger.info("Processing clipboard image stream with MIME type: %s", mime_type);
+            info("Processing clipboard image stream with MIME type: %s", mime_type);
 
             try {
                 // Read the entire stream into memory
@@ -454,7 +451,7 @@ namespace Karere {
 
                 inject_image_into_whatsapp(bytes, mime_type);
             } catch (Error e) {
-                logger.error("Failed to process clipboard image stream: %s", e.message);
+                critical("Failed to process clipboard image stream: %s", e.message);
                 show_error_toast(_("Failed to process clipboard image"));
             }
         }
@@ -463,7 +460,7 @@ namespace Karere {
          * Inject image data into WhatsApp Web
          */
         private void inject_image_into_whatsapp(Bytes image_bytes, string mime_type) {
-            logger.info("Injecting %s image (%zu bytes) into WhatsApp Web", mime_type, image_bytes.get_size());
+            info("Injecting %s image (%zu bytes) into WhatsApp Web", mime_type, image_bytes.get_size());
 
             // Convert bytes to base64 data URL
             var base64_data = Base64.encode(image_bytes.get_data());
@@ -537,10 +534,10 @@ namespace Karere {
             web_view.evaluate_javascript.begin(javascript, -1, null, null, null, (obj, res) => {
                 try {
                     web_view.evaluate_javascript.end(res);
-                    logger.info("Image injection JavaScript executed successfully");
+                    info("Image injection JavaScript executed successfully");
                     show_success_toast(_("Image pasted to WhatsApp"));
                 } catch (Error e) {
-                    logger.error("Failed to execute image injection JavaScript: %s", e.message);
+                    critical("Failed to execute image injection JavaScript: %s", e.message);
                     show_error_toast(_("Failed to paste image to WhatsApp"));
                 }
             });
@@ -550,7 +547,7 @@ namespace Karere {
          * Inject default paste behavior (for non-image content)
          */
         private void inject_default_paste() {
-            logger.debug("Executing default paste behavior");
+            debug("Executing default paste behavior");
 
             var javascript = """
                 (function() {
@@ -575,16 +572,16 @@ namespace Karere {
             web_view.evaluate_javascript.begin(javascript, -1, null, null, null, (obj, res) => {
                 try {
                     web_view.evaluate_javascript.end(res);
-                    logger.debug("Default paste JavaScript executed");
+                    debug("Default paste JavaScript executed");
                 } catch (Error e) {
-                    logger.warning("Failed to execute default paste JavaScript: %s", e.message);
+                    warning("Failed to execute default paste JavaScript: %s", e.message);
                 }
             });
         }
 
         private void update_spell_checking() {
             if (settings == null || web_view == null) {
-                logger.warning("Cannot update spell checking: settings or web_view is null");
+                warning("Cannot update spell checking: settings or web_view is null");
                 return;
             }
             
@@ -596,17 +593,17 @@ namespace Karere {
             if (spell_enabled) {
                 string[] spell_languages = get_spell_checking_languages();
                 web_context.set_spell_checking_languages(spell_languages);
-                logger.info("Spell checking updated - languages: %s", string.joinv(", ", spell_languages));
+                info("Spell checking updated - languages: %s", string.joinv(", ", spell_languages));
             } else {
                 web_context.set_spell_checking_languages({});
-                logger.info("Spell checking disabled");
+                info("Spell checking disabled");
             }
         }
 
 
         private void update_developer_tools() {
             if (settings == null || web_view == null) {
-                logger.warning("Cannot update developer tools: settings or web_view is null");
+                warning("Cannot update developer tools: settings or web_view is null");
                 return;
             }
             
@@ -619,7 +616,7 @@ namespace Karere {
                 close_developer_tools();
             }
             
-            logger.debug("Developer tools %s", dev_tools_enabled ? "enabled" : "disabled");
+            debug("Developer tools %s", dev_tools_enabled ? "enabled" : "disabled");
         }
 
         /**
@@ -629,12 +626,12 @@ namespace Karere {
          */
         public void update_webkit_zoom(double zoom_level) {
             if (web_view == null) {
-                logger.warning("Cannot update WebView zoom: web_view is null");
+                warning("Cannot update WebView zoom: web_view is null");
                 return;
             }
             
             web_view.zoom_level = zoom_level;
-            logger.info("WebView zoom level updated to: %f", zoom_level);
+            info("WebView zoom level updated to: %f", zoom_level);
         }
 
         /**
@@ -643,9 +640,9 @@ namespace Karere {
         public void update_webkit_settings() {
             if (webkit_manager != null && web_view != null) {
                 webkit_manager.update_settings(web_view);
-                logger.debug("WebKit settings updated through WebKitManager");
+                debug("WebKit settings updated through WebKitManager");
             } else {
-                logger.warning("Cannot update WebKit settings: webkit_manager or web_view is null");
+                warning("Cannot update WebKit settings: webkit_manager or web_view is null");
             }
         }
 
@@ -662,7 +659,7 @@ namespace Karere {
             
             settings.set_double("webkit-zoom-level", new_zoom);
             web_view.zoom_level = new_zoom;
-            logger.debug("WebView zoomed in to %f", new_zoom);
+            debug("WebView zoomed in to %f", new_zoom);
         }
 
         /**
@@ -678,7 +675,7 @@ namespace Karere {
             
             settings.set_double("webkit-zoom-level", new_zoom);
             web_view.zoom_level = new_zoom;
-            logger.debug("WebView zoomed out to %f", new_zoom);
+            debug("WebView zoomed out to %f", new_zoom);
         }
 
         /**
@@ -690,7 +687,7 @@ namespace Karere {
             
             settings.set_double("webkit-zoom-level", 1.0);
             web_view.zoom_level = 1.0;
-            logger.debug("WebView zoom reset to default");
+            debug("WebView zoom reset to default");
         }
 
         /**
@@ -698,22 +695,22 @@ namespace Karere {
          */
         public void update_focus_indicators() {
             if (settings == null) {
-                logger.warning("Cannot update focus indicators: settings is null");
+                warning("Cannot update focus indicators: settings is null");
                 return;
             }
             
             var focus_indicators_enabled = settings.get_boolean("focus-indicators-enabled");
-            logger.debug("Focus indicators setting value: %s", focus_indicators_enabled.to_string());
+            debug("Focus indicators setting value: %s", focus_indicators_enabled.to_string());
             
             // Apply the CSS class to the main window using modern GTK 4.10+ approach
             if (focus_indicators_enabled) {
                 // Add the focus indicators CSS class to window
                 add_css_class("karere-focus-indicators");
-                logger.info("Focus indicators enabled - CSS class added");
+                info("Focus indicators enabled - CSS class added");
             } else {
                 // Remove the focus indicators CSS class from window
                 remove_css_class("karere-focus-indicators");
-                logger.info("Focus indicators disabled - CSS class removed");
+                info("Focus indicators disabled - CSS class removed");
             }
         }
 
@@ -722,7 +719,7 @@ namespace Karere {
          */
         private void update_zoom_controls_visibility() {
             if (settings == null) {
-                logger.warning("Cannot update zoom controls visibility: settings is null");
+                warning("Cannot update zoom controls visibility: settings is null");
                 return;
             }
             
@@ -732,7 +729,7 @@ namespace Karere {
             // Only show controls if both zoom is enabled AND controls are enabled
             zoom_controls_box.visible = zoom_enabled && zoom_controls_enabled;
             
-            logger.info("Zoom controls %s", (zoom_enabled && zoom_controls_enabled) ? "shown" : "hidden");
+            info("Zoom controls %s", (zoom_enabled && zoom_controls_enabled) ? "shown" : "hidden");
         }
 
         // Removed: setup_drag_and_drop() method
@@ -740,7 +737,7 @@ namespace Karere {
 
         private void restore_window_state() {
             if (settings == null) {
-                logger.warning("Cannot restore window state: settings is null, using defaults");
+                warning("Cannot restore window state: settings is null, using defaults");
                 set_default_size(1200, 800);
                 return;
             }
@@ -755,7 +752,7 @@ namespace Karere {
                 maximize();
             }
             
-            logger.debug("Window state restored: %dx%d, maximized: %s", 
+            debug("Window state restored: %dx%d, maximized: %s", 
                         width, height, settings.get_boolean("window-maximized").to_string());
         }
 
@@ -771,7 +768,7 @@ namespace Karere {
             // Save maximized state
             settings.set_boolean("window-maximized", maximized);
             
-            logger.debug("Window state saved: %dx%d, maximized: %s", 
+            debug("Window state saved: %dx%d, maximized: %s", 
                         width, height, maximized.to_string());
         }
 
@@ -781,19 +778,19 @@ namespace Karere {
         private void on_load_changed(WebKit.LoadEvent load_event) {
             switch (load_event) {
                 case WebKit.LoadEvent.STARTED:
-                    logger.debug("Load started");
+                    debug("Load started");
                     break;
-                    
+
                 case WebKit.LoadEvent.REDIRECTED:
-                    logger.debug("Load redirected");
+                    debug("Load redirected");
                     break;
-                    
+
                 case WebKit.LoadEvent.COMMITTED:
-                    logger.debug("Load committed");
+                    debug("Load committed");
                     break;
-                    
+
                 case WebKit.LoadEvent.FINISHED:
-                    logger.debug("Load finished");
+                    debug("Load finished");
                     setup_webkit_notifications();
                     webkit_manager.inject_user_agent_override(web_view);
                     break;
@@ -801,7 +798,7 @@ namespace Karere {
         }
 
         private bool on_load_failed(WebKit.LoadEvent load_event, string failing_uri, Error error) {
-            logger.error("Load failed for %s: %s", failing_uri, error.message);
+            critical("Load failed for %s: %s", failing_uri, error.message);
 
             // TRANSLATORS: Error message when WhatsApp Web fails to load
             show_error_toast(_("Failed to load WhatsApp Web. Please check your internet connection."));
@@ -819,25 +816,25 @@ namespace Karere {
                     var request = navigation_action.get_request();
                     var uri = request.get_uri();
 
-                    logger.debug("Navigation policy decision (type: %s) for URI: %s",
+                    debug("Navigation policy decision (type: %s) for URI: %s",
                                decision_type.to_string(), uri);
 
                     // Allow internal WhatsApp Web navigation
                     if (is_whatsapp_internal_uri(uri)) {
-                        logger.debug("Allowing internal WhatsApp navigation: %s", uri);
+                        debug("Allowing internal WhatsApp navigation: %s", uri);
                         decision.use();
                         return true;
                     }
 
                     // For external links, open in system browser
                     if (is_external_link(uri)) {
-                        logger.info("Opening external link in system browser: %s", uri);
+                        info("Opening external link in system browser: %s", uri);
 
                         try {
                             // Try to open with portal first (for Flatpak compatibility)
                             open_uri_external(uri);
                         } catch (Error e) {
-                            logger.error("Failed to open external link: %s", e.message);
+                            critical("Failed to open external link: %s", e.message);
                             // TRANSLATORS: Error message when external link fails to open
                             show_error_toast(_("Failed to open link in external browser"));
                         }
@@ -865,16 +862,16 @@ namespace Karere {
             var request = navigation_action.get_request();
             var uri = request.get_uri();
 
-            logger.info("New web view creation requested for URI: %s", uri);
+            info("New web view creation requested for URI: %s", uri);
 
             // For external links, open in system browser instead of creating new web view
             if (is_external_link(uri)) {
-                logger.info("Intercepting new window for external link: %s", uri);
+                info("Intercepting new window for external link: %s", uri);
 
                 try {
                     open_uri_external(uri);
                 } catch (Error e) {
-                    logger.error("Failed to open external link in new window: %s", e.message);
+                    critical("Failed to open external link in new window: %s", e.message);
                     show_error_toast(_("Failed to open link in external browser"));
                 }
 
@@ -883,7 +880,7 @@ namespace Karere {
             }
 
             // For internal links, allow default behavior (shouldn't normally happen)
-            logger.debug("Allowing new window creation for internal URI: %s", uri);
+            debug("Allowing new window creation for internal URI: %s", uri);
             return null;
         }
 
@@ -919,7 +916,7 @@ namespace Karere {
          */
         private void open_uri_external(string uri) throws Error {
             // Always use the portal system since this is a Flatpak-only application
-            logger.debug("Opening URI via Flatpak portal: %s", uri);
+            debug("Opening URI via Flatpak portal: %s", uri);
             open_uri_with_portal(uri);
         }
 
@@ -932,9 +929,9 @@ namespace Karere {
             AppInfo.launch_default_for_uri_async.begin(uri, null, null, (obj, res) => {
                 try {
                     AppInfo.launch_default_for_uri_async.end(res);
-                    logger.debug("URI opened successfully via portal: %s", uri);
+                    debug("URI opened successfully via portal: %s", uri);
                 } catch (Error e) {
-                    logger.error("Portal URI opening failed: %s", e.message);
+                    critical("Portal URI opening failed: %s", e.message);
                 }
             });
         }
@@ -943,13 +940,13 @@ namespace Karere {
 
         private void setup_webkit_notifications() {
             // Set up notification permission handling 
-            logger.debug("WebKit notifications setup complete");
+            debug("WebKit notifications setup complete");
         }
 
 
         private bool on_permission_request(WebKit.PermissionRequest request) {
             if (request is WebKit.NotificationPermissionRequest) {
-                logger.info("WhatsApp requesting notification permission");
+                info("WhatsApp requesting notification permission");
                 
                 // Check if we have a saved permission decision
                 if (settings != null) {
@@ -959,11 +956,11 @@ namespace Karere {
                     if (permission_asked) {
                         // We have a previous decision, use it
                         if (permission_granted) {
-                            logger.info("Using saved permission: granted");
+                            info("Using saved permission: granted");
                             request.allow();
                             setup_notification_handler();
                         } else {
-                            logger.info("Using saved permission: denied");
+                            info("Using saved permission: denied");
                             request.deny();
                         }
                         return true;
@@ -1006,11 +1003,11 @@ namespace Karere {
                 
                 // Handle the WebKit permission request
                 if (granted) {
-                    logger.info("User granted notification permission");
+                    info("User granted notification permission");
                     request.allow();
                     setup_notification_handler();
                 } else {
-                    logger.info("User denied notification permission");
+                    info("User denied notification permission");
                     request.deny();
                 }
             });
@@ -1021,11 +1018,11 @@ namespace Karere {
         private void setup_notification_handler() {
             // Set up notification handler on the WebView
             web_view.show_notification.connect(on_webkit_notification);
-            logger.info("Notification handler connected");
+            info("Notification handler connected");
         }
 
         private bool on_webkit_notification(WebKit.WebView webview, WebKit.Notification webkit_notification) {
-            logger.info("WebKit notification received: %s", webkit_notification.get_title());
+            info("WebKit notification received: %s", webkit_notification.get_title());
             
             if (notification_manager != null) {
                 var title = webkit_notification.get_title();
@@ -1036,13 +1033,13 @@ namespace Karere {
                 
                 // Handle notification click
                 webkit_notification.clicked.connect(() => {
-                    logger.debug("Notification clicked, focusing window");
+                    debug("Notification clicked, focusing window");
                     present();
                     webkit_notification.clicked();
                 });
                 
                 webkit_notification.closed.connect(() => {
-                    logger.debug("Notification closed");
+                    debug("Notification closed");
                 });
                 
                 // Close the WebKit notification since we're showing our own
@@ -1073,7 +1070,7 @@ namespace Karere {
             toast.timeout = 5;
             toast_overlay.add_toast(toast);
             
-            logger.debug("Error toast shown: %s", message);
+            debug("Error toast shown: %s", message);
         }
 
         public void show_info_toast(string message) {
@@ -1081,7 +1078,7 @@ namespace Karere {
             toast.timeout = 3;
             toast_overlay.add_toast(toast);
             
-            logger.debug("Info toast shown: %s", message);
+            debug("Info toast shown: %s", message);
         }
 
         public void show_success_toast(string message) {
@@ -1089,12 +1086,12 @@ namespace Karere {
             toast.timeout = 2;
             toast_overlay.add_toast(toast);
             
-            logger.debug("Success toast shown: %s", message);
+            debug("Success toast shown: %s", message);
         }
         
         public void show_toast(Adw.Toast toast) {
             toast_overlay.add_toast(toast);
-            logger.debug("Toast shown: %s", toast.title);
+            debug("Toast shown: %s", toast.title);
         }
 
         public void open_developer_tools() {
@@ -1106,7 +1103,7 @@ namespace Karere {
             
             var inspector = web_view.get_inspector();
             inspector.show();
-            logger.debug("Developer tools opened");
+            debug("Developer tools opened");
         }
 
         public bool is_developer_tools_open() {
@@ -1126,7 +1123,7 @@ namespace Karere {
             var inspector = web_view.get_inspector();
             if (inspector.is_attached()) {
                 inspector.close();
-                logger.debug("Developer tools closed");
+                debug("Developer tools closed");
             }
         }
 
@@ -1137,10 +1134,10 @@ namespace Karere {
             if (web_view != null) {
                 if (force_reload) {
                     web_view.reload_bypass_cache();
-                    logger.debug("WebView force reloaded (bypassing cache)");
+                    debug("WebView force reloaded (bypassing cache)");
                 } else {
                     web_view.reload();
-                    logger.debug("WebView reloaded");
+                    debug("WebView reloaded");
                 }
                 show_info_toast(force_reload ? _("Force reloading...") : _("Reloading..."));
             }
@@ -1159,7 +1156,7 @@ namespace Karere {
         }
 
         public override bool close_request() {
-            logger.info("Window close requested");
+            info("Window close requested");
             save_window_state();
             
             // Hide the window instead of closing it to keep app running in background
@@ -1175,7 +1172,7 @@ namespace Karere {
         }
 
         public override void dispose() {
-            logger.info("Window being disposed");
+            info("Window being disposed");
             
             // Notify the application that this window is being destroyed
             var app = get_application() as Karere.Application;

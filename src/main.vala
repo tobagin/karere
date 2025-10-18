@@ -73,17 +73,16 @@ int main(string[] args) {
     Environment.set_application_name(Config.APP_NAME);
     Environment.set_prgname(Config.APP_NAME);
 
-    var logger = new Karere.Logger();
-    logger.info("Starting %s version %s", Config.APP_NAME, Config.VERSION);
+    info("Starting %s version %s", Config.APP_NAME, Config.VERSION);
 
     try {
         // Set up signal handlers for graceful shutdown
-        Karere.Utils.setup_signal_handlers(logger);
+        Karere.Utils.setup_signal_handlers();
 
         // Ensure user directories exist
-        var resource_manager = new Karere.Utils.ResourceManager(logger);
+        var resource_manager = new Karere.Utils.ResourceManager();
         if (!resource_manager.ensure_user_directories()) {
-            logger.error("Failed to create user directories, continuing anyway");
+            critical("Failed to create user directories, continuing anyway");
         }
 
         // Create and run application
@@ -110,17 +109,17 @@ int main(string[] args) {
 
         // Run the application
         var exit_code = app.run(args);
-        
-        logger.info("Application exiting with code %d", exit_code);
+
+        info("Application exiting with code %d", exit_code);
         return exit_code;
-        
+
     } catch (Error e) {
-        logger.critical("Fatal error during application startup: %s", e.message);
-        
+        critical("Fatal error during application startup: %s", e.message);
+
         // Show critical error to user if possible
-        var error_handler = new Karere.Utils.ErrorHandler(logger);
+        var error_handler = new Karere.Utils.ErrorHandler();
         error_handler.handle_critical_error(e, "application startup");
-        
+
         return 1;
     }
 }

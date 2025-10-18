@@ -18,19 +18,17 @@ namespace Karere {
      * Manages all keyboard shortcuts for the application
      */
     public class KeyboardShortcuts : Object {
-        private Logger logger;
         private GLib.Settings? settings = null;
         private Adw.Application application;
         private Window? main_window;
         private AccessibilityManager? accessibility_manager;
         private bool initialization_deferred = true;
 
-        public KeyboardShortcuts(Adw.Application app, Logger logger) {
+        public KeyboardShortcuts(Adw.Application app) {
             this.application = app;
-            this.logger = logger;
             // Note: Settings initialization is deferred until GTK is initialized
-            
-            logger.debug("KeyboardShortcuts manager initialized (Settings deferred)");
+
+            debug("KeyboardShortcuts manager initialized (Settings deferred)");
         }
         
         public void initialize_settings() {
@@ -38,12 +36,12 @@ namespace Karere {
                 try {
                     settings = new GLib.Settings(Config.APP_ID);
                     initialization_deferred = false;
-                    
+
                     setup_application_shortcuts();
-                    
-                    logger.debug("KeyboardShortcuts settings initialized");
+
+                    debug("KeyboardShortcuts settings initialized");
                 } catch (Error e) {
-                    logger.error("Failed to initialize KeyboardShortcuts settings: %s", e.message);
+                    critical("Failed to initialize KeyboardShortcuts settings: %s", e.message);
                     initialization_deferred = true;
                 }
             }
@@ -72,12 +70,12 @@ namespace Karere {
          */
         public void update_keyboard_shortcuts() {
             if (settings == null) return;
-            
+
             // Clear all existing shortcuts first
             clear_all_shortcuts();
-            
+
             if (!settings.get_boolean("keyboard-shortcuts-enabled")) {
-                logger.debug("Keyboard shortcuts disabled in settings");
+                debug("Keyboard shortcuts disabled in settings");
                 return;
             }
 
@@ -118,7 +116,7 @@ namespace Karere {
                 application.set_accels_for_action("win.dnd-toggle", {"<primary><shift>d"});
             }
 
-            logger.debug("Application shortcuts configured");
+            debug("Application shortcuts configured");
         }
 
         /**
@@ -150,8 +148,8 @@ namespace Karere {
             // Clear notification shortcuts
             application.set_accels_for_action("win.notifications-toggle", {});
             application.set_accels_for_action("win.dnd-toggle", {});
-            
-            logger.debug("All keyboard shortcuts cleared");
+
+            debug("All keyboard shortcuts cleared");
         }
 
         /**
@@ -174,7 +172,7 @@ namespace Karere {
             minimize_action.activate.connect(() => {
                 if (main_window != null) {
                     main_window.minimize();
-                    logger.debug("Window minimized via shortcut");
+                    debug("Window minimized via shortcut");
                 }
             });
             main_window.add_action(minimize_action);
@@ -185,10 +183,10 @@ namespace Karere {
                 if (main_window != null) {
                     if (main_window.fullscreened) {
                         main_window.unfullscreen();
-                        logger.debug("Exited fullscreen via shortcut");
+                        debug("Exited fullscreen via shortcut");
                     } else {
                         main_window.fullscreen();
-                        logger.debug("Entered fullscreen via shortcut");
+                        debug("Entered fullscreen via shortcut");
                     }
                 }
             });
@@ -203,7 +201,7 @@ namespace Karere {
             // Setup notification shortcuts
             setup_notification_shortcuts();
 
-            logger.debug("Window shortcuts configured");
+            debug("Window shortcuts configured");
         }
 
         /**
@@ -250,7 +248,7 @@ namespace Karere {
                         current ? _("High contrast disabled") : _("High contrast enabled")
                     );
                 }
-                logger.debug("High contrast toggled: %s", (!current).to_string());
+                debug("High contrast toggled: %s", (!current).to_string());
             });
             main_window.add_action(toggle_high_contrast_action);
 
@@ -259,11 +257,11 @@ namespace Karere {
             toggle_focus_indicators_action.activate.connect(() => {
                 var current = settings.get_boolean("focus-indicators-enabled");
                 settings.set_boolean("focus-indicators-enabled", !current);
-                logger.debug("Focus indicators toggled: %s", (!current).to_string());
+                debug("Focus indicators toggled: %s", (!current).to_string());
             });
             main_window.add_action(toggle_focus_indicators_action);
 
-            logger.debug("Accessibility shortcuts configured");
+            debug("Accessibility shortcuts configured");
         }
 
         /**
@@ -279,7 +277,7 @@ namespace Karere {
             dev_tools_action.activate.connect(() => {
                 if (main_window != null) {
                     main_window.open_developer_tools();
-                    logger.debug("Developer tools opened via shortcut");
+                    debug("Developer tools opened via shortcut");
                 }
             });
             main_window.add_action(dev_tools_action);
@@ -287,7 +285,7 @@ namespace Karere {
             // Reload action
             var reload_action = new GLib.SimpleAction("reload", null);
             reload_action.activate.connect(() => {
-                logger.debug("Reload requested via shortcut");
+                debug("Reload requested via shortcut");
                 reload_webview(false);
             });
             main_window.add_action(reload_action);
@@ -295,12 +293,12 @@ namespace Karere {
             // Force reload action (bypass cache)
             var force_reload_action = new GLib.SimpleAction("force-reload", null);
             force_reload_action.activate.connect(() => {
-                logger.debug("Force reload requested via shortcut");
+                debug("Force reload requested via shortcut");
                 reload_webview(true);
             });
             main_window.add_action(force_reload_action);
 
-            logger.debug("Developer shortcuts configured");
+            debug("Developer shortcuts configured");
         }
 
         /**
@@ -320,7 +318,7 @@ namespace Karere {
                         current ? _("Notifications disabled") : _("Notifications enabled")
                     );
                 }
-                logger.debug("Notifications toggled: %s", (!current).to_string());
+                debug("Notifications toggled: %s", (!current).to_string());
             });
             main_window.add_action(notifications_toggle_action);
 
@@ -334,11 +332,11 @@ namespace Karere {
                         current ? _("Do Not Disturb disabled") : _("Do Not Disturb enabled")
                     );
                 }
-                logger.debug("Do Not Disturb toggled: %s", (!current).to_string());
+                debug("Do Not Disturb toggled: %s", (!current).to_string());
             });
             main_window.add_action(dnd_toggle_action);
 
-            logger.debug("Notification shortcuts configured");
+            debug("Notification shortcuts configured");
         }
 
         /**
@@ -350,7 +348,7 @@ namespace Karere {
             // Find action (Ctrl+F)
             var find_action = new GLib.SimpleAction("find", null);
             find_action.activate.connect(() => {
-                logger.debug("Find requested via shortcut");
+                debug("Find requested via shortcut");
                 inject_whatsapp_find();
             });
             main_window.add_action(find_action);
@@ -361,7 +359,7 @@ namespace Karere {
             // WhatsApp Web navigation shortcuts
             setup_whatsapp_shortcuts();
 
-            logger.debug("WebView shortcuts configured");
+            debug("WebView shortcuts configured");
         }
 
         /**
@@ -376,7 +374,7 @@ namespace Karere {
             // Search chats (Ctrl+Shift+F)
             var search_chats_action = new GLib.SimpleAction("search-chats", null);
             search_chats_action.activate.connect(() => {
-                logger.debug("Search chats requested");
+                debug("Search chats requested");
                 inject_whatsapp_search();
             });
             main_window.add_action(search_chats_action);
@@ -385,7 +383,7 @@ namespace Karere {
             // New chat (Ctrl+N)
             var new_chat_action = new GLib.SimpleAction("new-chat", null);
             new_chat_action.activate.connect(() => {
-                logger.debug("New chat requested");
+                debug("New chat requested");
                 inject_whatsapp_new_chat();
             });
             main_window.add_action(new_chat_action);
@@ -394,7 +392,7 @@ namespace Karere {
             // Archive chat (Ctrl+E)
             var archive_chat_action = new GLib.SimpleAction("archive-chat", null);
             archive_chat_action.activate.connect(() => {
-                logger.debug("Archive chat requested");
+                debug("Archive chat requested");
                 inject_whatsapp_archive();
             });
             main_window.add_action(archive_chat_action);
@@ -404,13 +402,13 @@ namespace Karere {
             // Profile (Ctrl+P)
             var profile_action = new GLib.SimpleAction("profile", null);
             profile_action.activate.connect(() => {
-                logger.debug("Profile requested");
+                debug("Profile requested");
                 inject_whatsapp_profile();
             });
             main_window.add_action(profile_action);
             application.set_accels_for_action("win.profile", {"<primary>p"});
 
-            logger.debug("WhatsApp shortcuts configured");
+            debug("WhatsApp shortcuts configured");
         }
 
         /**
@@ -435,7 +433,7 @@ namespace Karere {
          * Inject JavaScript to trigger WhatsApp Web find functionality
          */
         private void inject_whatsapp_find() {
-            logger.debug("Injecting WhatsApp find functionality");
+            debug("Injecting WhatsApp find functionality");
             // This would inject JavaScript to activate WhatsApp's search
             // For now, show informational toast
             if (main_window != null) {
@@ -447,7 +445,7 @@ namespace Karere {
          * Inject JavaScript to trigger WhatsApp Web chat search
          */
         private void inject_whatsapp_search() {
-            logger.debug("Injecting WhatsApp chat search");
+            debug("Injecting WhatsApp chat search");
             if (main_window != null) {
                 main_window.show_info_toast(_("Opening chat search..."));
             }
@@ -457,7 +455,7 @@ namespace Karere {
          * Inject JavaScript to trigger WhatsApp Web new chat
          */
         private void inject_whatsapp_new_chat() {
-            logger.debug("Injecting WhatsApp new chat");
+            debug("Injecting WhatsApp new chat");
             if (main_window != null) {
                 main_window.show_info_toast(_("Opening new chat..."));
             }
@@ -467,7 +465,7 @@ namespace Karere {
          * Inject JavaScript to trigger WhatsApp Web archive
          */
         private void inject_whatsapp_archive() {
-            logger.debug("Injecting WhatsApp archive");
+            debug("Injecting WhatsApp archive");
             if (main_window != null) {
                 main_window.show_info_toast(_("Archiving current chat..."));
             }
@@ -477,7 +475,7 @@ namespace Karere {
          * Inject JavaScript to trigger WhatsApp Web profile
          */
         private void inject_whatsapp_profile() {
-            logger.debug("Injecting WhatsApp profile");
+            debug("Injecting WhatsApp profile");
             if (main_window != null) {
                 main_window.show_info_toast(_("Opening profile..."));
             }
@@ -493,8 +491,8 @@ namespace Karere {
                 setup_window_shortcuts();
                 setup_webview_shortcuts();
             }
-            
-            logger.debug("Keyboard shortcuts updated");
+
+            debug("Keyboard shortcuts updated");
         }
 
         /**
@@ -513,7 +511,7 @@ namespace Karere {
             if (main_window != null) {
                 var shortcuts_window = new ShortcutsWindow(main_window);
                 shortcuts_window.present(main_window);
-                logger.debug("Shortcuts help window shown");
+                debug("Shortcuts help window shown");
             }
         }
 
@@ -523,7 +521,7 @@ namespace Karere {
         public void cleanup() {
             main_window = null;
             accessibility_manager = null;
-            logger.debug("KeyboardShortcuts cleaned up");
+            debug("KeyboardShortcuts cleaned up");
         }
     }
 }

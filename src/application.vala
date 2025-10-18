@@ -16,8 +16,6 @@ namespace Karere {
 
     public class Application : Adw.Application {
         private Window? main_window = null;
-        private Logger logger;
-        private CrashReporter crash_reporter;
         private NotificationManager notification_manager;
         private AccessibilityManager accessibility_manager;
         private KeyboardShortcuts keyboard_shortcuts;
@@ -28,17 +26,15 @@ namespace Karere {
                 application_id: Config.APP_ID,
                 flags: ApplicationFlags.HANDLES_COMMAND_LINE
             );
-            
+
             // Set the application to quit when the last window is closed
             set_option_context_description(_("A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web"));
             register_session = true;
-            
-            logger = new Logger();
-            crash_reporter = new CrashReporter();
-            notification_manager = new NotificationManager(this, logger);
-            accessibility_manager = new AccessibilityManager(logger);
-            keyboard_shortcuts = new KeyboardShortcuts(this, logger);
-            
+
+            notification_manager = new NotificationManager(this);
+            accessibility_manager = new AccessibilityManager();
+            keyboard_shortcuts = new KeyboardShortcuts(this);
+
             // Note: Settings initialization is deferred to startup() method
             // to ensure GTK is properly initialized first
         }
@@ -46,94 +42,85 @@ namespace Karere {
         public override void startup() {
             base.startup();
 
-            logger.info("Application starting up");
+            debug("Application starting up");
 
             // Register icon theme resource path to make custom icons available
             var icon_theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
             icon_theme.add_resource_path("/" + Config.APP_ID.replace(".", "/"));
-            
+
             // Initialize Settings now that GTK is initialized
             settings = new Settings(Config.APP_ID);
-            
-            // Initialize logger settings now that GTK is initialized
-            logger.initialize_settings();
-            
-            // Initialize crash reporter settings and logger now that GTK is initialized
-            crash_reporter.initialize_settings_and_logger(logger);
-            
+
             // Initialize notification manager settings now that GTK is initialized
             notification_manager.initialize_settings();
-            
+
             // Initialize accessibility manager settings now that GTK is initialized
             accessibility_manager.initialize_settings();
-            
+
             // Initialize keyboard shortcuts settings now that GTK is initialized
             keyboard_shortcuts.initialize_settings();
-            
+
             // Update log handlers with user preferences now that settings are available
             setup_log_handlers_with_preferences();
-            
-            // Initialize crash reporting
-            crash_reporter.initialize();
-            
+
             // Set up application actions
             setup_actions();
-            
+
             // Set up keyboard shortcuts
             setup_keyboard_shortcuts();
-            
+
             // Set up theme handling
             setup_theme_handling();
-            
-            logger.info("Application startup complete");
+
+            debug("Application startup complete");
         }
 
         public override void activate() {
             base.activate();
-            
-            logger.info("Application activated");
-            
+
+            debug("Application activated");
+
             // Create window if it doesn't exist
             if (main_window == null) {
-                logger.info("Creating new main window");
+                debug("Creating new main window");
                 main_window = new Window(this);
-                
+
                 // Set up accessibility and keyboard shortcuts for the new window
                 accessibility_manager.set_main_window(main_window);
                 keyboard_shortcuts.set_window_reference(main_window, accessibility_manager);
-                
+
                 main_window.present();
-                logger.info("Main window created and presented with accessibility support");
-                
+                debug("Main window created and presented with accessibility support");
+
                 // Check if we should show What's New dialog
                 check_and_show_whats_new();
             } else {
                 // Show the existing window (it might be hidden)
                 main_window.set_visible(true);
                 main_window.present();
-                
+
                 // Reapply focus indicators setting when window is shown
                 main_window.update_focus_indicators();
-                
+
                 // Reset background notification state when window is shown
                 notification_manager.on_window_focus_changed(true);
-                
-                logger.info("Main window shown and presented");
+
+                debug("Main window shown and presented");
             }
         }
 
         public override int command_line(ApplicationCommandLine command_line) {
-            logger.info("Processing command line arguments");
-            
+            debug("Processing command line arguments");
+
             var options = command_line.get_options_dict();
-            
+
             // Handle version option
             if (options.contains("version")) {
                 // TRANSLATORS: %s is the version number
                 command_line.print(_("Karere %s\n"), Config.VERSION);
                 return 0;
             }
-            
+
             // Handle help option
             if (options.contains("help")) {
                 command_line.print(_("Usage: karere [OPTIONS]\n"));
@@ -141,26 +128,26 @@ namespace Karere {
                 command_line.print(_("  --help       Show this help message\n"));
                 return 0;
             }
-            
+
             // Hold the application and activate it
             hold();
             activate();
-            
+
             return 0;
         }
 
         public override void shutdown() {
-            logger.info("Application shutting down");
-            
+            debug("Application shutting down");
+
             // Save application state
             save_application_state();
-            
+
             // Clean up resources
             cleanup_resources();
-            
+
             base.shutdown();
-            
-            logger.info("Application shutdown complete");
+
+            debug("Application shutdown complete");
         }
 
         private void setup_actions() {
@@ -177,33 +164,33 @@ namespace Karere {
             // Quit action
             var quit_action = new SimpleAction("quit", null);
             quit_action.activate.connect(() => {
-                logger.info("Quit action activated");
+                debug("Quit action activated");
                 quit();
             });
             add_action(quit_action);
-            
+
             // Notification click action
             var notification_action = new SimpleAction("notification-clicked", null);
             notification_action.activate.connect(() => {
-                logger.info("Notification clicked - presenting window");
+                debug("Notification clicked - presenting window");
                 activate();
             });
             add_action(notification_action);
-            
-            logger.debug("Application actions set up");
+
+            debug("Application actions set up");
         }
 
         private void setup_keyboard_shortcuts() {
             // Note: Keyboard shortcuts are now managed by KeyboardShortcuts class
             // This method is kept for compatibility but the actual setup is done
             // when the window is created and keyboard_shortcuts.set_window_reference() is called
-            
-            logger.debug("Keyboard shortcuts will be configured when window is created");
+
+            debug("Keyboard shortcuts will be configured when window is created");
         }
-        
+
         private void setup_log_handlers_with_preferences() {
             if (settings == null) {
-                logger.warning("Settings not initialized, cannot update log handlers");
+                warning("Settings not initialized, cannot update log handlers");
                 return;
             }
             
@@ -254,64 +241,64 @@ namespace Karere {
                 Log.set_handler("WebKit", LogLevelFlags.LEVEL_MASK | LogLevelFlags.FLAG_FATAL | LogLevelFlags.FLAG_RECURSION, system_log_handler);
                 Log.set_handler("Adwaita", LogLevelFlags.LEVEL_MASK | LogLevelFlags.FLAG_FATAL | LogLevelFlags.FLAG_RECURSION, system_log_handler);
                 Log.set_handler("MESA-INTEL", LogLevelFlags.LEVEL_MASK | LogLevelFlags.FLAG_FATAL | LogLevelFlags.FLAG_RECURSION, system_log_handler);
-                
-                logger.debug("Log handlers updated with user preferences");
-                
+
+                debug("Log handlers updated with user preferences");
+
             } catch (Error e) {
-                logger.error("Failed to update log handlers with preferences: %s", e.message);
+                critical("Failed to update log handlers with preferences: %s", e.message);
             }
         }
-        
+
         private void setup_theme_handling() {
             // Apply initial theme
             apply_theme();
-            
+
             // Listen for theme changes
             if (settings != null) {
                 settings.changed["theme-preference"].connect(() => {
                     apply_theme();
-                    logger.debug("Theme preference changed");
+                    debug("Theme preference changed");
                 });
             }
-            
-            logger.debug("Theme handling configured");
+
+            debug("Theme handling configured");
         }
         
         private void apply_theme() {
             var style_manager = Adw.StyleManager.get_default();
-            
+
             if (settings == null) {
                 // Use system default if settings are not available yet
                 style_manager.color_scheme = Adw.ColorScheme.DEFAULT;
-                logger.debug("Applied system theme (settings not available)");
+                debug("Applied system theme (settings not available)");
                 return;
             }
-            
+
             var theme_preference = settings.get_int("theme-preference");
-            
+
             switch (theme_preference) {
                 case 0: // System
                     style_manager.color_scheme = Adw.ColorScheme.DEFAULT;
-                    logger.debug("Applied system theme");
+                    debug("Applied system theme");
                     break;
                 case 1: // Light
                     style_manager.color_scheme = Adw.ColorScheme.FORCE_LIGHT;
-                    logger.debug("Applied light theme");
+                    debug("Applied light theme");
                     break;
                 case 2: // Dark
                     style_manager.color_scheme = Adw.ColorScheme.FORCE_DARK;
-                    logger.debug("Applied dark theme");
+                    debug("Applied dark theme");
                     break;
                 default:
                     style_manager.color_scheme = Adw.ColorScheme.DEFAULT;
-                    logger.warning("Unknown theme preference: %d, using system default", theme_preference);
+                    warning("Unknown theme preference: %d, using system default", theme_preference);
                     break;
             }
         }
 
         private void on_preferences_activate() {
-            logger.debug("Preferences action activated");
-            
+            debug("Preferences action activated");
+
             if (main_window != null && !main_window.in_destruction()) {
                 var preferences = new Preferences();
                 preferences.present(main_window);
@@ -328,7 +315,7 @@ namespace Karere {
                 // Small delay to ensure main window is fully presented
                 Timeout.add(500, () => {
                     if (main_window != null && !main_window.in_destruction()) {
-                        logger.info("Showing automatic release notes for new version");
+                        info("Showing automatic release notes for new version");
                         KarereAboutDialog.show_with_release_notes(main_window);
                     }
                     return false;
@@ -340,7 +327,7 @@ namespace Karere {
             if (settings == null) {
                 return false;
             }
-            
+
             try {
                 string last_version = settings.get_string("last-version-shown");
                 string current_version = Config.VERSION;
@@ -348,13 +335,13 @@ namespace Karere {
                 // Show if this is the first run (empty last version) or version has changed
                 if (last_version == "" || last_version != current_version) {
                     settings.set_string("last-version-shown", current_version);
-                    logger.info("New version detected: %s (was: %s)", current_version, last_version == "" ? "first run" : last_version);
+                    info("New version detected: %s (was: %s)", current_version, last_version == "" ? "first run" : last_version);
                     return true;
                 }
             } catch (Error e) {
-                logger.warning("Failed to check last version shown: %s", e.message);
+                warning("Failed to check last version shown: %s", e.message);
             }
-            
+
             return false;
         }
 
@@ -362,16 +349,16 @@ namespace Karere {
             if (settings == null) {
                 return false;
             }
-            
+
             try {
                 string last_version = settings.get_string("last-shown-version");
                 if (last_version != Config.VERSION) {
                     return true;
                 }
             } catch (Error e) {
-                logger.warning("Failed to check last shown version: %s", e.message);
+                warning("Failed to check last shown version: %s", e.message);
             }
-            
+
             return false;
         }
 
@@ -379,39 +366,36 @@ namespace Karere {
             if (main_window == null || main_window.in_destruction()) {
                 return;
             }
-            
+
             // Get release notes from AppData
             string release_notes = KarereAboutDialog.get_current_release_notes();
             if (release_notes == "") {
                 release_notes = "New version available with improvements and bug fixes.";
             }
-            
+
             var alert = new Adw.AlertDialog(
                 "What's New in Karere %s".printf(Config.VERSION),
                 release_notes
             );
-            
+
             alert.add_response("ok", "Got it");
             alert.set_response_appearance("ok", Adw.ResponseAppearance.SUGGESTED);
             alert.set_default_response("ok");
-            
+
             alert.response.connect(() => {
                 // Mark this version as shown
                 if (settings != null) {
                     try {
                         settings.set_string("last-shown-version", Config.VERSION);
-                        logger.debug("Marked version %s as shown", Config.VERSION);
+                        debug("Marked version %s as shown", Config.VERSION);
                     } catch (Error e) {
-                        logger.warning("Failed to save last shown version: %s", e.message);
+                        warning("Failed to save last shown version: %s", e.message);
                     }
                 }
             });
-            
+
             alert.present(main_window);
         }
-
-
-
 
         private void save_application_state() {
             try {
@@ -422,13 +406,13 @@ namespace Karere {
                     settings.set_int("window-width", width);
                     settings.set_int("window-height", height);
                     settings.set_boolean("window-maximized", main_window.maximized);
-                    
-                    logger.debug("Application state saved");
+
+                    debug("Application state saved");
                 } else if (settings == null) {
-                    logger.warning("Cannot save application state: settings not initialized");
+                    warning("Cannot save application state: settings not initialized");
                 }
             } catch (Error e) {
-                logger.error("Failed to save application state: %s", e.message);
+                critical("Failed to save application state: %s", e.message);
             }
         }
 
@@ -436,43 +420,37 @@ namespace Karere {
             try {
                 // Clean up accessibility manager resources
                 accessibility_manager.cleanup();
-                
+
                 // Clean up keyboard shortcuts resources
                 keyboard_shortcuts.cleanup();
-                
-                // Clean up crash reporter resources
-                crash_reporter.cleanup();
-                
-                // Clean up logger resources
-                logger.cleanup();
-                
-                logger.debug("Resources cleaned up successfully");
+
+                debug("Resources cleaned up successfully");
             } catch (Error e) {
                 // Log error but don't prevent shutdown
-                logger.error("Error during resource cleanup: %s", e.message);
+                critical("Error during resource cleanup: %s", e.message);
             }
         }
 
         public override bool dbus_register(DBusConnection connection, string object_path) throws Error {
             base.dbus_register(connection, object_path);
-            
-            logger.debug("Application registered on D-Bus");
+
+            debug("Application registered on D-Bus");
             return true;
         }
 
         public override void dbus_unregister(DBusConnection connection, string object_path) {
             base.dbus_unregister(connection, object_path);
-            
-            logger.debug("Application unregistered from D-Bus");
+
+            debug("Application unregistered from D-Bus");
         }
 
         public void window_destroyed() {
-            logger.info("Window destroyed, clearing reference");
+            info("Window destroyed, clearing reference");
             main_window = null;
-            
+
             // Application continues running in background
             // User can reopen via launcher or quick settings
-            logger.info("Window destroyed, application continues in background");
+            info("Window destroyed, application continues in background");
         }
 
         public NotificationManager get_notification_manager() {

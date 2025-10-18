@@ -14,13 +14,11 @@
 
 int main(string[] args) {
     Test.init(ref args);
-    
+
     // Register all test suites
     KarereTests.register_application_tests();
     KarereTests.register_window_tests();
-    KarereTests.register_logger_tests();
     KarereTests.register_notification_manager_tests();
-    KarereTests.register_crash_reporter_tests();
-    
+
     return Test.run();
 }

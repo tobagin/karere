@@ -136,36 +136,6 @@ namespace Karere {
         private unowned Adw.ActionRow add_language_row;
         [GtkChild]
         private unowned Gtk.Button add_language_button;
-        
-        // Crash reporting page widgets
-        [GtkChild]
-        private unowned Adw.SwitchRow crash_reporter_row;
-        [GtkChild]
-        private unowned Adw.SwitchRow crash_system_info_row;
-        [GtkChild]
-        private unowned Adw.SwitchRow crash_logs_row;
-        [GtkChild]
-        private unowned Gtk.Label crash_count_label;
-        [GtkChild]
-        private unowned Gtk.Button crash_clear_button;
-        
-        // Logging page widgets
-        [GtkChild]
-        private unowned Adw.ComboRow log_level_row;
-        [GtkChild]
-        private unowned Adw.SwitchRow console_logging_row;
-        [GtkChild]
-        private unowned Adw.SwitchRow file_logging_row;
-        [GtkChild]
-        private unowned Adw.SpinRow log_file_max_size_row;
-        [GtkChild]
-        private unowned Adw.SpinRow log_file_retention_row;
-        [GtkChild]
-        private unowned Gtk.Button log_location_button;
-        [GtkChild]
-        private unowned Gtk.Button log_view_button;
-        [GtkChild]
-        private unowned Gtk.Button log_clear_button;
 
         
         private Settings settings;
@@ -178,7 +148,7 @@ namespace Karere {
             setup_notification_settings();
             setup_dnd_settings();
             setup_spell_checking_settings();
-            
+
             // Initialize UI visibility
             on_system_notifications_changed();
             on_notifications_changed();
@@ -188,10 +158,7 @@ namespace Karere {
             on_spell_checking_changed();
             on_developer_tools_changed();
             on_webview_zoom_changed();
-            setup_crash_reporting_settings();
-            setup_logging_settings();
-            
-            
+
             connect_signals();
         }
         
@@ -274,46 +241,15 @@ namespace Karere {
             // Spell checking settings
             settings.bind("spell-checking-enabled", spell_enabled_row, "active", SettingsBindFlags.DEFAULT);
             settings.bind("spell-checking-auto-detect", spell_auto_detect_row, "active", SettingsBindFlags.DEFAULT);
-            
+
             // Update current languages display
             update_current_languages_display();
-        }
-        
-        private void setup_crash_reporting_settings() {
-            // Crash reporting settings
-            settings.bind("crash-reporter-enabled", crash_reporter_row, "active", SettingsBindFlags.DEFAULT);
-            settings.bind("crash-include-system-info", crash_system_info_row, "active", SettingsBindFlags.DEFAULT);
-            settings.bind("crash-include-logs", crash_logs_row, "active", SettingsBindFlags.DEFAULT);
-            
-            // Update crash count display
-            update_crash_count();
-        }
-        
-        private void setup_logging_settings() {
-            // Log level setting
-            settings.bind("log-level", log_level_row, "selected", SettingsBindFlags.DEFAULT);
-            
-            // Logging toggles
-            settings.bind("console-logging-enabled", console_logging_row, "active", SettingsBindFlags.DEFAULT);
-            settings.bind("file-logging-enabled", file_logging_row, "active", SettingsBindFlags.DEFAULT);
-            
-            // Log file settings
-            settings.bind("log-file-max-size", log_file_max_size_row, "value", SettingsBindFlags.DEFAULT);
-            settings.bind("log-file-retention", log_file_retention_row, "value", SettingsBindFlags.DEFAULT);
         }
         
         private void connect_signals() {
             // Spell checking language buttons
             add_language_button.clicked.connect(on_add_language_clicked);
-            
-            // Crash clear button
-            crash_clear_button.clicked.connect(on_crash_clear_clicked);
-            
-            // Logging buttons
-            log_location_button.clicked.connect(on_log_location_clicked);
-            log_view_button.clicked.connect(on_log_view_clicked);
-            log_clear_button.clicked.connect(on_log_clear_clicked);
-            
+
             // Listen for settings changes that affect UI
             settings.changed["system-notifications-enabled"].connect(on_system_notifications_changed);
             settings.changed["notifications-enabled"].connect(on_notifications_changed);
@@ -325,7 +261,6 @@ namespace Karere {
             settings.changed["spell-checking-auto-detect"].connect(on_spell_checking_changed);
             settings.changed["spell-checking-languages"].connect(on_spell_checking_changed);
             settings.changed["developer-tools-enabled"].connect(on_developer_tools_changed);
-            settings.changed["file-logging-enabled"].connect(on_file_logging_changed);
             settings.changed["webview-zoom-enabled"].connect(on_webview_zoom_changed);
             
             // Accessibility settings listeners
@@ -472,19 +407,6 @@ namespace Karere {
             }
         }
         
-        private void on_crash_clear_clicked() {
-            settings.set_int("crash-reports-count", 0);
-            update_crash_count();
-            
-            // TRANSLATORS: Confirmation message when crash statistics are cleared
-            show_toast(_("Crash statistics cleared"));
-        }
-        
-        private void update_crash_count() {
-            var count = settings.get_int("crash-reports-count");
-            crash_count_label.set_text(count.to_string());
-        }
-        
         private void on_system_notifications_changed() {
             // Update UI sensitivity based on system notifications enabled - master toggle
             var system_enabled = settings.get_boolean("system-notifications-enabled");
@@ -573,101 +495,6 @@ namespace Karere {
             // Update UI visibility for developer tools
             var enabled = settings.get_boolean("developer-tools-enabled");
             open_dev_tools_row.visible = enabled;
-        }
-        
-        private void on_log_location_clicked() {
-            // Open log directory in file manager
-            try {
-                var log_dir = Environment.get_user_data_dir() + "/" + Config.APP_NAME + "/logs";
-                AppInfo.launch_default_for_uri("file://" + log_dir, null);
-            } catch (Error e) {
-                // TRANSLATORS: Error message when log directory cannot be opened. %s is the error details
-                show_toast(_("Could not open log directory: %s").printf(e.message));
-            }
-        }
-        
-        private void on_log_view_clicked() {
-            // Open current log file in default text editor
-            try {
-                var log_dir = Environment.get_user_data_dir() + "/" + Config.APP_NAME + "/logs";
-                var now = new DateTime.now_local();
-                var today_filename = "karere-%s.log".printf(now.format("%Y-%m-%d"));
-                var log_file = log_dir + "/" + today_filename;
-                
-                // Check if today's log file exists, if not try yesterday's
-                var file = File.new_for_path(log_file);
-                if (!file.query_exists()) {
-                    var yesterday = now.add_days(-1);
-                    var yesterday_filename = "karere-%s.log".printf(yesterday.format("%Y-%m-%d"));
-                    log_file = log_dir + "/" + yesterday_filename;
-                    file = File.new_for_path(log_file);
-                    
-                    if (!file.query_exists()) {
-                        // TRANSLATORS: Error message when no recent log files are found
-                        show_toast(_("No recent log files found"));
-                        return;
-                    }
-                }
-                
-                AppInfo.launch_default_for_uri("file://" + log_file, null);
-            } catch (Error e) {
-                // TRANSLATORS: Error message when log file cannot be opened. %s is the error details
-                show_toast(_("Could not open log file: %s").printf(e.message));
-            }
-        }
-        
-        private void on_log_clear_clicked() {
-            // Show confirmation dialog before clearing logs
-            var dialog = new Adw.AlertDialog(
-                "Clear All Log Files?",
-                "This will permanently delete all application log files. This action cannot be undone."
-            );
-            
-            dialog.add_response("cancel", "Cancel");
-            dialog.add_response("clear", "Clear All Logs");
-            dialog.set_response_appearance("clear", Adw.ResponseAppearance.DESTRUCTIVE);
-            dialog.set_default_response("cancel");
-            dialog.set_close_response("cancel");
-            
-            dialog.response.connect((response) => {
-                if (response == "clear") {
-                    clear_all_log_files();
-                }
-            });
-            
-            dialog.present(this);
-        }
-        
-        private void clear_all_log_files() {
-            // Clear all log files
-            try {
-                var log_dir = Environment.get_user_data_dir() + "/" + Config.APP_NAME + "/logs";
-                var dir = File.new_for_path(log_dir);
-                if (dir.query_exists()) {
-                    var enumerator = dir.enumerate_children("*", FileQueryInfoFlags.NONE);
-                    FileInfo info;
-                    while ((info = enumerator.next_file()) != null) {
-                        var child = dir.resolve_relative_path(info.get_name());
-                        if (info.get_name().has_suffix(".log")) {
-                            child.delete();
-                        }
-                    }
-                }
-                // TRANSLATORS: Confirmation message when all log files are cleared
-                show_toast(_("All log files cleared"));
-            } catch (Error e) {
-                // TRANSLATORS: Error message when log files cannot be cleared. %s is the error details
-                show_toast(_("Could not clear log files: %s").printf(e.message));
-            }
-        }
-        
-        private void on_file_logging_changed() {
-            // Update UI sensitivity for file logging settings
-            var enabled = settings.get_boolean("file-logging-enabled");
-            log_file_max_size_row.sensitive = enabled;
-            log_file_retention_row.sensitive = enabled;
-            log_view_button.sensitive = enabled;
-            log_clear_button.sensitive = enabled;
         }
         
         private void on_webview_zoom_changed() {

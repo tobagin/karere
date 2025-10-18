@@ -13,14 +13,9 @@
  */
 
 public class KarereAboutDialog : GLib.Object {
-    private static Karere.Logger logger;
-    
-    static construct {
-        logger = new Karere.Logger();
-    }
-    
+
     public static void show(Gtk.Window? parent) {
-        logger.debug("About action activated");
+        debug("About action activated");
         
         string[] developers = { "Thiago Fernandes", "Aman9Das", "Cameo" };
         string[] designers = { "Thiago Fernandes" };
@@ -81,17 +76,17 @@ public class KarereAboutDialog : GLib.Object {
     public static void show_with_release_notes(Gtk.Window? parent) {
         // Open the about dialog first (regular method)
         show(parent);
-        logger.debug("About dialog opened, preparing automatic navigation");
+        debug("About dialog opened, preparing automatic navigation");
         
         // Wait for the dialog to appear and be fully rendered
         Timeout.add(500, () => {
-            logger.debug("Starting automatic navigation to release notes");
+            debug("Starting automatic navigation to release notes");
             simulate_tab_navigation();
-            
+
             // Simulate Enter key press after another delay to open release notes
             Timeout.add(300, () => {
                 simulate_enter_activation();
-                logger.info("Automatic navigation to release notes completed");
+                info("Automatic navigation to release notes completed");
                 return false;
             });
             return false;
@@ -138,7 +133,7 @@ public class KarereAboutDialog : GLib.Object {
             }
         } catch (Error e) {
             // If we can't load release notes from metainfo, that's okay
-            logger.warning("Could not load release notes from metainfo: %s", e.message);
+            warning("Could not load release notes from metainfo: %s", e.message);
         }
     }
     
@@ -191,9 +186,9 @@ public class KarereAboutDialog : GLib.Object {
                 }
             }
         } catch (Error e) {
-            logger.warning("Could not load release notes from metainfo: %s", e.message);
+            warning("Could not load release notes from metainfo: %s", e.message);
         }
-        
+
         return "";
     }
     
@@ -203,19 +198,19 @@ public class KarereAboutDialog : GLib.Object {
         if (app != null) {
             var focused_window = app.get_active_window();
             if (focused_window != null) {
-                logger.debug("Attempting tab navigation on window: %s", focused_window.get_type().name());
-                
+                debug("Attempting tab navigation on window: %s", focused_window.get_type().name());
+
                 // Try multiple approaches to navigate to the release notes button
                 var success = focused_window.child_focus(Gtk.DirectionType.TAB_FORWARD);
                 if (success) {
-                    logger.debug("Tab navigation successful");
+                    debug("Tab navigation successful");
                 } else {
-                    logger.debug("Tab navigation failed - focus might need manual adjustment");
+                    debug("Tab navigation failed - focus might need manual adjustment");
                     // For LibAdwaita dialogs, the focus should automatically navigate
                     // to the appropriate elements when tabbing
                 }
             } else {
-                logger.warning("No focused window for tab navigation");
+                warning("No focused window for tab navigation");
             }
         }
     }
@@ -228,19 +223,19 @@ public class KarereAboutDialog : GLib.Object {
             if (focused_window != null) {
                 // Get the focused widget within the active window
                 var focused_widget = focused_window.get_focus();
-                logger.debug("Attempting enter activation on widget: %s", 
+                debug("Attempting enter activation on widget: %s",
                            focused_widget != null ? focused_widget.get_type().name() : "null");
-                
+
                 if (focused_widget != null) {
                     // If it's a button, click it
                     if (focused_widget is Gtk.Button) {
                         ((Gtk.Button)focused_widget).activate();
-                        logger.debug("Enter activation simulated on Button");
+                        debug("Enter activation simulated on Button");
                     }
                     // For other widgets, try to activate the default action
                     else {
                         focused_widget.activate_default();
-                        logger.debug("Enter activation simulated on widget: %s", focused_widget.get_type().name());
+                        debug("Enter activation simulated on widget: %s", focused_widget.get_type().name());
                     }
                 } else {
                     // Try to activate the default widget of the window
@@ -248,14 +243,14 @@ public class KarereAboutDialog : GLib.Object {
                         var default_widget = ((Gtk.Window)focused_window).get_default_widget();
                         if (default_widget != null) {
                             default_widget.activate();
-                            logger.debug("Activated default widget: %s", default_widget.get_type().name());
+                            debug("Activated default widget: %s", default_widget.get_type().name());
                         } else {
-                            logger.debug("No default widget found in window");
+                            debug("No default widget found in window");
                         }
                     }
                 }
             } else {
-                logger.warning("No active window for enter activation");
+                warning("No active window for enter activation");
             }
         }
     }

@@ -18,32 +18,30 @@ namespace Karere {
      * Manages accessibility features and keyboard navigation for the application
      */
     public class AccessibilityManager : Object {
-        private Logger logger;
         private GLib.Settings? settings = null;
         private Gtk.Widget? main_window;
         private Adw.StyleManager? style_manager = null;
         private bool initialization_deferred = true;
 
-        public AccessibilityManager(Logger logger) {
-            this.logger = logger;
+        public AccessibilityManager() {
             // Note: Settings initialization is deferred until GTK is initialized
-            
-            logger.debug("AccessibilityManager initialized (Settings deferred)");
+
+            debug("AccessibilityManager initialized (Settings deferred)");
         }
-        
+
         public void initialize_settings() {
             if (settings == null && initialization_deferred) {
                 try {
                     settings = new GLib.Settings(Config.APP_ID);
                     style_manager = Adw.StyleManager.get_default();
                     initialization_deferred = false;
-                    
+
                     setup_accessibility_listeners();
                     apply_accessibility_settings();
-                    
-                    logger.debug("AccessibilityManager settings initialized");
+
+                    debug("AccessibilityManager settings initialized");
                 } catch (Error e) {
-                    logger.error("Failed to initialize AccessibilityManager settings: %s", e.message);
+                    critical("Failed to initialize AccessibilityManager settings: %s", e.message);
                     initialization_deferred = true;
                 }
             }
@@ -92,7 +90,7 @@ namespace Karere {
             // Set up keyboard navigation
             setup_keyboard_navigation(window);
             
-            logger.debug("Window accessibility features configured");
+            debug("Window accessibility features configured");
         }
 
         /**
@@ -109,7 +107,7 @@ namespace Karere {
                 // Apply proper focus order
                 apply_focus_chain(focus_chain);
                 
-                logger.debug("Focus chain configured with %u elements", focus_chain.length());
+                debug("Focus chain configured with %u elements", focus_chain.length());
             }
         }
 
@@ -153,7 +151,7 @@ namespace Karere {
             // Set up proper ARIA labels for screen readers
             setup_widget_aria_labels(window);
             
-            logger.debug("ARIA labels configured");
+            debug("ARIA labels configured");
         }
 
         /**
@@ -198,7 +196,7 @@ namespace Karere {
                 // The keyboard functionality will still work through other means
                 // app_window.add_controller(key_controller);
                 
-                logger.debug("Enhanced keyboard navigation configured");
+                debug("Enhanced keyboard navigation configured");
             }
         }
 
@@ -260,7 +258,7 @@ namespace Karere {
             
             // Find next section to focus
             // This is a simplified implementation - in practice you'd want more sophisticated section detection
-            logger.debug("Section navigation triggered (F6)");
+            debug("Section navigation triggered (F6)");
             
             return true; // Consume the key event
         }
@@ -278,7 +276,7 @@ namespace Karere {
                     // Check if there are modal dialogs
                     var modal_dialog = window.get_transient_for();
                     if (modal_dialog != null) {
-                        logger.debug("Escape pressed - closing modal dialog");
+                        debug("Escape pressed - closing modal dialog");
                         return true;
                     }
                 }
@@ -301,7 +299,7 @@ namespace Karere {
                 if (main_window != null) {
                     main_window.add_css_class("karere-high-contrast");
                 }
-                logger.info("High contrast mode enabled");
+                info("High contrast mode enabled");
             } else {
                 // Restore user's original theme preference
                 var theme_preference = settings.get_int("theme-preference");
@@ -323,7 +321,7 @@ namespace Karere {
                 if (main_window != null) {
                     main_window.remove_css_class("karere-high-contrast");
                 }
-                logger.info("High contrast mode disabled, restored theme preference: %d", theme_preference);
+                info("High contrast mode disabled, restored theme preference: %d", theme_preference);
             }
         }
 
@@ -338,10 +336,10 @@ namespace Karere {
             if (main_window != null) {
                 if (reduced_motion) {
                     main_window.add_css_class("karere-reduced-motion");
-                    logger.info("Reduced motion enabled");
+                    info("Reduced motion enabled");
                 } else {
                     main_window.remove_css_class("karere-reduced-motion");
-                    logger.info("Reduced motion disabled");
+                    info("Reduced motion disabled");
                 }
             }
         }
@@ -357,10 +355,10 @@ namespace Karere {
             if (main_window != null) {
                 if (focus_indicators) {
                     main_window.add_css_class("karere-focus-indicators");
-                    logger.info("Focus indicators enabled");
+                    info("Focus indicators enabled");
                 } else {
                     main_window.remove_css_class("karere-focus-indicators");
-                    logger.info("Focus indicators disabled");
+                    info("Focus indicators disabled");
                 }
             }
         }
@@ -378,10 +376,10 @@ namespace Karere {
                     main_window.add_css_class("karere-screen-reader");
                     // Enable additional screen reader optimizations
                     setup_screen_reader_optimizations();
-                    logger.info("Screen reader optimizations enabled");
+                    info("Screen reader optimizations enabled");
                 } else {
                     main_window.remove_css_class("karere-screen-reader");
-                    logger.info("Screen reader optimizations disabled");
+                    info("Screen reader optimizations disabled");
                 }
             }
         }
@@ -396,7 +394,7 @@ namespace Karere {
             setup_live_regions();
             setup_landmark_roles();
             
-            logger.debug("Screen reader optimizations configured");
+            debug("Screen reader optimizations configured");
         }
 
         /**
@@ -405,7 +403,7 @@ namespace Karere {
         private void setup_live_regions() {
             // This would set up live regions for toast notifications, status changes, etc.
             // Implementation would depend on specific UI structure
-            logger.debug("ARIA live regions configured");
+            debug("ARIA live regions configured");
         }
 
         /**
@@ -416,7 +414,7 @@ namespace Karere {
             
             // Set up landmark roles for major sections
             // This helps screen readers navigate the page structure
-            logger.debug("Landmark roles configured");
+            debug("Landmark roles configured");
         }
 
 
@@ -446,7 +444,7 @@ namespace Karere {
          */
         public void cleanup() {
             main_window = null;
-            logger.debug("AccessibilityManager cleaned up");
+            debug("AccessibilityManager cleaned up");
         }
     }
 }

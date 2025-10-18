@@ -18,21 +18,19 @@ namespace Karere {
      * Keyboard shortcuts help dialog
      */
     public class ShortcutsWindow : Adw.Dialog {
-        private Logger logger;
         private GLib.Settings settings;
         private Adw.PreferencesPage content_page;
         private Gtk.ScrolledWindow scrolled_window;
 
         public ShortcutsWindow(Gtk.Window parent) {
             Object();
-            
-            logger = new Logger();
+
             settings = new GLib.Settings(Config.APP_ID);
-            
+
             setup_dialog();
             setup_settings_listeners();
-            
-            logger.debug("ShortcutsWindow created");
+
+            debug("ShortcutsWindow created");
         }
 
         /**
@@ -265,8 +263,8 @@ namespace Karere {
                 // Replace the old content
                 scrolled_window.child = new_content;
                 content_page = new_content;
-                
-                logger.debug("Shortcuts content refreshed");
+
+                debug("Shortcuts content refreshed");
             }
         }
     }
