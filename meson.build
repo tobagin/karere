@@ -177,6 +177,10 @@ sources = files(
     'src/managers/KeyboardShortcuts.vala',
     'src/managers/SettingsManager.vala',
     'src/managers/WhatsAppIntegration.vala',
+    'src/managers/WindowStateManager.vala',
+    'src/managers/ClipboardManager.vala',
+    'src/managers/WebKitNotificationBridge.vala',
+    'src/managers/WebViewManager.vala',
     'src/utils/Utils.vala',
     'src/utils/Constants.vala',
 ) + [config_vala]
@@ -342,6 +346,10 @@ if get_option('tests')
         'src/managers/KeyboardShortcuts.vala',
         'src/managers/SettingsManager.vala',
         'src/managers/WhatsAppIntegration.vala',
+        'src/managers/WindowStateManager.vala',
+        'src/managers/ClipboardManager.vala',
+        'src/managers/WebKitNotificationBridge.vala',
+        'src/managers/WebViewManager.vala',
         'src/utils/Utils.vala',
         'src/utils/Constants.vala',
     ) + [config_vala]
