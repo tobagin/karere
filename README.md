@@ -2,7 +2,7 @@
 
 A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless integration with the Linux desktop environment.
 
-![Karere Application](https://raw.githubusercontent.com/tobagin/karere-vala/main/data/screenshots/main-window.png)
+![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
 ## 🚀 Version 0.8.0 - Major Architecture Migration
 
@@ -122,9 +122,9 @@ Karere is licensed under the GNU General Public License v3.0 or later. See [LICE
 
 ## Support
 
-- **Bug Reports**: [GitHub Issues](https://github.com/tobagin/karere-vala/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/tobagin/karere-vala/discussions)
-- **Documentation**: [Project Wiki](https://github.com/tobagin/karere-vala/wiki)
+- **Bug Reports**: [GitHub Issues](https://github.com/tobagin/karere/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/tobagin/karere/discussions)
+- **Documentation**: [Project Wiki](https://github.com/tobagin/karere/wiki)
 
 ## Acknowledgments
 
@@ -135,13 +135,13 @@ Karere is licensed under the GNU General Public License v3.0 or later. See [LICE
 
 ## Screenshots
 
-| Light Theme | Dark Theme |
-|-------------|------------|
-| ![Light](data/screenshots/main-window.png) | ![Dark](data/screenshots/dark-theme.png) |
+| Main Window | About Dialog |
+|-------------|--------------|
+| ![Main Window](data/screenshots/main-window.png) | ![About](data/screenshots/about.png) |
 
-| Preferences | Notifications |
-|-------------|---------------|
-| ![Preferences](data/screenshots/preferences-general.png) | ![Notifications](data/screenshots/preferences-privacy.png) |
+| Preferences | Shortcuts |
+|-------------|-----------|
+| ![Preferences](data/screenshots/preferences.png) | ![Shortcuts](data/screenshots/shortcuts.png) |
 
 ---
 

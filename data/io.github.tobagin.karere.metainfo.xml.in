@@ -46,19 +46,19 @@
   
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/tobagin/karere/blob/main/main-window.png?raw=true</image>
+      <image>https://github.com/tobagin/karere/blob/main/data/screenshots/main-window.png?raw=true</image>
       <caption>Main application window with WhatsApp Web integration</caption>
     </screenshot>
     <screenshot>
-      <image>https://github.com/tobagin/karere/blob/main/about.png?raw=true</image>
+      <image>https://github.com/tobagin/karere/blob/main/data/screenshots/about.png?raw=true</image>
       <caption>About dialog showing application information</caption>
     </screenshot>
     <screenshot>
-      <image>https://github.com/tobagin/karere/blob/main/preferences.png?raw=true</image>
+      <image>https://github.com/tobagin/karere/blob/main/data/screenshots/preferences.png?raw=true</image>
       <caption>Application preferences and settings dialog</caption>
     </screenshot>
     <screenshot>
-      <image>https://github.com/tobagin/karere/blob/main/shortcuts.png?raw=true</image>
+      <image>https://github.com/tobagin/karere/blob/main/data/screenshots/shortcuts.png?raw=true</image>
       <caption>Keyboard shortcuts and productivity features</caption>
     </screenshot>
   </screenshots>
