@@ -182,7 +182,6 @@ sources = files(
     'src/managers/WhatsAppIntegration.vala',
     'src/utils/Utils.vala',
     'src/utils/Constants.vala',
-    'src/utils/DependencyContainer.vala',
 ) + [config_vala]
 
 # Build executable
@@ -361,7 +360,6 @@ if get_option('tests')
         'src/managers/WhatsAppIntegration.vala',
         'src/utils/Utils.vala',
         'src/utils/Constants.vala',
-        'src/utils/DependencyContainer.vala',
     ) + [config_vala]
     
     test_executable = executable(

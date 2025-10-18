@@ -37,6 +37,9 @@ resources.h
 .DS_Store
 Thumbs.db
 
+# Log files
+*.log
+
 # IDE files
 .vscode/
 .idea/

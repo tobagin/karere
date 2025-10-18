@@ -192,21 +192,21 @@ namespace Karere {
         }
 
         private void setup_log_handlers_with_preferences() {
-            if (settings == null) {
+            if (!settings_manager.is_initialized()) {
                 warning("Settings not initialized, cannot update log handlers");
                 return;
             }
-            
+
             try {
                 // Update environment variables based on user preferences
-                if (settings.get_boolean("console-logging-enabled")) {
+                if (settings_manager.get_boolean_with_fallback("console-logging-enabled", false)) {
                     Environment.set_variable("G_MESSAGES_DEBUG", "all", true);
                     Environment.set_variable("SOUP_DEBUG", "1", true);
                 } else {
                     Environment.set_variable("G_MESSAGES_DEBUG", "", true);
                     Environment.set_variable("SOUP_DEBUG", "0", true);
                 }
-                
+
                 // Custom log handler that respects user preferences
                 LogFunc system_log_handler = (log_domain, log_level, message) => {
                     // Always allow our application logs through
@@ -214,16 +214,16 @@ namespace Karere {
                         Log.default_handler(log_domain, log_level, message);
                         return;
                     }
-                    
+
                     // Check if console logging is enabled
-                    if (settings != null && !settings.get_boolean("console-logging-enabled")) {
+                    if (!settings_manager.get_boolean_with_fallback("console-logging-enabled", false)) {
                         // Console logging disabled - suppress all system debug messages and info messages
-                        if ((log_level & LogLevelFlags.LEVEL_DEBUG) != 0 || 
+                        if ((log_level & LogLevelFlags.LEVEL_DEBUG) != 0 ||
                             (log_level & LogLevelFlags.LEVEL_INFO) != 0) {
                             return; // Suppress debug and info messages
                         }
                     }
-                    
+
                     // For all other cases, use default handler
                     Log.default_handler(log_domain, log_level, message);
                 };
@@ -257,11 +257,14 @@ namespace Karere {
             apply_theme();
 
             // Listen for theme changes
-            if (settings != null) {
-                settings.changed["theme-preference"].connect(() => {
-                    apply_theme();
-                    debug("Theme preference changed");
-                });
+            if (settings_manager.is_initialized()) {
+                var settings = settings_manager.get_settings();
+                if (settings != null) {
+                    settings.changed["theme-preference"].connect(() => {
+                        apply_theme();
+                        debug("Theme preference changed");
+                    });
+                }
             }
 
             debug("Theme handling configured");
@@ -270,14 +273,14 @@ namespace Karere {
         private void apply_theme() {
             var style_manager = Adw.StyleManager.get_default();
 
-            if (settings == null) {
+            if (!settings_manager.is_initialized()) {
                 // Use system default if settings are not available yet
                 style_manager.color_scheme = Adw.ColorScheme.DEFAULT;
                 debug("Applied system theme (settings not available)");
                 return;
             }
 
-            var theme_preference = settings.get_int("theme-preference");
+            var theme_preference = settings_manager.get_int_with_fallback("theme-preference", 0);
 
             switch (theme_preference) {
                 case 0: // System
@@ -327,6 +330,11 @@ namespace Karere {
         }
 
         private bool should_show_release_notes() {
+            if (!settings_manager.is_initialized()) {
+                return false;
+            }
+
+            var settings = settings_manager.get_settings();
             if (settings == null) {
                 return false;
             }
@@ -349,6 +357,11 @@ namespace Karere {
         }
 
         private bool should_show_version_alert() {
+            if (!settings_manager.is_initialized()) {
+                return false;
+            }
+
+            var settings = settings_manager.get_settings();
             if (settings == null) {
                 return false;
             }
@@ -387,12 +400,15 @@ namespace Karere {
 
             alert.response.connect(() => {
                 // Mark this version as shown
-                if (settings != null) {
-                    try {
-                        settings.set_string("last-shown-version", Config.VERSION);
-                        debug("Marked version %s as shown", Config.VERSION);
-                    } catch (Error e) {
-                        warning("Failed to save last shown version: %s", e.message);
+                if (settings_manager.is_initialized()) {
+                    var settings = settings_manager.get_settings();
+                    if (settings != null) {
+                        try {
+                            settings.set_string("last-shown-version", Config.VERSION);
+                            debug("Marked version %s as shown", Config.VERSION);
+                        } catch (Error e) {
+                            warning("Failed to save last shown version: %s", e.message);
+                        }
                     }
                 }
             });
@@ -402,16 +418,19 @@ namespace Karere {
 
         private void save_application_state() {
             try {
-                if (main_window != null && settings != null) {
-                    // Save window state
-                    int width, height;
-                    main_window.get_default_size(out width, out height);
-                    settings.set_int("window-width", width);
-                    settings.set_int("window-height", height);
-                    settings.set_boolean("window-maximized", main_window.maximized);
+                if (main_window != null && settings_manager.is_initialized()) {
+                    var settings = settings_manager.get_settings();
+                    if (settings != null) {
+                        // Save window state
+                        int width, height;
+                        main_window.get_default_size(out width, out height);
+                        settings.set_int("window-width", width);
+                        settings.set_int("window-height", height);
+                        settings.set_boolean("window-maximized", main_window.maximized);
 
-                    debug("Application state saved");
-                } else if (settings == null) {
+                        debug("Application state saved");
+                    }
+                } else if (!settings_manager.is_initialized()) {
                     warning("Cannot save application state: settings not initialized");
                 }
             } catch (Error e) {

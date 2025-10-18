@@ -21,10 +21,10 @@ namespace Karere {
      * WebKit-specific functionality needed for optimal WhatsApp Web experience.
      */
     public class WebKitManager : GLib.Object {
-        private Settings settings;
+        private SettingsManager settings_manager;
 
         public WebKitManager() {
-            settings = new Settings(Config.APP_ID);
+            settings_manager = SettingsManager.get_instance();
 
             debug("WebKitManager initialized");
         }
@@ -52,7 +52,7 @@ namespace Karere {
             // Notifications will be handled through JavaScript injection
             
             // Enable developer tools if enabled in settings
-            web_settings.enable_developer_extras = settings.get_boolean("developer-tools-enabled");
+            web_settings.enable_developer_extras = settings_manager.get_boolean_with_fallback("developer-tools-enabled", false);
             
             // Note: enable_plugins property is not available in this WebKitGTK version
             // Plugins are disabled by default in modern WebKitGTK
@@ -118,15 +118,15 @@ namespace Karere {
             debug("Will inject user agent override after page load");
             
             // Configure zoom level
-            var zoom_level = settings.get_double("webkit-zoom-level");
+            var zoom_level = settings_manager.get_double_with_fallback("webkit-zoom-level", 1.0);
             web_view.zoom_level = zoom_level;
             debug("Set zoom level to: %f", zoom_level);
 
             // Note: enable_spell_checking property is not available in this WebKitGTK version
             // Spell checking will use system defaults
-            if (settings.get_boolean("spell-checking-enabled")) {
+            if (settings_manager.get_boolean_with_fallback("spell-checking-enabled", false)) {
 
-                if (settings.get_boolean("spell-checking-auto-detect")) {
+                if (settings_manager.get_boolean_with_fallback("spell-checking-auto-detect", true)) {
                     // Note: spell_checking_languages property is not available in this WebKitGTK version
                     // Spell checking will use system defaults
                     debug("Using system defaults for spell checking");
@@ -148,7 +148,7 @@ namespace Karere {
          * @return The user agent string to use, or null to use default
          */
         public string? get_user_agent() {
-            var custom_user_agent = settings.get_string("webkit-user-agent");
+            var custom_user_agent = settings_manager.get_string_with_fallback("webkit-user-agent", "");
             if (custom_user_agent != null && custom_user_agent.strip() != "") {
                 return custom_user_agent;
             }
@@ -181,16 +181,16 @@ namespace Karere {
             // Notifications handled through JavaScript injection
 
             // Update developer tools
-            web_settings.enable_developer_extras = settings.get_boolean("developer-tools-enabled");
+            web_settings.enable_developer_extras = settings_manager.get_boolean_with_fallback("developer-tools-enabled", false);
 
             // Update zoom level
-            var zoom_level = settings.get_double("webkit-zoom-level");
+            var zoom_level = settings_manager.get_double_with_fallback("webkit-zoom-level", 1.0);
             web_view.zoom_level = zoom_level;
 
             // Note: enable_spell_checking property is not available in this WebKitGTK version
             // Spell checking uses system defaults
 
-            if (settings.get_boolean("spell-checking-enabled")) {
+            if (settings_manager.get_boolean_with_fallback("spell-checking-enabled", false)) {
                 // Note: spell_checking_languages property is not available in this WebKitGTK version
                 // Spell checking will use system defaults
                 debug("Spell checking enabled with system defaults");
@@ -216,7 +216,7 @@ namespace Karere {
             debug("Configuring WebKit context");
 
             // Set cache model based on user preference
-            var cache_mode = settings.get_string("webkit-cache-mode");
+            var cache_mode = settings_manager.get_string_with_fallback("webkit-cache-mode", "enabled");
             switch (cache_mode) {
                 case "disabled":
                     context.set_cache_model(WebKit.CacheModel.DOCUMENT_VIEWER);

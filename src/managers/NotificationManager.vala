@@ -15,7 +15,7 @@
 namespace Karere {
 
     public class NotificationManager : GLib.Object {
-        private Settings? settings = null;
+        private SettingsManager settings_manager;
         private Application app;
         private bool initialization_deferred = true;
 
@@ -31,21 +31,16 @@ namespace Karere {
 
         public NotificationManager(Application app) {
             this.app = app;
+            settings_manager = SettingsManager.get_instance();
             // Note: Settings initialization is deferred until GTK is initialized
 
             debug("NotificationManager initialized");
         }
-        
+
         public void initialize_settings() {
-            if (settings == null) {
-                try {
-                    settings = new Settings(Config.APP_ID);
-                    initialization_deferred = false;
-                } catch (Error e) {
-                    // Settings not available, continue without notification settings
-                    initialization_deferred = true;
-                }
-            }
+            // SettingsManager is initialized by Application, just mark as ready
+            initialization_deferred = false;
+            debug("NotificationManager settings initialized");
         }
         
         public void send_notification(string title, string body, Icon icon) {
@@ -61,13 +56,8 @@ namespace Karere {
 
                 // Set body with preview handling
                 string notification_body = body;
-                var preview_enabled = true; // Default to enabled if settings not available
-                var max_length = 100; // Default preview length
-
-                if (settings != null) {
-                    preview_enabled = settings.get_boolean("notification-preview-enabled");
-                    max_length = settings.get_int("notification-preview-length");
-                }
+                var preview_enabled = settings_manager.get_boolean_with_fallback("notification-preview-enabled", true);
+                var max_length = settings_manager.get_int_with_fallback("notification-preview-length", 100);
 
                 if (preview_enabled) {
                     if (body.length > max_length) {
@@ -99,18 +89,18 @@ namespace Karere {
         }
         
         private bool should_show_notification() {
-            if (settings == null) {
+            if (!settings_manager.is_initialized()) {
                 // Default to showing notifications if settings not available
                 return true;
             }
-            
+
             // Check if notifications are globally enabled
-            if (!settings.get_boolean("notifications-enabled")) {
+            if (!settings_manager.get_boolean_with_fallback("notifications-enabled", true)) {
                 return false;
             }
-            
+
             // Check if system notifications are enabled
-            if (!settings.get_boolean("system-notifications-enabled")) {
+            if (!settings_manager.get_boolean_with_fallback("system-notifications-enabled", true)) {
                 return false;
             }
             
@@ -124,26 +114,26 @@ namespace Karere {
         }
         
         private bool is_dnd_active() {
-            if (settings == null) {
+            if (!settings_manager.is_initialized()) {
                 // Default to DND not active if settings not available
                 return false;
             }
-            
-            if (!settings.get_boolean("dnd-enabled")) {
+
+            if (!settings_manager.get_boolean_with_fallback("dnd-enabled", false)) {
                 return false;
             }
-            
+
             // If scheduled DND is not enabled, DND is manually active
-            if (!settings.get_boolean("dnd-scheduled")) {
+            if (!settings_manager.get_boolean_with_fallback("dnd-scheduled", false)) {
                 return true;
             }
-            
+
             // Check if we're in scheduled DND time
             var now = new DateTime.now_local();
             var current_time = "%02d:%02d".printf(now.get_hour(), now.get_minute());
-            
-            var start_time = settings.get_string("dnd-start-time") ?? "22:00";
-            var end_time = settings.get_string("dnd-end-time") ?? "08:00";
+
+            var start_time = settings_manager.get_string_with_fallback("dnd-start-time", "22:00");
+            var end_time = settings_manager.get_string_with_fallback("dnd-end-time", "08:00");
             
             // Simple time comparison - this could be improved for cross-midnight schedules
             if (start_time < end_time) {
@@ -218,10 +208,7 @@ namespace Karere {
         }
         
         private bool should_show_background_notification_basic_check() {
-            var mode = 0; // Default to disabled if settings not available
-            if (settings != null) {
-                mode = settings.get_int("background-notifications-mode");
-            }
+            var mode = settings_manager.get_int_with_fallback("background-notifications-mode", 0);
             
             // Check mode-specific conditions
             switch (mode) {
@@ -264,10 +251,7 @@ namespace Karere {
         }
         
         private bool should_show_background_notification() {
-            var mode = 0; // Default to disabled if settings not available
-            if (settings != null) {
-                mode = settings.get_int("background-notifications-mode");
-            }
+            var mode = settings_manager.get_int_with_fallback("background-notifications-mode", 0);
             
             debug("Background notification check: mode=%d, session_shown=%s", mode, session_background_notification_shown.to_string());
 
@@ -305,7 +289,7 @@ namespace Karere {
         }
         
         private void send_background_notification() {
-            var mode = settings.get_int("background-notifications-mode");
+            var mode = settings_manager.get_int_with_fallback("background-notifications-mode", 0);
             
             string message;
             switch (mode) {
