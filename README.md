@@ -4,42 +4,65 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
-## 🚀 Version 0.8.0 - Major Architecture Migration
+## 🎉 Version 1.0.0 - Stable Release
 
-**BREAKING CHANGE NOTICE:** Karere v0.8.0 represents a complete rewrite from Python to native Vala/GTK4 for superior performance and integration.
+**Karere has reached 1.0.0!** This stable release includes fully working notifications, enhanced accessibility, and comprehensive WhatsApp Web integration.
 
-### ⚠️ Important Migration Information
+### ✨ What's New in 1.0.0
 
-- **Mobile Re-sync Required**: After upgrading to v0.8.0, you **must re-sync your mobile device** with WhatsApp Web as this is a completely new application implementation
-- **Settings Reset**: Previous application settings will not be transferred - you'll need to reconfigure preferences
-- **Performance Boost**: Expect significantly improved startup time, memory usage, and overall responsiveness
-- **Enhanced Features**: New native notification system, accessibility support, and keyboard shortcuts
+- **✅ Fixed Notifications**: WhatsApp notifications now work perfectly with proper banner persistence
+- **🖼️ Image Paste**: Ctrl+V now works for both text and images in WhatsApp Web
+- **📥 Download Manager**: Custom download directory with toast notifications
+- **📝 Spell Checking**: 80+ language dictionaries with auto-detection
+- **♿ Enhanced Accessibility**: Screen reader optimization, keyboard navigation, and focus indicators
+- **⌨️ Keyboard Shortcuts**: Comprehensive shortcuts dialog with all available commands
 
-### What Changed
-- **Language**: Python 3 → Native Vala compilation
-- **UI Framework**: GTK4 with modern LibAdwaita and Blueprint declarative UI
-- **Build System**: setuptools → Meson with comprehensive toolchain
-- **Performance**: Interpreted → Compiled native binary
-- **Integration**: Enhanced desktop integration and accessibility
+### 🐛 Major Fixes
+
+- Fixed WhatsApp notification banner appearing on every launch
+- Fixed notifications not working properly
+- Fixed Ctrl+V paste for text content
+- Disabled WebView zoom by default (can be enabled in preferences)
+- Improved clipboard handling for images and text
 
 ## Features
 
-- **Native Desktop Integration**: True native notifications using GNotification, not browser notifications
+### Core Features
+- **Native Desktop Integration**: True native notifications using GNotification with persistent permission state
+- **WhatsApp Web Integration**: Full WhatsApp Web functionality with proper notification handling
 - **LibAdwaita Theming**: Full support for Light, Dark, and System themes with native styling
-- **WebKitGTK Optimization**: Efficient resource usage compared to browser-based solutions
-- **Spell Checking**: Multi-language spell checking support
-- **Accessibility Support**: Comprehensive a11y features including:
-  - Screen reader optimization with ARIA labels
-  - Keyboard navigation support with focus indicators
-  - High contrast mode support
-  - Reduced motion support for animations
-  - Configurable keyboard shortcuts
-  - Focus chain management for keyboard-only navigation
-- **Privacy Controls**: Granular settings for notifications and logging
+- **WebKitGTK Optimization**: Efficient resource usage with persistent storage for cookies and sessions
+- **Image & Text Paste**: Seamless Ctrl+V support for both images and text content
+- **Download Manager**: Custom download directory selection with completion notifications
+
+### Accessibility Support
+- **Screen Reader Optimization**: Full ARIA labels and semantic HTML
+- **Keyboard Navigation**: Complete keyboard-only navigation with visible focus indicators (82 focusable elements)
+- **High Contrast Mode**: Automatic detection and adaptation
+- **Reduced Motion**: Respects system reduce-motion preferences
+- **Configurable Shortcuts**: All keyboard shortcuts can be enabled/disabled
+- **Focus Management**: Logical focus chain for efficient navigation
+
+### Spell Checking
+- **Multi-Language Support**: 80+ dictionaries from LibreOffice
+- **Auto-Detection**: Automatically detect language from system locale
+- **Manual Selection**: Choose specific languages for spell checking
+- **Real-time Checking**: Inline spell checking as you type
+
+### Privacy & Customization
+- **Granular Notification Controls**: Customize notification behavior and previews
+- **Privacy Settings**: Control data logging and crash reporting
+- **Theme Selection**: Choose between Light, Dark, or System theme
+- **Zoom Control**: Configurable WebView zoom (disabled by default)
 
 ## Installation
 
 ### Flatpak (Recommended)
+
+#### From Flathub (Coming Soon)
+```bash
+flatpak install flathub io.github.tobagin.karere
+```
 
 #### Development Version
 ```bash
@@ -48,11 +71,10 @@ git clone https://github.com/tobagin/karere.git
 cd karere
 
 # Build and install development version
-./scripts/build.sh --dev --install
+./scripts/build.sh --dev
 ```
 
-#### Production Version (Coming Soon)
-Karere is available on Flathub.
+**Note**: After installation, you'll need to scan the QR code with your mobile WhatsApp to connect.
 
 ## Usage
 
