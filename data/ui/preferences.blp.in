@@ -27,6 +27,27 @@ template $KarerePreferencesDialog : Adw.PreferencesDialog {
 
     Adw.PreferencesGroup {
       title: _("Spell Checking");
+      description: _("Check spelling while typing in WhatsApp Web");
+
+      Adw.ActionRow dictionary_status_row {
+        title: _("Available Dictionaries");
+        subtitle: _("Spell checking dictionaries found on your system");
+
+        [suffix]
+        Gtk.Label dictionary_count_label {
+          label: "0 dictionaries";
+          valign: center;
+          css-classes: ["dim-label"];
+        }
+
+        [suffix]
+        Gtk.Image dictionary_status_icon {
+          icon-name: "emblem-default-symbolic";
+          valign: center;
+          css-classes: ["success"];
+          visible: false;
+        }
+      }
 
       Adw.SwitchRow spell_enabled_row {
         title: _("Enable Spell Checking");
@@ -40,34 +61,38 @@ template $KarerePreferencesDialog : Adw.PreferencesDialog {
     }
 
     Adw.PreferencesGroup spell_languages_group {
-      title: _("Languages");
+      title: _("Spell Check Languages");
+      description: _("Select which languages to check for spelling errors");
 
-      Adw.ExpanderRow spell_languages_expander {
-        title: _("Spell Check Languages");
-        subtitle: _("Configure enabled languages for spell checking");
+      Adw.ActionRow current_languages_row {
+        title: _("Active Languages");
 
-        Adw.ActionRow current_languages_row {
-          title: _("Current Languages");
-          subtitle: _("Languages currently enabled for spell checking");
-
-          [suffix]
-          Gtk.Label current_languages_label {
-            label: _("Auto-detected");
-            valign: center;
-            css-classes: ["dim-label"];
-          }
+        [suffix]
+        Gtk.Label current_languages_label {
+          label: _("Auto-detected");
+          valign: center;
+          css-classes: ["dim-label"];
+          wrap: true;
+          max-width-chars: 30;
         }
+      }
 
-        Adw.ActionRow add_language_row {
-          title: _("Add Language");
-          subtitle: _("Add a new language for spell checking");
-          activatable: true;
+      Adw.ComboRow language_selection_row {
+        title: _("Add Language");
+        subtitle: _("Select from available dictionaries");
+        visible: false;
+      }
 
-          [suffix]
-          Gtk.Button add_language_button {
-            label: _("Add");
-            valign: center;
-          }
+      Adw.ActionRow no_dictionaries_row {
+        title: _("No Dictionaries Available");
+        subtitle: _("Install hunspell dictionaries to enable spell checking");
+        visible: false;
+
+        [suffix]
+        Gtk.Image warning_icon {
+          icon-name: "dialog-warning-symbolic";
+          valign: center;
+          css-classes: ["warning"];
         }
       }
     }

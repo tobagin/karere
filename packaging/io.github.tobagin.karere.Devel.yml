@@ -35,6 +35,10 @@ finish-args:
   - --device=dri
   # Development debugging permissions
   - --env=G_MESSAGES_DEBUG=all
+  # Access to host hunspell dictionaries for spell checking (read-only)
+  - --filesystem=/usr/share/hunspell:ro
+  # Configure WebKit spell checker dictionary paths (bundled and runtime)
+  - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell:/usr/share/hunspell
 
 add-extensions:
   org.freedesktop.Platform.ffmpeg-full:
@@ -83,6 +87,28 @@ modules:
         url: https://github.com/googlefonts/noto-emoji/archive/refs/tags/v2.047.tar.gz
         sha256: 2cfaf5a427eb26334cdb30d98e4a0c005b660504a339249dc54373e566f09b50
         strip-components: 1
+
+  - name: hunspell-dictionaries
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/share/hunspell
+      # Install all dictionaries from LibreOffice dictionaries repository
+      # This script finds all .dic and .aff files and copies them to /app/share/hunspell
+      - |
+        find . -type f \( -name "*.dic" -o -name "*.aff" \) ! -path "*/hyph_*" ! -path "*/.git/*" ! -path "*/util/*" | while read -r file; do
+          filename=$(basename "$file")
+          # Skip hyphenation dictionaries (hyph_*) - we only want spell checking dictionaries
+          if [[ ! "$filename" =~ ^hyph_ ]]; then
+            install -Dm644 "$file" "/app/share/hunspell/$filename"
+          fi
+        done
+      - echo "Installed $(ls -1 /app/share/hunspell/*.dic 2>/dev/null | wc -l) dictionaries"
+    sources:
+      # LibreOffice dictionaries - comprehensive set of hunspell dictionaries (all languages)
+      - type: archive
+        url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-25.2.7.1.zip
+        sha256: 4a01f3e0f1f0982ce4a77fa2dd1352a23b14693fe8ba151a42be5cc6e88dc949
+        dest-filename: libreoffice-dictionaries.zip
 
   - name: karere
     buildsystem: meson

@@ -46,6 +46,7 @@ namespace Karere {
         private ClipboardManager clipboard_manager;
         private WebKitNotificationBridge notification_bridge;
         private DownloadManager download_manager;
+        private SpellCheckingManager spell_checking_manager;
         private Gdk.Clipboard clipboard;
 
         public Window(Gtk.Application app) {
@@ -132,9 +133,11 @@ namespace Karere {
             webview_manager = new WebViewManager(settings, webkit_manager);
             webview_manager.setup(web_container);
 
-            // Configure spell checking
-            var webkit_settings = webview_manager.web_view.get_settings();
-            setup_spell_checking(webkit_settings);
+            // Initialize spell checking manager
+            spell_checking_manager = new SpellCheckingManager();
+            var web_context = webview_manager.web_view.get_context();
+            spell_checking_manager.configure_webkit(web_context);
+            spell_checking_manager.setup_settings_listeners();
 
             // Connect to WebViewManager signals
             webview_manager.load_failed.connect((uri, error_message) => {
@@ -234,76 +237,13 @@ namespace Karere {
             debug("Download toast shown for: %s", filename);
         }
 
-        private void setup_spell_checking(WebKit.Settings webkit_settings) {
-            if (settings == null) {
-                warning("Cannot setup spell checking: settings is null");
-                return;
-            }
-
-            var spell_enabled = settings.get_boolean("spell-checking-enabled");
-            var web_context = webview_manager.web_view.get_context();
-
-            info("Setting up spell checking: enabled=%s", spell_enabled.to_string());
-
-            // Enable/disable spell checking
-            web_context.set_spell_checking_enabled(spell_enabled);
-
-            if (spell_enabled) {
-                // Get spell checking languages
-                string[] spell_languages = get_spell_checking_languages();
-
-                // Set the languages
-                web_context.set_spell_checking_languages(spell_languages);
-                info("Spell checking languages set: %s", string.joinv(", ", spell_languages));
-            } else {
-                info("Spell checking disabled");
-            }
-        }
-
-        private string[] get_spell_checking_languages() {
-            if (settings == null) {
-                warning("Cannot get spell checking languages: settings is null, using fallback");
-                return {"en_US"};
-            }
-
-            var auto_detect = settings.get_boolean("spell-checking-auto-detect");
-            var languages = settings.get_strv("spell-checking-languages");
-
-            if (auto_detect || languages.length == 0) {
-                // Auto-detect from system locale
-                var locale = Intl.setlocale(LocaleCategory.MESSAGES, null);
-                if (locale != null) {
-                    // Extract language code (e.g., "en_US.UTF-8" -> "en_US")
-                    var parts = locale.split(".");
-                    var lang_code = parts[0];
-                    info("Auto-detected spell checking language: %s", lang_code);
-                    return {lang_code};
-                } else {
-                    info("Using fallback spell checking language: en_US");
-                    return {"en_US"};
-                }
-            } else {
-                info("Using user-specified spell checking languages: %s", string.joinv(", ", languages));
-                return languages;
-            }
-        }
-
         private void setup_settings_listeners() {
             if (settings == null) {
                 warning("Cannot setup settings listeners: settings is null");
                 return;
             }
-            
-            // Listen for settings changes
-            settings.changed["spell-checking-enabled"].connect(() => {
-                update_spell_checking();
-            });
-            settings.changed["spell-checking-auto-detect"].connect(() => {
-                update_spell_checking();
-            });
-            settings.changed["spell-checking-languages"].connect(() => {
-                update_spell_checking();
-            });
+
+            // Listen for settings changes (spell checking listeners are now in SpellCheckingManager)
             settings.changed["developer-tools-enabled"].connect(() => {
                 update_developer_tools();
             });
@@ -398,28 +338,6 @@ namespace Karere {
          */
         private void on_window_focus_out() {
             debug("Window lost focus");
-        }
-
-
-        private void update_spell_checking() {
-            if (settings == null || webview_manager.web_view == null) {
-                warning("Cannot update spell checking: settings or webview_manager.web_view is null");
-                return;
-            }
-            
-            var spell_enabled = settings.get_boolean("spell-checking-enabled");
-            var web_context = webview_manager.web_view.get_context();
-            
-            web_context.set_spell_checking_enabled(spell_enabled);
-            
-            if (spell_enabled) {
-                string[] spell_languages = get_spell_checking_languages();
-                web_context.set_spell_checking_languages(spell_languages);
-                info("Spell checking updated - languages: %s", string.joinv(", ", spell_languages));
-            } else {
-                web_context.set_spell_checking_languages({});
-                info("Spell checking disabled");
-            }
         }
 
 

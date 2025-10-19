@@ -87,19 +87,29 @@ namespace Karere {
 
         // Spell checking page widgets
         [GtkChild]
+        private unowned Adw.ActionRow dictionary_status_row;
+        [GtkChild]
+        private unowned Gtk.Label dictionary_count_label;
+        [GtkChild]
+        private unowned Gtk.Image dictionary_status_icon;
+        [GtkChild]
         private unowned Adw.SwitchRow spell_enabled_row;
         [GtkChild]
         private unowned Adw.SwitchRow spell_auto_detect_row;
         [GtkChild]
         private unowned Adw.PreferencesGroup spell_languages_group;
         [GtkChild]
+        private unowned Adw.ActionRow current_languages_row;
+        [GtkChild]
         private unowned Gtk.Label current_languages_label;
         [GtkChild]
-        private unowned Adw.ActionRow add_language_row;
+        private unowned Adw.ComboRow language_selection_row;
         [GtkChild]
-        private unowned Gtk.Button add_language_button;
+        private unowned Adw.ActionRow no_dictionaries_row;
 
         private Settings settings;
+        private SpellCheckingManager? spell_checking_manager;
+        private Gtk.StringList? available_languages_model;
 
         public PreferencesDialog() {
             settings = new Settings(Config.APP_ID);
@@ -179,12 +189,163 @@ namespace Karere {
         }
 
         private void setup_spell_checking_settings() {
+            // Initialize spell checking manager
+            spell_checking_manager = new SpellCheckingManager();
+
             // Spell checking settings
             settings.bind("spell-checking-enabled", spell_enabled_row, "active", SettingsBindFlags.DEFAULT);
             settings.bind("spell-checking-auto-detect", spell_auto_detect_row, "active", SettingsBindFlags.DEFAULT);
 
+            // Update dictionary status display
+            update_dictionary_status();
+
+            // Setup language selection dropdown
+            setup_language_selection();
+
             // Update current languages display
             update_current_languages_display();
+        }
+
+        private void update_dictionary_status() {
+            if (spell_checking_manager == null) {
+                return;
+            }
+
+            var dict_count = spell_checking_manager.get_dictionary_count();
+
+            // Update dictionary count label
+            if (dict_count == 0) {
+                dictionary_count_label.set_text(_("No dictionaries"));
+                dictionary_status_icon.visible = false;
+                no_dictionaries_row.visible = true;
+                language_selection_row.visible = false;
+            } else if (dict_count == 1) {
+                dictionary_count_label.set_text(_("1 dictionary"));
+                dictionary_status_icon.visible = true;
+                no_dictionaries_row.visible = false;
+                language_selection_row.visible = true;
+            } else {
+                dictionary_count_label.set_text(_("%d dictionaries").printf(dict_count));
+                dictionary_status_icon.visible = true;
+                no_dictionaries_row.visible = false;
+                language_selection_row.visible = true;
+            }
+        }
+
+        private void setup_language_selection() {
+            if (spell_checking_manager == null) {
+                return;
+            }
+
+            // Create string list model for available languages
+            available_languages_model = new Gtk.StringList(null);
+
+            // Get available languages from spell checking manager
+            var available_languages = spell_checking_manager.get_available_languages();
+
+            // Add language display names to the model
+            foreach (var lang_code in available_languages) {
+                var display_name = get_language_display_name(lang_code);
+                available_languages_model.append(display_name);
+            }
+
+            // Set model to combo row
+            language_selection_row.model = available_languages_model;
+
+            // Connect selection changed signal
+            language_selection_row.notify["selected"].connect(() => {
+                on_language_selected();
+            });
+        }
+
+        private void on_language_selected() {
+            if (spell_checking_manager == null || available_languages_model == null) {
+                return;
+            }
+
+            var selected_index = language_selection_row.selected;
+            if (selected_index == Gtk.INVALID_LIST_POSITION) {
+                return;
+            }
+
+            // Get the selected display name
+            var display_name = available_languages_model.get_string(selected_index);
+
+            // Find the corresponding language code
+            var available_languages = spell_checking_manager.get_available_languages();
+            string? lang_code = null;
+
+            for (int i = 0; i < available_languages.length; i++) {
+                if (get_language_display_name(available_languages[i]) == display_name) {
+                    lang_code = available_languages[i];
+                    break;
+                }
+            }
+
+            if (lang_code != null) {
+                add_spell_checking_language(lang_code);
+                // Reset selection
+                language_selection_row.selected = Gtk.INVALID_LIST_POSITION;
+            }
+        }
+
+        private string get_language_display_name(string lang_code) {
+            // Map language codes to user-friendly names
+            // This is a basic implementation - could be expanded with full locale database
+            var name_map = new GLib.HashTable<string, string>(str_hash, str_equal);
+
+            // Common languages
+            name_map.insert("en_US", _("English (United States)"));
+            name_map.insert("en_GB", _("English (United Kingdom)"));
+            name_map.insert("es_ES", _("Spanish (Spain)"));
+            name_map.insert("es_MX", _("Spanish (Mexico)"));
+            name_map.insert("pt_BR", _("Portuguese (Brazil)"));
+            name_map.insert("pt_PT", _("Portuguese (Portugal)"));
+            name_map.insert("fr_FR", _("French (France)"));
+            name_map.insert("fr", _("French"));
+            name_map.insert("de_DE_frami", _("German (Germany)"));
+            name_map.insert("de", _("German"));
+            name_map.insert("it_IT", _("Italian (Italy)"));
+            name_map.insert("ru_RU", _("Russian (Russia)"));
+            name_map.insert("ar", _("Arabic"));
+            name_map.insert("id_ID", _("Indonesian (Indonesia)"));
+            name_map.insert("id", _("Indonesian"));
+            name_map.insert("nl_NL", _("Dutch (Netherlands)"));
+            name_map.insert("pl_PL", _("Polish (Poland)"));
+            name_map.insert("cs_CZ", _("Czech (Czechia)"));
+            name_map.insert("sv_SE", _("Swedish (Sweden)"));
+            name_map.insert("fi_FI", _("Finnish (Finland)"));
+            name_map.insert("no", _("Norwegian"));
+            name_map.insert("da_DK", _("Danish (Denmark)"));
+            name_map.insert("el_GR", _("Greek (Greece)"));
+            name_map.insert("he_IL", _("Hebrew (Israel)"));
+            name_map.insert("hi_IN", _("Hindi (India)"));
+            name_map.insert("th_TH", _("Thai (Thailand)"));
+            name_map.insert("vi", _("Vietnamese"));
+            name_map.insert("zh_CN", _("Chinese (Simplified)"));
+            name_map.insert("zh_TW", _("Chinese (Traditional)"));
+            name_map.insert("ja_JP", _("Japanese (Japan)"));
+            name_map.insert("ko_KR", _("Korean (South Korea)"));
+            name_map.insert("tr_TR", _("Turkish (Turkey)"));
+            name_map.insert("uk_UA", _("Ukrainian (Ukraine)"));
+            name_map.insert("bg_BG", _("Bulgarian (Bulgaria)"));
+            name_map.insert("ro", _("Romanian"));
+            name_map.insert("hr_HR", _("Croatian (Croatia)"));
+            name_map.insert("sk_SK", _("Slovak (Slovakia)"));
+            name_map.insert("sl_SI", _("Slovenian (Slovenia)"));
+            name_map.insert("sr", _("Serbian"));
+            name_map.insert("ca", _("Catalan"));
+            name_map.insert("eu", _("Basque"));
+            name_map.insert("gl", _("Galician"));
+
+            // Try to get friendly name
+            var friendly_name = name_map.lookup(lang_code);
+            if (friendly_name != null) {
+                return "%s (%s)".printf(friendly_name, lang_code);
+            }
+
+            // Fallback: just return the code
+            return lang_code;
         }
 
         private void update_download_directory_label() {
@@ -234,9 +395,6 @@ namespace Karere {
         }
 
         private void connect_signals() {
-            // Spell checking language buttons
-            add_language_button.clicked.connect(on_add_language_clicked);
-
             // Listen for settings changes that affect UI
             settings.changed["system-notifications-enabled"].connect(on_system_notifications_changed);
             settings.changed["notifications-enabled"].connect(on_notifications_changed);
@@ -296,42 +454,17 @@ namespace Karere {
                 close();
             }
         }
-        
-        
-        private void on_add_language_clicked() {
-            // Create a simple dialog for adding languages
-            var dialog = new Adw.AlertDialog(_("Add Language"), _("Enter a language code (e.g., en_US, fr_FR, de_DE):"));
-            
-            var entry = new Gtk.Entry();
-            // TRANSLATORS: Placeholder text for language code entry (example format)
-            entry.placeholder_text = _("en_US");
-            entry.margin_top = 12;
-            entry.margin_bottom = 12;
-            entry.margin_start = 12;
-            entry.margin_end = 12;
-            
-            dialog.set_extra_child(entry);
-            dialog.add_response("cancel", _("Cancel"));
-            dialog.add_response("add", _("Add"));
-            dialog.set_response_appearance("add", Adw.ResponseAppearance.SUGGESTED);
-            dialog.set_default_response("add");
-            dialog.set_close_response("cancel");
-            
-            dialog.response.connect((response) => {
-                if (response == "add") {
-                    var language = entry.get_text().strip();
-                    if (language.length > 0) {
-                        add_spell_checking_language(language);
-                    }
-                }
-            });
-            
-            dialog.present(this);
-        }
-        
+
+
         private void add_spell_checking_language(string language) {
+            // Validate language is available
+            if (spell_checking_manager != null && !spell_checking_manager.is_language_available(language)) {
+                show_toast(_("Dictionary for '%s' is not available").printf(language));
+                return;
+            }
+
             var current_languages = settings.get_strv("spell-checking-languages");
-            
+
             // Check if language already exists
             foreach (var lang in current_languages) {
                 if (lang == language) {
@@ -339,16 +472,19 @@ namespace Karere {
                     return;
                 }
             }
-            
+
             // Add the new language
             string[] new_languages = new string[current_languages.length + 1];
             for (int i = 0; i < current_languages.length; i++) {
                 new_languages[i] = current_languages[i];
             }
             new_languages[current_languages.length] = language;
-            
+
             settings.set_strv("spell-checking-languages", new_languages);
-            show_toast(_("Language '%s' added successfully").printf(language));
+
+            // Get friendly name for toast
+            var friendly_name = get_language_display_name(language);
+            show_toast(_("Added: %s").printf(friendly_name));
         }
         
         private void update_current_languages_display() {
@@ -357,23 +493,41 @@ namespace Karere {
                 current_languages_label.set_text(_("Disabled"));
                 return;
             }
-            
+
             var auto_detect = settings.get_boolean("spell-checking-auto-detect");
             var languages = settings.get_strv("spell-checking-languages");
-            
+
             if (auto_detect || languages.length == 0) {
                 // Show auto-detected language
-                var locale = Intl.setlocale(LocaleCategory.MESSAGES, null);
-                if (locale != null) {
-                    var parts = locale.split(".");
-                    var lang_code = parts[0];
-                    current_languages_label.set_text(_("Auto: %s").printf(lang_code));
+                if (spell_checking_manager != null) {
+                    var locale = Intl.setlocale(LocaleCategory.MESSAGES, null);
+                    var matched = spell_checking_manager.match_locale_to_dictionary(locale);
+                    if (matched != null) {
+                        var friendly_name = get_language_display_name(matched);
+                        current_languages_label.set_text(_("Auto: %s").printf(friendly_name));
+                    } else {
+                        current_languages_label.set_text(_("Auto (no match)"));
+                    }
                 } else {
-                    current_languages_label.set_text(_("Auto: en_US"));
+                    current_languages_label.set_text(_("Auto"));
                 }
             } else {
-                // Show user-specified languages
-                current_languages_label.set_text(string.joinv(", ", languages));
+                // Show user-specified languages with friendly names
+                var friendly_names = new GLib.GenericArray<string>();
+                foreach (var lang in languages) {
+                    friendly_names.add(get_language_display_name(lang));
+                }
+
+                if (friendly_names.length > 0) {
+                    // Convert to array for joinv
+                    string[] names_array = new string[friendly_names.length];
+                    for (int i = 0; i < friendly_names.length; i++) {
+                        names_array[i] = friendly_names[i];
+                    }
+                    current_languages_label.set_text(string.joinv(", ", names_array));
+                } else {
+                    current_languages_label.set_text(_("None"));
+                }
             }
         }
         
@@ -421,13 +575,16 @@ namespace Karere {
             // Update UI sensitivity for spell checking
             var enabled = settings.get_boolean("spell-checking-enabled");
             var auto_detect = settings.get_boolean("spell-checking-auto-detect");
-            
+
             spell_auto_detect_row.visible = enabled;
             spell_languages_group.visible = enabled;
-            
-            // Hide add language button when auto-detect is enabled
-            add_language_row.visible = enabled && !auto_detect;
-            
+
+            // Hide language selection when auto-detect is enabled or no dictionaries
+            if (spell_checking_manager != null) {
+                var dict_count = spell_checking_manager.get_dictionary_count();
+                language_selection_row.visible = enabled && !auto_detect && dict_count > 0;
+            }
+
             // Update current languages display
             update_current_languages_display();
         }

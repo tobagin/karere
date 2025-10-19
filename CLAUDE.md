@@ -15,4 +15,5 @@ Use `@/openspec/AGENTS.md` to learn:
 
 Keep this managed block so 'openspec update' can refresh the instructions.
 
+build the dev flatpak for testing new features by using ./scripts/build.sh --dev
 <!-- OPENSPEC:END -->

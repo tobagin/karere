@@ -182,6 +182,7 @@ sources = files(
     'src/managers/DownloadManager.vala',
     'src/managers/WebKitNotificationBridge.vala',
     'src/managers/WebViewManager.vala',
+    'src/managers/SpellCheckingManager.vala',
     'src/utils/Utils.vala',
     'src/utils/Constants.vala',
 ) + [config_vala]
@@ -352,6 +353,7 @@ if get_option('tests')
         'src/managers/DownloadManager.vala',
         'src/managers/WebKitNotificationBridge.vala',
         'src/managers/WebViewManager.vala',
+        'src/managers/SpellCheckingManager.vala',
         'src/utils/Utils.vala',
         'src/utils/Constants.vala',
     ) + [config_vala]

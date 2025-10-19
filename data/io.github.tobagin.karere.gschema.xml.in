@@ -163,7 +163,7 @@
     </key>
     
     <key name="webview-zoom-enabled" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Enable WebView zoom functionality</summary>
       <description>Whether to enable zoom functionality for the WhatsApp Web content</description>
     </key>

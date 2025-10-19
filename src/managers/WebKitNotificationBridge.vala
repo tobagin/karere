@@ -55,7 +55,61 @@ namespace Karere {
             // Connect to permission request signal
             web_view.permission_request.connect(on_permission_request);
 
+            // Inject notification permission state early so WhatsApp Web can detect it
+            inject_notification_permission_state(web_view);
+
             debug("WebKit notification bridge configured");
+        }
+
+        /**
+         * Inject notification permission state into the page
+         *
+         * This ensures that when WhatsApp Web checks Notification.permission,
+         * it gets the correct value based on our saved GSettings.
+         *
+         * NOTE: This overrides the permission property but WebKit still sends
+         * notifications via the show_notification signal which we handle separately.
+         */
+        private void inject_notification_permission_state(WebKit.WebView web_view) {
+            if (settings == null) {
+                return;
+            }
+
+            bool permission_asked = settings.get_boolean("web-notification-permission-asked");
+            bool permission_granted = settings.get_boolean("web-notification-permission-granted");
+
+            if (!permission_asked || !permission_granted) {
+                // No permission granted yet, don't inject anything
+                return;
+            }
+
+            // Inject a script that makes Notification.permission report "granted"
+            // This needs to run at document start, before WhatsApp Web's scripts
+            var user_content_manager = web_view.get_user_content_manager();
+
+            var script = new WebKit.UserScript(
+                """
+                // Override Notification.permission to report granted state
+                // This ensures WhatsApp Web sees the permission as granted
+                Object.defineProperty(Notification, 'permission', {
+                    get: function() {
+                        return 'granted';
+                    },
+                    configurable: false
+                });
+                console.log('[Karere] Notification permission injected as granted');
+                """,
+                WebKit.UserContentInjectedFrames.TOP_FRAME,
+                WebKit.UserScriptInjectionTime.START,
+                null,
+                null
+            );
+
+            user_content_manager.add_script(script);
+            info("Injected notification permission state: granted");
+
+            // Also set up the notification handler so we can receive notifications
+            setup_notification_handler();
         }
 
         /**
