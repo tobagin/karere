@@ -21,10 +21,8 @@ finish-args:
   - --filesystem=xdg-download
   # Hardware acceleration
   - --device=dri
-  # Access to host hunspell dictionaries for spell checking (read-only)
-  - --filesystem=/usr/share/hunspell:ro
   # Configure WebKit spell checker dictionary paths (bundled and runtime)
-  - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell:/usr/share/hunspell
+  - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell
 
 add-extensions:
   org.freedesktop.Platform.ffmpeg-full:
