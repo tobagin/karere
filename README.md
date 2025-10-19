@@ -59,7 +59,7 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 ### Flatpak (Recommended)
 
-#### From Flathub (Coming Soon)
+#### From Flathub
 ```bash
 flatpak install flathub io.github.tobagin.karere
 ```
@@ -82,7 +82,7 @@ cd karere
 
 Launch Karere from your applications menu or run:
 ```bash
-karere
+flatpak run io.github.tobagin.karere
 ```
 
 The application will load WhatsApp Web and provide native desktop integration.
