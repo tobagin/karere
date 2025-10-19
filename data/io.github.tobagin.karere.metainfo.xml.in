@@ -101,6 +101,17 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="1.0.1" date="2025-10-19">
+      <description>
+        <p>📸 Screenshots and Documentation Update</p>
+        <p>Improvements:</p>
+        <ul>
+          <li>Updated application screenshots with current UI appearance</li>
+          <li>Refreshed About dialog screenshot</li>
+          <li>Enhanced visual documentation for users</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.0" date="2025-10-19">
       <description>
         <p>🎉 Version 1.0.0 - Major Milestone Release</p>
