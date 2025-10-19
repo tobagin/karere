@@ -1,7 +1,7 @@
 project(
     'karere',
     'vala', 'c',
-    version: '0.9.4',
+    version: '1.0.0',
     meson_version: '>=0.60.0',
     default_options: [
         'warning_level=1',

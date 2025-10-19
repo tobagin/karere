@@ -101,6 +101,58 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="1.0.0" date="2025-10-19">
+      <description>
+        <p>🎉 Version 1.0.0 - Major Milestone Release</p>
+        <p>New Features:</p>
+        <ul>
+          <li>✅ Fixed WhatsApp Web notification banner persistence</li>
+          <li>✅ Fixed notifications not working properly</li>
+          <li>🖼️ Added image paste support via clipboard (Ctrl+V)</li>
+          <li>📥 Implemented download manager with custom directory and toast notifications</li>
+          <li>♿ Enhanced accessibility with screen reader optimization and keyboard navigation</li>
+          <li>📝 Added comprehensive spell checking system with auto-detection</li>
+          <li>🔤 Integrated 80+ language dictionaries from LibreOffice</li>
+          <li>⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog</li>
+        </ul>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed Ctrl+V paste for text content - now works for both text and images</li>
+          <li>Fixed WhatsApp notification permission not persisting across sessions</li>
+          <li>Fixed notifications banner appearing on every app launch</li>
+          <li>Fixed WebView zoom being enabled by default (now disabled)</li>
+          <li>Fixed clipboard manager intercepting all paste events</li>
+          <li>Removed hardcoded blueprint compiler paths for cross-architecture support</li>
+        </ul>
+        <p>Code Quality Improvements:</p>
+        <ul>
+          <li>♻️ Major refactor: Reorganized codebase with PascalCase filenames</li>
+          <li>♻️ Refactored Window.vala into specialized manager components</li>
+          <li>♻️ Removed custom logging and crash reporting (use system journalctl)</li>
+          <li>🗑️ Removed Do Not Disturb feature (handled by system notification daemon)</li>
+          <li>🗑️ Cleaned up obsolete test files and unused dependencies</li>
+          <li>🗑️ Removed json-glib, gee, and libsoup dependencies</li>
+          <li>🧹 Centralized settings management with SettingsManager singleton</li>
+          <li>🧹 Removed DependencyContainer.vala (unused dependency injection)</li>
+          <li>📸 Reorganized screenshots into data/screenshots/ directory</li>
+        </ul>
+        <p>Technical Changes:</p>
+        <ul>
+          <li>Implemented UserScript injection for Notification.permission state</li>
+          <li>Connected show_notification signal handler for WebKit notifications</li>
+          <li>WebKitGTK 6.0 storage persistence verified and documented</li>
+          <li>Updated SettingsManager to be the default for all settings access</li>
+          <li>Improved build system with cleaner dependency management</li>
+        </ul>
+        <p>Documentation:</p>
+        <ul>
+          <li>📚 Enhanced README with accessibility features documentation</li>
+          <li>📚 Documented all keyboard shortcuts by category</li>
+          <li>📚 Added spell checking configuration guide</li>
+          <li>📚 Fixed GitHub repository URLs (karere-vala → karere)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.9.4" date="2025-09-18">
       <description>
         <p>🐛 Runtime Update and Bug Fixes</p>
