@@ -27,7 +27,7 @@ finish-args:
 add-extensions:
   org.freedesktop.Platform.ffmpeg-full:
     directory: lib/ffmpeg
-    version: '24.08'
+    version: '25.08'
     add-ld-path: .
 
 cleanup-commands:
@@ -91,5 +91,5 @@ modules:
     sources:
       - type: git
         url: https://github.com/tobagin/karere.git
-        tag: v0.9.4
-        commit: c020b599da488202a48b937f0b00f72c25d0b1b3
+        tag: v1.0.3
+        commit: TO_BE_UPDATED_AFTER_COMMIT

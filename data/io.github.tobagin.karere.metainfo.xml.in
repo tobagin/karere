@@ -101,6 +101,28 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="1.0.3" date="2025-10-21">
+      <description>
+        <p>🔧 Maintenance Release</p>
+        <p>Improvements:</p>
+        <ul>
+          <li>Updated build configuration and dependencies</li>
+          <li>Enhanced packaging for better compatibility</li>
+          <li>Minor bug fixes and stability improvements</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.0.2" date="2025-10-20">
+      <description>
+        <p>📝 Documentation and Metadata Update</p>
+        <p>Improvements:</p>
+        <ul>
+          <li>Updated about dialog screenshot</li>
+          <li>Updated application screenshots</li>
+          <li>Minor README corrections</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.1" date="2025-10-19">
       <description>
         <p>📸 Screenshots and Documentation Update</p>

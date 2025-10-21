@@ -4,26 +4,24 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
-## 🎉 Version 1.0.0 - Stable Release
+## 🎉 Version 1.0.3 - Stable Release
 
-**Karere has reached 1.0.0!** This stable release includes fully working notifications, enhanced accessibility, and comprehensive WhatsApp Web integration.
+**Karere 1.0.3** is the latest stable release with fully working notifications, enhanced accessibility, and comprehensive WhatsApp Web integration.
 
-### ✨ What's New in 1.0.0
+### ✨ Key Features
 
-- **✅ Fixed Notifications**: WhatsApp notifications now work perfectly with proper banner persistence
-- **🖼️ Image Paste**: Ctrl+V now works for both text and images in WhatsApp Web
+- **✅ Working Notifications**: WhatsApp notifications work perfectly with proper banner persistence
+- **🖼️ Image Paste**: Ctrl+V works for both text and images in WhatsApp Web
 - **📥 Download Manager**: Custom download directory with toast notifications
 - **📝 Spell Checking**: 80+ language dictionaries with auto-detection
 - **♿ Enhanced Accessibility**: Screen reader optimization, keyboard navigation, and focus indicators
 - **⌨️ Keyboard Shortcuts**: Comprehensive shortcuts dialog with all available commands
 
-### 🐛 Major Fixes
+### 🆕 What's New in 1.0.3
 
-- Fixed WhatsApp notification banner appearing on every launch
-- Fixed notifications not working properly
-- Fixed Ctrl+V paste for text content
-- Disabled WebView zoom by default (can be enabled in preferences)
-- Improved clipboard handling for images and text
+- Updated build configuration and dependencies
+- Enhanced packaging for better compatibility
+- Minor bug fixes and stability improvements
 
 ## Features
 
