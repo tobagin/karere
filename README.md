@@ -23,6 +23,8 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 - Enhanced packaging for better compatibility
 - Minor bug fixes and stability improvements
 
+For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
+
 ## Features
 
 ### Core Features
@@ -147,25 +149,15 @@ Karere is designed with privacy in mind:
 
 ## Contributing
 
-Contributions are welcome! Please see our development documentation:
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
 
-- [Development Setup](docs/DEVELOPMENT.md) - Setting up your development environment
-- [Code Style Guide](docs/CODE_STYLE.md) - Coding standards and conventions
-- [Architecture Overview](docs/ARCHITECTURE.md) - Technical architecture details
+- Setting up your development environment
+- Code style and conventions
+- Testing and building
+- Submitting pull requests
+- Reporting bugs and feature requests
 
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests: `meson test -C build`
-5. Submit a pull request
-
-## Documentation
-
-- [User Documentation](docs/) - User guides and help
-- [Development Documentation](docs/DEVELOPMENT.md) - Developer resources
-- [Flathub Compliance](docs/FLATHUB_COMPLIANCE.md) - Distribution requirements
+For questions or discussions, please use [GitHub Discussions](https://github.com/tobagin/karere/discussions).
 
 ## License
 
@@ -175,7 +167,6 @@ Karere is licensed under the GNU General Public License v3.0 or later. See [LICE
 
 - **Bug Reports**: [GitHub Issues](https://github.com/tobagin/karere/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/tobagin/karere/discussions)
-- **Documentation**: [Project Wiki](https://github.com/tobagin/karere/wiki)
 
 ## Acknowledgments
 
