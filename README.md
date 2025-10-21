@@ -147,6 +147,20 @@ Karere is designed with privacy in mind:
 - **Local Storage**: Uses standard user data directories, no external services
 - **Transparent**: Open source code available for audit
 
+## Known Limitations
+
+### Video Attachments
+Due to compatibility limitations between WebKitGTK and WhatsApp Web, **video attachments are currently not supported**. This is a platform-level limitation that affects all WebKitGTK-based browsers (including GNOME Web/Epiphany).
+
+**What works:**
+- ✅ Text messages
+- ✅ Image attachments
+- ✅ Document attachments
+- ✅ Audio messages
+- ✅ Downloading videos sent by others
+
+This limitation is being tracked and will be resolved if/when WebKitGTK adds better support for WhatsApp Web's video processing APIs.
+
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
