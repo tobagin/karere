@@ -51,6 +51,8 @@ namespace Karere {
 
         public Window(Gtk.Application app) {
             Object(application: app);
+            var timer = new Timer();
+            debug("Window ctor start - Time: %f", timer.elapsed());
 
             // Initialize settings with error handling
             try {
@@ -60,20 +62,30 @@ namespace Karere {
                 warning("Continuing without settings - using defaults");
                 settings = null;
             }
+            debug("Settings init - Time: %f", timer.elapsed());
 
             setup_window_properties();
+            debug("Properties setup - Time: %f", timer.elapsed());
             setup_actions();
+            debug("Actions setup - Time: %f", timer.elapsed());
             setup_webkit();
+            debug("WebKit setup - Time: %f", timer.elapsed());
             setup_notifications();
+            debug("Notifications setup - Time: %f", timer.elapsed());
             setup_downloads();
+            debug("Downloads setup - Time: %f", timer.elapsed());
             setup_settings_listeners();
+            debug("Settings listeners setup - Time: %f", timer.elapsed());
             setup_accessibility_features();
+            debug("Accessibility setup - Time: %f", timer.elapsed());
             setup_network_monitoring();
+            debug("Network setup - Time: %f", timer.elapsed());
 
             // Initialize clipboard manager
             clipboard = this.get_clipboard();
             clipboard_manager = new ClipboardManager(clipboard, webview_manager.web_view);
             clipboard_manager.setup_paste_detection(webview_manager.web_view);
+            debug("Clipboard setup - Time: %f", timer.elapsed());
 
             // Connect clipboard manager signals for toast notifications
             clipboard_manager.paste_succeeded.connect((image_type) => {
@@ -88,13 +100,15 @@ namespace Karere {
                 update_focus_indicators();
                 update_zoom_controls_visibility(); // Initialize zoom controls visibility
             }
+            debug("Focus indicators - Time: %f", timer.elapsed());
 
             // Initialize window state manager
             window_state_manager = new WindowStateManager(settings, this);
             window_state_manager.restore_state();
             window_state_manager.start_tracking();
+            debug("Window state restore - Time: %f", timer.elapsed());
 
-            info("Window created and initialized");
+            info("Window created and initialized - Total Time: %f", timer.elapsed());
         }
 
         private void setup_window_properties() {
@@ -563,11 +577,6 @@ namespace Karere {
         public override bool close_request() {
             info("Window close requested");
 
-            // Save window state before closing
-            if (window_state_manager != null) {
-                window_state_manager.save_state();
-            }
-
             // Hide the window instead of closing it to keep app running in background
             set_visible(false);
 
@@ -603,17 +612,18 @@ namespace Karere {
 
 
 
-        /**
-         * Setup network monitoring for automatic reload
-         */
         private void setup_network_monitoring() {
-            try {
-                var monitor = NetworkMonitor.get_default();
-                monitor.network_changed.connect(on_network_changed);
-                debug("Network monitoring configured");
-            } catch (Error e) {
-                warning("Failed to setup network monitoring: %s", e.message);
-            }
+            // Initialize network monitoring in idle to avoid blocking startup
+            Idle.add(() => {
+                try {
+                    var monitor = NetworkMonitor.get_default();
+                    monitor.network_changed.connect(on_network_changed);
+                    debug("Network monitoring configured");
+                } catch (Error e) {
+                    warning("Failed to setup network monitoring: %s", e.message);
+                }
+                return false;
+            });
         }
 
         /**

@@ -84,18 +84,21 @@ namespace Karere {
         }
 
         public override void activate() {
+            var timer = new Timer();
             base.activate();
 
-            debug("Application activated");
+            debug("Application activated - Time: %f", timer.elapsed());
 
             // Create window if it doesn't exist
             if (main_window == null) {
-                debug("Creating new main window");
+                debug("Creating new main window - Time: %f", timer.elapsed());
                 main_window = new Window(this);
+                debug("Window created - Time: %f", timer.elapsed());
 
                 // Set up accessibility and keyboard shortcuts for the new window
                 accessibility_manager.set_main_window(main_window);
                 keyboard_shortcuts.set_window_reference(main_window, accessibility_manager);
+                debug("Accessibility setup - Time: %f", timer.elapsed());
 
                 // Check background start preference
                 bool start_in_background = false;
@@ -105,6 +108,7 @@ namespace Karere {
                         start_in_background = settings.get_boolean("start-in-background");
                     }
                 }
+                debug("Checked background preference: %s - Time: %f", start_in_background.to_string(), timer.elapsed());
 
                 if (start_in_background) {
                      debug("Starting in background (hidden)");
@@ -117,12 +121,13 @@ namespace Karere {
                      check_and_show_background_notification();
                 } else {
                     main_window.present();
-                    debug("Main window created and presented with accessibility support");
+                    debug("Main window created and presented with accessibility support - Time: %f", timer.elapsed());
                     
                     // Check if we should show What's New dialog
                     check_and_show_whats_new();
                 }
             } else {
+                debug("Showing existing window - Time: %f", timer.elapsed());
                 // Show the existing window (it might be hidden)
                 main_window.set_visible(true);
                 main_window.present();
@@ -133,8 +138,9 @@ namespace Karere {
                 // Reset background notification state when window is shown
                 notification_manager.on_window_focus_changed(true);
 
-                debug("Main window shown and presented");
+                debug("Main window shown and presented - Time: %f", timer.elapsed());
             }
+            debug("Activation complete - Time: %f", timer.elapsed());
         }
 
         private void check_and_show_background_notification() {
@@ -173,9 +179,6 @@ namespace Karere {
 
         public override void shutdown() {
             debug("Application shutting down");
-
-            // Save application state
-            save_application_state();
 
             // Clean up resources
             cleanup_resources();
@@ -446,28 +449,6 @@ namespace Karere {
             });
 
             alert.present(main_window);
-        }
-
-        private void save_application_state() {
-            try {
-                if (main_window != null && settings_manager.is_initialized()) {
-                    var settings = settings_manager.get_settings();
-                    if (settings != null) {
-                        // Save window state
-                        int width, height;
-                        main_window.get_default_size(out width, out height);
-                        settings.set_int("window-width", width);
-                        settings.set_int("window-height", height);
-                        settings.set_boolean("window-maximized", main_window.maximized);
-
-                        debug("Application state saved");
-                    }
-                } else if (!settings_manager.is_initialized()) {
-                    warning("Cannot save application state: settings not initialized");
-                }
-            } catch (Error e) {
-                critical("Failed to save application state: %s", e.message);
-            }
         }
 
         private void cleanup_resources() {

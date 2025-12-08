@@ -25,6 +25,8 @@ namespace Karere {
         private Settings? settings;
         private Adw.ApplicationWindow window;
 
+        private uint save_timeout_id = 0;
+
         /**
          * Create a new WindowStateManager
          *
@@ -65,15 +67,32 @@ namespace Karere {
          */
         public void start_tracking() {
             // Connect to window property change signals
-            window.notify["maximized"].connect(save_state);
-            window.notify["default-width"].connect(save_state);
-            window.notify["default-height"].connect(save_state);
+            window.notify["maximized"].connect(on_state_changed);
+            window.notify["default-width"].connect(on_state_changed);
+            window.notify["default-height"].connect(on_state_changed);
 
             debug("Window state tracking started");
         }
 
         /**
-         * Save current window state to GSettings
+         * Handle state changes by scheduling a save
+         */
+        private void on_state_changed(Object object, ParamSpec pspec) {
+            // Cancel existing timeout if any
+            if (save_timeout_id != 0) {
+                Source.remove(save_timeout_id);
+            }
+
+            // Schedule new save (debounce for 500ms)
+            save_timeout_id = Timeout.add(500, () => {
+                save_state();
+                save_timeout_id = 0;
+                return false;
+            });
+        }
+
+        /**
+         * Save current window state to GSettings immediately
          */
         public void save_state() {
             if (settings == null) return;
@@ -81,14 +100,26 @@ namespace Karere {
             // Save window size
             int width, height;
             window.get_default_size(out width, out height);
-            settings.set_int("window-width", width);
-            settings.set_int("window-height", height);
+            
+            // Only save valid dimensions
+            if (width > 0 && height > 0) {
+                settings.set_int("window-width", width);
+                settings.set_int("window-height", height);
+            }
 
             // Save maximized state
             settings.set_boolean("window-maximized", window.maximized);
 
             debug("Window state saved: %dx%d, maximized: %s",
                         width, height, window.maximized.to_string());
+        }
+        
+        ~WindowStateManager() {
+            if (save_timeout_id != 0) {
+                Source.remove(save_timeout_id);
+                // Last ditch effort to save if pending, but avoid blocking destruction seriously
+                save_state();
+            }
         }
     }
 }

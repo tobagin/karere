@@ -32,37 +32,64 @@ namespace Karere {
             settings_manager = SettingsManager.get_instance();
             available_dictionaries = new GLib.HashTable<string, string>(str_hash, str_equal);
 
-            // Scan for available dictionaries
-            scan_dictionary_paths();
+            // Scan for available dictionaries asynchronously
+            // Scan for available dictionaries asynchronously
+            scan_dictionary_paths_async();
 
-            debug("SpellCheckingManager initialized with %d dictionaries", get_dictionary_count());
+            debug("SpellCheckingManager initialized (scan started in background)");
         }
 
         /**
-         * Scan multiple filesystem paths for hunspell dictionaries
+         * Scan multiple filesystem paths for hunspell dictionaries asynchronously
          */
-        private void scan_dictionary_paths() {
-            string[] search_paths = {
-                "/app/share/hunspell",           // Flatpak bundled dictionaries
-                "/usr/share/hunspell",            // GNOME runtime/system dictionaries
-                "/run/host/usr/share/hunspell",   // Host system dictionaries (if accessible)
-                Environment.get_variable("WEBKIT_SPELL_CHECKER_DIR")  // Custom override
-            };
+        private void scan_dictionary_paths_async() {
+            // Run potentially slow directory scanning in a separate thread
+            new Thread<void>("dictionary-scanner", () => {
+                // Use a local map to avoid thread safety issues
+                var found_dictionaries = new GLib.HashTable<string, string>(str_hash, str_equal);
+                
+                string[] search_paths = {
+                    "/app/share/hunspell",           // Flatpak bundled dictionaries
+                    "/usr/share/hunspell",            // GNOME runtime/system dictionaries
+                    "/run/host/usr/share/hunspell",   // Host system dictionaries (if accessible)
+                    Environment.get_variable("WEBKIT_SPELL_CHECKER_DIR")  // Custom override
+                };
 
-            foreach (var path in search_paths) {
-                if (path == null) {
-                    continue;
+                foreach (var path in search_paths) {
+                    if (path == null) {
+                        continue;
+                    }
+                    scan_directory_for_dictionaries(path, found_dictionaries);
                 }
-                scan_directory_for_dictionaries(path);
-            }
+                
+                // Update UI/WebKit on main thread after scan completes
+                Idle.add(() => {
+                    // Merge found dictionaries into the main map
+                    found_dictionaries.foreach((lang, path) => {
+                        if (!available_dictionaries.contains(lang)) {
+                            available_dictionaries.insert(lang, path);
+                        }
+                    });
+                    
+                    debug("Dictionary scan complete. Found %u dictionaries.", available_dictionaries.size());
+                    
+                    // Update WebKit context if already initialized
+                    if (web_context != null) {
+                        update_spell_checking();
+                    }
+                    
+                    return false;
+                });
+            });
         }
 
         /**
          * Scan a single directory for hunspell dictionary files
          *
          * @param directory_path Path to scan for .dic and .aff files
+         * @param target_map Map to store found dictionaries
          */
-        private void scan_directory_for_dictionaries(string directory_path) {
+        private void scan_directory_for_dictionaries(string directory_path, GLib.HashTable<string, string> target_map) {
             if (!FileUtils.test(directory_path, FileTest.IS_DIR)) {
                 return;
             }
@@ -78,8 +105,10 @@ namespace Karere {
 
                         if (validate_dictionary(lang_code, directory_path)) {
                             // Only add if not already in dictionary (priority order)
-                            if (!available_dictionaries.contains(lang_code)) {
-                                available_dictionaries.insert(lang_code, directory_path);
+                            // Note: Since we scan in order, if we already found it in a previous (higher priority?) 
+                            // path in the loop, or if it's already in the target_map
+                            if (!target_map.contains(lang_code)) {
+                                target_map.insert(lang_code, directory_path);
                                 debug("Found dictionary: %s at %s", lang_code, directory_path);
                             }
                         }
