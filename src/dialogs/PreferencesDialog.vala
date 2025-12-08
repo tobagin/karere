@@ -23,6 +23,8 @@ namespace Karere {
         
         // General page widgets
         [GtkChild]
+        private unowned Adw.SwitchRow start_background_row;
+        [GtkChild]
         private unowned Adw.ComboRow theme_row;
         [GtkChild]
         private unowned Adw.ActionRow download_directory_row;
@@ -129,6 +131,9 @@ namespace Karere {
         }
         
         private void setup_general_settings() {
+            // Startup setting
+            settings.bind("start-in-background", start_background_row, "active", SettingsBindFlags.DEFAULT);
+
             // Theme setting
             settings.bind("theme-preference", theme_row, "selected", SettingsBindFlags.DEFAULT);
 

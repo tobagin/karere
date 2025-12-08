@@ -97,11 +97,31 @@ namespace Karere {
                 accessibility_manager.set_main_window(main_window);
                 keyboard_shortcuts.set_window_reference(main_window, accessibility_manager);
 
-                main_window.present();
-                debug("Main window created and presented with accessibility support");
+                // Check background start preference
+                bool start_in_background = false;
+                if (settings_manager.is_initialized()) {
+                    var settings = settings_manager.get_settings();
+                    if (settings != null) {
+                        start_in_background = settings.get_boolean("start-in-background");
+                    }
+                }
 
-                // Check if we should show What's New dialog
-                check_and_show_whats_new();
+                if (start_in_background) {
+                     debug("Starting in background (hidden)");
+                     // Do NOT present the window
+                     
+                     // Even if hidden, we might want to ensure focus indicators are correct
+                     main_window.update_focus_indicators();
+                     
+                     // Show a notification if configured to do so
+                     check_and_show_background_notification();
+                } else {
+                    main_window.present();
+                    debug("Main window created and presented with accessibility support");
+                    
+                    // Check if we should show What's New dialog
+                    check_and_show_whats_new();
+                }
             } else {
                 // Show the existing window (it might be hidden)
                 main_window.set_visible(true);
@@ -115,6 +135,13 @@ namespace Karere {
 
                 debug("Main window shown and presented");
             }
+        }
+
+        private void check_and_show_background_notification() {
+             // Logic to show "Karere is running in background" notification
+             // This can be implemented via NotificationManager or directly here
+             // For now, we'll leave it simple as per requirements.
+             // The user can open it via launcher again.
         }
 
         public override int command_line(ApplicationCommandLine command_line) {

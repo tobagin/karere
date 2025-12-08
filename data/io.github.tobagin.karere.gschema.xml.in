@@ -65,6 +65,12 @@
       <summary>Enable console logging</summary>
       <description>Whether to enable console logging for debugging</description>
     </key>
+
+    <key name="start-in-background" type="b">
+      <default>false</default>
+      <summary>Start in background</summary>
+      <description>Whether to start the application with the main window hidden</description>
+    </key>
     
     <!-- Notification settings -->
     <key name="notifications-enabled" type="b">

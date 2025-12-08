@@ -9,6 +9,15 @@ template $KarerePreferencesDialog : Adw.PreferencesDialog {
     title: _("General");
     icon-name: "applications-system-symbolic";
 
+        Adw.PreferencesGroup {
+      title: _("Startup");
+      
+      Adw.SwitchRow start_background_row {
+        title: _("Start in Background");
+        subtitle: _("Launch application hidden in the background");
+      }
+    }
+
     Adw.PreferencesGroup {
       title: _("Appearance");
 
