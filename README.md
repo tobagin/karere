@@ -161,6 +161,24 @@ Due to compatibility limitations between WebKitGTK and WhatsApp Web, **video att
 
 This limitation is being tracked and will be resolved if/when WebKitGTK adds better support for WhatsApp Web's video processing APIs.
 
+### MPRIS and WebKit Issue
+There is a known issue with MPRIS and WebKit that causes a bug on Karere! See [WebKit Bug 282000](https://bugs.webkit.org/show_bug.cgi?id=282000).
+
+As a workaround you can disable MPRIS for the application of your interest.
+To do this, create the file `/etc/dbus-1/session.d/block-karere-mpris.conf` with this content:
+
+```xml
+<busconfig>
+  <policy context="mandatory">
+    <deny own_prefix="org.mpris.MediaPlayer2.io.github.tobagin.karere"/>
+  </policy>
+</busconfig>
+```
+
+**Note:** This will block all instances of Karere from registering on MPRIS, because it uses the `own_prefix` prefix which also covers Sandboxed instances. It requires a system reboot or session restart to work.
+
+![MPRIS Workaround](data/screenshots/mpris-bug.png)
+
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
