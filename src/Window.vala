@@ -44,7 +44,7 @@ namespace Karere {
         private NotificationManager notification_manager;
         private WindowStateManager window_state_manager;
         private ClipboardManager clipboard_manager;
-        private WebKitNotificationBridge notification_bridge;
+        private WebKitPermissionManager permission_manager;
         private DownloadManager download_manager;
         private SpellCheckingManager spell_checking_manager;
         private Gdk.Clipboard clipboard;
@@ -189,9 +189,9 @@ namespace Karere {
             if (app != null) {
                 notification_manager = app.get_notification_manager();
 
-                // Initialize WebKit notification bridge
-                notification_bridge = new WebKitNotificationBridge(settings, notification_manager, this);
-                notification_bridge.setup(webview_manager.web_view);
+                // Initialize WebKit permission manager
+                permission_manager = new WebKitPermissionManager(settings, notification_manager, this);
+                permission_manager.setup(webview_manager.web_view);
 
                 debug("Notifications configured");
             } else {

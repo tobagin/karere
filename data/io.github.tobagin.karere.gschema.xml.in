@@ -218,6 +218,19 @@
       <description>Whether the user has been asked for notification permission</description>
     </key>
 
+    <!-- Web microphone permission state -->
+    <key name="web-microphone-permission-granted" type="b">
+      <default>false</default>
+      <summary>Web microphone permission granted</summary>
+      <description>Whether the user has granted microphone permission to WhatsApp Web</description>
+    </key>
+
+    <key name="web-microphone-permission-asked" type="b">
+      <default>false</default>
+      <summary>Web microphone permission has been asked</summary>
+      <description>Whether the user has been asked for microphone permission</description>
+    </key>
+
     <!-- Version alert settings -->
     <key name="last-version-shown" type="s">
       <default>""</default>
