@@ -168,6 +168,13 @@ namespace Karere {
             spell_checking_manager = new SpellCheckingManager();
             var web_context = webview_manager.web_view.get_context();
             spell_checking_manager.configure_webkit(web_context);
+            
+            // Connect to dictionary loaded signal to update WebKit settings when ready
+            spell_checking_manager.dictionaries_loaded.connect(() => {
+                debug("Dictionaries loaded in Window, updating WebKit spell checking");
+                spell_checking_manager.configure_webkit(web_context);
+            });
+            
             spell_checking_manager.setup_settings_listeners();
 
             // Connect to WebViewManager signals

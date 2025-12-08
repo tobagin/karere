@@ -49,13 +49,6 @@ template $KarerePreferencesDialog : Adw.PreferencesDialog {
           css-classes: ["dim-label"];
         }
 
-        [suffix]
-        Gtk.Image dictionary_status_icon {
-          icon-name: "emblem-default-symbolic";
-          valign: center;
-          css-classes: ["success"];
-          visible: false;
-        }
       }
 
       Adw.SwitchRow spell_enabled_row {

@@ -93,8 +93,6 @@ namespace Karere {
         [GtkChild]
         private unowned Gtk.Label dictionary_count_label;
         [GtkChild]
-        private unowned Gtk.Image dictionary_status_icon;
-        [GtkChild]
         private unowned Adw.SwitchRow spell_enabled_row;
         [GtkChild]
         private unowned Adw.SwitchRow spell_auto_detect_row;
@@ -197,11 +195,28 @@ namespace Karere {
             // Initialize spell checking manager
             spell_checking_manager = new SpellCheckingManager();
 
+            // Connect to dictionary loaded signal
+            spell_checking_manager.dictionaries_loaded.connect(() => {
+                debug("Dictionaries loaded, updating preferences UI");
+                update_dictionary_status();
+                setup_language_selection();
+                update_current_languages_display();
+            });
+
             // Spell checking settings
             settings.bind("spell-checking-enabled", spell_enabled_row, "active", SettingsBindFlags.DEFAULT);
             settings.bind("spell-checking-auto-detect", spell_auto_detect_row, "active", SettingsBindFlags.DEFAULT);
 
-            // Update dictionary status display
+            // Connect signal for auto-detect change
+            spell_auto_detect_row.notify["active"].connect(() => {
+                update_current_languages_display();
+            });
+
+            // Setup bindings for visibility
+            settings.bind("spell-checking-enabled", spell_languages_group, "visible", SettingsBindFlags.DEFAULT);
+            settings.bind("spell-checking-enabled", spell_auto_detect_row, "visible", SettingsBindFlags.DEFAULT);
+            
+            // Initial status update
             update_dictionary_status();
 
             // Setup language selection dropdown
@@ -221,17 +236,14 @@ namespace Karere {
             // Update dictionary count label
             if (dict_count == 0) {
                 dictionary_count_label.set_text(_("No dictionaries"));
-                dictionary_status_icon.visible = false;
                 no_dictionaries_row.visible = true;
                 language_selection_row.visible = false;
             } else if (dict_count == 1) {
                 dictionary_count_label.set_text(_("1 dictionary"));
-                dictionary_status_icon.visible = true;
                 no_dictionaries_row.visible = false;
                 language_selection_row.visible = true;
             } else {
                 dictionary_count_label.set_text(_("%d dictionaries").printf(dict_count));
-                dictionary_status_icon.visible = true;
                 no_dictionaries_row.visible = false;
                 language_selection_row.visible = true;
             }

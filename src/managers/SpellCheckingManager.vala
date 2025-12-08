@@ -40,6 +40,11 @@ namespace Karere {
         }
 
         /**
+         * Signal emitted when dictionary scanning is complete
+         */
+        public signal void dictionaries_loaded();
+
+        /**
          * Scan multiple filesystem paths for hunspell dictionaries asynchronously
          */
         private void scan_dictionary_paths_async() {
@@ -77,6 +82,9 @@ namespace Karere {
                     if (web_context != null) {
                         update_spell_checking();
                     }
+
+                    // Notify listeners that dictionaries are loaded
+                    dictionaries_loaded();
                     
                     return false;
                 });
