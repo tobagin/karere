@@ -106,9 +106,11 @@ namespace Karere {
             if (settings.get_boolean("developer-shortcuts-enabled") && 
                 settings.get_boolean("developer-tools-enabled")) {
                 application.set_accels_for_action("win.dev-tools", {"<primary><shift>d", "F12"});
-                application.set_accels_for_action("win.reload", {"<primary>r", "F5"});
-                application.set_accels_for_action("win.force-reload", {"<primary><shift>r", "<shift>F5"});
             }
+
+            // Standard reload shortcuts
+            application.set_accels_for_action("win.reload", {"<primary>r", "F5"});
+            application.set_accels_for_action("win.force-reload", {"<primary><shift>r", "<shift>F5"});
 
             // Notification shortcuts
             if (settings.get_boolean("notification-shortcuts-enabled")) {
@@ -282,21 +284,7 @@ namespace Karere {
             });
             main_window.add_action(dev_tools_action);
 
-            // Reload action
-            var reload_action = new GLib.SimpleAction("reload", null);
-            reload_action.activate.connect(() => {
-                debug("Reload requested via shortcut");
-                reload_webview(false);
-            });
-            main_window.add_action(reload_action);
-
-            // Force reload action (bypass cache)
-            var force_reload_action = new GLib.SimpleAction("force-reload", null);
-            force_reload_action.activate.connect(() => {
-                debug("Force reload requested via shortcut");
-                reload_webview(true);
-            });
-            main_window.add_action(force_reload_action);
+            debug("Developer shortcuts configured");
 
             debug("Developer shortcuts configured");
         }

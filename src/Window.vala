@@ -68,6 +68,7 @@ namespace Karere {
             setup_downloads();
             setup_settings_listeners();
             setup_accessibility_features();
+            setup_network_monitoring();
 
             // Initialize clipboard manager
             clipboard = this.get_clipboard();
@@ -122,6 +123,22 @@ namespace Karere {
                 }
             });
             add_action(open_file_action);
+
+            // Reload action
+            var reload_action = new SimpleAction("reload", null);
+            reload_action.activate.connect(() => {
+                debug("Reload requested via action");
+                reload_webview(false);
+            });
+            add_action(reload_action);
+
+            // Force reload action
+            var force_reload_action = new SimpleAction("force-reload", null);
+            force_reload_action.activate.connect(() => {
+                debug("Force reload requested via action");
+                reload_webview(true);
+            });
+            add_action(force_reload_action);
 
             debug("Window actions configured");
         }
@@ -582,6 +599,44 @@ namespace Karere {
             }
             
             base.dispose();
+        }
+
+
+
+        /**
+         * Setup network monitoring for automatic reload
+         */
+        private void setup_network_monitoring() {
+            try {
+                var monitor = NetworkMonitor.get_default();
+                monitor.network_changed.connect(on_network_changed);
+                debug("Network monitoring configured");
+            } catch (Error e) {
+                warning("Failed to setup network monitoring: %s", e.message);
+            }
+        }
+
+        /**
+         * Handle network changes
+         */
+        private void on_network_changed(bool available) {
+            debug("Network status changed: %s", available ? "Available" : "Unavailable");
+
+            // Only attempt reload if:
+            // 1. Network is now available
+            // 2. Window is not currently focused (user is not typing/interacting)
+            // 3. We are not in a modal state (simplified check via focus)
+
+            if (available) {
+                if (!is_active) {
+                    info("Network reconnected and window inactive - Triggering auto-reload");
+                    reload_webview(false);
+                } else {
+                    debug("Network reconnected but window active - skipping auto-reload to avoid interruption");
+                    // Optional: Show a toast suggesting reload?
+                    // show_info_toast(_("Network connected. Reload if needed."));
+                }
+            }
         }
 
     }

@@ -65,6 +65,12 @@ template $KarereWindow : Adw.ApplicationWindow {
 menu primary_menu {
   section {
     item {
+      label: _("_Reload");
+      action: "win.reload";
+      accel: "<primary>r";
+    }
+
+    item {
       label: _("_Preferences");
       action: "app.preferences";
       accel: "<primary>comma";
