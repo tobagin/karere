@@ -101,6 +101,28 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="1.1.0" date="2025-12-12">
+      <description>
+        <p>🎉 Feature Release</p>
+        <p>New Features:</p>
+        <ul>
+          <li>🎤 Microphone permission support for voice notes</li>
+          <li>🚀 Start in background option for autostart</li>
+          <li>🔄 Manual reload and auto-reload on network reconnection</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>⚡ Performance optimizations for startup and shutdown</li>
+          <li>📝 Async dictionary loading for smoother Spell Check initialization</li>
+          <li>📖 Added MPRIS workaround documentation</li>
+        </ul>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed missing dictionaries on startup</li>
+          <li>Fixed application freeze during lifecycle events</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.3" date="2025-10-21">
       <description>
         <p>🔧 Maintenance Release</p>

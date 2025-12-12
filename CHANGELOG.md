@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-12-12
+
+### Added
+- Microphone permission support for voice notes and calls
+- "Start in background" preference option
+- Manual reload action (Ctrl+R)
+- Automatic reload when network connection is restored
+- MPRIS workaround documentation in README
+
+### Changed
+- Optimized application startup and shutdown performance
+- Made dictionary loading asynchronous to prevent UI freeze
+- Debounced settings saves to improve responsiveness
+
+### Fixed
+- Fixed missing spell check dictionaries on startup
+- Resolved 20s freeze during application lifecycle events
+
 ## [1.0.3] - 2025-10-21
 
 ### Changed
