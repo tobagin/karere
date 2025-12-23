@@ -20,7 +20,7 @@ int main(string[] args) {
     Intl.textdomain(Config.GETTEXT_PACKAGE);
     
     // Set up early environment variable suppression before any libraries initialize
-    Environment.set_variable("G_MESSAGES_DEBUG", "", true);
+    // Environment.set_variable("G_MESSAGES_DEBUG", "", true); // DISABLED to allow debugging
     Environment.set_variable("SOUP_DEBUG", "0", true);
     
     // Set up default system debug message filtering before GTK initialization
@@ -88,24 +88,8 @@ int main(string[] args) {
         // Create and run application
         var app = new Karere.Application();
         
-        // Add command line options
-        app.add_main_option(
-            "version",
-            'v',
-            OptionFlags.NONE,
-            OptionArg.NONE,
-            _("Show version information"),
-            null
-        );
-        
-        app.add_main_option(
-            "help",
-            'h',
-            OptionFlags.NONE,
-            OptionArg.NONE,
-            _("Show help information"),
-            null
-        );
+        // Note: Command line handling is managed by GApplication default behavior
+        // logic moved to Application.startup/activate as needed
 
         // Run the application
         var exit_code = app.run(args);

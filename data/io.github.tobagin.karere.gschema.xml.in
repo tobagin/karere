@@ -87,7 +87,7 @@
     
     <key name="background-notifications-mode" type="i">
       <range min="0" max="2"/>
-      <default>0</default>
+      <default>2</default>
       <summary>Background notifications mode</summary>
       <description>When to show notifications about app running in background (0=Always, 1=First time only, 2=Never)</description>
     </key>

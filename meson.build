@@ -279,6 +279,21 @@ install_data(
     install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
 )
 
+# D-Bus Service File
+dbus_conf_data = configuration_data()
+dbus_conf_data.set('APP_ID', app_id)
+# Use bindir/karere because that's where the executable is installed
+# Note: In Flatpak, this usually maps to /app/bin/karere
+dbus_conf_data.set('bindir', get_option('prefix') / get_option('bindir'))
+
+dbus_service_file = configure_file(
+    input: 'data/io.github.tobagin.karere.service.in',
+    output: app_id + '.service',
+    configuration: dbus_conf_data,
+    install: true,
+    install_dir: get_option('datadir') / 'dbus-1' / 'services'
+)
+
 # Icons
 icon_sizes = ['16', '32', '48', '64', '128', '256', '512']
 foreach size : icon_sizes

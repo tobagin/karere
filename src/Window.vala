@@ -583,16 +583,17 @@ namespace Karere {
 
         public override bool close_request() {
             info("Window close requested");
-
-            // Hide the window instead of closing it to keep app running in background
+            
+            // Always hide the window instead of closing it, to keep app running in background
+            // The only way to quit is via the menu
             set_visible(false);
 
             // Trigger background notification when window is actually hidden
             if (notification_manager != null) {
                 notification_manager.on_window_focus_changed(false);
             }
-
-            // Prevent the window from being destroyed
+            
+            info("Window hidden (running in background)");
             return true;
         }
 

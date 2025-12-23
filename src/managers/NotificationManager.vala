@@ -26,7 +26,7 @@ namespace Karere {
         private uint background_notification_timer_id = 0;
 
         // Constants from Python version
-        private const int BACKGROUND_NOTIFICATION_GRACE_PERIOD_SECONDS = 0;
+        private const int BACKGROUND_NOTIFICATION_GRACE_PERIOD_SECONDS = 1;
         private const int BACKGROUND_NOTIFICATION_COOLDOWN_SECONDS = 30;
 
         public NotificationManager(Application app) {

@@ -22,15 +22,16 @@ namespace Karere {
         private SettingsManager settings_manager;
         private DownloadManager download_manager;
 
+
         public Application() {
             Object(
                 application_id: Config.APP_ID,
-                flags: ApplicationFlags.HANDLES_COMMAND_LINE
+                flags: ApplicationFlags.FLAGS_NONE
             );
 
             // Set the application to quit when the last window is closed
             set_option_context_description(_("A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web"));
-            register_session = true;
+            // register_session = true; // Disabled to prevent potential conflicts with background activation
 
             // Get SettingsManager singleton instance
             settings_manager = SettingsManager.get_instance();
@@ -38,6 +39,9 @@ namespace Karere {
             notification_manager = new NotificationManager(this);
             accessibility_manager = new AccessibilityManager();
             keyboard_shortcuts = new KeyboardShortcuts(this);
+            // DownloadManager requires Settings which are not ready yet, initialize with null or handle later.
+            // Based on checking the file, it accepts Settings?.
+            download_manager = new DownloadManager(null);
 
             // Note: Settings initialization is deferred to startup() method
             // to ensure GTK is properly initialized first
@@ -54,19 +58,14 @@ namespace Karere {
 
             // Initialize SettingsManager now that GTK is initialized
             settings_manager.initialize();
+            
+            // Re-initialize DownloadManager with valid settings
+            download_manager = new DownloadManager(settings_manager.get_settings());
 
-            // Initialize notification manager settings now that GTK is initialized
+            // Initialize manager settings now that GTK is initialized
             notification_manager.initialize_settings();
-
-            // Initialize accessibility manager settings now that GTK is initialized
             accessibility_manager.initialize_settings();
-
-            // Initialize keyboard shortcuts settings now that GTK is initialized
             keyboard_shortcuts.initialize_settings();
-
-            // Initialize download manager with settings
-            var settings = settings_manager.get_settings();
-            download_manager = new DownloadManager(settings);
 
             // Update log handlers with user preferences now that settings are available
             setup_log_handlers_with_preferences();
@@ -83,24 +82,28 @@ namespace Karere {
             debug("Application startup complete");
         }
 
+        private bool keep_alive = false;
+
         public override void activate() {
-            var timer = new Timer();
             base.activate();
 
-            debug("Application activated - Time: %f", timer.elapsed());
+            // Hold the application to keep it running when window is closed (hidden)
+            // Only hold once to avoid accumulating holds
+            if (!keep_alive) {
+                hold();
+                keep_alive = true;
+                debug("Application held for background running");
+            }
 
             // Create window if it doesn't exist
             if (main_window == null) {
-                debug("Creating new main window - Time: %f", timer.elapsed());
                 main_window = new Window(this);
-                debug("Window created - Time: %f", timer.elapsed());
 
                 // Set up accessibility and keyboard shortcuts for the new window
                 accessibility_manager.set_main_window(main_window);
                 keyboard_shortcuts.set_window_reference(main_window, accessibility_manager);
-                debug("Accessibility setup - Time: %f", timer.elapsed());
 
-                // Check background start preference
+                // Check background start preference to determine INITIAL visibility
                 bool start_in_background = false;
                 if (settings_manager.is_initialized()) {
                     var settings = settings_manager.get_settings();
@@ -108,7 +111,7 @@ namespace Karere {
                         start_in_background = settings.get_boolean("start-in-background");
                     }
                 }
-                debug("Checked background preference: %s - Time: %f", start_in_background.to_string(), timer.elapsed());
+                debug("Checked background preference: %s", start_in_background.to_string());
 
                 if (start_in_background) {
                      debug("Starting in background (hidden)");
@@ -121,13 +124,13 @@ namespace Karere {
                      check_and_show_background_notification();
                 } else {
                     main_window.present();
-                    debug("Main window created and presented with accessibility support - Time: %f", timer.elapsed());
+                    debug("Main window created and presented with accessibility support");
                     
                     // Check if we should show What's New dialog
                     check_and_show_whats_new();
                 }
+                
             } else {
-                debug("Showing existing window - Time: %f", timer.elapsed());
                 // Show the existing window (it might be hidden)
                 main_window.set_visible(true);
                 main_window.present();
@@ -138,45 +141,18 @@ namespace Karere {
                 // Reset background notification state when window is shown
                 notification_manager.on_window_focus_changed(true);
 
-                debug("Main window shown and presented - Time: %f", timer.elapsed());
+                debug("Main window shown and presented");
             }
-            debug("Activation complete - Time: %f", timer.elapsed());
         }
+
+
 
         private void check_and_show_background_notification() {
              // Logic to show "Karere is running in background" notification
-             // This can be implemented via NotificationManager or directly here
-             // For now, we'll leave it simple as per requirements.
-             // The user can open it via launcher again.
+             // Triggering via NotificationManager logic
+             notification_manager.on_window_focus_changed(false);
         }
-
-        public override int command_line(ApplicationCommandLine command_line) {
-            debug("Processing command line arguments");
-
-            var options = command_line.get_options_dict();
-
-            // Handle version option
-            if (options.contains("version")) {
-                // TRANSLATORS: %s is the version number
-                command_line.print(_("Karere %s\n"), Config.VERSION);
-                return 0;
-            }
-
-            // Handle help option
-            if (options.contains("help")) {
-                command_line.print(_("Usage: karere [OPTIONS]\n"));
-                command_line.print(_("  --version    Show version information\n"));
-                command_line.print(_("  --help       Show this help message\n"));
-                return 0;
-            }
-
-            // Hold the application and activate it
-            hold();
-            activate();
-
-            return 0;
-        }
-
+ 
         public override void shutdown() {
             debug("Application shutting down");
 
@@ -238,7 +214,12 @@ namespace Karere {
                     Environment.set_variable("G_MESSAGES_DEBUG", "all", true);
                     Environment.set_variable("SOUP_DEBUG", "1", true);
                 } else {
-                    Environment.set_variable("G_MESSAGES_DEBUG", "", true);
+                    // Only unset if NOT explicitly set by the environment (e.g. for debugging)
+                    // This allows us to debug with flatpak run --env=G_MESSAGES_DEBUG=all
+                    string? env_debug = Environment.get_variable("G_MESSAGES_DEBUG");
+                    if (env_debug == null || env_debug == "") {
+                         Environment.set_variable("G_MESSAGES_DEBUG", "", true);
+                    }
                     Environment.set_variable("SOUP_DEBUG", "0", true);
                 }
 
@@ -486,6 +467,8 @@ namespace Karere {
             // Application continues running in background
             // User can reopen via launcher or quick settings
             info("Window destroyed, application continues in background");
+            
+
         }
 
         public NotificationManager get_notification_manager() {

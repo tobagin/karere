@@ -57,7 +57,7 @@ namespace Karere {
             // Note: enable_plugins property is not available in this WebKitGTK version
             // Plugins are disabled by default in modern WebKitGTK
             
-            // Enable hardware acceleration
+            // Enable hardware acceleration (ALWAYS to prevent UI freeze on restore)
             web_settings.hardware_acceleration_policy = WebKit.HardwareAccelerationPolicy.ALWAYS;
             
             // Enable media with auto-loading
@@ -149,8 +149,8 @@ namespace Karere {
          */
         public string get_default_user_agent() {
             // Use a user agent that ensures WhatsApp Web works properly
-            // Based on Safari on Linux for a more native feel
-            return "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15 Karere/%s".printf(Config.VERSION);
+            // Using Chrome on Linux is currently the most reliable for WhatsApp Web
+            return "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Karere/%s".printf(Config.VERSION);
         }
 
         
