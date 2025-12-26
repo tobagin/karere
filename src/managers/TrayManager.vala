@@ -58,9 +58,9 @@ namespace Karere {
         [DBus (name = "Menu", signature = "o")]
         public abstract Variant menu { owned get; }
         
-        // ToolTip - Using Variant with signature instead of struct
-        [DBus (name = "ToolTip", signature = "(sa(iiay)ss)")]
-        public abstract Variant tool_tip { owned get; }
+        // ToolTip - Using struct for strict marshalling
+        [DBus (name = "ToolTip")]
+        public abstract SNIToolTip tool_tip { owned get; }
 
         public abstract void context_menu(int x, int y);
         public abstract void activate(int x, int y);
@@ -109,7 +109,7 @@ namespace Karere {
 
         // DBusMenu state
         private uint menu_revision = 1;
-        
+
         // Signals
         public signal void toggle_window();
         public signal void quit_application();
@@ -124,7 +124,6 @@ namespace Karere {
         // Icon name - using the app's symbolic icon for tray
         public string icon_name { 
             owned get { 
-                // Use the symbolic icon for tray (added by user)
                 return Config.APP_ID + "-symbolic"; 
             } 
         }
@@ -132,10 +131,101 @@ namespace Karere {
         // Icon theme path - point to where our icons are installed
         public string icon_theme_path { owned get { return "/app/share/icons/hicolor"; } }
         
-        // Primary Icon - Return empty array to force use of IconName
+        // Cached icon data
+        private SNIIcon? _cached_sni_icon = null;
+        
+        // Helper to load and rasterize the symbolic icon
+        private SNIIcon? get_sni_icon_data() {
+            if (_cached_sni_icon != null) {
+                return _cached_sni_icon;
+            }
+            
+            try {
+                // Try to load SYMBOLIC SVG icon from installed path in sandbox
+                string icon_path = "/app/share/icons/hicolor/symbolic/apps/" + Config.APP_ID + "-symbolic.svg";
+                if (!FileUtils.test(icon_path, FileTest.EXISTS)) {
+                    // Fallback path
+                     icon_path = "/app/share/icons/hicolor/symbolic/apps/io.github.tobagin.karere-symbolic.svg";
+                    if (!FileUtils.test(icon_path, FileTest.EXISTS)) {
+                        warning("TrayManager: Symbolic Icon not found at expected paths");
+                        return null;
+                    }
+                }
+                
+                // Load and rasterize SVG to a reasonable size (e.g. 24px)
+                var pixbuf = new Gdk.Pixbuf.from_file_at_scale(icon_path, 24, 24, true);
+                if (pixbuf == null) {
+                    return null;
+                }
+                
+                int width = pixbuf.width;
+                int height = pixbuf.height;
+                int n_channels = pixbuf.n_channels;
+                int rowstride = pixbuf.rowstride;
+                unowned uint8[] pixels = pixbuf.get_pixels();
+                
+                // Convert to ARGB format (network byte order)
+                var argb_data = new uint8[width * height * 4];
+                
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        int src_idx = y * rowstride + x * n_channels;
+                        int dst_idx = (y * width + x) * 4;
+                        
+                        uint8 r = pixels[src_idx];
+                        uint8 g = pixels[src_idx + 1];
+                        uint8 b = pixels[src_idx + 2];
+                        uint8 a = (n_channels == 4) ? pixels[src_idx + 3] : 255;
+                        
+                        // ARGB format (network byte order: A, R, G, B)
+                        argb_data[dst_idx] = a;
+                        argb_data[dst_idx + 1] = r;
+                        argb_data[dst_idx + 2] = g;
+                        argb_data[dst_idx + 3] = b;
+                    }
+                }
+                
+                _cached_sni_icon = SNIIcon() {
+                    width = width,
+                    height = height,
+                    data = argb_data
+                };
+                
+                return _cached_sni_icon;
+                
+            } catch (Error e) {
+                warning("TrayManager: Failed to load icon: %s", e.message);
+                return null;
+            }
+        }
+
+        // Helper to wrap SNIIcon into the Variant format expected by IconPixmap
+        private Variant get_icon_variant() {
+            var icon = get_sni_icon_data();
+            if (icon == null) {
+                return new Variant.array(new VariantType("(iiay)"), {});
+            }
+            
+            SNIIcon valid_icon = (SNIIcon)icon;
+            
+            // Create the byte array variant
+            var bytes = new GLib.Bytes(valid_icon.data);
+            var byte_array = new Variant.from_bytes(new VariantType("ay"), bytes, true);
+            
+            // Create the icon struct: (iiay)
+            var icon_struct = new Variant.tuple({
+                new Variant.int32(valid_icon.width),
+                new Variant.int32(valid_icon.height),
+                byte_array
+            });
+            
+            return new Variant.array(new VariantType("(iiay)"), { icon_struct });
+        }
+
+        // Primary Icon - Send rasterized symbolic icon for Flatpak visibility
         public Variant icon_pixmap { 
             owned get { 
-                return new Variant.array(new VariantType("(iiay)"), {});
+                return get_icon_variant();
             } 
         }
 
@@ -144,7 +234,7 @@ namespace Karere {
         
         public Variant attention_icon_pixmap { 
            owned get { 
-                return new Variant.array(new VariantType("(iiay)"), {});
+                return get_icon_variant();
            } 
         }
         
@@ -164,17 +254,22 @@ namespace Karere {
             } 
         }
         
-        // ToolTip - Using Variant.tuple for (sa(iiay)ss)
-        public Variant tool_tip { 
+        // ToolTip - Using struct for strict marshalling
+        public SNIToolTip tool_tip { 
             owned get { 
                 string desc = has_unread ? "Unread Messages" : "WhatsApp Client";
+                var icon = get_sni_icon_data();
+                SNIIcon[] icon_array = {};
+                if (icon != null) {
+                    icon_array += (SNIIcon)icon;
+                }
                 
-                return new Variant.tuple({
-                    new Variant.string(icon_name),
-                    new Variant.array(new VariantType("(iiay)"), {}),
-                    new Variant.string("<b>" + Config.APP_NAME + "</b>"),
-                    new Variant.string(desc)
-                });
+                return SNIToolTip() {
+                    icon_name = icon_name,
+                    icon_data = icon_array,
+                    title = Config.APP_NAME,
+                    description = desc
+                };
             } 
         }
 
@@ -209,9 +304,6 @@ namespace Karere {
 
         private void on_tray_mode_changed() {
             if (should_enable()) {
-                 // We can't auto-start from here easily without the connection refs if stopped.
-                 // But typically the app calls start() once with the connection.
-                 // If we need to restart, we need to store the connection.
                  if (connection != null) {
                      register_objects();
                      register_with_watcher.begin(Config.APP_ID);
@@ -255,15 +347,10 @@ namespace Karere {
             
             register_objects();
             register_with_watcher.begin(Config.APP_ID);
-            // debug("TrayManager: register_with_watcher DISABLED for crash isolation");
         }
 
         public void stop() {
-            // We don't nullify connection as we might restart, just unregister
-            // Ideally we'd unregister object but Vala/GDBus makes unregistering specific objects tricky without IDs.
-            // For now, let's assume 'stop' just means we stop talking.
-            // But strict 'stop' would require unregister_object using the ID returned by register_object.
-            // Given simplified scope, we'll keep connection but maybe set a flag.
+            // No-op for now
         }
 
         private void register_objects() {
@@ -318,33 +405,73 @@ namespace Karere {
 
         // --- DBusMenu Implementation ---
         
+        // Helper to get properties for a specific menu item ID
+        private HashTable<string, Variant> get_menu_item_properties(int id) {
+            var props = new HashTable<string, Variant>(str_hash, str_equal);
+            
+            switch (id) {
+                case 0: // Root
+                    props.insert("children-display", "submenu");
+                    break;
+                case 1: // Toggle
+                    props.insert("label", "Show/Hide Karere");
+                    props.insert("enabled", true);
+                    props.insert("visible", true);
+                    break;
+                case 2: // Separator
+                    props.insert("type", "separator");
+                    props.insert("visible", true);
+                    break;
+                case 3: // Quit
+                    props.insert("label", "Quit");
+                    props.insert("enabled", true);
+                    props.insert("visible", true);
+                    break;
+            }
+            
+            return props;
+        }
+
         public void get_layout(int parentId, int recursionDepth, string[] propertyNames, out uint revision, out Variant layout) {
             revision = menu_revision;
             
-            // Safe empty children array (av)
-            var empty_children = new Variant.array(new VariantType("v"), {});
-            
             if (parentId == 0) {
-                // Root children must be variants (v) containing the struct (ia{sv}av)
-                // But wait, the spec usually says children are list of variants?
-                // Or is it list of structs?
-                // The signature (ia{sv}av) implies the 3rd element is 'av'.
-                // So children are variants.
+                // Root children
+                var empty_children = new Variant.array(new VariantType("v"), {});
                 
-                var item1 = create_menu_item(1, "toggle", "Show/Hide Karere", true);
-                var item2 = create_separator(2);
-                var item3 = create_menu_item(3, "quit", "Quit", true);
+                // Construct children manually using the helper for properties
                 
-                // We must wrap these items in variants if the type is av
+                // Item 1: Toggle
+                var item1_props = get_menu_item_properties(1);
+                var item1 = new Variant.tuple({
+                    new Variant.int32(1),
+                    item1_props,
+                    empty_children
+                });
+                
+                // Item 2: Separator
+                var item2_props = get_menu_item_properties(2);
+                var item2 = new Variant.tuple({
+                    new Variant.int32(2),
+                    item2_props,
+                    empty_children
+                });
+                
+                // Item 3: Quit
+                var item3_props = get_menu_item_properties(3);
+                var item3 = new Variant.tuple({
+                    new Variant.int32(3),
+                    item3_props,
+                    empty_children
+                });
+                
                 var root_children = new Variant.array(new VariantType("v"), { 
                     new Variant.variant(item1),
                     new Variant.variant(item2),
                     new Variant.variant(item3)
                 });
                 
-                var root_props = new HashTable<string, Variant>(str_hash, str_equal);
-                root_props.insert("children-display", "submenu");
-                
+                var root_props = get_menu_item_properties(0);
                 
                 layout = new Variant.tuple({
                     new Variant.int32(0),
@@ -352,6 +479,7 @@ namespace Karere {
                     root_children
                 });
             } else {
+                 var empty_children = new Variant.array(new VariantType("v"), {});
                  layout = new Variant.tuple({
                     new Variant.int32(parentId),
                     new HashTable<string, Variant>(str_hash, str_equal),
@@ -359,41 +487,25 @@ namespace Karere {
                  });
             }
         }
-        
-        private Variant create_menu_item(int id, string action, string label, bool enabled) {
-            var props = new HashTable<string, Variant>(str_hash, str_equal);
-            props.insert("label", label);
-            props.insert("enabled", enabled);
-            props.insert("visible", true);
-            
-            var empty_children = new Variant.array(new VariantType("v"), {});
-            return new Variant.tuple({
-                new Variant.int32(id),
-                props,
-                empty_children
-            });
-        }
-        
-        private Variant create_separator(int id) {
-            var props = new HashTable<string, Variant>(str_hash, str_equal);
-            props.insert("type", "separator");
-            props.insert("visible", true);
-            
-            var empty_children = new Variant.array(new VariantType("v"), {});
-            return new Variant.tuple({
-                new Variant.int32(id),
-                props,
-                empty_children
-            });
-        }
 
         public void get_group_properties(int[] ids, string[] propertyNames, out Variant properties) {
-             // Avoid VariantBuilder to prevent floating reference crashes
-             properties = new Variant.array(new VariantType("(ia{sv})"), {});
+             var builder = new VariantBuilder(new VariantType("a(ia{sv})"));
+             
+             foreach (int id in ids) {
+                 var props = get_menu_item_properties(id);
+                 builder.add("(ia{sv})", id, props);
+             }
+             
+             properties = builder.end();
         }
 
         public new void get_property(int id, string name, out Variant value) {
-             value = new Variant.string("");
+             var props = get_menu_item_properties(id);
+             if (props.contains(name)) {
+                 value = props.get(name);
+             } else {
+                 value = new Variant.string("");
+             }
         }
 
         public void event(int id, string eventId, Variant data, uint timestamp) {
