@@ -77,6 +77,7 @@ blueprint_compiler = find_program('blueprint-compiler', required: true)
 
 # Symbolic icons list (needed early for resources)
 symbolic_icons = [
+    'io.github.tobagin.karere-symbolic.svg',
     'io.github.tobagin.karere-notification-symbolic.svg',
     'io.github.tobagin.karere-do-not-disturb-symbolic.svg',
 ]
@@ -183,6 +184,7 @@ sources = files(
     'src/managers/WebKitPermissionManager.vala',
     'src/managers/WebViewManager.vala',
     'src/managers/SpellCheckingManager.vala',
+    'src/managers/TrayManager.vala',
     'src/utils/Utils.vala',
     'src/utils/Constants.vala',
 ) + [config_vala]
@@ -369,6 +371,7 @@ if get_option('tests')
         'src/managers/WebKitPermissionManager.vala',
         'src/managers/WebViewManager.vala',
         'src/managers/SpellCheckingManager.vala',
+        'src/managers/TrayManager.vala',
         'src/utils/Utils.vala',
         'src/utils/Constants.vala',
     ) + [config_vala]

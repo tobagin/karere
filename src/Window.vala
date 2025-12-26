@@ -584,8 +584,18 @@ namespace Karere {
         public override bool close_request() {
             info("Window close requested");
             
-            // Always hide the window instead of closing it, to keep app running in background
-            // The only way to quit is via the menu
+            // detailed logic to decide whether to quit or hide
+            var tray_mode = 0; // Default auto
+            if (settings != null) {
+                tray_mode = settings.get_int("system-tray-mode");
+            }
+            
+            // If tray is explicitly disabled (2), quit.
+            if (tray_mode == 2) {
+                return false; // Allow close (quit)
+            }
+            
+            // Otherwise (Auto or Enabled), hide to tray
             set_visible(false);
 
             // Trigger background notification when window is actually hidden

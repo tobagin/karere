@@ -21,6 +21,7 @@ namespace Karere {
         private KeyboardShortcuts keyboard_shortcuts;
         private SettingsManager settings_manager;
         private DownloadManager download_manager;
+        private Karere.TrayManager tray_manager;
 
 
         public Application() {
@@ -61,6 +62,25 @@ namespace Karere {
             
             // Re-initialize DownloadManager with valid settings
             download_manager = new DownloadManager(settings_manager.get_settings());
+
+            // Initialize TrayManager
+            tray_manager = new TrayManager();
+            tray_manager.toggle_window.connect(on_tray_toggle);
+            tray_manager.quit_application.connect(() => {
+                debug("Quit requested from tray");
+                quit();
+            });
+            
+            // Start tray manager with our DBus connection
+            // This ensures the tray object is on the same connection as the application,
+            // which is required for the watcher to access it via our App ID.
+            var connection = this.get_dbus_connection();
+            if (connection != null) {
+                tray_manager.start(connection);
+                // debug("TrayManager disabled for crash isolation test");
+            } else {
+                warning("Application D-Bus connection not available for tray manager");
+            }
 
             // Initialize manager settings now that GTK is initialized
             notification_manager.initialize_settings();
@@ -454,6 +474,20 @@ namespace Karere {
             return true;
         }
 
+
+        private void on_tray_toggle() {
+            if (main_window == null) {
+                activate(); // Create window if needed
+            } else {
+                if (main_window.visible && main_window.is_active) {
+                    main_window.set_visible(false); // Hide
+                } else {
+                    main_window.set_visible(true);
+                    main_window.present(); // Show and Raise
+                }
+            }
+        }
+
         public override void dbus_unregister(DBusConnection connection, string object_path) {
             base.dbus_unregister(connection, object_path);
 
@@ -481,6 +515,10 @@ namespace Karere {
 
         public DownloadManager get_download_manager() {
             return download_manager;
+        }
+
+        public Karere.TrayManager? get_tray_manager() {
+            return tray_manager;
         }
     }
 }

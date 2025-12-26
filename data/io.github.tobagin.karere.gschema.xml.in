@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="karere">
+
   <schema id="@APP_ID@" path="/@APP_PATH@/">
     
     <!-- Window state -->
     <key name="window-width" type="i">
-      <default>1200</default>
-      <summary>Default window width</summary>
+      <default>1100</default>
+      <summary>Window width</summary>
       <description>The default width of the main window</description>
     </key>
     
     <key name="window-height" type="i">
-      <default>800</default>
-      <summary>Default window height</summary>
+      <default>700</default>
+      <summary>Window height</summary>
       <description>The default height of the main window</description>
     </key>
     
     <key name="window-maximized" type="b">
       <default>false</default>
-      <summary>Whether the window is maximized</summary>
+      <summary>Window maximized state</summary>
       <description>Whether the main window should start maximized</description>
     </key>
     
@@ -251,5 +252,10 @@
       <description>Whether to show toast notifications when downloads complete</description>
     </key>
 
+    <key name="system-tray-mode" type="i">
+      <default>0</default>
+      <summary>System tray icon mode</summary>
+      <description>Controls when the system tray icon is shown. 0 (Auto), 1 (Enabled), 2 (Disabled).</description>
+    </key>
   </schema>
 </schemalist>

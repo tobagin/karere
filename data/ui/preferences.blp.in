@@ -14,7 +14,19 @@ template $KarerePreferencesDialog : Adw.PreferencesDialog {
       
       Adw.SwitchRow start_background_row {
         title: _("Start in Background");
-        subtitle: _("Launch application hidden in the background");
+        subtitle: _("Start application minimized to background");
+      }
+
+      Adw.ComboRow system_tray_row {
+        title: _("System Tray Icon");
+        subtitle: _("Show icon in system tray");
+        model: StringList {
+          strings [
+            _("Auto (Non-GNOME)"),
+            _("Always Enabled"),
+            _("Always Disabled")
+          ]
+        };
       }
     }
 

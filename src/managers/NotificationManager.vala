@@ -43,7 +43,17 @@ namespace Karere {
             debug("NotificationManager settings initialized");
         }
         
-        public void send_notification(string title, string body, Icon icon) {
+        /**
+         * Send a notification
+         */
+        public void send_notification(string title, string body, GLib.Icon? icon = null, string? conversation_id = null) {
+            // Update tray icon status if we receive a notification (simplistic unread indicator)
+            // A more robust way would be to track unread count from WhatsApp Web titles
+            var tray = app.get_tray_manager();
+            if (tray != null) {
+                tray.set_unread_status(true);
+            }
+
             // Check if notifications are enabled
             if (!should_show_notification()) {
                 debug("Notification blocked by settings: %s", title);
