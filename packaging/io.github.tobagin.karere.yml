@@ -1,0 +1,83 @@
+app-id: io.github.tobagin.karere
+runtime: org.gnome.Platform
+runtime-version: '49'
+sdk: org.gnome.Sdk
+command: karere
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=org.freedesktop.Notifications
+  - --filesystem=xdg-download
+  # Audio for notification sounds and media
+  - --socket=pulseaudio
+  # Configure WebKit spell checker dictionary paths (bundled and runtime)
+  - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell
+
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+
+add-extensions:
+  org.freedesktop.Platform.ffmpeg-full:
+    directory: lib/ffmpeg
+    version: '25.08'
+    add-ld-path: .
+
+cleanup-commands:
+  - mkdir -p ${FLATPAK_DEST}/lib/ffmpeg
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /man
+  - /share/doc
+  - /share/gtk-doc
+  - /share/man
+  - /share/pkgconfig
+  - '*.la'
+  - '*.a'
+
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+  env:
+    CARGO_HOME: /run/build/karere/cargo
+
+modules:
+  - name: hunspell-dictionaries
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/share/hunspell
+      # Install all dictionaries from LibreOffice dictionaries repository
+      # This script finds all .dic and .aff files and copies them to /app/share/hunspell
+      - |
+        find . -type f \( -name "*.dic" -o -name "*.aff" \) ! -path "*/hyph_*" ! -path "*/.git/*" ! -path "*/util/*" | while read -r file; do
+          filename=$(basename "$file")
+          # Skip hyphenation dictionaries (hyph_*) - we only want spell checking dictionaries
+          if [[ ! "$filename" =~ ^hyph_ ]]; then
+            install -Dm644 "$file" "/app/share/hunspell/$filename"
+          fi
+        done
+      - echo "Installed $(ls -1 /app/share/hunspell/*.dic 2>/dev/null | wc -l) dictionaries"
+    sources:
+      - type: archive
+        url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-26.2.0.1.zip
+        sha256: e1ef5088fe903eac040b622df175b7a7230c4decfae9cc72c1a1377f0b9e7afd
+
+  - name: karere
+    buildsystem: simple
+    build-commands:
+      - cargo build --release
+      - install -Dm755 target/release/karere -t /app/bin/
+      - install -Dm644 data/icons/hicolor/scalable/apps/io.github.tobagin.karere.svg -t /app/share/icons/hicolor/scalable/apps/
+      - install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
+      - install -Dm644 data/io.github.tobagin.karere.gschema.xml -t /app/share/glib-2.0/schemas/
+      - glib-compile-schemas /app/share/glib-2.0/schemas
+    sources:
+      - packaging/cargo-sources.json
+      - type: dir
+        path: ..
+    build-options:
+        build-args: []

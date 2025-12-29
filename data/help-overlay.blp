@@ -1,0 +1,163 @@
+/*
+ * Copyright (C) 2025 Thiago Fernandes
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ShortcutsDialog shortcuts_dialog {
+  // General Section (always visible)
+  Adw.ShortcutsSection {
+    title: _("General");
+
+    Adw.ShortcutsItem {
+      title: _("Show this help");
+      accelerator: "<Primary>question <Primary>slash";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Preferences");
+      accelerator: "<Primary>comma";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("About");
+      accelerator: "F1";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Quit application");
+      accelerator: "<Primary>q";
+    }
+  }
+
+  // Window Section (always visible)
+  Adw.ShortcutsSection {
+    title: _("Window");
+
+    Adw.ShortcutsItem {
+      title: _("Minimize window");
+      accelerator: "<Primary>m";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Fullscreen");
+      accelerator: "F11 <Alt>Return";
+    }
+  }
+
+  // WhatsApp Web Section (always visible)
+  Adw.ShortcutsSection {
+    title: _("WhatsApp Web");
+
+    Adw.ShortcutsItem {
+      title: _("Find in chat");
+      accelerator: "<Primary>f";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Search chats");
+      accelerator: "<Primary><Shift>f";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("New chat");
+      accelerator: "<Primary>n";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Archive current chat");
+      accelerator: "<Primary>e";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Open profile");
+      accelerator: "<Primary>p";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Reload WhatsApp Web");
+      accelerator: "F5";
+    }
+  }
+
+  // WebView Zoom Section (conditional)
+  Adw.ShortcutsSection {
+    title: _("WebView Zoom");
+
+    Adw.ShortcutsItem {
+      title: _("Zoom in");
+      accelerator: "<Primary>plus <Primary>equal <Primary>KP_Add";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Zoom out");
+      accelerator: "<Primary>minus <Primary>KP_Subtract";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Reset zoom");
+      accelerator: "<Primary>0 <Primary>KP_0";
+    }
+  }
+
+  // Accessibility Section (conditional)
+  Adw.ShortcutsSection {
+    title: _("Accessibility");
+
+    Adw.ShortcutsItem {
+      title: _("Toggle high contrast");
+      accelerator: "<Primary><Shift>h";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Toggle focus indicators");
+      accelerator: "<Primary><Shift>f";
+    }
+  }
+
+  // Developer Section (conditional)
+  Adw.ShortcutsSection {
+    title: _("Developer");
+
+    Adw.ShortcutsItem {
+      title: _("Developer tools");
+      accelerator: "F12 <Primary><Shift>d";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Reload page");
+      accelerator: "F5 <Primary>r";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Force reload");
+      accelerator: "<Shift>F5 <Primary><Shift>r";
+    }
+  }
+
+  // Notifications Section (conditional)
+  Adw.ShortcutsSection {
+    title: _("Notifications");
+
+    Adw.ShortcutsItem {
+      title: _("Toggle notifications");
+      accelerator: "<Primary><Shift>n";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Toggle Do Not Disturb");
+      accelerator: "<Primary><Shift>d";
+    }
+  }
+}

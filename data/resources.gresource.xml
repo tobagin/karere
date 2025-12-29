@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/io/github/tobagin/karere">
+    <file compressed="true">window.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">help-overlay.ui</file>
+    <file alias="icons/hicolor/scalable/apps/io.github.tobagin.karere.svg">icons/hicolor/scalable/apps/io.github.tobagin.karere.svg</file>
+    <file alias="icons/hicolor/symbolic/apps/io.github.tobagin.karere-symbolic.svg">icons/hicolor/symbolic/apps/io.github.tobagin.karere-symbolic.svg</file>
+  </gresource>
+</gresources>
