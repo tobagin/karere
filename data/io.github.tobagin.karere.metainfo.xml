@@ -101,13 +101,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
-    <release version="2.0.0" date="2025-12-28">
+    <release version="2.0.0" date="2025-12-29">
       <description>
         <p>🎉 Major Release 2.0.0</p>
         <p>New Features:</p>
         <ul>
           <li>Full rewrite in Rust! 🦀</li>
           <li>New System Tray Icon support</li>
+          <li>Notifications fully working with persistence fixes</li>
           <li>Ported from Vala to native Rust/GTK4/Libadwaita</li>
           <li>Enhanced performance and stability</li>
         </ul>
