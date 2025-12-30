@@ -24,6 +24,10 @@
       <default>true</default>
       <summary>Auto-detect language</summary>
     </key>
+    <key name="enable-auto-correct" type="b">
+      <default>true</default>
+      <summary>Enable auto-correct</summary>
+    </key>
     <key name="spell-checking-languages" type="as">
       <default>[]</default>
       <summary>Enabled spell checking languages</summary>
@@ -74,26 +78,46 @@
       <summary>Enable notification shortcuts</summary>
     </key>
     <!-- Notifications -->
-    <key name="notify-system" type="b">
+    <key name="notifications-enabled" type="b">
       <default>true</default>
-      <summary>Enable system notifications</summary>
+      <summary>Master notification toggle</summary>
     </key>
-    <key name="notify-message" type="b">
+    <key name="notify-messages" type="b">
       <default>true</default>
-      <summary>Enable message notifications</summary>
+      <summary>Message notifications</summary>
     </key>
-    <key name="notify-background" type="i">
-      <default>0</default>
-      <summary>Background notification behavior</summary>
-      <description>0=always, 1=first-time, 2=never</description>
-    </key>
-    <key name="notify-sound" type="b">
+    <key name="notify-tray-icon" type="b">
       <default>true</default>
+      <summary>Change tray icon on new message</summary>
+    </key>
+    <key name="notify-sound-enabled" type="b">
+      <default>false</default>
       <summary>Enable notification sounds</summary>
     </key>
-    <key name="notify-download" type="b">
+    <key name="notify-sound-file" type="s">
+      <default>'default'</default>
+      <summary>Notification sound file</summary>
+    </key>
+    <key name="notify-downloads-enabled" type="b">
       <default>true</default>
       <summary>Enable download notifications</summary>
+    </key>
+    <key name="notify-download-type" type="s">
+      <default>'toast'</default>
+      <summary>Download notification type</summary>
+      <description>toast or system</description>
+    </key>
+    <key name="notify-preview-enabled" type="b">
+      <default>true</default>
+      <summary>Show message preview</summary>
+    </key>
+    <key name="notify-preview-limit-enabled" type="b">
+      <default>false</default>
+      <summary>Limit message preview size</summary>
+    </key>
+    <key name="notify-preview-length" type="i">
+      <default>20</default>
+      <summary>Message preview length</summary>
     </key>
     <!-- Permission Persistence -->
     <key name="web-notification-permission-asked" type="b">
@@ -111,18 +135,6 @@
     <key name="web-microphone-permission-granted" type="b">
       <default>false</default>
       <summary>Web microphone permission granted</summary>
-    </key>
-    <key name="preview-show" type="b">
-      <default>true</default>
-      <summary>Show message preview</summary>
-    </key>
-    <key name="preview-length" type="i">
-      <default>50</default>
-      <summary>Message preview length</summary>
-    </key>
-    <key name="check-frequency" type="i">
-      <default>10</default>
-      <summary>Background check frequency (minutes)</summary>
     </key>
   </schema>
 </schemalist>

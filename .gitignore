@@ -1,1 +1,13 @@
 /target
+build
+.flatpak-builder
+
+# Generated files
+*.ui
+*.compiled
+*.gresource
+
+# Editor files
+*~
+*.swp
+.vscode/

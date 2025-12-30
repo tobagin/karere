@@ -1,0 +1,272 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $KarerePreferencesWindow : Adw.PreferencesDialog {
+  title: "Preferences";
+
+  Adw.PreferencesPage {
+    title: "General";
+    icon-name: "preferences-system-symbolic";
+
+    Adw.PreferencesGroup {
+      title: "Startup";
+
+      Adw.SwitchRow row_background {
+        title: "Start in background";
+      }
+
+      Adw.ComboRow row_tray {
+        title: "System Tray Icon";
+        model: Gtk.StringList {
+          strings ["Auto", "Enabled", "Disabled"]
+        };
+        tooltip-text: "Auto: Enabled for non-GNOME environments";
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Appearance";
+
+      Adw.ComboRow row_theme {
+        title: "Theme";
+        model: Gtk.StringList {
+          strings ["Follow System", "Light", "Dark"]
+        };
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Spell Checking";
+
+      Adw.SwitchRow row_spell_enable {
+        title: "Enable Spell Checking";
+      }
+
+      Adw.ActionRow row_spell_status {
+        title: "Dictionary Status";
+        [suffix]
+        Gtk.Label label_spell_status {
+          valign: center;
+          label: "Unknown"; 
+        }
+      }
+
+      Adw.ActionRow row_spell_active_label {
+        title: "Active Language";
+        [suffix]
+        Gtk.Label label_active_lang {
+          valign: center;
+        }
+      }
+
+      Adw.ComboRow row_spell_active_combo {
+        title: "Active Language";
+        // Model populated in code
+      }
+
+      Adw.SwitchRow row_spell_override {
+        title: "Override Dictionary";
+      }
+
+      Adw.SwitchRow row_auto_correct {
+        title: "Enable Auto-Correct";
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Downloads";
+
+      Adw.ActionRow row_download {
+        title: "Download Directory";
+        subtitle: "Default (Downloads)";
+        
+        [suffix]
+        Gtk.Button btn_download_choose {
+          label: "Choose...";
+          valign: center;
+        }
+        
+        [suffix]
+        Gtk.Button btn_download_reset {
+          icon-name: "edit-clear-symbolic";
+          valign: center;
+          tooltip-text: "Reset to default";
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Developer Tools";
+
+      Adw.SwitchRow row_dev_enable {
+        title: "Enable Developer Tools";
+      }
+
+      Adw.ActionRow row_dev_open {
+        title: "Developer Tools";
+        [suffix]
+        Gtk.Button {
+          label: "Open";
+          valign: center;
+          action-name: "win.show-devtools";
+        }
+      }
+    }
+  }
+
+  Adw.PreferencesPage {
+    title: "Accessibility";
+    icon-name: "preferences-desktop-accessibility-symbolic";
+
+    Adw.PreferencesGroup {
+      title: "Keyboard Navigation";
+
+      Adw.SwitchRow row_kb_shortcuts {
+        title: "Keyboard Shortcuts";
+      }
+
+      Adw.SwitchRow row_focus {
+        title: "Focus indicators";
+      }
+
+      Adw.ActionRow {
+        title: "View keyboard shortcuts";
+        [suffix]
+        Gtk.Button {
+          label: "View";
+          valign: center;
+          action-name: "win.show-help-overlay";
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Visual Accessibility";
+
+      Adw.SwitchRow row_contrast {
+        title: "High Contract Mode";
+      }
+
+      Adw.SwitchRow row_motion {
+        title: "Reduce Motion";
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Webview Zoom";
+      Adw.SwitchRow row_zoom {
+        title: "Enable Webview Zoom";
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Screen Reader Support";
+      
+      Adw.SwitchRow row_sr_opts {
+        title: "Screen Reader Optimizations";
+      }
+
+      Adw.ActionRow {
+        title: "Screen Reader Status";
+        [suffix]
+        Gtk.Label {
+          label: "Inactive"; // Static for now as per prev code
+          valign: center;
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Accessibility Shortcuts";
+      
+      Adw.SwitchRow row_a11y_shortcuts {
+        title: "Accessibility Shortcuts";
+      }
+
+      Adw.SwitchRow row_dev_shortcuts {
+        title: "Developer Shortcuts";
+      }
+
+      Adw.SwitchRow row_notify_shortcuts {
+        title: "Notification Shortcuts";
+      }
+    }
+  }
+
+  Adw.PreferencesPage {
+    title: "Notifications";
+    icon-name: "preferences-system-notifications-symbolic";
+
+    Adw.PreferencesGroup group_master {
+      title: "General";
+      Adw.SwitchRow row_master_toggle {
+        title: "Enable Notifications";
+      }
+    }
+
+    Adw.PreferencesGroup group_messages {
+      title: "Messages";
+      
+      Adw.SwitchRow row_notify_msg {
+        title: "Message Notifications";
+      }
+
+      Adw.SwitchRow row_tray_anim {
+        title: "Change Tray Icon on Message";
+      }
+    }
+
+    Adw.PreferencesGroup group_preview {
+      title: "Message Preview";
+      
+      Adw.SwitchRow row_preview_show {
+        title: "Show message preview";
+      }
+
+      Adw.SwitchRow row_preview_limit {
+        title: "Limit message preview size";
+      }
+
+      Adw.SpinRow row_preview_len {
+        title: "Preview length (characters)";
+        adjustment: Gtk.Adjustment {
+          lower: 1.0;
+          upper: 500.0;
+          value: 20.0; // Default
+          step-increment: 1.0;
+          page-increment: 10.0;
+        };
+      }
+    }
+
+    Adw.PreferencesGroup group_sounds {
+      title: "Sounds";
+
+      Adw.SwitchRow row_sound_enable {
+        title: "Notification Sounds";
+      }
+
+      Adw.ComboRow row_sound_file {
+        title: "Sound";
+        model: Gtk.StringList {
+          strings ["WhatsApp (Default)", "Pop", "Alert", "Soft", "Start"]
+        };
+      }
+    }
+
+    Adw.PreferencesGroup group_dl_notify {
+      title: "Downloads";
+
+      Adw.SwitchRow row_dl_enable {
+        title: "Download notifications";
+      }
+
+      Adw.ComboRow row_dl_type {
+        title: "Notification Type";
+        model: Gtk.StringList {
+          strings ["In-app Toast", "System Notification"]
+        };
+      }
+    }
+  }
+}

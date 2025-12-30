@@ -180,7 +180,7 @@ fn main() -> anyhow::Result<()> {
         action_help.connect_activate(move |_, _| {
             if let Some(app) = app_weak.upgrade() {
                  if let Some(window) = app.active_window() {
-                     let builder = gtk::Builder::from_resource("/io/github/tobagin/karere/help-overlay.ui");
+                     let builder = gtk::Builder::from_resource("/io/github/tobagin/karere/ui/keyboard-shortcuts.ui");
                      // Support both Adw.Dialog (newer) and Gtk.Window (fallback)
                      if let Some(dialog) = builder.object::<adw::Dialog>("shortcuts_dialog") {
                         dialog.present(Some(&window));
@@ -201,6 +201,7 @@ fn main() -> anyhow::Result<()> {
         app.set_accels_for_action("app.show-help-overlay", &["<Control>question", "<Control>slash"]);
         app.set_accels_for_action("app.about", &["F1"]);
         app.set_accels_for_action("app.quit", &["<Control>q"]);
+        app.set_accels_for_action("win.show-devtools", &["F12"]);
 
         // Present Window Action (for Notifications)
         let action_present = gio::SimpleAction::new("present-window", None);
@@ -208,8 +209,10 @@ fn main() -> anyhow::Result<()> {
         action_present.connect_activate(move |_, _| {
             if let Some(app) = app_weak.upgrade() {
                 if let Some(window) = app.active_window() {
+                    window.set_visible(true); // Force visible
                     window.present();
                 } else if let Some(window) = app.windows().first() {
+                     window.set_visible(true); // Force visible
                      window.present();
                 }
             }
@@ -299,6 +302,24 @@ fn main() -> anyhow::Result<()> {
 
     app.connect_activate(move |app| {
         println!("Activate signal received.");
+        
+        // Prevent duplicate windows on re-activation (e.g. clicking notification)
+        if let Some(window) = app.active_window() {
+            println!("Window already exists, presenting it.");
+            window.set_visible(true); // Force visible
+            window.present();
+            return;
+        }
+        
+        // If no active window, check if we have any windows at all (handling case where active_window might be None if hidden)
+        if let Some(window) = app.windows().first() {
+             println!("Window found (inactive), presenting it.");
+             window.set_visible(true); // Force visible
+             window.present();
+             return;
+        }
+
+        println!("Creating new window...");
         let window = KarereWindow::new(app);
 
         // TEST NOTIFICATION REMOVED

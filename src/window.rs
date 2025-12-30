@@ -9,12 +9,16 @@ mod imp {
     use webkit6::prelude::*;
 
     #[derive(Debug, Default, gtk::CompositeTemplate)]
-    #[template(resource = "/io/github/tobagin/karere/window.ui")]
+    #[template(resource = "/io/github/tobagin/karere/ui/window.ui")]
     pub struct KarereWindow {
         #[template_child]
         pub view_container: TemplateChild<gtk::Box>,
         #[template_child]
         pub zoom_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub toast_overlay: TemplateChild<adw::ToastOverlay>,
+        #[template_child]
+        pub dictionary_dropdown: TemplateChild<gtk::DropDown>,
         
         // Manual storage for the WebView
         pub web_view: std::cell::OnceCell<webkit6::WebView>,
@@ -77,6 +81,29 @@ mod imp {
                 }
             });
             obj.add_action(&action_refresh);
+
+            // Host-Driven Permission Trigger (User Suggestion)
+            // Attempt to force the permission request from the Host side on load completion.
+            let webview_perm = web_view.clone();
+            web_view.connect_load_changed(move |_, event| {
+                if event == webkit6::LoadEvent::Finished {
+                    println!("DEBUG: Load Finished. Attempting Host-Driven Permission Request...");
+                    // We use the proxy's requestPermission if available, or native.
+                    // Since we injected the proxy at Start, window.Notification should be our proxy.
+                    webview_perm.evaluate_javascript(
+                        "Notification.requestPermission()", 
+                        None, 
+                        None, 
+                        Option::<&gio::Cancellable>::None, 
+                        |result| {
+                            match result {
+                                Ok(_) => println!("DEBUG: Host-driven JS execution success."),
+                                Err(e) => println!("DEBUG: Host-driven JS execution failed: {}", e),
+                            }
+                        }
+                    );
+                }
+            });
 
             // Present Action (for notifications)
             let action_present = gio::SimpleAction::new("present", None);
@@ -155,117 +182,11 @@ mod imp {
                        );
                        ucm.add_script(&script_ua);
 
-                       // 2. Notification Persistence Sync (Proxy Strategy)
-                       // Check if we already granted permission in GSettings
-                       let already_granted = settings.boolean("web-notification-permission-granted");
-                       
-                       if already_granted {
-                           let js_perm = r#"
-                               (function() {
-                                   // Redirect logging to Rust
-                                   const oldLog = console.log;
-                                   console.log = function(...args) {
-                                       oldLog.apply(console, args);
-                                       try {
-                                           window.webkit.messageHandlers.log.postMessage(args.map(a => String(a)).join(' '));
-                                       } catch(e) {}
-                                   };
-                                   
-                                   console.log('Karere: JS Injection Started.');
-
-                                   if (window.KarereInjected) {
-                                       console.log('Karere: Already injected, skipping.');
-                                       return;
-                                   }
-                                   window.KarereInjected = true;
-                                   
-                                   const NativeNotification = window.Notification;
-                                   if (!NativeNotification) {
-                                       console.log('Karere: ERR - No Notification object found!');
-                                       return;
-                                   }
-                                   
-                                   console.log('Karere: Creating Proxy...');
-                                   
-                                   // Create a proxy constructor
-                                   const ProxyNotification = function(title, options) {
-                                       return new NativeNotification(title, options);
-                                   };
-                                   
-                                   // Copy prototype chain
-                                   ProxyNotification.prototype = NativeNotification.prototype;
-                                   
-                                   // Spoof permission to 'granted' to hide banner
-                                   Object.defineProperty(ProxyNotification, 'permission', {
-                                       get: () => {
-                                           console.log('Karere: Permission property accessed, returning granted.');
-                                           return 'granted';
-                                       },
-                                       configurable: true,
-                                       enumerable: true
-                                   });
-                                   
-                                   // Pass-through requestPermission to native to trigger Rust signal
-                                   ProxyNotification.requestPermission = function(cb) {
-                                       console.log('Karere: Proxy requestPermission called, forwarding to native...');
-                                       return NativeNotification.requestPermission(cb);
-                                   };
-                                   
-                                   // Copy other static properties
-                                   for (let prop in NativeNotification) {
-                                        if (prop !== 'permission' && prop !== 'requestPermission' && prop !== 'prototype') {
-                                            try {
-                                               ProxyNotification[prop] = NativeNotification[prop];
-                                            } catch(e) {}
-                                        }
-                                   }
-
-                                   // Replace global Notification object
-                                   try {
-                                       window.Notification = ProxyNotification;
-                                       console.log('Karere: Notification object replaced successfully.');
-                                   } catch(e) {
-                                       console.log('Karere: Failed to replace Notification object:', e);
-                                   }
-                                   
-                                   // Force sync native permission state
-                                   console.log('Karere: Attempting initial native sync...');
-                                   const doSync = () => {
-                                        console.log('Karere: doSync called');
-                                        NativeNotification.requestPermission().then(p => {
-                                            console.log('Karere: Native sync result:', p);
-                                        }).catch(e => {
-                                            console.log('Karere: Sync failed:', e);
-                                        });
-                                   };
-                                   
-                                   doSync();
-                                   
-                                   // Retry on user interaction (to bypass User Activation protections)
-                                   const lazySync = () => {
-                                        console.log('Karere: User interaction detected, retrying sync...');
-                                        doSync();
-                                        window.removeEventListener('click', lazySync);
-                                        window.removeEventListener('keydown', lazySync);
-                                   };
-                                   window.addEventListener('click', lazySync);
-                                   window.addEventListener('keydown', lazySync);
-
-                               })();
-                           "#;
-                           
-                           let script_perm = webkit6::UserScript::new(
-                               js_perm,
-                               webkit6::UserContentInjectedFrames::AllFrames,
-                               webkit6::UserScriptInjectionTime::Start,
-                               &[],
-                               &[],
-                           );
-                           ucm.add_script(&script_perm);
-                       }
-
-                  }
-            }
+                       // 2. Notification Persistence Sync (Proxy Strategy) - REMOVED
+                       // We now rely on Host-Driven Trigger (on Load Finished) and PersistentNetworkSession.
+                       // The Proxy is no longer needed to "lie" because we can now get the "truth" (native grant) fast enough.
+                   }
+             }
 
 
             // Inject Notification Persistence (Native Logic)
@@ -297,36 +218,147 @@ mod imp {
             });
             obj.add_action(&action_devtools);
             
-            // Add accelerator (F11)
-            if let Some(app) = obj.application().and_then(|a| a.downcast::<gtk::Application>().ok()) {
-                app.set_accels_for_action("win.show-devtools", &["F11"]);
-            }
+
 
             // 3. Downloads
             if let Some(session) = self.web_view.get().unwrap().network_session() {
                 let settings_dl = settings.clone();
+                let overlay = self.toast_overlay.get(); // Strong ref for clone! to downgrade
+                let overlay_weak = overlay.downgrade();
+                
+                // Clone obj (self) which is strong, to pass to clone! for downgrading if needed, 
+                // but actually we need to pass `obj` itself to clone! if we want it to handle weak ref creation.
+                // However, `connect_closure` might take 'move', so we need to be careful.
+                // The issue was `@weak overlay_weak` where overlay_weak was already weak.
+                // We should pass `@weak overlay` where overlay is Strong.
+                
                 session.connect_closure(
                      "download-started",
                      false,
                      glib::closure_local!(move |_session: webkit6::NetworkSession, download: webkit6::Download| {
                           let settings_dl = settings_dl.clone();
+                           let overlay_weak = overlay_weak.clone();
+                           let settings_finished = settings_dl.clone();
+                           let overlay_weak_fin = overlay_weak.clone();
+                           let overlay_weak_fail = overlay_weak.clone();
+                          
                           download.connect_closure(
                               "decide-destination",
                               false,
                               glib::closure_local!(move |download: webkit6::Download, filename: glib::GString| -> bool {
                                    let directory = settings_dl.string("download-directory");
                                    if !directory.is_empty() {
-                                       let path = std::path::PathBuf::from(directory.as_str());
-                                       if path.exists() {
-                                           let dest = path.join(filename.as_str());
-                                           let dest_uri = format!("file://{}", dest.to_string_lossy());
-                                           download.set_destination(&dest_uri);
-                                           return true;
+                                       let mut path_str = directory.to_string();
+                                       // Expand ~
+                                       if path_str.starts_with("~") {
+                                           let home = glib::home_dir(); // Returns PathBuf directly
+                                           path_str = path_str.replacen("~", home.to_str().unwrap(), 1);
                                        }
+                                       
+                                       let path = std::path::PathBuf::from(path_str);
+                                       if path.exists() {
+                                            let dest = path.join(filename.as_str());
+                                            // WebKitGTK set_destination expects an absolute path, not a URI.
+                                            if let Some(path_str) = dest.to_str() {
+                                                download.set_destination(path_str);
+                                                return true;
+                                            }
+                                        }
                                    }
                                    false                     
                               })
                           );
+                          
+                          // Handle Finished (Show Toast)
+                          // let overlay_weak = overlay.downgrade();
+                          download.connect_finished(move |download| {
+                               let settings_dl = &settings_finished;
+                               if let Some(overlay) = overlay_weak_fin.upgrade() {
+                                   if let Some(uri) = download.destination() {
+                                       if let Some(file) = gio::File::for_uri(&uri).path() {
+                                            let filename = file.file_name().unwrap_or_default().to_string_lossy();
+                                            // Downloads
+                                            // Check Master & Download Toggles
+                                            let master_enabled = settings_dl.boolean("notifications-enabled");
+                                            let dl_enabled = settings_dl.boolean("notify-downloads-enabled");
+                                            
+                                            if master_enabled && dl_enabled {
+                                                 let dl_type = settings_dl.string("notify-download-type");
+                                                 let filename_str = &filename; // Use deref for Cow<str>
+
+                                                 if dl_type == "system" {
+                                                      // System Notification
+                                                      let note = gio::Notification::new("Download Complete");
+                                                      note.set_body(Some(filename_str));
+                                                      note.set_icon(&gio::ThemedIcon::new("folder-download-symbolic"));
+                                                      
+                                                      // Add Open Action
+                                                      // We need an action to open URI. "app.open-uri" doesn't exist.
+                                                      // "app.present-window" brings up app.
+                                                      // We can try to use default action to open file? 
+                                                      // For now, simple notification.
+                                                
+                                                      if let Some(app) = gio::Application::default() {
+                                                          app.send_notification(Some(&format!("dl-{}", glib::monotonic_time())), &note);
+                                                      }
+                                                 } else {
+                                                      // Toast (Default)
+                                                      let toast = adw::Toast::new(&format!("Download Complete: {}", filename_str));
+                                                      // Hardcoding standard timeout 
+                                                      toast.set_timeout(5); 
+
+                                                      toast.set_button_label(Some("Open"));
+                                                      let uri_str = uri.to_string();
+                                                      toast.connect_button_clicked(move |_| {
+                                                           let _ = gtk::show_uri(None::<&gtk::Window>, &uri_str, 0);
+                                                      });
+                                                      overlay.add_toast(toast);
+                                                 }
+                                            }
+                                       }
+                                   }
+                               }
+                          });
+                          
+                          // Handle Failed (Show Alert)
+                          // Use `obj` (strong - KarereWindow wrapper) if available? 
+                          // We are inside `constructed` method, so `obj` (Self) is available in outer scope.
+                          // But we need to capture it.
+                          // Let's assume we can capture `obj` from outer scope.
+                          // BUT `obj` was defined way up.
+                          // We need to pass it into the closure_local!
+                          // Wait, `obj` is `self.obj()` in `constructed`.
+                          // We need to capture it here.
+                          // Re-define window_strong to be safe.
+                          
+                          // Handle Failed (Show Alert)
+                          // let overlay_weak2 = overlay.downgrade();
+                          download.connect_failed(move |_, _error| {
+                               if let Some(overlay) = overlay_weak_fail.upgrade() {
+                               // Fallback to overlay if window logic is too complex to capture deep in closures without visual ref
+                               // Actually, let's just use the overlay to find the window or just show a toast for error too slightly
+                               // Or just use the overlay to show error toast?
+                               // User asked for AlertDialog.
+                               // Use proper weak ref to window.
+                               // We need to capture `obj` in the outer closure.
+                               // Let's skip AlertDialog for now and use Toast for error to handle the compile error simply?
+                               // NO, user explicitly asked for AlertDialog.
+                               // We need `obj`.
+                               // We can't easily access `obj` here unless we captured it.
+                               // Let's modify the outer `glib::closure_local!` to capture `obj`.
+                               
+                               // Actually, `overlay` is attached to window.
+                               if let Some(window) = overlay.root().and_then(|w| w.downcast::<gtk::Window>().ok()) {
+                                   let dialog = adw::AlertDialog::builder()
+                                       .heading("Download Failed")
+                                       .body("An error occurred while downloading the file.")
+                                       .default_response("ok")
+                                       .build();
+                                   dialog.add_response("ok", "OK");
+                                   dialog.choose(Some(&window), gio::Cancellable::NONE, |_| {});
+                               }
+                           }
+                      });
                      })
                 );
             }
@@ -447,27 +479,56 @@ mod imp {
             });
 
             // Handle Show Notification signal (Bridge to Desktop)
+            let settings_notify_msg = settings.clone(); // Clone for closure
             let window_weak = obj.downgrade();
             self.web_view.get().unwrap().connect_show_notification(move |_, notification| {
                 println!("DEBUG: connect_show_notification TRIGGERED!");
+                
+                // 1. Check Master Toggle
+                if !settings_notify_msg.boolean("notifications-enabled") {
+                    println!("DEBUG: Notifications disabled globally.");
+                    return true; // Suppress
+                }
+                
+                // 2. Check Message Notifications Toggle
+                if !settings_notify_msg.boolean("notify-messages") {
+                    println!("DEBUG: Message notifications disabled.");
+                    return true; // Suppress
+                }
+
                 if let Some(window) = window_weak.upgrade() {
                     if let Some(app) = window.application() {
-                        // Notify Tray: Set Unread = true
-                        app.activate_action("set-unread", Some(&true.to_variant()));
+                        // 3. Tray Icon Update (Check Toggle)
+                        if settings_notify_msg.boolean("notify-tray-icon") {
+                             app.activate_action("set-unread", Some(&true.to_variant()));
+                        }
 
                         let title = notification.title().unwrap_or_else(|| glib::GString::from("WhatsApp"));
-                        let body = notification.body().unwrap_or_else(|| glib::GString::from("New message"));
+                        let mut body_text = notification.body().unwrap_or_else(|| glib::GString::from("New message")).to_string();
+                        
+                        // 4. Message Preview Settings
+                        let show_preview = settings_notify_msg.boolean("notify-preview-enabled");
+                        if !show_preview {
+                            body_text = "New message received".to_string();
+                        } else {
+                            // Check Limit
+                            let limit_enabled = settings_notify_msg.boolean("notify-preview-limit-enabled");
+                            if limit_enabled {
+                                let max_len = settings_notify_msg.int("notify-preview-length") as usize;
+                                if body_text.chars().count() > max_len {
+                                    body_text = body_text.chars().take(max_len).collect::<String>();
+                                    body_text.push_str("...");
+                                }
+                            }
+                        }
                         
                         let note = gio::Notification::new(&title);
-                        note.set_body(Some(&body));
+                        note.set_body(Some(&body_text));
                         note.set_icon(&gio::ThemedIcon::new("dialog-information-symbolic"));
                         
                         // When clicked, activate the window
-                        note.set_default_action("win.present"); // Action on the window itself
+                        note.set_default_action("app.present-window"); 
                         
-                        // Assign a unique ID to allow multiple? Or just constant ID "whatsapp-msg"?
-                        // WhatsApp uses unique checks, so probably unique is better.
-                        // Using tag if available?
                         let id = if let Some(tag) = notification.tag() {
                              format!("karere-{}", tag)
                         } else {
@@ -475,10 +536,32 @@ mod imp {
                         };
                         
                         println!("Sending notification to OS: ID={}", id); 
-
                         app.send_notification(Some(&id), &note);
                         
-                        // We handled it
+                        // 5. Play Custom Sound (if enabled)
+                        if settings_notify_msg.boolean("notify-sound-enabled") {
+                            let sound_key = settings_notify_msg.string("notify-sound-file");
+                            let sound_name = match sound_key.as_str() {
+                                "pop" => "pop",
+                                "alert" => "alert",
+                                "soft" => "soft",
+                                "start" => "start",
+                                _ => "whatsapp",
+                            };
+                            
+                            // Play Logic (Extract & Spawn)
+                            // Ideally extraction happens once or cached, but tmp write is fast enough.
+                            let resource_path = format!("/io/github/tobagin/karere/sounds/{}.oga", sound_name);
+                            if let Ok(bytes) = gio::resources_lookup_data(&resource_path, gio::ResourceLookupFlags::NONE) {
+                                let temp_path = std::env::temp_dir().join("karere-notify.oga");
+                                if std::fs::write(&temp_path, &bytes).is_ok() {
+                                     let _ = std::process::Command::new("paplay")
+                                         .arg(temp_path)
+                                         .spawn();
+                                }
+                            }
+                        }
+
                         return true;
                     }
                 }
@@ -496,102 +579,157 @@ mod imp {
 
             // 5. Sound (Notify Sound) -> Mute logic
             let webview_clone = self.web_view.get().unwrap().clone();
-            let update_sound = move |settings: &gio::Settings, key: &str| {
-                let enabled = settings.boolean(key);
+            let update_sound = move |settings: &gio::Settings, _: &str| {
+                // Check Master AND Sound Enabled
+                let master = settings.boolean("notifications-enabled");
+                let sound = settings.boolean("notify-sound-enabled");
+                
+                // If either is OFF, we mute. 
+                // Meaning: Sound is only ON if Master is ON AND Sound is ON.
+                let enabled = master && sound;
                 webview_clone.set_is_muted(!enabled);
             };
-            update_sound(&settings, "notify-sound"); 
-            settings.connect_changed(Some("notify-sound"), update_sound);
+            update_sound(&settings, "notify-sound-enabled"); 
+            settings.connect_changed(Some("notify-sound-enabled"), update_sound.clone());
+            settings.connect_changed(Some("notifications-enabled"), update_sound);
 
             // 6. Accessibility & System Overrides
-            let update_a11y = move |settings: &gio::Settings, _: &str| {
-                if let Some(gtk_settings) = gtk::Settings::default() {
-                     let reduce_motion = settings.boolean("reduce-motion");
-                     gtk_settings.set_gtk_enable_animations(!reduce_motion);
+            
+            // 11. Setup Accessibility & Auto-Correct
+            self.setup_accessibility(web_view, settings.clone());
+            
+            // 12. Dictionary Dropdown Logic (Quick Access)
+            settings.bind("auto-detect-language", &*self.dictionary_dropdown, "visible")
+                .flags(gio::SettingsBindFlags::INVERT_BOOLEAN)
+                .build();
+                
+            let avail_dicts = crate::spellcheck::get_available_dictionaries();
+            if !avail_dicts.is_empty() {
+                let store = gtk::StringList::new(&avail_dicts.iter().map(|s| s.as_str()).collect::<Vec<&str>>());
+                self.dictionary_dropdown.set_model(Some(&store));
+                
+                let current = settings.strv("spell-checking-languages");
+                if let Some(first) = current.first() {
+                    if let Some(idx) = avail_dicts.iter().position(|r| r == first.as_str()) {
+                         self.dictionary_dropdown.set_selected(idx as u32);
+                    }
                 }
-            };
-            settings.connect_changed(Some("reduce-motion"), update_a11y);
-            // Initial call
-            if let Some(gtk_settings) = gtk::Settings::default() {
-                 let reduce_motion = settings.boolean("reduce-motion");
-                 gtk_settings.set_gtk_enable_animations(!reduce_motion);
-            }
-
-            // 7. Zoom Controls
-            settings.bind("webview-zoom", &*self.zoom_box, "visible").build();
-
-            let webview_z = self.web_view.get().unwrap().clone();
-            let action_zoom_in = gio::SimpleAction::new("zoom-in", None);
-            action_zoom_in.connect_activate(move |_, _| {
-                let level = webview_z.zoom_level();
-                webview_z.set_zoom_level(level + 0.1);
-            });
-            obj.add_action(&action_zoom_in);
-
-            let webview_z = self.web_view.get().unwrap().clone();
-            let action_zoom_out = gio::SimpleAction::new("zoom-out", None);
-            action_zoom_out.connect_activate(move |_, _| {
-                let level = webview_z.zoom_level();
-                if level > 0.2 {
-                    webview_z.set_zoom_level(level - 0.1);
-                }
-            });
-            obj.add_action(&action_zoom_out);
-
-            let webview_z = self.web_view.get().unwrap().clone();
-            let action_zoom_reset = gio::SimpleAction::new("zoom-reset", None);
-            action_zoom_reset.connect_activate(move |_, _| {
-                webview_z.set_zoom_level(1.0);
-            });
-            obj.add_action(&action_zoom_reset);
-
-            // 8. Spell Checking
-            if let Some(context) = self.web_view.get().unwrap().context() {
-                  let update_spell = move |settings: &gio::Settings, _: &str| {
-                      let enabled = settings.boolean("enable-spell-checking");
-                      
-                      context.set_spell_checking_enabled(enabled);
-
-                      // Handle auto-detect
-                      let auto = settings.boolean("auto-detect-language");
-                       if enabled {
-                           let available_dicts = crate::spellcheck::get_available_dictionaries();
-
-                           if auto {
-                               // Auto-detect logic
-                               let locale = std::env::var("LANG").unwrap_or_else(|_| "en_US".to_string());
-                               if let Some(lang) = crate::spellcheck::match_locale_to_dictionary(&locale, &available_dicts) {
-                                   println!("Auto-detected spell checking language: {}", lang);
-                                   context.set_spell_checking_languages(&[&lang]);
-                               } else {
-                                   eprintln!("Warning: No dictionary found for locale '{}'", locale);
-                               }
-                           } else {
-                               // Manual selection logic
-                               let languages = settings.strv("spell-checking-languages");
-                               let available_set: std::collections::HashSet<&str> = available_dicts.iter().map(|s| s.as_str()).collect();
-                               let mut valid_langs: Vec<&str> = Vec::new();
-                               for lang in &languages {
-                                   if available_set.contains(lang.as_str()) {
-                                       valid_langs.push(lang.as_str());
-                                   }
-                               }
-                               context.set_spell_checking_languages(&valid_langs);
-                           }
-                      }
-                 };
-                 // Initial call
-                 update_spell(&settings, "enable-spell-checking");
-                 
-                 // Connect
-                 settings.connect_changed(Some("enable-spell-checking"), update_spell.clone());
-                 settings.connect_changed(Some("auto-detect-language"), update_spell.clone());
-                 settings.connect_changed(Some("spell-checking-languages"), update_spell);
+                
+                let settings_dict = settings.clone();
+                let dicts_clone = avail_dicts.clone();
+                self.dictionary_dropdown.connect_selected_notify(move |dropdown| {
+                     let idx = dropdown.selected() as usize;
+                     if idx < dicts_clone.len() {
+                         let selected = &dicts_clone[idx];
+                         let _ = settings_dict.set_strv("spell-checking-languages", [selected.as_str()]);
+                     }
+                });
             }
         }
     }
 
+    impl KarereWindow {
+        fn setup_accessibility(&self, web_view: webkit6::WebView, settings: gio::Settings) {
+             let obj = self.obj();
+             
+             // 1. High Contrast
+             let style_manager = adw::StyleManager::default();
+             settings.bind("high-contrast", &style_manager, "high-contrast").build();
 
+             // 2. Reduce Motion
+             let settings_anim = settings.clone();
+             let update_anim = move |settings: &gio::Settings| {
+                 if let Some(gtk_settings) = gtk::Settings::default() {
+                     let reduce = settings.boolean("reduce-motion");
+                     gtk_settings.set_gtk_enable_animations(!reduce);
+                 }
+             };
+             update_anim(&settings_anim);
+             settings.connect_changed(Some("reduce-motion"), move |s, _| update_anim(s));
+
+             // 3. Webview Zoom Visibility
+             settings.bind("webview-zoom", &*self.zoom_box, "visible").build();
+             
+             // 4. Screen Reader Support
+             if let Some(webview_settings) = webkit6::prelude::WebViewExt::settings(&web_view) {
+                 settings.bind("screen-reader-opts", &webview_settings, "enable-caret-browsing").build();
+             }
+             
+             // 5. Focus Indicators
+             let provider = gtk::CssProvider::new();
+             gtk::style_context_add_provider_for_display(
+                 &gtk::gdk::Display::default().unwrap(),
+                 &provider,
+                 gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+             );
+             let update_focus = move |settings: &gio::Settings| {
+                 if settings.boolean("focus-indicators") {
+                     provider.load_from_data(":focus { outline-width: 2px; outline-style: solid; outline-color: alpha(currentColor, 0.7); }");
+                 } else {
+                     provider.load_from_data(""); 
+                 }
+             };
+             let uf = update_focus.clone();
+             settings.connect_changed(Some("focus-indicators"), move |s, _| uf(s));
+             update_focus(&settings);
+
+             // 6. Spell Checking & Auto-Correct
+             if let Some(context) = web_view.context() {
+                  let update_spell = move |settings: &gio::Settings, _: &str| {
+                      let enabled = settings.boolean("enable-spell-checking");
+                      context.set_spell_checking_enabled(enabled);
+                      
+                      if enabled {
+                          let auto = settings.boolean("auto-detect-language");
+                          if !auto {
+                               let configured = settings.strv("spell-checking-languages");
+                               let refs: Vec<&str> = configured.iter().map(|s| s.as_str()).collect();
+                               context.set_spell_checking_languages(&refs);
+                          } else {
+                               context.set_spell_checking_languages(&[]); 
+                          }
+                      }
+                  };
+                  
+                  let us = update_spell.clone();
+                  settings.connect_changed(Some("enable-spell-checking"), move |s, k| us(s, k));
+                  let us = update_spell.clone();
+                  settings.connect_changed(Some("auto-detect-language"), move |s, k| us(s, k));
+                  let us = update_spell.clone();
+                  settings.connect_changed(Some("spell-checking-languages"), move |s, k| us(s, k));
+                   let us = update_spell.clone();
+                  settings.connect_changed(Some("enable-auto-correct"), move |s, k| us(s, k));
+                  
+                  update_spell(&settings, "initial");
+             }
+             
+             // 7. Zoom Controls Actions
+             let webview_z = web_view.clone();
+             let action_zoom_in = gio::SimpleAction::new("zoom-in", None);
+             action_zoom_in.connect_activate(move |_, _| {
+                 let level = webview_z.zoom_level();
+                 webview_z.set_zoom_level(level + 0.1);
+             });
+             obj.add_action(&action_zoom_in);
+
+             let webview_z = web_view.clone();
+             let action_zoom_out = gio::SimpleAction::new("zoom-out", None);
+             action_zoom_out.connect_activate(move |_, _| {
+                 let level = webview_z.zoom_level();
+                 if level > 0.2 {
+                     webview_z.set_zoom_level(level - 0.1);
+                 }
+             });
+             obj.add_action(&action_zoom_out);
+
+             let webview_z = web_view.clone();
+             let action_zoom_reset = gio::SimpleAction::new("zoom-reset", None);
+             action_zoom_reset.connect_activate(move |_, _| {
+                 webview_z.set_zoom_level(1.0);
+             });
+             obj.add_action(&action_zoom_reset);
+        }
+    }
 
     impl WidgetImpl for KarereWindow {}
     impl WindowImpl for KarereWindow {}

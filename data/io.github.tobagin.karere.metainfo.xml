@@ -110,6 +110,7 @@
           <li>New System Tray Icon support</li>
           <li>Notifications fully working with persistence fixes</li>
           <li>Ported from Vala to native Rust/GTK4/Libadwaita</li>
+          <li>Redesigned/streamlined preferences dialog</li>
           <li>Enhanced performance and stability</li>
         </ul>
       </description>

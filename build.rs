@@ -1,24 +1,36 @@
 use std::process::Command;
 
 fn main() {
+    // Get OUT_DIR
+    let out_dir = std::env::var("OUT_DIR").expect("OUT_DIR not set");
+    let out_path = std::path::Path::new(&out_dir);
+    let ui_out = out_path.join("ui");
+    std::fs::create_dir_all(&ui_out).expect("Failed to create ui output dir");
+
     // Compile Blueprint files
     let status = Command::new("blueprint-compiler")
-        .args(&["compile", "data/window.blp", "--output", "data/window.ui"])
+        .args(&["compile", "data/ui/window.blp", "--output", out_path.join("ui/window.ui").to_str().unwrap()])
         .status()
         .expect("Failed to run blueprint-compiler (window)");
 
     let status_help = Command::new("blueprint-compiler")
-        .args(&["compile", "data/help-overlay.blp", "--output", "data/help-overlay.ui"])
+        .args(&["compile", "data/ui/keyboard-shortcuts.blp", "--output", out_path.join("ui/keyboard-shortcuts.ui").to_str().unwrap()])
         .status()
-        .expect("Failed to run blueprint-compiler (help-overlay)");
+        .expect("Failed to run blueprint-compiler (keyboard-shortcuts)");
 
-    if !status.success() || !status_help.success() {
+    let status_pref = Command::new("blueprint-compiler")
+        .args(&["compile", "data/ui/preferences.blp", "--output", out_path.join("ui/preferences.ui").to_str().unwrap()])
+        .status()
+        .expect("Failed to run blueprint-compiler (preferences)");
+
+    if !status.success() || !status_help.success() || !status_pref.success() {
         panic!("blueprint-compiler failed");
     }
 
     // Compile GResources
+    // We strictly search "data" AND "OUT_DIR" so it finds `ui/window.ui` in `OUT_DIR`
     glib_build_tools::compile_resources(
-        &["data"],
+        &["data", &out_dir],
         "data/resources.gresource.xml",
         "karere.gresource",
     );

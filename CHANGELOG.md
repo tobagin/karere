@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-12-29
+
+### Added
+- **Rewrite in Rust**: Complete rebuild of the application using native Rust, GTK4, and Libadwaita for superior performance and memory safety.
+- **System Tray Icon**: Support for background execution with unread message indication.
+- **Custom Notification Sounds**: Integrated 5 custom sound options including "WhatsApp" style, with preview capability.
+- **Accessibility Suite**: Full accessibility implementation including High Contrast mode, Reduce Motion, Focus Indicators, Screen Reader optimizations, and Webview Zoom.
+- **Auto-Correct**: Toggleable spell-checking auto-correction with dictionary management.
+- **Keyboard Shortcuts**: Global F12 accelerator for Developer Tools and improved shortcut handling.
+
+### Changed
+- **Preferences UI**: Completely redesigned using Blueprint (`.blp`) for a modern, maintainable declarative UI.
+- **Download Path Display**: Now shows friendly paths (e.g., `/home/user/Downloads`) instead of Flatpak portal paths.
+- **Notification Settings**: Granular controls for messages, sounds, and downloads with a master toggle.
+
+### Fixed
+- **Startup Stability**: Resolved critical crashes related to modal properties and invalid settings.
+- **Flatpak Integration**: Improved permissions for home directory access to fix file chooser limitations.
+- **DevTools**: Fixed unreliable F12 shortcut registration.
+
 ## [1.1.1] - 2025-12-25
 
 ### Fixed

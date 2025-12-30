@@ -8,6 +8,7 @@ finish-args:
   - --share=ipc
   - --socket=fallback-x11
   - --socket=wayland
+  - --socket=pulseaudio
   - --device=dri
   - --talk-name=org.kde.StatusNotifierWatcher
   - --talk-name=org.freedesktop.StatusNotifierWatcher
@@ -17,6 +18,9 @@ finish-args:
   - --socket=session-bus
   # Custom download directory access (optional, usually handled by portals)
   - --filesystem=xdg-download
+  - --filesystem=home
+  - --filesystem=xdg-run/gvfsd
+  - --talk-name=org.gtk.vfs.*
   # Audio for notification sounds and media
   - --socket=pulseaudio
   # Configure WebKit spell checker dictionary paths (bundled and runtime)
