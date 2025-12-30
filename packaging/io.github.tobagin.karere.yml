@@ -25,7 +25,7 @@ sdk-extensions:
 add-extensions:
   org.freedesktop.Platform.ffmpeg-full:
     directory: lib/ffmpeg
-    version: '25.08'
+    version: '24.08'
     add-ld-path: .
 
 cleanup-commands:
