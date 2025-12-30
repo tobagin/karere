@@ -78,7 +78,7 @@ modules:
       - install -Dm644 data/io.github.tobagin.karere.gschema.xml -t /app/share/glib-2.0/schemas/
       - glib-compile-schemas /app/share/glib-2.0/schemas
     sources:
-      - packaging/cargo-sources.json
+      - cargo-sources.json
       - type: git
         url: https://github.com/tobagin/karere
         tag: v2.0.0
