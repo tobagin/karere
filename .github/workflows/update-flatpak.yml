@@ -66,6 +66,7 @@ jobs:
         
         # Copy the manifest and update it with correct tag and commit
         cp ../packaging/io.github.tobagin.karere.yml ./io.github.tobagin.karere.yml
+        cp ../packaging/cargo-sources.json ./cargo-sources.json
         
         # Update the manifest with the correct tag and commit hash (only for karere module)
         # Find the karere module section and update only its tag and commit
@@ -78,7 +79,7 @@ jobs:
         echo "  Tag: ${{ steps.version.outputs.tag_name }}"
         echo "  Commit: ${{ steps.version.outputs.commit_hash }}"
         
-        git add io.github.tobagin.karere.yml
+        git add io.github.tobagin.karere.yml cargo-sources.json
         git commit -m "Update to ${{ steps.version.outputs.tag_name }}
 
         🚀 **New Release: ${{ steps.version.outputs.tag_name }}**
