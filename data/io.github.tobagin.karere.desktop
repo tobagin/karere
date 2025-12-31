@@ -14,5 +14,4 @@ StartupWMClass=karere
 X-GNOME-SingleWindow=true
 X-GNOME-UsesNotifications=true
 X-Purism-FormFactor=Workstation;Mobile;
-DBusActivatable=true
 PrefersNonDefaultGPU=false
