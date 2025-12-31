@@ -74,6 +74,8 @@ modules:
     build-commands:
       - cargo build --release
       - install -Dm755 target/release/karere -t /app/bin/
+      - sed -i "s/@APP_ID@/io.github.tobagin.karere/g" data/io.github.tobagin.karere.desktop data/io.github.tobagin.karere.metainfo.xml
+      - sed -i "s/@APP_NAME@/Karere/g" data/io.github.tobagin.karere.desktop data/io.github.tobagin.karere.metainfo.xml
       - install -Dm644 data/icons/hicolor/scalable/apps/io.github.tobagin.karere.svg -t /app/share/icons/hicolor/scalable/apps/
       - install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
       - install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-new-message-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
