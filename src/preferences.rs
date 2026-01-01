@@ -117,7 +117,8 @@ impl KarerePreferencesWindow {
              // Autostart Logic
              let app = gio::Application::default();
              let app_id = app.and_then(|a| a.application_id()).unwrap_or_else(|| "io.github.tobagin.karere".into());
-             let autostart_dir = glib::user_config_dir().join("autostart");
+             // Use home_dir() to escape Flatpak sandbox XDG_CONFIG_HOME
+             let autostart_dir = glib::home_dir().join(".config").join("autostart");
              let desktop_path = autostart_dir.join(format!("{}.desktop", app_id));
 
              if enabled {

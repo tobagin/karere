@@ -101,6 +101,15 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.0.2" date="2026-01-01">
+      <description>
+        <p>Bug Fix Release</p>
+        <p>Changes:</p>
+        <ul>
+          <li>Fixed "Run on Startup" toggle not working reliably in Flatpak sandbox environments</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.1" date="2026-01-01">
       <description>
         <p>Update and Bug Fix Release</p>
