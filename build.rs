@@ -44,4 +44,39 @@ fn main() {
     if !status.success() {
         panic!("glib-compile-schemas failed");
     }
+
+    // Compile translations
+    let status = Command::new("msgfmt")
+        .arg("--version")
+        .status();
+
+    if let Ok(status) = status {
+        if status.success() {
+            let po_dir = std::path::Path::new("po");
+            let locale_dir = out_path.join("locale");
+            std::fs::create_dir_all(&locale_dir).expect("Failed to create locale dir");
+
+            for entry in std::fs::read_dir(po_dir).expect("Failed to read po dir") {
+                let entry = entry.expect("Failed to read po entry");
+                let path = entry.path();
+                if path.extension().and_then(|s| s.to_str()) == Some("po") {
+                    let lang = path.file_stem().unwrap().to_str().unwrap();
+                    let lang_dir = locale_dir.join(lang).join("LC_MESSAGES");
+                    std::fs::create_dir_all(&lang_dir).expect("Failed to create lang dir");
+                    
+                    let status = Command::new("msgfmt")
+                        .arg("-o")
+                        .arg(lang_dir.join("karere.mo"))
+                        .arg(&path)
+                        .status()
+                        .expect("Failed to run msgfmt");
+
+                    if !status.success() {
+                        panic!("msgfmt failed for {}", lang);
+                    }
+                    println!("cargo:rerun-if-changed={}", path.display());
+                }
+            }
+        }
+    }
 }

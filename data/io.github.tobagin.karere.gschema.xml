@@ -46,7 +46,7 @@
       <summary>Enable keyboard shortcuts</summary>
     </key>
     <key name="focus-indicators" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Enable focus indicators</summary>
     </key>
     <key name="high-contrast" type="b">

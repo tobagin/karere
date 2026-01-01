@@ -1,4 +1,5 @@
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+use gettextrs::gettext;
 use libadwaita as adw;
 use adw::prelude::*;
 use adw::subclass::prelude::*;
@@ -206,7 +207,7 @@ impl KarerePreferencesWindow {
             .mapping(|variant, _type| {
                 let path_str = variant.get::<String>().unwrap_or_default();
                 if path_str.is_empty() {
-                    Some("Default (Downloads)".to_value())
+                    Some(gettext("Default (Downloads)").to_value())
                 } else {
                     // Prettify path if it's a Flatpak doc portal path
                     // Portal paths look like: /run/user/1000/doc/ID/Name
@@ -350,7 +351,12 @@ impl KarerePreferencesWindow {
         
         let available_dicts = crate::spellcheck::get_available_dictionaries();
         let dict_count = available_dicts.len();
-        let count_text = if dict_count == 1 { "1 Dictionary".to_string() } else { format!("{} Dictionaries", dict_count) };
+        let count_text = if dict_count == 1 { 
+            gettext("1 Dictionary") 
+        } else { 
+            // In a real app we'd use ngettext for plurals, but for now simple gettext
+            format!("{} {}", dict_count, gettext("Dictionaries"))
+        };
         imp.label_spell_status.set_label(&count_text);
         
         let model_langs = gtk::StringList::new(
@@ -398,9 +404,9 @@ impl KarerePreferencesWindow {
              } else { None };
              
              let dialog = gtk::FileDialog::builder()
-                 .title("Select Download Directory")
+                 .title(&gettext("Select Download Directory"))
                  .modal(true)
-                 .accept_label("Select")
+                 .accept_label(&gettext("Select"))
                  .build();
              if let Some(f) = initial_file {
                  dialog.set_initial_folder(Some(&f));

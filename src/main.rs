@@ -4,6 +4,8 @@ use adw::prelude::*;
 use gtk::{gio, glib};
 use std::sync::atomic::Ordering;
 
+use gettextrs::*;
+
 mod tray;
 mod window;
 mod preferences;
@@ -13,6 +15,23 @@ use window::KarereWindow;
 
 fn main() -> anyhow::Result<()> {
     env_logger::init();
+
+    // Initialize gettext
+    textdomain("karere")?;
+    bind_textdomain_codeset("karere", "UTF-8")?;
+    
+    let locale_dir = if std::env::var("FLATPAK_ID").is_ok() {
+        std::path::PathBuf::from("/app/share/locale")
+    } else {
+        // Fallback for local dev - try to find target dir or use current dir
+        // This is a bit hacky for creating a general path, but sufficient for now
+        // Better: just expect them to be installed or ignore for raw cargo run unless we setup a specific install step.
+        // Let's use a local 'locale' folder if it exists
+        std::env::current_dir()?.join("locale")
+    };
+    
+    bindtextdomain("karere", locale_dir)?;
+
     
     // Ensure compiled schemas are found (fix for running locally from cargo)
     // ONLY do this if NOT inside Flatpak, otherwise we break system schemas!
@@ -41,6 +60,7 @@ fn main() -> anyhow::Result<()> {
     let app = adw::Application::builder()
         .application_id(&app_id)
         .build();
+
 
     println!("Starting main... App ID: {}", app_id);
 
@@ -124,11 +144,11 @@ fn main() -> anyhow::Result<()> {
                     let artists = vec!["Thiago Fernandes"];
                     
                     let is_devel = app_id_clone.contains("Devel");
-                    let app_name = if is_devel { "Karere (Dev)" } else { "Karere" };
+                    let app_name = if is_devel { gettext("Karere (Dev)") } else { gettext("Karere") };
                     let comments = if is_devel {
-                        "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities (Development Version)"
+                        gettext("A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities (Development Version)")
                     } else {
-                        "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities"
+                        gettext("A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities")
                     };
 
                     let about = adw::AboutDialog::builder()
@@ -149,10 +169,10 @@ fn main() -> anyhow::Result<()> {
                         .release_notes(&get_release_notes("2.0.0"))
                         .build();
                         
-                    about.add_link("Source", "https://github.com/tobagin/karere");
+                    about.add_link(gettext("Source").as_str(), "https://github.com/tobagin/karere");
                     
                     about.add_acknowledgement_section(
-                        Some("Special Thanks"), 
+                        Some(gettext("Special Thanks").as_str()), 
                         &["The GNOME Project", "The WebKitGTK Team", "WhatsApp Inc.", "LibAdwaita Contributors", "Vala Programming Language Team"]
                     );
 

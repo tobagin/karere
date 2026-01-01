@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [Unreleased]
+
+### Fixed
+- **Audio Playback**: Resolved issues with voice messages and video playback audio output.
+- **Translations**: Completed translation coverage for English (UK/US), Portuguese (BR/PT), and Spanish.
+- **Flatpak Build**: Fixed `appstreamcli compose` errors and ensured correct asset installation.
+- **Build System**: Improved `cargo-sources.json` generation and synchronization.
+
 ## [2.0.0] - 2025-12-29
 
 ### Added

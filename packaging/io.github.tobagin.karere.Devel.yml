@@ -1,4 +1,4 @@
-app-id: io.github.tobagin.karere2.Devel
+app-id: io.github.tobagin.karere.Dev
 runtime: org.gnome.Platform
 runtime-version: '49'
 sdk: org.gnome.Sdk
@@ -38,6 +38,8 @@ add-extensions:
 cleanup-commands:
   - mkdir -p ${FLATPAK_DEST}/lib/ffmpeg
 
+
+
 cleanup:
   - /include
   - /lib/pkgconfig
@@ -74,6 +76,18 @@ modules:
       - type: archive
         url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-26.2.0.1.zip
         sha256: e1ef5088fe903eac040b622df175b7a7230c4decfae9cc72c1a1377f0b9e7afd
+
+
+
+  - name: fonts-noto-color-emoji
+    buildsystem: simple
+    build-commands:
+      - install -Dm644 NotoColorEmoji.ttf /app/share/fonts/NotoColorEmoji.ttf
+    sources:
+      - type: file
+        url: https://github.com/googlefonts/noto-emoji/raw/main/fonts/NotoColorEmoji.ttf
+        sha256: 72a635cb3d2f3524c51620cdde406b217204e8a6a06c6a096ff8ed4b5fd6e27b
+        dest-filename: NotoColorEmoji.ttf
 
   - name: karere
     buildsystem: simple

@@ -4,6 +4,8 @@ use gtk::prelude::*;
 use gtk::{gio, glib};
 use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
 
+use gettextrs::gettext;
+
 pub struct KarereTray {
     pub visible: Arc<AtomicBool>,
     pub has_unread: Arc<AtomicBool>,
@@ -20,7 +22,7 @@ impl ksni::Tray for KarereTray {
     }
 
     fn title(&self) -> String {
-        "Karere".into()
+        gettext("Karere")
     }
 
     fn id(&self) -> String {
@@ -37,8 +39,8 @@ impl ksni::Tray for KarereTray {
 
     fn tool_tip(&self) -> ksni::ToolTip {
         ksni::ToolTip {
-            title: "Karere".to_string(),
-            description: "Running via Rust & GTK4".to_string(),
+            title: gettext("Karere"),
+            description: gettext("Running via Rust & GTK4"),
             ..Default::default()
         }
     }
@@ -46,9 +48,9 @@ impl ksni::Tray for KarereTray {
     fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
         use ksni::menu::*;
         let label = if self.visible.load(Ordering::Relaxed) {
-             "Hide Window"
+             gettext("Hide Window")
         } else {
-             "Show Window"
+             gettext("Show Window")
         };
         vec![
             StandardItem {
@@ -72,7 +74,7 @@ impl ksni::Tray for KarereTray {
             }
             .into(),
             StandardItem {
-                label: "Quit".into(),
+                label: gettext("Quit").into(),
                 activate: Box::new(|_| std::process::exit(0)),
                 ..Default::default()
             }

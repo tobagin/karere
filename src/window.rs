@@ -1,4 +1,5 @@
 use gtk::{gio, glib, prelude::*, subclass::prelude::*};
+use gettextrs::gettext;
 use libadwaita as adw;
 use adw::prelude::*;
 use adw::subclass::prelude::*;
@@ -103,6 +104,48 @@ mod imp {
                         }
                     );
                 }
+            });
+
+            // Handle Navigation Policy (External Links)
+            let obj_weak_nav = obj.downgrade();
+            web_view.connect_decide_policy(move |_, decision, decision_type| {
+                match decision_type {
+                     webkit6::PolicyDecisionType::NavigationAction | webkit6::PolicyDecisionType::NewWindowAction => {
+                         if let Some(mut nav_action) = decision.downcast_ref::<webkit6::NavigationPolicyDecision>().and_then(|d| d.navigation_action()) {
+                             if let Some(req) = nav_action.request() {
+                                 if let Some(uri) = req.uri() {
+                                     let uri_str = uri.as_str();
+                                     println!("DEBUG: Policy Decision: Type={:?}, URI={}", decision_type, uri_str);
+
+                                     // Enhanced V1-like Logic
+                                     let is_internal = uri_str.contains("web.whatsapp.com") || 
+                                                       uri_str.contains("whatsapp.com") ||
+                                                       uri_str.contains("whatsapp.net") ||
+                                                       uri_str.starts_with("data:") ||
+                                                       uri_str.starts_with("blob:") ||
+                                                       uri_str.starts_with("about:");
+
+                                     if !is_internal {
+                                         println!("DEBUG: External Link detected. Opening: {}", uri_str);
+                                         
+                                         // Use generic GLib/GIO launcher which works via portal in Flatpak
+                                         // This matches V1 logic (AppInfo.launch_default_for_uri)
+                                         let uri_owned = uri_str.to_string();
+                                         match gio::AppInfo::launch_default_for_uri(&uri_owned, Option::<&gio::AppLaunchContext>::None) {
+                                             Ok(_) => println!("DEBUG: External URI launched successfully via AppInfo."),
+                                             Err(e) => eprintln!("WARNING: Failed to launch external URI: {}", e),
+                                         }
+                                         
+                                         decision.ignore();
+                                         return true;
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                     _ => {}
+                }
+                false
             });
 
             // Present Action (for notifications)
@@ -350,11 +393,11 @@ mod imp {
                                // Actually, `overlay` is attached to window.
                                if let Some(window) = overlay.root().and_then(|w| w.downcast::<gtk::Window>().ok()) {
                                    let dialog = adw::AlertDialog::builder()
-                                       .heading("Download Failed")
-                                       .body("An error occurred while downloading the file.")
+                                       .heading(&gettext("Download Failed"))
+                                       .body(&gettext("An error occurred while downloading the file."))
                                        .default_response("ok")
                                        .build();
-                                   dialog.add_response("ok", "OK");
+                                   dialog.add_response("ok", &gettext("OK"));
                                    dialog.choose(Some(&window), gio::Cancellable::NONE, |_| {});
                                }
                            }
@@ -395,14 +438,14 @@ mod imp {
                     // Show Dialog
                     if let Some(window) = window_weak.upgrade() {
                         let dialog = adw::AlertDialog::builder()
-                            .heading("WhatsApp Web Notification Permission")
-                            .body("WhatsApp Web wants to show desktop notifications for new messages. Would you like to allow notifications?")
+                            .heading(&gettext("WhatsApp Web Notification Permission"))
+                            .body(&gettext("WhatsApp Web wants to show desktop notifications for new messages. Would you like to allow notifications?"))
                             .default_response("allow")
                             .close_response("deny")
                             .build();
 
-                        dialog.add_response("deny", "Deny");
-                        dialog.add_response("allow", "Allow");
+                        dialog.add_response("deny", &gettext("Deny"));
+                        dialog.add_response("allow", &gettext("Allow"));
                         dialog.set_response_appearance("allow", adw::ResponseAppearance::Suggested);
                         
                         let req_clone = request.clone(); // Upcast to PermissionRequest object
@@ -449,14 +492,14 @@ mod imp {
                     // Show Dialog
                     if let Some(window) = window_weak.upgrade() {
                         let dialog = adw::AlertDialog::builder()
-                            .heading("WhatsApp Web Microphone Permission")
-                            .body("WhatsApp Web wants to access your microphone for voice messages and calls. Would you like to allow microphone access?")
+                            .heading(&gettext("WhatsApp Web Microphone Permission"))
+                            .body(&gettext("WhatsApp Web wants to access your microphone for voice messages and calls. Would you like to allow microphone access?"))
                             .default_response("allow")
                             .close_response("deny")
                             .build();
 
-                        dialog.add_response("deny", "Deny");
-                        dialog.add_response("allow", "Allow");
+                        dialog.add_response("deny", &gettext("Deny"));
+                        dialog.add_response("allow", &gettext("Allow"));
                         dialog.set_response_appearance("allow", adw::ResponseAppearance::Suggested);
                         
                         let req_clone = request.clone(); 
@@ -503,13 +546,13 @@ mod imp {
                              app.activate_action("set-unread", Some(&true.to_variant()));
                         }
 
-                        let title = notification.title().unwrap_or_else(|| glib::GString::from("WhatsApp"));
-                        let mut body_text = notification.body().unwrap_or_else(|| glib::GString::from("New message")).to_string();
+                        let title = notification.title().unwrap_or_else(|| glib::GString::from(gettext("WhatsApp")));
+                        let mut body_text = notification.body().unwrap_or_else(|| glib::GString::from(gettext("New message"))).to_string();
                         
                         // 4. Message Preview Settings
                         let show_preview = settings_notify_msg.boolean("notify-preview-enabled");
                         if !show_preview {
-                            body_text = "New message received".to_string();
+                            body_text = gettext("New message received");
                         } else {
                             // Check Limit
                             let limit_enabled = settings_notify_msg.boolean("notify-preview-limit-enabled");
@@ -577,21 +620,7 @@ mod imp {
                 }
             });
 
-            // 5. Sound (Notify Sound) -> Mute logic
-            let webview_clone = self.web_view.get().unwrap().clone();
-            let update_sound = move |settings: &gio::Settings, _: &str| {
-                // Check Master AND Sound Enabled
-                let master = settings.boolean("notifications-enabled");
-                let sound = settings.boolean("notify-sound-enabled");
-                
-                // If either is OFF, we mute. 
-                // Meaning: Sound is only ON if Master is ON AND Sound is ON.
-                let enabled = master && sound;
-                webview_clone.set_is_muted(!enabled);
-            };
-            update_sound(&settings, "notify-sound-enabled"); 
-            settings.connect_changed(Some("notify-sound-enabled"), update_sound.clone());
-            settings.connect_changed(Some("notifications-enabled"), update_sound);
+
 
             // 6. Accessibility & System Overrides
             

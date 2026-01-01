@@ -1,0 +1,7 @@
+src/main.rs
+src/window.rs
+src/preferences.rs
+src/tray.rs
+src/spellcheck.rs
+data/io.github.tobagin.karere.desktop
+data/io.github.tobagin.karere.metainfo.xml
