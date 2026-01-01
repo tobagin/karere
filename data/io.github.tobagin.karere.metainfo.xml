@@ -101,6 +101,17 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.0.1" date="2026-01-01">
+      <description>
+        <p>Update and Bug Fix Release</p>
+        <p>Changes:</p>
+        <ul>
+          <li>Added "Run on Startup" toggle in preferences (default: false)</li>
+          <li>Fixed tray icon quit behavior</li>
+          <li>Added striped symbolic icons for development version</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.0" date="2025-12-29">
       <description>
         <p>🎉 Major Release 2.0.0</p>

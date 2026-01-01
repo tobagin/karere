@@ -75,7 +75,13 @@ impl ksni::Tray for KarereTray {
             .into(),
             StandardItem {
                 label: gettext("Quit").into(),
-                activate: Box::new(|_| std::process::exit(0)),
+                activate: Box::new(|_| {
+                     glib::MainContext::default().invoke(move || {
+                        if let Some(app) = gio::Application::default() {
+                            app.activate_action("quit", None);
+                        }
+                     });
+                }),
                 ..Default::default()
             }
             .into(),

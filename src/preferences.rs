@@ -11,6 +11,7 @@ mod imp {
     #[template(resource = "/io/github/tobagin/karere/ui/preferences.ui")]
     pub struct KarerePreferencesWindow {
         // Startup
+        #[template_child] pub row_startup: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_background: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_tray: TemplateChild<adw::ComboRow>,
         
@@ -110,6 +111,44 @@ impl KarerePreferencesWindow {
          let settings = gio::Settings::new("io.github.tobagin.karere");
 
          // 1. Startup
+         settings.bind("run-on-startup", &*imp.row_startup, "active").build();
+         settings.connect_changed(Some("run-on-startup"), move |settings, _| {
+             let enabled = settings.boolean("run-on-startup");
+             // Autostart Logic
+             let app = gio::Application::default();
+             let app_id = app.and_then(|a| a.application_id()).unwrap_or_else(|| "io.github.tobagin.karere".into());
+             let autostart_dir = glib::user_config_dir().join("autostart");
+             let desktop_path = autostart_dir.join(format!("{}.desktop", app_id));
+
+             if enabled {
+                 if let Err(e) = std::fs::create_dir_all(&autostart_dir) {
+                     eprintln!("Failed to create autostart dir: {}", e);
+                     return;
+                 }
+                 let name = if app_id.ends_with("Devel") { "Karere (Dev)" } else { "Karere" };
+                 
+                 // Note: This assumes Flatpak environment mostly
+                 let exec_cmd = format!("flatpak run {}", app_id);
+                 let content = format!(
+                     "[Desktop Entry]\n\
+                      Type=Application\n\
+                      Name={}\n\
+                      Exec={}\n\
+                      Icon={}\n\
+                      X-GNOME-Autostart-enabled=true\n",
+                     name, exec_cmd, app_id
+                 );
+                 
+                 if let Err(e) = std::fs::write(&desktop_path, content) {
+                      eprintln!("Failed to write autostart file: {}", e);
+                 }
+             } else {
+                 if desktop_path.exists() {
+                     let _ = std::fs::remove_file(desktop_path);
+                 }
+             }
+         });
+
          settings.bind("start-in-background", &*imp.row_background, "active").build();
          
          settings.bind("systray-icon", &*imp.row_tray, "selected")

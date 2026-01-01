@@ -23,6 +23,9 @@ mod imp {
         
         // Manual storage for the WebView
         pub web_view: std::cell::OnceCell<webkit6::WebView>,
+        
+        // Force Close Flag
+        pub force_close: std::cell::Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -44,6 +47,20 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed(); // Call parent constructed first
             let obj = self.obj();
+
+            // Apply devel class if needed
+            // Fallback to env var since obj.application() might be None in constructed
+            let app_id = obj.application()
+                .and_then(|app| app.application_id())
+                .map(|s| s.to_string())
+                .or_else(|| std::env::var("FLATPAK_ID").ok())
+                .unwrap_or_default();
+
+            println!("DEBUG: Resolved App ID: '{}'", app_id);
+            if app_id.contains("Dev") || app_id.contains("Devel") {
+                 println!("DEBUG: 'Dev/Devel' detected. Adding 'devel' css class.");
+                 obj.add_css_class("devel");
+            }
 
             // 0. Setup Persistent Network Session
             let data_dir = glib::user_data_dir().join("karere").join("webkit");
@@ -107,7 +124,7 @@ mod imp {
             });
 
             // Handle Navigation Policy (External Links)
-            let obj_weak_nav = obj.downgrade();
+            let _obj_weak_nav = obj.downgrade();
             web_view.connect_decide_policy(move |_, decision, decision_type| {
                 match decision_type {
                      webkit6::PolicyDecisionType::NavigationAction | webkit6::PolicyDecisionType::NewWindowAction => {
@@ -160,6 +177,11 @@ mod imp {
 
             // Handle Close Request (Background Mode)
             obj.connect_close_request(|window| {
+                if window.imp().force_close.get() {
+                    return glib::Propagation::Proceed;
+                }
+                
+                // Hide instead of close
                 window.set_visible(false);
                 glib::Propagation::Stop
             });
@@ -662,8 +684,11 @@ mod imp {
              let obj = self.obj();
              
              // 1. High Contrast
-             let style_manager = adw::StyleManager::default();
-             settings.bind("high-contrast", &style_manager, "high-contrast").build();
+             // AdwStyleManager::high-contrast is read-only, we cannot bind TO it.
+             // Libadwaita automatically handles system high-contrast settings.
+             // If manual override is needed, it requires a different approach, but usually not recommended.
+             // let style_manager = adw::StyleManager::default();
+             // settings.bind("high-contrast", &style_manager, "high-contrast").build();
 
              // 2. Reduce Motion
              let settings_anim = settings.clone();
@@ -776,5 +801,10 @@ glib::wrapper! {
 impl KarereWindow {
     pub fn new(app: &adw::Application) -> Self {
         glib::Object::builder().property("application", app).build()
+    }
+
+    pub fn force_close(&self) {
+        self.imp().force_close.set(true);
+        self.close();
     }
 }

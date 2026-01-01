@@ -11,6 +11,11 @@
       <summary>System Tray Icon</summary>
       <description>System tray icon behavior (auto, enabled, disabled).</description>
     </key>
+    <key name="run-on-startup" type="b">
+      <default>false</default>
+      <summary>Run on startup</summary>
+      <description>Whether to start the application automatically when the user logs in.</description>
+    </key>
     <key name="theme" type="s">
       <default>'system'</default>
       <summary>Theme</summary>

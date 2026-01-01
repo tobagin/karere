@@ -15,6 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Flatpak Build**: Fixed `appstreamcli compose` errors and ensured correct asset installation.
 - **Build System**: Improved `cargo-sources.json` generation and synchronization.
 
+## [2.0.1] - 2026-01-01
+
+### Added
+- **Auto-Start**: Added a toggle in preferences to control "Run on Startup" behavior (default: false)
+- **Development Icons**: Stripe pattern for development version icons
+
+### Fixed
+- **Tray Icon**: Fixed quit behavior to properly terminate the application
+
 ## [2.0.0] - 2025-12-29
 
 ### Added

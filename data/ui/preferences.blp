@@ -11,6 +11,10 @@ template $KarerePreferencesWindow : Adw.PreferencesDialog {
     Adw.PreferencesGroup {
       title: "Startup";
 
+      Adw.SwitchRow row_startup {
+        title: "Run on Startup";
+      }
+
       Adw.SwitchRow row_background {
         title: "Start in background";
       }

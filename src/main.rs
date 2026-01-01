@@ -126,6 +126,16 @@ fn main() -> anyhow::Result<()> {
         let app_weak = app.downgrade();
         action_quit.connect_activate(move |_, _| {
             if let Some(app) = app_weak.upgrade() {
+                for window in app.windows() {
+                    // Start by assuming it's a KarereWindow directly or use proper casting.
+                    // The error was that `downcast` consumes `window`.
+                    // We can clone `window` (which is a cheap GObject ref) for the attempt.
+                    if let Ok(win) = window.clone().downcast::<KarereWindow>() {
+                        win.force_close();
+                    } else {
+                        window.close();
+                    }
+                }
                 app.quit();
             }
         });

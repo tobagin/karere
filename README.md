@@ -59,6 +59,7 @@ For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md)
 - **Privacy Settings**: Control message previews and system tray behavior
 - **Theme Selection**: Light, Dark, or System preference
 - **Permission Management**: Persistent controls for Microphone and Notifications
+- **Startup Control**: Toggle automatic launch on login
 
 ## Installation
 
