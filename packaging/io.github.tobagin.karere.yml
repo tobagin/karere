@@ -10,6 +10,7 @@ finish-args:
   - --socket=wayland
   - --device=dri
   - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=org.freedesktop.StatusNotifierWatcher
   - --talk-name=org.freedesktop.Notifications
   - --filesystem=xdg-download
   # Audio for notification sounds and media
@@ -42,23 +43,21 @@ cleanup:
 
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin
+  env:
+    CARGO_HOME: /run/build/karere/cargo
 
 modules:
   - name: hunspell-dictionaries
     buildsystem: simple
     build-commands:
       - mkdir -p /app/share/hunspell
-      # Install all dictionaries from LibreOffice dictionaries repository
-      # This script finds all .dic and .aff files and copies them to /app/share/hunspell
       - |
         find . -type f \( -name "*.dic" -o -name "*.aff" \) ! -path "*/hyph_*" ! -path "*/.git/*" ! -path "*/util/*" | while read -r file; do
           filename=$(basename "$file")
-          # Skip hyphenation dictionaries (hyph_*) - we only want spell checking dictionaries
           if [[ ! "$filename" =~ ^hyph_ ]]; then
             install -Dm644 "$file" "/app/share/hunspell/$filename"
           fi
         done
-      - echo "Installed $(ls -1 /app/share/hunspell/*.dic 2>/dev/null | wc -l) dictionaries"
     sources:
       - type: archive
         url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-26.2.0.1.zip
@@ -76,28 +75,28 @@ modules:
 
   - name: karere
     buildsystem: simple
-    build-options:
-      env:
-        CARGO_HOME: /run/build/karere/cargo
     build-commands:
       - cargo build --release
       - install -Dm755 target/release/karere -t /app/bin/
-      - sed -i "s/@APP_ID@/io.github.tobagin.karere/g" data/io.github.tobagin.karere.desktop data/io.github.tobagin.karere.metainfo.xml
-      - sed -i "s/@APP_NAME@/Karere/g" data/io.github.tobagin.karere.desktop data/io.github.tobagin.karere.metainfo.xml
-      - install -Dm644 data/icons/hicolor/scalable/apps/io.github.tobagin.karere.svg -t /app/share/icons/hicolor/scalable/apps/
-      - install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
-      - install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-new-message-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
-      - install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-notification-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
-      - install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-do-not-disturb-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
-      - mkdir -p /app/share/sounds/karere
-      - install -Dm644 data/sounds/*.oga -t /app/share/sounds/karere/
-      - install -Dm644 data/io.github.tobagin.karere.gschema.xml -t /app/share/glib-2.0/schemas/
-      - install -Dm644 data/io.github.tobagin.karere.desktop -t /app/share/applications/
-      - install -Dm644 data/io.github.tobagin.karere.metainfo.xml -t /app/share/metainfo/
+      - |
+        # Patch files with actual ID/Name
+        sed -i "s/@APP_ID@/${FLATPAK_ID}/g" data/io.github.tobagin.karere.metainfo.xml
+        sed -i "s/@APP_NAME@/Karere/g" data/io.github.tobagin.karere.metainfo.xml
+        sed -i "s/@APP_ID@/${FLATPAK_ID}/g" data/io.github.tobagin.karere.desktop
+        sed -i "s/@APP_NAME@/Karere/g" data/io.github.tobagin.karere.desktop
+        
+        install -Dm644 data/icons/hicolor/scalable/apps/io.github.tobagin.karere.svg -t /app/share/icons/hicolor/scalable/apps/
+        install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
+        install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-new-message-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
+        install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-notification-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
+        install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere-do-not-disturb-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
+        install -Dm644 data/io.github.tobagin.karere.desktop -t /app/share/applications/
+        install -Dm644 data/io.github.tobagin.karere.metainfo.xml -t /app/share/metainfo/
+        install -Dm644 data/io.github.tobagin.karere.gschema.xml -t /app/share/glib-2.0/schemas/
       - glib-compile-schemas /app/share/glib-2.0/schemas
     sources:
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v2.0.1
-        commit: 075ed75bfd7128f74d43486e330c91ed61f0caf5
+        tag: v2.0.2
+        commit: 80d1ad1538e65e34f953cb9b78b92b4ee7c71915
       - cargo-sources.json

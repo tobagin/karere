@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.0.2] - 2026-01-02
+
+### Fixed
+- **Tray Icon**: Fixed missing tray icon on GNOME by granting `org.freedesktop.StatusNotifierWatcher` permission.
+
 ## [2.0.1] - 2026-01-01
 
 ### Added

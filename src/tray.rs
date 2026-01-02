@@ -99,7 +99,7 @@ pub fn spawn_tray(visible: Arc<AtomicBool>, has_unread: Arc<AtomicBool>) -> Resu
     // Actually, to be safe, let's leak the runtime so it keeps running background tasks?
     // Or assume ksni/zbus handles its own threads.
     // Using block_on for now.
-    let handle = rt.block_on(tray.spawn())?;
+    let handle = rt.block_on(tray.disable_dbus_name(true).spawn())?;
     // We might need to keep rt alive? 
     // Let's store it in a static if needed, but simplest fix first.
     // Actually, zbus 5 usually requires an async executor running. 
