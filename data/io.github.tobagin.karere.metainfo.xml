@@ -83,21 +83,7 @@
     <control>pointing</control>
     <control>touch</control>
   </recommends>
-  
-  <categories>
-    <category>Network</category>
-    <category>InstantMessaging</category>
-    <category>Chat</category>
-  </categories>
-  
-  <keywords>
-    <keyword>whatsapp</keyword>
-    <keyword>chat</keyword>
-    <keyword>messaging</keyword>
-    <keyword>web</keyword>
-    <keyword>communication</keyword>
-  </keywords>
-  
+   
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
