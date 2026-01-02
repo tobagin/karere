@@ -69,6 +69,7 @@
   <url type="donation">https://github.com/sponsors/tobagin</url>
   <url type="contact">https://github.com/tobagin</url>
   <url type="contribute">https://github.com/tobagin/karere</url>
+  <url type="vcs-browser">https://github.com/tobagin/karere</url>
 
   <developer id="io.github.tobagin">
     <name>Thiago Fernandes</name>
