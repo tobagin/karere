@@ -98,5 +98,5 @@ modules:
       - type: git
         url: https://github.com/tobagin/karere
         tag: v2.0.7
-        commit: 58e50a7b3e0ec6e8d2f71bde1ef01392c2eaff8c
+        commit: 90cbd8f55924d49fdecb0130e2906266a70d0d07
       - cargo-sources.json
