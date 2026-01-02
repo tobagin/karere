@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.0.6] - 2026-01-02
+
+### Added
+- Add Sabri Ünal as a contributor to the About dialog.
+
 ## [2.0.5] - 2026-01-02
 
 ### Added

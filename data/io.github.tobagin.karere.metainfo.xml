@@ -101,6 +101,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.0.6" date="2026-01-02">
+      <description>
+        <ul>
+          <li>Add new contributor Sabri Ünal to the About dialog</li>
+          <li>General improvements and versioning updates</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.5" date="2026-01-02">
       <description>
         <ul>

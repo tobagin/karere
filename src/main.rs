@@ -149,7 +149,7 @@ fn main() -> anyhow::Result<()> {
         action_about.connect_activate(move |_, _| {
             if let Some(app) = app_weak.upgrade() {
                 if let Some(window) = app.active_window() {
-                    let developers = vec!["Thiago Fernandes", "Aman9Das", "Cameo"];
+                    let developers = vec!["Thiago Fernandes", "Aman9Das", "Cameo", "Sabri Ünal"];
                     let designers = vec!["Thiago Fernandes"];
                     let artists = vec!["Thiago Fernandes"];
                     
@@ -164,7 +164,7 @@ fn main() -> anyhow::Result<()> {
                     let about = adw::AboutDialog::builder()
                         .application_name(app_name)
                         .developer_name("The Karere Team") 
-                        .version("2.0.0")
+                        .version("2.0.6")
                         .comments(comments)
                         .website("https://tobagin.github.io/apps/karere")
                         .issue_url("https://github.com/tobagin/karere/issues")
@@ -176,7 +176,7 @@ fn main() -> anyhow::Result<()> {
                         .designers(designers.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
                         .artists(artists.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
                         .translator_credits("Thiago Fernandes")
-                        .release_notes(&get_release_notes("2.0.0"))
+                        .release_notes(&get_release_notes("2.0.6"))
                         .build();
                         
                     about.add_link(gettext("Source").as_str(), "https://github.com/tobagin/karere");
