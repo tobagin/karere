@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.0.5] - 2026-01-02
+
+### Added
+- Restore `xdg-config/autostart` permission (linter exception granted).
+
 ## [2.0.4] - 2026-01-02
 
 ### Fixed
