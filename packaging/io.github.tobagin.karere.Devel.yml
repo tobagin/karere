@@ -19,8 +19,6 @@ finish-args:
   # Custom download directory access (optional, usually handled by portals)
   - --filesystem=xdg-download
   - --filesystem=home
-  - --filesystem=xdg-run/gvfsd
-  - --talk-name=org.gtk.vfs.*
   # Audio for notification sounds and media
   - --socket=pulseaudio
   # Configure WebKit spell checker dictionary paths (bundled and runtime)

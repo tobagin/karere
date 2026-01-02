@@ -6,28 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
 
-## [Unreleased]
-
+### Changed
 ### Fixed
-- **Audio Playback**: Resolved issues with voice messages and video playback audio output.
-- **Translations**: Completed translation coverage for English (UK/US), Portuguese (BR/PT), and Spanish.
-- **Flatpak Build**: Fixed `appstreamcli compose` errors and ensured correct asset installation.
-- **Build System**: Improved `cargo-sources.json` generation and synchronization.
+### Removed
 
-## [2.0.2] - 2026-01-01
-
-### Fixed
-- **Auto-Start**: Fixed autostart toggle not removing `.desktop` file correctly when running in Flatpak (now uses host configuration directory)
 
 ## [2.0.1] - 2026-01-01
 
 ### Added
 - **Auto-Start**: Added a toggle in preferences to control "Run on Startup" behavior (default: false)
 - **Development Icons**: Stripe pattern for development version icons
+- **Translations**: Completed translation coverage for English (UK/US), Portuguese (BR/PT), and Spanish.
 
 ### Fixed
+- **Auto-Start**: Fixed autostart toggle pathing for Flatpak environments
 - **Tray Icon**: Fixed quit behavior to properly terminate the application
+- **Audio Playback**: Resolved issues with voice messages and video playback audio output.
+- **Flatpak Build**: Fixed `appstreamcli compose` errors and ensured correct asset installation.
+
+### Changed
+- **Build System**: Improved `cargo-sources.json` generation and synchronization.
 
 ## [2.0.0] - 2025-12-29
 

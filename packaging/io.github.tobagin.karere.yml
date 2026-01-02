@@ -12,8 +12,6 @@ finish-args:
   - --talk-name=org.kde.StatusNotifierWatcher
   - --talk-name=org.freedesktop.Notifications
   - --filesystem=xdg-download
-  - --filesystem=xdg-run/gvfsd
-  - --talk-name=org.gtk.vfs.*
   # Audio for notification sounds and media
   - --socket=pulseaudio
   # Configure WebKit spell checker dictionary paths (bundled and runtime)
@@ -100,6 +98,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v2.0.0
-        commit: deac68015fa9b8392fab09a0ae9156e54206d2cd
+        tag: v2.0.1
+        commit: 075ed75bfd7128f74d43486e330c91ed61f0caf5
       - cargo-sources.json

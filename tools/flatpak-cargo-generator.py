@@ -459,7 +459,7 @@ async def generate_sources(
                 }
             ),
             "dest": CARGO_HOME,
-            "dest-filename": "config",
+            "dest-filename": "config.toml",
         }
     )
     return sources

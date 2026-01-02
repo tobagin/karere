@@ -4,26 +4,25 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
-## 🎉 Version 2.0.0 - Major Rust Rewrite
+## 🎉 Version 2.0.1 - Maintenance & Improvements
 
-**Karere 2.0.0** is a complete rewrite of the application in **Rust**, offering superior performance, memory safety, and native integration. It includes a brand new system tray icon, custom notification sounds, a completely redesigned Preferences UI, and a full suite of accessibility tools.
+**Karere 2.0.1** brings important fixes and improvements to the 2.0 release, including better startup control, translation updates, and stability enhancements.
 
 ### ✨ Key Features
 
 - **🚀 Native Rust Backend**: Built with Rust, GTK4, and Libadwaita for rock-solid stability
-- **🔔 Custom Notification Sounds**: Choose from 5 different notification sounds including "WhatsApp" style
+- **🏁 Startup Control**: Preference to toggle "Run on Startup" (now fixed for Flatpak)
+- **🔔 Custom Notification Sounds**: Choose from 5 different notification sounds
 - **📥 System Tray Integration**: Background execution with unread message indication
-- **♿ Comprehensive Accessibility**: High Contrast, Focus Indicators, Screen Reader optimizations, and more
+- **♿ Comprehensive Accessibility**: High Contrast, Focus Indicators, Screen Reader optimizations
 - **📝 Auto-Correct**: Toggleable auto-correction with multi-language dictionary support
-- **⌨️ Keyboard Shortcuts**: Global F12 for DevTools and improved navigation
-- **📂 Friendly Paths**: Improved display of download directories
 
-### 🆕 What's New in 2.0.0
+### 🆕 What's New in 2.0.1
 
-- **Full Codebase Rewrite**: Transited from Vala to Rust
-- **Redesigned Preferences**: Modern declarative UI using Blueprint
-- **Enhanced Sound System**: Preview and select custom notification sounds
-- **Accessibility Suite**: Full implementation of GNOME accessibility standards
+- **Startup Control**: Manage application autostart from Preferences
+- **Stability Fixes**: Resolved audio playback and tray icon quit issues
+- **Translation Updates**: Complete coverage for EN, PT, and ES
+- **Flatpak Improvements**: Better build stability and permission handling
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 
