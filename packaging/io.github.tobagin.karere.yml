@@ -10,6 +10,7 @@ finish-args:
   - --socket=wayland
   - --device=dri
   - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=org.freedesktop.StatusNotifierWatcher
   - --talk-name=org.freedesktop.Notifications
   - --filesystem=xdg-download
   # Audio for notification sounds and media
@@ -99,5 +100,5 @@ modules:
       - type: git
         url: https://github.com/tobagin/karere
         tag: v2.0.1
-        commit: 075ed75bfd7128f74d43486e330c91ed61f0caf5
+        commit: 62624731afac259392a8fc3cb77b2c138b09f39c
       - cargo-sources.json
