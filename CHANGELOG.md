@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Switch to XDG Background Portal for autostart functionality.
 - Add PipeWire permission (`xdg-run/pipewire-0`) for improved audio support.
 
+### Fixed
+- **Auto-Start**: Implemented robust toggling using a global Tokio runtime to prevent XDG Portal hangs on repeated requests.
+- **Quit**: Improved window closing logic to ensure application termination.
+
 ## [2.0.6] - 2026-01-02
 
 ### Added

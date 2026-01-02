@@ -3,6 +3,8 @@ use libadwaita as adw;
 use adw::prelude::*;
 use gtk::{gio, glib};
 use std::sync::atomic::Ordering;
+use once_cell::sync::Lazy;
+use tokio::runtime::Runtime;
 
 use gettextrs::*;
 
@@ -12,6 +14,10 @@ mod preferences;
 mod spellcheck;
 
 use window::KarereWindow;
+
+static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
+    Runtime::new().expect("Failed to create Tokio runtime")
+});
 
 fn main() -> anyhow::Result<()> {
     env_logger::init();
@@ -61,20 +67,17 @@ fn main() -> anyhow::Result<()> {
         .application_id(&app_id)
         .build();
 
-
     println!("Starting main... App ID: {}", app_id);
 
     app.connect_startup(move |app| {
         println!("Startup signal received.");
         adw::init().expect("Failed to initialize Libadwaita");
 
-        // Conditional Autostart Check
-        // If the user has "Run on Startup" enabled, we ensure the portal permission is active.
-                            .await;
-                    });
-                }
-            });
-        }
+        // Sync Autostart Status
+        // We ensure the portal permission matches the user preference on every startup.
+        let settings = gio::Settings::new("io.github.tobagin.karere");
+        let enabled = settings.boolean("run-on-startup");
+        app.activate_action("sync-autostart", Some(&enabled.to_variant()));
 
         // Register icons
         if let Some(display) = gtk::gdk::Display::default() {
@@ -82,15 +85,32 @@ fn main() -> anyhow::Result<()> {
             icon_theme.add_resource_path("/io/github/tobagin/karere/icons");
         }
 
+        // Sync Autostart Action
+        let action_sync_autostart = gio::SimpleAction::new("sync-autostart", Some(glib::VariantTy::BOOLEAN));
+        action_sync_autostart.connect_activate(|_, parameter| {
+             let enabled = parameter.unwrap().get::<bool>().unwrap();
+             
+             std::thread::spawn(move || {
+                // Use global runtime to reuse resources/connections context potential
+                RUNTIME.block_on(async {
+                    let request_future = ashpd::desktop::background::Background::request()
+                        .reason("Syncing autostart preference")
+                        .auto_start(enabled)
+                        .send();
+                        
+                    // Wrap in timeout
+                    let _ = tokio::time::timeout(std::time::Duration::from_secs(5), request_future).await;
+                });
+            });
+        });
+        app.add_action(&action_sync_autostart);
+
         // Quit Action
         let action_quit = gio::SimpleAction::new("quit", None);
         let app_weak = app.downgrade();
         action_quit.connect_activate(move |_, _| {
             if let Some(app) = app_weak.upgrade() {
                 for window in app.windows() {
-                    // Start by assuming it's a KarereWindow directly or use proper casting.
-                    // The error was that `downcast` consumes `window`.
-                    // We can clone `window` (which is a cheap GObject ref) for the attempt.
                     if let Ok(win) = window.clone().downcast::<KarereWindow>() {
                         win.force_close();
                     } else {

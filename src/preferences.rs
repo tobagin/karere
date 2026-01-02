@@ -113,32 +113,13 @@ impl KarerePreferencesWindow {
          // 1. Startup
          settings.bind("run-on-startup", &*imp.row_startup, "active").build();
          settings.connect_changed(Some("run-on-startup"), move |settings, _| {
-             let enabled = settings.boolean("run-on-startup");
-             std::thread::spawn(move || {
-                 if let Ok(rt) = tokio::runtime::Runtime::new() {
-                     rt.block_on(async move {
-                         let result = if enabled {
-                             ashpd::desktop::background::Background::request()
-                                 .reason("Allow Karere to run on startup")
-                                 .auto_start(true)
-                                 .send()
-                                 .await
-                         } else {
-                             ashpd::desktop::background::Background::request()
-                                 .reason("Disable run on startup")
-                                 .auto_start(false)
-                                 .send()
-                                 .await
-                         };
-
-                         if let Err(e) = result {
-                             eprintln!("Failed to update autostart permission: {}", e);
-                         }
-                     });
-                 } else {
-                     eprintln!("Failed to create Tokio runtime for autostart toggle.");
-                 }
-             });
+            let enabled = settings.boolean("run-on-startup");
+            // Call the action defined in main.rs
+            if let Some(app) = gio::Application::default() {
+                app.activate_action("sync-autostart", Some(&enabled.to_variant()));
+            } else {
+                eprintln!("Failed to get default application to sync autostart.");
+            }
          });
 
          settings.bind("start-in-background", &*imp.row_background, "active").build();
