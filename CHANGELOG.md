@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.0.7] - 2026-01-02
+
+### Changed
+- Switch to XDG Background Portal for autostart functionality.
+- Add PipeWire permission (`xdg-run/pipewire-0`) for improved audio support.
+
 ## [2.0.6] - 2026-01-02
 
 ### Added

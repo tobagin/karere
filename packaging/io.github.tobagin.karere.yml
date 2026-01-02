@@ -13,7 +13,7 @@ finish-args:
   - --talk-name=org.freedesktop.StatusNotifierWatcher
   - --talk-name=org.freedesktop.Notifications
   - --filesystem=xdg-download
-  - --filesystem=xdg-config/autostart
+  - --filesystem=xdg-run/pipewire-0
   # Audio for notification sounds and media
   - --socket=pulseaudio
   # Configure WebKit spell checker dictionary paths (bundled and runtime)
@@ -98,6 +98,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v2.0.6
-        commit: be30022d97b518d9281974d7976227f63285fbd1
+        tag: v2.0.7
+        commit: 58e50a7b3e0ec6e8d2f71bde1ef01392c2eaff8c
       - cargo-sources.json

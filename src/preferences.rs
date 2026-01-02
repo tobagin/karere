@@ -114,40 +114,31 @@ impl KarerePreferencesWindow {
          settings.bind("run-on-startup", &*imp.row_startup, "active").build();
          settings.connect_changed(Some("run-on-startup"), move |settings, _| {
              let enabled = settings.boolean("run-on-startup");
-             // Autostart Logic
-             let app = gio::Application::default();
-             let app_id = app.and_then(|a| a.application_id()).unwrap_or_else(|| "io.github.tobagin.karere".into());
-             // Use home_dir() to escape Flatpak sandbox XDG_CONFIG_HOME
-             let autostart_dir = glib::home_dir().join(".config").join("autostart");
-             let desktop_path = autostart_dir.join(format!("{}.desktop", app_id));
+             std::thread::spawn(move || {
+                 if let Ok(rt) = tokio::runtime::Runtime::new() {
+                     rt.block_on(async move {
+                         let result = if enabled {
+                             ashpd::desktop::background::Background::request()
+                                 .reason("Allow Karere to run on startup")
+                                 .auto_start(true)
+                                 .send()
+                                 .await
+                         } else {
+                             ashpd::desktop::background::Background::request()
+                                 .reason("Disable run on startup")
+                                 .auto_start(false)
+                                 .send()
+                                 .await
+                         };
 
-             if enabled {
-                 if let Err(e) = std::fs::create_dir_all(&autostart_dir) {
-                     eprintln!("Failed to create autostart dir: {}", e);
-                     return;
+                         if let Err(e) = result {
+                             eprintln!("Failed to update autostart permission: {}", e);
+                         }
+                     });
+                 } else {
+                     eprintln!("Failed to create Tokio runtime for autostart toggle.");
                  }
-                 let name = if app_id.ends_with("Devel") { "Karere (Dev)" } else { "Karere" };
-                 
-                 // Note: This assumes Flatpak environment mostly
-                 let exec_cmd = format!("flatpak run {}", app_id);
-                 let content = format!(
-                     "[Desktop Entry]\n\
-                      Type=Application\n\
-                      Name={}\n\
-                      Exec={}\n\
-                      Icon={}\n\
-                      X-GNOME-Autostart-enabled=true\n",
-                     name, exec_cmd, app_id
-                 );
-                 
-                 if let Err(e) = std::fs::write(&desktop_path, content) {
-                      eprintln!("Failed to write autostart file: {}", e);
-                 }
-             } else {
-                 if desktop_path.exists() {
-                     let _ = std::fs::remove_file(desktop_path);
-                 }
-             }
+             });
          });
 
          settings.bind("start-in-background", &*imp.row_background, "active").build();

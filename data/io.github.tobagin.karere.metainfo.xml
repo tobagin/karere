@@ -101,6 +101,13 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.0.7" date="2026-01-02">
+      <description>
+        <ul>
+          <li>Switch to XDG Background Portal for autostart (improves security and compatibility)</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.6" date="2026-01-02">
       <description>
         <ul>

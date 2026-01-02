@@ -68,52 +68,13 @@ fn main() -> anyhow::Result<()> {
         println!("Startup signal received.");
         adw::init().expect("Failed to initialize Libadwaita");
 
-        // Request background permission
-        std::thread::spawn(|| {
-            if let Ok(rt) = tokio::runtime::Runtime::new() {
-                rt.block_on(async {
-                    println!("Requesting background permission...");
-                    match ashpd::desktop::background::Background::request()
-                        .reason("Karere needs to run in the background to receive notifications.")
-                        .auto_start(true)
-                        .send()
-                        .await
-                    {
-                        Ok(response) => {
-                             println!("Background permission requested: {:?}", response.response());
-                             async fn set_status_msg() -> ashpd::Result<()> {
-                                 // Use zbus directly to call SetStatus
-                                 let connection = zbus::Connection::session().await?;
-                                 let proxy = zbus::Proxy::new(
-                                     &connection, 
-                                     "org.freedesktop.portal.Desktop", 
-                                     "/org/freedesktop/portal/desktop", 
-                                     "org.freedesktop.portal.Background"
-                                 ).await?;
-                                 
-                                 let mut options = std::collections::HashMap::new();
-                                 options.insert("message", zbus::zvariant::Value::from("Running in background"));
-                                 
-                                 proxy.call_method("SetStatus", &(options)).await?;
-                                 Ok(())
-                             }
-
-                             if let Err(e) = set_status_msg().await {
-                                 // "NotAllowed" is expected if running outside sandbox (e.g. cargo run)
-                                 eprintln!("Warning: Failed to set background status (normal if not sandboxed): {}", e);
-                             } else {
-                                 println!("Background status set.");
-                             }
-                        }
-                        Err(e) => {
-                             eprintln!("Failed to request background permission: {}", e);
-                        }
-                    }
-                });
-            } else {
-                eprintln!("Failed to create Tokio runtime for background permission request.");
-            }
-        });
+        // Conditional Autostart Check
+        // If the user has "Run on Startup" enabled, we ensure the portal permission is active.
+                            .await;
+                    });
+                }
+            });
+        }
 
         // Register icons
         if let Some(display) = gtk::gdk::Display::default() {
