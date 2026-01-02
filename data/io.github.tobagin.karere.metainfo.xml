@@ -101,6 +101,13 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.0.3" date="2026-01-02">
+      <description>
+        <ul>
+          <li>Add xdg-config/autostart permission for autostart support</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.2" date="2026-01-02">
       <description>
         <p>Bug Fix Release</p>

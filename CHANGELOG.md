@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.0.3] - 2026-01-02
+
+### Added
+- Add `--filesystem=xdg-config/autostart` permission to Flatpak manifest to support autostart functionality.
+
 ## [2.0.2] - 2026-01-02
 
 ### Fixed
