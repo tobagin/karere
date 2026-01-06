@@ -26,27 +26,28 @@ dependency('libadwaita-1', version: '>= 1.0.0')
 cargo = find_program('cargo', required: true)
 fs = import('fs')
 
-cargo_script = find_program('build-aux/cargo.sh')
+output = meson.project_name()
 
-output = 'karere'
+# Cargo build logic adapted from Ntfyr
+cargo_options = [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
+cargo_options += [ '--target-dir', meson.project_build_root() / 'target' ]
 
-# Detect vendored cargo sources (Flatpak)
-if fs.is_dir('cargo') and profile != 'development'
-  message('Found vendored cargo sources, enabling offline build')
-  cargo_options = [ '--release', '--offline' ]
-  cargo_home = meson.project_source_root() / 'cargo'
+if get_option('profile') == 'development'
+  cargo_options += [ '--offline' ]
+  # In dev profile, we might still want release-like optimizations or debug:
+  # Ntfyr used 'debug' logic here, but Karere used 'release'. Sticking to release for now as per previous setup.
+  cargo_options += [ '--release' ]
+  rust_target = 'release'
 else
-  message('No vendored cargo sources found, using default build')
-  cargo_options = [ '--release' ]
-  cargo_home = meson.project_build_root() / 'cargo-home'
+  cargo_options += [ '--release', '--offline' ]
+  rust_target = 'release'
 endif
 
-message('Building with Cargo options: @0@'.format(cargo_options))
-
-cargo_env = {
-  'CARGO_HOME': cargo_home,
-  'CARGO_TARGET_DIR': meson.project_build_root() / 'target',
-}
+if fs.is_dir(meson.project_source_root() / 'cargo')
+  cargo_env = [ 'CARGO_HOME=' + meson.project_source_root() / 'cargo' ]
+else
+  cargo_env = [ 'CARGO_HOME=' + meson.project_build_root() / 'cargo-home' ]
+endif
 
 custom_target('cargo-build',
   build_by_default: true,
@@ -56,13 +57,13 @@ custom_target('cargo-build',
   install: true,
   install_dir: get_option('bindir'),
   command: [
-    cargo_script,
-    meson.project_build_root(),
-    meson.project_source_root(),
-    '@OUTPUT@',
+    'env',
+    cargo_env,
+    cargo, 'build',
     cargo_options,
+    '&&',
+    'cp', meson.project_build_root() / 'target' / rust_target / 'karere', '@OUTPUT@',
   ],
-  env: cargo_env,
 )
 
 subdir('data')

@@ -23,6 +23,7 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 - **Cleaner Permissions**: Removed direct D-Bus access for notifications.
 - **Download Fixes**: Improved handling of downloaded files in Flatpak.
 - **Bug Fixes**: Resolved Dead Key/composition input issues.
+- **Build System**: Migrated Flatpak build logic to `meson.build`.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

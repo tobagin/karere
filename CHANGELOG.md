@@ -70,6 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Auto-Start**: Fixed autostart toggle pathing for Flatpak environments
 - **Tray Icon**: Fixed quit behavior to properly terminate the application
 - **Audio Playback**: Resolved issues with voice messages and video playback audio output.
+- **Build**: Fixed installation issues with GSettings schemas and desktop file naming for development builds.
+- **Build**: Migrated Flatpak build logic to `meson.build` for better offline build support.
 - **Flatpak Build**: Fixed `appstreamcli compose` errors and ensured correct asset installation.
 
 ### Changed

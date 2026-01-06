@@ -108,6 +108,7 @@
           <li>Remove direct D-Bus notification permissions for cleaner manifest</li>
           <li>Fixed Open action for downloaded files</li>
           <li>Fixed Dead Key/composition input issues</li>
+          <li>Migrated Flatpak build logic to meson.build</li>
         </ul>
       </description>
     </release>

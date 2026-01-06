@@ -150,6 +150,24 @@ jobs:
         
         if [[ -n "$PR_URL" && "$PR_URL" != "null" ]]; then
           echo "✅ Created PR: $PR_URL"
+          
+          # Unsubscribe from the PR to avoid email flood
+          PR_NUMBER=$(echo "$API_RESPONSE" | jq -r '.number')
+          PR_NODE_ID=$(echo "$API_RESPONSE" | jq -r '.node_id')
+          
+          echo "🔕 Unsubscribing from PR #$PR_NUMBER (Node ID: $PR_NODE_ID)..."
+          
+          # Use GraphQL to mute the thread (state: IGNORED matches 'ignored: true')
+          gh api graphql -f query='
+            mutation($id: ID!) {
+              updateSubscription(input: {state: UNSUBSCRIBED, subscribableId: $id}) {
+                subscribable {
+                  viewerSubscription
+                }
+              }
+            }' -f id="$PR_NODE_ID" > /dev/null
+            
+          echo "✅ Successfully unsubscribed."
         else
           echo "⚠️ PR creation may have failed. API Response:"
           echo "$API_RESPONSE" | jq '.'
