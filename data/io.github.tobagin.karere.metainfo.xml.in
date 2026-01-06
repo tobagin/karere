@@ -101,6 +101,16 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.0.8" date="2026-01-06">
+      <description>
+        <ul>
+          <li>Switch to XDG Notification Portal (ashpd) for better sandboxing support</li>
+          <li>Remove direct D-Bus notification permissions for cleaner manifest</li>
+          <li>Fixed Open action for downloaded files</li>
+          <li>Fixed Dead Key/composition input issues</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.7" date="2026-01-02">
       <description>
         <ul>

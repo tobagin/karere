@@ -187,7 +187,8 @@ mod imp {
             });
 
             // Setup Settings Logic
-            let settings = gio::Settings::new("io.github.tobagin.karere");
+            let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+            let settings = gio::Settings::new(&app_id);
             
             // DEBUG: Check persistence at startup
             let asked_start = settings.boolean("web-notification-permission-asked");
@@ -217,37 +218,24 @@ mod imp {
             if let Some(ws) = webkit6::prelude::WebViewExt::settings(self.web_view.get().unwrap()) {
                  settings.bind("enable-developer-tools", &ws, "enable-developer-extras").build();
                  
-                 // User Agent Parity with Karere v1
-                 let version = "2.0.0"; // Hardcoded or env!("CARGO_PKG_VERSION")
-                 let user_agent = format!("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Karere/{}", version);
+                 // User Agent Spoofing (WebSettings only - JavaScript breaks composition!)
+                 // Use Safari on Linux - Chrome UA might be triggering issues?
+                 // Back when we tested this (Step 586), Safari UA + No JS overrides worked.
+                 // Let's go back to that "Known Good" state.
+                 let _version = "2.0.0"; // Available if needed: env!("CARGO_PKG_VERSION")
+                 let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15";
                  ws.set_user_agent(Some(&user_agent));
                  
-                 // Inject User Agent via UserScript for Parity
-                  if let Some(ucm) = self.web_view.get().unwrap().user_content_manager() {
-                       // 1. User Agent Spoofing
-                       let js_ua = format!(r#"
-                           Object.defineProperty(navigator, 'userAgent', {{
-                               get: function() {{ return '{}'; }},
-                               configurable: false,
-                               enumerable: true
-                           }});
-                           Object.defineProperty(navigator, 'platform', {{
-                               get: function() {{ return 'Linux x86_64'; }},
-                               configurable: false,
-                               enumerable: true
-                           }});
-                       "#, user_agent);
-                       
-                       let script_ua = webkit6::UserScript::new(
-                           &js_ua,
-                           webkit6::UserContentInjectedFrames::AllFrames,
-                           webkit6::UserScriptInjectionTime::Start,
-                           &[],
-                           &[],
-                       );
-                       ucm.add_script(&script_ua);
-
-                       // 2. Notification Persistence Sync (Proxy Strategy) - REMOVED
+                 // Disable quirks to restore our manual Linux UA
+                 ws.set_enable_site_specific_quirks(false);
+                 
+                 // CRITICAL: ANY JavaScript navigator override (userAgent OR platform) breaks dead key composition!
+                 // Validated by user: platform-only override also causes dead key bug.
+                 // We must NOT inject any scripts that modify navigator.
+                 // The "Download for Mac" banner is cosmetic and unavoidable.
+                 
+                 if let Some(_ucm) = self.web_view.get().unwrap().user_content_manager() {
+                       // Notification Persistence Sync (Proxy Strategy) - REMOVED
                        // We now rely on Host-Driven Trigger (on Load Finished) and PersistentNetworkSession.
                        // The Proxy is no longer needed to "lie" because we can now get the "truth" (native grant) fast enough.
                    }
@@ -300,7 +288,7 @@ mod imp {
                 session.connect_closure(
                      "download-started",
                      false,
-                     glib::closure_local!(move |_session: webkit6::NetworkSession, download: webkit6::Download| {
+                     glib::closure_local! (move |_session: webkit6::NetworkSession, download: webkit6::Download| {
                           let settings_dl = settings_dl.clone();
                            let overlay_weak = overlay_weak.clone();
                            let settings_finished = settings_dl.clone();
@@ -310,7 +298,7 @@ mod imp {
                           download.connect_closure(
                               "decide-destination",
                               false,
-                              glib::closure_local!(move |download: webkit6::Download, filename: glib::GString| -> bool {
+                              glib::closure_local! (move |download: webkit6::Download, filename: glib::GString| -> bool {
                                    let directory = settings_dl.string("download-directory");
                                    if !directory.is_empty() {
                                        let mut path_str = directory.to_string();
@@ -323,24 +311,31 @@ mod imp {
                                        let path = std::path::PathBuf::from(path_str);
                                        if path.exists() {
                                             let dest = path.join(filename.as_str());
-                                            // WebKitGTK set_destination expects an absolute path, not a URI.
-                                            if let Some(path_str) = dest.to_str() {
-                                                download.set_destination(path_str);
-                                                return true;
-                                            }
+                                            // WebKitGTK set_destination expects a URI, validation for it returning one.
+                                            let dest_file = gio::File::for_path(&dest);
+                                            let uri_str = dest_file.uri();
+                                            download.set_destination(&uri_str);
+                                            return true;
                                         }
                                    }
                                    false                     
-                              })
-                          );
+                              }
+                          ));
                           
                           // Handle Finished (Show Toast)
                           // let overlay_weak = overlay.downgrade();
                           download.connect_finished(move |download| {
                                let settings_dl = &settings_finished;
                                if let Some(overlay) = overlay_weak_fin.upgrade() {
-                                   if let Some(uri) = download.destination() {
-                                       if let Some(file) = gio::File::for_uri(&uri).path() {
+                                   // Try to get path from URI first (standard), fallback if needed
+                                   let file_path = if let Some(uri) = download.destination() {
+                                       gio::File::for_uri(&uri).path()
+                                           .or_else(|| gio::File::for_path(uri.as_str()).path()) // Fallback: maybe it was a path?
+                                   } else {
+                                       None
+                                   };
+
+                                   if let Some(file) = file_path {
                                             let filename = file.file_name().unwrap_or_default().to_string_lossy();
                                             // Downloads
                                             // Check Master & Download Toggles
@@ -358,10 +353,13 @@ mod imp {
                                                       note.set_icon(&gio::ThemedIcon::new("folder-download-symbolic"));
                                                       
                                                       // Add Open Action
-                                                      // We need an action to open URI. "app.open-uri" doesn't exist.
                                                       // "app.present-window" brings up app.
-                                                      // We can try to use default action to open file? 
-                                                      // For now, simple notification.
+                                                      // Use "app.open-download" with uri param
+                                                      if let Some(uri) = download.destination() {
+                                                          let uri_str = uri.to_string();
+                                                          let detailed_action = gio::Action::print_detailed_name("app.open-download", Some(&uri_str.to_variant()));
+                                                          note.set_default_action(&detailed_action);
+                                                      }
                                                 
                                                       if let Some(app) = gio::Application::default() {
                                                           app.send_notification(Some(&format!("dl-{}", glib::monotonic_time())), &note);
@@ -373,17 +371,17 @@ mod imp {
                                                       toast.set_timeout(5); 
 
                                                       toast.set_button_label(Some("Open"));
-                                                      let uri_str = uri.to_string();
-                                                      toast.connect_button_clicked(move |_| {
-                                                           let _ = gtk::show_uri(None::<&gtk::Window>, &uri_str, 0);
-                                                      });
+                                                      if let Some(uri) = download.destination() {
+                                                           let uri_str = uri.to_string();
+                                                           toast.set_action_name(Some("app.open-download"));
+                                                           toast.set_action_target_value(Some(&uri_str.to_variant()));
+                                                      }
                                                       overlay.add_toast(toast);
                                                  }
                                             }
                                        }
                                    }
-                               }
-                          });
+                               });
                           
                           // Handle Failed (Show Alert)
                           // Use `obj` (strong - KarereWindow wrapper) if available? 
@@ -424,8 +422,8 @@ mod imp {
                                }
                            }
                       });
-                     })
-                );
+                     }
+                ));
             }
             
             // 4. Notifications (Permissions)
@@ -587,21 +585,40 @@ mod imp {
                             }
                         }
                         
-                        let note = gio::Notification::new(&title);
-                        note.set_body(Some(&body_text));
-                        note.set_icon(&gio::ThemedIcon::new("dialog-information-symbolic"));
-                        
-                        // When clicked, activate the window
-                        note.set_default_action("app.present-window"); 
-                        
-                        let id = if let Some(tag) = notification.tag() {
+                        // Use ashpd for Portal Notifications
+                        let title_clone = title.clone();
+                        let body_clone = body_text.clone();
+                        let notification_id = if let Some(tag) = notification.tag() {
                              format!("karere-{}", tag)
                         } else {
                              format!("karere-msg-{}", glib::monotonic_time())
                         };
-                        
-                        println!("Sending notification to OS: ID={}", id); 
-                        app.send_notification(Some(&id), &note);
+
+                        glib::MainContext::default().spawn_local(async move {
+                            // Enter the tokio runtime context for ashpd/zbus
+                            let _guard = crate::RUNTIME.enter();
+                            
+                            // Create proxy
+                            match ashpd::desktop::notification::NotificationProxy::new().await {
+                                Ok(proxy) => {
+                                    let notif = ashpd::desktop::notification::Notification::new(&title_clone)
+                                        .body(body_clone.as_str())
+                                        .icon(ashpd::desktop::Icon::with_names(&["dialog-information-symbolic"]))
+                                        .default_action("app.present-window")
+                                        .priority(ashpd::desktop::notification::Priority::High);
+
+                                    // Check if we can add an ID (ashpd 0.4+ uses send_notification with ID usually, let's check basic usage)
+                                    // wrapper: "add_notification(&self, id: &str, notification: &Notification)"
+                                    
+                                    if let Err(e) = proxy.add_notification(&notification_id, notif).await {
+                                        eprintln!("WARNING: Failed to send portal notification: {}", e);
+                                    } else {
+                                        println!("Sent portal notification: ID={}", notification_id); 
+                                    }
+                                },
+                                Err(e) => eprintln!("ERROR: Failed to connect to notification portal: {}", e),
+                            }
+                        });
                         
                         // 5. Play Custom Sound (if enabled)
                         if settings_notify_msg.boolean("notify-sound-enabled") {

@@ -4,9 +4,9 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
-## 🎉 Version 2.0.7 - Improved Portal Integration
+## 🎉 Version 2.0.8 - Improved System Integration
 
-**Karere 2.0.7** enhances system integration by adopting standard portals for background execution.
+**Karere 2.0.8** enhances system integration by adopting the Notification Portal.
 
 ### ✨ Key Features
 
@@ -17,11 +17,12 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 - **♿ Comprehensive Accessibility**: High Contrast, Focus Indicators, Screen Reader optimizations
 - **📝 Auto-Correct**: Toggleable auto-correction with multi-language dictionary support
 
-### 🆕 What's New in 2.0.7
+### 🆕 What's New in 2.0.8
 
-- **Portal Adoption**: Switched to the XDG Background Portal for autostart management.
-- **Enhanced Security**: Removed filesystem permission requirements for autostart.
-- **Improved Compatibility**: Satisfied Flathub requirements while maintaining features.
+- **Portal Notifications**: Full support for the XDG Notification Portal via `ashpd`.
+- **Cleaner Permissions**: Removed direct D-Bus access for notifications.
+- **Download Fixes**: Improved handling of downloaded files in Flatpak.
+- **Bug Fixes**: Resolved Dead Key/composition input issues.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

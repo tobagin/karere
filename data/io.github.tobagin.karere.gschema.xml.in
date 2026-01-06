@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schemalist>
-  <schema id="io.github.tobagin.karere" path="/io/github/tobagin/karere/">
+  <schema id="@APP_ID@" path="@APP_PATH@">
     <key name="start-in-background" type="b">
       <default>false</default>
       <summary>Start in background</summary>

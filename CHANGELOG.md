@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.0.8] - 2026-01-06
+
+### Changed
+- **Notifications**: Switch to **XDG Notification Portal** (`ashpd`) for native notifications in sandboxed environments.
+- **Permissions**: Remove `org.freedesktop.Notifications` permission from manifests.
+
+### Fixed
+- **Downloads**: Fixed "Open" action for downloaded files in Flatpak (using `ashpd`).
+- **Input**: Fixed **Dead Keys** (composition) bug by disabling navigator overrides.
+
+
 ## [2.0.7] - 2026-01-02
 
 ### Changed

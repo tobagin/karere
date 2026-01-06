@@ -422,7 +422,7 @@ async def generate_sources(
     sources: List[_FlatpakSourceType] = []
     package_sources = []
     cargo_vendored_sources = {
-        VENDORED_SOURCES: {"directory": f"{CARGO_CRATES}"},
+        VENDORED_SOURCES: {"directory": "vendor"},
     }
 
     pkg_coros = [

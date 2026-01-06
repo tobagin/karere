@@ -10,7 +10,7 @@ finish-args:
   - --socket=wayland
   - --device=dri
   - --talk-name=org.kde.StatusNotifierWatcher
-  - --talk-name=org.freedesktop.Notifications
+
   - --filesystem=xdg-download
   - --filesystem=xdg-run/pipewire-0
   # Audio for notification sounds and media
@@ -29,8 +29,6 @@ add-extensions:
 
 cleanup-commands:
   - mkdir -p ${FLATPAK_DEST}/lib/ffmpeg
-
-
 
 cleanup:
   - /include
@@ -53,23 +51,17 @@ modules:
     buildsystem: simple
     build-commands:
       - mkdir -p /app/share/hunspell
-      # Install all dictionaries from LibreOffice dictionaries repository
-      # This script finds all .dic and .aff files and copies them to /app/share/hunspell
       - |
         find . -type f \( -name "*.dic" -o -name "*.aff" \) ! -path "*/hyph_*" ! -path "*/.git/*" ! -path "*/util/*" | while read -r file; do
           filename=$(basename "$file")
-          # Skip hyphenation dictionaries (hyph_*) - we only want spell checking dictionaries
           if [[ ! "$filename" =~ ^hyph_ ]]; then
             install -Dm644 "$file" "/app/share/hunspell/$filename"
           fi
         done
-      - echo "Installed $(ls -1 /app/share/hunspell/*.dic 2>/dev/null | wc -l) dictionaries"
     sources:
       - type: archive
         url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-26.2.0.1.zip
         sha256: e1ef5088fe903eac040b622df175b7a7230c4decfae9cc72c1a1377f0b9e7afd
-
-
 
   - name: fonts-noto-color-emoji
     buildsystem: simple
@@ -82,46 +74,14 @@ modules:
         dest-filename: NotoColorEmoji.ttf
 
   - name: karere
-    buildsystem: simple
-    build-commands:
-      - cargo build --release
-      - install -Dm755 target/release/karere -t /app/bin/
-      # Rename and install resources to match Flatpak ID (Prod vs Devel)
-      - |
-        # Icons
-        install -Dm644 data/icons/hicolor/scalable/apps/io.github.tobagin.karere.Devel.svg /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
-        install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere.Devel-symbolic.svg /app/share/icons/hicolor/symbolic/apps/${FLATPAK_ID}-symbolic.svg
-        install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere.Devel-new-message-symbolic.svg /app/share/icons/hicolor/symbolic/apps/${FLATPAK_ID}-new-message-symbolic.svg
-        install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere.Devel-notification-symbolic.svg /app/share/icons/hicolor/symbolic/apps/${FLATPAK_ID}-notification-symbolic.svg
-        install -Dm644 data/icons/hicolor/symbolic/apps/io.github.tobagin.karere.Devel-do-not-disturb-symbolic.svg /app/share/icons/hicolor/symbolic/apps/${FLATPAK_ID}-do-not-disturb-symbolic.svg
-        
-        # Desktop File: Rename and patch Icon= and ID references
-        cp data/io.github.tobagin.karere.desktop ${FLATPAK_ID}.desktop
-        sed -i "s/@APP_ID@/${FLATPAK_ID}/g" ${FLATPAK_ID}.desktop
-        sed -i "s/@APP_NAME@/Karere (Dev)/g" ${FLATPAK_ID}.desktop
-        sed -i "s/DBusActivatable=true/DBusActivatable=false/g" ${FLATPAK_ID}.desktop
-        # Also ensure StartupWMClass matches if needed, but usually binary name is same.
-        install -Dm644 ${FLATPAK_ID}.desktop -t /app/share/applications/
-        
-        # Metainfo: Rename and patch ID
-        cp data/io.github.tobagin.karere.metainfo.xml ${FLATPAK_ID}.metainfo.xml
-        sed -i "s/@APP_ID@/${FLATPAK_ID}/g" ${FLATPAK_ID}.metainfo.xml
-        sed -i "s/@APP_NAME@/Karere (Dev)/g" ${FLATPAK_ID}.metainfo.xml
-        install -Dm644 ${FLATPAK_ID}.metainfo.xml -t /app/share/metainfo/
-        
-        # Schema (usually needs specific name to compile, but we can copy it to ID name if schema ID changes, 
-        # BUT GSettings schema ID in code is hardcoded. So we install original schema file?)
-        # For Devel builds, usually we just install the standard schema unless we patch source code.
-        # Keeping schema as is for now since compilation expects specific schema ID.
-        install -Dm644 data/io.github.tobagin.karere.gschema.xml -t /app/share/glib-2.0/schemas/
+    buildsystem: meson
+    config-opts:
+      - -Dprofile=development
+    post-install:
       - glib-compile-schemas /app/share/glib-2.0/schemas
     sources:
       - type: dir
         path: ..
-    # Note: For strict offline builds, we'd need to vendor crates. 
-    # For Devel manifest with network access disabled during build by default, we need to allow it or vendor.
-    # Flatpak builder blocks network during build unless allowed.
-    # We will enable network for this module to fetch crates.
     build-options:
-        build-args:
-            - --share=network
+      build-args:
+        - --share=network

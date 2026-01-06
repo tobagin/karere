@@ -15,7 +15,7 @@ mod spellcheck;
 
 use window::KarereWindow;
 
-static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
+pub static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
     Runtime::new().expect("Failed to create Tokio runtime")
 });
 
@@ -75,7 +75,9 @@ fn main() -> anyhow::Result<()> {
 
         // Sync Autostart Status
         // We ensure the portal permission matches the user preference on every startup.
-        let settings = gio::Settings::new("io.github.tobagin.karere");
+        // We ensure the portal permission matches the user preference on every startup.
+        // app_id is captured from outer scope
+        let settings = gio::Settings::new(&app_id);
         let enabled = settings.boolean("run-on-startup");
         app.activate_action("sync-autostart", Some(&enabled.to_variant()));
 
@@ -134,7 +136,7 @@ fn main() -> anyhow::Result<()> {
                     let designers = vec!["Thiago Fernandes"];
                     let artists = vec!["Thiago Fernandes"];
                     
-                    let is_devel = app_id_clone.contains("Devel");
+                    let is_devel = app_id_clone.contains("Devel") || app_id_clone.ends_with(".Dev");
                     let app_name = if is_devel { gettext("Karere (Dev)") } else { gettext("Karere") };
                     let comments = if is_devel {
                         gettext("A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities (Development Version)")
@@ -145,7 +147,7 @@ fn main() -> anyhow::Result<()> {
                     let about = adw::AboutDialog::builder()
                         .application_name(app_name)
                         .developer_name("The Karere Team") 
-                        .version("2.0.6")
+                        .version(env!("CARGO_PKG_VERSION"))
                         .comments(comments)
                         .website("https://tobagin.github.io/apps/karere")
                         .issue_url("https://github.com/tobagin/karere/issues")
@@ -157,7 +159,7 @@ fn main() -> anyhow::Result<()> {
                         .designers(designers.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
                         .artists(artists.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
                         .translator_credits("Thiago Fernandes")
-                        .release_notes(&get_release_notes("2.0.6"))
+                        .release_notes(&get_release_notes(env!("CARGO_PKG_VERSION")))
                         .build();
                         
                     about.add_link(gettext("Source").as_str(), "https://github.com/tobagin/karere");
@@ -214,6 +216,61 @@ fn main() -> anyhow::Result<()> {
         app.set_accels_for_action("app.quit", &["<Control>q"]);
         app.set_accels_for_action("win.show-devtools", &["F12"]);
 
+        app.set_accels_for_action("win.show-devtools", &["F12"]);
+
+        // Open Download Action
+        let action_open_download = gio::SimpleAction::new("open-download", Some(glib::VariantTy::STRING));
+        let app_weak = app.downgrade();
+        action_open_download.connect_activate(move |_, parameter| {
+             if let Some(app) = app_weak.upgrade() {
+                 let uri_str = parameter
+                     .expect("Could not get parameter")
+                     .get::<String>()
+                     .expect("The value is not a string");
+                 
+                 // Extract file path from URI or treat as direct path
+                 let file_obj = gio::File::for_uri(&uri_str);
+                 let path_opt = if file_obj.path().is_some() {
+                     file_obj.path()
+                 } else {
+                     gio::File::for_path(&uri_str).path()
+                 };
+
+                 if let Some(path) = path_opt {
+                     if let Ok(file) = std::fs::File::open(&path) {
+                         let window = app.active_window();
+                         if let Some(win) = window {
+                             let win_ref = win.clone();
+                             glib::MainContext::default().spawn_local(async move {
+                                     // Enter Tokio context for zbus/ashpd, preventing "no reactor" panic
+                                     let _guard = RUNTIME.enter();
+                                     
+                                     let request = ashpd::desktop::open_uri::OpenFileRequest::default();
+                                     let request = if let Some(native) = win_ref.native() {
+                                         request.identifier(ashpd::WindowIdentifier::from_native(&native).await)
+                                     } else {
+                                         request
+                                     };
+                                     
+                                     let result = request
+                                         .ask(true) 
+                                         .send_file(&file).await;
+                                         
+                                     if let Err(e) = result {
+                                         eprintln!("Failed to open file via portal: {}", e);
+                                     }
+                             });
+                         }
+                     } else {
+                         eprintln!("Failed to open file for reading: {}", path.display());
+                     }
+                 } else {
+                     eprintln!("Invalid file URI/Path: {}", uri_str);
+                 }
+             }
+        });
+        app.add_action(&action_open_download);
+
         // Present Window Action (for Notifications)
         let action_present = gio::SimpleAction::new("present-window", None);
         let app_weak = app.downgrade();
@@ -233,7 +290,8 @@ fn main() -> anyhow::Result<()> {
 
     // Start Tray Icon
     println!("Initializing settings...");
-    let settings = gio::Settings::new("io.github.tobagin.karere");
+    let app_id_files = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+    let settings = gio::Settings::new(&app_id_files);
     println!("Settings initialized.");
     
     let tray_behavior = settings.string("systray-icon");

@@ -108,7 +108,8 @@ impl KarerePreferencesWindow {
 
     fn setup_bindings(&self) {
          let imp = self.imp();
-         let settings = gio::Settings::new("io.github.tobagin.karere");
+         let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+         let settings = gio::Settings::new(&app_id);
 
          // 1. Startup
          settings.bind("run-on-startup", &*imp.row_startup, "active").build();
@@ -270,7 +271,6 @@ impl KarerePreferencesWindow {
          settings.bind("notify-tray-icon", &*imp.row_tray_anim, "active").build();
          settings.bind("notify-messages", &*imp.row_tray_anim, "visible").build();
          
-         settings.bind("notifications-enabled", &*imp.group_preview, "visible").build(); // AND Logic handled below
          
          settings.bind("notify-preview-enabled", &*imp.row_preview_show, "active").build();
          settings.bind("notify-preview-limit-enabled", &*imp.row_preview_limit, "active").build();
@@ -359,7 +359,8 @@ impl KarerePreferencesWindow {
 
     fn setup_spellcheck(&self) {
         let imp = self.imp();
-        let settings = gio::Settings::new("io.github.tobagin.karere");
+        let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+        let settings = gio::Settings::new(&app_id);
         
         let available_dicts = crate::spellcheck::get_available_dictionaries();
         let dict_count = available_dicts.len();
@@ -402,7 +403,8 @@ impl KarerePreferencesWindow {
     
     fn setup_downloads(&self) {
         let imp = self.imp();
-        let settings = gio::Settings::new("io.github.tobagin.karere");
+        let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+        let settings = gio::Settings::new(&app_id);
         
         let settings_clone_dl = settings.clone();
         imp.btn_download_choose.connect_clicked(move |btn| {

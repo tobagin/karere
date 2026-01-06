@@ -8,18 +8,19 @@ fn main() {
     std::fs::create_dir_all(&ui_out).expect("Failed to create ui output dir");
 
     // Compile Blueprint files
+    // Compile Blueprint files
     let status = Command::new("blueprint-compiler")
-        .args(&["compile", "data/ui/window.blp", "--output", out_path.join("ui/window.ui").to_str().unwrap()])
+        .args(&["compile", "data/ui/window.blp", "--output", out_path.join("window.ui").to_str().unwrap()])
         .status()
         .expect("Failed to run blueprint-compiler (window)");
 
     let status_help = Command::new("blueprint-compiler")
-        .args(&["compile", "data/ui/keyboard-shortcuts.blp", "--output", out_path.join("ui/keyboard-shortcuts.ui").to_str().unwrap()])
+        .args(&["compile", "data/ui/keyboard-shortcuts.blp", "--output", out_path.join("keyboard-shortcuts.ui").to_str().unwrap()])
         .status()
         .expect("Failed to run blueprint-compiler (keyboard-shortcuts)");
 
     let status_pref = Command::new("blueprint-compiler")
-        .args(&["compile", "data/ui/preferences.blp", "--output", out_path.join("ui/preferences.ui").to_str().unwrap()])
+        .args(&["compile", "data/ui/preferences.blp", "--output", out_path.join("preferences.ui").to_str().unwrap()])
         .status()
         .expect("Failed to run blueprint-compiler (preferences)");
 
