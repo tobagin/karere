@@ -10,7 +10,7 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 ### 🆕 What's New in 2.0.9
 
-- **✨ New Icons**: Fresh new application icons.
+- **✨ New Icons**: Fresh new application icons (Thanks to @oiimrosabel).
 - **🐛 Packaging Fix**: Resolved startup crash on Flatpak (missing GSettings schema).
 - **📝 Metadata**: Fixed AppStream metadata for better store compliance.
 
