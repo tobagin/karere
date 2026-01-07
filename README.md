@@ -4,26 +4,15 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
-## 🎉 Version 2.0.8 - Improved System Integration
+## 🎉 Version 2.0.9 - Polishing & Fixes
 
-**Karere 2.0.8** enhances system integration by adopting the Notification Portal.
+**Karere 2.0.9** brings new icons and critical fixes for Flatpak environments.
 
-### ✨ Key Features
+### 🆕 What's New in 2.0.9
 
-- **🚀 Native Rust Backend**: Built with Rust, GTK4, and Libadwaita for rock-solid stability
-- **🏁 Startup Control**: Preference to toggle "Run on Startup" (now fixed for Flatpak)
-- **🔔 Custom Notification Sounds**: Choose from 5 different notification sounds
-- **📥 System Tray Integration**: Background execution with unread message indication
-- **♿ Comprehensive Accessibility**: High Contrast, Focus Indicators, Screen Reader optimizations
-- **📝 Auto-Correct**: Toggleable auto-correction with multi-language dictionary support
-
-### 🆕 What's New in 2.0.8
-
-- **Portal Notifications**: Full support for the XDG Notification Portal via `ashpd`.
-- **Cleaner Permissions**: Removed direct D-Bus access for notifications.
-- **Download Fixes**: Improved handling of downloaded files in Flatpak.
-- **Bug Fixes**: Resolved Dead Key/composition input issues.
-- **Build System**: Migrated Flatpak build logic to `meson.build`.
+- **✨ New Icons**: Fresh new application icons.
+- **🐛 Packaging Fix**: Resolved startup crash on Flatpak (missing GSettings schema).
+- **📝 Metadata**: Fixed AppStream metadata for better store compliance.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 
