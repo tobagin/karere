@@ -1,5 +1,5 @@
 project('karere', 'rust',
-          version: '2.0.8',
+          version: '2.0.9',
     meson_version: '>= 0.59.0',
   default_options: [ 'warning_level=2', 'werror=false', ],
 )
@@ -33,7 +33,8 @@ cargo_options = [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' 
 cargo_options += [ '--target-dir', meson.project_build_root() / 'target' ]
 
 if get_option('profile') == 'development'
-  cargo_options += [ '--offline' ]
+  # cargo_options += [ '--offline' ]
+  # Development profile should have network access (via --share=network in manifest) so we don't need offline mode
   # In dev profile, we might still want release-like optimizations or debug:
   # Ntfyr used 'debug' logic here, but Karere used 'release'. Sticking to release for now as per previous setup.
   cargo_options += [ '--release' ]
@@ -68,3 +69,9 @@ custom_target('cargo-build',
 
 subdir('data')
 subdir('po')
+
+gnome.post_install(
+  glib_compile_schemas: true,
+  update_desktop_database: true,
+  gtk_update_icon_cache: true,
+)

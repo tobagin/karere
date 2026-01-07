@@ -134,7 +134,7 @@ fn main() -> anyhow::Result<()> {
                 if let Some(window) = app.active_window() {
                     let developers = vec!["Thiago Fernandes", "Aman9Das", "Cameo", "Sabri Ünal"];
                     let designers = vec!["Thiago Fernandes"];
-                    let artists = vec!["Thiago Fernandes"];
+                    let artists = vec!["Thiago Fernandes", "oiimrosabel"];
                     
                     let is_devel = app_id_clone.contains("Devel") || app_id_clone.ends_with(".Dev");
                     let app_name = if is_devel { gettext("Karere (Dev)") } else { gettext("Karere") };

@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.0.9] - 2026-01-07
+
+### ✨ New Features
+
+- **New Icons**: Updated application icons for a fresh look (Thanks to @oiimrosabel).
+
+### 🐛 Bug Fixes
+
+- **Packaging**: Fixed missing GSettings schema in Flatpak builds, resolving startup crashes.
+- **Metadata**: Added missing VCS browser URL to AppStream metadata to satisfy linter warnings.
+- **Documentation**: Corrected "Built with Vala" references to "Built with Rust" in metadata.
+
 ## [2.0.8] - 2026-01-06
 
 ### Changed

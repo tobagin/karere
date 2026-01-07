@@ -23,7 +23,7 @@
   <description>
     <p>
       Karere is a production-ready GTK4 WhatsApp client that provides a native desktop experience
-      for WhatsApp Web. Built with Vala, GTK4, and Libadwaita, it offers a clean and
+      for WhatsApp Web. Built with Rust, GTK4, and Libadwaita, it offers a clean and
       intuitive interface that integrates seamlessly with your Linux desktop.
     </p>
     <p>
@@ -69,6 +69,7 @@
   <url type="donation">https://github.com/sponsors/tobagin</url>
   <url type="contact">https://github.com/tobagin</url>
   <url type="contribute">https://github.com/tobagin/karere</url>
+  <url type="vcs-browser">https://github.com/tobagin/karere</url>
 
   <developer id="io.github.tobagin">
     <name>Thiago Fernandes</name>
@@ -101,6 +102,15 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.0.9" date="2026-01-07">
+      <description>
+        <ul>
+          <li>Fixed missing GSettings schema in Flatpak builds</li>
+          <li>Added new application icons</li>
+          <li>Corrected metadata description references</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.8" date="2026-01-06">
       <description>
         <ul>
