@@ -4,15 +4,15 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
-## 🎉 Version 2.0.9 - Polishing & Fixes
+## 🎉 Version 2.1.0 - Enhanced Clipboard Support
 
-**Karere 2.0.9** brings new icons and critical fixes for Flatpak environments.
+**Karere 2.1.0** brings improved clipboard functionality with better image paste and middle-click primary selection support.
 
-### 🆕 What's New in 2.0.9
+### 🆕 What's New in 2.1.0
 
-- **✨ New Icons**: Fresh new application icons (Thanks to @oiimrosabel).
-- **🐛 Packaging Fix**: Resolved startup crash on Flatpak (missing GSettings schema).
-- **📝 Metadata**: Fixed AppStream metadata for better store compliance.
+- **📋 Improved Image Paste**: Enhanced Ctrl+V image paste with Base64 encoding for reliable WhatsApp Web compatibility.
+- **🖱️ Middle-Click Paste**: Paste from primary selection (selected text) using middle mouse button.
+- **🐛 Bug Fix**: Fixed double-paste issue with middle-click (now only pastes primary selection).
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

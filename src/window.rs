@@ -3,6 +3,7 @@ use gettextrs::gettext;
 use libadwaita as adw;
 use adw::prelude::*;
 use adw::subclass::prelude::*;
+use base64::prelude::*;
 
 mod imp {
     use super::*;
@@ -661,7 +662,104 @@ mod imp {
 
 
 
-            // 6. Accessibility & System Overrides
+
+            // 5. Input Handling (Paste & Middle-click)
+            
+            // Image Paste (Ctrl+V)
+            // WhatsApp Web often struggles with direct image pasting from Linux/GDK clipboard in WebKit.
+            // We manually detect image data, encode it, and inject a synthetic Paste event.
+            let key_controller = gtk::EventControllerKey::new();
+            let webview_paste = self.web_view.get().unwrap().clone();
+            key_controller.connect_key_pressed(move |_, keyval, _keycode, state| {
+                if state.contains(gtk::gdk::ModifierType::CONTROL_MASK) && (keyval == gtk::gdk::Key::v || keyval == gtk::gdk::Key::V) {
+                     let clipboard = gtk::gdk::Display::default().and_then(|d| Some(d.clipboard()));
+                     if let Some(clipboard) = clipboard {
+                         // Check if clipboard has an image (GdkTexture)
+                         let formats = clipboard.formats();
+                         if formats.contains_type(gtk::gdk::Texture::static_type()) {
+                             println!("DEBUG: Image detected in clipboard. Intercepting Ctrl+V for manual injection.");
+                             
+                             let webview = webview_paste.clone();
+                             clipboard.read_texture_async(gio::Cancellable::NONE, move |res: Result<Option<gtk::gdk::Texture>, glib::Error>| {
+                                 if let Ok(Some(texture)) = res {
+                                      // Convert to PNG bytes
+                                      let bytes = texture.save_to_png_bytes();
+                                      let b64 = BASE64_STANDARD.encode(bytes.as_ref());
+                                      
+                                      // Inject JS to create File and dispatch Paste event
+                                      let js = format!(r#"
+                                          (function() {{
+                                              try {{
+                                                  console.log("Karere: Injecting Image Paste...");
+                                                  const b64 = "{}";
+                                                  const byteCharacters = atob(b64);
+                                                  const byteNumbers = new Array(byteCharacters.length);
+                                                  for (let i = 0; i < byteCharacters.length; i++) {{
+                                                      byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                                  }}
+                                                  const byteArray = new Uint8Array(byteNumbers);
+                                                  const blob = new Blob([byteArray], {{type: 'image/png'}});
+                                                  const file = new File([blob], "paste.png", {{type: 'image/png', lastModified: new Date().getTime()}});
+                                                  
+                                                  const dataTransfer = new DataTransfer();
+                                                  dataTransfer.items.add(file);
+                                                  
+                                                  const pasteEvent = new ClipboardEvent('paste', {{
+                                                      bubbles: true,
+                                                      cancelable: true,
+                                                      clipboardData: dataTransfer
+                                                  }});
+                                                  
+                                                  document.activeElement.dispatchEvent(pasteEvent);
+                                                  console.log("Karere: Image Paste Dispatched.");
+                                              }} catch (e) {{
+                                                  console.error("Karere Paste Injection Error:", e);
+                                              }}
+                                          }})();
+                                      "#, b64);
+                                      
+                                      webview.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
+                                 }
+                             });
+                             
+                             return glib::Propagation::Stop;
+                         }
+                     }
+                }
+                glib::Propagation::Proceed
+            });
+            self.web_view.get().unwrap().add_controller(key_controller);
+
+            // Middle Click Paste (Primary Selection)
+            let gesture_click = gtk::GestureClick::new();
+            gesture_click.set_button(2); // Middle Mouse Button
+            gesture_click.set_propagation_phase(gtk::PropagationPhase::Capture);
+            let webview_mid = self.web_view.get().unwrap().clone();
+            gesture_click.connect_pressed(move |gesture, _, _, _| {
+                 // Claim the gesture to stop propagation to WebView's default handler
+                 gesture.set_state(gtk::EventSequenceState::Claimed);
+                 
+                 println!("DEBUG: Middle Click Detected. Attempting Primary Paste...");
+                 let clipboard = gtk::gdk::Display::default().and_then(|d| Some(d.primary_clipboard()));
+                 if let Some(clipboard) = clipboard {
+                     let webview = webview_mid.clone();
+                     clipboard.read_text_async(gio::Cancellable::NONE, move |res: Result<Option<glib::GString>, glib::Error>| {
+                         match res {
+                             Ok(Some(text)) => {
+                                 println!("DEBUG: Primary Selection Retrieved: {} chars", text.len());
+                                 // Escape for JS string
+                                 let safe_text = text.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
+                                 let js = format!(r#"document.execCommand("insertText", false, "{}");"#, safe_text);
+                                 webview.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
+                             },
+                             Ok(None) => println!("DEBUG: Primary Selection Empty"),
+                             Err(e) => println!("DEBUG: Failed to read Primary Selection: {}", e),
+                         }
+                     });
+                 }
+            });
+            self.web_view.get().unwrap().add_controller(gesture_click);
+
             
             // 11. Setup Accessibility & Auto-Correct
             self.setup_accessibility(web_view, settings.clone());

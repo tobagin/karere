@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.1.0] - 2026-01-10
+
+### ✨ New Features
+
+- **📋 Enhanced Clipboard Support**: Improved image paste functionality with Base64 encoding and JavaScript injection for reliable WhatsApp Web compatibility.
+- **🖱️ Middle-Click Paste**: Added primary selection paste support via middle mouse button click.
+
+### 🐛 Bug Fixes
+
+- **Clipboard**: Fixed double-paste issue when using middle-click (now only pastes primary selection, not regular clipboard).
+
+
 ## [2.0.9] - 2026-01-07
 
 ### ✨ New Features

@@ -102,6 +102,15 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.1.0" date="2026-01-10">
+      <description>
+        <ul>
+          <li>Enhanced image paste with Base64 encoding for reliable WhatsApp Web compatibility</li>
+          <li>Added middle-click paste from primary selection (selected text)</li>
+          <li>Fixed double-paste issue with middle-click</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.9" date="2026-01-07">
       <description>
         <ul>

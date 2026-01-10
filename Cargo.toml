@@ -1,6 +1,6 @@
 [package]
 name = "karere"
-version = "2.0.9"
+version = "2.1.0"
 edition = "2024"
 
 [dependencies]
@@ -16,6 +16,12 @@ glib = "0.21.5"
 ashpd = { version = "0.12", features = ["gtk4"] }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 tokio = { version = "1.48.0", features = ["rt-multi-thread", "macros", "time"] }
-zbus = "5.12"
+zbus = "=5.12.0"
+zbus_macros = "=5.12.0"
+zbus_names = "=4.2.0"
+zvariant = "=5.8.0"
+zvariant_derive = "=5.8.0"
+zvariant_utils = "=3.2.1"
+base64 = "0.22"
 [build-dependencies]
 glib-build-tools = "0.21.0"

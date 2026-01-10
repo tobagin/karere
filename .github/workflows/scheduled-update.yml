@@ -1,0 +1,113 @@
+name: Scheduled Dependency Update
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Run weekly on Monday at 00:00
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install aiohttp tomlkit
+
+    - name: Check for updates
+      id: check
+      run: |
+        python3 tools/check_updates.py
+        
+        # Check if files changed
+        if [[ -n $(git status --porcelain) ]]; then
+          echo "Changes detected."
+          echo "changes=true" >> $GITHUB_OUTPUT
+        else
+          echo "No changes detected."
+          echo "changes=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create Flathub PR
+      if: steps.check.outputs.changes == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.FLATHUB_TOKEN }}
+      run: |
+        FLATHUB_REPO="flathub/io.github.tobagin.karere"
+        
+        echo "🔄 Cloning Flathub repository..."
+        git clone https://x-access-token:$GITHUB_TOKEN@github.com/$FLATHUB_REPO.git flathub-repo
+        cd flathub-repo
+        
+        git config user.email "action@github.com"
+        git config user.name "GitHub Action (Karere Updates)"
+        
+        # Copy the updated files
+        cp ../packaging/io.github.tobagin.karere.yml ./io.github.tobagin.karere.yml
+        cp ../packaging/cargo-sources.json ./cargo-sources.json
+        
+        DATE=$(date +%Y-%m-%d)
+        BRANCH_NAME="update-deps-$DATE"
+        
+        # Delete existing branch if it exists
+        git push https://x-access-token:$GITHUB_TOKEN@github.com/$FLATHUB_REPO.git --delete "$BRANCH_NAME" 2>/dev/null || true
+        
+        git checkout -b "$BRANCH_NAME"
+        
+        git add io.github.tobagin.karere.yml cargo-sources.json
+        git commit -m "Update dependencies ($DATE)"
+        
+        git push https://x-access-token:$GITHUB_TOKEN@github.com/$FLATHUB_REPO.git "$BRANCH_NAME"
+        
+        # Create PR using GitHub API
+        PR_BODY="🚀 **Automated Dependency Update ($DATE)**
+        
+        This PR updates the Flatpak manifest with the latest dependencies:
+        - Cargo dependencies
+        - Hunspell dictionaries
+        - Noto Color Emoji
+        - Runtime version
+        
+        **Automated Checks:**
+        - ✅ Manifest syntax validated
+        - ✅ Dependencies updated
+        
+        ---
+        *🤖 This PR was automatically created by [GitHub Actions](https://github.com/tobagin/karere/actions)*"
+        
+        # Create JSON payload for API call
+        PR_JSON=$(jq -n \
+          --arg title "📦 Update dependencies ($DATE)" \
+          --arg head "$BRANCH_NAME" \
+          --arg base "master" \
+          --arg body "$PR_BODY" \
+          '{title: $title, head: $head, base: $base, body: $body}')
+        
+        echo "🔄 Creating PR via GitHub API..."
+        API_RESPONSE=$(curl -s -X POST \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Content-Type: application/json" \
+          "https://api.github.com/repos/$FLATHUB_REPO/pulls" \
+          -d "$PR_JSON")
+          
+        # Extract PR URL from response
+        PR_URL=$(echo "$API_RESPONSE" | jq -r '.html_url // empty')
+        
+        if [[ -n "$PR_URL" && "$PR_URL" != "null" ]]; then
+          echo "✅ Created PR: $PR_URL"
+        else
+          echo "⚠️ PR creation may have failed. API Response:"
+          echo "$API_RESPONSE" | jq '.'
+        fi
