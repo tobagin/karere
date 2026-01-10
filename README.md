@@ -54,20 +54,17 @@ For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md)
 
 ### Flatpak (Recommended)
 
-#### From Flathub
-```bash
-flatpak install flathub io.github.tobagin.karere
-```
+[![Get it on Flathub](https://flathub.org/api/badge)](https://flathub.org/en/apps/io.github.tobagin.karere)
 
-#### Development Version
+### From Source
+
 ```bash
 # Clone the repository
 git clone https://github.com/tobagin/karere.git
 cd karere
 
 # Build and install development version
-flatpak-builder --user --install --force-clean build packaging/io.github.tobagin.karere.Devel.yml
-flatpak run io.github.tobagin.karere.Devel
+./build.sh --dev
 ```
 
 **Note**: After installation, you'll need to scan the QR code with your mobile WhatsApp to connect.
