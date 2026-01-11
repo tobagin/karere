@@ -174,7 +174,7 @@ fn main() -> anyhow::Result<()> {
                     
                     about.add_acknowledgement_section(
                         Some(gettext("Special Thanks").as_str()), 
-                        &["The GNOME Project", "The WebKitGTK Team", "WhatsApp Inc.", "LibAdwaita Contributors", "Vala Programming Language Team"]
+                        &["The GNOME Project", "The WebKitGTK Team", "WhatsApp Inc.", "LibAdwaita Contributors", "The Rust Project"]
                     );
 
                     about.present(Some(&window));
