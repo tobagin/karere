@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **📷 Webcam Support**: Added full support for using the camera in WhatsApp Web (e.g., for Status updates and Video Calls).
 - **🔒 Permission Dialogs**: Added new permission dialogs for Camera and Microphone access with persistent "Allow/Deny" settings.
 - **📲 Device Access**: Updated sandbox permissions to ensure reliable webcam device detection.
+- **👥 Credits**: Updated About dialog with new contributors and GitHub URLs.
+- **🙏 Acknowledgements**: Replaced Vala with The Rust Project in special thanks.
 
 ## [2.1.0] - 2026-01-10
 

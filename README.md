@@ -13,6 +13,7 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 - **🔔 Notification Chat Linking**: Clicking a system notification now intelligently opens the specific chat in Karere, just like on mobile.
 - **📷 Webcam Support**: Full support for using your webcam in WhatsApp Web (Status updates, Video calls) with persistent permission management.
 - **🔒 Enhanced Permissions**: New granular permission dialogs for Camera and Microphone access.
+- **👥 Updated Credits**: Updated About dialog with correct contributor names and URLs.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 
