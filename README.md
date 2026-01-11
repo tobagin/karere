@@ -4,15 +4,15 @@ A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
-## 🎉 Version 2.1.0 - Enhanced Clipboard Support
+## 🎉 Version 2.2.0 - Notification Linking & Webcam Support
 
-**Karere 2.1.0** brings improved clipboard functionality with better image paste and middle-click primary selection support.
+**Karere 2.2.0** significantly improves desktop integration with notification chat linking and complete webcam support.
 
-### 🆕 What's New in 2.1.0
+### 🆕 What's New in 2.2.0
 
-- **📋 Improved Image Paste**: Enhanced Ctrl+V image paste with Base64 encoding for reliable WhatsApp Web compatibility.
-- **🖱️ Middle-Click Paste**: Paste from primary selection (selected text) using middle mouse button.
-- **🐛 Bug Fix**: Fixed double-paste issue with middle-click (now only pastes primary selection).
+- **🔔 Notification Chat Linking**: Clicking a system notification now intelligently opens the specific chat in Karere, just like on mobile.
+- **📷 Webcam Support**: Full support for using your webcam in WhatsApp Web (Status updates, Video calls) with persistent permission management.
+- **🔒 Enhanced Permissions**: New granular permission dialogs for Camera and Microphone access.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

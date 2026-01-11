@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.2.0] - 2026-01-11
+
+### ✨ New Features
+
+- **🔔 Notification Chat Linking**: Clicking a notification now opens the exact chat in the application window.
+- **📷 Webcam Support**: Added full support for using the camera in WhatsApp Web (e.g., for Status updates and Video Calls).
+- **🔒 Permission Dialogs**: Added new permission dialogs for Camera and Microphone access with persistent "Allow/Deny" settings.
+- **📲 Device Access**: Updated sandbox permissions to ensure reliable webcam device detection.
+
 ## [2.1.0] - 2026-01-10
 
 ### ✨ New Features

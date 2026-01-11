@@ -141,5 +141,13 @@
       <default>false</default>
       <summary>Web microphone permission granted</summary>
     </key>
+    <key name="web-camera-permission-asked" type="b">
+      <default>false</default>
+      <summary>Web camera permission asked</summary>
+    </key>
+    <key name="web-camera-permission-granted" type="b">
+      <default>false</default>
+      <summary>Web camera permission granted</summary>
+    </key>
   </schema>
 </schemalist>

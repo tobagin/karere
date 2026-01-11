@@ -102,6 +102,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.2.0" date="2026-01-11">
+      <description>
+        <ul>
+          <li><strong>Notification Chat Linking</strong>: Clicking a notification now opens the specific chat in Karere.</li>
+          <li><strong>Webcam Support</strong>: Added support for using the webcam (Status updates, Video calls) with a new permission dialog.</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.1.0" date="2026-01-10">
       <description>
         <ul>

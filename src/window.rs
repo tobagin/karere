@@ -4,6 +4,7 @@ use libadwaita as adw;
 use adw::prelude::*;
 use adw::subclass::prelude::*;
 use base64::prelude::*;
+use webkit6::prelude::*;
 
 mod imp {
     use super::*;
@@ -27,6 +28,9 @@ mod imp {
         
         // Force Close Flag
         pub force_close: std::cell::Cell<bool>,
+
+        // Active Notifications Storage (Map ID -> WebKitNotification)
+        pub active_notifications: std::cell::RefCell<std::collections::HashMap<String, webkit6::Notification>>,
     }
 
     #[glib::object_subclass]
@@ -492,29 +496,57 @@ mod imp {
                         return true; // We are handling it (async)
                     }
                 } else if let Some(req) = request.downcast_ref::<webkit6::UserMediaPermissionRequest>() {
-                     // Only handle Audio
-                     if !req.is_for_audio_device() {
-                         return false; 
+                     let is_audio = req.is_for_audio_device();
+                     let is_video = req.is_for_video_device();
+
+                     // Skip if neither (shouldn't happen for UserMedia)
+                     if !is_audio && !is_video {
+                         return false;
                      }
 
-                    // Check persistence
-                    let asked = settings.boolean("web-microphone-permission-asked");
-                    let granted = settings.boolean("web-microphone-permission-granted");     
+                     // Determine keys and dialog text
+                     let (asked_key, granted_key, title, body) = if is_video {
+                         // Video implies Camera (may include Audio too)
+                         // If it's both, we just ask for Camera access (which implies call usually) or say "Camera and Microphone"
+                         // For simplicity and matching typical "app" behavior:
+                         if is_audio {
+                             ("web-camera-permission-asked", "web-camera-permission-granted", 
+                              gettext("WhatsApp Web Camera & Microphone Permission"),
+                              gettext("WhatsApp Web wants to access your camera and microphone. Would you like to allow access?"))
+                         } else {
+                             ("web-camera-permission-asked", "web-camera-permission-granted",
+                              gettext("WhatsApp Web Camera Permission"),
+                              gettext("WhatsApp Web wants to access your camera. Would you like to allow access?"))
+                         }
+                     } else {
+                         // Audio only
+                         ("web-microphone-permission-asked", "web-microphone-permission-granted",
+                          gettext("WhatsApp Web Microphone Permission"),
+                          gettext("WhatsApp Web wants to access your microphone. Would you like to allow access?"))
+                     };
 
-                    if asked {
-                        if granted {
-                            req.allow();
-                        } else {
-                            req.deny();
-                        }
-                        return true;
-                    }
+                     // Check persistence
+                     let asked = settings.boolean(asked_key);
+                     let granted = settings.boolean(granted_key);
+
+                     println!("DEBUG: Media Request. Audio={}, Video={}, Asked={}, Granted={}", is_audio, is_video, asked, granted);
+
+                     if asked {
+                         if granted {
+                             println!("DEBUG: Auto-Allowing media permission");
+                             req.allow();
+                         } else {
+                             println!("DEBUG: Auto-Denying media permission");
+                             req.deny();
+                         }
+                         return true;
+                     }
                     
                     // Show Dialog
                     if let Some(window) = window_weak.upgrade() {
                         let dialog = adw::AlertDialog::builder()
-                            .heading(&gettext("WhatsApp Web Microphone Permission"))
-                            .body(&gettext("WhatsApp Web wants to access your microphone for voice messages and calls. Would you like to allow microphone access?"))
+                            .heading(&title)
+                            .body(&body)
                             .default_response("allow")
                             .close_response("deny")
                             .build();
@@ -526,8 +558,19 @@ mod imp {
                         let req_clone = request.clone(); 
                         dialog.choose(Some(&window), gio::Cancellable::NONE, move |response| {
                             let granted = response == "allow";
-                            settings.set_boolean("web-microphone-permission-asked", true).unwrap();
-                            settings.set_boolean("web-microphone-permission-granted", granted).unwrap();
+                            
+                            // Save settings
+                            let _ = settings.set_boolean(asked_key, true);
+                            let _ = settings.set_boolean(granted_key, granted);
+                            
+                            // If granting Video+Audio, we should implicitly grant Audio-only too?
+                            // Yes, to avoid double prompt if next time it asks only Audio.
+                            if granted && is_video && is_audio {
+                                let _ = settings.set_boolean("web-microphone-permission-asked", true);
+                                let _ = settings.set_boolean("web-microphone-permission-granted", true);
+                            }
+                            
+                            gio::Settings::sync();
                             
                             if granted {
                                 req_clone.allow();
@@ -590,11 +633,12 @@ mod imp {
                         let title_clone = title.clone();
                         let body_clone = body_text.clone();
                         let notification_id = if let Some(tag) = notification.tag() {
-                             format!("karere-{}", tag)
+                             tag.to_string()
                         } else {
-                             format!("karere-msg-{}", glib::monotonic_time())
+                             format!("msg-{}", glib::monotonic_time())
                         };
 
+                        let notification_id_portal = notification_id.clone();
                         glib::MainContext::default().spawn_local(async move {
                             // Enter the tokio runtime context for ashpd/zbus
                             let _guard = crate::RUNTIME.enter();
@@ -605,21 +649,34 @@ mod imp {
                                     let notif = ashpd::desktop::notification::Notification::new(&title_clone)
                                         .body(body_clone.as_str())
                                         .icon(ashpd::desktop::Icon::with_names(&["dialog-information-symbolic"]))
-                                        .default_action("app.present-window")
+                                        .default_action("app.notification-clicked")
+                                        .default_action_target(notification_id_portal.as_str())
                                         .priority(ashpd::desktop::notification::Priority::High);
 
                                     // Check if we can add an ID (ashpd 0.4+ uses send_notification with ID usually, let's check basic usage)
                                     // wrapper: "add_notification(&self, id: &str, notification: &Notification)"
                                     
-                                    if let Err(e) = proxy.add_notification(&notification_id, notif).await {
-                                        eprintln!("WARNING: Failed to send portal notification: {}", e);
-                                    } else {
-                                        println!("Sent portal notification: ID={}", notification_id); 
+                                    if let Err(e) = proxy.add_notification(&notification_id_portal, notif).await {
+                                        eprintln!("Failed to send portal notification: {}", e);
                                     }
                                 },
                                 Err(e) => eprintln!("ERROR: Failed to connect to notification portal: {}", e),
                             }
                         });
+                        
+                        // Store notification for click handling
+                        if let Some(window) = window_weak.upgrade() {
+                             window.imp().active_notifications.borrow_mut().insert(notification_id.clone(), notification.clone());
+                             
+                             // Cleanup on close
+                             let window_weak_close = window.downgrade();
+                             let id_close = notification_id.clone();
+                             notification.connect_closed(move |_| {
+                                 if let Some(window) = window_weak_close.upgrade() {
+                                     window.imp().active_notifications.borrow_mut().remove(&id_close);
+                                 }
+                             });
+                        }
                         
                         // 5. Play Custom Sound (if enabled)
                         if settings_notify_msg.boolean("notify-sound-enabled") {
@@ -921,5 +978,14 @@ impl KarereWindow {
     pub fn force_close(&self) {
         self.imp().force_close.set(true);
         self.close();
+    }
+
+    pub fn process_notification_click(&self, id: &str) {
+        let imp = self.imp();
+        if let Some(notification) = imp.active_notifications.borrow().get(id) {
+            notification.clicked();
+        } else {
+            eprintln!("Notification ID not found for click: {}", id);
+        }
     }
 }

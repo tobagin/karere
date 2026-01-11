@@ -286,6 +286,49 @@ fn main() -> anyhow::Result<()> {
             }
         });
         app.add_action(&action_present);
+        // Notification Click Action
+        let action_notification_click = gio::SimpleAction::new("notification-clicked", Some(glib::VariantTy::VARIANT));
+        let app_weak = app.downgrade();
+        action_notification_click.connect_activate(move |_, parameter| {
+             if let Some(app) = app_weak.upgrade() {
+                 let id = if let Some(v) = parameter {
+                     // Try extracting as string directly
+                     if let Some(s) = v.get::<String>() {
+                         s
+                     } 
+                     // Try extracting if it's a tuple containing a string (s)
+                     else if let Some(s) = v.child_value(0).get::<String>() {
+                         s
+                     }
+                     else {
+                         String::new()
+                     }
+                 } else {
+                     String::new()
+                 };
+                 
+                 println!("DEBUG: Action 'notification-clicked' processed ID: {}", id);
+
+                 if !id.is_empty() {
+                     if let Some(window) = app.active_window() {
+                         if let Ok(win) = window.downcast::<KarereWindow>() {
+                             win.process_notification_click(&id);
+                             win.set_visible(true);
+                             win.present();
+                         }
+                     } else if let Some(window) = app.windows().first() {
+                         if let Ok(win) = window.clone().downcast::<KarereWindow>() {
+                             win.process_notification_click(&id);
+                             win.set_visible(true);
+                             win.present();
+                         }
+                     }
+                 }
+             }
+        });
+        
+        app.add_action(&action_notification_click);
+
     });
 
     // Start Tray Icon
