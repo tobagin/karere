@@ -102,7 +102,7 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
-    <release version="2.2.0" date="2026-01-11">
+    <release version="2.2.1" date="2026-01-11">
       <description>
         <ul>
           <li>Notification Chat Linking: Clicking a notification now opens the specific chat in Karere.</li>
