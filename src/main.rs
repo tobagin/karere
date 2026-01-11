@@ -132,9 +132,17 @@ fn main() -> anyhow::Result<()> {
         action_about.connect_activate(move |_, _| {
             if let Some(app) = app_weak.upgrade() {
                 if let Some(window) = app.active_window() {
-                    let developers = vec!["Thiago Fernandes", "Aman9Das", "Cameo", "Sabri Ünal"];
-                    let designers = vec!["Thiago Fernandes"];
-                    let artists = vec!["Thiago Fernandes", "oiimrosabel"];
+                    let developers = vec![
+                        "Thiago Fernandes https://github.com/tobagin", 
+                        "Aman9Das https://github.com/Aman9das", 
+                        "Pascal Dietrich https://github.com/", 
+                        "Sabri Ünal https://github.com/yakushabb"
+                    ];
+                    let designers = vec!["Thiago Fernandes https://github.com/tobagin"];
+                    let artists = vec![
+                        "Thiago Fernandes https://github.com/tobagin", 
+                        "Rosabel https://github.com/oiimrosabel"
+                    ];
                     
                     let is_devel = app_id_clone.contains("Devel") || app_id_clone.ends_with(".Dev");
                     let app_name = if is_devel { gettext("Karere (Dev)") } else { gettext("Karere") };
