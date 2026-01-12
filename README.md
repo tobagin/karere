@@ -1,6 +1,6 @@
 # Karere
 
-A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless integration with the Linux desktop environment.
+A fast, native WhatsApp client for Linux that feels right at home on your desktop.
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
@@ -17,22 +17,20 @@ For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md)
 ## Features
 
 ### Core Features
-- **Native Desktop Integration**: True native notifications using GNotification with persistent permission state
-- **WhatsApp Web Integration**: Full WhatsApp Web functionality with proper notification handling
-- **LibAdwaita Theming**: Full support for Light, Dark, and System themes with native styling
-- **WebKitGTK Optimization**: Efficient resource usage with persistent storage for cookies and sessions
+- **Native Experience**: Designed to look and feel like a native application on your desktop.
+- **System Integration**: Notifications, themes, and shortcuts work exactly as you expect.
+- **Privacy Focused**: Sandboxed communication with comprehensive privacy controls.
+- **Efficient**: Optimized to be lightweight and fast.
 ### User Experience
 - **System Tray Icon**: Dynamic icon showing unread status, with background run support
 - **Custom Notification Sounds**: Select from 'WhatsApp', 'Pop', 'Alert', 'Soft', or 'Start' sounds
 - **Image & Text Paste**: Seamless Ctrl+V support for both mixed content types
 - **Download Manager**: Custom directory selection (e.g., `~/Downloads`) with toast notifications
 
-### Accessibility Support
-- **Screen Reader Optimization**: Enabled Caret Browsing and ARIA labels
-- **Keyboard Navigation**: Complete navigation with visible focus indicators
-- **High Contrast**: Full support for Adwaita high contrast mode
-- **Reduced Motion**: Respects system animation settings
-- **Zoom Control**: Toggleable WebView zoom controls
+### Accessibility
+- **Screen Reader Ready**: Fully labeled interface for screen reader users.
+- **Keyboard Navigation**: Use the entire app without a mouse.
+- **Visual Aids**: High contrast support, zoom controls, and reduced motion.
 - **Auto-Correct**: Smart text correction with dictionary support
 
 ### Spell Checking
