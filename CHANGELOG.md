@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.1.2] - 2026-01-12
+
+### Changed
+- **Metadata**: Updated application summary and description to better comply with AppStream/Flathub guidelines.
+
 ## [2.2.1] - 2026-01-11
 
 ### ✨ New Features

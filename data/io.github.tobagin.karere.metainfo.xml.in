@@ -13,7 +13,7 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <name>@APP_NAME@</name>
-  <summary>GTK4 WhatsApp Client</summary>
+  <summary>Chat on WhatsApp</summary>
   
   <branding>
     <color type="primary" scheme_preference="light">#25D366</color>
@@ -22,25 +22,18 @@
   
   <description>
     <p>
-      Karere is a production-ready GTK4 WhatsApp client that provides a native desktop experience
-      for WhatsApp Web. Built with Rust, GTK4, and Libadwaita, it offers a clean and
-      intuitive interface that integrates seamlessly with your Linux desktop.
+      Karere brings WhatsApp to your Linux desktop with a native look and feel. It integrates
+      seamlessly with your environment, offering a clean, modern interface that respects your
+      system's theme and workflow. By wrapping WhatsApp Web, it ensures you have access to
+      all the latest features while adding powerful desktop-specific capabilities.
     </p>
-    <p>
-      Features:
-    </p>
+    <p>Key features include:</p>
     <ul>
-      <li>Native GTK4 interface with Libadwaita styling</li>
-      <li>Blueprint UI with declarative interface design</li>
-      <li>Persistent login data and cookie management</li>
-      <li>Settings dialog with theme selection and privacy controls</li>
-      <li>Full WhatsApp Web functionality with desktop integration</li>
-      <li>Hardware-accelerated WebKit rendering</li>
-      <li>Comprehensive crash reporting with privacy controls</li>
-      <li>Graceful shutdown with window state persistence</li>
-      <li>Production hardening with security enhancements</li>
-      <li>Professional logging system with rotation</li>
-      <li>Signal handling for proper system integration</li>
+      <li>Native system notifications and tray icon support</li>
+      <li>Persistent login sessions so you don't need to scan the QR code every time</li>
+      <li>Privacy controls and comprehensive spell-checking settings</li>
+      <li>Smooth performance with hardware acceleration</li>
+      <li>Proper clipboard integration for text and images</li>
     </ul>
   </description>
   
@@ -102,6 +95,13 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.1.2" date="2026-01-12">
+      <description>
+        <ul>
+          <li>Updated application summary and description for better AppStream compliance</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.2.1" date="2026-01-11">
       <description>
         <ul>
