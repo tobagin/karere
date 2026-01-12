@@ -6,8 +6,12 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
-[![Get it on Flathub](https://flathub.org/api/badge)](https://flathub.org/en/apps/io.github.tobagin.karere)
-[![Support me on Ko-Fi](data/kofi_button.png)](https://ko-fi.com/tobagin)
+<a href="https://flathub.org/en/apps/io.github.tobagin.karere">
+  <img src="https://flathub.org/api/badge" height="55" alt="Get it on Flathub">
+</a>
+<a href="https://ko-fi.com/tobagin">
+  <img src="data/kofi_button.png" height="55" alt="Support me on Ko-Fi">
+</a>
 
 </div>
 
