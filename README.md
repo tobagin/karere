@@ -2,11 +2,13 @@
 
 A fast, native WhatsApp client for Linux that feels right at home on your desktop.
 
+<div align="center">
 
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
 
 [![Get it on Flathub](https://flathub.org/api/badge)](https://flathub.org/en/apps/io.github.tobagin.karere)
 
+</div>
 
 ## 🎉 Version 2.1.2 - Metadata Improvements
 
