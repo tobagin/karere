@@ -1,6 +1,6 @@
 [package]
 name = "karere"
-version = "2.1.2"
+version = "2.2.2"
 edition = "2024"
 
 [dependencies]

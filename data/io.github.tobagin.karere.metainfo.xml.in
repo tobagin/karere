@@ -95,7 +95,7 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
-    <release version="2.1.2" date="2026-01-12">
+    <release version="2.2.2" date="2026-01-12">
       <description>
         <ul>
           <li>Updated application summary and description for better AppStream compliance</li>

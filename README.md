@@ -10,11 +10,11 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.1.2 - Metadata Improvements
+## 🎉 Version 2.2.2 - Metadata Improvements
 
-**Karere 2.1.2** brings improvements to application metadata for better discovery and AppStream compliance.
+**Karere 2.2.2** brings improvements to application metadata for better discovery and AppStream compliance.
 
-### 🆕 What's New in 2.1.2
+### 🆕 What's New in 2.2.2
 
 - **Metadata improvements**: Updated summary and description for better clarity and compliance.
 
