@@ -2,7 +2,11 @@
 
 A fast, native WhatsApp client for Linux that feels right at home on your desktop.
 
+
 ![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
+
+[![Get it on Flathub](https://flathub.org/api/badge)](https://flathub.org/en/apps/io.github.tobagin.karere)
+
 
 ## 🎉 Version 2.1.2 - Metadata Improvements
 
@@ -46,13 +50,7 @@ For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md)
 - **Permission Management**: Persistent controls for Microphone and Notifications
 - **Startup Control**: Toggle automatic launch on login
 
-## Installation
-
-### Flatpak (Recommended)
-
-[![Get it on Flathub](https://flathub.org/api/badge)](https://flathub.org/en/apps/io.github.tobagin.karere)
-
-### From Source
+## Building from Source
 
 ```bash
 # Clone the repository
