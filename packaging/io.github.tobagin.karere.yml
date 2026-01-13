@@ -47,20 +47,6 @@ build-options:
     CARGO_HOME: /run/build/karere/cargo
 
 modules:
-  - name: hunspell-dictionaries
-    buildsystem: simple
-    build-commands:
-      - mkdir -p /app/share/hunspell
-      - find . -type f \( -name "*.dic" -o -name "*.aff" \) ! -path "*/hyph_*" ! -path "*/.git/*" ! -path "*/util/*" | while read -r file; do
-          filename=$(basename "$file")
-          if [[ ! "$filename" =~ ^hyph_ ]]; then
-            install -Dm644 "$file" "/app/share/hunspell/$filename"
-          fi
-        done
-    sources:
-      - type: archive
-        url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-26.2.0.1.zip
-        sha256: e1ef5088fe903eac040b622df175b7a7230c4decfae9cc72c1a1377f0b9e7afd
 
   - name: fonts-noto-color-emoji
     buildsystem: simple
