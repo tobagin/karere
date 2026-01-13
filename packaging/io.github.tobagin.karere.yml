@@ -51,8 +51,7 @@ modules:
     buildsystem: simple
     build-commands:
       - mkdir -p /app/share/hunspell
-      - |
-        find . -type f \( -name "*.dic" -o -name "*.aff" \) ! -path "*/hyph_*" ! -path "*/.git/*" ! -path "*/util/*" | while read -r file; do
+      - find . -type f \( -name "*.dic" -o -name "*.aff" \) ! -path "*/hyph_*" ! -path "*/.git/*" ! -path "*/util/*" | while read -r file; do
           filename=$(basename "$file")
           if [[ ! "$filename" =~ ^hyph_ ]]; then
             install -Dm644 "$file" "/app/share/hunspell/$filename"
