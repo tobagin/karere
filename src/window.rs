@@ -105,26 +105,32 @@ mod imp {
             });
             obj.add_action(&action_refresh);
 
+            // Setup Settings Logic
+            let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+            let settings = gio::Settings::new(&app_id);
+
             // Host-Driven Permission Trigger (User Suggestion)
             // Attempt to force the permission request from the Host side on load completion.
             let webview_inj = web_view.clone();
             web_view.connect_load_changed(move |_, event| {
                 if event == webkit6::LoadEvent::Finished {
 
-                    let js_content = include_str!("mobile_responsive.js");
-
-                    webview_inj.evaluate_javascript(
-                        &js_content,
-                        None,
-                        None,
-                        Option::<&gio::Cancellable>::None,
-                        |result| {
-                            match result {
-                                Ok(_) => println!("INFO: mobile_responsive.js injected successfully."),
-                                Err(e) => eprintln!("ERROR: Failed to inject mobile_responsive.js: {}", e),
-                            }
-                        },
-                    );
+                    let mobile_layout = settings.boolean("mobile-layout");
+                    if mobile_layout {
+                        let js_content = include_str!("mobile_responsive.js");
+                        webview_inj.evaluate_javascript(
+                            &js_content,
+                            None,
+                            None,
+                            Option::<&gio::Cancellable>::None,
+                            |result| {
+                                match result {
+                                    Ok(_) => println!("INFO: mobile_responsive.js injected successfully."),
+                                    Err(e) => eprintln!("ERROR: Failed to inject mobile_responsive.js: {}", e),
+                                }
+                            },
+                        );                        
+                    }
 
                     println!("DEBUG: Load Finished. Attempting Host-Driven Permission Request...");
                     // We use the proxy's requestPermission if available, or native.
@@ -206,10 +212,6 @@ mod imp {
                 window.set_visible(false);
                 glib::Propagation::Stop
             });
-
-            // Setup Settings Logic
-            let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
-            let settings = gio::Settings::new(&app_id);
             
             // DEBUG: Check persistence at startup
             let asked_start = settings.boolean("web-notification-permission-asked");

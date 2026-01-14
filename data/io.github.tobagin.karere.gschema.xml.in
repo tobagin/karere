@@ -21,6 +21,10 @@
       <summary>Theme</summary>
       <description>Application theme (system, light, dark).</description>
     </key>
+    <key name="mobile-layout" type="b">
+      <default>false</default>
+      <summary>Mobile Layout (Experimental)</summary>
+    </key>
     <key name="enable-spell-checking" type="b">
       <default>true</default>
       <summary>Enable spell checking</summary>
