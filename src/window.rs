@@ -111,11 +111,12 @@ mod imp {
 
             // Host-Driven Permission Trigger (User Suggestion)
             // Attempt to force the permission request from the Host side on load completion.
+            let settings_mobile_layout = settings.clone(); // Clone for closure
             let webview_inj = web_view.clone();
             web_view.connect_load_changed(move |_, event| {
                 if event == webkit6::LoadEvent::Finished {
 
-                    let mobile_layout = settings.boolean("mobile-layout");
+                    let mobile_layout = settings_mobile_layout.boolean("mobile-layout");
                     if mobile_layout {
                         let js_content = include_str!("mobile_responsive.js");
                         webview_inj.evaluate_javascript(
