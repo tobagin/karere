@@ -89,6 +89,7 @@ Access preferences through the application menu or keyboard shortcut (`Ctrl+,`) 
 ### Keyboard Shortcuts
 
 #### Standard
+- `Ctrl+N` - New Chat
 - `Ctrl+,` - Open Preferences
 - `Ctrl+Q` - Quit Application
 - `F1` - Show Keyboard Shortcuts Help

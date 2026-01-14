@@ -217,6 +217,7 @@ fn main() -> anyhow::Result<()> {
         app.add_action(&action_help);
 
         // Set Accelerators
+        app.set_accels_for_action("win.new-chat", &["<Control>n"]);
         app.set_accels_for_action("win.refresh", &["<Control>r"]);
         app.set_accels_for_action("app.preferences", &["<Control>comma"]);
         app.set_accels_for_action("app.show-help-overlay", &["<Control>question", "<Control>slash"]);

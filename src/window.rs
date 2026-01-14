@@ -105,9 +105,41 @@ mod imp {
             });
             obj.add_action(&action_refresh);
 
+            // New Chat Action (Ctrl+N -> Ctrl+Alt+N simulation)
+            let action_new_chat = gio::SimpleAction::new("new-chat", None);
+            let obj_weak_nc = obj.downgrade();
+            action_new_chat.connect_activate(move |_, _| {
+                if let Some(obj) = obj_weak_nc.upgrade() {
+                    if let Some(webview) = obj.imp().web_view.get() {
+                        println!("DEBUG: Triggering New Chat (Ctrl+Alt+N simulation)");
+                        let js = r#"
+                            (function() {
+                                const ev = new KeyboardEvent('keydown', {
+                                    bubbles: true, 
+                                    cancelable: true, 
+                                    view: window, 
+                                    ctrlKey: true, 
+                                    altKey: true, 
+                                    shiftKey: false,
+                                    metaKey: false,
+                                    key: 'n',
+                                    code: 'KeyN',
+                                    keyCode: 78,
+                                    which: 78
+                                });
+                                document.dispatchEvent(ev);
+                            })();
+                        "#;
+                        webview.evaluate_javascript(js, None, None, Option::<&gio::Cancellable>::None, |_| {});
+                    }
+                }
+            });
+            obj.add_action(&action_new_chat);
+
             // Setup Settings Logic
             let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
             let settings = gio::Settings::new(&app_id);
+
 
             // Host-Driven Permission Trigger (User Suggestion)
             // Attempt to force the permission request from the Host side on load completion.
@@ -242,12 +274,9 @@ mod imp {
             if let Some(ws) = webkit6::prelude::WebViewExt::settings(self.web_view.get().unwrap()) {
                  settings.bind("enable-developer-tools", &ws, "enable-developer-extras").build();
                  
-                 // User Agent Spoofing (WebSettings only - JavaScript breaks composition!)
-                 // Use Safari on Linux - Chrome UA might be triggering issues?
-                 // Back when we tested this (Step 586), Safari UA + No JS overrides worked.
-                 // Let's go back to that "Known Good" state.
-                 let _version = "2.0.0"; // Available if needed: env!("CARGO_PKG_VERSION")
-                 let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15";
+                 // User Agent Spoofing (Chrome Linux)
+                 let _version = "2.0.0"; 
+                 let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
                  ws.set_user_agent(Some(&user_agent));
                  
                  // Disable quirks to restore our manual Linux UA
