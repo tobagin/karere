@@ -17,6 +17,7 @@ mod imp {
         
         // Appearance
         #[template_child] pub row_theme: TemplateChild<adw::ComboRow>,
+        #[template_child] pub row_mobile_layout: TemplateChild<adw::SwitchRow>,
         
         // Spell Checking
         #[template_child] pub row_spell_enable: TemplateChild<adw::SwitchRow>,
@@ -167,6 +168,8 @@ impl KarerePreferencesWindow {
                 Some(val.to_variant())
             })
             .build();
+
+         settings.bind("mobile-layout", &*imp.row_mobile_layout, "active").build();
 
          // 3. Spell Checking
          settings.bind("enable-spell-checking", &*imp.row_spell_enable, "active").build();
