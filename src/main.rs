@@ -42,17 +42,13 @@ fn main() -> anyhow::Result<()> {
     // Ensure compiled schemas are found (fix for running locally from cargo)
     // ONLY do this if NOT inside Flatpak, otherwise we break system schemas!
     if std::env::var("FLATPAK_ID").is_err() {
-        println!("DEBUG: Not in Flatpak. Applying Schema Override.");
         let current_dir = std::env::current_dir().expect("Failed to get current directory");
         let schema_dir = current_dir.join("data");
-        // Only set if the directory actually exists to be safe
         if schema_dir.exists() {
              unsafe {
                  std::env::set_var("GSETTINGS_SCHEMA_DIR", schema_dir);
              }
         }
-    } else {
-        println!("DEBUG: Flatpak detected ({:?}). Skipping Schema Override.", std::env::var("FLATPAK_ID"));
     }
 
     // Load resources
@@ -67,10 +63,7 @@ fn main() -> anyhow::Result<()> {
         .application_id(&app_id)
         .build();
 
-    println!("Starting main... App ID: {}", app_id);
-
     app.connect_startup(move |app| {
-        println!("Startup signal received.");
         adw::init().expect("Failed to initialize Libadwaita");
 
         // Sync Autostart Status
@@ -136,7 +129,8 @@ fn main() -> anyhow::Result<()> {
                         "Thiago Fernandes https://github.com/tobagin", 
                         "Aman9Das https://github.com/Aman9das", 
                         "Pascal Dietrich https://github.com/", 
-                        "Sabri Ünal https://github.com/yakushabb"
+                        "Sabri Ünal https://github.com/yakushabb",
+                        "Enrico https://github.com/account1009"
                     ];
                     let designers = vec!["Thiago Fernandes https://github.com/tobagin"];
                     let artists = vec![
@@ -316,7 +310,7 @@ fn main() -> anyhow::Result<()> {
                      String::new()
                  };
                  
-                 println!("DEBUG: Action 'notification-clicked' processed ID: {}", id);
+
 
                  if !id.is_empty() {
                      if let Some(window) = app.active_window() {
@@ -341,24 +335,18 @@ fn main() -> anyhow::Result<()> {
     });
 
     // Start Tray Icon
-    println!("Initializing settings...");
     let app_id_files = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
     let settings = gio::Settings::new(&app_id_files);
-    println!("Settings initialized.");
     
     let tray_behavior = settings.string("systray-icon");
-    println!("Tray behavior: {}", tray_behavior);
-    
     let should_spawn_tray = match tray_behavior.as_str() {
         "disabled" => false,
         "enabled" => true,
         "auto" | _ => {
-             // Simple auto detection: Check XDG_CURRENT_DESKTOP
              let desktop = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default().to_lowercase();
              !desktop.contains("gnome")
         }
     };
-    println!("Should spawn tray: {}", should_spawn_tray);
 
     // Visibility state
     let start_hidden = settings.boolean("start-in-background");
@@ -375,13 +363,11 @@ fn main() -> anyhow::Result<()> {
     let has_unread = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
 
 
-    println!("Spawning tray handle...");
     let tray_handle = if should_spawn_tray {
         match tray::spawn_tray(visible.clone(), has_unread.clone()) {
             Ok(handle) => Some(handle),
             Err(e) => {
                 eprintln!("Warning: Failed to start tray icon: {}", e);
-                // If tray fails, ensure window is visible so user can access app
                 visible.store(true, Ordering::Relaxed);
                 None
             }
@@ -389,7 +375,6 @@ fn main() -> anyhow::Result<()> {
     } else {
         None
     };
-    println!("Tray handle spawned.");
     
     // Action: Set Unread Status
     let action_set_unread = gio::SimpleAction::new("set-unread", Some(&*glib::VariantTy::BOOLEAN));
@@ -415,32 +400,25 @@ fn main() -> anyhow::Result<()> {
                          });
                      }
                  });
-                 println!("Tray icon updated (unread={})", is_unread);
+
             }
         }
     });
     app.add_action(&action_set_unread);
 
     app.connect_activate(move |app| {
-        println!("Activate signal received.");
-        
-        // Prevent duplicate windows on re-activation (e.g. clicking notification)
         if let Some(window) = app.active_window() {
-            println!("Window already exists, presenting it.");
-            window.set_visible(true); // Force visible
+            window.set_visible(true);
             window.present();
             return;
         }
         
-        // If no active window, check if we have any windows at all (handling case where active_window might be None if hidden)
         if let Some(window) = app.windows().first() {
-             println!("Window found (inactive), presenting it.");
-             window.set_visible(true); // Force visible
+             window.set_visible(true);
              window.present();
              return;
         }
 
-        println!("Creating new window...");
         let window = KarereWindow::new(app);
 
         // TEST NOTIFICATION REMOVED

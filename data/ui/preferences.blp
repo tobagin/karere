@@ -38,8 +38,12 @@ template $KarerePreferencesWindow : Adw.PreferencesDialog {
         };
       }
 
-      Adw.SwitchRow row_mobile_layout {
+      Adw.ComboRow row_mobile_layout {
         title: "Mobile Layout (Experimental)";
+        model: Gtk.StringList {
+          strings ["Auto", "Enabled", "Disabled"]
+        };
+        tooltip-text: "Auto: Enabled for mobile environments (Phosh, Plasma Mobile, etc.)";
       }
 
     }

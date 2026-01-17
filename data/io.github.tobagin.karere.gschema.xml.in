@@ -16,14 +16,25 @@
       <summary>Run on startup</summary>
       <description>Whether to start the application automatically when the user logs in.</description>
     </key>
+    <key name="window-width" type="i">
+      <default>800</default>
+      <summary>Window width</summary>
+      <description>Last window width</description>
+    </key>
+    <key name="window-height" type="i">
+      <default>600</default>
+      <summary>Window height</summary>
+      <description>Last window height</description>
+    </key>
     <key name="theme" type="s">
       <default>'system'</default>
       <summary>Theme</summary>
       <description>Application theme (system, light, dark).</description>
     </key>
-    <key name="mobile-layout" type="b">
-      <default>false</default>
+    <key name="mobile-layout" type="s">
+      <default>'auto'</default>
       <summary>Mobile Layout (Experimental)</summary>
+      <description>Mobile layout mode: auto (detect environment), enabled, or disabled.</description>
     </key>
     <key name="enable-spell-checking" type="b">
       <default>true</default>

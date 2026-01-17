@@ -95,6 +95,17 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.3.0" date="2026-01-17">
+      <description>
+        <ul>
+          <li>Ctrl+N keyboard shortcut for opening a new chat</li>
+          <li>Mobile layout support with auto-detection for Phosh, Plasma Mobile, and Lomiri</li>
+          <li>Tray icon click now toggles window visibility</li>
+          <li>Window size is saved and restored when hiding/showing</li>
+          <li>Mobile layout setting changed to dropdown (auto/enabled/disabled)</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.2.2" date="2026-01-12">
       <description>
         <ul>

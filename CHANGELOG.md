@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.3.0] - 2026-01-17
+
+### Added
+- **Ctrl+N for New Chat**: Native keyboard shortcut to open new chat sidebar via simulated keypress.
+- **Mobile Layout Support**: Responsive layout for mobile Linux phones (Phosh, Plasma Mobile, Lomiri) with auto-detection based on desktop environment and window width.
+- **Tray Icon Toggle**: Click the system tray icon to show/hide the application window.
+- **Window Size Persistence**: Window dimensions are saved when hiding and restored when showing.
+
+### Changed
+- **Mobile Layout Setting**: Changed from boolean toggle to dropdown (auto/enabled/disabled) for better control.
+- **User Agent**: Switched WebView to Chrome on Linux user agent for improved WhatsApp Web compatibility.
+- **Ko-Fi Badge**: Added support button to README.
+
+
 ## [2.2.2] - 2026-01-12
 
 ### Changed

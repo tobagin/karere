@@ -11,13 +11,16 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.2.2 - Metadata Improvements
+## 🎉 Version 2.3.0 - Mobile & Tray Improvements
 
-**Karere 2.2.2** brings improvements to application metadata for better discovery and AppStream compliance.
+**Karere 2.3.0** brings mobile layout support, tray icon improvements, and native keyboard shortcuts.
 
-### 🆕 What's New in 2.2.2
+### 🆕 What's New in 2.3.0
 
-- **Metadata improvements**: Updated summary and description for better clarity and compliance.
+- **Ctrl+N for New Chat**: Native keyboard shortcut to quickly open a new chat.
+- **Mobile Layout**: Responsive layout for Phosh, Plasma Mobile, and Lomiri with auto-detection.
+- **Tray Icon Toggle**: Click the tray icon to show/hide the window.
+- **Window Size Persistence**: Window dimensions are remembered when hiding.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

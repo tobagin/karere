@@ -17,7 +17,7 @@ mod imp {
         
         // Appearance
         #[template_child] pub row_theme: TemplateChild<adw::ComboRow>,
-        #[template_child] pub row_mobile_layout: TemplateChild<adw::SwitchRow>,
+        #[template_child] pub row_mobile_layout: TemplateChild<adw::ComboRow>,
         
         // Spell Checking
         #[template_child] pub row_spell_enable: TemplateChild<adw::SwitchRow>,
@@ -169,7 +169,26 @@ impl KarerePreferencesWindow {
             })
             .build();
 
-         settings.bind("mobile-layout", &*imp.row_mobile_layout, "active").build();
+         settings.bind("mobile-layout", &*imp.row_mobile_layout, "selected")
+            .mapping(|variant, _type| {
+                let val = variant.get::<String>().unwrap_or_else(|| "auto".to_string());
+                let idx: u32 = match val.as_str() {
+                    "enabled" => 1,
+                    "disabled" => 2,
+                    "auto" | _ => 0,
+                };
+                Some(idx.to_value())
+            })
+            .set_mapping(|value, _type| {
+                let idx = value.get::<u32>().unwrap_or(0);
+                let val = match idx {
+                    1 => "enabled",
+                    2 => "disabled",
+                    _ => "auto",
+                };
+                Some(val.to_variant())
+            })
+            .build();
 
          // 3. Spell Checking
          settings.bind("enable-spell-checking", &*imp.row_spell_enable, "active").build();

@@ -31,6 +31,9 @@ mod imp {
 
         // Active Notifications Storage (Map ID -> WebKitNotification)
         pub active_notifications: std::cell::RefCell<std::collections::HashMap<String, webkit6::Notification>>,
+        
+        // Mobile Layout State (tracks if mobile layout is currently active)
+        pub mobile_layout_active: std::cell::Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -61,9 +64,7 @@ mod imp {
                 .or_else(|| std::env::var("FLATPAK_ID").ok())
                 .unwrap_or_default();
 
-            println!("DEBUG: Resolved App ID: '{}'", app_id);
             if app_id.contains("Dev") || app_id.contains("Devel") {
-                 println!("DEBUG: 'Dev/Devel' detected. Adding 'devel' css class.");
                  obj.add_css_class("devel");
             }
 
@@ -111,7 +112,6 @@ mod imp {
             action_new_chat.connect_activate(move |_, _| {
                 if let Some(obj) = obj_weak_nc.upgrade() {
                     if let Some(webview) = obj.imp().web_view.get() {
-                        println!("DEBUG: Triggering New Chat (Ctrl+Alt+N simulation)");
                         let js = r#"
                             (function() {
                                 const ev = new KeyboardEvent('keydown', {
@@ -144,42 +144,114 @@ mod imp {
             // Host-Driven Permission Trigger (User Suggestion)
             // Attempt to force the permission request from the Host side on load completion.
             let settings_mobile_layout = settings.clone(); // Clone for closure
-            let webview_inj = web_view.clone();
-            web_view.connect_load_changed(move |_, event| {
+            
+            // Helper function to determine if mobile layout should be used
+            // window_width: current window width in pixels (use 0 if unknown)
+            fn should_use_mobile_layout(settings: &gio::Settings, window_width: i32) -> bool {
+                const MOBILE_WIDTH_THRESHOLD: i32 = 768;
+                
+                let mode = settings.string("mobile-layout");
+                match mode.as_str() {
+                    "enabled" => true,
+                    "disabled" => false,
+                    "auto" | _ => {
+                        // Check for mobile desktop environments
+                        if let Ok(desktop) = std::env::var("XDG_CURRENT_DESKTOP") {
+                            let desktop_lower = desktop.to_lowercase();
+                            let mobile_desktops = ["phosh", "plasma-mobile", "lomiri"];
+                            if mobile_desktops.iter().any(|d| desktop_lower.contains(d)) {
+                                return true;
+                            }
+                        }
+                        // Check window width (0 means unknown, don't trigger)
+                        if window_width > 0 && window_width < MOBILE_WIDTH_THRESHOLD {
+                            return true;
+                        }
+                        false
+                    }
+                }
+            }
+            
+            // Clone obj for closures
+            let obj_weak_mobile = obj.downgrade();
+            
+            web_view.connect_load_changed(move |webview, event| {
                 if event == webkit6::LoadEvent::Finished {
+                    // Get window width if available
+                    let window_width = if let Some(window) = obj_weak_mobile.upgrade() {
+                        window.width()
+                    } else {
+                        0
+                    };
 
-                    let mobile_layout = settings_mobile_layout.boolean("mobile-layout");
-                    if mobile_layout {
+                    if should_use_mobile_layout(&settings_mobile_layout, window_width) {
                         let js_content = include_str!("mobile_responsive.js");
-                        webview_inj.evaluate_javascript(
+                        webview.evaluate_javascript(
                             &js_content,
                             None,
                             None,
                             Option::<&gio::Cancellable>::None,
                             |result| {
                                 match result {
-                                    Ok(_) => println!("INFO: mobile_responsive.js injected successfully."),
+                                    Ok(_) => {},
                                     Err(e) => eprintln!("ERROR: Failed to inject mobile_responsive.js: {}", e),
                                 }
                             },
-                        );                        
+                        );
+                        // Update state
+                        if let Some(window) = obj_weak_mobile.upgrade() {
+                            window.imp().mobile_layout_active.set(true);
+                        }
+                    } else {
+                        // Update state
+                        if let Some(window) = obj_weak_mobile.upgrade() {
+                            window.imp().mobile_layout_active.set(false);
+                        }
                     }
 
-                    println!("DEBUG: Load Finished. Attempting Host-Driven Permission Request...");
-                    // We use the proxy's requestPermission if available, or native.
-                    // Since we injected the proxy at Start, window.Notification should be our proxy.
-                    webview_inj.evaluate_javascript(
+                    webview.evaluate_javascript(
                         "Notification.requestPermission()", 
                         None, 
                         None, 
                         Option::<&gio::Cancellable>::None, 
-                        |result| {
-                            match result {
-                                Ok(_) => println!("DEBUG: Host-driven JS execution success."),
-                                Err(e) => println!("DEBUG: Host-driven JS execution failed: {}", e),
+                        |_| {}
+                    );
+                }
+            });
+
+            // Window Resize Handler - Check for mobile/desktop transition in Auto mode
+            // We need to use the surface's layout signal which fires on actual resize
+            let settings_resize = settings.clone();
+            let webview_resize = web_view.clone();
+            let obj_weak_resize = obj.downgrade();
+            obj.connect_realize(move |window| {
+                if let Some(surface) = window.surface() {
+                    let settings_layout = settings_resize.clone();
+                    let webview_layout = webview_resize.clone();
+                    let obj_weak_layout = obj_weak_resize.clone();
+                    
+                    // Initialize the mobile_layout_active state based on current width
+                    const MOBILE_WIDTH_THRESHOLD: i32 = 768;
+                    let initial_width = window.width();
+                    window.imp().mobile_layout_active.set(initial_width < MOBILE_WIDTH_THRESHOLD);
+                    
+                    surface.connect_layout(move |_surface, width, _height| {
+                        let mode = settings_layout.string("mobile-layout");
+                        if mode.as_str() != "auto" {
+                            return; // Only handle resize in auto mode
+                        }
+                        
+                        if let Some(window) = obj_weak_layout.upgrade() {
+                            let currently_mobile = window.imp().mobile_layout_active.get();
+                            let should_be_mobile = width < MOBILE_WIDTH_THRESHOLD;
+                            
+                            // Only reload if transition crossed the threshold
+                            if currently_mobile != should_be_mobile {
+                                window.imp().mobile_layout_active.set(should_be_mobile);
+                                webview_layout.reload();
                             }
                         }
-                    );
+                    });
                 }
             });
 
@@ -192,7 +264,6 @@ mod imp {
                              if let Some(req) = nav_action.request() {
                                  if let Some(uri) = req.uri() {
                                      let uri_str = uri.as_str();
-                                     println!("DEBUG: Policy Decision: Type={:?}, URI={}", decision_type, uri_str);
 
                                      // Enhanced V1-like Logic
                                      let is_internal = uri_str.contains("web.whatsapp.com") || 
@@ -203,13 +274,12 @@ mod imp {
                                                        uri_str.starts_with("about:");
 
                                      if !is_internal {
-                                         println!("DEBUG: External Link detected. Opening: {}", uri_str);
                                          
                                          // Use generic GLib/GIO launcher which works via portal in Flatpak
                                          // This matches V1 logic (AppInfo.launch_default_for_uri)
                                          let uri_owned = uri_str.to_string();
                                          match gio::AppInfo::launch_default_for_uri(&uri_owned, Option::<&gio::AppLaunchContext>::None) {
-                                             Ok(_) => println!("DEBUG: External URI launched successfully via AppInfo."),
+                                             Ok(_) => {},
                                              Err(e) => eprintln!("WARNING: Failed to launch external URI: {}", e),
                                          }
                                          
@@ -246,11 +316,7 @@ mod imp {
                 glib::Propagation::Stop
             });
             
-            // DEBUG: Check persistence at startup
-            let asked_start = settings.boolean("web-notification-permission-asked");
-            let granted_start = settings.boolean("web-notification-permission-granted");
-            println!("DEBUG: Startup GSettings - Asked: {}, Granted: {}", asked_start, granted_start);
-            
+
             // 1. Theme
             let _style_manager = adw::StyleManager::default();
             // Bind setting to theme
@@ -268,6 +334,13 @@ mod imp {
             update_theme(&settings, "theme");
             // Connect change
             settings.connect_changed(Some("theme"), update_theme);
+
+            // Mobile Layout Change Handler - Reload webview when mode changes
+            let webview_mobile_reload = self.web_view.get().unwrap().clone();
+            settings.connect_changed(Some("mobile-layout"), move |_settings, _| {
+                // Reload webview to apply/remove mobile layout
+                webview_mobile_reload.reload();
+            });
 
             // 2. WebKit Settings
             // Also ensure main switch is toggled on WebView settings
@@ -304,13 +377,7 @@ mod imp {
             // Setup JS->Rust Logging Channel
             if let Some(ucm) = self.web_view.get().unwrap().user_content_manager() {
                 ucm.register_script_message_handler("log", None);
-                ucm.connect_script_message_received(Some("log"), |_, result| {
-                     // result is &Simple (or &Value). 
-                     // In webkit6-rs, the signature handles the conversion efficiently or gives access to JSCValue.
-                     // The error said `result` is `&webkit6::javascriptcore6::Value`.
-                     // Let's rely on standard debug print or robust string conversion.
-                     let msg = result.to_string();
-                     println!("JS_LOG: {}", msg);
+                ucm.connect_script_message_received(Some("log"), |_, _result| {
                 });
             }
 
@@ -486,7 +553,6 @@ mod imp {
             
             self.web_view.get().unwrap().connect_permission_request(move |_, request| {
                 // Debug logs
-                println!("Requesting notification permission...");
                 let settings = settings_notify.clone();
                 let window_weak = window_weak.clone();
 
@@ -495,14 +561,11 @@ mod imp {
                     let asked = settings.boolean("web-notification-permission-asked");
                     let granted = settings.boolean("web-notification-permission-granted");
                     
-                    println!("DEBUG: Permission Request. Asked={}, Granted={}", asked, granted);
                     
                     if asked {
                         if granted {
-                            println!("DEBUG: Auto-Allowing notification permission");
                             req.allow();
                         } else {
-                            println!("DEBUG: Auto-Denying notification permission");
                             req.deny();
                         }
                         return true;
@@ -577,14 +640,11 @@ mod imp {
                      let asked = settings.boolean(asked_key);
                      let granted = settings.boolean(granted_key);
 
-                     println!("DEBUG: Media Request. Audio={}, Video={}, Asked={}, Granted={}", is_audio, is_video, asked, granted);
 
                      if asked {
                          if granted {
-                             println!("DEBUG: Auto-Allowing media permission");
                              req.allow();
                          } else {
-                             println!("DEBUG: Auto-Denying media permission");
                              req.deny();
                          }
                          return true;
@@ -637,17 +697,14 @@ mod imp {
             let settings_notify_msg = settings.clone(); // Clone for closure
             let window_weak = obj.downgrade();
             self.web_view.get().unwrap().connect_show_notification(move |_, notification| {
-                println!("DEBUG: connect_show_notification TRIGGERED!");
                 
                 // 1. Check Master Toggle
                 if !settings_notify_msg.boolean("notifications-enabled") {
-                    println!("DEBUG: Notifications disabled globally.");
                     return true; // Suppress
                 }
                 
                 // 2. Check Message Notifications Toggle
                 if !settings_notify_msg.boolean("notify-messages") {
-                    println!("DEBUG: Message notifications disabled.");
                     return true; // Suppress
                 }
 
@@ -770,66 +827,136 @@ mod imp {
 
             // 5. Input Handling (Paste & Middle-click)
             
-            // Image Paste (Ctrl+V)
-            // WhatsApp Web often struggles with direct image pasting from Linux/GDK clipboard in WebKit.
-            // We manually detect image data, encode it, and inject a synthetic Paste event.
+            // Image & File Paste (Ctrl+V)
+            // WhatsApp Web often struggles with direct pasting from Linux/GDK clipboard in WebKit for images and files.
+            // We manually detect them, encode, and inject synthetic Paste events.
             let key_controller = gtk::EventControllerKey::new();
             let webview_paste = self.web_view.get().unwrap().clone();
             key_controller.connect_key_pressed(move |_, keyval, _keycode, state| {
-                if state.contains(gtk::gdk::ModifierType::CONTROL_MASK) && (keyval == gtk::gdk::Key::v || keyval == gtk::gdk::Key::V) {
-                     let clipboard = gtk::gdk::Display::default().and_then(|d| Some(d.clipboard()));
-                     if let Some(clipboard) = clipboard {
-                         // Check if clipboard has an image (GdkTexture)
-                         let formats = clipboard.formats();
-                         if formats.contains_type(gtk::gdk::Texture::static_type()) {
-                             println!("DEBUG: Image detected in clipboard. Intercepting Ctrl+V for manual injection.");
+                if state.contains(gtk::gdk::ModifierType::CONTROL_MASK) {
+                    // COPY Fallback (Ctrl+C)
+                    if keyval == gtk::gdk::Key::c || keyval == gtk::gdk::Key::C {
+                         // Explicitly trigger copy standard behavior just in case
+                         let webview = webview_paste.clone();
+                         webview.evaluate_javascript("document.execCommand('copy');", None, None, Option::<&gio::Cancellable>::None, |_| {});
+                         return glib::Propagation::Proceed;
+                    }
+
+                    // PASTE (Ctrl+V)
+                    if keyval == gtk::gdk::Key::v || keyval == gtk::gdk::Key::V {
+                         let clipboard = gtk::gdk::Display::default().and_then(|d| Some(d.clipboard()));
+                         if let Some(clipboard) = clipboard {
+                             let formats = clipboard.formats();
                              
-                             let webview = webview_paste.clone();
-                             clipboard.read_texture_async(gio::Cancellable::NONE, move |res: Result<Option<gtk::gdk::Texture>, glib::Error>| {
-                                 if let Ok(Some(texture)) = res {
-                                      // Convert to PNG bytes
-                                      let bytes = texture.save_to_png_bytes();
-                                      let b64 = BASE64_STANDARD.encode(bytes.as_ref());
-                                      
-                                      // Inject JS to create File and dispatch Paste event
-                                      let js = format!(r#"
-                                          (function() {{
-                                              try {{
-                                                  console.log("Karere: Injecting Image Paste...");
-                                                  const b64 = "{}";
-                                                  const byteCharacters = atob(b64);
-                                                  const byteNumbers = new Array(byteCharacters.length);
-                                                  for (let i = 0; i < byteCharacters.length; i++) {{
-                                                      byteNumbers[i] = byteCharacters.charCodeAt(i);
+                             // 1. Textures (Images)
+                             if formats.contains_type(gtk::gdk::Texture::static_type()) {
+                                 let webview = webview_paste.clone();
+                                 clipboard.read_texture_async(gio::Cancellable::NONE, move |res: Result<Option<gtk::gdk::Texture>, glib::Error>| {
+                                     if let Ok(Some(texture)) = res {
+                                          let bytes = texture.save_to_png_bytes();
+                                          let b64 = BASE64_STANDARD.encode(bytes.as_ref());
+                                          let js = format!(r#"
+                                              (function() {{
+                                                  try {{
+                                                      console.log("Karere: Injecting Image Paste...");
+                                                      const b64 = "{}";
+                                                      const byteCharacters = atob(b64);
+                                                      const byteNumbers = new Array(byteCharacters.length);
+                                                      for (let i = 0; i < byteCharacters.length; i++) {{
+                                                          byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                                      }}
+                                                      const byteArray = new Uint8Array(byteNumbers);
+                                                      const blob = new Blob([byteArray], {{type: 'image/png'}});
+                                                      const file = new File([blob], "paste.png", {{type: 'image/png', lastModified: new Date().getTime()}});
+                                                      
+                                                      const dataTransfer = new DataTransfer();
+                                                      dataTransfer.items.add(file);
+                                                      
+                                                      const pasteEvent = new ClipboardEvent('paste', {{
+                                                          bubbles: true,
+                                                          cancelable: true,
+                                                          clipboardData: dataTransfer
+                                                      }});
+                                                      
+                                                      document.activeElement.dispatchEvent(pasteEvent);
+                                                      console.log("Karere: Image Paste Dispatched.");
+                                                  }} catch (e) {{
+                                                     console.error("Karere Paste Injection Error:", e);
                                                   }}
-                                                  const byteArray = new Uint8Array(byteNumbers);
-                                                  const blob = new Blob([byteArray], {{type: 'image/png'}});
-                                                  const file = new File([blob], "paste.png", {{type: 'image/png', lastModified: new Date().getTime()}});
-                                                  
-                                                  const dataTransfer = new DataTransfer();
-                                                  dataTransfer.items.add(file);
-                                                  
-                                                  const pasteEvent = new ClipboardEvent('paste', {{
-                                                      bubbles: true,
-                                                      cancelable: true,
-                                                      clipboardData: dataTransfer
-                                                  }});
-                                                  
-                                                  document.activeElement.dispatchEvent(pasteEvent);
-                                                  console.log("Karere: Image Paste Dispatched.");
-                                              }} catch (e) {{
-                                                  console.error("Karere Paste Injection Error:", e);
-                                              }}
-                                          }})();
-                                      "#, b64);
-                                      
-                                      webview.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
-                                 }
-                             });
-                             
-                             return glib::Propagation::Stop;
+                                              }})();
+                                          "#, b64);
+                                          webview.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
+                                     }
+                                 });
+                                 return glib::Propagation::Stop;
+                             }
+                             // 2. Files (FileList)
+                             else if formats.contains_type(gtk::gdk::FileList::static_type()) {
+                                 let webview = webview_paste.clone();
+                                 clipboard.read_value_async(gtk::gdk::FileList::static_type(), glib::Priority::default(), gio::Cancellable::NONE, move |res| {
+                                     if let Ok(value) = res {
+                                         if let Ok(file_list) = value.get::<gtk::gdk::FileList>() {
+                                             let files = file_list.files();
+                                             
+                                             for file in files {
+                                                 let webview_clone = webview.clone();
+                                                 let file_clone = file.clone();
+                                                 file.load_contents_async(gio::Cancellable::NONE, move |res| {
+                                                     match res {
+                                                         Ok((bytes, _etag)) => {
+                                                             let b64 = BASE64_STANDARD.encode(&bytes);
+                                                             let filename = file_clone.basename().unwrap_or_else(|| std::path::Path::new("unknown").into()).to_string_lossy().to_string();
+                                                             
+                                                             // Basic Mime Guessing
+                                                             let mime = if filename.ends_with(".png") { "image/png" }
+                                                                        else if filename.ends_with(".jpg") || filename.ends_with(".jpeg") { "image/jpeg" }
+                                                                        else if filename.ends_with(".pdf") { "application/pdf" }
+                                                                        else if filename.ends_with(".mp4") { "video/mp4" }
+                                                                        else { "application/octet-stream" };
+
+
+                                                             let js = format!(r#"
+                                                                 (function() {{
+                                                                     try {{
+                                                                         console.log("Karere: Injecting File Paste: {}");
+                                                                         const b64 = "{}";
+                                                                         const byteCharacters = atob(b64);
+                                                                         const byteNumbers = new Array(byteCharacters.length);
+                                                                         for (let i = 0; i < byteCharacters.length; i++) {{
+                                                                             byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                                                         }}
+                                                                         const byteArray = new Uint8Array(byteNumbers);
+                                                                         const blob = new Blob([byteArray], {{type: '{}'}});
+                                                                         const file = new File([blob], "{}", {{type: '{}', lastModified: new Date().getTime()}});
+                                                                         
+                                                                         const dataTransfer = new DataTransfer();
+                                                                         dataTransfer.items.add(file);
+                                                                         
+                                                                         const pasteEvent = new ClipboardEvent('paste', {{
+                                                                             bubbles: true,
+                                                                             cancelable: true,
+                                                                             clipboardData: dataTransfer
+                                                                         }});
+                                                                         
+                                                                         document.activeElement.dispatchEvent(pasteEvent);
+                                                                     }} catch (e) {{
+                                                                         console.error("Karere File Paste Error:", e);
+                                                                     }}
+                                                                 }})();
+                                                             "#, filename, b64, mime, filename, mime);
+                                                             webview_clone.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
+                                                         },
+                                                         Err(e) => eprintln!("ERROR: Failed to read clipboard file: {}", e),
+                                                     }
+                                                 });
+                                             }
+                                         }
+                                     }
+                                 });
+                                 return glib::Propagation::Stop;
+                             }
                          }
-                     }
+                    }
                 }
                 glib::Propagation::Proceed
             });
@@ -844,26 +971,91 @@ mod imp {
                  // Claim the gesture to stop propagation to WebView's default handler
                  gesture.set_state(gtk::EventSequenceState::Claimed);
                  
-                 println!("DEBUG: Middle Click Detected. Attempting Primary Paste...");
                  let clipboard = gtk::gdk::Display::default().and_then(|d| Some(d.primary_clipboard()));
                  if let Some(clipboard) = clipboard {
                      let webview = webview_mid.clone();
                      clipboard.read_text_async(gio::Cancellable::NONE, move |res: Result<Option<glib::GString>, glib::Error>| {
                          match res {
                              Ok(Some(text)) => {
-                                 println!("DEBUG: Primary Selection Retrieved: {} chars", text.len());
                                  // Escape for JS string
                                  let safe_text = text.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
                                  let js = format!(r#"document.execCommand("insertText", false, "{}");"#, safe_text);
                                  webview.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
                              },
-                             Ok(None) => println!("DEBUG: Primary Selection Empty"),
-                             Err(e) => println!("DEBUG: Failed to read Primary Selection: {}", e),
+                             Ok(None) => {},
+                             Err(_) => {},
                          }
                      });
                  }
             });
             self.web_view.get().unwrap().add_controller(gesture_click);
+
+            // Drag and Drop (Files)
+            // Explicitly handle file drops to bypass some Flatpak/WebView disconnects or just to provide unified injection.
+            let drop_target = gtk::DropTarget::new(gtk::gdk::FileList::static_type(), gtk::gdk::DragAction::COPY);
+            let webview_drop = self.web_view.get().unwrap().clone();
+            
+            drop_target.connect_drop(move |_target, value, _x, _y| {
+                if let Ok(file_list) = value.get::<gtk::gdk::FileList>() {
+                     for file in file_list.files() {
+                         let webview = webview_drop.clone();
+                         let file_clone = file.clone();
+                         file.load_contents_async(gio::Cancellable::NONE, move |res| {
+                             match res {
+                                 Ok((bytes, _etag)) => {
+                                     let b64 = BASE64_STANDARD.encode(&bytes);
+                                     let filename = file_clone.basename().unwrap_or_else(|| std::path::Path::new("dropped_file").into()).to_string_lossy().to_string();
+                                     
+                                     // Basic Mime Guessing (Same as Paste)
+                                     let mime = if filename.ends_with(".png") { "image/png" }
+                                                else if filename.ends_with(".jpg") || filename.ends_with(".jpeg") { "image/jpeg" }
+                                                else if filename.ends_with(".pdf") { "application/pdf" }
+                                                else if filename.ends_with(".mp4") { "video/mp4" }
+                                                else { "application/octet-stream" };
+
+
+                                     // Reuse the same JS injection strategy as Paste
+                                     let js = format!(r#"
+                                         (function() {{
+                                             try {{
+                                                 console.log("Karere: Injecting Dropped File: {}");
+                                                 const b64 = "{}";
+                                                 const byteCharacters = atob(b64);
+                                                 const byteNumbers = new Array(byteCharacters.length);
+                                                 for (let i = 0; i < byteCharacters.length; i++) {{
+                                                     byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                                 }}
+                                                 const byteArray = new Uint8Array(byteNumbers);
+                                                 const blob = new Blob([byteArray], {{type: '{}'}});
+                                                 const file = new File([blob], "{}", {{type: '{}', lastModified: new Date().getTime()}});
+                                                 
+                                                 const dataTransfer = new DataTransfer();
+                                                 dataTransfer.items.add(file);
+                                                 
+                                                 // Use 'paste' event injection for attachments (proven to work)
+                                                 const pasteEvent = new ClipboardEvent('paste', {{
+                                                     bubbles: true,
+                                                     cancelable: true,
+                                                     clipboardData: dataTransfer
+                                                 }});
+                                                 document.activeElement.dispatchEvent(pasteEvent);
+                                                 
+                                             }} catch (e) {{
+                                                 console.error("Karere Drop Injection Error:", e);
+                                             }}
+                                         }})();
+                                     "#, filename, b64, mime, filename, mime);
+                                     webview.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
+                                 },
+                                 Err(e) => eprintln!("ERROR: Failed to read dropped file: {}", e),
+                             }
+                         });
+                     }
+                     return true;
+                }
+                false
+            });
+            self.web_view.get().unwrap().add_controller(drop_target);
 
             
             // 11. Setup Accessibility & Auto-Correct

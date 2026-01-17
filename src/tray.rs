@@ -2,6 +2,8 @@ use ksni;
 use std::error::Error;
 use gtk::prelude::*;
 use gtk::{gio, glib};
+use libadwaita as adw;
+use adw::prelude::*;
 use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
 
 use gettextrs::gettext;
@@ -34,7 +36,34 @@ impl ksni::Tray for KarereTray {
     }
 
     fn activate(&mut self, _x: i32, _y: i32) {
-        println!("Tray clicked!");
+        // Toggle window visibility on tray icon click
+        glib::MainContext::default().invoke(move || {
+            if let Some(app) = gio::Application::default() {
+                if let Ok(gtk_app) = app.downcast::<gtk::Application>() {
+                    if let Some(window) = gtk_app.windows().first() {
+                        let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+                        let settings = gio::Settings::new(&app_id);
+                        
+                        if window.is_visible() {
+                            // Save window size before hiding
+                            let width = window.width();
+                            let height = window.height();
+                            let _ = settings.set_int("window-width", width);
+                            let _ = settings.set_int("window-height", height);
+                            window.set_visible(false);
+                        } else {
+                            // Restore window size and present
+                            let width = settings.int("window-width");
+                            let height = settings.int("window-height");
+                            if let Ok(adw_window) = window.clone().downcast::<adw::ApplicationWindow>() {
+                                adw_window.set_default_size(width, height);
+                            }
+                            window.present();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     fn tool_tip(&self) -> ksni::ToolTip {
@@ -60,9 +89,23 @@ impl ksni::Tray for KarereTray {
                         if let Some(app) = gio::Application::default() {
                             if let Ok(gtk_app) = app.downcast::<gtk::Application>() {
                                 if let Some(window) = gtk_app.windows().first() {
+                                    let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+                                    let settings = gio::Settings::new(&app_id);
+                                    
                                     if window.is_visible() {
+                                        // Save window size before hiding
+                                        let width = window.width();
+                                        let height = window.height();
+                                        let _ = settings.set_int("window-width", width);
+                                        let _ = settings.set_int("window-height", height);
                                         window.set_visible(false);
                                     } else {
+                                        // Restore window size and present
+                                        let width = settings.int("window-width");
+                                        let height = settings.int("window-height");
+                                        if let Ok(adw_window) = window.clone().downcast::<adw::ApplicationWindow>() {
+                                            adw_window.set_default_size(width, height);
+                                        }
                                         window.present();
                                     }
                                 }
