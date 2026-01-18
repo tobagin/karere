@@ -95,6 +95,13 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   
   <releases>
+    <release version="2.3.2" date="2026-01-18">
+      <description>
+        <ul>
+          <li>Fixed Flatpak build failure by correcting config</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.3.1" date="2026-01-18">
       <description>
         <ul>
