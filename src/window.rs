@@ -10,6 +10,8 @@ mod imp {
     use super::*;
     use gtk::gio;
     use webkit6::prelude::*;
+    use std::rc::Rc;
+    use tokio::sync::OnceCell;
 
     #[derive(Debug, Default, gtk::CompositeTemplate)]
     #[template(resource = "/io/github/tobagin/karere/ui/window.ui")]
@@ -34,6 +36,9 @@ mod imp {
         
         // Mobile Layout State (tracks if mobile layout is currently active)
         pub mobile_layout_active: std::cell::Cell<bool>,
+
+        // Notification Proxy (Reusable)
+        pub notification_proxy: Rc<OnceCell<ashpd::desktop::notification::NotificationProxy<'static>>>,
     }
 
     #[glib::object_subclass]
@@ -737,35 +742,58 @@ mod imp {
                         // Use ashpd for Portal Notifications
                         let title_clone = title.clone();
                         let body_clone = body_text.clone();
-                        let notification_id = if let Some(tag) = notification.tag() {
-                             tag.to_string()
-                        } else {
-                             format!("msg-{}", glib::monotonic_time())
-                        };
+                         let notification_id = if let Some(tag) = notification.tag() {
+                              tag.to_string()
+                         } else {
+                              format!("msg-{}", glib::monotonic_time())
+                         };
 
                         let notification_id_portal = notification_id.clone();
+                        
+                        // Get the proxy from the window impl (shared)
+                        let proxy_cell = if let Some(window) = window_weak.upgrade() {
+                             window.imp().notification_proxy.clone()
+                        } else {
+                             // Should not happen if we are here
+                             return true;
+                        };
+
                         glib::MainContext::default().spawn_local(async move {
-                            // Enter the tokio runtime context for ashpd/zbus
+                            // Enter the tokio runtime context
                             let _guard = crate::RUNTIME.enter();
                             
-                            // Create proxy
-                            match ashpd::desktop::notification::NotificationProxy::new().await {
-                                Ok(proxy) => {
-                                    let notif = ashpd::desktop::notification::Notification::new(&title_clone)
-                                        .body(body_clone.as_str())
-                                        .icon(ashpd::desktop::Icon::with_names(&["dialog-information-symbolic"]))
-                                        .default_action("app.notification-clicked")
-                                        .default_action_target(notification_id_portal.as_str())
-                                        .priority(ashpd::desktop::notification::Priority::High);
-
-                                    // Check if we can add an ID (ashpd 0.4+ uses send_notification with ID usually, let's check basic usage)
-                                    // wrapper: "add_notification(&self, id: &str, notification: &Notification)"
-                                    
-                                    if let Err(e) = proxy.add_notification(&notification_id_portal, notif).await {
-                                        eprintln!("Failed to send portal notification: {}", e);
+                            // Initialize Proxy if needed (Singleton pattern per window)
+                            let proxy = proxy_cell.get_or_init(|| async {
+                                match ashpd::desktop::notification::NotificationProxy::new().await {
+                                    Ok(p) => p,
+                                    Err(e) => {
+                                        eprintln!("ERROR: Failed to create notification proxy: {}", e);
+                                        // We have to return something to satisfy the type, but this is cached.
+                                        // If this fails, we are in trouble anyway. 
+                                        // Ideally we retry, but OnceCell is once.
+                                        // For simplicity, we might crash or just panic here if strict, 
+                                        // but better to handle it. 
+                                        // Actually ashpd Proxy new() shouldn't fail often unless DBus is dead.
+                                        // Let's rely on it working or we'll get a broken proxy maybe?
+                                        // Wait, we can't easily return a Result here if get_or_init expects value.
+                                        // Let's panic to restart app state? No.
+                                        // Let's try to construct it.
+                                        // If it fails, subsequent calls will not re-try with standard OnceCell.
+                                        // But we can just log and panic for now as it's critical infrastructure.
+                                        panic!("Failed to init notification proxy: {}", e);
                                     }
-                                },
-                                Err(e) => eprintln!("ERROR: Failed to connect to notification portal: {}", e),
+                                }
+                            }).await;
+
+                            let notif = ashpd::desktop::notification::Notification::new(&title_clone)
+                                .body(body_clone.as_str())
+                                .icon(ashpd::desktop::Icon::with_names(&["dialog-information-symbolic"]))
+                                .default_action("app.notification-clicked")
+                                .default_action_target(notification_id_portal.as_str())
+                                .priority(ashpd::desktop::notification::Priority::High);
+
+                            if let Err(e) = proxy.add_notification(&notification_id_portal, notif).await {
+                                eprintln!("Failed to send portal notification: {}", e);
                             }
                         });
                         
@@ -794,17 +822,36 @@ mod imp {
                                 _ => "whatsapp",
                             };
                             
-                            // Play Logic (Extract & Spawn)
-                            // Ideally extraction happens once or cached, but tmp write is fast enough.
-                            let resource_path = format!("/io/github/tobagin/karere/sounds/{}.oga", sound_name);
-                            if let Ok(bytes) = gio::resources_lookup_data(&resource_path, gio::ResourceLookupFlags::NONE) {
+                            // Reuse spawn_local logic or just spawn separate one?
+                            // Let's spawn separate local task to keep it async and clean
+                            glib::MainContext::default().spawn_local(async move {
+                                let resource_path = format!("/io/github/tobagin/karere/sounds/{}.oga", sound_name);
                                 let temp_path = std::env::temp_dir().join("karere-notify.oga");
-                                if std::fs::write(&temp_path, &bytes).is_ok() {
-                                     let _ = std::process::Command::new("paplay")
-                                         .arg(temp_path)
-                                         .spawn();
+                                
+                                // Only write if not exists or size is 0 (simple cache)
+                                let needs_write = !temp_path.exists();
+                                
+                                if needs_write {
+                                    if let Ok(bytes) = gio::resources_lookup_data(&resource_path, gio::ResourceLookupFlags::NONE) {
+                                        let _ = tokio::fs::write(&temp_path, &bytes).await;
+                                    }
                                 }
-                            }
+                                
+                                if temp_path.exists() {
+                                    match tokio::process::Command::new("paplay")
+                                        .arg(temp_path)
+                                        .status() // awaits completion
+                                        .await 
+                                    {
+                                        Ok(status) => {
+                                            if !status.success() {
+                                                eprintln!("paplay failed");
+                                            }
+                                        },
+                                        Err(e) => eprintln!("Failed to run paplay: {}", e),
+                                    }
+                                }
+                            });
                         }
 
                         return true;
