@@ -30,10 +30,10 @@ If applicable, add screenshots to help explain your problem.
  - Source [e.g. Flathub, AUR, distro repo]
 
 **Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
+ - Device: [e.g. PinePhone, Librem 5, Fairphone]
+ - OS: [e.g. pmOS, Mobian]
  - Version [e.g. 22]
-
+ - Source [e.g. Flathub, AUR, distro repo]
+   
 **Additional context**
 Add any other context about the problem here.
