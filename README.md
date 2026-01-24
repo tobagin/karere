@@ -11,14 +11,14 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.3.1 - Bug Fixes
+## 🎉 Version 2.3.3 - Bug Fixes
 
-**Karere 2.3.1** brings stability improvements and critical bug fixes.
+**Karere 2.3.3** brings further stability improvements and fixes for background operations.
 
-### 🆕 What's New in 2.3.1
+### 🆕 What's New in 2.3.3
 
-- **Crash Fix**: Resolved "Too many open files" crash.
-- **Stability**: improved resource management for notifications.
+- **Resize Fix**: Smoother window resizing without reloads.
+- **Notifications**: Reliable background notifications.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

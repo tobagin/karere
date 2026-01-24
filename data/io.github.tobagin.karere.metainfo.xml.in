@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>@APP_ID@</id>
-  
+
   <!-- Flatpak ID transition support -->
   <provides>
     <id>com.mudeprolinux.whakarere</id>
@@ -9,17 +9,17 @@
   <replaces>
     <id>com.mudeprolinux.whakarere</id>
   </replaces>
-  
+
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <name>@APP_NAME@</name>
   <summary>Chat on WhatsApp</summary>
-  
+
   <branding>
     <color type="primary" scheme_preference="light">#25D366</color>
     <color type="primary" scheme_preference="dark">#128C7E</color>
   </branding>
-  
+
   <description>
     <p>
       Karere brings WhatsApp to your Linux desktop with a native look and feel. It integrates
@@ -36,7 +36,7 @@
       <li>Proper clipboard integration for text and images</li>
     </ul>
   </description>
-  
+
   <screenshots>
     <screenshot type="default">
       <image>https://github.com/tobagin/karere/blob/main/data/screenshots/main-window.png?raw=true</image>
@@ -55,7 +55,7 @@
       <caption>Keyboard shortcuts and productivity features</caption>
     </screenshot>
   </screenshots>
-  
+
   <url type="homepage">https://github.com/tobagin/karere</url>
   <url type="bugtracker">https://github.com/tobagin/karere/issues</url>
   <url type="help">https://github.com/tobagin/karere/discussions</url>
@@ -67,23 +67,23 @@
   <developer id="io.github.tobagin">
     <name>Thiago Fernandes</name>
   </developer>
-  
+
   <requires>
     <display_length compare="ge">768</display_length>
   </requires>
-  
+
   <recommends>
     <control>keyboard</control>
     <control>pointing</control>
     <control>touch</control>
   </recommends>
-  
+
   <categories>
     <category>Network</category>
     <category>InstantMessaging</category>
     <category>Chat</category>
   </categories>
-  
+
   <keywords>
     <keyword>whatsapp</keyword>
     <keyword>chat</keyword>
@@ -91,10 +91,18 @@
     <keyword>web</keyword>
     <keyword>communication</keyword>
   </keywords>
-  
+
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
-  
+
   <releases>
+    <release version="2.3.3" date="2026-01-24">
+      <description>
+        <ul>
+          <li>Fixed window resize behavior to prevent excessive reloading</li>
+          <li>Fixed background notifications reliability</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.3.2" date="2026-01-18">
       <description>
         <ul>
@@ -519,7 +527,7 @@
       </description>
     </release>
   </releases>
-  
+
   <content_rating type="oars-1.1">
     <content_attribute id="social-chat">moderate</content_attribute>
     <content_attribute id="social-info">mild</content_attribute>

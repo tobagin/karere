@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [2.3.3] - 2026-01-24
+
+### Fixed
+- **UI**: Fixed window resize behavior to prevent excessive reloading on resize.
+- **Notifications**: Fixed background notifications by ensuring window realization and visibility spoofing.
 ## [2.3.2] - 2026-01-18
 
 ### Fixed
