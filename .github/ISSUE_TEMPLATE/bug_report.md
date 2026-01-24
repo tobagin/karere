@@ -24,14 +24,13 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
+ - Distro: [e.g. Fedora, Debian, Ubuntu, Arch]
  - Version [e.g. 22]
  - Source [e.g. Flathub, AUR, distro repo]
 
 **Smartphone (please complete the following information):**
  - Device: [e.g. PinePhone, Librem 5, Fairphone]
- - OS: [e.g. pmOS, Mobian]
+ - Distro: [e.g. pmOS, Mobian]
  - Version [e.g. 22]
  - Source [e.g. Flathub, AUR, distro repo]
    
