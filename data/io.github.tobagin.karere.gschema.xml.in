@@ -26,6 +26,11 @@
       <summary>Window height</summary>
       <description>Last window height</description>
     </key>
+    <key name="is-maximized" type="b">
+      <default>false</default>
+      <summary>Window maximized state</summary>
+      <description>Whether the window is maximized</description>
+    </key>
     <key name="theme" type="s">
       <default>'system'</default>
       <summary>Theme</summary>

@@ -39,6 +39,12 @@ mod imp {
 
         // Notification Proxy (Reusable)
         pub notification_proxy: Rc<OnceCell<ashpd::desktop::notification::NotificationProxy<'static>>>,
+
+        // Window State Persistence
+        pub last_unmaximized_size: std::cell::Cell<(i32, i32)>,
+
+        // Resize Debounce Timer
+        pub resize_timer: std::cell::RefCell<Option<glib::SourceId>>,
     }
 
     #[glib::object_subclass]
@@ -162,6 +168,35 @@ mod imp {
             let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
             let settings = gio::Settings::new(&app_id);
 
+            // Restore Window State
+            let width = settings.int("window-width");
+            let height = settings.int("window-height");
+            if width > 0 && height > 0 {
+                obj.set_default_size(width, height);
+                obj.imp().last_unmaximized_size.set((width, height));
+            } else {
+                obj.imp().last_unmaximized_size.set((800, 600));
+            }
+
+            if settings.boolean("is-maximized") {
+                obj.maximize();
+            }
+
+            // Track Window Size (Resize Events) - Save only unmaximized size
+            let obj_weak_resize = obj.downgrade();
+            obj.connect_realize(move |window| {
+                if let Some(surface) = window.surface() {
+                    let obj_weak = obj_weak_resize.clone();
+                    surface.connect_layout(move |_surface, width, height| {
+                        if let Some(window) = obj_weak.upgrade() {
+                            if !window.is_maximized() {
+                                window.imp().last_unmaximized_size.set((width, height));
+                            }
+                        }
+                    });
+                }
+            });
+
 
             // Host-Driven Permission Trigger (User Suggestion)
             // Attempt to force the permission request from the Host side on load completion.
@@ -264,14 +299,44 @@ mod imp {
                         }
                         
                         if let Some(window) = obj_weak_layout.upgrade() {
-                            let currently_mobile = window.imp().mobile_layout_active.get();
-                            let should_be_mobile = width < MOBILE_WIDTH_THRESHOLD;
+                            let imp = window.imp();
                             
-                            // Only reload if transition crossed the threshold
-                            if currently_mobile != should_be_mobile {
-                                window.imp().mobile_layout_active.set(should_be_mobile);
-                                webview_layout.reload();
+                            // Cancel existing timer
+                            if let Some(source_id) = imp.resize_timer.borrow_mut().take() {
+                                source_id.remove();
                             }
+
+                            let window_weak_timer = window.downgrade();
+                            let webview_timer = webview_layout.clone();
+                            
+                            // Schedule new check
+                            let source_id = glib::timeout_add_local(
+                                std::time::Duration::from_millis(200),
+                                move || {
+                                    if let Some(window) = window_weak_timer.upgrade() {
+                                        let imp = window.imp();
+                                        imp.resize_timer.borrow_mut().take(); // Clear self
+
+                                        let current_width = window.width();
+                                        let currently_mobile = imp.mobile_layout_active.get();
+                                        // Use the exact width from the window at this moment, 
+                                        // or rely on the width passed to layout? 
+                                        // The width passed to layout was "then", "now" is better.
+                                        
+                                        const MOBILE_WIDTH_THRESHOLD: i32 = 768;
+                                        let should_be_mobile = current_width < MOBILE_WIDTH_THRESHOLD;
+                                        
+                                        // Only reload if transition crossed the threshold
+                                        if currently_mobile != should_be_mobile {
+                                            imp.mobile_layout_active.set(should_be_mobile);
+                                            webview_timer.reload();
+                                        }
+                                    }
+                                    glib::ControlFlow::Break
+                                }
+                            );
+                            
+                            imp.resize_timer.replace(Some(source_id));
                         }
                     });
                 }
@@ -327,8 +392,20 @@ mod imp {
             });
             obj.add_action(&action_present);
 
-            // Handle Close Request (Background Mode)
-            obj.connect_close_request(|window| {
+            // Handle Close Request (Background Mode & State Saving)
+            let settings_close = settings.clone();
+            obj.connect_close_request(move |window| {
+                // Save Window State
+                let is_maximized = window.is_maximized();
+                let (width, height) = window.imp().last_unmaximized_size.get();
+
+                if width > 0 && height > 0 {
+                    let _ = settings_close.set_int("window-width", width);
+                    let _ = settings_close.set_int("window-height", height);
+                }
+                let _ = settings_close.set_boolean("is-maximized", is_maximized);
+                gio::Settings::sync();
+
                 if window.imp().force_close.get() {
                     return glib::Propagation::Proceed;
                 }
