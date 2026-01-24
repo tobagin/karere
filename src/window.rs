@@ -98,6 +98,23 @@ mod imp {
 
             // 4. Load URI
             web_view.load_uri("https://web.whatsapp.com");
+
+            // Spoof Page Visibility API to ensure notifications firing in background
+            if let Some(ucm) = web_view.user_content_manager() {
+                 let source = r#"
+                    Object.defineProperty(document, 'hidden', {get: function() { return false; }});
+                    Object.defineProperty(document, 'visibilityState', {get: function() { return 'visible'; }});
+                    document.dispatchEvent(new Event('visibilitychange'));
+                 "#;
+                 let script = webkit6::UserScript::new(
+                     source, 
+                     webkit6::UserContentInjectedFrames::TopFrame, 
+                     webkit6::UserScriptInjectionTime::Start, 
+                     &[], 
+                     &[]
+                 );
+                 ucm.add_script(&script);
+            }
             
             // Setup Actions
             let action_refresh = gio::SimpleAction::new("refresh", None);
@@ -515,8 +532,6 @@ mod imp {
                           // Let's assume we can capture `obj` from outer scope.
                           // BUT `obj` was defined way up.
                           // We need to pass it into the closure_local!
-                          // Wait, `obj` is `self.obj()` in `constructed`.
-                          // We need to capture it here.
                           // Re-define window_strong to be safe.
                           
                           // Handle Failed (Show Alert)
@@ -528,10 +543,7 @@ mod imp {
                                // Or just use the overlay to show error toast?
                                // User asked for AlertDialog.
                                // Use proper weak ref to window.
-                               // We need to capture `obj` in the outer closure.
-                               // Let's skip AlertDialog for now and use Toast for error to handle the compile error simply?
-                               // NO, user explicitly asked for AlertDialog.
-                               // We need `obj`.
+                               // We need to capture `obj`.
                                // We can't easily access `obj` here unless we captured it.
                                // Let's modify the outer `glib::closure_local!` to capture `obj`.
                                
@@ -792,8 +804,8 @@ mod imp {
                                 .default_action_target(notification_id_portal.as_str())
                                 .priority(ashpd::desktop::notification::Priority::High);
 
-                            if let Err(e) = proxy.add_notification(&notification_id_portal, notif).await {
-                                eprintln!("Failed to send portal notification: {}", e);
+                            if let Err(_e) = proxy.add_notification(&notification_id_portal, notif).await {
+                                // eprintln!("Failed to send portal notification: {}", e); // Removed debug log
                             }
                         });
                         

@@ -429,9 +429,13 @@ fn main() -> anyhow::Result<()> {
              window.present();
         } else {
              window.set_visible(false);
+             
+             // Ensure window is realized so WebKit loads resources even if hidden
+             gtk::prelude::WidgetExt::realize(&window);
         }
 
         // Sync visibility
+
         let visible = visible_clone.clone();
         let tray_handle = tray_handle.clone();
         window.connect_notify_local(Some("visible"), move |window, _| {
