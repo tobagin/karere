@@ -37,6 +37,7 @@ pub fn get_available_dictionaries() -> Vec<String> {
 
 
 /// Matches a system locale (e.g. "en_GB.UTF-8") to an available dictionary.
+#[allow(dead_code)]
 pub fn match_locale_to_dictionary(locale: &str, available_dicts: &[String]) -> Option<String> {
     let dict_set: HashSet<&String> = HashSet::from_iter(available_dicts);
     

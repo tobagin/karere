@@ -3,7 +3,7 @@ use std::error::Error;
 use gtk::prelude::*;
 use gtk::{gio, glib};
 use libadwaita as adw;
-use adw::prelude::*;
+
 use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
 
 use gettextrs::gettext;
