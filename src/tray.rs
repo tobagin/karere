@@ -3,6 +3,9 @@ use std::error::Error;
 use gtk::prelude::*;
 use gtk::{gio, glib};
 use libadwaita as adw;
+use std::fs;
+use std::path::PathBuf;
+use cairo;
 
 use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
 
@@ -152,4 +155,106 @@ pub fn spawn_tray(visible: Arc<AtomicBool>, has_unread: Arc<AtomicBool>) -> Resu
     // So we should probably leak `rt` or store it.
     std::mem::forget(rt); 
     Ok(handle)
+}
+
+    fn icon_pixmap(&self) -> Vec<ksni::Icon> {
+        // Only provide pixmap on KDE - let GNOME use icon_name
+        let desktop = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default();
+        if !desktop.contains("KDE") {
+            return Vec::new();
+        }
+
+        //  Detect theme via environment variable (set by KDE)
+        let is_dark = detect_dark_theme();
+        
+        // Get icon name and render it
+        let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+        let icon_name = if self.has_unread.load(Ordering::Relaxed) {
+            format!("{}-new-message-symbolic", app_id)
+        } else {
+            format!("{}-symbolic", app_id)
+        };
+
+        // Render SVG with appropriate color
+        match render_svg_icon(&icon_name, 22, is_dark) {
+            Ok(pixmap) => vec![pixmap],
+            Err(_) => Vec::new(),
+        }
+    }
+
+/// Detect dark theme via KDE environment variables
+fn detect_dark_theme() -> bool {
+    // KDE sets KDEL color scheme in env
+    if let Ok(scheme) = std::env::var("KDE_SESSION_VERSION") {
+        // Check if we can read the color scheme config
+        if let Ok(home) = std::env::var("HOME") {
+            let config_path = format!("{}/.config/kdeglobals", home);
+            if let Ok(content) = fs::read_to_string(&config_path) {
+                // Look for ColorScheme in config
+                return content.contains("ColorScheme=Breeze Dark") || 
+                       content.contains("ColorScheme=BreezeDark");
+            }
+        }
+    }
+    
+    // Default to dark theme (most common)
+    true
+}
+
+/// Render SVG icon with color replacement based on theme
+fn render_svg_icon(icon_name: &str, size: i32, is_dark: bool) -> Result<ksni::Icon, Box<dyn Error>> {
+    // Find the SVG file
+    let icon_path = find_icon_path(icon_name)?;
+    
+    // Read and modify SVG content
+    let svg_content = fs::read_to_string(&icon_path)?;
+    let color = if is_dark { "#ffffff" } else { "#000000" };
+    
+    // Replace both currentColor and hardcoded colors
+    let modified_svg = svg_content
+        .replace("currentColor", color)
+        .replace("#2e3436", color);
+    
+    // Render SVG to pixmap
+    let handle = rsvg::Loader::new().read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
+        &gio::MemoryInputStream::from_bytes(&glib::Bytes::from(modified_svg.as_bytes())),
+        None::<&gio::File>,
+        None::<&gio::Cancellable>,
+    )?;
+    
+    let mut surface = cairo::ImageSurface::create(cairo::Format::ARgb32, size, size)?;
+    let width = surface.width();
+    let height = surface.height();
+    
+    {
+        let cr = cairo::Context::new(&surface)?;
+        let renderer = rsvg::CairoRenderer::new(&handle);
+        let viewport = cairo::Rectangle::new(0.0, 0.0, size as f64, size as f64);
+        renderer.render_document(&cr, &viewport)?;
+    }
+    
+    let data = surface.data()?;
+    
+    Ok(ksni::Icon {
+        width,
+        height,
+        data: data.to_vec(),
+    })
+}
+
+/// Find icon file path
+fn find_icon_path(icon_name: &str) -> Result<PathBuf, Box<dyn Error>> {
+    let paths = vec![
+        format!("/app/share/icons/hicolor/symbolic/apps/{}.svg", icon_name),
+        format!("/usr/share/icons/hicolor/symbolic/apps/{}.svg", icon_name),
+    ];
+    
+    for path in paths {
+        let p = PathBuf::from(&path);
+        if p.exists() {
+            return Ok(p);
+        }
+    }
+    
+    Err("Icon not found".into())
 }
