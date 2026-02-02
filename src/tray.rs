@@ -30,12 +30,16 @@ impl ksni::Tray for KarereTray {
     fn icon_pixmap(&self) -> Vec<ksni::Icon> {
         // Only provide pixmap on KDE - let GNOME use icon_name
         let desktop = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default();
+        log::info!("icon_pixmap called, XDG_CURRENT_DESKTOP: {}", desktop);
+        
         if !desktop.contains("KDE") {
+            log::info!("Not KDE, returning empty pixmap vector");
             return Vec::new();
         }
 
         // Determine if we're on dark theme
         let is_dark = is_dark_theme();
+        log::info!("Theme is dark: {}", is_dark);
         
         // Get icon name and render it
         let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
@@ -44,12 +48,19 @@ impl ksni::Tray for KarereTray {
         } else {
             format!("{}-symbolic", app_id)
         };
+        
+        log::info!("Rendering icon: {}", icon_name);
 
         // Render SVG with appropriate color
-        if let Ok(pixmap) = render_svg_icon(&icon_name, 22, is_dark) {
-            vec![pixmap]
-        } else {
-            Vec::new()
+        match render_svg_icon(&icon_name, 22, is_dark) {
+            Ok(pixmap) => {
+                log::info!("Successfully rendered icon pixmap: {}x{}", pixmap.width, pixmap.height);
+                vec![pixmap]
+            }
+            Err(e) => {
+                log::error!("Failed to render icon pixmap: {}", e);
+                Vec::new()
+            }
         }
     }
 
