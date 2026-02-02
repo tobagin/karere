@@ -41,7 +41,8 @@ schema_conf.set('APP_ID', base_id)
 schema_path = '/' + base_id.replace('.', '/') + '/'
 schema_conf.set('APP_PATH', schema_path)
 
-configure_file(
+# Build schema file
+schema_file = configure_file(
   input: 'io.github.tobagin.karere.gschema.xml.in',
   output: base_id + '.gschema.xml',
   configuration: schema_conf,
@@ -49,7 +50,8 @@ configure_file(
   install_dir: get_option('datadir') / 'glib-2.0/schemas'
 )
 
-gnome.compile_schemas()
+# Compile schemas - this compiles at install time
+gnome.compile_schemas(build_by_default: true, depend_files: schema_file)
 
 # Blueprint Compilation
 blueprint_compiler = find_program('blueprint-compiler', required: true)
