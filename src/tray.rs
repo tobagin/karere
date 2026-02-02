@@ -185,14 +185,9 @@ pub fn spawn_tray(visible: Arc<AtomicBool>, has_unread: Arc<AtomicBool>) -> Resu
 
 /// Detect if the system is using a dark theme
 fn is_dark_theme() -> bool {
-    // Try to detect via GTK settings first (fastest)
-    if let Some(settings) = gtk::Settings::default() {
-        if settings.is_gtk_application_prefer_dark_theme() {
-            return true;
-        }
-    }
-    
-    // Fallback to light theme
+    // TODO: Detect theme without GTK (which isn't initialized yet when tray spawns)
+    // For now, default to light theme
+    // We could use XDG portal or read KDE/GNOME settings directly
     false
 }
 
