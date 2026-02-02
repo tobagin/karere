@@ -11,8 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 ### Fixed
-### Removed
 
+## [2.3.4] - 2026-02-02
+
+### Fixed
+- **Freezing**: Fixed frequent app freezing on resume by reverting `CacheModel::DocumentViewer` optimization.
+- **Background Startup**: Fixed issue where app would show window despite "Start in background" setting being enabled.
+- **Styling**: Fixed symbolic icon rendering to correctly use `currentColor` and cleaned up SVG assets.
+
+### Changed
+- **Memory**: Optimized `mobile_responsive.js` to prevent excessive DOM observation and reduce memory usage.
 
 ## [2.3.3] - 2026-01-24
 

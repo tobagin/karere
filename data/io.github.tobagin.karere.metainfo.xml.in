@@ -95,6 +95,16 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="2.3.4" date="2026-02-02">
+      <description>
+        <ul>
+          <li>Fixed application freezing on resume by reverting aggressive cache optimization</li>
+          <li>Fixed background validation to ensure app starts correctly</li>
+          <li>Optimized memory usage in mobile responsive scripts</li>
+          <li>Improved icon rendering (symbolic icons now use currentColor)</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.3.3" date="2026-01-24">
       <description>
         <ul>
