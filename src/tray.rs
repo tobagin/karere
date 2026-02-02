@@ -184,31 +184,21 @@ pub fn spawn_tray(visible: Arc<AtomicBool>, has_unread: Arc<AtomicBool>) -> Resu
 
 /// Detect dark theme via KDE environment variables
 fn detect_dark_theme() -> bool {
-    // KDE sets KDEL color scheme in env
-    if let Ok(scheme) = std::env::var("KDE_SESSION_VERSION") {
-        // Check if we can read the color scheme config
-        if let Ok(home) = std::env::var("HOME") {
-            let config_path = format!("{}/.config/kdeglobals", home);
-            if let Ok(content) = fs::read_to_string(&config_path) {
-                // Look for ColorScheme in config
-                return content.contains("ColorScheme=Breeze Dark") || 
-                       content.contains("ColorScheme=BreezeDark");
-            }
-        }
-    }
-    
-    // Default to dark theme (most common)
-    true
+    // We'll just use a medium gray that works on both themes
+    // Return value doesn't matter since we use the same color
+    false
 }
 
 /// Render SVG icon with color replacement based on theme
-fn render_svg_icon(icon_name: &str, size: i32, is_dark: bool) -> Result<ksni::Icon, Box<dyn Error>> {
+fn render_svg_icon(icon_name: &str, size: i32, _is_dark: bool) -> Result<ksni::Icon, Box<dyn Error>> {
     // Find the SVG file
     let icon_path = find_icon_path(icon_name)?;
     
     // Read and modify SVG content
     let svg_content = fs::read_to_string(&icon_path)?;
-    let color = if is_dark { "#ffffff" } else { "#000000" };
+    
+    // Use medium gray (#6e6e6e) that works on both light and dark backgrounds
+    let color = "#6e6e6e";
     
     // Replace both currentColor and hardcoded colors
     let modified_svg = svg_content
