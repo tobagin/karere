@@ -32,7 +32,7 @@ impl ksni::Tray for KarereTray {
     }
 
     fn category(&self) -> ksni::Category {
-        ksni::Category::ApplicationStatus
+        ksni::Category::Communications
     }
 
     fn activate(&mut self, _x: i32, _y: i32) {
