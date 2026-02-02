@@ -221,17 +221,20 @@ fn render_svg_icon(icon_name: &str, size: i32, is_dark: bool) -> Result<ksni::Ic
     
     
     let mut surface = cairo::ImageSurface::create(cairo::Format::ARgb32, size, size)?;
-    let cr = cairo::Context::new(&surface)?;
     
-    let renderer = rsvg::CairoRenderer::new(&handle);
-    let viewport = cairo::Rectangle::new(0.0, 0.0, size as f64, size as f64);
-    renderer.render_document(&cr, &viewport)?;
-    
-    // Get dimensions before borrowing data
+    // Get dimensions first
     let width = surface.width();
     let height = surface.height();
     
-    // Convert surface to ARGB data
+    // Render in a scope so cr gets dropped
+    {
+        let cr = cairo::Context::new(&surface)?;
+        let renderer = rsvg::CairoRenderer::new(&handle);
+        let viewport = cairo::Rectangle::new(0.0, 0.0, size as f64, size as f64);
+        renderer.render_document(&cr, &viewport)?;
+    } // cr dropped here
+    
+    // Now we can get exclusive access to surface data
     let data = surface.data()?;
     
     Ok(ksni::Icon {
