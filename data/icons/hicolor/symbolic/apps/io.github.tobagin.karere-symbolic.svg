@@ -42,15 +42,11 @@
   </g>
   <defs
      id="defs1">
-    <style id="current-color-scheme" type="text/css">
-      .ColorScheme-Text { color:#dfdfdf; } .ColorScheme-Highlight { color:#4285f4; }
-    </style>
     <clipPath
        id="clip0_327_415">
       <rect
          width="16"
          height="16"
-         class="ColorScheme-Text" fill="currentColor"
          id="rect1" />
     </clipPath>
   </defs>
