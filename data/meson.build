@@ -93,13 +93,14 @@ install_data(
 )
 
 # Install PNG Icons at various sizes
-foreach size : ['48x48', '64x64', '128x128', '256x256']
+foreach size : ['48x48', '64x64', '128x128', '256x256', '512x512']
   install_data(
     'icons/hicolor/' + size + '/apps/' + icon_src_id + '.png',
     rename: base_id + '.png',
     install_dir: get_option('datadir') / 'icons/hicolor' / size / 'apps'
   )
 endforeach
+
 
 # Install Symbolic Icon
 install_data(
