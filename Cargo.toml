@@ -15,6 +15,8 @@ anyhow = "1.0.100"
 glib = "0.21.5"
 ashpd = { version = "0.12.1", features = ["gtk4"] }
 gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
+cairo-rs = "0.21.0"
+librsvg = "2.60.1"
 tokio = { version = "1.49.0", features = ["rt-multi-thread", "macros", "time"] }
 zbus = "5.13.2"
 zbus_macros = "5.13.2"

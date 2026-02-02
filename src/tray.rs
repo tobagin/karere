@@ -3,6 +3,10 @@ use std::error::Error;
 use gtk::prelude::*;
 use gtk::{gio, glib};
 use libadwaita as adw;
+use std::fs;
+use std::path::PathBuf;
+use cairo;
+use librsvg;
 
 use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
 
@@ -20,6 +24,32 @@ impl ksni::Tray for KarereTray {
              format!("{}-new-message-symbolic", app_id)
         } else {
              format!("{}-symbolic", app_id)
+        }
+    }
+
+    fn icon_pixmap(&self) -> Vec<ksni::Icon> {
+        // Only provide pixmap on KDE - let GNOME use icon_name
+        let desktop = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default();
+        if !desktop.contains("KDE") {
+            return Vec::new();
+        }
+
+        // Determine if we're on dark theme
+        let is_dark = is_dark_theme();
+        
+        // Get icon name and render it
+        let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+        let icon_name = if self.has_unread.load(Ordering::Relaxed) {
+            format!("{}-new-message-symbolic", app_id)
+        } else {
+            format!("{}-symbolic", app_id)
+        };
+
+        // Render SVG with appropriate color
+        if let Ok(pixmap) = render_svg_icon(&icon_name, 22, is_dark) {
+            vec![pixmap]
+        } else {
+            Vec::new()
         }
     }
 
@@ -151,4 +181,71 @@ pub fn spawn_tray(visible: Arc<AtomicBool>, has_unread: Arc<AtomicBool>) -> Resu
     // So we should probably leak `rt` or store it.
     std::mem::forget(rt); 
     Ok(handle)
+}
+
+/// Detect if the system is using a dark theme
+fn is_dark_theme() -> bool {
+    // Try to detect via GTK settings first (fastest)
+    if let Some(settings) = gtk::Settings::default() {
+        if settings.is_gtk_application_prefer_dark_theme() {
+            return true;
+        }
+    }
+    
+    // Fallback to light theme
+    false
+}
+
+/// Render SVG icon with color replacement based on theme
+fn render_svg_icon(icon_name: &str, size: i32, is_dark: bool) -> Result<ksni::Icon, Box<dyn Error>> {
+    // Find the SVG file in the icon theme
+    let icon_path = find_icon_path(icon_name)?;
+    
+    // Read and modify SVG content based on theme
+    let svg_content = fs::read_to_string(&icon_path)?;
+    let color = if is_dark { "#ffffff" } else { "#000000" };
+    let modified_svg = svg_content.replace("#2e3436", color);
+    
+    // Render SVG to pixmap using librsvg and cairo
+    let handle = librsvg::Loader::new().read_stream::<gio::MemoryInputStream>(
+        &gio::MemoryInputStream::from_bytes(&glib::Bytes::from(modified_svg.as_bytes())),
+        None::<&gio::File>,
+        None::<&gio::Cancellable>,
+    )?;
+    
+    let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, size, size)?;
+    let cr = cairo::Context::new(&surface)?;
+    
+    let renderer = librsvg::CairoRenderer::new(&handle);
+    let viewport = cairo::Rectangle::new(0.0, 0.0, size as f64, size as f64);
+    renderer.render_document(&cr, &viewport)?;
+    
+    // Convert surface to ARGB data
+    let data = surface.data()?;
+    let width = surface.width();
+    let height = surface.height();
+    
+    Ok(ksni::Icon {
+        width,
+        height,
+        data: data.to_vec(),
+    })
+}
+
+/// Find icon file path in the icon theme directories  
+fn find_icon_path(icon_name: &str) -> Result<PathBuf, Box<dyn Error>> {
+    let icon_dirs = vec![
+        "/app/share/icons/hicolor/symbolic/apps",  // Flatpak location
+        "/usr/share/icons/hicolor/symbolic/apps",
+        format!("{}/.local/share/icons/hicolor/symbolic/apps", std::env::var("HOME")?),
+    ];
+    
+    for dir in icon_dirs {
+        let path = PathBuf::from(dir).join(format!("{}.svg", icon_name));
+        if path.exists() {
+            return Ok(path);
+        }
+    }
+    
+    Err(format!("Icon {} not found", icon_name).into())
 }
