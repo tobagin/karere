@@ -213,17 +213,20 @@ fn render_svg_icon(icon_name: &str, size: i32, is_dark: bool) -> Result<ksni::Ic
         None::<&gio::Cancellable>,
     )?;
     
-    let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, size, size)?;
+    
+    let mut surface = cairo::ImageSurface::create(cairo::Format::ARgb32, size, size)?;
     let cr = cairo::Context::new(&surface)?;
     
     let renderer = rsvg::CairoRenderer::new(&handle);
     let viewport = cairo::Rectangle::new(0.0, 0.0, size as f64, size as f64);
     renderer.render_document(&cr, &viewport)?;
     
-    // Convert surface to ARGB data
-    let data = surface.data()?;
+    // Get dimensions before borrowing data
     let width = surface.width();
     let height = surface.height();
+    
+    // Convert surface to ARGB data
+    let data = surface.data()?;
     
     Ok(ksni::Icon {
         width,
