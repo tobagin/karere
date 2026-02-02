@@ -6,7 +6,7 @@ use libadwaita as adw;
 use std::fs;
 use std::path::PathBuf;
 use cairo;
-use librsvg::prelude::*;
+use rsvg::prelude::*;
 
 use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
 
@@ -207,7 +207,7 @@ fn render_svg_icon(icon_name: &str, size: i32, is_dark: bool) -> Result<ksni::Ic
     let modified_svg = svg_content.replace("#2e3436", color);
     
     // Render SVG to pixmap using librsvg and cairo
-    let handle = librsvg::Loader::new().read_stream::<gio::MemoryInputStream>(
+    let handle = rsvg::Loader::new().read_stream::<gio::MemoryInputStream>(
         &gio::MemoryInputStream::from_bytes(&glib::Bytes::from(modified_svg.as_bytes())),
         None::<&gio::File>,
         None::<&gio::Cancellable>,
@@ -216,7 +216,7 @@ fn render_svg_icon(icon_name: &str, size: i32, is_dark: bool) -> Result<ksni::Ic
     let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, size, size)?;
     let cr = cairo::Context::new(&surface)?;
     
-    let renderer = librsvg::CairoRenderer::new(&handle);
+    let renderer = rsvg::CairoRenderer::new(&handle);
     let viewport = cairo::Rectangle::new(0.0, 0.0, size as f64, size as f64);
     renderer.render_document(&cr, &viewport)?;
     
@@ -235,10 +235,11 @@ fn render_svg_icon(icon_name: &str, size: i32, is_dark: bool) -> Result<ksni::Ic
 /// Find icon file path in the icon theme directories  
 fn find_icon_path(icon_name: &str) -> Result<PathBuf, Box<dyn Error>> {
     let home = std::env::var("HOME")?;
+    let home_path = format!("{}/.local/share/icons/hicolor/symbolic/apps", home);
     let icon_dirs = vec![
         "/app/share/icons/hicolor/symbolic/apps",  // Flatpak location
         "/usr/share/icons/hicolor/symbolic/apps",
-        &format!("{}/.local/share/icons/hicolor/symbolic/apps", home),
+        &home_path,
     ];
     
     for dir in icon_dirs {
