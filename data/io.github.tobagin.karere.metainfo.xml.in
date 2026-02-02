@@ -95,6 +95,15 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="2.3.5" date="2026-02-02">
+      <description>
+        <ul>
+          <li>Fixed tray icons on KDE/GNOME (visible on both light/dark themes)</li>
+          <li>Restored correct app icons and transparent backgrounds</li>
+          <li>Improved icon compatibility across desktop environments</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.3.4" date="2026-02-02">
       <description>
         <ul>
