@@ -49,7 +49,7 @@
          id="rect1" />
     </clipPath>
   </defs>
-  <circle class="ColorScheme-Highlight" fill="currentColor"
+  <circle fill="#e01b24"
      id="path2"
      cx="14.507607"
      cy="14.539387"
