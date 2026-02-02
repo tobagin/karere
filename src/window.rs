@@ -9,7 +9,6 @@ use webkit6::prelude::*;
 mod imp {
     use super::*;
     use gtk::gio;
-    use webkit6::prelude::*;
     use std::rc::Rc;
     use tokio::sync::OnceCell;
 
@@ -66,6 +65,13 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed(); // Call parent constructed first
             let obj = self.obj();
+            
+            // Debug Font Config
+            if let Ok(val) = std::env::var("FONTCONFIG_FILE") {
+                println!("DEBUG: FONTCONFIG_FILE={}", val);
+            } else {
+                println!("DEBUG: FONTCONFIG_FILE is NOT SET");
+            }
 
             // Apply devel class if needed
             // Fallback to env var since obj.application() might be None in constructed
@@ -292,7 +298,7 @@ mod imp {
                     let initial_width = window.width();
                     window.imp().mobile_layout_active.set(initial_width < MOBILE_WIDTH_THRESHOLD);
                     
-                    surface.connect_layout(move |_surface, width, _height| {
+                    surface.connect_layout(move |_surface, _width, _height| {
                         let mode = settings_layout.string("mobile-layout");
                         if mode.as_str() != "auto" {
                             return; // Only handle resize in auto mode
@@ -409,11 +415,19 @@ mod imp {
                 if window.imp().force_close.get() {
                     return glib::Propagation::Proceed;
                 }
+
+                // Check "Close Button Behavior" setting
+                let close_action = settings_close.string("close-button-action");
+                if close_action == "quit" {
+                    // Quit Application
+                    return glib::Propagation::Proceed;
+                }
                 
-                // Hide instead of close
+                // Hide instead of close (Default/'background')
                 window.set_visible(false);
                 glib::Propagation::Stop
             });
+            
             
 
             // 1. Theme
@@ -446,6 +460,9 @@ mod imp {
             if let Some(ws) = webkit6::prelude::WebViewExt::settings(self.web_view.get().unwrap()) {
                  settings.bind("enable-developer-tools", &ws, "enable-developer-extras").build();
                  
+                 // Memory Optimization: Disable Page Cache (Back/Forward Cache)
+                 ws.set_enable_page_cache(false);
+                 
                  // User Agent Spoofing (Chrome Linux)
                  let _version = "2.0.0"; 
                  let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
@@ -466,6 +483,11 @@ mod imp {
                    }
              }
 
+             // Memory Optimization: Set Cache Model to DocumentViewer (Lower Memory Usage)
+             if let Some(context) = self.web_view.get().unwrap().context() {
+                 context.set_cache_model(webkit6::CacheModel::DocumentViewer);
+             }
+
 
             // Inject Notification Persistence (Native Logic)
             // With PersistentNetworkSession, we rely on WebKit saving the permission state.
@@ -476,7 +498,39 @@ mod imp {
             // Setup JS->Rust Logging Channel
             if let Some(ucm) = self.web_view.get().unwrap().user_content_manager() {
                 ucm.register_script_message_handler("log", None);
-                ucm.connect_script_message_received(Some("log"), |_, _result| {
+                
+                // Inject Console Override Script
+                let console_script = r#"
+                    (function() {
+                        function send(level, args) {
+                            try {
+                                var msg = Array.from(args).map(obj => String(obj)).join(' ');
+                                window.webkit.messageHandlers.log.postMessage(level + ': ' + msg);
+                            } catch(e) {}
+                        }
+                        var oldLog = console.log;
+                        var oldWarn = console.warn;
+                        var oldError = console.error;
+                        console.log = function() { send('LOG', arguments); oldLog.apply(console, arguments); };
+                        console.warn = function() { send('WARN', arguments); oldWarn.apply(console, arguments); };
+                        console.error = function() { send('ERROR', arguments); oldError.apply(console, arguments); };
+                    })();
+                "#;
+                let script = webkit6::UserScript::new(
+                    console_script,
+                    webkit6::UserContentInjectedFrames::TopFrame,
+                    webkit6::UserScriptInjectionTime::Start,
+                    &[],
+                    &[]
+                );
+                ucm.add_script(&script);
+
+                ucm.connect_script_message_received(Some("log"), |_, result| {
+                    // result is a webkit6::javascriptcore6::Value
+                    if result.is_string() {
+                        let s = result.to_string();
+                        println!("WEB-CONSOLE: {}", s);
+                    }
                 });
             }
 
@@ -1266,9 +1320,9 @@ mod imp {
              );
              let update_focus = move |settings: &gio::Settings| {
                  if settings.boolean("focus-indicators") {
-                     provider.load_from_data(":focus { outline-width: 2px; outline-style: solid; outline-color: alpha(currentColor, 0.7); }");
+                     provider.load_from_string(":focus { outline-width: 2px; outline-style: solid; outline-color: alpha(currentColor, 0.7); }");
                  } else {
-                     provider.load_from_data(""); 
+                     provider.load_from_string(""); 
                  }
              };
              let uf = update_focus.clone();

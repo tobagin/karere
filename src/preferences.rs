@@ -13,6 +13,7 @@ mod imp {
         // Startup
         #[template_child] pub row_startup: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_background: TemplateChild<adw::SwitchRow>,
+        #[template_child] pub row_close_action: TemplateChild<adw::ComboRow>,
         #[template_child] pub row_tray: TemplateChild<adw::ComboRow>,
         
         // Appearance
@@ -125,6 +126,26 @@ impl KarerePreferencesWindow {
          });
 
          settings.bind("start-in-background", &*imp.row_background, "active").build();
+         
+
+         settings.bind("close-button-action", &*imp.row_close_action, "selected")
+            .mapping(|variant, _type| {
+                let val = variant.get::<String>().unwrap_or_else(|| "background".to_string());
+                let idx: u32 = match val.as_str() {
+                    "quit" => 1,
+                    "background" | _ => 0,
+                };
+                Some(idx.to_value())
+            })
+            .set_mapping(|value, _type| {
+                let idx = value.get::<u32>().unwrap_or(0);
+                let val = match idx {
+                    1 => "quit",
+                    _ => "background",
+                };
+                Some(val.to_variant())
+            })
+            .build();
          
          settings.bind("systray-icon", &*imp.row_tray, "selected")
             .mapping(|variant, _type| {

@@ -19,6 +19,13 @@ template $KarerePreferencesWindow : Adw.PreferencesDialog {
         title: "Start in background";
       }
 
+      Adw.ComboRow row_close_action {
+        title: "Window Close Behavior";
+        model: Gtk.StringList {
+          strings ["Run in Background", "Quit Application"]
+        };
+      }
+
       Adw.ComboRow row_tray {
         title: "System Tray Icon";
         model: Gtk.StringList {

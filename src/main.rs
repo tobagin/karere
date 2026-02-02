@@ -350,12 +350,10 @@ fn main() -> anyhow::Result<()> {
 
     // Visibility state
     let start_hidden = settings.boolean("start-in-background");
-    // If tray is NOT spawned, we MUST be visible, otherwise there is no way to access the window.
-    let initial_visibility = if !should_spawn_tray {
-        true
-    } else {
-        !start_hidden
-    };
+    // If tray is NOT spawned, we usually want to be visible. HOWEVER, if the user explicitly
+    // requested "start in background", we should respect that (e.g. for GNOME Background Apps).
+    // The previous logic forced visibility if tray was disabled, preventing background startup on GNOME.
+    let initial_visibility = !start_hidden;
     
     let visible = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(initial_visibility));
     let visible_clone = visible.clone();

@@ -6,6 +6,11 @@
       <summary>Start in background</summary>
       <description>Whether to start the application in the background.</description>
     </key>
+    <key name="close-button-action" type="s">
+      <default>'background'</default>
+      <summary>Action to take when close button is clicked</summary>
+      <description>Action to take when close button is clicked (background, quit).</description>
+    </key>
     <key name="systray-icon" type="s">
       <default>'auto'</default>
       <summary>System Tray Icon</summary>
