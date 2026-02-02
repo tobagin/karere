@@ -196,10 +196,10 @@ pub fn spawn_tray(visible: Arc<AtomicBool>, has_unread: Arc<AtomicBool>) -> Resu
 
 /// Detect if the system is using a dark theme
 fn is_dark_theme() -> bool {
-    // TODO: Detect theme without GTK (which isn't initialized yet when tray spawns)
-    // For now, default to light theme
-    // We could use XDG portal or read KDE/GNOME settings directly
-    false
+    // For KDE, we just assume dark theme and render white icons
+    // This works well for the majority of users on dark themes
+    // Light theme users will see white icons (not ideal but visible)
+    true  // Always render white icons for KDE
 }
 
 /// Render SVG icon with color replacement based on theme
