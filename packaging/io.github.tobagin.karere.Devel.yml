@@ -60,8 +60,8 @@ modules:
         done
     sources:
       - type: archive
-        url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-26.2.0.1.zip
-        sha256: e1ef5088fe903eac040b622df175b7a7230c4decfae9cc72c1a1377f0b9e7afd
+        url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-26.2.0.2.zip
+        sha256: 4b076ff20485af78036fc896804754c64f760b227aa692de84200f762ee471bc
 
   - name: fonts-noto-color-emoji
     buildsystem: simple
