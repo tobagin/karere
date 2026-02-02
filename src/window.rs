@@ -483,10 +483,7 @@ mod imp {
                    }
              }
 
-             // Memory Optimization: Set Cache Model to DocumentViewer (Lower Memory Usage)
-             if let Some(context) = self.web_view.get().unwrap().context() {
-                 context.set_cache_model(webkit6::CacheModel::DocumentViewer);
-             }
+
 
 
             // Inject Notification Persistence (Native Logic)
