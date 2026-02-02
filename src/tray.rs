@@ -17,11 +17,12 @@ impl ksni::Tray for KarereTray {
     fn icon_name(&self) -> String {
         let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
         if self.has_unread.load(Ordering::Relaxed) {
-             format!("{}-new-message-symbolic", app_id)
+             format!("{}-new-message", app_id)
         } else {
-             format!("{}-symbolic", app_id)
+             app_id
         }
     }
+
 
     fn title(&self) -> String {
         gettext("Karere")

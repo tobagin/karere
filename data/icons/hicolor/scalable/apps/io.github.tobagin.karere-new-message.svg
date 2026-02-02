@@ -6,7 +6,7 @@
    
    version="1.1"
    id="svg1"
-   sodipodi:docname="io.github.tobagin.karere-symbolic.svg"
+   sodipodi:docname="io.github.tobagin.karere.new-message-symblolic.svg"
    inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -21,14 +21,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="44.5"
-     inkscape:cx="8"
-     inkscape:cy="8"
-     inkscape:window-width="2560"
-     inkscape:window-height="923"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:zoom="31.466252"
+     inkscape:cx="11.091248"
+     inkscape:cy="16.112501"
+     inkscape:window-width="1268"
+     inkscape:window-height="907"
+     inkscape:window-x="26"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
      inkscape:current-layer="svg1" />
   <g
      clip-path="url(#clip0_327_415)"
@@ -53,4 +53,9 @@
          id="rect1" />
     </clipPath>
   </defs>
+  <circle fill="#ff7800"
+     id="path2"
+     cx="14.507607"
+     cy="14.539387"
+     r="1.1281928" />
 </svg>
