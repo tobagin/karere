@@ -95,6 +95,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="2.3.6" date="2026-02-04">
+      <description>
+        <ul>
+          <li>Fixed: App now respects system "Do Not Disturb" settings on GNOME (silences sounds)</li>
+          <li>Fixed: Notifications bypass DND visuals (priority lowered to Normal)</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.3.5" date="2026-02-02">
       <description>
         <ul>

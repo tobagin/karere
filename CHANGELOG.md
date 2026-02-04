@@ -14,11 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed complex runtime icon rendering to improve stability
 - Fixed icon visibility issues across different desktop environments
 
+## [2.3.6] - 2026-02-04
+
+### Fixed
+- **Notifications**: Respect system "Do Not Disturb" settings on GNOME (suppresses sound and lowers visual priority).
+
 ## [Unreleased]
 ### Added
 
 ### Changed
 ### Fixed
+
 
 ## [2.3.4] - 2026-02-02
 

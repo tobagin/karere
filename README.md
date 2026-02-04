@@ -11,13 +11,13 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.3.5 - Icon Fixes
+## 🎉 Version 2.3.6 - Do Not Disturb Fix
 
-**Karere 2.3.5** restores correct icon rendering on Linux desktops.
+**Karere 2.3.6** improves integration with system notification settings.
 
-### 🆕 What's New in 2.3.5
+### 🆕 What's New in 2.3.6
 
-- **Icon Fix**: Restored correct icon rendering on Linux desktops.
+- **Do Not Disturb**: App now respects system DND settings (GNOME) by silencing custom sounds.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 
