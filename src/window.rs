@@ -930,7 +930,7 @@ mod imp {
                                 .icon(ashpd::desktop::Icon::with_names(&["dialog-information-symbolic"]))
                                 .default_action("app.notification-clicked")
                                 .default_action_target(notification_id_portal.as_str())
-                                .priority(ashpd::desktop::notification::Priority::High);
+                                .priority(ashpd::desktop::notification::Priority::Normal);
 
                             if let Err(_e) = proxy.add_notification(&notification_id_portal, notif).await {
                                 // eprintln!("Failed to send portal notification: {}", e); // Removed debug log
@@ -952,7 +952,25 @@ mod imp {
                         }
                         
                         // 5. Play Custom Sound (if enabled)
-                        if settings_notify_msg.boolean("notify-sound-enabled") {
+                        // Valid DND Check for GNOME
+                        // 5. Play Custom Sound (if enabled)
+                        // Valid DND Check for GNOME
+                        let dnd_enabled = {
+                             if let Some(source) = gio::SettingsSchemaSource::default() {
+                                 if let Some(_schema) = source.lookup("org.gnome.desktop.notifications", true) {
+                                      // Schema exists (likely GNOME or compatible)
+                                      let settings = gio::Settings::new("org.gnome.desktop.notifications");
+                                      // show-banners = false means DND is Likely ON (or just banners hidden, which implies quiet)
+                                      !settings.boolean("show-banners")
+                                 } else {
+                                      false
+                                 }
+                             } else {
+                                  false
+                             }
+                        };
+
+                        if !dnd_enabled && settings_notify_msg.boolean("notify-sound-enabled") {
                             let sound_key = settings_notify_msg.string("notify-sound-file");
                             let sound_name = match sound_key.as_str() {
                                 "pop" => "pop",
