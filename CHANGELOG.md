@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Fixed
 
+## [2.4.1] - 2026-02-06
+
+### Fixed
+- **Startup Reload**: Fixed an issue where the webview would double-reload on startup due to improper window size initialization (Mobile/Desktop detection).
+
 ## [2.4.0] - 2026-02-06
 
 ### Added

@@ -331,9 +331,9 @@ mod imp {
                     let obj_weak_layout = obj_weak_resize.clone();
                     
                     // Initialize the mobile_layout_active state based on current width
-                    const MOBILE_WIDTH_THRESHOLD: i32 = 768;
+                    // Initialize the mobile_layout_active state based on current width
                     let initial_width = window.width();
-                    window.imp().mobile_layout_active.set(initial_width < MOBILE_WIDTH_THRESHOLD);
+                    window.imp().mobile_layout_active.set(should_use_mobile_layout(&settings_layout, initial_width));
                     
                     /* Mobile layout logic temporarily removed to fix reload loop regression */
                     surface.connect_layout(move |_, width, _| {

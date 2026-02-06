@@ -11,14 +11,13 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.4.0 - Call Prep & Polish
+## 🎉 Version 2.4.1 - Startup Fixes
 
-**Karere 2.4.0** prepares the ground for voice and video calls and improves mobile responsiveness.
+**Karere 2.4.1** fixes a startup reload loop.
 
-### 🆕 What's New in 2.4.0
+### 🆕 What's New in 2.4.1
 
-- **Call Prep**: Added WebRTC infrastructure for future call support.
-- **Mobile**: Smoother resizing and layout adjustments.
+- **Fix**: Resolved double-reload on startup.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 
