@@ -13,6 +13,7 @@ finish-args:
 
   - --filesystem=xdg-download
   - --filesystem=xdg-run/pipewire-0
+
   # Audio for notification sounds and media
   - --socket=pulseaudio
   # Configure WebKit spell checker dictionary paths (bundled and runtime)

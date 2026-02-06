@@ -12,11 +12,18 @@ finish-args:
   - --talk-name=org.kde.StatusNotifierWatcher
   - --filesystem=xdg-download
   - --filesystem=xdg-run/pipewire-0
+
   # Audio for notification sounds and media
   - --socket=pulseaudio
   # Configure WebKit spell checker dictionary paths (bundled and runtime)
   - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell
   - --env=FONTCONFIG_FILE=/app/etc/fonts/fonts.conf
+  # Force GStreamer/WebKit to use PipeWire for camera
+  - --env=GST_PLUGIN_FEATURE_RANK=pipewiresrc:MAX
+  - --env=WEBRTC_USE_PIPEWIRE=1
+  # Disable JIT to fix "NeedDebuggerBreak trap" crashes
+  - --env=JSC_useJIT=0
+
 
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable

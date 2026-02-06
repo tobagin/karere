@@ -11,13 +11,14 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.3.6 - Do Not Disturb Fix
+## 🎉 Version 2.4.0 - Call Prep & Polish
 
-**Karere 2.3.6** improves integration with system notification settings.
+**Karere 2.4.0** prepares the ground for voice and video calls and improves mobile responsiveness.
 
-### 🆕 What's New in 2.3.6
+### 🆕 What's New in 2.4.0
 
-- **Do Not Disturb**: App now respects system DND settings (GNOME) by silencing custom sounds.
+- **Call Prep**: Added WebRTC infrastructure for future call support.
+- **Mobile**: Smoother resizing and layout adjustments.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

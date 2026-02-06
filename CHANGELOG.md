@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Fixed
 
+## [2.4.0] - 2026-02-06
+
+### Added
+- **Call Preparation**: Added underlying WebRTC permission handling for Camera and Microphone to support future WhatsApp Web voice and video calls.
+- **Mobile UI**: Improved resizing logic for better responsiveness on mobile devices.
+
 ## [2.3.6] - 2026-02-04
 
 ### Fixed

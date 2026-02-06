@@ -101,6 +101,13 @@ mod imp {
             
             web_view.set_vexpand(true);
             web_view.set_hexpand(true);
+
+            // Enable Page Cache explicitly (Helpful for history navigation)
+            if let Some(settings) = webkit6::prelude::WebViewExt::settings(&web_view) {
+                settings.set_enable_page_cache(true);
+                settings.set_enable_webrtc(true);
+                settings.set_enable_media_stream(true);
+            }
             
             // 2. Add to UI
             self.view_container.append(&web_view);
@@ -110,6 +117,36 @@ mod imp {
 
             // 4. Load URI
             web_view.load_uri("https://web.whatsapp.com");
+
+            // 5. Pre-emptive Camera Permission Request (Fix for "0 Devices" / Catch-22)
+            // We must ask for permission *before* WebKit initializes GStreamer, otherwise
+            // GStreamer sees 0 devices and WebKit never asks for permission.
+            let ctx = glib::MainContext::default();
+            ctx.spawn_local(async move {
+                 // Use the global Tokio runtime from main.rs to prevent "no reactor running" panic
+                 // This is necessary because we have Tokio enabled in dependencies, causing zbus to expect it.
+                 let _ = crate::RUNTIME.spawn(async {
+                     println!("Karere: Requesting Camera Access at Startup...");
+                     if let Ok(proxy) = ashpd::desktop::camera::Camera::new().await {
+                         match proxy.request_access().await {
+                             Ok(_) => println!("Karere: Camera Access GRANTED by System/User."),
+                             Err(e) => println!("Karere: Camera Access DENIED or FAILED: {:?}", e),
+                         }
+                         
+                         match proxy.is_present().await {
+                             Ok(present) => println!("Karere: Camera Is Present: {}", present),
+                             Err(e) => println!("Karere: Failed to check camera presence: {:?}", e),
+                         }
+
+                         match proxy.open_pipe_wire_remote().await {
+                             Ok(fd) => println!("Karere: Successfully opened PipeWire remote via Portal (FD: {:?})", fd),
+                             Err(e) => println!("Karere: Failed to open PipeWire remote: {:?}", e),
+                         }
+                     } else {
+                         println!("Karere: Failed to connect to Camera Portal.");
+                     }
+                 }).await;
+            });
 
             // Spoof Page Visibility API to ensure notifications firing in background
             if let Some(ucm) = web_view.user_content_manager() {
@@ -298,51 +335,17 @@ mod imp {
                     let initial_width = window.width();
                     window.imp().mobile_layout_active.set(initial_width < MOBILE_WIDTH_THRESHOLD);
                     
-                    surface.connect_layout(move |_surface, _width, _height| {
-                        let mode = settings_layout.string("mobile-layout");
-                        if mode.as_str() != "auto" {
-                            return; // Only handle resize in auto mode
-                        }
-                        
+                    /* Mobile layout logic temporarily removed to fix reload loop regression */
+                    surface.connect_layout(move |_, width, _| {
                         if let Some(window) = obj_weak_layout.upgrade() {
-                            let imp = window.imp();
-                            
-                            // Cancel existing timer
-                            if let Some(source_id) = imp.resize_timer.borrow_mut().take() {
-                                source_id.remove();
+                            let was_mobile = window.imp().mobile_layout_active.get();
+                            let is_mobile = should_use_mobile_layout(&settings_layout, width);
+
+                            if is_mobile != was_mobile {
+                                println!("Karere: Layout Mode Change Detected (Mobile: {} -> {}). Reloading...", was_mobile, is_mobile);
+                                window.imp().mobile_layout_active.set(is_mobile);
+                                webview_layout.reload();
                             }
-
-                            let window_weak_timer = window.downgrade();
-                            let webview_timer = webview_layout.clone();
-                            
-                            // Schedule new check
-                            let source_id = glib::timeout_add_local(
-                                std::time::Duration::from_millis(200),
-                                move || {
-                                    if let Some(window) = window_weak_timer.upgrade() {
-                                        let imp = window.imp();
-                                        imp.resize_timer.borrow_mut().take(); // Clear self
-
-                                        let current_width = window.width();
-                                        let currently_mobile = imp.mobile_layout_active.get();
-                                        // Use the exact width from the window at this moment, 
-                                        // or rely on the width passed to layout? 
-                                        // The width passed to layout was "then", "now" is better.
-                                        
-                                        const MOBILE_WIDTH_THRESHOLD: i32 = 768;
-                                        let should_be_mobile = current_width < MOBILE_WIDTH_THRESHOLD;
-                                        
-                                        // Only reload if transition crossed the threshold
-                                        if currently_mobile != should_be_mobile {
-                                            imp.mobile_layout_active.set(should_be_mobile);
-                                            webview_timer.reload();
-                                        }
-                                    }
-                                    glib::ControlFlow::Break
-                                }
-                            );
-                            
-                            imp.resize_timer.replace(Some(source_id));
                         }
                     });
                 }
@@ -457,15 +460,32 @@ mod imp {
 
             // 2. WebKit Settings
             // Also ensure main switch is toggled on WebView settings
-            if let Some(ws) = webkit6::prelude::WebViewExt::settings(self.web_view.get().unwrap()) {
+            let webview = self.web_view.get().expect("WebView should be initialized");
+            if let Some(ws) = webkit6::prelude::WebViewExt::settings(webview) {
                  settings.bind("enable-developer-tools", &ws, "enable-developer-extras").build();
                  
                  // Memory Optimization: Disable Page Cache (Back/Forward Cache)
                  ws.set_enable_page_cache(false);
                  
+                 ws.set_enable_media_stream(true);
+                 ws.set_enable_mediasource(true);
+                 ws.set_enable_webrtc(true);
+
+            // Debug: Monitor Camera Capture State
+            webview.connect_notify_local(Some("camera-capture-state"), |webview, _| {
+                let state = webview.camera_capture_state();
+                println!("Karere: Camera Capture State Changed: {:?}", state);
+            });
+            
+            // Debug: Monitor Microphone Capture State
+             webview.connect_notify_local(Some("microphone-capture-state"), |webview, _| {
+                let state = webview.microphone_capture_state();
+                println!("Karere: Microphone Capture State Changed: {:?}", state);
+            });
+                 
                  // User Agent Spoofing (Chrome Linux)
                  let _version = "2.0.0"; 
-                 let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+                 let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
                  ws.set_user_agent(Some(&user_agent));
                  
                  // Disable quirks to restore our manual Linux UA
@@ -759,6 +779,11 @@ mod imp {
                      if !is_audio && !is_video {
                          return false;
                      }
+
+                     // Manual Portal Request for Video (Camera)
+                     // The OS-level permission is handled at startup to ensure device visibility.
+                     // We now fall through to the standard app dialog below to ask the user
+                     // for site-specific permission, maintaining UX consistency with Microphone.
 
                      // Determine keys and dialog text
                      let (asked_key, granted_key, title, body) = if is_video {
