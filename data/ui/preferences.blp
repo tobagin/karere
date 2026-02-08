@@ -177,6 +177,28 @@ template $KarerePreferencesWindow : Adw.PreferencesDialog {
       Adw.SwitchRow row_zoom {
         title: "Enable Webview Zoom";
       }
+
+      Adw.SpinRow row_zoom_level {
+        title: "Zoom Level";
+        adjustment: Gtk.Adjustment {
+          lower: 0.2;
+          upper: 5.0;
+          value: 1.0;
+          step-increment: 0.1;
+          page-increment: 0.5;
+        };
+        digits: 1;
+      }
+
+      Adw.ActionRow row_zoom_reset {
+        title: "Reset Zoom";
+        [suffix]
+        Gtk.Button btn_zoom_reset {
+          label: "Reset";
+          valign: center;
+          icon-name: "edit-clear-symbolic";
+        }
+      }
     }
 
     Adw.PreferencesGroup {

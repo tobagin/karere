@@ -36,6 +36,11 @@
       <summary>Window maximized state</summary>
       <description>Whether the window is maximized</description>
     </key>
+    <key name="zoom-level" type="d">
+      <default>1.0</default>
+      <summary>Zoom level</summary>
+      <description>The zoom level of the webview.</description>
+    </key>
     <key name="theme" type="s">
       <default>'system'</default>
       <summary>Theme</summary>

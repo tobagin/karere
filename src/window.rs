@@ -225,15 +225,39 @@ mod imp {
                 obj.maximize();
             }
 
+            // Restore Zoom Level
+            let zoom = settings.double("zoom-level");
+            if zoom > 0.0 {
+                 web_view.set_zoom_level(zoom);
+            }
+
+            // Bind Zoom Level (Two-way: Property to Settings)
+            let settings_zoom = settings.clone();
+            web_view.connect_zoom_level_notify(move |webview| {
+                 let level = webview.zoom_level();
+                 let _ = settings_zoom.set_double("zoom-level", level);
+            });
+            
+            // Bind Settings Change to Zoom Level
+            let webview_zoom_update = web_view.clone();
+            settings.connect_changed(Some("zoom-level"), move |settings, _| {
+                let level = settings.double("zoom-level");
+                if (level - webview_zoom_update.zoom_level()).abs() > f64::EPSILON {
+                    webview_zoom_update.set_zoom_level(level);
+                }
+            });
+
             // Track Window Size (Resize Events) - Save only unmaximized size
             let obj_weak_resize = obj.downgrade();
             obj.connect_realize(move |window| {
                 if let Some(surface) = window.surface() {
                     let obj_weak = obj_weak_resize.clone();
-                    surface.connect_layout(move |_surface, width, height| {
+                    surface.connect_layout(move |_surface, _width, _height| {
                         if let Some(window) = obj_weak.upgrade() {
                             if !window.is_maximized() {
-                                window.imp().last_unmaximized_size.set((width, height));
+                                let w = window.width();
+                                let h = window.height();
+                                window.imp().last_unmaximized_size.set((w, h));
                             }
                         }
                     });

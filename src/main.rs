@@ -219,7 +219,10 @@ fn main() -> anyhow::Result<()> {
         app.set_accels_for_action("app.quit", &["<Control>q"]);
         app.set_accels_for_action("win.show-devtools", &["F12"]);
 
-        app.set_accels_for_action("win.show-devtools", &["F12"]);
+        // Zoom Accelerators
+        app.set_accels_for_action("win.zoom-in", &["<Control>plus", "<Control>equal", "<Control>KP_Add"]);
+        app.set_accels_for_action("win.zoom-out", &["<Control>minus", "<Control>KP_Subtract"]);
+        app.set_accels_for_action("win.zoom-reset", &["<Control>0", "<Control>KP_0"]);
 
         // Open Download Action
         let action_open_download = gio::SimpleAction::new("open-download", Some(glib::VariantTy::STRING));

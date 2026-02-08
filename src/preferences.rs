@@ -45,6 +45,9 @@ mod imp {
         #[template_child] pub row_contrast: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_motion: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_zoom: TemplateChild<adw::SwitchRow>,
+        #[template_child] pub row_zoom_level: TemplateChild<adw::SpinRow>,
+        #[template_child] pub row_zoom_reset: TemplateChild<adw::ActionRow>,
+        #[template_child] pub btn_zoom_reset: TemplateChild<gtk::Button>,
         #[template_child] pub row_sr_opts: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_a11y_shortcuts: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_dev_shortcuts: TemplateChild<adw::SwitchRow>,
@@ -294,6 +297,16 @@ impl KarerePreferencesWindow {
          settings.bind("high-contrast", &*imp.row_contrast, "active").build();
          settings.bind("reduce-motion", &*imp.row_motion, "active").build();
          settings.bind("webview-zoom", &*imp.row_zoom, "active").build();
+         
+         settings.bind("zoom-level", &*imp.row_zoom_level, "value").build();
+         settings.bind("webview-zoom", &*imp.row_zoom_level, "visible").build();
+         settings.bind("webview-zoom", &*imp.row_zoom_reset, "visible").build();
+         
+         let settings_zoom_reset = settings.clone();
+         imp.btn_zoom_reset.connect_clicked(move |_| {
+             let _ = settings_zoom_reset.set_double("zoom-level", 1.0);
+         });
+         
          settings.bind("screen-reader-opts", &*imp.row_sr_opts, "active").build();
          
          // Shortcuts Sub-settings: Bind sensitivity to master toggle
