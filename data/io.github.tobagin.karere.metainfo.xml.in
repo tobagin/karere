@@ -95,6 +95,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="2.4.2" date="2026-02-08">
+      <description>
+        <ul>
+          <li>Added Zoom support (Ctrl +/-/0) with persistence and preference controls</li>
+          <li>Fixed window size increasing on every restart</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.4.1" date="2026-02-06">
       <description>
         <ul>

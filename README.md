@@ -11,13 +11,14 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.4.1 - Startup Fixes
+## 🎉 Version 2.4.2 - Zoom & Fixes
 
-**Karere 2.4.1** fixes a startup reload loop.
+**Karere 2.4.2** brings zoom support and window size fixes.
 
-### 🆕 What's New in 2.4.1
+### 🆕 What's New in 2.4.2
 
-- **Fix**: Resolved double-reload on startup.
+- **Zoom**: Zoom in/out with Ctrl +/- and save connection state.
+- **Fix**: Window size no longer increases on restart.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Fixed
 
+## [2.4.2] - 2026-02-08
+
+### Added
+- **Zoom Support**: Added zoom controls (Ctrl +/-/0), persistence, and preference settings.
+
+### Fixed
+- **Window Size**: Fixed window size increasing on restart.
+
 ## [2.4.1] - 2026-02-06
 
 ### Fixed
