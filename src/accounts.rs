@@ -104,13 +104,14 @@ impl AccountManager {
             accounts[0].is_active = true;
         }
 
+        self.save_accounts(&accounts)?;
+
         // Also remove any saved session data for this account
         let session_dir = self.session_dir_for(account_id);
         if session_dir.exists() {
             let _ = std::fs::remove_dir_all(&session_dir);
         }
 
-        self.save_accounts(&accounts)?;
         Ok(())
     }
 
