@@ -341,6 +341,38 @@ msgstr  "Full rewrite in Rust! 🦀"
 msgid   "GTK4 WhatsApp Client"
 msgstr  "GTK4 WhatsApp Client"
 
+#: src/window.rs:1510
+msgid "Add New Account"
+msgstr "Add New Account"
+
+#: src/window.rs:1511
+msgid "Enter account name:"
+msgstr "Enter account name:"
+
+#: src/window.rs:1515
+msgid "Account name"
+msgstr "Account name"
+
+#: src/window.rs:1522
+msgid "_Cancel"
+msgstr "_Cancel"
+
+#: src/window.rs:1523
+msgid "_Add"
+msgstr "_Add"
+
+#: src/window.rs:1534
+msgid "Remove account"
+msgstr "Remove account"
+
+#: src/window.rs:1535
+msgid "This action cannot be undone."
+msgstr "This action cannot be undone."
+
+#: data/ui/window.blp:116
+msgid "Add new account"
+msgstr "Add new account"
+
 #: data/io.github.tobagin.karere.metainfo.xml:40
 msgid   "Graceful shutdown with window state persistence"
 msgstr  "Graceful shutdown with window state persistence"

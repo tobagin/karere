@@ -325,6 +325,38 @@ msgstr ""
 msgid "GTK4 WhatsApp Client"
 msgstr ""
 
+#: src/window.rs:1510
+msgid "Add New Account"
+msgstr "Adicionar Nova Conta"
+
+#: src/window.rs:1511
+msgid "Enter account name:"
+msgstr "Digite o nome da conta:"
+
+#: src/window.rs:1515
+msgid "Account name"
+msgstr "Nome da conta"
+
+#: src/window.rs:1522
+msgid "_Cancel"
+msgstr "_Cancelar"
+
+#: src/window.rs:1523
+msgid "_Add"
+msgstr "_Adicionar"
+
+#: src/window.rs:1534
+msgid "Remove account"
+msgstr "Remover conta"
+
+#: src/window.rs:1535
+msgid "This action cannot be undone."
+msgstr "Essa ação não pode ser desfeita"
+
+#: data/ui/window.blp:116
+msgid "Add new account"
+msgstr "Adicionar nova conta"
+
 #: data/io.github.tobagin.karere.metainfo.xml:40
 msgid "Graceful shutdown with window state persistence"
 msgstr ""
