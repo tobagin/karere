@@ -6,6 +6,8 @@ use adw::subclass::prelude::*;
 use base64::prelude::*;
 use webkit6::prelude::*;
 
+use crate::accounts::{Account, AccountManager, build_account_row};
+
 mod imp {
     use super::*;
     use gtk::gio;
@@ -23,10 +25,20 @@ mod imp {
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
         #[template_child]
         pub dictionary_dropdown: TemplateChild<gtk::DropDown>,
-        
-        // Manual storage for the WebView
-        pub web_view: std::cell::OnceCell<webkit6::WebView>,
-        
+        #[template_child]
+        pub account_bottom_sheet: TemplateChild<adw::BottomSheet>,
+        #[template_child]
+        pub account_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub account_avatar: TemplateChild<adw::Avatar>,
+        #[template_child]
+        pub accounts_list: TemplateChild<gtk::ListBox>,
+        #[template_child]
+        pub add_account_button: TemplateChild<gtk::Button>,
+
+        // Pool of WebViews keyed by account ID — kept alive to avoid reloading
+        pub webviews: std::cell::RefCell<std::collections::HashMap<String, webkit6::WebView>>,
+
         // Force Close Flag
         pub force_close: std::cell::Cell<bool>,
 
@@ -44,6 +56,15 @@ mod imp {
 
         // Resize Debounce Timer
         pub resize_timer: std::cell::RefCell<Option<glib::SourceId>>,
+
+        // Account Manager
+        pub account_manager: Rc<std::cell::RefCell<Option<AccountManager>>>,
+
+        // Flag to prevent multiple concurrent account list updates
+        pub updating_accounts: std::cell::Cell<bool>,
+
+        // Currently active account ID (matches a key in webviews)
+        pub active_account_id: std::cell::RefCell<Option<String>>,
     }
 
     #[glib::object_subclass]
@@ -65,7 +86,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed(); // Call parent constructed first
             let obj = self.obj();
-            
+
             // Debug Font Config
             if let Ok(val) = std::env::var("FONTCONFIG_FILE") {
                 println!("DEBUG: FONTCONFIG_FILE={}", val);
@@ -85,92 +106,41 @@ mod imp {
                  obj.add_css_class("devel");
             }
 
-            // 0. Setup Persistent Network Session
-            let data_dir = glib::user_data_dir().join("karere").join("webkit");
-            let cache_dir = glib::user_cache_dir().join("karere").join("webkit");
-            
-            let session = webkit6::NetworkSession::new(
-                data_dir.to_str(),
-                cache_dir.to_str()
-            );
+            // 0. Setup Account Manager (before WebView so we can determine per-account dirs)
+            let account_manager = AccountManager::new();
+            *self.account_manager.borrow_mut() = Some(account_manager);
 
-            // 1. Create WebView Manually with Session
-            let web_view = webkit6::WebView::builder()
-                .network_session(&session)
-                .build();
-            
-            web_view.set_vexpand(true);
-            web_view.set_hexpand(true);
+            // Determine initial WebView directories based on active account
+            let (account_id, data_dir, cache_dir) = {
+                let mgr_ref = self.account_manager.borrow();
 
-            // Enable Page Cache explicitly (Helpful for history navigation)
-            if let Some(settings) = webkit6::prelude::WebViewExt::settings(&web_view) {
-                settings.set_enable_page_cache(true);
-                settings.set_enable_webrtc(true);
-                settings.set_enable_media_stream(true);
-            }
-            
-            // 2. Add to UI
-            self.view_container.append(&web_view);
-            
-            // 3. Store reference
-            let _ = self.web_view.set(web_view.clone());
+                let default_data = glib::user_data_dir().join("karere").join("webkit");
+                let default_cache = glib::user_cache_dir().join("karere").join("webkit");
 
-            // 4. Load URI
-            web_view.load_uri("https://web.whatsapp.com");
+                if let Some(mgr) = mgr_ref.as_ref() {
+                    mgr.get_active_account()
+                        .ok()
+                        .flatten()
+                        .map(|account| {
+                            let id = account.id.clone();
+                            (id.clone(), mgr.data_dir_for(&id), mgr.cache_dir_for(&id))
+                        })
+                        .unwrap_or(("default".to_string(), default_data, default_cache))
+                } else {
+                    ("default".to_string(), default_data, default_cache)
+                }
+            };
 
-            // 5. Pre-emptive Camera Permission Request (Fix for "0 Devices" / Catch-22)
-            // We must ask for permission *before* WebKit initializes GStreamer, otherwise
-            // GStreamer sees 0 devices and WebKit never asks for permission.
-            let ctx = glib::MainContext::default();
-            ctx.spawn_local(async move {
-                 // Use the global Tokio runtime from main.rs to prevent "no reactor running" panic
-                 // This is necessary because we have Tokio enabled in dependencies, causing zbus to expect it.
-                 let _ = crate::RUNTIME.spawn(async {
-                     println!("Karere: Requesting Camera Access at Startup...");
-                     if let Ok(proxy) = ashpd::desktop::camera::Camera::new().await {
-                         match proxy.request_access().await {
-                             Ok(_) => println!("Karere: Camera Access GRANTED by System/User."),
-                             Err(e) => println!("Karere: Camera Access DENIED or FAILED: {:?}", e),
-                         }
-                         
-                         match proxy.is_present().await {
-                             Ok(present) => println!("Karere: Camera Is Present: {}", present),
-                             Err(e) => println!("Karere: Failed to check camera presence: {:?}", e),
-                         }
 
-                         match proxy.open_pipe_wire_remote().await {
-                             Ok(fd) => println!("Karere: Successfully opened PipeWire remote via Portal (FD: {:?})", fd),
-                             Err(e) => println!("Karere: Failed to open PipeWire remote: {:?}", e),
-                         }
-                     } else {
-                         println!("Karere: Failed to connect to Camera Portal.");
-                     }
-                 }).await;
-            });
+            // Create an initial WebView with a per-account session
+            let web_view = self.setup_webview(&account_id, data_dir, cache_dir);
 
-            // Spoof Page Visibility API to ensure notifications firing in background
-            if let Some(ucm) = web_view.user_content_manager() {
-                 let source = r#"
-                    Object.defineProperty(document, 'hidden', {get: function() { return false; }});
-                    Object.defineProperty(document, 'visibilityState', {get: function() { return 'visible'; }});
-                    document.dispatchEvent(new Event('visibilitychange'));
-                 "#;
-                 let script = webkit6::UserScript::new(
-                     source, 
-                     webkit6::UserContentInjectedFrames::TopFrame, 
-                     webkit6::UserScriptInjectionTime::Start, 
-                     &[], 
-                     &[]
-                 );
-                 ucm.add_script(&script);
-            }
-            
-            // Setup Actions
+            // Setup Actions (use dynamic webview() helper so they work after WebView replacement)
             let action_refresh = gio::SimpleAction::new("refresh", None);
             let obj_weak = obj.downgrade();
             action_refresh.connect_activate(move |_, _| {
                 if let Some(obj) = obj_weak.upgrade() {
-                    if let Some(webview) = obj.imp().web_view.get() {
+                    if let Some(webview) = obj.imp().webview() {
                         webview.reload();
                     }
                 }
@@ -182,7 +152,7 @@ mod imp {
             let obj_weak_nc = obj.downgrade();
             action_new_chat.connect_activate(move |_, _| {
                 if let Some(obj) = obj_weak_nc.upgrade() {
-                    if let Some(webview) = obj.imp().web_view.get() {
+                    if let Some(webview) = obj.imp().webview() {
                         let js = r#"
                             (function() {
                                 const ev = new KeyboardEvent('keydown', {
@@ -206,6 +176,39 @@ mod imp {
                 }
             });
             obj.add_action(&action_new_chat);
+
+            // Connect account button to toggle the bottom sheet
+            let obj_weak_sheet = obj.downgrade();
+            self.account_button.connect_clicked(move |_| {
+                if let Some(obj) = obj_weak_sheet.upgrade() {
+                    let sheet = &obj.imp().account_bottom_sheet;
+                    sheet.set_open(!sheet.is_open());
+                }
+            });
+
+            // Connect account list row activation (for switching accounts)
+            let obj_weak_list = obj.downgrade();
+            self.accounts_list.connect_row_activated(move |_, row| {
+                let account_id = row.widget_name();
+                if !account_id.is_empty() {
+                    if let Some(obj) = obj_weak_list.upgrade() {
+                        obj.imp().switch_to_account(&account_id);
+                    }
+                }
+            });
+
+            // Setup Add Account Action
+            let action_add_account = gio::SimpleAction::new("add-account", None);
+            let obj_weak_acct = obj.downgrade();
+            action_add_account.connect_activate(move |_, _| {
+                if let Some(window) = obj_weak_acct.upgrade() {
+                    window.show_add_account_dialog();
+                }
+            });
+            obj.add_action(&action_add_account);
+
+            // Update account button with current account info
+            self.update_account_button();
 
             // Setup Settings Logic
             let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
@@ -237,7 +240,7 @@ mod imp {
                  let level = webview.zoom_level();
                  let _ = settings_zoom.set_double("zoom-level", level);
             });
-            
+
             // Bind Settings Change to Zoom Level
             let webview_zoom_update = web_view.clone();
             settings.connect_changed(Some("zoom-level"), move |settings, _| {
@@ -449,13 +452,13 @@ mod imp {
                     // Quit Application
                     return glib::Propagation::Proceed;
                 }
-                
+
                 // Hide instead of close (Default/'background')
                 window.set_visible(false);
                 glib::Propagation::Stop
             });
             
-            
+
 
             // 1. Theme
             let _style_manager = adw::StyleManager::default();
@@ -476,37 +479,40 @@ mod imp {
             settings.connect_changed(Some("theme"), update_theme);
 
             // Mobile Layout Change Handler - Reload webview when mode changes
-            let webview_mobile_reload = self.web_view.get().unwrap().clone();
+            let obj_weak_mobile_setting = obj.downgrade();
             settings.connect_changed(Some("mobile-layout"), move |_settings, _| {
-                // Reload webview to apply/remove mobile layout
-                webview_mobile_reload.reload();
+                if let Some(obj) = obj_weak_mobile_setting.upgrade() {
+                    if let Some(webview) = obj.imp().webview() {
+                        // Reload webview to apply/remove mobile layout
+                        webview.reload();
+                    }
+                }
             });
 
             // 2. WebKit Settings
             // Also ensure main switch is toggled on WebView settings
-            let webview = self.web_view.get().expect("WebView should be initialized");
-            if let Some(ws) = webkit6::prelude::WebViewExt::settings(webview) {
+            if let Some(ws) = webkit6::prelude::WebViewExt::settings(&web_view) {
                  settings.bind("enable-developer-tools", &ws, "enable-developer-extras").build();
                  
                  // Memory Optimization: Disable Page Cache (Back/Forward Cache)
                  ws.set_enable_page_cache(false);
-                 
+
                  ws.set_enable_media_stream(true);
                  ws.set_enable_mediasource(true);
                  ws.set_enable_webrtc(true);
 
             // Debug: Monitor Camera Capture State
-            webview.connect_notify_local(Some("camera-capture-state"), |webview, _| {
+            web_view.connect_notify_local(Some("camera-capture-state"), |webview, _| {
                 let state = webview.camera_capture_state();
                 println!("Karere: Camera Capture State Changed: {:?}", state);
             });
-            
+
             // Debug: Monitor Microphone Capture State
-             webview.connect_notify_local(Some("microphone-capture-state"), |webview, _| {
+             web_view.connect_notify_local(Some("microphone-capture-state"), |webview, _| {
                 let state = webview.microphone_capture_state();
                 println!("Karere: Microphone Capture State Changed: {:?}", state);
             });
-                 
+
                  // User Agent Spoofing (Chrome Linux)
                  let _version = "2.0.0"; 
                  let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
@@ -520,7 +526,7 @@ mod imp {
                  // We must NOT inject any scripts that modify navigator.
                  // The "Download for Mac" banner is cosmetic and unavoidable.
                  
-                 if let Some(_ucm) = self.web_view.get().unwrap().user_content_manager() {
+                 if let Some(_ucm) = web_view.user_content_manager() {
                        // Notification Persistence Sync (Proxy Strategy) - REMOVED
                        // We now rely on Host-Driven Trigger (on Load Finished) and PersistentNetworkSession.
                        // The Proxy is no longer needed to "lie" because we can now get the "truth" (native grant) fast enough.
@@ -537,9 +543,9 @@ mod imp {
 
 
             // Setup JS->Rust Logging Channel
-            if let Some(ucm) = self.web_view.get().unwrap().user_content_manager() {
+            if let Some(ucm) = web_view.user_content_manager() {
                 ucm.register_script_message_handler("log", None);
-                
+
                 // Inject Console Override Script
                 let console_script = r#"
                     (function() {
@@ -576,11 +582,15 @@ mod imp {
             }
 
             // 9. Developer Tools Action
-            let webview_dev = self.web_view.get().unwrap().clone();
+            let obj_weak_dev = obj.downgrade();
             let action_devtools = gio::SimpleAction::new("show-devtools", None);
             action_devtools.connect_activate(move |_, _| {
-                if let Some(inspector) = webview_dev.inspector() {
-                    inspector.show();
+                if let Some(obj) = obj_weak_dev.upgrade() {
+                    if let Some(webview) = obj.imp().webview() {
+                        if let Some(inspector) = webview.inspector() {
+                            inspector.show();
+                        }
+                    }
                 }
             });
             obj.add_action(&action_devtools);
@@ -588,7 +598,7 @@ mod imp {
 
 
             // 3. Downloads
-            if let Some(session) = self.web_view.get().unwrap().network_session() {
+            if let Some(session) = web_view.network_session() {
                 let settings_dl = settings.clone();
                 let overlay = self.toast_overlay.get(); // Strong ref for clone! to downgrade
                 let overlay_weak = overlay.downgrade();
@@ -740,7 +750,7 @@ mod imp {
             let settings_notify = settings.clone();
             let window_weak = obj.downgrade();
             
-            self.web_view.get().unwrap().connect_permission_request(move |_, request| {
+            web_view.connect_permission_request(move |_, request| {
                 // Debug logs
                 let settings = settings_notify.clone();
                 let window_weak = window_weak.clone();
@@ -890,7 +900,7 @@ mod imp {
             // Handle Show Notification signal (Bridge to Desktop)
             let settings_notify_msg = settings.clone(); // Clone for closure
             let window_weak = obj.downgrade();
-            self.web_view.get().unwrap().connect_show_notification(move |_, notification| {
+            web_view.connect_show_notification(move |_, notification| {
                 
                 // 1. Check Master Toggle
                 if !settings_notify_msg.boolean("notifications-enabled") {
@@ -1085,7 +1095,7 @@ mod imp {
             // WhatsApp Web often struggles with direct pasting from Linux/GDK clipboard in WebKit for images and files.
             // We manually detect them, encode, and inject synthetic Paste events.
             let key_controller = gtk::EventControllerKey::new();
-            let webview_paste = self.web_view.get().unwrap().clone();
+            let webview_paste = web_view.clone();
             key_controller.connect_key_pressed(move |_, keyval, _keycode, state| {
                 if state.contains(gtk::gdk::ModifierType::CONTROL_MASK) {
                     // COPY Fallback (Ctrl+C)
@@ -1214,13 +1224,13 @@ mod imp {
                 }
                 glib::Propagation::Proceed
             });
-            self.web_view.get().unwrap().add_controller(key_controller);
+            web_view.add_controller(key_controller);
 
             // Middle Click Paste (Primary Selection)
             let gesture_click = gtk::GestureClick::new();
             gesture_click.set_button(2); // Middle Mouse Button
             gesture_click.set_propagation_phase(gtk::PropagationPhase::Capture);
-            let webview_mid = self.web_view.get().unwrap().clone();
+            let webview_mid = web_view.clone();
             gesture_click.connect_pressed(move |gesture, _, _, _| {
                  // Claim the gesture to stop propagation to WebView's default handler
                  gesture.set_state(gtk::EventSequenceState::Claimed);
@@ -1242,12 +1252,12 @@ mod imp {
                      });
                  }
             });
-            self.web_view.get().unwrap().add_controller(gesture_click);
+            web_view.add_controller(gesture_click);
 
             // Drag and Drop (Files)
             // Explicitly handle file drops to bypass some Flatpak/WebView disconnects or just to provide unified injection.
             let drop_target = gtk::DropTarget::new(gtk::gdk::FileList::static_type(), gtk::gdk::DragAction::COPY);
-            let webview_drop = self.web_view.get().unwrap().clone();
+            let webview_drop = web_view.clone();
             
             drop_target.connect_drop(move |_target, value, _x, _y| {
                 if let Ok(file_list) = value.get::<gtk::gdk::FileList>() {
@@ -1309,7 +1319,7 @@ mod imp {
                 }
                 false
             });
-            self.web_view.get().unwrap().add_controller(drop_target);
+            web_view.add_controller(drop_target);
 
             
             // 11. Setup Accessibility & Auto-Correct
@@ -1346,6 +1356,101 @@ mod imp {
     }
 
     impl KarereWindow {
+        /// Get the currently active WebView (if any).
+        pub fn webview(&self) -> Option<webkit6::WebView> {
+            let id = self.active_account_id.borrow().clone()?;
+            self.webviews.borrow().get(&id).cloned()
+        }
+
+        pub fn setup_webview(&self, account_id: &str, data_dir: std::path::PathBuf, cache_dir: std::path::PathBuf) -> webkit6::WebView {
+            // Hide current WebView (don't destroy it — we keep it in the pool)
+            if let Some(current_wv) = self.webview() {
+                current_wv.set_visible(false);
+            }
+
+            // Ensure directories exist
+            let _ = std::fs::create_dir_all(&data_dir);
+            let _ = std::fs::create_dir_all(&cache_dir);
+
+            // Create per-account NetworkSession
+            let session = webkit6::NetworkSession::new(
+                data_dir.to_str(),
+                cache_dir.to_str()
+            );
+
+            // Create WebView Manually with Session
+            let web_view = webkit6::WebView::builder()
+                .network_session(&session)
+                .build();
+
+            // Enable Page Cache explicitly (Helpful for history navigation)
+            if let Some(settings) = webkit6::prelude::WebViewExt::settings(&web_view) {
+                settings.set_enable_page_cache(true);
+                settings.set_enable_webrtc(true);
+                settings.set_enable_media_stream(true);
+            }
+
+            web_view.set_vexpand(true);
+            web_view.set_hexpand(true);
+
+            // Add to UI
+            self.view_container.append(&web_view);
+            self.webviews.borrow_mut().insert(account_id.to_string(), web_view.clone());
+            *self.active_account_id.borrow_mut() = Some(account_id.to_string());
+
+            // Load URI
+            web_view.load_uri("https://web.whatsapp.com");
+
+            // Pre-emptive Camera Permission Request (Fix for "0 Devices" / Catch-22)
+            // We must ask for permission *before* WebKit initializes GStreamer, otherwise
+            // GStreamer sees 0 devices and WebKit never asks for permission.
+            let ctx = glib::MainContext::default();
+            ctx.spawn_local(async move {
+                // Use the global Tokio runtime from main.rs to prevent "no reactor running" panic
+                // This is necessary because we have Tokio enabled in dependencies, causing zbus to expect it.
+                let _ = crate::RUNTIME.spawn(async {
+                    println!("Karere: Requesting Camera Access at Startup...");
+                    if let Ok(proxy) = ashpd::desktop::camera::Camera::new().await {
+                        match proxy.request_access().await {
+                            Ok(_) => println!("Karere: Camera Access GRANTED by System/User."),
+                            Err(e) => println!("Karere: Camera Access DENIED or FAILED: {:?}", e),
+                        }
+
+                        match proxy.is_present().await {
+                            Ok(present) => println!("Karere: Camera Is Present: {}", present),
+                            Err(e) => println!("Karere: Failed to check camera presence: {:?}", e),
+                        }
+
+                        match proxy.open_pipe_wire_remote().await {
+                            Ok(fd) => println!("Karere: Successfully opened PipeWire remote via Portal (FD: {:?})", fd),
+                            Err(e) => println!("Karere: Failed to open PipeWire remote: {:?}", e),
+                        }
+                    } else {
+                        println!("Karere: Failed to connect to Camera Portal.");
+                    }
+                }).await;
+            });
+
+            // Spoof Page Visibility API to ensure notifications firing in background
+            if let Some(ucm) = web_view.user_content_manager() {
+                let source = r#"
+                    Object.defineProperty(document, 'hidden', {get: function() { return false; }});
+                    Object.defineProperty(document, 'visibilityState', {get: function() { return 'visible'; }});
+                    document.dispatchEvent(new Event('visibilitychange'));
+                 "#;
+                let script = webkit6::UserScript::new(
+                    source,
+                    webkit6::UserContentInjectedFrames::TopFrame,
+                    webkit6::UserScriptInjectionTime::Start,
+                    &[],
+                    &[]
+                );
+                ucm.add_script(&script);
+            }
+
+            web_view
+        }
+
         fn setup_accessibility(&self, web_view: webkit6::WebView, settings: gio::Settings) {
              let obj = self.obj();
              
@@ -1386,7 +1491,7 @@ mod imp {
                  if settings.boolean("focus-indicators") {
                      provider.load_from_string(":focus { outline-width: 2px; outline-style: solid; outline-color: alpha(currentColor, 0.7); }");
                  } else {
-                     provider.load_from_string(""); 
+                     provider.load_from_string("");
                  }
              };
              let uf = update_focus.clone();
@@ -1423,31 +1528,141 @@ mod imp {
                   update_spell(&settings, "initial");
              }
              
-             // 7. Zoom Controls Actions
-             let webview_z = web_view.clone();
+             // 7. Zoom Controls Actions (use dynamic webview ref)
+             let obj_weak_z = obj.downgrade();
              let action_zoom_in = gio::SimpleAction::new("zoom-in", None);
              action_zoom_in.connect_activate(move |_, _| {
-                 let level = webview_z.zoom_level();
-                 webview_z.set_zoom_level(level + 0.1);
+                 if let Some(obj) = obj_weak_z.upgrade() {
+                     if let Some(webview) = obj.imp().webview() {
+                         let level = webview.zoom_level();
+                         webview.set_zoom_level(level + 0.1);
+                     }
+                 }
              });
              obj.add_action(&action_zoom_in);
 
-             let webview_z = web_view.clone();
+             let obj_weak_z = obj.downgrade();
              let action_zoom_out = gio::SimpleAction::new("zoom-out", None);
              action_zoom_out.connect_activate(move |_, _| {
-                 let level = webview_z.zoom_level();
-                 if level > 0.2 {
-                     webview_z.set_zoom_level(level - 0.1);
+                 if let Some(obj) = obj_weak_z.upgrade() {
+                     if let Some(webview) = obj.imp().webview() {
+                         let level = webview.zoom_level();
+                         if level > 0.2 {
+                             webview.set_zoom_level(level - 0.1);
+                         }
+                     }
                  }
              });
              obj.add_action(&action_zoom_out);
 
-             let webview_z = web_view.clone();
+             let obj_weak_z = obj.downgrade();
              let action_zoom_reset = gio::SimpleAction::new("zoom-reset", None);
              action_zoom_reset.connect_activate(move |_, _| {
-                 webview_z.set_zoom_level(1.0);
+                 if let Some(obj) = obj_weak_z.upgrade() {
+                     if let Some(webview) = obj.imp().webview() {
+                         webview.set_zoom_level(1.0);
+                     }
+                 }
              });
              obj.add_action(&action_zoom_reset);
+        }
+
+        pub fn update_account_button(&self) {
+            if self.updating_accounts.replace(true) {
+                return;
+            }
+
+            self.reset_account_button_default();
+            self.clear_account_list();
+
+            if let Some(mgr) = self.account_manager.borrow().as_ref() {
+                if let Ok(accounts) = mgr.get_accounts() {
+                    self.populate_account_list(&accounts);
+                }
+                if let Ok(Some(account)) = mgr.get_active_account() {
+                    self.set_account_button_active(&account);
+                }
+            }
+
+            self.updating_accounts.set(false);
+        }
+
+        fn reset_account_button_default(&self) {
+            self.account_avatar.set_icon_name(Some("user-info-symbolic"));
+            self.account_avatar.set_text(Some(" "));
+            self.account_button.set_tooltip_text(Some(&gettext("No account")));
+        }
+
+        fn set_account_button_active(&self, account: &Account) {
+            self.account_button.set_tooltip_text(Some(&account.name));
+            self.account_avatar.set_icon_name(None::<&str>);
+            self.account_avatar.set_text(Some(&account.name));
+        }
+
+        fn clear_account_list(&self) {
+            while let Some(row) = self.accounts_list.first_child() {
+                self.accounts_list.remove(&row);
+            }
+        }
+
+        fn populate_account_list(&self, accounts: &[Account]) {
+            for account in accounts {
+                let (row, delete_btn) = build_account_row(account);
+
+                let account_id = account.id.clone();
+                let account_name = account.name.clone();
+                let obj_weak = self.obj().downgrade();
+                delete_btn.connect_clicked(move |_| {
+                    if let Some(obj) = obj_weak.upgrade() {
+                        obj.confirm_delete_account(&account_id, &account_name);
+                    }
+                });
+
+                self.accounts_list.append(&row);
+            }
+        }
+
+        fn switch_to_account(&self, account_id: &str) {
+            // Already active — nothing to do
+            if self.active_account_id.borrow().as_deref() == Some(account_id) {
+                self.account_bottom_sheet.set_open(false);
+                return;
+            }
+
+            // Hide the current WebView (keep it in the pool)
+            if let Some(current_wv) = self.webview() {
+                current_wv.set_visible(false);
+            }
+
+            // Update active account in manager
+            if let Some(mgr) = self.account_manager.borrow().as_ref() {
+                let _ = mgr.set_active_account(account_id);
+            }
+
+            // Check if we already have a WebView for this account
+            let has_webview = self.webviews.borrow().contains_key(account_id);
+
+            if has_webview {
+                // Show the existing WebView
+                if let Some(wv) = self.webviews.borrow().get(account_id) {
+                    wv.set_visible(true);
+                }
+                *self.active_account_id.borrow_mut() = Some(account_id.to_string());
+            } else {
+                // Create a new WebView for this account
+                let dirs = if let Some(mgr) = self.account_manager.borrow().as_ref() {
+                    Some((mgr.data_dir_for(account_id), mgr.cache_dir_for(account_id)))
+                } else {
+                    None
+                };
+
+                if let Some((data_dir, cache_dir)) = dirs {
+                    self.setup_webview(account_id, data_dir, cache_dir);
+                }
+            }
+
+            self.update_account_button();
+            self.account_bottom_sheet.set_open(false);
         }
     }
 
@@ -1481,5 +1696,127 @@ impl KarereWindow {
         } else {
             eprintln!("Notification ID not found for click: {}", id);
         }
+    }
+
+    fn show_add_account_dialog(&self) {
+        self.imp().account_bottom_sheet.set_open(false);
+
+        let dialog = adw::AlertDialog::builder()
+            .heading(&gettext("Add New Account"))
+            .body(&gettext("Enter account name:"))
+            .default_response("add")
+            .close_response("cancel")
+            .build();
+
+        let entry = gtk::Entry::new();
+        entry.set_placeholder_text(Some(&gettext("Account name")));
+        entry.set_margin_start(12);
+        entry.set_margin_end(12);
+        entry.set_margin_top(12);
+        entry.set_margin_bottom(12);
+
+        dialog.set_extra_child(Some(&entry));
+        dialog.add_response("cancel", &gettext("_Cancel"));
+        dialog.add_response("add", &gettext("_Add"));
+        dialog.set_response_appearance("add", adw::ResponseAppearance::Suggested);
+
+        let window_weak = self.downgrade();
+        dialog.choose(Some(self), gio::Cancellable::NONE, move |response| {
+            if response == "add" {
+                let name = entry.text();
+                if !name.is_empty() {
+                    if let Some(window) = window_weak.upgrade() {
+                        window.create_account(name.as_str());
+                    }
+                }
+            }
+        });
+    }
+
+    fn confirm_delete_account(&self, account_id: &str, account_name: &str) {
+        self.imp().account_bottom_sheet.set_open(false);
+
+        let dialog = adw::AlertDialog::builder()
+            .heading(&format!("{} \"{}\"?", gettext("Remove account"), account_name))
+            .body(&gettext("This action cannot be undone."))
+            .default_response("cancel")
+            .close_response("cancel")
+            .build();
+
+        dialog.add_response("cancel", &gettext("_Cancel"));
+        dialog.add_response("remove", &gettext("_Remove"));
+        dialog.set_response_appearance("remove", adw::ResponseAppearance::Destructive);
+
+        let account_id = account_id.to_string();
+        let window_weak = self.downgrade();
+        dialog.choose(Some(self), gio::Cancellable::NONE, move |response| {
+            if response == "remove" {
+                if let Some(window) = window_weak.upgrade() {
+                    let imp = window.imp();
+
+                    // Remove the deleted account's WebView from pool and container
+                    if let Some(wv) = imp.webviews.borrow_mut().remove(&account_id) {
+                        imp.view_container.remove(&wv);
+                    }
+
+                    // Collect info for the new active account while borrow is held
+                    let new_info = if let Some(mgr) = imp.account_manager.borrow().as_ref() {
+                        let _ = mgr.remove_account(&account_id);
+
+                        if let Ok(Some(new_active)) = mgr.get_active_account() {
+                            Some((new_active.id.clone(), mgr.data_dir_for(&new_active.id), mgr.cache_dir_for(&new_active.id)))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    };
+                    // borrow dropped
+
+                    if let Some((new_id, data_dir, cache_dir)) = new_info {
+                        // Check if the new active account already has a WebView in the pool
+                        let has_webview = imp.webviews.borrow().contains_key(&new_id);
+                        if has_webview {
+                            if let Some(wv) = imp.webviews.borrow().get(&new_id) {
+                                wv.set_visible(true);
+                            }
+                            *imp.active_account_id.borrow_mut() = Some(new_id);
+                        } else {
+                            imp.setup_webview(&new_id, data_dir, cache_dir);
+                        }
+                    } else {
+                        *imp.active_account_id.borrow_mut() = None;
+                    }
+
+                    imp.update_account_button();
+                }
+            }
+        });
+    }
+
+    fn create_account(&self, account_name: &str) {
+        let imp = self.imp();
+
+        // Collect dirs and account_id while borrow is held, then drop before setup_webview
+        let info = if let Some(mgr) = imp.account_manager.borrow().as_ref() {
+            let new_account_id = format!("account_{}", chrono::Local::now().timestamp());
+            let account = Account::new(new_account_id.clone(), account_name.to_string());
+
+            if mgr.add_account(account).is_ok() {
+                let _ = mgr.set_active_account(&new_account_id);
+                Some((new_account_id.clone(), mgr.data_dir_for(&new_account_id), mgr.cache_dir_for(&new_account_id)))
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        // borrow dropped
+
+        if let Some((account_id, data_dir, cache_dir)) = info {
+            imp.setup_webview(&account_id, data_dir, cache_dir);
+        }
+
+        imp.update_account_button();
     }
 }

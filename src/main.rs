@@ -12,6 +12,7 @@ mod tray;
 mod window;
 mod preferences;
 mod spellcheck;
+mod accounts;
 
 use window::KarereWindow;
 
