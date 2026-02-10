@@ -1,5 +1,6 @@
 src/main.rs
 src/window.rs
+src/accounts.rs
 src/preferences.rs
 src/tray.rs
 src/spellcheck.rs

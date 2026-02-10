@@ -75,6 +75,21 @@
       <default>false</default>
       <summary>Enable developer tools</summary>
     </key>
+    <key name="enable-multi-account" type="b">
+      <default>false</default>
+      <summary>Enable multi-account support</summary>
+      <description>Whether to show the account switcher button in the header bar.</description>
+    </key>
+    <key name="account-limit-enabled" type="b">
+      <default>true</default>
+      <summary>Enable account limit</summary>
+      <description>Whether to limit the number of accounts that can be created.</description>
+    </key>
+    <key name="account-limit" type="i">
+      <default>3</default>
+      <summary>Maximum number of accounts</summary>
+      <description>The maximum number of accounts when the account limit is enabled (1-10).</description>
+    </key>
     <!-- Accessibility -->
     <key name="enable-shortcuts" type="b">
       <default>true</default>

@@ -35,6 +35,11 @@ mod imp {
         #[template_child] pub btn_download_choose: TemplateChild<gtk::Button>,
         #[template_child] pub btn_download_reset: TemplateChild<gtk::Button>,
         
+        // Accounts
+        #[template_child] pub row_multi_account: TemplateChild<adw::SwitchRow>,
+        #[template_child] pub row_account_limit_enabled: TemplateChild<adw::SwitchRow>,
+        #[template_child] pub row_account_limit: TemplateChild<adw::SpinRow>,
+        
         // Developers
         #[template_child] pub row_dev_enable: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_dev_open: TemplateChild<adw::ActionRow>,
@@ -287,7 +292,28 @@ impl KarerePreferencesWindow {
             })
             .build();
          
-         // 5. Dev Tools
+         // 5. Accounts
+         settings.bind("enable-multi-account", &*imp.row_multi_account, "active").build();
+         settings.bind("account-limit-enabled", &*imp.row_account_limit_enabled, "active").build();
+         settings.bind("account-limit", &*imp.row_account_limit, "value").build();
+
+         // Visibility: limit-enabled row visible only when multi-account is on
+         // max-accounts row visible only when multi-account AND limit-enabled are both on
+         settings.bind("enable-multi-account", &*imp.row_account_limit_enabled, "visible").build();
+
+         let row_limit = imp.row_account_limit.clone();
+         let update_limit_vis = move |settings: &gio::Settings| {
+             let multi = settings.boolean("enable-multi-account");
+             let limit = settings.boolean("account-limit-enabled");
+             row_limit.set_visible(multi && limit);
+         };
+         let ulv = update_limit_vis.clone();
+         settings.connect_changed(Some("enable-multi-account"), move |s, _| ulv(s));
+         let ulv = update_limit_vis.clone();
+         settings.connect_changed(Some("account-limit-enabled"), move |s, _| ulv(s));
+         update_limit_vis(&settings);
+
+         // 6. Dev Tools
          settings.bind("enable-developer-tools", &*imp.row_dev_enable, "active").build();
          settings.bind("enable-developer-tools", &*imp.row_dev_open, "visible").build();
          

@@ -6,7 +6,7 @@ use adw::subclass::prelude::*;
 use base64::prelude::*;
 use webkit6::prelude::*;
 
-use crate::accounts::{Account, AccountManager, build_account_row};
+use crate::accounts::{Account, AccountManager, build_account_row, apply_avatar_color, hex_to_rgba, rgba_to_hex, DEFAULT_COLOR, DEFAULT_EMOJI};
 
 mod imp {
     use super::*;
@@ -108,6 +108,13 @@ mod imp {
 
             // 0. Setup Account Manager (before WebView so we can determine per-account dirs)
             let account_manager = AccountManager::new();
+            
+            // Ensure a default account always exists (migrates legacy session if present)
+            match account_manager.ensure_default_account() {
+                Ok(account) => println!("Karere: Active account: '{}' (has_session: {})", account.name, account.has_session),
+                Err(e) => eprintln!("Karere: Failed to ensure default account: {}", e),
+            }
+            
             *self.account_manager.borrow_mut() = Some(account_manager);
 
             // Determine initial WebView directories based on active account
@@ -185,6 +192,11 @@ mod imp {
                     sheet.set_open(!sheet.is_open());
                 }
             });
+
+            // Bind account button visibility to multi-account preference
+            let app_id_ma = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+            let settings_ma = gio::Settings::new(&app_id_ma);
+            settings_ma.bind("enable-multi-account", &*self.account_button, "visible").build();
 
             // Connect account list row activation (for switching accounts)
             let obj_weak_list = obj.downgrade();
@@ -489,6 +501,143 @@ mod imp {
                 }
             });
 
+            // WebKit settings and signals moved to setup_webview
+            
+            // 12. Dictionary Dropdown Logic (Quick Access)
+            settings.bind("auto-detect-language", &*self.dictionary_dropdown, "visible")
+                .flags(gio::SettingsBindFlags::INVERT_BOOLEAN)
+                .build();
+                
+            let avail_dicts = crate::spellcheck::get_available_dictionaries();
+            if !avail_dicts.is_empty() {
+                let store = gtk::StringList::new(&avail_dicts.iter().map(|s| s.as_str()).collect::<Vec<&str>>());
+                self.dictionary_dropdown.set_model(Some(&store));
+                
+                let current = settings.strv("spell-checking-languages");
+                if let Some(first) = current.first() {
+                    if let Some(idx) = avail_dicts.iter().position(|r| r == first.as_str()) {
+                         self.dictionary_dropdown.set_selected(idx as u32);
+                    }
+                }
+                
+                let settings_dict = settings.clone();
+                let dicts_clone = avail_dicts.clone();
+                self.dictionary_dropdown.connect_selected_notify(move |dropdown| {
+                     let idx = dropdown.selected() as usize;
+                     if idx < dicts_clone.len() {
+                         let selected = &dicts_clone[idx];
+                         let _ = settings_dict.set_strv("spell-checking-languages", [selected.as_str()]);
+                     }
+                });
+            }
+        }
+    }
+
+    impl KarereWindow {
+        /// Get the currently active WebView (if any).
+        pub fn webview(&self) -> Option<webkit6::WebView> {
+            let id = self.active_account_id.borrow().clone()?;
+            self.webviews.borrow().get(&id).cloned()
+        }
+
+        pub fn setup_webview(&self, account_id: &str, data_dir: std::path::PathBuf, cache_dir: std::path::PathBuf) -> webkit6::WebView {
+            // Hide current WebView (don't destroy it — we keep it in the pool)
+            if let Some(current_wv) = self.webview() {
+                current_wv.set_visible(false);
+            }
+
+            // Ensure directories exist
+            let _ = std::fs::create_dir_all(&data_dir);
+            let _ = std::fs::create_dir_all(&cache_dir);
+
+            // Create per-account NetworkSession
+            let session = webkit6::NetworkSession::new(
+                data_dir.to_str(),
+                cache_dir.to_str()
+            );
+
+            // Create WebView Manually with Session
+            let web_view = webkit6::WebView::builder()
+                .network_session(&session)
+                .build();
+
+            // Enable Page Cache explicitly (Helpful for history navigation)
+            if let Some(settings) = webkit6::prelude::WebViewExt::settings(&web_view) {
+                // Memory Optimization: Disable Page Cache (Back/Forward Cache)
+                settings.set_enable_page_cache(false);
+                settings.set_enable_webrtc(true);
+                settings.set_enable_media_stream(true);
+                settings.set_enable_mediasource(true);
+
+                // User Agent Spoofing (Chrome Linux) — must match for all accounts
+                let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+                settings.set_user_agent(Some(user_agent));
+
+                // Disable quirks to restore our manual Linux UA
+                settings.set_enable_site_specific_quirks(false);
+            }
+
+            web_view.set_vexpand(true);
+            web_view.set_hexpand(true);
+
+            // Add to UI
+            self.view_container.append(&web_view);
+            self.webviews.borrow_mut().insert(account_id.to_string(), web_view.clone());
+            *self.active_account_id.borrow_mut() = Some(account_id.to_string());
+
+            // Load URI
+            // Load URI moved to end
+
+            // Pre-emptive Camera Permission Request (Fix for "0 Devices" / Catch-22)
+            // We must ask for permission *before* WebKit initializes GStreamer, otherwise
+            // GStreamer sees 0 devices and WebKit never asks for permission.
+            let ctx = glib::MainContext::default();
+            ctx.spawn_local(async move {
+                // Use the global Tokio runtime from main.rs to prevent "no reactor running" panic
+                // This is necessary because we have Tokio enabled in dependencies, causing zbus to expect it.
+                let _ = crate::RUNTIME.spawn(async {
+                    println!("Karere: Requesting Camera Access at Startup...");
+                    if let Ok(proxy) = ashpd::desktop::camera::Camera::new().await {
+                        match proxy.request_access().await {
+                            Ok(_) => println!("Karere: Camera Access GRANTED by System/User."),
+                            Err(e) => println!("Karere: Camera Access DENIED or FAILED: {:?}", e),
+                        }
+
+                        match proxy.is_present().await {
+                            Ok(present) => println!("Karere: Camera Is Present: {}", present),
+                            Err(e) => println!("Karere: Failed to check camera presence: {:?}", e),
+                        }
+
+                        match proxy.open_pipe_wire_remote().await {
+                            Ok(fd) => println!("Karere: Successfully opened PipeWire remote via Portal (FD: {:?})", fd),
+                            Err(e) => println!("Karere: Failed to open PipeWire remote: {:?}", e),
+                        }
+                    } else {
+                        println!("Karere: Failed to connect to Camera Portal.");
+                    }
+                }).await;
+            });
+
+            // Spoof Page Visibility API to ensure notifications firing in background
+            if let Some(ucm) = web_view.user_content_manager() {
+                let source = r#"
+                    Object.defineProperty(document, 'hidden', {get: function() { return false; }});
+                    Object.defineProperty(document, 'visibilityState', {get: function() { return 'visible'; }});
+                    document.dispatchEvent(new Event('visibilitychange'));
+                 "#;
+                let script = webkit6::UserScript::new(
+                    source,
+                    webkit6::UserContentInjectedFrames::TopFrame,
+                    webkit6::UserScriptInjectionTime::Start,
+                    &[],
+                    &[]
+                );
+                ucm.add_script(&script);
+            }
+
+            let obj = self.obj();
+            let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+            let settings = gio::Settings::new(&app_id);
             // 2. WebKit Settings
             // Also ensure main switch is toggled on WebView settings
             if let Some(ws) = webkit6::prelude::WebViewExt::settings(&web_view) {
@@ -745,157 +894,128 @@ mod imp {
                 ));
             }
             
-            // 4. Notifications (Permissions)
-            // 4. Notifications & Microphone Permissions (with Persistence and Dialogs)
-            let settings_notify = settings.clone();
-            let window_weak = obj.downgrade();
+            // 4. Notifications & Microphone Permissions (per-account persistence)
+            let window_weak_perm = obj.downgrade();
+            let account_id_perm = account_id.to_string();
             
             web_view.connect_permission_request(move |_, request| {
-                // Debug logs
-                let settings = settings_notify.clone();
-                let window_weak = window_weak.clone();
+                let window_weak = window_weak_perm.clone();
+                let account_id = account_id_perm.clone();
+
+                // Helper: get account manager from window
+                let get_mgr = |window: &super::KarereWindow| -> Option<crate::accounts::AccountManager> {
+                    window.imp().account_manager.borrow().clone()
+                };
 
                 if let Some(req) = request.downcast_ref::<webkit6::NotificationPermissionRequest>() {
-                    // Check persistence
-                    let asked = settings.boolean("web-notification-permission-asked");
-                    let granted = settings.boolean("web-notification-permission-granted");
-                    
-                    
-                    if asked {
-                        if granted {
-                            req.allow();
-                        } else {
-                            req.deny();
-                        }
-                        return true;
-                    }
-                    
-                    // Show Dialog
+                    // Check per-account persistence
                     if let Some(window) = window_weak.upgrade() {
-                        let dialog = adw::AlertDialog::builder()
-                            .heading(&gettext("WhatsApp Web Notification Permission"))
-                            .body(&gettext("WhatsApp Web wants to show desktop notifications for new messages. Would you like to allow notifications?"))
-                            .default_response("allow")
-                            .close_response("deny")
-                            .build();
+                        if let Some(mgr) = get_mgr(&window) {
+                            let (asked, granted) = mgr.get_account_permission(&account_id, "notification");
+                            
+                            if asked {
+                                if granted { req.allow(); } else { req.deny(); }
+                                return true;
+                            }
 
-                        dialog.add_response("deny", &gettext("Deny"));
-                        dialog.add_response("allow", &gettext("Allow"));
-                        dialog.set_response_appearance("allow", adw::ResponseAppearance::Suggested);
-                        
-                        let req_clone = request.clone(); // Upcast to PermissionRequest object
-                        dialog.choose(Some(&window), gio::Cancellable::NONE, move |response| {
-                            let granted = response == "allow";
+                            // Show Dialog
+                            let dialog = adw::AlertDialog::builder()
+                                .heading(&gettext("WhatsApp Web Notification Permission"))
+                                .body(&gettext("WhatsApp Web wants to show desktop notifications for new messages. Would you like to allow notifications?"))
+                                .default_response("allow")
+                                .close_response("deny")
+                                .build();
+
+                            dialog.add_response("deny", &gettext("Deny"));
+                            dialog.add_response("allow", &gettext("Allow"));
+                            dialog.set_response_appearance("allow", adw::ResponseAppearance::Suggested);
                             
-                            if let Err(e) = settings.set_boolean("web-notification-permission-asked", true) {
-                                eprintln!("ERROR: Failed to save 'asked' setting: {}", e);
-                            }
-                            if let Err(e) = settings.set_boolean("web-notification-permission-granted", granted) {
-                                eprintln!("ERROR: Failed to save 'granted' setting: {}", e);
-                            }
-                            
-                            // Force sync to ensure it hits disk
-                            gio::Settings::sync();
-                            
-                            if granted {
-                                req_clone.allow();
-                            } else {
-                                req_clone.deny();
-                            }
-                        });
-                        return true; // We are handling it (async)
+                            let req_clone = request.clone();
+                            let account_id_d = account_id.clone();
+                            let window_weak_d = window.downgrade();
+                            dialog.choose(Some(&window), gio::Cancellable::NONE, move |response| {
+                                let granted = response == "allow";
+                                if let Some(w) = window_weak_d.upgrade() {
+                                    if let Some(m) = get_mgr(&w) {
+                                        let _ = m.set_account_permission(&account_id_d, "notification", true, granted);
+                                    }
+                                }
+                                if granted { req_clone.allow(); } else { req_clone.deny(); }
+                            });
+                            return true;
+                        }
                     }
                 } else if let Some(req) = request.downcast_ref::<webkit6::UserMediaPermissionRequest>() {
                      let is_audio = req.is_for_audio_device();
                      let is_video = req.is_for_video_device();
 
-                     // Skip if neither (shouldn't happen for UserMedia)
                      if !is_audio && !is_video {
                          return false;
                      }
 
-                     // Manual Portal Request for Video (Camera)
-                     // The OS-level permission is handled at startup to ensure device visibility.
-                     // We now fall through to the standard app dialog below to ask the user
-                     // for site-specific permission, maintaining UX consistency with Microphone.
-
-                     // Determine keys and dialog text
-                     let (asked_key, granted_key, title, body) = if is_video {
-                         // Video implies Camera (may include Audio too)
-                         // If it's both, we just ask for Camera access (which implies call usually) or say "Camera and Microphone"
-                         // For simplicity and matching typical "app" behavior:
+                     // Determine permission key and dialog text
+                     let (perm_key, title, body) = if is_video {
                          if is_audio {
-                             ("web-camera-permission-asked", "web-camera-permission-granted", 
+                             ("camera",
                               gettext("WhatsApp Web Camera & Microphone Permission"),
                               gettext("WhatsApp Web wants to access your camera and microphone. Would you like to allow access?"))
                          } else {
-                             ("web-camera-permission-asked", "web-camera-permission-granted",
+                             ("camera",
                               gettext("WhatsApp Web Camera Permission"),
                               gettext("WhatsApp Web wants to access your camera. Would you like to allow access?"))
                          }
                      } else {
-                         // Audio only
-                         ("web-microphone-permission-asked", "web-microphone-permission-granted",
+                         ("microphone",
                           gettext("WhatsApp Web Microphone Permission"),
                           gettext("WhatsApp Web wants to access your microphone. Would you like to allow access?"))
                      };
 
-                     // Check persistence
-                     let asked = settings.boolean(asked_key);
-                     let granted = settings.boolean(granted_key);
+                     if let Some(window) = window_weak.upgrade() {
+                         if let Some(mgr) = get_mgr(&window) {
+                             let (asked, granted) = mgr.get_account_permission(&account_id, perm_key);
 
+                             if asked {
+                                 if granted { req.allow(); } else { req.deny(); }
+                                 return true;
+                             }
 
-                     if asked {
-                         if granted {
-                             req.allow();
-                         } else {
-                             req.deny();
+                             // Show Dialog
+                             let dialog = adw::AlertDialog::builder()
+                                 .heading(&title)
+                                 .body(&body)
+                                 .default_response("allow")
+                                 .close_response("deny")
+                                 .build();
+
+                             dialog.add_response("deny", &gettext("Deny"));
+                             dialog.add_response("allow", &gettext("Allow"));
+                             dialog.set_response_appearance("allow", adw::ResponseAppearance::Suggested);
+                             
+                             let req_clone = request.clone();
+                             let account_id_d = account_id.clone();
+                             let perm_key_owned = perm_key.to_string();
+                             let window_weak_d = window.downgrade();
+                             dialog.choose(Some(&window), gio::Cancellable::NONE, move |response| {
+                                 let granted = response == "allow";
+                                 if let Some(w) = window_weak_d.upgrade() {
+                                     if let Some(m) = get_mgr(&w) {
+                                         let _ = m.set_account_permission(&account_id_d, &perm_key_owned, true, granted);
+                                         // If granting camera+audio, implicitly grant microphone too
+                                         if granted && is_video && is_audio {
+                                             let _ = m.set_account_permission(&account_id_d, "microphone", true, true);
+                                         }
+                                     }
+                                 }
+                                 if granted { req_clone.allow(); } else { req_clone.deny(); }
+                             });
+                             return true;
                          }
-                         return true;
                      }
-                    
-                    // Show Dialog
-                    if let Some(window) = window_weak.upgrade() {
-                        let dialog = adw::AlertDialog::builder()
-                            .heading(&title)
-                            .body(&body)
-                            .default_response("allow")
-                            .close_response("deny")
-                            .build();
-
-                        dialog.add_response("deny", &gettext("Deny"));
-                        dialog.add_response("allow", &gettext("Allow"));
-                        dialog.set_response_appearance("allow", adw::ResponseAppearance::Suggested);
-                        
-                        let req_clone = request.clone(); 
-                        dialog.choose(Some(&window), gio::Cancellable::NONE, move |response| {
-                            let granted = response == "allow";
-                            
-                            // Save settings
-                            let _ = settings.set_boolean(asked_key, true);
-                            let _ = settings.set_boolean(granted_key, granted);
-                            
-                            // If granting Video+Audio, we should implicitly grant Audio-only too?
-                            // Yes, to avoid double prompt if next time it asks only Audio.
-                            if granted && is_video && is_audio {
-                                let _ = settings.set_boolean("web-microphone-permission-asked", true);
-                                let _ = settings.set_boolean("web-microphone-permission-granted", true);
-                            }
-                            
-                            gio::Settings::sync();
-                            
-                            if granted {
-                                req_clone.allow();
-                            } else {
-                                req_clone.deny();
-                            }
-                        });
-                        return true;
-                    }
                 }
                 
                 false
             });
+
 
             // Handle Show Notification signal (Bridge to Desktop)
             let settings_notify_msg = settings.clone(); // Clone for closure
@@ -941,11 +1061,30 @@ mod imp {
                         // Use ashpd for Portal Notifications
                         let title_clone = title.clone();
                         let body_clone = body_text.clone();
-                         let notification_id = if let Some(tag) = notification.tag() {
+
+                        // Tag notification with account ID for routing
+                        let account_id_notify = window.imp().active_account_id.borrow().clone().unwrap_or_else(|| "default".to_string());
+                        let _account_info = if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                            if let Ok(Some(acct)) = mgr.get_active_account() {
+                                Some((acct.emoji.clone(), acct.name.clone()))
+                            } else { None }
+                        } else { None };
+
+                        // Prepend account identity to title for multi-account
+                        let display_title = title_clone.to_string();
+
+                        // Create compound notification ID: account_id:original_tag
+                        let original_tag = if let Some(tag) = notification.tag() {
                               tag.to_string()
                          } else {
                               format!("msg-{}", glib::monotonic_time())
                          };
+                        let notification_id = format!("{}:{}", account_id_notify, original_tag);
+
+                        // Set account as having unread messages
+                        if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                            let _ = mgr.set_account_unread(&account_id_notify, true);
+                        }
 
                         let notification_id_portal = notification_id.clone();
                         
@@ -984,7 +1123,7 @@ mod imp {
                                 }
                             }).await;
 
-                            let notif = ashpd::desktop::notification::Notification::new(&title_clone)
+                            let notif = ashpd::desktop::notification::Notification::new(&display_title)
                                 .body(body_clone.as_str())
                                 .icon(ashpd::desktop::Icon::with_names(&["dialog-information-symbolic"]))
                                 .default_action("app.notification-clicked")
@@ -1077,12 +1216,21 @@ mod imp {
                 false
             });
 
-            // Handle Window Focus (Clear Unread)
+            // Handle Window Focus (Clear Unread for active account)
             obj.connect_is_active_notify(move |window| {
                 if window.is_active() {
                      if let Some(app) = window.application() {
                          app.activate_action("set-unread", Some(&false.to_variant()));
                      }
+                     // Clear unread for the active account
+                     let account_id = window.imp().active_account_id.borrow().clone();
+                     if let Some(id) = account_id {
+                         if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                             let _ = mgr.set_account_unread(&id, false);
+                         }
+                     }
+                     // Refresh account button to update unread indicators
+                     window.imp().update_account_button();
                 }
             });
 
@@ -1323,135 +1471,13 @@ mod imp {
 
             
             // 11. Setup Accessibility & Auto-Correct
-            self.setup_accessibility(web_view, settings.clone());
-            
-            // 12. Dictionary Dropdown Logic (Quick Access)
-            settings.bind("auto-detect-language", &*self.dictionary_dropdown, "visible")
-                .flags(gio::SettingsBindFlags::INVERT_BOOLEAN)
-                .build();
-                
-            let avail_dicts = crate::spellcheck::get_available_dictionaries();
-            if !avail_dicts.is_empty() {
-                let store = gtk::StringList::new(&avail_dicts.iter().map(|s| s.as_str()).collect::<Vec<&str>>());
-                self.dictionary_dropdown.set_model(Some(&store));
-                
-                let current = settings.strv("spell-checking-languages");
-                if let Some(first) = current.first() {
-                    if let Some(idx) = avail_dicts.iter().position(|r| r == first.as_str()) {
-                         self.dictionary_dropdown.set_selected(idx as u32);
-                    }
-                }
-                
-                let settings_dict = settings.clone();
-                let dicts_clone = avail_dicts.clone();
-                self.dictionary_dropdown.connect_selected_notify(move |dropdown| {
-                     let idx = dropdown.selected() as usize;
-                     if idx < dicts_clone.len() {
-                         let selected = &dicts_clone[idx];
-                         let _ = settings_dict.set_strv("spell-checking-languages", [selected.as_str()]);
-                     }
-                });
-            }
-        }
-    }
+            self.setup_accessibility(&web_view, settings.clone());
 
-    impl KarereWindow {
-        /// Get the currently active WebView (if any).
-        pub fn webview(&self) -> Option<webkit6::WebView> {
-            let id = self.active_account_id.borrow().clone()?;
-            self.webviews.borrow().get(&id).cloned()
-        }
-
-        pub fn setup_webview(&self, account_id: &str, data_dir: std::path::PathBuf, cache_dir: std::path::PathBuf) -> webkit6::WebView {
-            // Hide current WebView (don't destroy it — we keep it in the pool)
-            if let Some(current_wv) = self.webview() {
-                current_wv.set_visible(false);
-            }
-
-            // Ensure directories exist
-            let _ = std::fs::create_dir_all(&data_dir);
-            let _ = std::fs::create_dir_all(&cache_dir);
-
-            // Create per-account NetworkSession
-            let session = webkit6::NetworkSession::new(
-                data_dir.to_str(),
-                cache_dir.to_str()
-            );
-
-            // Create WebView Manually with Session
-            let web_view = webkit6::WebView::builder()
-                .network_session(&session)
-                .build();
-
-            // Enable Page Cache explicitly (Helpful for history navigation)
-            if let Some(settings) = webkit6::prelude::WebViewExt::settings(&web_view) {
-                settings.set_enable_page_cache(true);
-                settings.set_enable_webrtc(true);
-                settings.set_enable_media_stream(true);
-            }
-
-            web_view.set_vexpand(true);
-            web_view.set_hexpand(true);
-
-            // Add to UI
-            self.view_container.append(&web_view);
-            self.webviews.borrow_mut().insert(account_id.to_string(), web_view.clone());
-            *self.active_account_id.borrow_mut() = Some(account_id.to_string());
-
-            // Load URI
             web_view.load_uri("https://web.whatsapp.com");
-
-            // Pre-emptive Camera Permission Request (Fix for "0 Devices" / Catch-22)
-            // We must ask for permission *before* WebKit initializes GStreamer, otherwise
-            // GStreamer sees 0 devices and WebKit never asks for permission.
-            let ctx = glib::MainContext::default();
-            ctx.spawn_local(async move {
-                // Use the global Tokio runtime from main.rs to prevent "no reactor running" panic
-                // This is necessary because we have Tokio enabled in dependencies, causing zbus to expect it.
-                let _ = crate::RUNTIME.spawn(async {
-                    println!("Karere: Requesting Camera Access at Startup...");
-                    if let Ok(proxy) = ashpd::desktop::camera::Camera::new().await {
-                        match proxy.request_access().await {
-                            Ok(_) => println!("Karere: Camera Access GRANTED by System/User."),
-                            Err(e) => println!("Karere: Camera Access DENIED or FAILED: {:?}", e),
-                        }
-
-                        match proxy.is_present().await {
-                            Ok(present) => println!("Karere: Camera Is Present: {}", present),
-                            Err(e) => println!("Karere: Failed to check camera presence: {:?}", e),
-                        }
-
-                        match proxy.open_pipe_wire_remote().await {
-                            Ok(fd) => println!("Karere: Successfully opened PipeWire remote via Portal (FD: {:?})", fd),
-                            Err(e) => println!("Karere: Failed to open PipeWire remote: {:?}", e),
-                        }
-                    } else {
-                        println!("Karere: Failed to connect to Camera Portal.");
-                    }
-                }).await;
-            });
-
-            // Spoof Page Visibility API to ensure notifications firing in background
-            if let Some(ucm) = web_view.user_content_manager() {
-                let source = r#"
-                    Object.defineProperty(document, 'hidden', {get: function() { return false; }});
-                    Object.defineProperty(document, 'visibilityState', {get: function() { return 'visible'; }});
-                    document.dispatchEvent(new Event('visibilitychange'));
-                 "#;
-                let script = webkit6::UserScript::new(
-                    source,
-                    webkit6::UserContentInjectedFrames::TopFrame,
-                    webkit6::UserScriptInjectionTime::Start,
-                    &[],
-                    &[]
-                );
-                ucm.add_script(&script);
-            }
-
             web_view
         }
 
-        fn setup_accessibility(&self, web_view: webkit6::WebView, settings: gio::Settings) {
+        fn setup_accessibility(&self, web_view: &webkit6::WebView, settings: gio::Settings) {
              let obj = self.obj();
              
              // 1. High Contrast
@@ -1476,7 +1502,7 @@ mod imp {
              settings.bind("webview-zoom", &*self.zoom_box, "visible").build();
              
              // 4. Screen Reader Support
-             if let Some(webview_settings) = webkit6::prelude::WebViewExt::settings(&web_view) {
+             if let Some(webview_settings) = webkit6::prelude::WebViewExt::settings(web_view) {
                  settings.bind("screen-reader-opts", &webview_settings, "enable-caret-browsing").build();
              }
              
@@ -1596,7 +1622,9 @@ mod imp {
         fn set_account_button_active(&self, account: &Account) {
             self.account_button.set_tooltip_text(Some(&account.name));
             self.account_avatar.set_icon_name(None::<&str>);
-            self.account_avatar.set_text(Some(&account.name));
+            self.account_avatar.set_text(Some(&account.emoji));
+            self.account_avatar.set_show_initials(true);
+            apply_avatar_color(&self.account_avatar, &account.color);
         }
 
         fn clear_account_list(&self) {
@@ -1607,14 +1635,22 @@ mod imp {
 
         fn populate_account_list(&self, accounts: &[Account]) {
             for account in accounts {
-                let (row, delete_btn) = build_account_row(account);
+                let (row, edit_btn, delete_btn) = build_account_row(account);
 
-                let account_id = account.id.clone();
-                let account_name = account.name.clone();
-                let obj_weak = self.obj().downgrade();
+                let account_id_del = account.id.clone();
+                let account_name_del = account.name.clone();
+                let obj_weak_del = self.obj().downgrade();
                 delete_btn.connect_clicked(move |_| {
-                    if let Some(obj) = obj_weak.upgrade() {
-                        obj.confirm_delete_account(&account_id, &account_name);
+                    if let Some(obj) = obj_weak_del.upgrade() {
+                        obj.confirm_delete_account(&account_id_del, &account_name_del);
+                    }
+                });
+
+                let account_clone = account.clone();
+                let obj_weak_edit = self.obj().downgrade();
+                edit_btn.connect_clicked(move |_| {
+                    if let Some(obj) = obj_weak_edit.upgrade() {
+                        obj.show_account_dialog(Some(&account_clone));
                     }
                 });
 
@@ -1622,7 +1658,7 @@ mod imp {
             }
         }
 
-        fn switch_to_account(&self, account_id: &str) {
+        pub fn switch_to_account(&self, account_id: &str) {
             // Already active — nothing to do
             if self.active_account_id.borrow().as_deref() == Some(account_id) {
                 self.account_bottom_sheet.set_open(false);
@@ -1637,6 +1673,9 @@ mod imp {
             // Update active account in manager
             if let Some(mgr) = self.account_manager.borrow().as_ref() {
                 let _ = mgr.set_active_account(account_id);
+                
+                // Update session state for the account we're switching to
+                let _ = mgr.update_session_state(account_id);
             }
 
             // Check if we already have a WebView for this account
@@ -1689,49 +1728,231 @@ impl KarereWindow {
         self.close();
     }
 
+    /// Public method for switching accounts, delegates to imp
+    pub fn switch_to_account(&self, account_id: &str) {
+        self.imp().switch_to_account(account_id);
+    }
+
     pub fn process_notification_click(&self, id: &str) {
         let imp = self.imp();
+
+        // Parse compound notification ID: "account_id:original_tag"
+        let (account_id, original_tag) = if let Some(colon_pos) = id.find(':') {
+            (&id[..colon_pos], &id[colon_pos + 1..])
+        } else {
+            ("default", id)
+        };
+
+        // Switch to the correct account first
+        let current_account = imp.active_account_id.borrow().clone();
+        if current_account.as_deref() != Some(account_id) {
+            self.switch_to_account(account_id);
+        }
+
+        // Fire the notification click on the original tag
         if let Some(notification) = imp.active_notifications.borrow().get(id) {
             notification.clicked();
         } else {
-            eprintln!("Notification ID not found for click: {}", id);
+            // Try with original tag too (backward compat)
+            if let Some(notification) = imp.active_notifications.borrow().get(original_tag) {
+                notification.clicked();
+            }
         }
+
+        // Clear unread for this account
+        if let Some(mgr) = imp.account_manager.borrow().as_ref() {
+            let _ = mgr.set_account_unread(account_id, false);
+        }
+        imp.update_account_button();
     }
 
-    fn show_add_account_dialog(&self) {
+    fn show_account_dialog(&self, existing: Option<&Account>) {
         self.imp().account_bottom_sheet.set_open(false);
 
-        let dialog = adw::AlertDialog::builder()
-            .heading(&gettext("Add New Account"))
-            .body(&gettext("Enter account name:"))
-            .default_response("add")
-            .close_response("cancel")
-            .build();
+        let is_edit = existing.is_some();
 
-        let entry = gtk::Entry::new();
-        entry.set_placeholder_text(Some(&gettext("Account name")));
-        entry.set_margin_start(12);
-        entry.set_margin_end(12);
-        entry.set_margin_top(12);
-        entry.set_margin_bottom(12);
+        // Check account limit (only for new accounts)
+        if !is_edit {
+            let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+            let settings = gio::Settings::new(&app_id);
+            let limit_enabled = settings.boolean("account-limit-enabled");
+            let limit = settings.int("account-limit") as usize;
 
-        dialog.set_extra_child(Some(&entry));
-        dialog.add_response("cancel", &gettext("_Cancel"));
-        dialog.add_response("add", &gettext("_Add"));
-        dialog.set_response_appearance("add", adw::ResponseAppearance::Suggested);
-
-        let window_weak = self.downgrade();
-        dialog.choose(Some(self), gio::Cancellable::NONE, move |response| {
-            if response == "add" {
-                let name = entry.text();
-                if !name.is_empty() {
-                    if let Some(window) = window_weak.upgrade() {
-                        window.create_account(name.as_str());
+            if limit_enabled {
+                if let Some(mgr) = self.imp().account_manager.borrow().as_ref() {
+                    let count = mgr.get_account_count();
+                    if count >= limit {
+                        let warning = adw::AlertDialog::builder()
+                            .heading(&gettext("Account Limit Reached"))
+                            .body(&format!(
+                                "{} ({}/{}). {}",
+                                gettext("You have reached the maximum number of accounts"),
+                                count, limit,
+                                gettext("You can increase or disable this limit in Preferences → Accounts.")
+                            ))
+                            .default_response("ok")
+                            .close_response("ok")
+                            .build();
+                        warning.add_response("ok", &gettext("_OK"));
+                        warning.present(Some(self));
+                        return;
                     }
                 }
             }
+        }
+
+        let title = if is_edit { gettext("Edit Account") } else { gettext("Add New Account") };
+        let btn_label = if is_edit { gettext("Save") } else { gettext("Add Account") };
+
+        let initial_name = existing.map(|a| a.name.clone()).unwrap_or_default();
+        let initial_emoji = existing.map(|a| a.emoji.clone()).unwrap_or_else(|| DEFAULT_EMOJI.to_string());
+        let account_id = existing.map(|a| a.id.clone());
+
+        // Build a proper Adw.Dialog with header bar
+        let dialog = adw::Dialog::builder()
+            .title(&title)
+            .content_width(360)
+            .content_height(-1)
+            .build();
+
+        // Action button (goes in bottom bar)
+        let action_btn = gtk::Button::with_label(&btn_label);
+        action_btn.add_css_class("suggested-action");
+        action_btn.add_css_class("pill");
+        action_btn.set_sensitive(!initial_name.is_empty());
+
+        // Top header bar (with close button)
+        let header = adw::HeaderBar::new();
+
+        // Bottom header bar (with action button as title widget, no window buttons)
+        let bottom_bar = adw::HeaderBar::new();
+        bottom_bar.set_show_start_title_buttons(false);
+        bottom_bar.set_show_end_title_buttons(false);
+        bottom_bar.set_title_widget(Some(&action_btn));
+
+        // ToolbarView wrapping header + content + bottom bar
+        let toolbar_view = adw::ToolbarView::new();
+        toolbar_view.add_top_bar(&header);
+        toolbar_view.add_bottom_bar(&bottom_bar);
+
+        // Content
+        let content = gtk::Box::new(gtk::Orientation::Vertical, 18);
+        content.set_margin_start(24);
+        content.set_margin_end(24);
+        content.set_margin_top(12);
+        content.set_margin_bottom(12);
+
+        // === Live Avatar Preview ===
+        let preview_avatar = adw::Avatar::builder()
+            .size(96)
+            .text(&initial_emoji)
+            .show_initials(true)
+            .halign(gtk::Align::Center)
+            .build();
+        content.append(&preview_avatar);
+
+        // === Preferences Group with proper rows ===
+        let group = adw::PreferencesGroup::new();
+
+        // --- Account Name EntryRow ---
+        let name_row = adw::EntryRow::builder()
+            .title(&gettext("Account Name"))
+            .text(&initial_name)
+            .build();
+        name_row.connect_map(|e| {
+            e.grab_focus();
         });
+
+        // Enable button only when name is non-empty
+        let action_btn_weak = action_btn.downgrade();
+        name_row.connect_changed(move |entry| {
+            if let Some(btn) = action_btn_weak.upgrade() {
+                btn.set_sensitive(!entry.text().is_empty());
+            }
+        });
+
+        group.add(&name_row);
+
+        // --- Emoji ActionRow with EmojiChooser ---
+        let selected_emoji = std::rc::Rc::new(std::cell::RefCell::new(initial_emoji.clone()));
+
+        let emoji_label = gtk::Label::new(Some(&initial_emoji));
+        emoji_label.add_css_class("title-2");
+
+        let emoji_chooser = gtk::EmojiChooser::new();
+        let emoji_button = gtk::MenuButton::builder()
+            .popover(&emoji_chooser)
+            .valign(gtk::Align::Center)
+            .child(&emoji_label)
+            .build();
+        emoji_button.add_css_class("flat");
+
+        let emoji_row = adw::ActionRow::builder()
+            .title(&gettext("Emoji"))
+            .activatable_widget(&emoji_button)
+            .build();
+        emoji_row.add_suffix(&emoji_button);
+
+        // Connect emoji picked signal
+        let preview_avatar_e = preview_avatar.clone();
+        let selected_emoji_e = selected_emoji.clone();
+        let emoji_label_e = emoji_label.clone();
+        emoji_chooser.connect_emoji_picked(move |_, emoji_str| {
+            let emoji = emoji_str.to_string();
+            *selected_emoji_e.borrow_mut() = emoji.clone();
+            emoji_label_e.set_label(&emoji);
+            preview_avatar_e.set_text(Some(&emoji));
+        });
+
+        group.add(&emoji_row);
+
+        content.append(&group);
+        toolbar_view.set_content(Some(&content));
+        dialog.set_child(Some(&toolbar_view));
+
+        // Action button handler
+        let window_weak = self.downgrade();
+        let selected_emoji_final = selected_emoji.clone();
+        let dialog_weak = dialog.downgrade();
+        let name_row_ref = name_row.clone();
+        let account_id_clone = account_id.clone();
+        action_btn.connect_clicked(move |_| {
+            let name = name_row_ref.text();
+            if !name.is_empty() {
+                if let Some(window) = window_weak.upgrade() {
+                    let emoji = selected_emoji_final.borrow().clone();
+                    if let Some(ref id) = account_id_clone {
+                        // Edit mode: update existing account
+                        if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                            let _ = mgr.update_account_identity(id, name.as_str(), &emoji);
+                        }
+                        window.imp().update_account_button();
+                    } else {
+                        // Add mode: create new account
+                        window.create_account(name.as_str(), DEFAULT_COLOR, &emoji);
+                    }
+                }
+            }
+            if let Some(d) = dialog_weak.upgrade() {
+                d.close();
+            }
+        });
+
+        // Enter key in name entry triggers action
+        let action_btn_enter = action_btn.clone();
+        name_row.connect_entry_activated(move |_| {
+            if action_btn_enter.is_sensitive() {
+                action_btn_enter.emit_clicked();
+            }
+        });
+
+        dialog.present(Some(self));
     }
+
+    fn show_add_account_dialog(&self) {
+        self.show_account_dialog(None);
+    }
+
 
     fn confirm_delete_account(&self, account_id: &str, account_name: &str) {
         self.imp().account_bottom_sheet.set_open(false);
@@ -1794,16 +2015,20 @@ impl KarereWindow {
         });
     }
 
-    fn create_account(&self, account_name: &str) {
+    fn create_account(&self, account_name: &str, color: &str, emoji: &str) {
         let imp = self.imp();
 
         // Collect dirs and account_id while borrow is held, then drop before setup_webview
         let info = if let Some(mgr) = imp.account_manager.borrow().as_ref() {
             let new_account_id = format!("account_{}", chrono::Local::now().timestamp());
-            let account = Account::new(new_account_id.clone(), account_name.to_string());
+            let account = Account::new(new_account_id.clone(), account_name.to_string(), color.to_string(), emoji.to_string());
 
             if mgr.add_account(account).is_ok() {
                 let _ = mgr.set_active_account(&new_account_id);
+                
+                // Update session state immediately after creation
+                let _ = mgr.update_session_state(&new_account_id);
+                
                 Some((new_account_id.clone(), mgr.data_dir_for(&new_account_id), mgr.cache_dir_for(&new_account_id)))
             } else {
                 None

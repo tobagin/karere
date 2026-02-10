@@ -1,45 +1,55 @@
+# Irish translations for PACKAGE package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2026.
+#
 msgid ""
 msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-09 22:06+0000\n"
+"PO-Revision-Date: 2026-02-09 22:04+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ga\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n==2 ? 1 : 2;\n"
 
 #: temp_ui/keyboard-shortcuts.ui:12 temp_ui/preferences.ui:13
 #: temp_ui/preferences.ui:356
 msgid "General"
-msgstr "Geral"
+msgstr "Ginearálta"
 
 #: temp_ui/keyboard-shortcuts.ui:15
 msgid "Show this help"
-msgstr "Mostrar esta ajuda"
+msgstr "Taispeáin an chabhair seo"
 
 #: temp_ui/keyboard-shortcuts.ui:21 temp_ui/preferences.ui:10
 #: temp_ui/window.ui:152
 msgid "Preferences"
-msgstr "Preferências"
+msgstr "Sainroghanna"
 
 #: temp_ui/keyboard-shortcuts.ui:27 temp_ui/window.ui:162
 msgid "About"
-msgstr "Sobre"
+msgstr "Maidir le"
 
 #: temp_ui/keyboard-shortcuts.ui:33
 msgid "Quit application"
-msgstr "Sair da aplicação"
+msgstr "Scoir den fheidhmchlár"
 
 #: temp_ui/keyboard-shortcuts.ui:41
-#, fuzzy
 msgid "Window"
-msgstr "Ocultar Janela"
+msgstr "Fuinneog"
 
 #: temp_ui/keyboard-shortcuts.ui:44
-#, fuzzy
 msgid "Minimize window"
-msgstr "Ocultar Janela"
+msgstr "Íoslaghdaigh an fhuinneog"
 
 #: temp_ui/keyboard-shortcuts.ui:50
 msgid "Fullscreen"
-msgstr "Ecrã inteiro"
+msgstr "Scáileán iomlán"
 
 #: temp_ui/keyboard-shortcuts.ui:58
 msgid "WhatsApp Web"
@@ -47,503 +57,495 @@ msgstr "WhatsApp Web"
 
 #: temp_ui/keyboard-shortcuts.ui:61
 msgid "Find in chat"
-msgstr "Localizar no chat"
+msgstr "Aimsigh sa chomhrá"
 
 #: temp_ui/keyboard-shortcuts.ui:67
 msgid "Search chats"
-msgstr "Pesquisar chats"
+msgstr "Cuardaigh comhráite"
 
 #: temp_ui/keyboard-shortcuts.ui:73
 msgid "New chat"
-msgstr "Novo chat"
+msgstr "Comhrá nua"
 
 #: temp_ui/keyboard-shortcuts.ui:79
 msgid "Archive current chat"
-msgstr "Arquivar chat atual"
+msgstr "Cuir an comhrá reatha i dtaisce"
 
 #: temp_ui/keyboard-shortcuts.ui:85
 msgid "Open profile"
-msgstr "Abrir perfil"
+msgstr "Oscail próifíl"
 
 #: temp_ui/keyboard-shortcuts.ui:91
 msgid "Reload WhatsApp Web"
-msgstr "Recarregar WhatsApp Web"
+msgstr "Athlódáil WhatsApp Web"
 
 #: temp_ui/keyboard-shortcuts.ui:99
 msgid "WebView Zoom"
-msgstr "Zoom da visualização web"
+msgstr "Súmáil an Amharcán Gréasáin"
 
 #: temp_ui/keyboard-shortcuts.ui:102
 msgid "Zoom in"
-msgstr "Aumentar zoom"
+msgstr "Súmáil isteach"
 
 #: temp_ui/keyboard-shortcuts.ui:108
 msgid "Zoom out"
-msgstr "Diminuir zoom"
+msgstr "Súmáil amach"
 
 #: temp_ui/keyboard-shortcuts.ui:114
 msgid "Reset zoom"
-msgstr "Repor zoom"
+msgstr "Athshocraigh an tsúmáil"
 
 #: temp_ui/keyboard-shortcuts.ui:122 temp_ui/preferences.ui:213
 msgid "Accessibility"
-msgstr "Acessibilidade"
+msgstr "Inrochtaineacht"
 
 #: temp_ui/keyboard-shortcuts.ui:125
 msgid "Toggle high contrast"
-msgstr "Alternar alto contraste"
+msgstr "Scoránaigh ardchodarsnacht"
 
 #: temp_ui/keyboard-shortcuts.ui:131
 msgid "Toggle focus indicators"
-msgstr "Alternar indicadores de foco"
+msgstr "Scoránaigh táscairí fócais"
 
 #: temp_ui/keyboard-shortcuts.ui:139
 msgid "Developer"
-msgstr "Programador"
+msgstr "Forbróir"
 
 #: temp_ui/keyboard-shortcuts.ui:142
 msgid "Developer tools"
-msgstr "Ferramentas do programador"
+msgstr "Uirlisí forbróra"
 
 #: temp_ui/keyboard-shortcuts.ui:148
 msgid "Reload page"
-msgstr "Recarregar página"
+msgstr "Athlódáil an leathanach"
 
 #: temp_ui/keyboard-shortcuts.ui:154
 msgid "Force reload"
-msgstr "Forçar recarga"
+msgstr "Éigean-athlódáil"
 
 #: temp_ui/keyboard-shortcuts.ui:162 temp_ui/preferences.ui:352
 msgid "Notifications"
-msgstr "Notificações"
+msgstr "Fógraí"
 
 #: temp_ui/keyboard-shortcuts.ui:165
 msgid "Toggle notifications"
-msgstr "Alternar notificações"
+msgstr "Scoránaigh fógraí"
 
 #: temp_ui/keyboard-shortcuts.ui:171
 msgid "Toggle Do Not Disturb"
-msgstr "Alternar Não incomodar"
+msgstr "Scoránaigh Ná Cuir Isteach"
 
 #: temp_ui/preferences.ui:17
 msgid "Startup"
-msgstr "Início"
+msgstr "Tosú"
 
 #: temp_ui/preferences.ui:20
 msgid "Run on Startup"
-msgstr "Executar ao iniciar"
+msgstr "Rith ag an Tosú"
 
 #: temp_ui/preferences.ui:21
 msgid "Launch Karere automatically when you log in"
-msgstr "Iniciar o Karere automaticamente quando iniciar sessão"
+msgstr "Seol Karere go huathoibríoch nuair a logálann tú isteach"
 
 #: temp_ui/preferences.ui:26
 msgid "Start in background"
-msgstr "Iniciar em segundo plano"
+msgstr "Tosaigh sa chúlra"
 
 #: temp_ui/preferences.ui:27
 msgid "Start minimized without showing the window"
-msgstr "Iniciar minimizado sem mostrar a janela"
+msgstr "Tosaigh íoslaghdaithe gan an fhuinneog a thaispeáint"
 
 #: temp_ui/preferences.ui:32
 msgid "Window Close Behavior"
-msgstr "Comportamento ao fechar a janela"
+msgstr "Iompar Dúnadh na Fuinneoige"
 
 #: temp_ui/preferences.ui:33
 msgid "What happens when you close the window"
-msgstr "O que acontece quando fecha a janela"
+msgstr "Cad a tharlaíonn nuair a dhúnann tú an fhuinneog"
 
 #: temp_ui/preferences.ui:37
 msgid "Run in Background"
-msgstr "Executar em segundo plano"
+msgstr "Rith sa Chúlra"
 
 #: temp_ui/preferences.ui:38
 msgid "Quit Application"
-msgstr "Sair da aplicação"
+msgstr "Scoir den Fheidhmchlár"
 
 #: temp_ui/preferences.ui:46
 msgid "System Tray Icon"
-msgstr "Ícone do tabuleiro do sistema"
+msgstr "Deilbhín Tráidire an Chórais"
 
 #: temp_ui/preferences.ui:47
 msgid "Show an icon in the system tray"
-msgstr "Mostrar um ícone no tabuleiro do sistema"
+msgstr "Taispeáin deilbhín i dtráidire an chórais"
 
 #: temp_ui/preferences.ui:51 temp_ui/preferences.ui:87
 msgid "Auto"
-msgstr "Automático"
+msgstr "Uathoibríoch"
 
 #: temp_ui/preferences.ui:52 temp_ui/preferences.ui:88
 msgid "Enabled"
-msgstr "Ativado"
+msgstr "Cumasaithe"
 
 #: temp_ui/preferences.ui:53 temp_ui/preferences.ui:89
 msgid "Disabled"
-msgstr "Desativado"
+msgstr "Díchumasaithe"
 
 #: temp_ui/preferences.ui:57
 msgid "Auto: Enabled for non-GNOME environments"
-msgstr "Auto: Ativado para ambientes não-GNOME"
+msgstr "Uathoibríoch: Cumasaithe do thimpeallachtaí nach GNOME iad"
 
 #: temp_ui/preferences.ui:64
 msgid "Appearance"
-msgstr "Aparência"
+msgstr "Dealramh"
 
 #: temp_ui/preferences.ui:67
 msgid "Theme"
-msgstr "Tema"
+msgstr "Téama"
 
 #: temp_ui/preferences.ui:68
 msgid "Choose the application color scheme"
-msgstr "Escolha o esquema de cores da aplicação"
+msgstr "Roghnaigh scéim dathanna an fheidhmchláir"
 
 #: temp_ui/preferences.ui:72
 msgid "Follow System"
-msgstr "Seguir o sistema"
+msgstr "Lean an Córas"
 
 #: temp_ui/preferences.ui:73
 msgid "Light"
-msgstr "Claro"
+msgstr "Solas"
 
 #: temp_ui/preferences.ui:74
 msgid "Dark"
-msgstr "Escuro"
+msgstr "Dorcha"
 
 #: temp_ui/preferences.ui:82
 msgid "Mobile Layout (Experimental)"
-msgstr "Esquema móvel (experimental)"
+msgstr "Leagan Amach Móibíleach (Turgnamhach)"
 
 #: temp_ui/preferences.ui:83
 msgid "Optimize the interface for small screens"
-msgstr "Otimizar a interface para ecrãs pequenos"
+msgstr "Optamaigh an comhéadan le haghaidh scáileáin bheaga"
 
 #: temp_ui/preferences.ui:93
 msgid "Auto: Enabled for mobile environments (Phosh, Plasma Mobile, etc.)"
-msgstr "Auto: Ativado para ambientes móveis (Phosh, Plasma Mobile, etc.)"
+msgstr "Uathoibríoch: Cumasaithe do thimpeallachtaí móibíleacha (Phosh, Plasma Mobile, etc.)"
 
 #: temp_ui/preferences.ui:100
 msgid "Spell Checking"
-msgstr "Correção ortográfica"
+msgstr "Seiceáil Litrithe"
 
 #: temp_ui/preferences.ui:103
 msgid "Enable Spell Checking"
-msgstr "Ativar correção ortográfica"
+msgstr "Cumasaigh Seiceáil Litrithe"
 
 #: temp_ui/preferences.ui:104
 msgid "Check spelling as you type"
-msgstr "Verificar ortografia ao digitar"
+msgstr "Seiceáil litriú agus tú ag clóscríobh"
 
 #: temp_ui/preferences.ui:109
-#, fuzzy
 msgid "Dictionary Status"
-msgstr "1 Dicionário"
+msgstr "Stádas an Fhoclóra"
 
 #: temp_ui/preferences.ui:110
 msgid "Number of installed dictionaries"
-msgstr "Número de dicionários instalados"
+msgstr "Líon na bhfoclóirí suiteáilte"
 
 #: temp_ui/preferences.ui:114
 msgid "Unknown"
-msgstr "Desconhecido"
+msgstr "Anaithnid"
 
 #: temp_ui/preferences.ui:121 temp_ui/preferences.ui:132
 msgid "Active Language"
-msgstr "Idioma ativo"
+msgstr "Teanga Ghníomhach"
 
 #: temp_ui/preferences.ui:122
 msgid "Automatically detected language"
-msgstr "Idioma detetado automaticamente"
+msgstr "Teanga braite go huathoibríoch"
 
 #: temp_ui/preferences.ui:133
 msgid "Select the language for spell checking"
-msgstr "Selecione o idioma para correção ortográfica"
+msgstr "Roghnaigh an teanga don seiceáil litrithe"
 
 #: temp_ui/preferences.ui:138
-#, fuzzy
 msgid "Override Dictionary"
-msgstr "1 Dicionário"
+msgstr "Anulaigh an Foclóir"
 
 #: temp_ui/preferences.ui:139
 msgid "Manually select the spell checking language"
-msgstr "Selecionar manualmente o idioma de correção ortográfica"
+msgstr "Roghnaigh teanga an tseiceáil litrithe de láimh"
 
 #: temp_ui/preferences.ui:144
 msgid "Enable Auto-Correct"
-msgstr "Ativar autocorreção"
+msgstr "Cumasaigh uathcheartú"
 
 #: temp_ui/preferences.ui:145
 msgid "Automatically fix common spelling mistakes"
-msgstr "Corrigir automaticamente erros ortográficos comuns"
+msgstr "Deisigh botúin choitianta litrithe go huathoibríoch"
 
 #: temp_ui/preferences.ui:152 temp_ui/preferences.ui:444
-#, fuzzy
 msgid "Downloads"
-msgstr "Predefinido (Transferências)"
+msgstr "Íoslódálacha"
 
 #: temp_ui/preferences.ui:155
-#, fuzzy
 msgid "Download Directory"
-msgstr "Selecionar Diretório de Transferências"
+msgstr "Comhadlann Íoslódála"
 
 #: temp_ui/preferences.ui:156 src/preferences.rs:272
 msgid "Default (Downloads)"
-msgstr "Predefinido (Transferências)"
+msgstr "Réamhshocrú (Íoslódálacha)"
 
 #: temp_ui/preferences.ui:159
 msgid "Choose..."
-msgstr "Escolher..."
+msgstr "Roghnaigh..."
 
 #: temp_ui/preferences.ui:167
 msgid "Reset to default"
-msgstr "Repor predefinição"
+msgstr "Athshocraigh go réamhshocrú"
 
 #: temp_ui/preferences.ui:176
 msgid "Accounts"
-msgstr "Contas"
+msgstr "Cuntais"
 
 #: temp_ui/preferences.ui:179
 msgid "Multi-Account Support"
-msgstr "Suporte multiconta"
+msgstr "Tacaíocht Ilchuntas"
 
 #: temp_ui/preferences.ui:180
 msgid "Show account switcher in the header bar"
-msgstr "Mostrar seletor de conta na barra de cabeçalho"
+msgstr "Taispeáin malartóir cuntas sa bharrbharra"
 
 #: temp_ui/preferences.ui:187 temp_ui/preferences.ui:196
 msgid "Developer Tools"
-msgstr "Ferramentas do programador"
+msgstr "Uirlisí Forbróra"
 
 #: temp_ui/preferences.ui:190
 msgid "Enable Developer Tools"
-msgstr "Ativar ferramentas do programador"
+msgstr "Cumasaigh Uirlisí Forbróra"
 
 #: temp_ui/preferences.ui:191
 msgid "Allow inspecting and debugging the WebView"
-msgstr "Permitir inspeção e depuração da visualização web"
+msgstr "Ceadaigh iniúchadh agus dífhabhtú an Amharcán Gréasáin"
 
 #: temp_ui/preferences.ui:197
 msgid "Open the WebKit inspector"
-msgstr "Abrir o inspetor do WebKit"
+msgstr "Oscail an t-iniúchóir WebKit"
 
 #: temp_ui/preferences.ui:200
 msgid "Open"
-msgstr "Abrir"
+msgstr "Oscail"
 
 #: temp_ui/preferences.ui:217
 msgid "Keyboard Navigation"
-msgstr "Navegação por teclado"
+msgstr "Nascleanúint Méarchláir"
 
 #: temp_ui/preferences.ui:220 temp_ui/window.ui:158
 msgid "Keyboard Shortcuts"
-msgstr "Atalhos de teclado"
+msgstr "Aicearraí Méarchláir"
 
 #: temp_ui/preferences.ui:221
 msgid "Enable keyboard shortcuts for common actions"
-msgstr "Ativar atalhos de teclado para ações comuns"
+msgstr "Cumasaigh aicearraí méarchláir le haghaidh gníomhartha coitianta"
 
 #: temp_ui/preferences.ui:226
 msgid "Focus Indicators"
-msgstr "Indicadores de foco"
+msgstr "Táscairí Fócais"
 
 #: temp_ui/preferences.ui:227
 msgid "Show visible outlines around focused elements"
-msgstr "Mostrar contornos visíveis ao redor de elementos focados"
+msgstr "Taispeáin imlínte infheicthe thart ar ghnéithe dírithe"
 
 #: temp_ui/preferences.ui:232
 msgid "View Keyboard Shortcuts"
-msgstr "Ver atalhos de teclado"
+msgstr "Féach ar Aicearraí Méarchláir"
 
 #: temp_ui/preferences.ui:233
 msgid "See all available keyboard shortcuts"
-msgstr "Ver todos os atalhos de teclado disponíveis"
+msgstr "Féach ar na haicearraí méarchláir go léir atá ar fáil"
 
 #: temp_ui/preferences.ui:236
 msgid "View"
-msgstr "Ver"
+msgstr "Féach"
 
 #: temp_ui/preferences.ui:247
 msgid "Visual Accessibility"
-msgstr "Acessibilidade visual"
+msgstr "Inrochtaineacht Amhairc"
 
 #: temp_ui/preferences.ui:250
 msgid "High Contrast Mode"
-msgstr "Modo de alto contraste"
+msgstr "Mód Ardchodarsnachta"
 
 #: temp_ui/preferences.ui:251
 msgid "Increase contrast for better readability"
-msgstr "Aumentar o contraste para melhor legibilidade"
+msgstr "Méadaigh codarsnacht le haghaidh inléiteacht níos fearr"
 
 #: temp_ui/preferences.ui:256
 msgid "Reduce Motion"
-msgstr "Reduzir movimento"
+msgstr "Laghdaigh Gluaisne"
 
 #: temp_ui/preferences.ui:257
 msgid "Minimize animations and transitions"
-msgstr "Minimizar animações e transições"
+msgstr "Íoslaghdaigh beochan agus trasnaíocht"
 
 #: temp_ui/preferences.ui:264
 msgid "Webview Zoom"
-msgstr "Zoom da visualização web"
+msgstr "Súmáil an Amharcán Gréasáin"
 
 #: temp_ui/preferences.ui:267
 msgid "Enable Webview Zoom"
-msgstr "Ativar zoom da visualização web"
+msgstr "Cumasaigh Súmáil an Amharcán Gréasáin"
 
 #: temp_ui/preferences.ui:268
 msgid "Allow zooming in and out of the web content"
-msgstr "Permitir aumentar e diminuir o zoom do conteúdo web"
+msgstr "Ceadaigh súmáil isteach agus amach as an inneachar gréasáin"
 
 #: temp_ui/preferences.ui:273
 msgid "Zoom Level"
-msgstr "Nível de zoom"
+msgstr "Leibhéal Súmála"
 
 #: temp_ui/preferences.ui:274
 msgid "Adjust the magnification of the web content"
-msgstr "Ajustar a ampliação do conteúdo web"
+msgstr "Coigeartaigh méadú an inneachair ghréasáin"
 
 #: temp_ui/preferences.ui:289 temp_ui/window.ui:44
 msgid "Reset Zoom"
-msgstr "Repor zoom"
+msgstr "Athshocraigh an tSúmáil"
 
 #: temp_ui/preferences.ui:290
 msgid "Restore zoom to the default level"
-msgstr "Restaurar o zoom para o nível predefinido"
+msgstr "Athbhunaigh an tsúmáil chuig an leibhéal réamhshocraithe"
 
 #: temp_ui/preferences.ui:293
 msgid "Reset"
-msgstr "Repor"
+msgstr "Athshocraigh"
 
 #: temp_ui/preferences.ui:304
 msgid "Screen Reader Support"
-msgstr "Suporte para leitor de ecrã"
+msgstr "Tacaíocht Léitheora Scáileáin"
 
 #: temp_ui/preferences.ui:307
 msgid "Screen Reader Optimizations"
-msgstr "Otimizações para leitor de ecrã"
+msgstr "Optamuithe Léitheora Scáileáin"
 
 #: temp_ui/preferences.ui:308
 msgid "Improve compatibility with assistive technologies"
-msgstr "Melhorar a compatibilidade com tecnologias assistivas"
+msgstr "Feabhsaigh comhoiriúnacht le teicneolaíochtaí cúnta"
 
 #: temp_ui/preferences.ui:313
 msgid "Screen Reader Status"
-msgstr "Estado do leitor de ecrã"
+msgstr "Stádas an Léitheora Scáileáin"
 
 #: temp_ui/preferences.ui:314
 msgid "Current screen reader detection state"
-msgstr "Estado atual de deteção do leitor de ecrã"
+msgstr "Stádas braite léitheora scáileáin reatha"
 
 #: temp_ui/preferences.ui:317
 msgid "Inactive"
-msgstr "Inativo"
+msgstr "Neamhghníomhach"
 
 #: temp_ui/preferences.ui:327 temp_ui/preferences.ui:330
 msgid "Accessibility Shortcuts"
-msgstr "Atalhos de acessibilidade"
+msgstr "Aicearraí Inrochtaineachta"
 
 #: temp_ui/preferences.ui:331
 msgid "Enable keyboard shortcuts for accessibility features"
-msgstr "Ativar atalhos de teclado para recursos de acessibilidade"
+msgstr "Cumasaigh aicearraí méarchláir le haghaidh gnéithe inrochtaineachta"
 
 #: temp_ui/preferences.ui:336
 msgid "Developer Shortcuts"
-msgstr "Atalhos do programador"
+msgstr "Aicearraí Forbróra"
 
 #: temp_ui/preferences.ui:337
 msgid "Enable keyboard shortcuts for developer tools"
-msgstr "Ativar atalhos de teclado para ferramentas do programador"
+msgstr "Cumasaigh aicearraí méarchláir le haghaidh uirlisí forbróra"
 
 #: temp_ui/preferences.ui:342
 msgid "Notification Shortcuts"
-msgstr "Atalhos de notificação"
+msgstr "Aicearraí Fógra"
 
 #: temp_ui/preferences.ui:343
 msgid "Enable keyboard shortcuts for notification actions"
-msgstr "Ativar atalhos de teclado para ações de notificação"
+msgstr "Cumasaigh aicearraí méarchláir le haghaidh gníomhartha fógra"
 
 #: temp_ui/preferences.ui:359
 msgid "Enable Notifications"
-msgstr "Ativar notificações"
+msgstr "Cumasaigh Fógraí"
 
 #: temp_ui/preferences.ui:360
 msgid "Master toggle for all notifications"
-msgstr "Alternância mestre para todas as notificações"
+msgstr "Máistir-scoránaigh do gach fógra"
 
 #: temp_ui/preferences.ui:367
-#, fuzzy
 msgid "Messages"
-msgstr "Nova mensagem"
+msgstr "Teachtaireachtaí"
 
 #: temp_ui/preferences.ui:370
 msgid "Message Notifications"
-msgstr "Notificações de mensagens"
+msgstr "Fógraí Teachtaireachta"
 
 #: temp_ui/preferences.ui:371
 msgid "Show notifications for incoming messages"
-msgstr "Mostrar notificações para mensagens recebidas"
+msgstr "Taispeáin fógraí le haghaidh teachtaireachtaí isteach"
 
 #: temp_ui/preferences.ui:376
 msgid "Change Tray Icon on Message"
-msgstr "Alterar ícone do tabuleiro ao receber mensagem"
+msgstr "Athraigh Deilbhín an Tráidire ar Theachtaireacht"
 
 #: temp_ui/preferences.ui:377
 msgid "Animate the tray icon when a new message arrives"
-msgstr "Animar o ícone do tabuleiro quando uma nova mensagem chegar"
+msgstr "Beoigh deilbhín an tráidire nuair a thagann teachtaireacht nua"
 
 #: temp_ui/preferences.ui:384
-#, fuzzy
 msgid "Message Preview"
-msgstr "Nova mensagem recebida"
+msgstr "Réamhamharc Teachtaireachta"
 
 #: temp_ui/preferences.ui:387
-#, fuzzy
 msgid "Show Message Preview"
-msgstr "Nova mensagem recebida"
+msgstr "Taispeáin Réamhamharc Teachtaireachta"
 
 #: temp_ui/preferences.ui:388
 msgid "Display message content in notifications"
-msgstr "Exibir o conteúdo da mensagem nas notificações"
+msgstr "Taispeáin inneachar na dteachtaireachtaí i bhfógraí"
 
 #: temp_ui/preferences.ui:393
 msgid "Limit Message Preview Size"
-msgstr "Limitar o tamanho da pré-visualização da mensagem"
+msgstr "Teorainn le Méid Réamhamhairc Teachtaireachta"
 
 #: temp_ui/preferences.ui:394
 msgid "Truncate long messages in notifications"
-msgstr "Truncar mensagens longas nas notificações"
+msgstr "Giorraigh teachtaireachtaí fada i bhfógraí"
 
 #: temp_ui/preferences.ui:399
 msgid "Preview Length (characters)"
-msgstr "Comprimento da pré-visualização (caracteres)"
+msgstr "Fad an Réamhamhairc (carachtair)"
 
 #: temp_ui/preferences.ui:400
 msgid "Maximum number of characters shown in previews"
-msgstr "Número máximo de caracteres mostrados nas pré-visualizações"
+msgstr "Uasmhéid carachtar a thaispeántar i réamhamhairc"
 
 #: temp_ui/preferences.ui:416
 msgid "Sounds"
-msgstr "Sons"
+msgstr "Fuaimeanna"
 
 #: temp_ui/preferences.ui:419
 msgid "Notification Sounds"
-msgstr "Sons de notificação"
+msgstr "Fuaimeanna Fógra"
 
 #: temp_ui/preferences.ui:420
 msgid "Play a sound when a notification arrives"
-msgstr "Reproduzir um som quando uma notificação chegar"
+msgstr "Seinn fuaim nuair a thagann fógra"
 
 #: temp_ui/preferences.ui:425
 msgid "Sound"
-msgstr "Som"
+msgstr "Fuaim"
 
 #: temp_ui/preferences.ui:426
-#, fuzzy
 msgid "Choose the notification alert sound"
-msgstr "Permissão de Notificação do WhatsApp Web"
+msgstr "Roghnaigh fuaim airdeall an fhógra"
 
 #: temp_ui/preferences.ui:430
 msgid "WhatsApp (Default)"
-msgstr "WhatsApp (predefinido)"
+msgstr "WhatsApp (Réamhshocrú)"
 
 #: temp_ui/preferences.ui:431
 msgid "Pop"
@@ -551,39 +553,39 @@ msgstr "Pop"
 
 #: temp_ui/preferences.ui:432
 msgid "Alert"
-msgstr "Alerta"
+msgstr "Airdeall"
 
 #: temp_ui/preferences.ui:433
 msgid "Soft"
-msgstr "Suave"
+msgstr "Bog"
 
 #: temp_ui/preferences.ui:434
 msgid "Start"
-msgstr "Iniciar"
+msgstr "Tosaigh"
 
 #: temp_ui/preferences.ui:447
 msgid "Download Notifications"
-msgstr "Notificações de transferência"
+msgstr "Fógraí Íoslódála"
 
 #: temp_ui/preferences.ui:448
 msgid "Notify when a file download completes"
-msgstr "Notificar quando a conclusão da transferência de um arquivo"
+msgstr "Cuir in iúl nuair a chríochnaíonn íoslódáil comhaid"
 
 #: temp_ui/preferences.ui:453
 msgid "Notification Type"
-msgstr "Tipo de notificación"
+msgstr "Cineál Fógra"
 
 #: temp_ui/preferences.ui:454
 msgid "How download notifications are displayed"
-msgstr "Como as notificações de transferência são exibidas"
+msgstr "Conas a thaispeántar fógraí íoslódála"
 
 #: temp_ui/preferences.ui:458
 msgid "In-app Toast"
-msgstr "Toast na aplicação"
+msgstr "Tósta in-aipe"
 
 #: temp_ui/preferences.ui:459
 msgid "System Notification"
-msgstr "Notificação do sistema"
+msgstr "Fógra Córais"
 
 #: temp_ui/window.ui:12 temp_ui/window.ui:23 src/main.rs:144 src/tray.rs:29
 #: src/tray.rs:73
@@ -592,43 +594,43 @@ msgstr "Karere"
 
 #: temp_ui/window.ui:24
 msgid "GTK4 Whatsapp Web Client"
-msgstr "Cliente de WhatsApp Web GTK4"
+msgstr "Cliant WhatsApp Web GTK4"
 
 #: temp_ui/window.ui:37
 msgid "Zoom Out"
-msgstr "Diminuir zoom"
+msgstr "Súmáil Amach"
 
 #: temp_ui/window.ui:51
 msgid "Zoom In"
-msgstr "Aumentar zoom"
+msgstr "Súmáil Isteach"
 
 #: temp_ui/window.ui:60
 msgid "Spell Checking Language"
-msgstr "Idioma de correção ortográfica"
+msgstr "Teanga Seiceála Litrithe"
 
 #: temp_ui/window.ui:67
 msgid "Menu"
-msgstr "Menu"
+msgstr "Roghchlár"
 
 #: temp_ui/window.ui:73
 msgid "Switch Account"
-msgstr "Trocar conta"
+msgstr "Athraigh Cuntas"
 
 #: temp_ui/window.ui:134
 msgid "Add new account"
-msgstr "Adicionar nova conta"
+msgstr "Cuir cuntas nua leis"
 
 #: temp_ui/window.ui:148
 msgid "Refresh WhatsApp Web"
-msgstr "Recarregar WhatsApp Web"
+msgstr "Athnuaigh WhatsApp Web"
 
 #: temp_ui/window.ui:168 src/tray.rs:122
 msgid "Quit"
-msgstr "Sair"
+msgstr "Scoir"
 
 #: src/main.rs:144
 msgid "Karere (Dev)"
-msgstr "Karere (dev)"
+msgstr "Karere (Forbairt)"
 
 #: src/main.rs:146
 msgid ""
@@ -646,98 +648,85 @@ msgstr ""
 
 #: src/main.rs:169
 msgid "Source"
-msgstr "Código-fonte"
+msgstr "Foinse"
 
 #: src/main.rs:172
 msgid "Special Thanks"
-msgstr "Agradecimentos especiais"
+msgstr "Buíochas Faoin Leith"
 
 #: src/preferences.rs:430
 msgid "1 Dictionary"
-msgstr "1 Dicionário"
+msgstr "1 Foclóir"
 
 #: src/preferences.rs:433
 msgid "Dictionaries"
-msgstr "Dicionários"
+msgstr "Foclóirí"
 
 #: src/preferences.rs:483
 msgid "Select Download Directory"
-msgstr "Selecionar Diretório de Transferências"
+msgstr "Roghnaigh Comhadlann Íoslódála"
 
 #: src/preferences.rs:485
 msgid "Select"
-msgstr "Selecionar"
+msgstr "Roghnaigh"
 
 #: src/tray.rs:74
 msgid "Running via Rust & GTK4"
-msgstr "A executar via Rust e GTK4"
+msgstr "Ag rith trí Rust & GTK4"
 
 #: src/tray.rs:82
 msgid "Hide Window"
-msgstr "Ocultar Janela"
+msgstr "Oifalaigh an Fhuinneog"
 
 #: src/tray.rs:84
 msgid "Show Window"
-msgstr "Mostrar Janela"
+msgstr "Taispeáin an Fhuinneog"
 
 #: src/window.rs:788
 msgid "WhatsApp Web Notification Permission"
-msgstr "Permissão de Notificação do WhatsApp Web"
+msgstr "Cead Fógra WhatsApp Web"
 
 #: src/window.rs:789
 msgid ""
 "WhatsApp Web wants to show desktop notifications for new messages. Would you "
 "like to allow notifications?"
 msgstr ""
-"O WhatsApp Web pretende mostrar notificações no ambiente de trabalho para "
-"novas mensagens. Deseja permitir as notificações?"
 
 #: src/window.rs:794 src/window.rs:878
 msgid "Deny"
-msgstr "Recusar"
+msgstr "Diúltaigh"
 
 #: src/window.rs:795 src/window.rs:879
 msgid "Allow"
-msgstr "Permitir"
+msgstr "Ceadaigh"
 
 #: src/window.rs:841
-#, fuzzy
 msgid "WhatsApp Web Camera & Microphone Permission"
-msgstr "Permissão de Microfone do WhatsApp Web"
+msgstr "Cead Ceamara & Micreafón WhatsApp Web"
 
 #: src/window.rs:842
-#, fuzzy
 msgid ""
 "WhatsApp Web wants to access your camera and microphone. Would you like to "
 "allow access?"
 msgstr ""
-"O WhatsApp Web pretende aceder ao seu microfone para mensagens de voz e "
-"chamadas. Deseja permitir o acesso ao microfone?"
 
 #: src/window.rs:845
-#, fuzzy
 msgid "WhatsApp Web Camera Permission"
-msgstr "Permissão de Microfone do WhatsApp Web"
+msgstr "Cead Ceamara WhatsApp Web"
 
 #: src/window.rs:846
-#, fuzzy
 msgid ""
 "WhatsApp Web wants to access your camera. Would you like to allow access?"
 msgstr ""
-"O WhatsApp Web pretende aceder ao seu microfone para mensagens de voz e "
-"chamadas. Deseja permitir o acesso ao microfone?"
 
 #: src/window.rs:851
 msgid "WhatsApp Web Microphone Permission"
-msgstr "Permissão de Microfone do WhatsApp Web"
+msgstr "Cead Micreafóin WhatsApp Web"
 
 #: src/window.rs:852
-#, fuzzy
 msgid ""
 "WhatsApp Web wants to access your microphone. Would you like to allow access?"
 msgstr ""
-"O WhatsApp Web pretende aceder ao seu microfone para mensagens de voz e "
-"chamadas. Deseja permitir o acesso ao microfone?"
 
 #: src/window.rs:934
 msgid "WhatsApp"
@@ -745,47 +734,47 @@ msgstr "WhatsApp"
 
 #: src/window.rs:935
 msgid "New message"
-msgstr "Nova mensagem"
+msgstr "Teachtaireacht nua"
 
 #: src/window.rs:940
 msgid "New message received"
-msgstr "Nova mensagem recebida"
+msgstr "Teachtaireacht nua faighte"
 
 #: src/window.rs:1614
 msgid "No account"
-msgstr "Sem conta"
+msgstr "Gan chuntas"
 
 #: src/window.rs:1729
 msgid "Add New Account"
-msgstr "Adicionar Nova Conta"
+msgstr "Cuir Cuntas Nua Leis"
 
 #: src/window.rs:1730
 msgid "Enter account name:"
-msgstr "Introduza o nome da conta:"
+msgstr "Iontráil ainm an chuntais:"
 
 #: src/window.rs:1736
 msgid "Account name"
-msgstr "Nome da conta"
+msgstr "Ainm an chuntais"
 
 #: src/window.rs:1743 src/window.rs:1770
 msgid "_Cancel"
-msgstr "_Cancelar"
+msgstr "_Cealaigh"
 
 #: src/window.rs:1744
 msgid "_Add"
-msgstr "_Adicionar"
+msgstr "_Cuir leis"
 
 #: src/window.rs:1764
 msgid "Remove account"
-msgstr "Remover conta"
+msgstr "Bain cuntas"
 
 #: src/window.rs:1765
 msgid "This action cannot be undone."
-msgstr "Esta ação não pode ser desfeita."
+msgstr "Ní féidir an gníomh seo a chealú."
 
 #: src/window.rs:1771
 msgid "_Remove"
-msgstr "_Remover"
+msgstr "_Bain"
 
 #: data/io.github.tobagin.karere.desktop.in:3
 msgid "@APP_NAME@"
@@ -793,12 +782,12 @@ msgstr "@APP_NAME@"
 
 #: data/io.github.tobagin.karere.desktop.in:4
 msgid "WhatsApp Client"
-msgstr "Cliente de WhatsApp"
+msgstr "Cliant WhatsApp"
 
 #: data/io.github.tobagin.karere.desktop.in:5
 msgid "Native WhatsApp Web client for Linux desktop"
-msgstr "Cliente nativo de WhatsApp Web para o ambiente de trabalho Linux"
+msgstr "Cliant dúchasach WhatsApp Web le haghaidh deisce Linux"
 
 #: data/io.github.tobagin.karere.desktop.in:10
 msgid "whatsapp;chat;messaging;web;communication;"
-msgstr "whatsapp;chat;mensagens;web;comunicação;"
+msgstr "whatsapp;comhrá;teachtaireachtaí;gréasán;cumarsáid;"

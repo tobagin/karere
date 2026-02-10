@@ -1,10 +1,10 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $KarereWindow : Adw.ApplicationWindow {
+template $KarereWindow: Adw.ApplicationWindow {
   default-width: 800;
   default-height: 600;
-  title: "Karere";
+  title: _("Karere");
 
   content: Adw.BottomSheet account_bottom_sheet {
     content: Adw.ToastOverlay toast_overlay {
@@ -12,24 +12,30 @@ template $KarereWindow : Adw.ApplicationWindow {
         [top]
         Adw.HeaderBar {
           title-widget: Adw.WindowTitle {
-            title: "Karere";
-            subtitle: "GTK4 Whatsapp Web Client";
+            title: _("Karere");
+            subtitle: _("GTK4 Whatsapp Web Client");
           };
 
           [start]
           Gtk.Box zoom_box {
             visible: false;
-            styles ["linked"]
+
+            styles [
+              "linked",
+            ]
+
             Gtk.Button {
               icon-name: "zoom-out-symbolic";
               action-name: "win.zoom-out";
               tooltip-text: _("Zoom Out");
             }
+
             Gtk.Button {
               icon-name: "zoom-original-symbolic";
               action-name: "win.zoom-reset";
               tooltip-text: _("Reset Zoom");
             }
+
             Gtk.Button {
               icon-name: "zoom-in-symbolic";
               action-name: "win.zoom-in";
@@ -55,7 +61,10 @@ template $KarereWindow : Adw.ApplicationWindow {
           Gtk.Button account_button {
             valign: center;
             tooltip-text: _("Switch Account");
-            styles ["circular"]
+
+            styles [
+              "circular",
+            ]
 
             child: Adw.Avatar account_avatar {
               size: 28;
@@ -63,7 +72,6 @@ template $KarereWindow : Adw.ApplicationWindow {
               show-initials: true;
             };
           }
-
         }
 
         content: Gtk.Box view_container {
@@ -86,12 +94,15 @@ template $KarereWindow : Adw.ApplicationWindow {
       Gtk.ScrolledWindow {
         vexpand: true;
         hexpand: true;
-        max-content-height: 300;
-        min-content-height: 100;
+        propagate-natural-height: true;
+        max-content-height: 400;
 
         Gtk.ListBox accounts_list {
           selection-mode: none;
-          styles ["boxed-list"]
+
+          styles [
+            "boxed-list",
+          ]
         }
       }
 
@@ -105,6 +116,7 @@ template $KarereWindow : Adw.ApplicationWindow {
           icon-name: "list-add-symbolic";
           label: _("Add new account");
         };
+
         action-name: "win.add-account";
       }
     }
@@ -117,6 +129,7 @@ menu primary_menu {
       label: _("Refresh WhatsApp Web");
       action: "win.refresh";
     }
+
     item {
       label: _("Preferences");
       action: "app.preferences";
@@ -128,6 +141,7 @@ menu primary_menu {
       label: _("Keyboard Shortcuts");
       action: "app.show-help-overlay";
     }
+
     item {
       label: _("About");
       action: "app.about";
