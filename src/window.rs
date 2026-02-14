@@ -802,25 +802,30 @@ mod imp {
                               false,
                               glib::closure_local! (move |download: webkit6::Download, filename: glib::GString| -> bool {
                                    let directory = settings_dl.string("download-directory");
-                                   if !directory.is_empty() {
+                                   let path = if !directory.is_empty() {
                                        let mut path_str = directory.to_string();
                                        // Expand ~
                                        if path_str.starts_with("~") {
-                                           let home = glib::home_dir(); // Returns PathBuf directly
+                                           let home = glib::home_dir();
                                            path_str = path_str.replacen("~", home.to_str().unwrap(), 1);
                                        }
-                                       
-                                       let path = std::path::PathBuf::from(path_str);
-                                       if path.exists() {
-                                            let dest = path.join(filename.as_str());
-                                            // WebKitGTK set_destination expects a URI, validation for it returning one.
-                                            let dest_file = gio::File::for_path(&dest);
-                                            let uri_str = dest_file.uri();
-                                            download.set_destination(&uri_str);
-                                            return true;
-                                        }
+                                       let p = std::path::PathBuf::from(path_str);
+                                       if p.exists() { Some(p) } else { None }
+                                   } else {
+                                       None
+                                   };
+
+                                   // Fall back to XDG Downloads dir (always accessible in Flatpak sandbox)
+                                   let path = path.or_else(|| glib::user_special_dir(glib::UserDirectory::Downloads).map(|p| p.to_path_buf()));
+
+                                   if let Some(path) = path {
+                                       let dest = path.join(filename.as_str());
+                                       let dest_file = gio::File::for_path(&dest);
+                                       let uri_str = dest_file.uri();
+                                       download.set_destination(&uri_str);
+                                       return true;
                                    }
-                                   false                     
+                                   false
                               }
                           ));
                           
