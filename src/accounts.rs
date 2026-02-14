@@ -35,8 +35,6 @@ pub struct Account {
     pub id: String,
     /// Display name (phone number or contact name)
     pub name: String,
-    /// Path to profile picture (base64 encoded or file path)
-    pub profile_picture: Option<String>,
     /// Timestamp when an account was added
     pub created_at: i64,
     /// Whether this is the currently active account
@@ -51,9 +49,15 @@ pub struct Account {
     /// Avatar emoji identifier
     #[serde(default = "default_emoji")]
     pub emoji: String,
+    /// Display order (lower = first)
+    #[serde(default)]
+    pub order: i32,
     /// Whether this account has unread notifications
     #[serde(default)]
     pub has_unread: bool,
+    /// Per-account zoom level (default 1.0)
+    #[serde(default = "default_zoom")]
+    pub zoom_level: f64,
     /// Per-account permission state
     #[serde(default)]
     pub notification_permission_asked: bool,
@@ -71,13 +75,13 @@ pub struct Account {
 
 fn default_color() -> String { DEFAULT_COLOR.to_string() }
 fn default_emoji() -> String { DEFAULT_EMOJI.to_string() }
+fn default_zoom() -> f64 { 1.0 }
 
 impl Account {
     pub fn new(id: String, name: String, color: String, emoji: String) -> Self {
         Self {
             id,
             name,
-            profile_picture: None,
             created_at: std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap_or_default()
@@ -86,7 +90,9 @@ impl Account {
             has_session: false,
             color,
             emoji,
+            order: 0,
             has_unread: false,
+            zoom_level: 1.0,
             notification_permission_asked: false,
             notification_permission_granted: false,
             microphone_permission_asked: false,
@@ -151,6 +157,10 @@ impl AccountManager {
             account.is_active = true;
         }
 
+        // Set order to be after the last account
+        let max_order = accounts.iter().map(|a| a.order).max().unwrap_or(-1);
+        account.order = max_order + 1;
+
         accounts.push(account);
         self.save_accounts(&accounts)?;
         Ok(())
@@ -191,20 +201,6 @@ impl AccountManager {
         }
 
         self.save_accounts(&accounts)?;
-        Ok(())
-    }
-
-    /// Update account profile picture
-    pub fn update_profile_picture(&self, account_id: &str, picture_data: String) -> anyhow::Result<()> {
-        let mut accounts = self.get_accounts()?;
-
-        if let Some(account) = accounts.iter_mut().find(|a| a.id == account_id) {
-            account.profile_picture = Some(picture_data);
-            self.save_accounts(&accounts)?;
-        } else {
-            return Err(anyhow::anyhow!("Account not found"));
-        }
-
         Ok(())
     }
 
@@ -286,6 +282,28 @@ impl AccountManager {
         Ok(())
     }
 
+    /// Get zoom level for a specific account
+    pub fn get_account_zoom(&self, account_id: &str) -> f64 {
+        if let Ok(accounts) = self.get_accounts() {
+            if let Some(account) = accounts.iter().find(|a| a.id == account_id) {
+                return account.zoom_level;
+            }
+        }
+        1.0
+    }
+
+    /// Set zoom level for a specific account
+    pub fn set_account_zoom(&self, account_id: &str, zoom: f64) -> anyhow::Result<()> {
+        let mut accounts = self.get_accounts()?;
+
+        if let Some(account) = accounts.iter_mut().find(|a| a.id == account_id) {
+            account.zoom_level = zoom;
+            self.save_accounts(&accounts)?;
+        }
+
+        Ok(())
+    }
+
     /// Set unread status for a specific account
     pub fn set_account_unread(&self, account_id: &str, unread: bool) -> anyhow::Result<()> {
         let mut accounts = self.get_accounts()?;
@@ -298,10 +316,45 @@ impl AccountManager {
         Ok(())
     }
 
+    /// Get all accounts sorted by their order field
+    pub fn get_accounts_sorted(&self) -> anyhow::Result<Vec<Account>> {
+        let mut accounts = self.get_accounts()?;
+        accounts.sort_by_key(|a| a.order);
+        Ok(accounts)
+    }
+
+    /// Reorder an account by swapping it with an adjacent account
+    /// direction: -1 for up (earlier), +1 for down (later)
+    pub fn reorder_account(&self, account_id: &str, direction: i32) -> anyhow::Result<()> {
+        let mut accounts = self.get_accounts()?;
+        accounts.sort_by_key(|a| a.order);
+
+        let pos = accounts.iter().position(|a| a.id == account_id);
+        if let Some(idx) = pos {
+            let swap_idx = if direction < 0 {
+                if idx == 0 { return Ok(()); }
+                idx - 1
+            } else {
+                if idx >= accounts.len() - 1 { return Ok(()); }
+                idx + 1
+            };
+
+            // Swap order values
+            let a_order = accounts[idx].order;
+            let b_order = accounts[swap_idx].order;
+            accounts[idx].order = b_order;
+            accounts[swap_idx].order = a_order;
+
+            self.save_accounts(&accounts)?;
+        }
+
+        Ok(())
+    }
+
     /// Get a summary of all accounts for tray integration:
     /// Returns Vec<(id, name, emoji, has_unread)>
     pub fn get_accounts_summary(&self) -> Vec<(String, String, String, bool)> {
-        self.get_accounts()
+        self.get_accounts_sorted()
             .unwrap_or_default()
             .iter()
             .map(|a| (a.id.clone(), a.name.clone(), a.emoji.clone(), a.has_unread))
@@ -313,24 +366,6 @@ impl AccountManager {
         let content = serde_json::to_string_pretty(accounts)?;
         std::fs::write(&self.accounts_file, content)?;
         Ok(())
-    }
-
-    /// Get the path where profile pictures are stored
-    pub fn get_profile_picture_dir(&self) -> PathBuf {
-        self.config_dir.join("profiles")
-    }
-
-    /// Save a profile picture file and return the path
-    pub fn save_profile_picture(&self, account_id: &str, image_data: &[u8]) -> anyhow::Result<PathBuf> {
-        let pic_dir = self.get_profile_picture_dir();
-        if !pic_dir.exists() {
-            std::fs::create_dir_all(&pic_dir)?;
-        }
-
-        let filename = format!("{}.jpg", account_id);
-        let path = pic_dir.join(&filename);
-        std::fs::write(&path, image_data)?;
-        Ok(path)
     }
 
     /// Root directory for per-account sessions
@@ -555,10 +590,10 @@ pub fn apply_avatar_texture(avatar: &adw::Avatar, color: &str, emoji: &str) {
     }
 }
 
-/// Create a ListBoxRow for an account with edit and delete buttons.
-/// Returns (row, edit_button, delete_button) so the caller can connect signals.
+/// Create a ListBoxRow for an account with edit, delete, and reorder buttons.
+/// Returns (row, edit_button, delete_button, up_button, down_button) so the caller can connect signals.
 /// The row's widget_name is set to the account ID for identification.
-pub fn build_account_row(account: &Account) -> (gtk::ListBoxRow, gtk::Button, gtk::Button) {
+pub fn build_account_row(account: &Account, is_first: bool, is_last: bool) -> (gtk::ListBoxRow, gtk::Button, gtk::Button, gtk::Button, gtk::Button) {
     let row = gtk::ListBoxRow::new();
     row.set_activatable(true);
     row.set_widget_name(&account.id);
@@ -593,6 +628,24 @@ pub fn build_account_row(account: &Account) -> (gtk::ListBoxRow, gtk::Button, gt
     content_box.append(&label);
     content_box.set_hexpand(true);
 
+    let up_btn = gtk::Button::builder()
+        .icon_name("go-up-symbolic")
+        .css_classes(["flat"])
+        .halign(gtk::Align::End)
+        .valign(gtk::Align::Center)
+        .tooltip_text("Move up")
+        .visible(!is_first)
+        .build();
+
+    let down_btn = gtk::Button::builder()
+        .icon_name("go-down-symbolic")
+        .css_classes(["flat"])
+        .halign(gtk::Align::End)
+        .valign(gtk::Align::Center)
+        .tooltip_text("Move down")
+        .visible(!is_last)
+        .build();
+
     let edit_btn = gtk::Button::builder()
         .icon_name("document-edit-symbolic")
         .css_classes(["flat"])
@@ -607,6 +660,8 @@ pub fn build_account_row(account: &Account) -> (gtk::ListBoxRow, gtk::Button, gt
         .build();
 
     box_container.append(&content_box);
+    box_container.append(&up_btn);
+    box_container.append(&down_btn);
     box_container.append(&edit_btn);
     box_container.append(&delete_btn);
     row.set_child(Some(&box_container));
@@ -621,5 +676,5 @@ pub fn build_account_row(account: &Account) -> (gtk::ListBoxRow, gtk::Button, gt
         avatar.add_css_class("active-account");
     }
 
-    (row, edit_btn, delete_btn)
+    (row, edit_btn, delete_btn, up_btn, down_btn)
 }

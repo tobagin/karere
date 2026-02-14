@@ -48,6 +48,9 @@ mod imp {
         // Mobile Layout State (tracks if mobile layout is currently active)
         pub mobile_layout_active: std::cell::Cell<bool>,
 
+        // Flag to prevent reload loops during mobile layout transitions
+        pub mobile_layout_transitioning: std::cell::Cell<bool>,
+
         // Notification Proxy (Reusable)
         pub notification_proxy: Rc<OnceCell<ashpd::desktop::notification::NotificationProxy<'static>>>,
 
@@ -347,15 +350,20 @@ mod imp {
                     let initial_width = window.width();
                     window.imp().mobile_layout_active.set(should_use_mobile_layout(&settings_layout, initial_width));
                     
-                    /* Mobile layout logic temporarily removed to fix reload loop regression */
                     surface.connect_layout(move |_, width, _| {
                         if let Some(window) = obj_weak_layout.upgrade() {
+                            // Skip if we're already in the middle of a layout transition reload
+                            if window.imp().mobile_layout_transitioning.get() {
+                                return;
+                            }
+
                             let was_mobile = window.imp().mobile_layout_active.get();
                             let is_mobile = should_use_mobile_layout(&settings_layout, width);
 
                             if is_mobile != was_mobile {
                                 println!("Karere: Layout Mode Change Detected (Mobile: {} -> {}). Reloading...", was_mobile, is_mobile);
                                 window.imp().mobile_layout_active.set(is_mobile);
+                                window.imp().mobile_layout_transitioning.set(true);
                                 webview_layout.reload();
                             }
                         }
@@ -388,13 +396,22 @@ mod imp {
                 gio::Settings::sync();
 
                 if window.imp().force_close.get() {
+                    // Clean up WebViews on actual quit
+                    let mut webviews = window.imp().webviews.borrow_mut();
+                    for (_id, wv) in webviews.drain() {
+                        window.imp().view_container.remove(&wv);
+                    }
                     return glib::Propagation::Proceed;
                 }
 
                 // Check "Close Button Behavior" setting
                 let close_action = settings_close.string("close-button-action");
                 if close_action == "quit" {
-                    // Quit Application
+                    // Clean up WebViews on actual quit
+                    let mut webviews = window.imp().webviews.borrow_mut();
+                    for (_id, wv) in webviews.drain() {
+                        window.imp().view_container.remove(&wv);
+                    }
                     return glib::Propagation::Proceed;
                 }
 
@@ -1406,24 +1423,26 @@ mod imp {
             // 11. Setup Accessibility & Auto-Correct
             self.setup_accessibility(&web_view, settings.clone());
 
-            // Zoom level setup (only for foreground webview to avoid conflicts)
+            // Per-account zoom level setup (only for foreground webview)
             if is_foreground {
-                let zoom = settings.double("zoom-level");
+                let zoom = if let Some(mgr) = self.account_manager.borrow().as_ref() {
+                    mgr.get_account_zoom(account_id)
+                } else {
+                    1.0
+                };
                 if zoom > 0.0 {
                     web_view.set_zoom_level(zoom);
                 }
 
-                let settings_zoom = settings.clone();
+                let obj_weak_zoom = obj.downgrade();
                 web_view.connect_zoom_level_notify(move |webview| {
-                    let level = webview.zoom_level();
-                    let _ = settings_zoom.set_double("zoom-level", level);
-                });
-
-                let webview_zoom_update = web_view.clone();
-                settings.connect_changed(Some("zoom-level"), move |settings, _| {
-                    let level = settings.double("zoom-level");
-                    if (level - webview_zoom_update.zoom_level()).abs() > f64::EPSILON {
-                        webview_zoom_update.set_zoom_level(level);
+                    if let Some(window) = obj_weak_zoom.upgrade() {
+                        let level = webview.zoom_level();
+                        if let Some(id) = window.imp().active_account_id.borrow().clone() {
+                            if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                                let _ = mgr.set_account_zoom(&id, level);
+                            }
+                        }
                     }
                 });
             }
@@ -1444,15 +1463,20 @@ mod imp {
 
                     if should_use_mobile_layout(&settings_mobile_layout, window_width) {
                         let js_content = include_str!("mobile_responsive.js");
+                        let obj_weak_js = obj_weak_load.clone();
                         webview.evaluate_javascript(
                             &js_content,
                             None,
                             None,
                             Option::<&gio::Cancellable>::None,
-                            |result| {
+                            move |result| {
                                 match result {
                                     Ok(_) => {},
                                     Err(e) => eprintln!("ERROR: Failed to inject mobile_responsive.js: {}", e),
+                                }
+                                // Reset transitioning flag after JS injection completes
+                                if let Some(window) = obj_weak_js.upgrade() {
+                                    window.imp().mobile_layout_transitioning.set(false);
                                 }
                             },
                         );
@@ -1461,9 +1485,10 @@ mod imp {
                             window.imp().mobile_layout_active.set(true);
                         }
                     } else {
-                        // Update state
+                        // Update state and reset transitioning flag
                         if let Some(window) = obj_weak_load.upgrade() {
                             window.imp().mobile_layout_active.set(false);
+                            window.imp().mobile_layout_transitioning.set(false);
                         }
                     }
 
@@ -1477,23 +1502,33 @@ mod imp {
                     } else { false };
 
                     if should_auto_grant {
-                        // Override Notification.permission to 'granted' so WhatsApp doesn't re-ask
+                        // Override Notification.permission to 'granted' first,
+                        // then call requestPermission() in the callback to avoid race condition
+                        let webview_perm = webview.clone();
                         webview.evaluate_javascript(
                             "if (typeof Notification !== 'undefined') { Object.defineProperty(Notification, 'permission', { value: 'granted', writable: false, configurable: true }); }",
+                            None,
+                            None,
+                            Option::<&gio::Cancellable>::None,
+                            move |_| {
+                                webview_perm.evaluate_javascript(
+                                    "Notification.requestPermission()",
+                                    None,
+                                    None,
+                                    Option::<&gio::Cancellable>::None,
+                                    |_| {}
+                                );
+                            }
+                        );
+                    } else {
+                        webview.evaluate_javascript(
+                            "Notification.requestPermission()",
                             None,
                             None,
                             Option::<&gio::Cancellable>::None,
                             |_| {}
                         );
                     }
-
-                    webview.evaluate_javascript(
-                        "Notification.requestPermission()",
-                        None,
-                        None,
-                        Option::<&gio::Cancellable>::None,
-                        |_| {}
-                    );
                 }
             });
 
@@ -1683,9 +1718,24 @@ mod imp {
             self.reset_account_button_default();
             self.clear_account_list();
 
+            let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+            let settings = gio::Settings::new(&app_id);
+            let limit_enabled = settings.boolean("account-limit-enabled");
+            let limit = settings.int("account-limit") as usize;
+
             if let Some(mgr) = self.account_manager.borrow().as_ref() {
-                if let Ok(accounts) = mgr.get_accounts() {
-                    self.populate_account_list(&accounts);
+                if let Ok(accounts) = mgr.get_accounts_sorted() {
+                    // If limit is enabled, only show accounts up to the limit in the UI
+                    let visible_accounts: Vec<_> = if limit_enabled && limit > 0 {
+                        accounts.iter().take(limit).cloned().collect()
+                    } else {
+                        accounts.clone()
+                    };
+                    self.populate_account_list(&visible_accounts);
+
+                    // Hide "Add account" button when at or over the limit
+                    let at_limit = limit_enabled && accounts.len() >= limit;
+                    self.add_account_button.set_visible(!at_limit);
                 }
                 if let Ok(Some(account)) = mgr.get_active_account() {
                     self.set_account_button_active(&account);
@@ -1720,8 +1770,11 @@ mod imp {
         }
 
         fn populate_account_list(&self, accounts: &[Account]) {
-            for account in accounts {
-                let (row, edit_btn, delete_btn) = build_account_row(account);
+            let count = accounts.len();
+            for (i, account) in accounts.iter().enumerate() {
+                let is_first = i == 0;
+                let is_last = i == count - 1;
+                let (row, edit_btn, delete_btn, up_btn, down_btn) = build_account_row(account, is_first, is_last);
 
                 let account_id_del = account.id.clone();
                 let account_name_del = account.name.clone();
@@ -1737,6 +1790,30 @@ mod imp {
                 edit_btn.connect_clicked(move |_| {
                     if let Some(obj) = obj_weak_edit.upgrade() {
                         obj.show_account_dialog(Some(&account_clone));
+                    }
+                });
+
+                // Move up
+                let account_id_up = account.id.clone();
+                let obj_weak_up = self.obj().downgrade();
+                up_btn.connect_clicked(move |_| {
+                    if let Some(obj) = obj_weak_up.upgrade() {
+                        if let Some(mgr) = obj.imp().account_manager.borrow().as_ref() {
+                            let _ = mgr.reorder_account(&account_id_up, -1);
+                        }
+                        obj.imp().update_account_button();
+                    }
+                });
+
+                // Move down
+                let account_id_down = account.id.clone();
+                let obj_weak_down = self.obj().downgrade();
+                down_btn.connect_clicked(move |_| {
+                    if let Some(obj) = obj_weak_down.upgrade() {
+                        if let Some(mgr) = obj.imp().account_manager.borrow().as_ref() {
+                            let _ = mgr.reorder_account(&account_id_down, 1);
+                        }
+                        obj.imp().update_account_button();
                     }
                 });
 
@@ -1768,12 +1845,14 @@ mod imp {
             let has_webview = self.webviews.borrow().contains_key(account_id);
 
             if has_webview {
-                // Show the existing WebView and restore zoom level from settings
+                // Show the existing WebView and restore per-account zoom level
                 if let Some(wv) = self.webviews.borrow().get(account_id) {
                     wv.set_visible(true);
-                    let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
-                    let settings = gio::Settings::new(&app_id);
-                    let zoom = settings.double("zoom-level");
+                    let zoom = if let Some(mgr) = self.account_manager.borrow().as_ref() {
+                        mgr.get_account_zoom(account_id)
+                    } else {
+                        1.0
+                    };
                     if zoom > 0.0 {
                         wv.set_zoom_level(zoom);
                     }
@@ -2145,9 +2224,11 @@ impl KarereWindow {
                         if has_webview {
                             if let Some(wv) = imp.webviews.borrow().get(&new_id) {
                                 wv.set_visible(true);
-                                let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
-                                let settings = gio::Settings::new(&app_id);
-                                let zoom = settings.double("zoom-level");
+                                let zoom = if let Some(mgr) = imp.account_manager.borrow().as_ref() {
+                                    mgr.get_account_zoom(&new_id)
+                                } else {
+                                    1.0
+                                };
                                 if zoom > 0.0 {
                                     wv.set_zoom_level(zoom);
                                 }
