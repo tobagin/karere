@@ -109,7 +109,13 @@
     </key>
     <key name="webview-zoom" type="b">
       <default>false</default>
-      <summary>Enable webview zoom</summary>
+      <summary>Enable accessibility zoom</summary>
+      <description>Master toggle for the accessibility zoom system. When enabled, the zoom-level setting acts as a minimum zoom floor for all webviews.</description>
+    </key>
+    <key name="zoom-controls-headerbar" type="b">
+      <default>false</default>
+      <summary>Show zoom controls in header bar</summary>
+      <description>Show zoom in/out/reset buttons in the header bar. These controls only affect the currently displayed webview.</description>
     </key>
     <key name="screen-reader-opts" type="b">
       <default>false</default>

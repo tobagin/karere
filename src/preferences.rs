@@ -53,6 +53,7 @@ mod imp {
         #[template_child] pub row_zoom_level: TemplateChild<adw::SpinRow>,
         #[template_child] pub row_zoom_reset: TemplateChild<adw::ActionRow>,
         #[template_child] pub btn_zoom_reset: TemplateChild<gtk::Button>,
+        #[template_child] pub row_zoom_headerbar: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_sr_opts: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_a11y_shortcuts: TemplateChild<adw::SwitchRow>,
         #[template_child] pub row_dev_shortcuts: TemplateChild<adw::SwitchRow>,
@@ -98,6 +99,7 @@ mod imp {
              obj.setup_bindings();
              obj.setup_downloads();
              obj.setup_spellcheck();
+             obj.setup_zoom_confirmation();
         }
     }
     impl WidgetImpl for KarerePreferencesWindow {}
@@ -323,15 +325,31 @@ impl KarerePreferencesWindow {
          settings.bind("high-contrast", &*imp.row_contrast, "active").build();
          settings.bind("reduce-motion", &*imp.row_motion, "active").build();
          settings.bind("webview-zoom", &*imp.row_zoom, "active").build();
-         
+
          settings.bind("zoom-level", &*imp.row_zoom_level, "value").build();
          settings.bind("webview-zoom", &*imp.row_zoom_level, "visible").build();
-         settings.bind("webview-zoom", &*imp.row_zoom_reset, "visible").build();
-         
+
+         // Reset row: visible only when zoom is enabled AND zoom-level != 1.0
+         let row_zoom_reset = imp.row_zoom_reset.clone();
+         let update_reset_vis = move |settings: &gio::Settings| {
+             let enabled = settings.boolean("webview-zoom");
+             let level = settings.double("zoom-level");
+             row_zoom_reset.set_visible(enabled && (level - 1.0).abs() > f64::EPSILON);
+         };
+         let urv = update_reset_vis.clone();
+         settings.connect_changed(Some("webview-zoom"), move |s, _| urv(s));
+         let urv = update_reset_vis.clone();
+         settings.connect_changed(Some("zoom-level"), move |s, _| urv(s));
+         update_reset_vis(&settings);
+
          let settings_zoom_reset = settings.clone();
          imp.btn_zoom_reset.connect_clicked(move |_| {
              let _ = settings_zoom_reset.set_double("zoom-level", 1.0);
          });
+
+         // Header bar zoom controls toggle (visible when accessibility zoom is enabled)
+         settings.bind("zoom-controls-headerbar", &*imp.row_zoom_headerbar, "active").build();
+         settings.bind("webview-zoom", &*imp.row_zoom_headerbar, "visible").build();
          
          settings.bind("screen-reader-opts", &*imp.row_sr_opts, "active").build();
          
@@ -526,6 +544,69 @@ impl KarerePreferencesWindow {
         let settings_clone_reset = settings.clone();
         imp.btn_download_reset.connect_clicked(move |_| {
             let _ = settings_clone_reset.set_string("download-directory", "");
+        });
+    }
+
+    fn setup_zoom_confirmation(&self) {
+        let imp = self.imp();
+        let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+        let settings = gio::Settings::new(&app_id);
+
+        // Track the previous zoom level to detect user-initiated changes
+        let prev_zoom = std::rc::Rc::new(std::cell::Cell::new(settings.double("zoom-level")));
+
+        let prev_zoom_clone = prev_zoom.clone();
+        let settings_clone = settings.clone();
+        let obj_weak = self.downgrade();
+        imp.row_zoom_level.connect_notify_local(Some("value"), move |row: &adw::SpinRow, _| {
+            let new_val = row.value();
+            let old_val = prev_zoom_clone.get();
+
+            // Skip if value hasn't actually changed
+            if (new_val - old_val).abs() < f64::EPSILON {
+                return;
+            }
+
+            // Only show alert if accessibility zoom is enabled
+            if !settings_clone.boolean("webview-zoom") {
+                prev_zoom_clone.set(new_val);
+                return;
+            }
+
+            let settings_inner = settings_clone.clone();
+            let prev_zoom_inner = prev_zoom_clone.clone();
+            let row_weak = row.downgrade();
+            let obj_weak_inner = obj_weak.clone();
+
+            let dialog = adw::AlertDialog::builder()
+                .heading(&gettext("Reset All Zoom Levels?"))
+                .body(&gettext("Changing the minimum zoom level will reset the zoom on all accounts to this value."))
+                .default_response("apply")
+                .close_response("cancel")
+                .build();
+
+            dialog.add_response("cancel", &gettext("_Cancel"));
+            dialog.add_response("apply", &gettext("_Apply"));
+            dialog.set_response_appearance("apply", adw::ResponseAppearance::Suggested);
+
+            let parent: Option<gtk::Window> = if let Some(obj) = obj_weak_inner.upgrade() {
+                obj.root().and_then(|r: gtk::Root| r.downcast::<gtk::Window>().ok())
+            } else {
+                None
+            };
+
+            dialog.choose(parent.as_ref(), gio::Cancellable::NONE, move |response| {
+                if response == "apply" {
+                    prev_zoom_inner.set(new_val);
+                } else {
+                    // Revert the spin row to the old value
+                    prev_zoom_inner.set(old_val);
+                    let _ = settings_inner.set_double("zoom-level", old_val);
+                    if let Some(row) = row_weak.upgrade() {
+                        row.set_value(old_val);
+                    }
+                }
+            });
         });
     }
 }

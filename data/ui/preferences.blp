@@ -171,7 +171,7 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
           upper: 10;
           step-increment: 1;
           page-increment: 1;
-          value: 3;
+          value: 2;
         };
       }
     }
@@ -243,19 +243,19 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
     }
 
     Adw.PreferencesGroup {
-      title: _("Webview Zoom");
+      title: _("Zoom");
 
       Adw.SwitchRow row_zoom {
-        title: _("Enable Webview Zoom");
-        subtitle: _("Allow zooming in and out of the web content");
+        title: _("Accessibility Zoom");
+        subtitle: _("Set a minimum zoom level for all accounts");
       }
 
       Adw.SpinRow row_zoom_level {
-        title: _("Zoom Level");
-        subtitle: _("Adjust the magnification of the web content");
+        title: _("Minimum Zoom Level");
+        subtitle: _("Applied to all webviews — changing this resets all accounts");
 
         adjustment: Gtk.Adjustment {
-          lower: 0.2;
+          lower: 0.5;
           upper: 5.0;
           value: 1.0;
           step-increment: 0.1;
@@ -266,8 +266,8 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
       }
 
       Adw.ActionRow row_zoom_reset {
-        title: _("Reset Zoom");
-        subtitle: _("Restore zoom to the default level");
+        title: _("Reset Zoom Level");
+        subtitle: _("Reset minimum zoom to 1.0 for all accounts");
 
         [suffix]
         Gtk.Button btn_zoom_reset {
@@ -275,6 +275,11 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
           valign: center;
           icon-name: "edit-clear-symbolic";
         }
+      }
+
+      Adw.SwitchRow row_zoom_headerbar {
+        title: _("Header Bar Zoom Controls");
+        subtitle: _("Show zoom buttons in the header bar (affects current account only)");
       }
     }
 

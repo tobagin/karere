@@ -498,6 +498,55 @@ mod imp {
                 println!("Karere: Initializing background webview for account '{}'", id);
                 self.setup_webview(&id, data_dir, cache_dir, false);
             }
+
+            // Global zoom-level listener: when the accessibility zoom floor changes,
+            // apply the new floor to ALL webviews and reset all per-account zooms.
+            let obj_weak_zoom_floor = obj.downgrade();
+            settings.connect_changed(Some("zoom-level"), move |settings, _| {
+                if !settings.boolean("webview-zoom") {
+                    return; // Accessibility zoom not enabled, ignore
+                }
+                let floor = settings.double("zoom-level");
+                if let Some(window) = obj_weak_zoom_floor.upgrade() {
+                    // Reset all per-account zooms to the new floor
+                    if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                        if let Ok(accounts) = mgr.get_accounts() {
+                            for account in &accounts {
+                                let _ = mgr.set_account_zoom(&account.id, floor);
+                            }
+                        }
+                    }
+                    // Apply to all live webviews
+                    for wv in window.imp().webviews.borrow().values() {
+                        wv.set_zoom_level(floor);
+                    }
+                }
+            });
+
+            // When accessibility zoom is toggled on, apply the floor immediately
+            let obj_weak_zoom_toggle = obj.downgrade();
+            settings.connect_changed(Some("webview-zoom"), move |settings, _| {
+                if !settings.boolean("webview-zoom") {
+                    return;
+                }
+                let floor = settings.double("zoom-level");
+                if let Some(window) = obj_weak_zoom_toggle.upgrade() {
+                    if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                        if let Ok(accounts) = mgr.get_accounts() {
+                            for account in &accounts {
+                                if account.zoom_level < floor {
+                                    let _ = mgr.set_account_zoom(&account.id, floor);
+                                }
+                            }
+                        }
+                    }
+                    for wv in window.imp().webviews.borrow().values() {
+                        if wv.zoom_level() < floor {
+                            wv.set_zoom_level(floor);
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -1423,17 +1472,27 @@ mod imp {
             // 11. Setup Accessibility & Auto-Correct
             self.setup_accessibility(&web_view, settings.clone());
 
-            // Per-account zoom level setup (only for foreground webview)
-            if is_foreground {
-                let zoom = if let Some(mgr) = self.account_manager.borrow().as_ref() {
+            // Per-account zoom level setup
+            {
+                let mut zoom = if let Some(mgr) = self.account_manager.borrow().as_ref() {
                     mgr.get_account_zoom(account_id)
                 } else {
                     1.0
                 };
+
+                // Enforce minimum zoom floor if accessibility zoom is enabled
+                if settings.boolean("webview-zoom") {
+                    let floor = settings.double("zoom-level");
+                    if zoom < floor {
+                        zoom = floor;
+                    }
+                }
+
                 if zoom > 0.0 {
                     web_view.set_zoom_level(zoom);
                 }
 
+                // Save per-account zoom on change, enforcing floor
                 let obj_weak_zoom = obj.downgrade();
                 web_view.connect_zoom_level_notify(move |webview| {
                     if let Some(window) = obj_weak_zoom.upgrade() {
@@ -1615,8 +1674,8 @@ mod imp {
              update_anim(&settings_anim);
              settings.connect_changed(Some("reduce-motion"), move |s, _| update_anim(s));
 
-             // 3. Webview Zoom Visibility
-             settings.bind("webview-zoom", &*self.zoom_box, "visible").build();
+             // 3. Header bar zoom controls visibility
+             settings.bind("zoom-controls-headerbar", &*self.zoom_box, "visible").build();
              
              // 4. Screen Reader Support
              if let Some(webview_settings) = webkit6::prelude::WebViewExt::settings(web_view) {
@@ -1672,6 +1731,8 @@ mod imp {
              }
              
              // 7. Zoom Controls Actions (use dynamic webview ref)
+             // Ctrl++/- always work. The header bar buttons also trigger these.
+             // Zoom out is clamped to the accessibility floor when enabled.
              let obj_weak_z = obj.downgrade();
              let action_zoom_in = gio::SimpleAction::new("zoom-in", None);
              action_zoom_in.connect_activate(move |_, _| {
@@ -1685,13 +1746,20 @@ mod imp {
              obj.add_action(&action_zoom_in);
 
              let obj_weak_z = obj.downgrade();
+             let settings_zoom_out = settings.clone();
              let action_zoom_out = gio::SimpleAction::new("zoom-out", None);
              action_zoom_out.connect_activate(move |_, _| {
                  if let Some(obj) = obj_weak_z.upgrade() {
                      if let Some(webview) = obj.imp().webview() {
                          let level = webview.zoom_level();
-                         if level > 0.2 {
-                             webview.set_zoom_level(level - 0.1);
+                         let floor = if settings_zoom_out.boolean("webview-zoom") {
+                             settings_zoom_out.double("zoom-level")
+                         } else {
+                             0.2
+                         };
+                         let new_level = level - 0.1;
+                         if new_level >= floor {
+                             webview.set_zoom_level(new_level);
                          }
                      }
                  }
@@ -1699,11 +1767,18 @@ mod imp {
              obj.add_action(&action_zoom_out);
 
              let obj_weak_z = obj.downgrade();
+             let settings_zoom_reset = settings.clone();
              let action_zoom_reset = gio::SimpleAction::new("zoom-reset", None);
              action_zoom_reset.connect_activate(move |_, _| {
                  if let Some(obj) = obj_weak_z.upgrade() {
                      if let Some(webview) = obj.imp().webview() {
-                         webview.set_zoom_level(1.0);
+                         // Reset to floor if accessibility zoom is enabled, otherwise 1.0
+                         let reset_to = if settings_zoom_reset.boolean("webview-zoom") {
+                             settings_zoom_reset.double("zoom-level")
+                         } else {
+                             1.0
+                         };
+                         webview.set_zoom_level(reset_to);
                      }
                  }
              });
@@ -1855,11 +1930,18 @@ mod imp {
                 // Show the existing WebView and restore per-account zoom level
                 if let Some(wv) = self.webviews.borrow().get(account_id) {
                     wv.set_visible(true);
-                    let zoom = if let Some(mgr) = self.account_manager.borrow().as_ref() {
+                    let mut zoom = if let Some(mgr) = self.account_manager.borrow().as_ref() {
                         mgr.get_account_zoom(account_id)
                     } else {
                         1.0
                     };
+                    // Enforce floor
+                    let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+                    let settings = gio::Settings::new(&app_id);
+                    if settings.boolean("webview-zoom") {
+                        let floor = settings.double("zoom-level");
+                        if zoom < floor { zoom = floor; }
+                    }
                     if zoom > 0.0 {
                         wv.set_zoom_level(zoom);
                     }
@@ -2231,11 +2313,17 @@ impl KarereWindow {
                         if has_webview {
                             if let Some(wv) = imp.webviews.borrow().get(&new_id) {
                                 wv.set_visible(true);
-                                let zoom = if let Some(mgr) = imp.account_manager.borrow().as_ref() {
+                                let mut zoom = if let Some(mgr) = imp.account_manager.borrow().as_ref() {
                                     mgr.get_account_zoom(&new_id)
                                 } else {
                                     1.0
                                 };
+                                let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+                                let settings = gio::Settings::new(&app_id);
+                                if settings.boolean("webview-zoom") {
+                                    let floor = settings.double("zoom-level");
+                                    if zoom < floor { zoom = floor; }
+                                }
                                 if zoom > 0.0 {
                                     wv.set_zoom_level(zoom);
                                 }
