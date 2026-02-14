@@ -1,63 +1,125 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $KarereWindow : Adw.ApplicationWindow {
+template $KarereWindow: Adw.ApplicationWindow {
   default-width: 800;
   default-height: 600;
-  title: "Karere";
+  title: _("Karere");
 
-  content: Adw.ToastOverlay toast_overlay {
-    child: Adw.ToolbarView {
-      [top]
-      Adw.HeaderBar {
-        title-widget: Adw.WindowTitle {
-          title: "Karere";
-          subtitle: "GTK4 Whatsapp Web Client";
+  content: Adw.BottomSheet account_bottom_sheet {
+    content: Adw.ToastOverlay toast_overlay {
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {
+          title-widget: Adw.WindowTitle {
+            title: _("Karere");
+            subtitle: _("GTK4 WhatsApp Web Client");
+          };
+
+          [start]
+          Gtk.Box zoom_box {
+            visible: false;
+
+            styles [
+              "linked",
+            ]
+
+            Gtk.Button {
+              icon-name: "zoom-out-symbolic";
+              action-name: "win.zoom-out";
+              tooltip-text: _("Zoom Out");
+            }
+
+            Gtk.Button {
+              icon-name: "zoom-original-symbolic";
+              action-name: "win.zoom-reset";
+              tooltip-text: _("Reset Zoom");
+            }
+
+            Gtk.Button {
+              icon-name: "zoom-in-symbolic";
+              action-name: "win.zoom-in";
+              tooltip-text: _("Zoom In");
+            }
+          }
+
+          [start]
+          Gtk.DropDown dictionary_dropdown {
+            valign: center;
+            visible: false;
+            tooltip-text: _("Spell Checking Language");
+          }
+
+          [end]
+          Gtk.MenuButton {
+            icon-name: "open-menu-symbolic";
+            menu-model: primary_menu;
+            tooltip-text: _("Menu");
+          }
+
+          [end]
+          Gtk.Button account_button {
+            valign: center;
+            tooltip-text: _("Switch Account");
+
+            styles [
+              "circular",
+            ]
+
+            child: Adw.Avatar account_avatar {
+              size: 28;
+              text: "?";
+              show-initials: true;
+            };
+          }
+        }
+
+        content: Gtk.Box view_container {
+          vexpand: true;
+          hexpand: true;
+          orientation: vertical;
         };
-
-        [start]
-        Gtk.Box zoom_box {
-          visible: false;
-          styles ["linked"]
-          Gtk.Button {
-            icon-name: "zoom-out-symbolic";
-            action-name: "win.zoom-out";
-            tooltip-text: _("Zoom Out");
-          }
-          Gtk.Button {
-            icon-name: "zoom-original-symbolic";
-            action-name: "win.zoom-reset";
-            tooltip-text: _("Reset Zoom");
-          }
-          Gtk.Button {
-            icon-name: "zoom-in-symbolic";
-            action-name: "win.zoom-in";
-            tooltip-text: _("Zoom In");
-          }
-        }
-
-        [start]
-        Gtk.DropDown dictionary_dropdown {
-          valign: center;
-          visible: false;
-          tooltip-text: _("Spell Checking Language");
-        }
-
-        [end]
-        Gtk.MenuButton {
-          icon-name: "open-menu-symbolic";
-          menu-model: primary_menu;
-          tooltip-text: "Menu";
-        }
-
-      }
-
-      content: Gtk.Box view_container {
-        vexpand: true;
-        hexpand: true;
-        orientation: vertical;
       };
     };
+
+    [sheet]
+    Gtk.Box {
+      orientation: vertical;
+      margin-top: 36;
+      margin-bottom: 10;
+      margin-start: 10;
+      margin-end: 10;
+      spacing: 6;
+
+      Gtk.ScrolledWindow {
+        vexpand: true;
+        hexpand: true;
+        propagate-natural-height: true;
+        max-content-height: 400;
+
+        Gtk.ListBox accounts_list {
+          selection-mode: none;
+
+          styles [
+            "boxed-list",
+          ]
+        }
+      }
+
+      Gtk.Separator {
+        margin-top: 4;
+        margin-bottom: 4;
+      }
+
+      Gtk.Button add_account_button {
+        child: Adw.ButtonContent {
+          icon-name: "list-add-symbolic";
+          label: _("Add new account");
+        };
+
+        action-name: "win.add-account";
+      }
+    }
   };
 }
 
@@ -67,6 +129,7 @@ menu primary_menu {
       label: _("Refresh WhatsApp Web");
       action: "win.refresh";
     }
+
     item {
       label: _("Preferences");
       action: "app.preferences";
@@ -78,6 +141,7 @@ menu primary_menu {
       label: _("Keyboard Shortcuts");
       action: "app.show-help-overlay";
     }
+
     item {
       label: _("About");
       action: "app.about";

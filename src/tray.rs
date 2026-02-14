@@ -4,13 +4,17 @@ use gtk::prelude::*;
 use gtk::{gio, glib};
 use libadwaita as adw;
 
-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
+use std::sync::{Arc, Mutex, atomic::{AtomicBool, Ordering}};
 
 use gettextrs::gettext;
+
+/// Account info tuple: (id, name, emoji, has_unread)
+pub type AccountInfo = (String, String, String, bool);
 
 pub struct KarereTray {
     pub visible: Arc<AtomicBool>,
     pub has_unread: Arc<AtomicBool>,
+    pub accounts: Arc<Mutex<Vec<AccountInfo>>>,
 }
 
 impl ksni::Tray for KarereTray {
@@ -22,8 +26,6 @@ impl ksni::Tray for KarereTray {
              format!("{}-symbolic", app_id)
         }
     }
-
-
 
     fn title(&self) -> String {
         gettext("Karere")
@@ -83,7 +85,8 @@ impl ksni::Tray for KarereTray {
         } else {
              gettext("Show Window")
         };
-        vec![
+
+        let mut items: Vec<ksni::MenuItem<Self>> = vec![
             StandardItem {
                 label: label.into(),
                 activate: Box::new(|_| {
@@ -95,14 +98,12 @@ impl ksni::Tray for KarereTray {
                                     let settings = gio::Settings::new(&app_id);
                                     
                                     if window.is_visible() {
-                                        // Save window size before hiding
                                         let width = window.width();
                                         let height = window.height();
                                         let _ = settings.set_int("window-width", width);
                                         let _ = settings.set_int("window-height", height);
                                         window.set_visible(false);
                                     } else {
-                                        // Restore window size and present
                                         let width = settings.int("window-width");
                                         let height = settings.int("window-height");
                                         if let Ok(adw_window) = window.clone().downcast::<adw::ApplicationWindow>() {
@@ -118,6 +119,43 @@ impl ksni::Tray for KarereTray {
                 ..Default::default()
             }
             .into(),
+        ];
+
+        // Add account entries when multiple accounts exist
+        let accounts = self.accounts.lock().unwrap_or_else(|e| e.into_inner());
+        if accounts.len() > 1 {
+            // Separator
+            items.push(MenuItem::Separator);
+
+            for (id, name, emoji, has_unread) in accounts.iter() {
+                let label = if *has_unread {
+                    format!("● {} {}", emoji, name)
+                } else {
+                    format!("{} {}", emoji, name)
+                };
+                let account_id = id.clone();
+                items.push(
+                    StandardItem {
+                        label,
+                        activate: Box::new(move |_| {
+                            let account_id = account_id.clone();
+                            glib::MainContext::default().invoke(move || {
+                                if let Some(app) = gio::Application::default() {
+                                    app.activate_action("switch-account", Some(&account_id.to_variant()));
+                                }
+                            });
+                        }),
+                        ..Default::default()
+                    }
+                    .into(),
+                );
+            }
+
+            // Separator before Quit
+            items.push(MenuItem::Separator);
+        }
+
+        items.push(
             StandardItem {
                 label: gettext("Quit").into(),
                 activate: Box::new(|_| {
@@ -130,26 +168,24 @@ impl ksni::Tray for KarereTray {
                 ..Default::default()
             }
             .into(),
-        ]
+        );
+
+        items
     }
 }
 
 use ksni::TrayMethods;
 
-pub fn spawn_tray(visible: Arc<AtomicBool>, has_unread: Arc<AtomicBool>) -> Result<ksni::Handle<KarereTray>, Box<dyn Error>> {
-    let tray = KarereTray { visible, has_unread };
-    let rt = tokio::runtime::Runtime::new()?;
-    // We block on spawn. Note: If ksni requires the runtime to stay alive for the tray to function, 
-    // this might fail at runtime. But let's try to compile first.
-    // Actually, to be safe, let's leak the runtime so it keeps running background tasks?
-    // Or assume ksni/zbus handles its own threads.
-    // Using block_on for now.
-    let handle = rt.block_on(tray.disable_dbus_name(true).spawn())?;
-    // We might need to keep rt alive? 
-    // Let's store it in a static if needed, but simplest fix first.
-    // Actually, zbus 5 usually requires an async executor running. 
-    // If we drop `rt`, the executor stops.
-    // So we should probably leak `rt` or store it.
-    std::mem::forget(rt); 
+pub fn spawn_tray(
+    visible: Arc<AtomicBool>,
+    has_unread: Arc<AtomicBool>,
+    accounts: Arc<Mutex<Vec<AccountInfo>>>,
+) -> Result<ksni::Handle<KarereTray>, Box<dyn Error>> {
+    let tray = KarereTray { visible, has_unread, accounts };
+    let handle = crate::RUNTIME.block_on(
+        tray.disable_dbus_name(true)
+            .assume_sni_available(true)
+            .spawn(),
+    )?;
     Ok(handle)
 }

@@ -12,6 +12,7 @@ mod tray;
 mod window;
 mod preferences;
 mod spellcheck;
+mod accounts;
 
 use window::KarereWindow;
 
@@ -85,18 +86,15 @@ fn main() -> anyhow::Result<()> {
         action_sync_autostart.connect_activate(|_, parameter| {
              let enabled = parameter.unwrap().get::<bool>().unwrap();
              
-             std::thread::spawn(move || {
-                // Use global runtime to reuse resources/connections context potential
-                RUNTIME.block_on(async {
-                    let request_future = ashpd::desktop::background::Background::request()
-                        .reason("Syncing autostart preference")
-                        .auto_start(enabled)
-                        .send();
-                        
-                    // Wrap in timeout
-                    let _ = tokio::time::timeout(std::time::Duration::from_secs(5), request_future).await;
-                });
-            });
+             RUNTIME.spawn(async move {
+                let request_future = ashpd::desktop::background::Background::request()
+                    .reason("Syncing autostart preference")
+                    .auto_start(enabled)
+                    .send();
+
+                // Wrap in timeout
+                let _ = tokio::time::timeout(std::time::Duration::from_secs(5), request_future).await;
+             });
         });
         app.add_action(&action_sync_autostart);
 
@@ -130,7 +128,8 @@ fn main() -> anyhow::Result<()> {
                         "Aman9Das https://github.com/Aman9das", 
                         "Pascal Dietrich https://github.com/", 
                         "Sabri Ünal https://github.com/yakushabb",
-                        "Enrico https://github.com/account1009"
+                        "Enrico https://github.com/account1009",
+                        "Leandro Marques https://github.com/leandromqrs"
                     ];
                     let designers = vec!["Thiago Fernandes https://github.com/tobagin"];
                     let artists = vec![
@@ -363,9 +362,15 @@ fn main() -> anyhow::Result<()> {
     
     let has_unread = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
 
+    // Collect initial account info for tray
+    let tray_accounts: std::sync::Arc<std::sync::Mutex<Vec<tray::AccountInfo>>> = {
+        let mgr = accounts::AccountManager::new();
+        let summary = mgr.get_accounts_summary();
+        std::sync::Arc::new(std::sync::Mutex::new(summary))
+    };
 
     let tray_handle = if should_spawn_tray {
-        match tray::spawn_tray(visible.clone(), has_unread.clone()) {
+        match tray::spawn_tray(visible.clone(), has_unread.clone(), tray_accounts.clone()) {
             Ok(handle) => Some(handle),
             Err(e) => {
                 eprintln!("Warning: Failed to start tray icon: {}", e);
@@ -381,6 +386,7 @@ fn main() -> anyhow::Result<()> {
     let action_set_unread = gio::SimpleAction::new("set-unread", Some(&*glib::VariantTy::BOOLEAN));
     let tray_handle_clone = tray_handle.clone();
     let has_unread_clone_2 = has_unread.clone();
+    let tray_accounts_unread = tray_accounts.clone();
     
     action_set_unread.connect_activate(move |_, parameter| {
         let is_unread = parameter
@@ -392,29 +398,85 @@ fn main() -> anyhow::Result<()> {
         let was_unread = has_unread_clone_2.load(Ordering::Relaxed);
         if was_unread != is_unread {
             has_unread_clone_2.store(is_unread, Ordering::Relaxed);
+
+            // Also refresh tray accounts data
+            {
+                let mgr = accounts::AccountManager::new();
+                let summary = mgr.get_accounts_summary();
+                if let Ok(mut accounts) = tray_accounts_unread.lock() {
+                    *accounts = summary;
+                }
+            }
+
             if let Some(handle) = &tray_handle_clone {
                  let handle = handle.clone();
-                 std::thread::spawn(move || {
-                     if let Ok(rt) = tokio::runtime::Runtime::new() {
-                         rt.block_on(async move {
-                             let _ = handle.update(|_| {}).await;
-                         });
-                     }
+                 RUNTIME.spawn(async move {
+                     let _ = handle.update(|_| {}).await;
                  });
-
             }
         }
     });
     app.add_action(&action_set_unread);
 
+    // Action: Refresh Tray Account List (fired on account add/edit/delete/switch)
+    let action_refresh_tray = gio::SimpleAction::new("refresh-tray-accounts", None);
+    let tray_handle_refresh = tray_handle.clone();
+    let tray_accounts_refresh = tray_accounts.clone();
+    action_refresh_tray.connect_activate(move |_, _| {
+        let mgr = accounts::AccountManager::new();
+        let summary = mgr.get_accounts_summary();
+        if let Ok(mut accounts) = tray_accounts_refresh.lock() {
+            *accounts = summary;
+        }
+        if let Some(handle) = &tray_handle_refresh {
+            let handle = handle.clone();
+            RUNTIME.spawn(async move {
+                let _ = handle.update(|_| {}).await;
+            });
+        }
+    });
+    app.add_action(&action_refresh_tray);
+
+    // Action: Switch Account (from tray or other sources)
+    let action_switch_account = gio::SimpleAction::new("switch-account", Some(glib::VariantTy::STRING));
+    action_switch_account.connect_activate(move |_, parameter| {
+        let account_id = parameter
+            .expect("Could not get parameter")
+            .get::<String>()
+            .expect("The value is not a string");
+
+        glib::MainContext::default().invoke(move || {
+            if let Some(app) = gio::Application::default() {
+                if let Ok(gtk_app) = app.downcast::<gtk::Application>() {
+                    if let Some(window) = gtk_app.active_window().or_else(|| gtk_app.windows().first().cloned()) {
+                        if let Ok(win) = window.downcast::<KarereWindow>() {
+                            win.switch_to_account(&account_id);
+                            win.set_visible(true);
+                            win.present();
+                        }
+                    }
+                }
+            }
+        });
+    });
+    app.add_action(&action_switch_account);
+
+    let startup_time = std::time::Instant::now();
+
     app.connect_activate(move |app| {
         if let Some(window) = app.active_window() {
+            if start_hidden && startup_time.elapsed() < std::time::Duration::from_secs(3) {
+                return;
+            }
             window.set_visible(true);
             window.present();
             return;
         }
-        
+
         if let Some(window) = app.windows().first() {
+            if start_hidden && startup_time.elapsed() < std::time::Duration::from_secs(3) {
+                return;
+            }
              window.set_visible(true);
              window.present();
              return;
@@ -443,12 +505,8 @@ fn main() -> anyhow::Result<()> {
             visible.store(window.is_visible(), std::sync::atomic::Ordering::Relaxed);
             if let Some(handle) = &tray_handle {
                 let handle = handle.clone();
-                std::thread::spawn(move || {
-                     if let Ok(rt) = tokio::runtime::Runtime::new() {
-                         rt.block_on(async move {
-                             let _ = handle.update(|_| {}).await;
-                         });
-                     }
+                RUNTIME.spawn(async move {
+                    let _ = handle.update(|_| {}).await;
                 });
             }
         });

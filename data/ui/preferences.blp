@@ -1,78 +1,109 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $KarerePreferencesWindow : Adw.PreferencesDialog {
-  title: "Preferences";
+template $KarerePreferencesWindow: Adw.PreferencesDialog {
+  title: _("Preferences");
 
   Adw.PreferencesPage {
-    title: "General";
+    title: _("General");
     icon-name: "preferences-system-symbolic";
 
     Adw.PreferencesGroup {
-      title: "Startup";
+      title: _("Startup");
 
       Adw.SwitchRow row_startup {
-        title: "Run on Startup";
+        title: _("Run on Startup");
+        subtitle: _("Launch Karere automatically when you log in");
       }
 
       Adw.SwitchRow row_background {
-        title: "Start in background";
+        title: _("Start in background");
+        subtitle: _("Start minimized without showing the window");
       }
 
       Adw.ComboRow row_close_action {
-        title: "Window Close Behavior";
+        title: _("Window Close Behavior");
+        subtitle: _("What happens when you close the window");
+
         model: Gtk.StringList {
-          strings ["Run in Background", "Quit Application"]
+          strings [
+            _("Run in Background"),
+            _("Quit Application"),
+          ]
         };
       }
 
       Adw.ComboRow row_tray {
-        title: "System Tray Icon";
+        title: _("System Tray Icon");
+        subtitle: _("Show an icon in the system tray");
+
         model: Gtk.StringList {
-          strings ["Auto", "Enabled", "Disabled"]
+          strings [
+            _("Auto"),
+            _("Enabled"),
+            _("Disabled"),
+          ]
         };
-        tooltip-text: "Auto: Enabled for non-GNOME environments";
+
+        tooltip-text: _("Auto: Enabled for non-GNOME environments");
       }
     }
 
     Adw.PreferencesGroup {
-      title: "Appearance";
+      title: _("Appearance");
 
       Adw.ComboRow row_theme {
-        title: "Theme";
+        title: _("Theme");
+        subtitle: _("Choose the application color scheme");
+
         model: Gtk.StringList {
-          strings ["Follow System", "Light", "Dark"]
+          strings [
+            _("Follow System"),
+            _("Light"),
+            _("Dark"),
+          ]
         };
       }
 
       Adw.ComboRow row_mobile_layout {
-        title: "Mobile Layout (Experimental)";
-        model: Gtk.StringList {
-          strings ["Auto", "Enabled", "Disabled"]
-        };
-        tooltip-text: "Auto: Enabled for mobile environments (Phosh, Plasma Mobile, etc.)";
-      }
+        title: _("Mobile Layout (Experimental)");
+        subtitle: _("Optimize the interface for small screens");
 
+        model: Gtk.StringList {
+          strings [
+            _("Auto"),
+            _("Enabled"),
+            _("Disabled"),
+          ]
+        };
+
+        tooltip-text: _("Auto: Enabled for mobile environments (Phosh, Plasma Mobile, etc.)");
+      }
     }
 
     Adw.PreferencesGroup {
-      title: "Spell Checking";
+      title: _("Spell Checking");
 
       Adw.SwitchRow row_spell_enable {
-        title: "Enable Spell Checking";
+        title: _("Enable Spell Checking");
+        subtitle: _("Check spelling as you type");
       }
 
       Adw.ActionRow row_spell_status {
-        title: "Dictionary Status";
+        title: _("Dictionary Status");
+        subtitle: _("Number of installed dictionaries");
+
         [suffix]
         Gtk.Label label_spell_status {
           valign: center;
-          label: "Unknown"; 
+          label: _("Unknown");
         }
       }
 
       Adw.ActionRow row_spell_active_label {
-        title: "Active Language";
+        title: _("Active Language");
+        subtitle: _("Automatically detected language");
+
         [suffix]
         Gtk.Label label_active_lang {
           valign: center;
@@ -80,53 +111,86 @@ template $KarerePreferencesWindow : Adw.PreferencesDialog {
       }
 
       Adw.ComboRow row_spell_active_combo {
-        title: "Active Language";
+        title: _("Active Language");
+        subtitle: _("Select the language for spell checking");
         // Model populated in code
       }
 
       Adw.SwitchRow row_spell_override {
-        title: "Override Dictionary";
+        title: _("Override Dictionary");
+        subtitle: _("Manually select the spell checking language");
       }
 
       Adw.SwitchRow row_auto_correct {
-        title: "Enable Auto-Correct";
+        title: _("Enable Auto-Correct");
+        subtitle: _("Automatically fix common spelling mistakes");
       }
     }
 
     Adw.PreferencesGroup {
-      title: "Downloads";
+      title: _("Downloads");
 
       Adw.ActionRow row_download {
-        title: "Download Directory";
-        subtitle: "Default (Downloads)";
-        
+        title: _("Download Directory");
+        subtitle: _("Default (Downloads)");
+
         [suffix]
         Gtk.Button btn_download_choose {
-          label: "Choose...";
+          label: _("Choose...");
           valign: center;
         }
-        
+
         [suffix]
         Gtk.Button btn_download_reset {
           icon-name: "edit-clear-symbolic";
           valign: center;
-          tooltip-text: "Reset to default";
+          tooltip-text: _("Reset to default");
         }
       }
     }
 
     Adw.PreferencesGroup {
-      title: "Developer Tools";
+      title: _("Accounts");
+
+      Adw.SwitchRow row_multi_account {
+        title: _("Multi-Account Support");
+        subtitle: _("Show account switcher in the header bar");
+      }
+
+      Adw.SwitchRow row_account_limit_enabled {
+        title: _("Limit Number of Accounts");
+        subtitle: _("Restrict how many accounts can be created");
+      }
+
+      Adw.SpinRow row_account_limit {
+        title: _("Maximum Accounts");
+        subtitle: _("Maximum number of accounts allowed");
+
+        adjustment: Gtk.Adjustment {
+          lower: 1;
+          upper: 10;
+          step-increment: 1;
+          page-increment: 1;
+          value: 2;
+        };
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Developer Tools");
 
       Adw.SwitchRow row_dev_enable {
-        title: "Enable Developer Tools";
+        title: _("Enable Developer Tools");
+        subtitle: _("Allow inspecting and debugging the WebView");
       }
 
       Adw.ActionRow row_dev_open {
-        title: "Developer Tools";
+        title: _("Developer Tools");
+        subtitle: _("Open the WebKit inspector");
+
         [suffix]
         Gtk.Button {
-          label: "Open";
+          label: _("Open");
           valign: center;
           action-name: "win.show-devtools";
         }
@@ -135,25 +199,29 @@ template $KarerePreferencesWindow : Adw.PreferencesDialog {
   }
 
   Adw.PreferencesPage {
-    title: "Accessibility";
+    title: _("Accessibility");
     icon-name: "preferences-desktop-accessibility-symbolic";
 
     Adw.PreferencesGroup {
-      title: "Keyboard Navigation";
+      title: _("Keyboard Navigation");
 
       Adw.SwitchRow row_kb_shortcuts {
-        title: "Keyboard Shortcuts";
+        title: _("Keyboard Shortcuts");
+        subtitle: _("Enable keyboard shortcuts for common actions");
       }
 
       Adw.SwitchRow row_focus {
-        title: "Focus indicators";
+        title: _("Focus Indicators");
+        subtitle: _("Show visible outlines around focused elements");
       }
 
       Adw.ActionRow {
-        title: "View keyboard shortcuts";
+        title: _("View Keyboard Shortcuts");
+        subtitle: _("See all available keyboard shortcuts");
+
         [suffix]
         Gtk.Button {
-          label: "View";
+          label: _("View");
           valign: center;
           action-name: "win.show-help-overlay";
         }
@@ -161,116 +229,144 @@ template $KarerePreferencesWindow : Adw.PreferencesDialog {
     }
 
     Adw.PreferencesGroup {
-      title: "Visual Accessibility";
+      title: _("Visual Accessibility");
 
       Adw.SwitchRow row_contrast {
-        title: "High Contract Mode";
+        title: _("High Contrast Mode");
+        subtitle: _("Increase contrast for better readability");
       }
 
       Adw.SwitchRow row_motion {
-        title: "Reduce Motion";
+        title: _("Reduce Motion");
+        subtitle: _("Minimize animations and transitions");
       }
     }
 
     Adw.PreferencesGroup {
-      title: "Webview Zoom";
+      title: _("Zoom");
+
       Adw.SwitchRow row_zoom {
-        title: "Enable Webview Zoom";
+        title: _("Accessibility Zoom");
+        subtitle: _("Set a minimum zoom level for all accounts");
       }
 
       Adw.SpinRow row_zoom_level {
-        title: "Zoom Level";
+        title: _("Minimum Zoom Level");
+        subtitle: _("Applied to all webviews — changing this resets all accounts");
+
         adjustment: Gtk.Adjustment {
-          lower: 0.2;
+          lower: 0.5;
           upper: 5.0;
           value: 1.0;
           step-increment: 0.1;
           page-increment: 0.5;
         };
+
         digits: 1;
       }
 
       Adw.ActionRow row_zoom_reset {
-        title: "Reset Zoom";
+        title: _("Reset Zoom Level");
+        subtitle: _("Reset minimum zoom to 1.0 for all accounts");
+
         [suffix]
         Gtk.Button btn_zoom_reset {
-          label: "Reset";
+          label: _("Reset");
           valign: center;
           icon-name: "edit-clear-symbolic";
         }
       }
+
+      Adw.SwitchRow row_zoom_headerbar {
+        title: _("Header Bar Zoom Controls");
+        subtitle: _("Show zoom buttons in the header bar (affects current account only)");
+      }
     }
 
     Adw.PreferencesGroup {
-      title: "Screen Reader Support";
-      
+      title: _("Screen Reader Support");
+
       Adw.SwitchRow row_sr_opts {
-        title: "Screen Reader Optimizations";
+        title: _("Screen Reader Optimizations");
+        subtitle: _("Improve compatibility with assistive technologies");
       }
 
       Adw.ActionRow {
-        title: "Screen Reader Status";
+        title: _("Screen Reader Status");
+        subtitle: _("Current screen reader detection state");
+
         [suffix]
         Gtk.Label {
-          label: "Inactive"; // Static for now as per prev code
+          label: _("Inactive"); // Static for now as per prev code
           valign: center;
         }
       }
     }
 
     Adw.PreferencesGroup {
-      title: "Accessibility Shortcuts";
-      
+      title: _("Accessibility Shortcuts");
+
       Adw.SwitchRow row_a11y_shortcuts {
-        title: "Accessibility Shortcuts";
+        title: _("Accessibility Shortcuts");
+        subtitle: _("Enable keyboard shortcuts for accessibility features");
       }
 
       Adw.SwitchRow row_dev_shortcuts {
-        title: "Developer Shortcuts";
+        title: _("Developer Shortcuts");
+        subtitle: _("Enable keyboard shortcuts for developer tools");
       }
 
       Adw.SwitchRow row_notify_shortcuts {
-        title: "Notification Shortcuts";
+        title: _("Notification Shortcuts");
+        subtitle: _("Enable keyboard shortcuts for notification actions");
       }
     }
   }
 
   Adw.PreferencesPage {
-    title: "Notifications";
+    title: _("Notifications");
     icon-name: "preferences-system-notifications-symbolic";
 
     Adw.PreferencesGroup group_master {
-      title: "General";
+      title: _("General");
+
       Adw.SwitchRow row_master_toggle {
-        title: "Enable Notifications";
+        title: _("Enable Notifications");
+        subtitle: _("Master toggle for all notifications");
       }
     }
 
     Adw.PreferencesGroup group_messages {
-      title: "Messages";
-      
+      title: _("Messages");
+
       Adw.SwitchRow row_notify_msg {
-        title: "Message Notifications";
+        title: _("Message Notifications");
+        subtitle: _("Show notifications for incoming messages");
       }
 
       Adw.SwitchRow row_tray_anim {
-        title: "Change Tray Icon on Message";
+        title: _("Change Tray Icon on Message");
+        subtitle: _("Animate the tray icon when a new message arrives");
       }
     }
 
     Adw.PreferencesGroup group_preview {
-      title: "Message Preview";
-      
+      title: _("Message Preview");
+
       Adw.SwitchRow row_preview_show {
-        title: "Show message preview";
+        title: _("Show Message Preview");
+        subtitle: _("Display message content in notifications");
       }
 
       Adw.SwitchRow row_preview_limit {
-        title: "Limit message preview size";
+        title: _("Limit Message Preview Size");
+        subtitle: _("Truncate long messages in notifications");
       }
 
       Adw.SpinRow row_preview_len {
-        title: "Preview length (characters)";
+        title: _("Preview Length (characters)");
+        subtitle: _("Maximum number of characters shown in previews");
+
         adjustment: Gtk.Adjustment {
           lower: 1.0;
           upper: 500.0;
@@ -282,31 +378,46 @@ template $KarerePreferencesWindow : Adw.PreferencesDialog {
     }
 
     Adw.PreferencesGroup group_sounds {
-      title: "Sounds";
+      title: _("Sounds");
 
       Adw.SwitchRow row_sound_enable {
-        title: "Notification Sounds";
+        title: _("Notification Sounds");
+        subtitle: _("Play a sound when a notification arrives");
       }
 
       Adw.ComboRow row_sound_file {
-        title: "Sound";
+        title: _("Sound");
+        subtitle: _("Choose the notification alert sound");
+
         model: Gtk.StringList {
-          strings ["WhatsApp (Default)", "Pop", "Alert", "Soft", "Start"]
+          strings [
+            _("WhatsApp (Default)"),
+            _("Pop"),
+            _("Alert"),
+            _("Soft"),
+            _("Start"),
+          ]
         };
       }
     }
 
     Adw.PreferencesGroup group_dl_notify {
-      title: "Downloads";
+      title: _("Downloads");
 
       Adw.SwitchRow row_dl_enable {
-        title: "Download notifications";
+        title: _("Download Notifications");
+        subtitle: _("Notify when a file download completes");
       }
 
       Adw.ComboRow row_dl_type {
-        title: "Notification Type";
+        title: _("Notification Type");
+        subtitle: _("How download notifications are displayed");
+
         model: Gtk.StringList {
-          strings ["In-app Toast", "System Notification"]
+          strings [
+            _("In-app Toast"),
+            _("System Notification"),
+          ]
         };
       }
     }

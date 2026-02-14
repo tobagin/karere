@@ -17,7 +17,6 @@ finish-args:
   - --socket=pulseaudio
   # Configure WebKit spell checker dictionary paths (bundled and runtime)
   - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell
-  - --env=FONTCONFIG_FILE=/app/etc/fonts/fonts.conf
   # Force GStreamer/WebKit to use PipeWire for camera
   - --env=GST_PLUGIN_FEATURE_RANK=pipewiresrc:MAX
   - --env=WEBRTC_USE_PIPEWIRE=1
@@ -69,19 +68,6 @@ modules:
       - type: archive
         url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-26.2.0.2.zip
         sha256: 4b076ff20485af78036fc896804754c64f760b227aa692de84200f762ee471bc
-
-  - name: fonts-noto-color-emoji
-    buildsystem: simple
-    build-commands:
-      - install -Dm644 NotoColorEmoji.ttf /app/share/fonts/NotoColorEmoji.ttf
-      - install -Dm644 fonts.conf /app/etc/fonts/fonts.conf
-    sources:
-      - type: file
-        path: fonts.conf
-      - type: file
-        url: https://github.com/googlefonts/noto-emoji/raw/main/fonts/NotoColorEmoji.ttf
-        sha256: 72a635cb3d2f3524c51620cdde406b217204e8a6a06c6a096ff8ed4b5fd6e27b
-        dest-filename: NotoColorEmoji.ttf
 
   - name: karere
     buildsystem: meson

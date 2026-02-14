@@ -75,6 +75,21 @@
       <default>false</default>
       <summary>Enable developer tools</summary>
     </key>
+    <key name="enable-multi-account" type="b">
+      <default>false</default>
+      <summary>Enable multi-account support</summary>
+      <description>Whether to show the account switcher button in the header bar.</description>
+    </key>
+    <key name="account-limit-enabled" type="b">
+      <default>true</default>
+      <summary>Enable account limit</summary>
+      <description>Whether to limit the number of accounts that can be created.</description>
+    </key>
+    <key name="account-limit" type="i">
+      <default>2</default>
+      <summary>Maximum number of accounts</summary>
+      <description>The maximum number of accounts when the account limit is enabled (1-10).</description>
+    </key>
     <!-- Accessibility -->
     <key name="enable-shortcuts" type="b">
       <default>true</default>
@@ -94,7 +109,13 @@
     </key>
     <key name="webview-zoom" type="b">
       <default>false</default>
-      <summary>Enable webview zoom</summary>
+      <summary>Enable accessibility zoom</summary>
+      <description>Master toggle for the accessibility zoom system. When enabled, the zoom-level setting acts as a minimum zoom floor for all webviews.</description>
+    </key>
+    <key name="zoom-controls-headerbar" type="b">
+      <default>false</default>
+      <summary>Show zoom controls in header bar</summary>
+      <description>Show zoom in/out/reset buttons in the header bar. These controls only affect the currently displayed webview.</description>
     </key>
     <key name="screen-reader-opts" type="b">
       <default>false</default>
@@ -153,31 +174,6 @@
     <key name="notify-preview-length" type="i">
       <default>20</default>
       <summary>Message preview length</summary>
-    </key>
-    <!-- Permission Persistence -->
-    <key name="web-notification-permission-asked" type="b">
-      <default>false</default>
-      <summary>Web notification permission asked</summary>
-    </key>
-    <key name="web-notification-permission-granted" type="b">
-      <default>false</default>
-      <summary>Web notification permission granted</summary>
-    </key>
-    <key name="web-microphone-permission-asked" type="b">
-      <default>false</default>
-      <summary>Web microphone permission asked</summary>
-    </key>
-    <key name="web-microphone-permission-granted" type="b">
-      <default>false</default>
-      <summary>Web microphone permission granted</summary>
-    </key>
-    <key name="web-camera-permission-asked" type="b">
-      <default>false</default>
-      <summary>Web camera permission asked</summary>
-    </key>
-    <key name="web-camera-permission-granted" type="b">
-      <default>false</default>
-      <summary>Web camera permission granted</summary>
     </key>
   </schema>
 </schemalist>
