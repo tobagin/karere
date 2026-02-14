@@ -1770,11 +1770,18 @@ mod imp {
         }
 
         fn populate_account_list(&self, accounts: &[Account]) {
-            let count = accounts.len();
-            for (i, account) in accounts.iter().enumerate() {
-                let is_first = i == 0;
-                let is_last = i == count - 1;
-                let (row, edit_btn, delete_btn, up_btn, down_btn) = build_account_row(account, is_first, is_last);
+            // For reorder buttons: only non-default accounts can be reordered,
+            // so compute first/last among non-default accounts only
+            let non_default: Vec<&str> = accounts.iter()
+                .filter(|a| a.id != DEFAULT_ACCOUNT_ID)
+                .map(|a| a.id.as_str())
+                .collect();
+
+            for account in accounts {
+                let non_default_idx = non_default.iter().position(|id| *id == account.id);
+                let is_first_reorderable = non_default_idx == Some(0);
+                let is_last_reorderable = non_default_idx == Some(non_default.len().saturating_sub(1));
+                let (row, edit_btn, delete_btn, up_btn, down_btn) = build_account_row(account, is_first_reorderable, is_last_reorderable);
 
                 let account_id_del = account.id.clone();
                 let account_name_del = account.name.clone();

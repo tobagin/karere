@@ -323,9 +323,15 @@ impl AccountManager {
         Ok(accounts)
     }
 
-    /// Reorder an account by swapping it with an adjacent account
+    /// Reorder an account by swapping it with an adjacent account.
+    /// The default/primary account is always pinned first and cannot be reordered.
     /// direction: -1 for up (earlier), +1 for down (later)
     pub fn reorder_account(&self, account_id: &str, direction: i32) -> anyhow::Result<()> {
+        // The default account is pinned and cannot be reordered
+        if account_id == DEFAULT_ACCOUNT_ID {
+            return Ok(());
+        }
+
         let mut accounts = self.get_accounts()?;
         accounts.sort_by_key(|a| a.order);
 
@@ -333,6 +339,8 @@ impl AccountManager {
         if let Some(idx) = pos {
             let swap_idx = if direction < 0 {
                 if idx == 0 { return Ok(()); }
+                // Don't swap with the default account
+                if accounts[idx - 1].id == DEFAULT_ACCOUNT_ID { return Ok(()); }
                 idx - 1
             } else {
                 if idx >= accounts.len() - 1 { return Ok(()); }
@@ -628,13 +636,16 @@ pub fn build_account_row(account: &Account, is_first: bool, is_last: bool) -> (g
     content_box.append(&label);
     content_box.set_hexpand(true);
 
+    // Reorder buttons: hidden for the default/primary account (always pinned first)
+    // and hidden when there's nothing to reorder (fewer than 2 non-default accounts)
+    let show_reorder = account.id != DEFAULT_ACCOUNT_ID;
     let up_btn = gtk::Button::builder()
         .icon_name("go-up-symbolic")
         .css_classes(["flat"])
         .halign(gtk::Align::End)
         .valign(gtk::Align::Center)
         .tooltip_text("Move up")
-        .visible(!is_first)
+        .visible(show_reorder && !is_first)
         .build();
 
     let down_btn = gtk::Button::builder()
@@ -643,7 +654,7 @@ pub fn build_account_row(account: &Account, is_first: bool, is_last: bool) -> (g
         .halign(gtk::Align::End)
         .valign(gtk::Align::Center)
         .tooltip_text("Move down")
-        .visible(!is_last)
+        .visible(show_reorder && !is_last)
         .build();
 
     let edit_btn = gtk::Button::builder()

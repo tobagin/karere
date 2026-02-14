@@ -86,7 +86,7 @@
       <description>Whether to limit the number of accounts that can be created.</description>
     </key>
     <key name="account-limit" type="i">
-      <default>3</default>
+      <default>2</default>
       <summary>Maximum number of accounts</summary>
       <description>The maximum number of accounts when the account limit is enabled (1-10).</description>
     </key>
