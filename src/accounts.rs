@@ -550,9 +550,16 @@ pub fn create_account_icon_bytes(color: &str, emoji: &str, size: i32) -> Option<
 
     // Parse hex color
     let hex = color.trim_start_matches('#');
-    let r = u8::from_str_radix(&hex[0..2], 16).unwrap_or(53) as f64 / 255.0;
-    let g = u8::from_str_radix(&hex[2..4], 16).unwrap_or(132) as f64 / 255.0;
-    let b = u8::from_str_radix(&hex[4..6], 16).unwrap_or(228) as f64 / 255.0;
+    let (r, g, b) = if hex.len() >= 6 {
+        (
+            u8::from_str_radix(&hex[0..2], 16).unwrap_or(53) as f64 / 255.0,
+            u8::from_str_radix(&hex[2..4], 16).unwrap_or(132) as f64 / 255.0,
+            u8::from_str_radix(&hex[4..6], 16).unwrap_or(228) as f64 / 255.0,
+        )
+    } else {
+        // Fallback to DEFAULT_COLOR
+        (53.0 / 255.0, 132.0 / 255.0, 228.0 / 255.0)
+    };
 
     // Draw colored circle
     cr.arc(
