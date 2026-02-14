@@ -384,8 +384,7 @@ msgstr "Reduce Motion"
 
 #: temp_ui/preferences.ui:257
 msgid "Minimize animations and transitions"
-msgstr "Minimize animations and transitions"
-
+msgstr "Minimise animations and transitions"
 #: temp_ui/preferences.ui:264
 msgid "Webview Zoom"
 msgstr "Webview Zoom"
