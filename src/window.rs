@@ -44,6 +44,9 @@ mod imp {
 
         // Active Notifications Storage (Map ID -> WebKitNotification)
         pub active_notifications: std::cell::RefCell<std::collections::HashMap<String, webkit6::Notification>>,
+
+        // Portal notification IDs for withdrawing on window focus
+        pub portal_notification_ids: std::cell::RefCell<Vec<String>>,
         
         // Mobile Layout State (tracks if mobile layout is currently active)
         pub mobile_layout_active: std::cell::Cell<bool>,
@@ -215,6 +218,20 @@ mod imp {
                      }
                      // Refresh account button to update unread indicators
                      window.imp().update_account_button();
+
+                     // Withdraw all desktop notifications
+                     let portal_ids: Vec<String> = window.imp().portal_notification_ids.borrow_mut().drain(..).collect();
+                     if !portal_ids.is_empty() {
+                         let proxy_cell = window.imp().notification_proxy.clone();
+                         glib::MainContext::default().spawn_local(async move {
+                             let _guard = crate::RUNTIME.enter();
+                             if let Some(proxy) = proxy_cell.get() {
+                                 for id in &portal_ids {
+                                     let _ = proxy.remove_notification(id).await;
+                                 }
+                             }
+                         });
+                     }
                 }
             });
 
@@ -1119,10 +1136,12 @@ mod imp {
                              return true;
                         };
 
+                        let portal_id_track = portal_id.clone();
+
                         glib::MainContext::default().spawn_local(async move {
                             // Enter the tokio runtime context
                             let _guard = crate::RUNTIME.enter();
-                            
+
                             // Initialize Proxy if needed (Singleton pattern per window)
                             let proxy = proxy_cell.get_or_init(|| async {
                                 match ashpd::desktop::notification::NotificationProxy::new().await {
@@ -1157,7 +1176,7 @@ mod imp {
                                 // eprintln!("Failed to send portal notification: {}", e);
                             }
                         });
-                        
+
                         // Store notification for click handling.
                         // We intentionally do NOT remove on close — WhatsApp Web
                         // auto-closes notifications on the active tab, but we still
@@ -1166,6 +1185,7 @@ mod imp {
                         // with the same account:tag key.
                         if let Some(window) = window_weak.upgrade() {
                              window.imp().active_notifications.borrow_mut().insert(notification_id.clone(), notification.clone());
+                             window.imp().portal_notification_ids.borrow_mut().push(portal_id_track);
                         }
                         
                         // 5. Play Custom Sound (if enabled)
