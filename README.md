@@ -11,14 +11,14 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.4.2 - Zoom & Fixes
+## 🎉 Version 2.5.0 - Multi-Account Support
 
-**Karere 2.4.2** brings zoom support and window size fixes.
+**Karere 2.5.0** brings full multi-account support!
 
-### 🆕 What's New in 2.4.2
+### 🆕 What's New in 2.5.0
 
-- **Zoom**: Zoom in/out with Ctrl +/- and save connection state.
-- **Fix**: Window size no longer increases on restart.
+- **Multi-Account**: Seamlessly switch between multiple WhatsApp accounts.
+- **Zoom**: Per-account zoom settings for better accessibility.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

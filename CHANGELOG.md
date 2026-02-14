@@ -12,6 +12,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Fixed
 
+## [2.5.0] - 2026-02-14
+
+### Added
+- **Multi-Account**: Complete multi-account support with sidebar switching, tray menu integration, and unread counting.
+- **Zoom**: Added per-account zoom settings and reworked accessibility zoom.
+
+### Fixed
+- **Startup**: Resolved race conditions when starting in background and initializing tray icon.
+- **Resources**: Fixed file descriptor exhaustion issues.
+- **Notifications**: Fixed issue where desktop notifications weren't clearing when window gained focus.
+- **Downloads**: Added fallback to XDG Downloads directory when download-directory is unset.
+
+
 ## [2.4.2] - 2026-02-08
 
 ### Added

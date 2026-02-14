@@ -95,6 +95,15 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="2.5.0" date="2026-02-14">
+      <description>
+        <ul>
+          <li>Added complete multi-account support with sidebar and tray integration</li>
+          <li>Added per-account zoom settings and improved accessibility</li>
+          <li>Fixed startup race conditions and resource usage issues</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.4.2" date="2026-02-08">
       <description>
         <ul>
