@@ -299,6 +299,8 @@ impl AccountManager {
         if let Some(account) = accounts.iter_mut().find(|a| a.id == account_id) {
             account.zoom_level = zoom;
             self.save_accounts(&accounts)?;
+        } else {
+            return Err(anyhow::anyhow!("Account not found"));
         }
 
         Ok(())
@@ -311,6 +313,8 @@ impl AccountManager {
         if let Some(account) = accounts.iter_mut().find(|a| a.id == account_id) {
             account.has_unread = unread;
             self.save_accounts(&accounts)?;
+        } else {
+            return Err(anyhow::anyhow!("Account not found"));
         }
 
         Ok(())
