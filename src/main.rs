@@ -86,18 +86,15 @@ fn main() -> anyhow::Result<()> {
         action_sync_autostart.connect_activate(|_, parameter| {
              let enabled = parameter.unwrap().get::<bool>().unwrap();
              
-             std::thread::spawn(move || {
-                // Use global runtime to reuse resources/connections context potential
-                RUNTIME.block_on(async {
-                    let request_future = ashpd::desktop::background::Background::request()
-                        .reason("Syncing autostart preference")
-                        .auto_start(enabled)
-                        .send();
-                        
-                    // Wrap in timeout
-                    let _ = tokio::time::timeout(std::time::Duration::from_secs(5), request_future).await;
-                });
-            });
+             RUNTIME.spawn(async move {
+                let request_future = ashpd::desktop::background::Background::request()
+                    .reason("Syncing autostart preference")
+                    .auto_start(enabled)
+                    .send();
+
+                // Wrap in timeout
+                let _ = tokio::time::timeout(std::time::Duration::from_secs(5), request_future).await;
+             });
         });
         app.add_action(&action_sync_autostart);
 
@@ -413,14 +410,9 @@ fn main() -> anyhow::Result<()> {
 
             if let Some(handle) = &tray_handle_clone {
                  let handle = handle.clone();
-                 std::thread::spawn(move || {
-                     if let Ok(rt) = tokio::runtime::Runtime::new() {
-                         rt.block_on(async move {
-                             let _ = handle.update(|_| {}).await;
-                         });
-                     }
+                 RUNTIME.spawn(async move {
+                     let _ = handle.update(|_| {}).await;
                  });
-
             }
         }
     });
@@ -438,12 +430,8 @@ fn main() -> anyhow::Result<()> {
         }
         if let Some(handle) = &tray_handle_refresh {
             let handle = handle.clone();
-            std::thread::spawn(move || {
-                if let Ok(rt) = tokio::runtime::Runtime::new() {
-                    rt.block_on(async move {
-                        let _ = handle.update(|_| {}).await;
-                    });
-                }
+            RUNTIME.spawn(async move {
+                let _ = handle.update(|_| {}).await;
             });
         }
     });
@@ -517,12 +505,8 @@ fn main() -> anyhow::Result<()> {
             visible.store(window.is_visible(), std::sync::atomic::Ordering::Relaxed);
             if let Some(handle) = &tray_handle {
                 let handle = handle.clone();
-                std::thread::spawn(move || {
-                     if let Ok(rt) = tokio::runtime::Runtime::new() {
-                         rt.block_on(async move {
-                             let _ = handle.update(|_| {}).await;
-                         });
-                     }
+                RUNTIME.spawn(async move {
+                    let _ = handle.update(|_| {}).await;
                 });
             }
         });

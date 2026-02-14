@@ -1190,7 +1190,12 @@ mod imp {
                         // with the same account:tag key.
                         if let Some(window) = window_weak.upgrade() {
                              window.imp().active_notifications.borrow_mut().insert(notification_id.clone(), notification.clone());
-                             window.imp().portal_notification_ids.borrow_mut().push(portal_id_track);
+                             let mut ids = window.imp().portal_notification_ids.borrow_mut();
+                             ids.push(portal_id_track);
+                             let len = ids.len();
+                             if len > 50 {
+                                 ids.drain(..len - 50);
+                             }
                         }
                         
                         // 5. Play Custom Sound (if enabled)

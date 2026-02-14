@@ -182,12 +182,10 @@ pub fn spawn_tray(
     accounts: Arc<Mutex<Vec<AccountInfo>>>,
 ) -> Result<ksni::Handle<KarereTray>, Box<dyn Error>> {
     let tray = KarereTray { visible, has_unread, accounts };
-    let rt = tokio::runtime::Runtime::new()?;
-    let handle = rt.block_on(
+    let handle = crate::RUNTIME.block_on(
         tray.disable_dbus_name(true)
             .assume_sni_available(true)
             .spawn(),
     )?;
-    std::mem::forget(rt); 
     Ok(handle)
 }
