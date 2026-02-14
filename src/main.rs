@@ -473,14 +473,22 @@ fn main() -> anyhow::Result<()> {
     });
     app.add_action(&action_switch_account);
 
+    let startup_time = std::time::Instant::now();
+
     app.connect_activate(move |app| {
         if let Some(window) = app.active_window() {
+            if start_hidden && startup_time.elapsed() < std::time::Duration::from_secs(3) {
+                return;
+            }
             window.set_visible(true);
             window.present();
             return;
         }
-        
+
         if let Some(window) = app.windows().first() {
+            if start_hidden && startup_time.elapsed() < std::time::Duration::from_secs(3) {
+                return;
+            }
              window.set_visible(true);
              window.present();
              return;
