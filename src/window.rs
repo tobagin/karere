@@ -6,7 +6,7 @@ use adw::subclass::prelude::*;
 use base64::prelude::*;
 use webkit6::prelude::*;
 
-use crate::accounts::{Account, AccountManager, build_account_row, apply_avatar_color, hex_to_rgba, rgba_to_hex, DEFAULT_COLOR, DEFAULT_EMOJI};
+use crate::accounts::{Account, AccountManager, build_account_row, apply_avatar_texture, create_account_icon_bytes, DEFAULT_ACCOUNT_ID, DEFAULT_COLOR, DEFAULT_EMOJI};
 
 mod imp {
     use super::*;
@@ -65,6 +65,33 @@ mod imp {
 
         // Currently active account ID (matches a key in webviews)
         pub active_account_id: std::cell::RefCell<Option<String>>,
+    }
+
+    /// Helper function to determine if mobile layout should be used
+    /// window_width: current window width in pixels (use 0 if unknown)
+    fn should_use_mobile_layout(settings: &gio::Settings, window_width: i32) -> bool {
+        const MOBILE_WIDTH_THRESHOLD: i32 = 768;
+
+        let mode = settings.string("mobile-layout");
+        match mode.as_str() {
+            "enabled" => true,
+            "disabled" => false,
+            "auto" | _ => {
+                // Check for mobile desktop environments
+                if let Ok(desktop) = std::env::var("XDG_CURRENT_DESKTOP") {
+                    let desktop_lower = desktop.to_lowercase();
+                    let mobile_desktops = ["phosh", "plasma-mobile", "lomiri"];
+                    if mobile_desktops.iter().any(|d| desktop_lower.contains(d)) {
+                        return true;
+                    }
+                }
+                // Check window width (0 means unknown, don't trigger)
+                if window_width > 0 && window_width < MOBILE_WIDTH_THRESHOLD {
+                    return true;
+                }
+                false
+            }
+        }
     }
 
     #[glib::object_subclass]
@@ -132,15 +159,61 @@ mod imp {
                             let id = account.id.clone();
                             (id.clone(), mgr.data_dir_for(&id), mgr.cache_dir_for(&id))
                         })
-                        .unwrap_or(("default".to_string(), default_data, default_cache))
+                        .unwrap_or((DEFAULT_ACCOUNT_ID.to_string(), default_data, default_cache))
                 } else {
-                    ("default".to_string(), default_data, default_cache)
+                    (DEFAULT_ACCOUNT_ID.to_string(), default_data, default_cache)
                 }
             };
 
 
             // Create an initial WebView with a per-account session
-            let web_view = self.setup_webview(&account_id, data_dir, cache_dir);
+            let web_view = self.setup_webview(&account_id, data_dir, cache_dir, true);
+
+            // One-time: Pre-emptive Camera Permission Request (Fix for "0 Devices" / Catch-22)
+            // We must ask for permission *before* WebKit initializes GStreamer, otherwise
+            // GStreamer sees 0 devices and WebKit never asks for permission.
+            let ctx = glib::MainContext::default();
+            ctx.spawn_local(async move {
+                let _ = crate::RUNTIME.spawn(async {
+                    println!("Karere: Requesting Camera Access at Startup...");
+                    if let Ok(proxy) = ashpd::desktop::camera::Camera::new().await {
+                        match proxy.request_access().await {
+                            Ok(_) => println!("Karere: Camera Access GRANTED by System/User."),
+                            Err(e) => println!("Karere: Camera Access DENIED or FAILED: {:?}", e),
+                        }
+
+                        match proxy.is_present().await {
+                            Ok(present) => println!("Karere: Camera Is Present: {}", present),
+                            Err(e) => println!("Karere: Failed to check camera presence: {:?}", e),
+                        }
+
+                        match proxy.open_pipe_wire_remote().await {
+                            Ok(fd) => println!("Karere: Successfully opened PipeWire remote via Portal (FD: {:?})", fd),
+                            Err(e) => println!("Karere: Failed to open PipeWire remote: {:?}", e),
+                        }
+                    } else {
+                        println!("Karere: Failed to connect to Camera Portal.");
+                    }
+                }).await;
+            });
+
+            // One-time: Handle Window Focus (Clear Unread for active account)
+            obj.connect_is_active_notify(move |window| {
+                if window.is_active() {
+                     if let Some(app) = window.application() {
+                         app.activate_action("set-unread", Some(&false.to_variant()));
+                     }
+                     // Clear unread for the active account
+                     let account_id = window.imp().active_account_id.borrow().clone();
+                     if let Some(id) = account_id {
+                         if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                             let _ = mgr.set_account_unread(&id, false);
+                         }
+                     }
+                     // Refresh account button to update unread indicators
+                     window.imp().update_account_button();
+                }
+            });
 
             // Setup Actions (use dynamic webview() helper so they work after WebView replacement)
             let action_refresh = gio::SimpleAction::new("refresh", None);
@@ -240,28 +313,6 @@ mod imp {
                 obj.maximize();
             }
 
-            // Restore Zoom Level
-            let zoom = settings.double("zoom-level");
-            if zoom > 0.0 {
-                 web_view.set_zoom_level(zoom);
-            }
-
-            // Bind Zoom Level (Two-way: Property to Settings)
-            let settings_zoom = settings.clone();
-            web_view.connect_zoom_level_notify(move |webview| {
-                 let level = webview.zoom_level();
-                 let _ = settings_zoom.set_double("zoom-level", level);
-            });
-
-            // Bind Settings Change to Zoom Level
-            let webview_zoom_update = web_view.clone();
-            settings.connect_changed(Some("zoom-level"), move |settings, _| {
-                let level = settings.double("zoom-level");
-                if (level - webview_zoom_update.zoom_level()).abs() > f64::EPSILON {
-                    webview_zoom_update.set_zoom_level(level);
-                }
-            });
-
             // Track Window Size (Resize Events) - Save only unmaximized size
             let obj_weak_resize = obj.downgrade();
             obj.connect_realize(move |window| {
@@ -279,84 +330,6 @@ mod imp {
                 }
             });
 
-
-            // Host-Driven Permission Trigger (User Suggestion)
-            // Attempt to force the permission request from the Host side on load completion.
-            let settings_mobile_layout = settings.clone(); // Clone for closure
-            
-            // Helper function to determine if mobile layout should be used
-            // window_width: current window width in pixels (use 0 if unknown)
-            fn should_use_mobile_layout(settings: &gio::Settings, window_width: i32) -> bool {
-                const MOBILE_WIDTH_THRESHOLD: i32 = 768;
-                
-                let mode = settings.string("mobile-layout");
-                match mode.as_str() {
-                    "enabled" => true,
-                    "disabled" => false,
-                    "auto" | _ => {
-                        // Check for mobile desktop environments
-                        if let Ok(desktop) = std::env::var("XDG_CURRENT_DESKTOP") {
-                            let desktop_lower = desktop.to_lowercase();
-                            let mobile_desktops = ["phosh", "plasma-mobile", "lomiri"];
-                            if mobile_desktops.iter().any(|d| desktop_lower.contains(d)) {
-                                return true;
-                            }
-                        }
-                        // Check window width (0 means unknown, don't trigger)
-                        if window_width > 0 && window_width < MOBILE_WIDTH_THRESHOLD {
-                            return true;
-                        }
-                        false
-                    }
-                }
-            }
-            
-            // Clone obj for closures
-            let obj_weak_mobile = obj.downgrade();
-            
-            web_view.connect_load_changed(move |webview, event| {
-                if event == webkit6::LoadEvent::Finished {
-                    // Get window width if available
-                    let window_width = if let Some(window) = obj_weak_mobile.upgrade() {
-                        window.width()
-                    } else {
-                        0
-                    };
-
-                    if should_use_mobile_layout(&settings_mobile_layout, window_width) {
-                        let js_content = include_str!("mobile_responsive.js");
-                        webview.evaluate_javascript(
-                            &js_content,
-                            None,
-                            None,
-                            Option::<&gio::Cancellable>::None,
-                            |result| {
-                                match result {
-                                    Ok(_) => {},
-                                    Err(e) => eprintln!("ERROR: Failed to inject mobile_responsive.js: {}", e),
-                                }
-                            },
-                        );
-                        // Update state
-                        if let Some(window) = obj_weak_mobile.upgrade() {
-                            window.imp().mobile_layout_active.set(true);
-                        }
-                    } else {
-                        // Update state
-                        if let Some(window) = obj_weak_mobile.upgrade() {
-                            window.imp().mobile_layout_active.set(false);
-                        }
-                    }
-
-                    webview.evaluate_javascript(
-                        "Notification.requestPermission()", 
-                        None, 
-                        None, 
-                        Option::<&gio::Cancellable>::None, 
-                        |_| {}
-                    );
-                }
-            });
 
             // Window Resize Handler - Check for mobile/desktop transition in Auto mode
             // We need to use the surface's layout signal which fires on actual resize
@@ -388,46 +361,6 @@ mod imp {
                         }
                     });
                 }
-            });
-
-            // Handle Navigation Policy (External Links)
-            let _obj_weak_nav = obj.downgrade();
-            web_view.connect_decide_policy(move |_, decision, decision_type| {
-                match decision_type {
-                     webkit6::PolicyDecisionType::NavigationAction | webkit6::PolicyDecisionType::NewWindowAction => {
-                         if let Some(mut nav_action) = decision.downcast_ref::<webkit6::NavigationPolicyDecision>().and_then(|d| d.navigation_action()) {
-                             if let Some(req) = nav_action.request() {
-                                 if let Some(uri) = req.uri() {
-                                     let uri_str = uri.as_str();
-
-                                     // Enhanced V1-like Logic
-                                     let is_internal = uri_str.contains("web.whatsapp.com") || 
-                                                       uri_str.contains("whatsapp.com") ||
-                                                       uri_str.contains("whatsapp.net") ||
-                                                       uri_str.starts_with("data:") ||
-                                                       uri_str.starts_with("blob:") ||
-                                                       uri_str.starts_with("about:");
-
-                                     if !is_internal {
-                                         
-                                         // Use generic GLib/GIO launcher which works via portal in Flatpak
-                                         // This matches V1 logic (AppInfo.launch_default_for_uri)
-                                         let uri_owned = uri_str.to_string();
-                                         match gio::AppInfo::launch_default_for_uri(&uri_owned, Option::<&gio::AppLaunchContext>::None) {
-                                             Ok(_) => {},
-                                             Err(e) => eprintln!("WARNING: Failed to launch external URI: {}", e),
-                                         }
-                                         
-                                         decision.ignore();
-                                         return true;
-                                     }
-                                 }
-                             }
-                         }
-                     }
-                     _ => {}
-                }
-                false
             });
 
             // Present Action (for notifications)
@@ -530,6 +463,24 @@ mod imp {
                      }
                 });
             }
+
+            // Initialize background webviews for all non-active accounts
+            // This enables notifications from every account without user interaction
+            let background_accounts = {
+                let mgr_ref = self.account_manager.borrow();
+                if let Some(mgr) = mgr_ref.as_ref() {
+                    mgr.get_accounts().unwrap_or_default()
+                        .iter()
+                        .filter(|a| !a.is_active)
+                        .map(|a| (a.id.clone(), mgr.data_dir_for(&a.id), mgr.cache_dir_for(&a.id)))
+                        .collect::<Vec<_>>()
+                } else { vec![] }
+            }; // borrow dropped
+
+            for (id, data_dir, cache_dir) in background_accounts {
+                println!("Karere: Initializing background webview for account '{}'", id);
+                self.setup_webview(&id, data_dir, cache_dir, false);
+            }
         }
     }
 
@@ -540,10 +491,12 @@ mod imp {
             self.webviews.borrow().get(&id).cloned()
         }
 
-        pub fn setup_webview(&self, account_id: &str, data_dir: std::path::PathBuf, cache_dir: std::path::PathBuf) -> webkit6::WebView {
+        pub fn setup_webview(&self, account_id: &str, data_dir: std::path::PathBuf, cache_dir: std::path::PathBuf, is_foreground: bool) -> webkit6::WebView {
             // Hide current WebView (don't destroy it — we keep it in the pool)
-            if let Some(current_wv) = self.webview() {
-                current_wv.set_visible(false);
+            if is_foreground {
+                if let Some(current_wv) = self.webview() {
+                    current_wv.set_visible(false);
+                }
             }
 
             // Ensure directories exist
@@ -582,41 +535,14 @@ mod imp {
 
             // Add to UI
             self.view_container.append(&web_view);
+            web_view.set_visible(is_foreground);
             self.webviews.borrow_mut().insert(account_id.to_string(), web_view.clone());
-            *self.active_account_id.borrow_mut() = Some(account_id.to_string());
+            if is_foreground {
+                *self.active_account_id.borrow_mut() = Some(account_id.to_string());
+            }
 
             // Load URI
             // Load URI moved to end
-
-            // Pre-emptive Camera Permission Request (Fix for "0 Devices" / Catch-22)
-            // We must ask for permission *before* WebKit initializes GStreamer, otherwise
-            // GStreamer sees 0 devices and WebKit never asks for permission.
-            let ctx = glib::MainContext::default();
-            ctx.spawn_local(async move {
-                // Use the global Tokio runtime from main.rs to prevent "no reactor running" panic
-                // This is necessary because we have Tokio enabled in dependencies, causing zbus to expect it.
-                let _ = crate::RUNTIME.spawn(async {
-                    println!("Karere: Requesting Camera Access at Startup...");
-                    if let Ok(proxy) = ashpd::desktop::camera::Camera::new().await {
-                        match proxy.request_access().await {
-                            Ok(_) => println!("Karere: Camera Access GRANTED by System/User."),
-                            Err(e) => println!("Karere: Camera Access DENIED or FAILED: {:?}", e),
-                        }
-
-                        match proxy.is_present().await {
-                            Ok(present) => println!("Karere: Camera Is Present: {}", present),
-                            Err(e) => println!("Karere: Failed to check camera presence: {:?}", e),
-                        }
-
-                        match proxy.open_pipe_wire_remote().await {
-                            Ok(fd) => println!("Karere: Successfully opened PipeWire remote via Portal (FD: {:?})", fd),
-                            Err(e) => println!("Karere: Failed to open PipeWire remote: {:?}", e),
-                        }
-                    } else {
-                        println!("Karere: Failed to connect to Camera Portal.");
-                    }
-                }).await;
-            });
 
             // Spoof Page Visibility API to ensure notifications firing in background
             if let Some(ucm) = web_view.user_content_manager() {
@@ -633,6 +559,26 @@ mod imp {
                     &[]
                 );
                 ucm.add_script(&script);
+
+                // Prevent WhatsApp Web from closing notifications via JS.
+                // When the active tab auto-closes a notification, WebKit removes
+                // it from internal tracking and notification.clicked() becomes a
+                // no-op. By making close() a no-op, the WebKit notification stays
+                // alive so our Rust-side clicked() call can still dispatch the
+                // click event back to the page/service-worker.
+                // Tag-based replacement (new Notification with same tag) still
+                // works — it's handled at creation time, not via close().
+                let notif_hook = r#"
+                    Notification.prototype.close = function() {};
+                "#;
+                let notif_script = webkit6::UserScript::new(
+                    notif_hook,
+                    webkit6::UserContentInjectedFrames::TopFrame,
+                    webkit6::UserScriptInjectionTime::Start,
+                    &[],
+                    &[]
+                );
+                ucm.add_script(&notif_script);
             }
 
             let obj = self.obj();
@@ -1020,6 +966,7 @@ mod imp {
             // Handle Show Notification signal (Bridge to Desktop)
             let settings_notify_msg = settings.clone(); // Clone for closure
             let window_weak = obj.downgrade();
+            let account_id_notify_capture = account_id.to_string();
             web_view.connect_show_notification(move |_, notification| {
                 
                 // 1. Check Master Toggle
@@ -1063,14 +1010,21 @@ mod imp {
                         let body_clone = body_text.clone();
 
                         // Tag notification with account ID for routing
-                        let account_id_notify = window.imp().active_account_id.borrow().clone().unwrap_or_else(|| "default".to_string());
-                        let _account_info = if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
-                            if let Ok(Some(acct)) = mgr.get_active_account() {
-                                Some((acct.emoji.clone(), acct.name.clone()))
-                            } else { None }
-                        } else { None };
+                        // Tag notification with account ID for routing (FIX: Use captured ID, not active)
+                        let account_id_notify = account_id_notify_capture.clone();
 
-                        // Prepend account identity to title for multi-account
+                        // Retrieve account info for icon generation
+                        let (emoji, account_color, account_count) = if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                            let count = mgr.get_account_count();
+                            if let Ok(accounts) = mgr.get_accounts() {
+                                if let Some(acct) = accounts.iter().find(|a| a.id == account_id_notify) {
+                                    (acct.emoji.clone(), acct.color.clone(), count)
+                                } else {
+                                    ("💬".to_string(), DEFAULT_COLOR.to_string(), count)
+                                }
+                            } else { ("💬".to_string(), DEFAULT_COLOR.to_string(), count) }
+                        } else { ("💬".to_string(), DEFAULT_COLOR.to_string(), 1) };
+
                         let display_title = title_clone.to_string();
 
                         // Create compound notification ID: account_id:original_tag
@@ -1080,14 +1034,17 @@ mod imp {
                               format!("msg-{}", glib::monotonic_time())
                          };
                         let notification_id = format!("{}:{}", account_id_notify, original_tag);
+                        // Unique portal ID so multiple notifications from the same
+                        // chat stack instead of replacing each other.
+                        let portal_id = format!("{}-{}", notification_id, glib::monotonic_time());
 
                         // Set account as having unread messages
                         if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
                             let _ = mgr.set_account_unread(&account_id_notify, true);
                         }
 
-                        let notification_id_portal = notification_id.clone();
-                        
+                        let notification_id_action = notification_id.clone();
+
                         // Get the proxy from the window impl (shared)
                         let proxy_cell = if let Some(window) = window_weak.upgrade() {
                              window.imp().notification_proxy.clone()
@@ -1106,47 +1063,43 @@ mod imp {
                                     Ok(p) => p,
                                     Err(e) => {
                                         eprintln!("ERROR: Failed to create notification proxy: {}", e);
-                                        // We have to return something to satisfy the type, but this is cached.
-                                        // If this fails, we are in trouble anyway. 
-                                        // Ideally we retry, but OnceCell is once.
-                                        // For simplicity, we might crash or just panic here if strict, 
-                                        // but better to handle it. 
-                                        // Actually ashpd Proxy new() shouldn't fail often unless DBus is dead.
-                                        // Let's rely on it working or we'll get a broken proxy maybe?
-                                        // Wait, we can't easily return a Result here if get_or_init expects value.
-                                        // Let's panic to restart app state? No.
-                                        // Let's try to construct it.
-                                        // If it fails, subsequent calls will not re-try with standard OnceCell.
-                                        // But we can just log and panic for now as it's critical infrastructure.
                                         panic!("Failed to init notification proxy: {}", e);
                                     }
                                 }
                             }).await;
 
-                            let notif = ashpd::desktop::notification::Notification::new(&display_title)
+                            let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+
+                            let mut notif = ashpd::desktop::notification::Notification::new(&display_title)
                                 .body(body_clone.as_str())
-                                .icon(ashpd::desktop::Icon::with_names(&["dialog-information-symbolic"]))
                                 .default_action("app.notification-clicked")
-                                .default_action_target(notification_id_portal.as_str())
+                                .default_action_target(notification_id_action.as_str())
                                 .priority(ashpd::desktop::notification::Priority::Normal);
 
-                            if let Err(_e) = proxy.add_notification(&notification_id_portal, notif).await {
-                                // eprintln!("Failed to send portal notification: {}", e); // Removed debug log
+                            // Icon: colored circle + emoji for multi-account, app icon for single
+                            if account_count > 1 {
+                                if let Some(bytes) = create_account_icon_bytes(&account_color, &emoji, 64) {
+                                    notif = notif.icon(ashpd::desktop::Icon::Bytes(bytes));
+                                } else {
+                                    notif = notif.icon(ashpd::desktop::Icon::with_names(&[&app_id]));
+                                }
+                            } else {
+                                notif = notif.icon(ashpd::desktop::Icon::with_names(&[&app_id]));
+                            }
+
+                            if let Err(_e) = proxy.add_notification(&portal_id, notif).await {
+                                // eprintln!("Failed to send portal notification: {}", e);
                             }
                         });
                         
-                        // Store notification for click handling
+                        // Store notification for click handling.
+                        // We intentionally do NOT remove on close — WhatsApp Web
+                        // auto-closes notifications on the active tab, but we still
+                        // need the reference so notification.clicked() can be attempted.
+                        // Entries are naturally replaced when a new notification arrives
+                        // with the same account:tag key.
                         if let Some(window) = window_weak.upgrade() {
                              window.imp().active_notifications.borrow_mut().insert(notification_id.clone(), notification.clone());
-                             
-                             // Cleanup on close
-                             let window_weak_close = window.downgrade();
-                             let id_close = notification_id.clone();
-                             notification.connect_closed(move |_| {
-                                 if let Some(window) = window_weak_close.upgrade() {
-                                     window.imp().active_notifications.borrow_mut().remove(&id_close);
-                                 }
-                             });
                         }
                         
                         // 5. Play Custom Sound (if enabled)
@@ -1215,26 +1168,6 @@ mod imp {
                 }
                 false
             });
-
-            // Handle Window Focus (Clear Unread for active account)
-            obj.connect_is_active_notify(move |window| {
-                if window.is_active() {
-                     if let Some(app) = window.application() {
-                         app.activate_action("set-unread", Some(&false.to_variant()));
-                     }
-                     // Clear unread for the active account
-                     let account_id = window.imp().active_account_id.borrow().clone();
-                     if let Some(id) = account_id {
-                         if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
-                             let _ = mgr.set_account_unread(&id, false);
-                         }
-                     }
-                     // Refresh account button to update unread indicators
-                     window.imp().update_account_button();
-                }
-            });
-
-
 
 
             // 5. Input Handling (Paste & Middle-click)
@@ -1473,6 +1406,155 @@ mod imp {
             // 11. Setup Accessibility & Auto-Correct
             self.setup_accessibility(&web_view, settings.clone());
 
+            // Zoom level setup (only for foreground webview to avoid conflicts)
+            if is_foreground {
+                let zoom = settings.double("zoom-level");
+                if zoom > 0.0 {
+                    web_view.set_zoom_level(zoom);
+                }
+
+                let settings_zoom = settings.clone();
+                web_view.connect_zoom_level_notify(move |webview| {
+                    let level = webview.zoom_level();
+                    let _ = settings_zoom.set_double("zoom-level", level);
+                });
+
+                let webview_zoom_update = web_view.clone();
+                settings.connect_changed(Some("zoom-level"), move |settings, _| {
+                    let level = settings.double("zoom-level");
+                    if (level - webview_zoom_update.zoom_level()).abs() > f64::EPSILON {
+                        webview_zoom_update.set_zoom_level(level);
+                    }
+                });
+            }
+
+            // Auto-restore notification permission and mobile layout on page load
+            let settings_mobile_layout = settings.clone();
+            let obj_weak_load = obj.downgrade();
+            let account_id_load = account_id.to_string();
+
+            web_view.connect_load_changed(move |webview, event| {
+                if event == webkit6::LoadEvent::Finished {
+                    // Get window width if available
+                    let window_width = if let Some(window) = obj_weak_load.upgrade() {
+                        window.width()
+                    } else {
+                        0
+                    };
+
+                    if should_use_mobile_layout(&settings_mobile_layout, window_width) {
+                        let js_content = include_str!("mobile_responsive.js");
+                        webview.evaluate_javascript(
+                            &js_content,
+                            None,
+                            None,
+                            Option::<&gio::Cancellable>::None,
+                            |result| {
+                                match result {
+                                    Ok(_) => {},
+                                    Err(e) => eprintln!("ERROR: Failed to inject mobile_responsive.js: {}", e),
+                                }
+                            },
+                        );
+                        // Update state
+                        if let Some(window) = obj_weak_load.upgrade() {
+                            window.imp().mobile_layout_active.set(true);
+                        }
+                    } else {
+                        // Update state
+                        if let Some(window) = obj_weak_load.upgrade() {
+                            window.imp().mobile_layout_active.set(false);
+                        }
+                    }
+
+                    // Auto-restore notification permission if previously granted
+                    // This prevents WhatsApp from re-prompting on every startup
+                    let should_auto_grant = if let Some(window) = obj_weak_load.upgrade() {
+                        if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                            let (asked, granted) = mgr.get_account_permission(&account_id_load, "notification");
+                            asked && granted
+                        } else { false }
+                    } else { false };
+
+                    if should_auto_grant {
+                        // Override Notification.permission to 'granted' so WhatsApp doesn't re-ask
+                        webview.evaluate_javascript(
+                            "if (typeof Notification !== 'undefined') { Object.defineProperty(Notification, 'permission', { value: 'granted', writable: false, configurable: true }); }",
+                            None,
+                            None,
+                            Option::<&gio::Cancellable>::None,
+                            |_| {}
+                        );
+                    }
+
+                    webview.evaluate_javascript(
+                        "Notification.requestPermission()",
+                        None,
+                        None,
+                        Option::<&gio::Cancellable>::None,
+                        |_| {}
+                    );
+                }
+            });
+
+            // Track unread counts from page title changes
+            // WhatsApp Web sets titles like "(3) WhatsApp" when there are unread messages
+            let account_id_title = account_id.to_string();
+            let window_weak_title = obj.downgrade();
+            web_view.connect_notify_local(Some("title"), move |webview, _| {
+                let title = webview.title().unwrap_or_default().to_string();
+                let has_unread = title.starts_with('(');
+
+                if let Some(window) = window_weak_title.upgrade() {
+                    if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                        let _ = mgr.set_account_unread(&account_id_title, has_unread);
+                    }
+                    if let Some(app) = window.application() {
+                        app.activate_action("set-unread", Some(&has_unread.to_variant()));
+                    }
+                    window.imp().update_account_button();
+                }
+            });
+
+            // Handle Navigation Policy (External Links)
+            web_view.connect_decide_policy(move |_, decision, decision_type| {
+                match decision_type {
+                     webkit6::PolicyDecisionType::NavigationAction | webkit6::PolicyDecisionType::NewWindowAction => {
+                         if let Some(mut nav_action) = decision.downcast_ref::<webkit6::NavigationPolicyDecision>().and_then(|d| d.navigation_action()) {
+                             if let Some(req) = nav_action.request() {
+                                 if let Some(uri) = req.uri() {
+                                     let uri_str = uri.as_str();
+
+                                     // Enhanced V1-like Logic
+                                     let is_internal = uri_str.contains("web.whatsapp.com") ||
+                                                       uri_str.contains("whatsapp.com") ||
+                                                       uri_str.contains("whatsapp.net") ||
+                                                       uri_str.starts_with("data:") ||
+                                                       uri_str.starts_with("blob:") ||
+                                                       uri_str.starts_with("about:");
+
+                                     if !is_internal {
+
+                                         // Use generic GLib/GIO launcher which works via portal in Flatpak
+                                         // This matches V1 logic (AppInfo.launch_default_for_uri)
+                                         let uri_owned = uri_str.to_string();
+                                         match gio::AppInfo::launch_default_for_uri(&uri_owned, Option::<&gio::AppLaunchContext>::None) {
+                                             Ok(_) => {},
+                                             Err(e) => eprintln!("WARNING: Failed to launch external URI: {}", e),
+                                         }
+
+                                         decision.ignore();
+                                         return true;
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                     _ => {}
+                }
+                false
+            });
+
             web_view.load_uri("https://web.whatsapp.com");
             web_view
         }
@@ -1611,9 +1693,15 @@ mod imp {
             }
 
             self.updating_accounts.set(false);
+
+            // Keep tray menu in sync with account list
+            if let Some(app) = self.obj().application() {
+                app.activate_action("refresh-tray-accounts", None);
+            }
         }
 
         fn reset_account_button_default(&self) {
+            self.account_avatar.set_custom_image(None::<&gtk::gdk::Paintable>);
             self.account_avatar.set_icon_name(Some("user-info-symbolic"));
             self.account_avatar.set_text(Some(" "));
             self.account_button.set_tooltip_text(Some(&gettext("No account")));
@@ -1622,9 +1710,7 @@ mod imp {
         fn set_account_button_active(&self, account: &Account) {
             self.account_button.set_tooltip_text(Some(&account.name));
             self.account_avatar.set_icon_name(None::<&str>);
-            self.account_avatar.set_text(Some(&account.emoji));
-            self.account_avatar.set_show_initials(true);
-            apply_avatar_color(&self.account_avatar, &account.color);
+            apply_avatar_texture(&self.account_avatar, &account.color, &account.emoji);
         }
 
         fn clear_account_list(&self) {
@@ -1682,9 +1768,15 @@ mod imp {
             let has_webview = self.webviews.borrow().contains_key(account_id);
 
             if has_webview {
-                // Show the existing WebView
+                // Show the existing WebView and restore zoom level from settings
                 if let Some(wv) = self.webviews.borrow().get(account_id) {
                     wv.set_visible(true);
+                    let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+                    let settings = gio::Settings::new(&app_id);
+                    let zoom = settings.double("zoom-level");
+                    if zoom > 0.0 {
+                        wv.set_zoom_level(zoom);
+                    }
                 }
                 *self.active_account_id.borrow_mut() = Some(account_id.to_string());
             } else {
@@ -1696,7 +1788,7 @@ mod imp {
                 };
 
                 if let Some((data_dir, cache_dir)) = dirs {
-                    self.setup_webview(account_id, data_dir, cache_dir);
+                    self.setup_webview(account_id, data_dir, cache_dir, true);
                 }
             }
 
@@ -1740,8 +1832,10 @@ impl KarereWindow {
         let (account_id, original_tag) = if let Some(colon_pos) = id.find(':') {
             (&id[..colon_pos], &id[colon_pos + 1..])
         } else {
-            ("default", id)
+            (DEFAULT_ACCOUNT_ID, id)
         };
+
+        println!("Karere: Notification clicked — Account: {}, Tag: {}", account_id, original_tag);
 
         // Switch to the correct account first
         let current_account = imp.active_account_id.borrow().clone();
@@ -1749,14 +1843,12 @@ impl KarereWindow {
             self.switch_to_account(account_id);
         }
 
-        // Fire the notification click on the original tag
+        // Fire the WebKit notification's click handler.
+        // We inject a Notification.prototype.close no-op so WhatsApp Web can't
+        // close notifications — this keeps them alive in WebKit's internal
+        // tracking, allowing clicked() to dispatch the event back to the page.
         if let Some(notification) = imp.active_notifications.borrow().get(id) {
             notification.clicked();
-        } else {
-            // Try with original tag too (backward compat)
-            if let Some(notification) = imp.active_notifications.borrow().get(original_tag) {
-                notification.clicked();
-            }
         }
 
         // Clear unread for this account
@@ -1806,7 +1898,12 @@ impl KarereWindow {
 
         let initial_name = existing.map(|a| a.name.clone()).unwrap_or_default();
         let initial_emoji = existing.map(|a| a.emoji.clone()).unwrap_or_else(|| DEFAULT_EMOJI.to_string());
+        let initial_color = existing.map(|a| a.color.clone()).unwrap_or_else(|| DEFAULT_COLOR.to_string());
         let account_id = existing.map(|a| a.id.clone());
+
+        // Shared state for selected color and emoji
+        let selected_emoji = std::rc::Rc::new(std::cell::RefCell::new(initial_emoji.clone()));
+        let selected_color = std::rc::Rc::new(std::cell::RefCell::new(initial_color.clone()));
 
         // Build a proper Adw.Dialog with header bar
         let dialog = adw::Dialog::builder()
@@ -1842,14 +1939,23 @@ impl KarereWindow {
         content.set_margin_top(12);
         content.set_margin_bottom(12);
 
-        // === Live Avatar Preview ===
+        // === Live Avatar Preview (PNG texture) ===
         let preview_avatar = adw::Avatar::builder()
             .size(96)
-            .text(&initial_emoji)
-            .show_initials(true)
             .halign(gtk::Align::Center)
             .build();
+        apply_avatar_texture(&preview_avatar, &initial_color, &initial_emoji);
         content.append(&preview_avatar);
+
+        // Shared closure to update the preview avatar
+        let preview_avatar_update = preview_avatar.clone();
+        let color_for_preview = selected_color.clone();
+        let emoji_for_preview = selected_emoji.clone();
+        let update_preview = std::rc::Rc::new(move || {
+            let color = color_for_preview.borrow().clone();
+            let emoji = emoji_for_preview.borrow().clone();
+            apply_avatar_texture(&preview_avatar_update, &color, &emoji);
+        });
 
         // === Preferences Group with proper rows ===
         let group = adw::PreferencesGroup::new();
@@ -1874,8 +1980,6 @@ impl KarereWindow {
         group.add(&name_row);
 
         // --- Emoji ActionRow with EmojiChooser ---
-        let selected_emoji = std::rc::Rc::new(std::cell::RefCell::new(initial_emoji.clone()));
-
         let emoji_label = gtk::Label::new(Some(&initial_emoji));
         emoji_label.add_css_class("title-2");
 
@@ -1894,17 +1998,56 @@ impl KarereWindow {
         emoji_row.add_suffix(&emoji_button);
 
         // Connect emoji picked signal
-        let preview_avatar_e = preview_avatar.clone();
         let selected_emoji_e = selected_emoji.clone();
         let emoji_label_e = emoji_label.clone();
+        let update_preview_emoji = update_preview.clone();
         emoji_chooser.connect_emoji_picked(move |_, emoji_str| {
             let emoji = emoji_str.to_string();
             *selected_emoji_e.borrow_mut() = emoji.clone();
             emoji_label_e.set_label(&emoji);
-            preview_avatar_e.set_text(Some(&emoji));
+            update_preview_emoji();
         });
 
         group.add(&emoji_row);
+
+        // --- Color ActionRow with ColorDialogButton ---
+        let color_dialog = gtk::ColorDialog::builder()
+            .title(&gettext("Choose Avatar Color"))
+            .with_alpha(false)
+            .build();
+
+        let initial_rgba = gtk::gdk::RGBA::parse(&initial_color).unwrap_or_else(|_| {
+            gtk::gdk::RGBA::parse(DEFAULT_COLOR).unwrap()
+        });
+
+        let color_button = gtk::ColorDialogButton::builder()
+            .dialog(&color_dialog)
+            .rgba(&initial_rgba)
+            .valign(gtk::Align::Center)
+            .build();
+
+        let color_row = adw::ActionRow::builder()
+            .title(&gettext("Color"))
+            .activatable_widget(&color_button)
+            .build();
+        color_row.add_suffix(&color_button);
+
+        // Connect color change signal
+        let selected_color_c = selected_color.clone();
+        let update_preview_color = update_preview.clone();
+        color_button.connect_rgba_notify(move |btn| {
+            let rgba = btn.rgba();
+            let hex = format!(
+                "#{:02x}{:02x}{:02x}",
+                (rgba.red() * 255.0) as u8,
+                (rgba.green() * 255.0) as u8,
+                (rgba.blue() * 255.0) as u8,
+            );
+            *selected_color_c.borrow_mut() = hex;
+            update_preview_color();
+        });
+
+        group.add(&color_row);
 
         content.append(&group);
         toolbar_view.set_content(Some(&content));
@@ -1913,6 +2056,7 @@ impl KarereWindow {
         // Action button handler
         let window_weak = self.downgrade();
         let selected_emoji_final = selected_emoji.clone();
+        let selected_color_final = selected_color.clone();
         let dialog_weak = dialog.downgrade();
         let name_row_ref = name_row.clone();
         let account_id_clone = account_id.clone();
@@ -1921,15 +2065,16 @@ impl KarereWindow {
             if !name.is_empty() {
                 if let Some(window) = window_weak.upgrade() {
                     let emoji = selected_emoji_final.borrow().clone();
+                    let color = selected_color_final.borrow().clone();
                     if let Some(ref id) = account_id_clone {
                         // Edit mode: update existing account
                         if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
-                            let _ = mgr.update_account_identity(id, name.as_str(), &emoji);
+                            let _ = mgr.update_account_identity(id, name.as_str(), &emoji, &color);
                         }
                         window.imp().update_account_button();
                     } else {
                         // Add mode: create new account
-                        window.create_account(name.as_str(), DEFAULT_COLOR, &emoji);
+                        window.create_account(name.as_str(), &color, &emoji);
                     }
                 }
             }
@@ -2000,10 +2145,16 @@ impl KarereWindow {
                         if has_webview {
                             if let Some(wv) = imp.webviews.borrow().get(&new_id) {
                                 wv.set_visible(true);
+                                let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+                                let settings = gio::Settings::new(&app_id);
+                                let zoom = settings.double("zoom-level");
+                                if zoom > 0.0 {
+                                    wv.set_zoom_level(zoom);
+                                }
                             }
                             *imp.active_account_id.borrow_mut() = Some(new_id);
                         } else {
-                            imp.setup_webview(&new_id, data_dir, cache_dir);
+                            imp.setup_webview(&new_id, data_dir, cache_dir, true);
                         }
                     } else {
                         *imp.active_account_id.borrow_mut() = None;
@@ -2039,7 +2190,7 @@ impl KarereWindow {
         // borrow dropped
 
         if let Some((account_id, data_dir, cache_dir)) = info {
-            imp.setup_webview(&account_id, data_dir, cache_dir);
+            imp.setup_webview(&account_id, data_dir, cache_dir, true);
         }
 
         imp.update_account_button();

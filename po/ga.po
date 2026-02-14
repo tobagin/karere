@@ -638,6 +638,9 @@ msgid ""
 "seamless desktop integration with comprehensive logging and crash reporting "
 "capabilities (Development Version)"
 msgstr ""
+"Fillteán nua-aimseartha dúchasach GTK4/LibAdwaita do WhatsApp Web a "
+"sholáthraíonn comhtháthú deisce gan uaim le cumais chuimsitheacha logála "
+"agus tuairiscithe tuairteála (Leagan Forbartha)"
 
 #: src/main.rs:148
 msgid ""
@@ -645,6 +648,9 @@ msgid ""
 "seamless desktop integration with comprehensive logging and crash reporting "
 "capabilities"
 msgstr ""
+"Fillteán nua-aimseartha dúchasach GTK4/LibAdwaita do WhatsApp Web a "
+"sholáthraíonn comhtháthú deisce gan uaim le cumais chuimsitheacha logála "
+"agus tuairiscithe tuairteála"
 
 #: src/main.rs:169
 msgid "Source"
@@ -676,7 +682,7 @@ msgstr "Ag rith trí Rust & GTK4"
 
 #: src/tray.rs:82
 msgid "Hide Window"
-msgstr "Oifalaigh an Fhuinneog"
+msgstr "Folaigh an Fhuinneog"
 
 #: src/tray.rs:84
 msgid "Show Window"
@@ -691,6 +697,8 @@ msgid ""
 "WhatsApp Web wants to show desktop notifications for new messages. Would you "
 "like to allow notifications?"
 msgstr ""
+"Ba mhaith le WhatsApp Web fógraí deisce a thaispeáint le haghaidh "
+"teachtaireachtaí nua. Ar mhaith leat fógraí a cheadú?"
 
 #: src/window.rs:794 src/window.rs:878
 msgid "Deny"
@@ -709,6 +717,8 @@ msgid ""
 "WhatsApp Web wants to access your camera and microphone. Would you like to "
 "allow access?"
 msgstr ""
+"Ba mhaith le WhatsApp Web rochtain a fháil ar do cheamara agus do "
+"mhicreafón. Ar mhaith leat rochtain a cheadú?"
 
 #: src/window.rs:845
 msgid "WhatsApp Web Camera Permission"
@@ -718,6 +728,8 @@ msgstr "Cead Ceamara WhatsApp Web"
 msgid ""
 "WhatsApp Web wants to access your camera. Would you like to allow access?"
 msgstr ""
+"Ba mhaith le WhatsApp Web rochtain a fháil ar do cheamara. Ar mhaith leat "
+"rochtain a cheadú?"
 
 #: src/window.rs:851
 msgid "WhatsApp Web Microphone Permission"
@@ -727,6 +739,8 @@ msgstr "Cead Micreafóin WhatsApp Web"
 msgid ""
 "WhatsApp Web wants to access your microphone. Would you like to allow access?"
 msgstr ""
+"Ba mhaith le WhatsApp Web rochtain a fháil ar do mhicreafón. Ar mhaith leat "
+"rochtain a cheadú?"
 
 #: src/window.rs:934
 msgid "WhatsApp"

@@ -28,14 +28,12 @@ msgid "Quit application"
 msgstr "Salir de la aplicación"
 
 #: temp_ui/keyboard-shortcuts.ui:41
-#, fuzzy
 msgid "Window"
-msgstr "Ocultar ventana"
+msgstr "Ventana"
 
 #: temp_ui/keyboard-shortcuts.ui:44
-#, fuzzy
 msgid "Minimize window"
-msgstr "Ocultar ventana"
+msgstr "Minimizar ventana"
 
 #: temp_ui/keyboard-shortcuts.ui:50
 msgid "Fullscreen"
@@ -234,9 +232,8 @@ msgid "Check spelling as you type"
 msgstr "Comprobar la ortografía mientras escribe"
 
 #: temp_ui/preferences.ui:109
-#, fuzzy
 msgid "Dictionary Status"
-msgstr "1 Diccionario"
+msgstr "Estado del diccionario"
 
 #: temp_ui/preferences.ui:110
 msgid "Number of installed dictionaries"
@@ -259,9 +256,8 @@ msgid "Select the language for spell checking"
 msgstr "Seleccionar el idioma para la corrección ortográfica"
 
 #: temp_ui/preferences.ui:138
-#, fuzzy
 msgid "Override Dictionary"
-msgstr "1 Diccionario"
+msgstr "Anular diccionario"
 
 #: temp_ui/preferences.ui:139
 msgid "Manually select the spell checking language"
@@ -276,14 +272,12 @@ msgid "Automatically fix common spelling mistakes"
 msgstr "Corregir automáticamente errores ortográficos comunes"
 
 #: temp_ui/preferences.ui:152 temp_ui/preferences.ui:444
-#, fuzzy
 msgid "Downloads"
-msgstr "Predeterminado (Descargas)"
+msgstr "Descargas"
 
 #: temp_ui/preferences.ui:155
-#, fuzzy
 msgid "Download Directory"
-msgstr "Seleccionar directorio de descarga"
+msgstr "Directorio de descarga"
 
 #: temp_ui/preferences.ui:156 src/preferences.rs:272
 msgid "Default (Downloads)"
@@ -319,7 +313,7 @@ msgstr "Habilitar herramientas de desarrollador"
 
 #: temp_ui/preferences.ui:191
 msgid "Allow inspecting and debugging the WebView"
-msgstr "Permitir inspeccionar y dífhabhtadh el visor web"
+msgstr "Permitir inspeccionar y depurar el visor web"
 
 #: temp_ui/preferences.ui:197
 msgid "Open the WebKit inspector"
@@ -335,7 +329,7 @@ msgstr "Navegación por teclado"
 
 #: temp_ui/preferences.ui:220 temp_ui/window.ui:158
 msgid "Keyboard Shortcuts"
-msgstr "Ajos de teclado"
+msgstr "Atajos de teclado"
 
 #: temp_ui/preferences.ui:221
 msgid "Enable keyboard shortcuts for common actions"
@@ -470,9 +464,8 @@ msgid "Master toggle for all notifications"
 msgstr "Control maestro para todas las notificaciones"
 
 #: temp_ui/preferences.ui:367
-#, fuzzy
 msgid "Messages"
-msgstr "Nuevo mensaje"
+msgstr "Mensajes"
 
 #: temp_ui/preferences.ui:370
 msgid "Message Notifications"
@@ -491,14 +484,12 @@ msgid "Animate the tray icon when a new message arrives"
 msgstr "Animar el icono de la bandeja cuando llega un nuevo mensaje"
 
 #: temp_ui/preferences.ui:384
-#, fuzzy
 msgid "Message Preview"
-msgstr "Nuevo mensaje recibido"
+msgstr "Vista previa del mensaje"
 
 #: temp_ui/preferences.ui:387
-#, fuzzy
 msgid "Show Message Preview"
-msgstr "Nuevo mensaje recibido"
+msgstr "Mostrar vista previa del mensaje"
 
 #: temp_ui/preferences.ui:388
 msgid "Display message content in notifications"
@@ -537,9 +528,8 @@ msgid "Sound"
 msgstr "Sonido"
 
 #: temp_ui/preferences.ui:426
-#, fuzzy
 msgid "Choose the notification alert sound"
-msgstr "Permiso de notificaciones de WhatsApp Web"
+msgstr "Elegir el sonido de alerta de notificación"
 
 #: temp_ui/preferences.ui:430
 msgid "WhatsApp (Default)"
@@ -636,6 +626,9 @@ msgid ""
 "seamless desktop integration with comprehensive logging and crash reporting "
 "capabilities (Development Version)"
 msgstr ""
+"Un envoltorio moderno y nativo GTK4/LibAdwaita para WhatsApp Web que "
+"proporciona integración de escritorio perfecta con capacidades completas de "
+"registro y reporte de errores (versión de desarrollo)"
 
 #: src/main.rs:148
 msgid ""
@@ -643,6 +636,9 @@ msgid ""
 "seamless desktop integration with comprehensive logging and crash reporting "
 "capabilities"
 msgstr ""
+"Un envoltorio moderno y nativo GTK4/LibAdwaita para WhatsApp Web que "
+"proporciona integración de escritorio perfecta con capacidades completas de "
+"registro y reporte de errores"
 
 #: src/main.rs:169
 msgid "Source"
@@ -701,43 +697,37 @@ msgid "Allow"
 msgstr "Permitir"
 
 #: src/window.rs:841
-#, fuzzy
 msgid "WhatsApp Web Camera & Microphone Permission"
-msgstr "Permiso de micrófono de WhatsApp Web"
+msgstr "Permiso de cámara y micrófono de WhatsApp Web"
 
 #: src/window.rs:842
-#, fuzzy
 msgid ""
 "WhatsApp Web wants to access your camera and microphone. Would you like to "
 "allow access?"
 msgstr ""
-"WhatsApp Web quiere acceder a tu micrófono para mensajes de voz y llamadas. "
-"¿Te gustaría permitir el acceso al micrófono?"
+"WhatsApp Web quiere acceder a tu cámara y micrófono. ¿Te gustaría permitir "
+"el acceso?"
 
 #: src/window.rs:845
-#, fuzzy
 msgid "WhatsApp Web Camera Permission"
-msgstr "Permiso de micrófono de WhatsApp Web"
+msgstr "Permiso de cámara de WhatsApp Web"
 
 #: src/window.rs:846
-#, fuzzy
 msgid ""
 "WhatsApp Web wants to access your camera. Would you like to allow access?"
 msgstr ""
-"WhatsApp Web quiere acceder a tu micrófono para mensajes de voz y llamadas. "
-"¿Te gustaría permitir el acceso al micrófono?"
+"WhatsApp Web quiere acceder a tu cámara. ¿Te gustaría permitir el acceso?"
 
 #: src/window.rs:851
 msgid "WhatsApp Web Microphone Permission"
 msgstr "Permiso de micrófono de WhatsApp Web"
 
 #: src/window.rs:852
-#, fuzzy
 msgid ""
 "WhatsApp Web wants to access your microphone. Would you like to allow access?"
 msgstr ""
-"WhatsApp Web quiere acceder a tu micrófono para mensajes de voz y llamadas. "
-"¿Te gustaría permitir el acceso al micrófono?"
+"WhatsApp Web quiere acceder a tu micrófono. ¿Te gustaría permitir el acceso "
+"al micrófono?"
 
 #: src/window.rs:934
 msgid "WhatsApp"

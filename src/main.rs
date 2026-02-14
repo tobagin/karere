@@ -426,6 +426,29 @@ fn main() -> anyhow::Result<()> {
     });
     app.add_action(&action_set_unread);
 
+    // Action: Refresh Tray Account List (fired on account add/edit/delete/switch)
+    let action_refresh_tray = gio::SimpleAction::new("refresh-tray-accounts", None);
+    let tray_handle_refresh = tray_handle.clone();
+    let tray_accounts_refresh = tray_accounts.clone();
+    action_refresh_tray.connect_activate(move |_, _| {
+        let mgr = accounts::AccountManager::new();
+        let summary = mgr.get_accounts_summary();
+        if let Ok(mut accounts) = tray_accounts_refresh.lock() {
+            *accounts = summary;
+        }
+        if let Some(handle) = &tray_handle_refresh {
+            let handle = handle.clone();
+            std::thread::spawn(move || {
+                if let Ok(rt) = tokio::runtime::Runtime::new() {
+                    rt.block_on(async move {
+                        let _ = handle.update(|_| {}).await;
+                    });
+                }
+            });
+        }
+    });
+    app.add_action(&action_refresh_tray);
+
     // Action: Switch Account (from tray or other sources)
     let action_switch_account = gio::SimpleAction::new("switch-account", Some(glib::VariantTy::STRING));
     action_switch_account.connect_activate(move |_, parameter| {

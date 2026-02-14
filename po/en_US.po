@@ -39,23 +39,20 @@ msgid "Quit application"
 msgstr "Quit application"
 
 #: temp_ui/keyboard-shortcuts.ui:41
-#, fuzzy
 msgid "Window"
-msgstr "Hide Window"
+msgstr "Window"
 
 #: temp_ui/keyboard-shortcuts.ui:44
-#, fuzzy
 msgid "Minimize window"
-msgstr "Hide Window"
+msgstr "Minimize window"
 
 #: temp_ui/keyboard-shortcuts.ui:50
 msgid "Fullscreen"
 msgstr "Fullscreen"
 
 #: temp_ui/keyboard-shortcuts.ui:58
-#, fuzzy
 msgid "WhatsApp Web"
-msgstr "WhatsApp"
+msgstr "WhatsApp Web"
 
 #: temp_ui/keyboard-shortcuts.ui:61
 msgid "Find in chat"
@@ -66,9 +63,8 @@ msgid "Search chats"
 msgstr "Search chats"
 
 #: temp_ui/keyboard-shortcuts.ui:73
-#, fuzzy
 msgid "New chat"
-msgstr "chat"
+msgstr "New chat"
 
 #: temp_ui/keyboard-shortcuts.ui:79
 msgid "Archive current chat"
@@ -127,9 +123,8 @@ msgid "Force reload"
 msgstr "Force reload"
 
 #: temp_ui/keyboard-shortcuts.ui:162 temp_ui/preferences.ui:352
-#, fuzzy
 msgid "Notifications"
-msgstr "communication"
+msgstr "Notifications"
 
 #: temp_ui/keyboard-shortcuts.ui:165
 msgid "Toggle notifications"
@@ -176,9 +171,8 @@ msgid "Quit Application"
 msgstr "Quit Application"
 
 #: temp_ui/preferences.ui:46
-#, fuzzy
 msgid "System Tray Icon"
-msgstr "New System Tray Icon support"
+msgstr "System Tray Icon"
 
 #: temp_ui/preferences.ui:47
 msgid "Show an icon in the system tray"
@@ -249,9 +243,8 @@ msgid "Check spelling as you type"
 msgstr "Check spelling as you type"
 
 #: temp_ui/preferences.ui:109
-#, fuzzy
 msgid "Dictionary Status"
-msgstr "1 Dictionary"
+msgstr "Dictionary Status"
 
 #: temp_ui/preferences.ui:110
 msgid "Number of installed dictionaries"
@@ -270,14 +263,12 @@ msgid "Automatically detected language"
 msgstr "Automatically detected language"
 
 #: temp_ui/preferences.ui:133
-#, fuzzy
 msgid "Select the language for spell checking"
-msgstr "Multi-language spell checking support"
+msgstr "Select the language for spell checking"
 
 #: temp_ui/preferences.ui:138
-#, fuzzy
 msgid "Override Dictionary"
-msgstr "1 Dictionary"
+msgstr "Override Dictionary"
 
 #: temp_ui/preferences.ui:139
 msgid "Manually select the spell checking language"
@@ -292,14 +283,12 @@ msgid "Automatically fix common spelling mistakes"
 msgstr "Automatically fix common spelling mistakes"
 
 #: temp_ui/preferences.ui:152 temp_ui/preferences.ui:444
-#, fuzzy
 msgid "Downloads"
-msgstr "Default (Downloads)"
+msgstr "Downloads"
 
 #: temp_ui/preferences.ui:155
-#, fuzzy
 msgid "Download Directory"
-msgstr "Select Download Directory"
+msgstr "Download Directory"
 
 #: temp_ui/preferences.ui:156 src/preferences.rs:272
 msgid "Default (Downloads)"
@@ -314,9 +303,8 @@ msgid "Reset to default"
 msgstr "Reset to default"
 
 #: temp_ui/preferences.ui:176
-#, fuzzy
 msgid "Accounts"
-msgstr "Account name"
+msgstr "Accounts"
 
 #: temp_ui/preferences.ui:179
 msgid "Multi-Account Support"
@@ -387,9 +375,8 @@ msgid "High Contrast Mode"
 msgstr "High Contrast Mode"
 
 #: temp_ui/preferences.ui:251
-#, fuzzy
 msgid "Increase contrast for better readability"
-msgstr "Enhanced packaging for better compatibility"
+msgstr "Increase contrast for better readability"
 
 #: temp_ui/preferences.ui:256
 msgid "Reduce Motion"
@@ -460,9 +447,8 @@ msgid "Accessibility Shortcuts"
 msgstr "Accessibility Shortcuts"
 
 #: temp_ui/preferences.ui:331
-#, fuzzy
 msgid "Enable keyboard shortcuts for accessibility features"
-msgstr "Keyboard shortcuts and productivity features"
+msgstr "Enable keyboard shortcuts for accessibility features"
 
 #: temp_ui/preferences.ui:336
 msgid "Developer Shortcuts"
@@ -473,32 +459,28 @@ msgid "Enable keyboard shortcuts for developer tools"
 msgstr "Enable keyboard shortcuts for developer tools"
 
 #: temp_ui/preferences.ui:342
-#, fuzzy
 msgid "Notification Shortcuts"
-msgstr "communication"
+msgstr "Notification Shortcuts"
 
 #: temp_ui/preferences.ui:343
 msgid "Enable keyboard shortcuts for notification actions"
 msgstr "Enable keyboard shortcuts for notification actions"
 
 #: temp_ui/preferences.ui:359
-#, fuzzy
 msgid "Enable Notifications"
-msgstr "communication"
+msgstr "Enable Notifications"
 
 #: temp_ui/preferences.ui:360
 msgid "Master toggle for all notifications"
 msgstr "Master toggle for all notifications"
 
 #: temp_ui/preferences.ui:367
-#, fuzzy
 msgid "Messages"
-msgstr "New message"
+msgstr "Messages"
 
 #: temp_ui/preferences.ui:370
-#, fuzzy
 msgid "Message Notifications"
-msgstr "communication"
+msgstr "Message Notifications"
 
 #: temp_ui/preferences.ui:371
 msgid "Show notifications for incoming messages"
@@ -513,14 +495,12 @@ msgid "Animate the tray icon when a new message arrives"
 msgstr "Animate the tray icon when a new message arrives"
 
 #: temp_ui/preferences.ui:384
-#, fuzzy
 msgid "Message Preview"
-msgstr "New message received"
+msgstr "Message Preview"
 
 #: temp_ui/preferences.ui:387
-#, fuzzy
 msgid "Show Message Preview"
-msgstr "New message received"
+msgstr "Show Message Preview"
 
 #: temp_ui/preferences.ui:388
 msgid "Display message content in notifications"
@@ -547,9 +527,8 @@ msgid "Sounds"
 msgstr "Sounds"
 
 #: temp_ui/preferences.ui:419
-#, fuzzy
 msgid "Notification Sounds"
-msgstr "communication"
+msgstr "Notification Sounds"
 
 #: temp_ui/preferences.ui:420
 msgid "Play a sound when a notification arrives"
@@ -560,14 +539,12 @@ msgid "Sound"
 msgstr "Sound"
 
 #: temp_ui/preferences.ui:426
-#, fuzzy
 msgid "Choose the notification alert sound"
-msgstr "WhatsApp Web Notification Permission"
+msgstr "Choose the notification alert sound"
 
 #: temp_ui/preferences.ui:430
-#, fuzzy
 msgid "WhatsApp (Default)"
-msgstr "WhatsApp"
+msgstr "WhatsApp (Default)"
 
 #: temp_ui/preferences.ui:431
 msgid "Pop"
@@ -586,18 +563,16 @@ msgid "Start"
 msgstr "Start"
 
 #: temp_ui/preferences.ui:447
-#, fuzzy
 msgid "Download Notifications"
-msgstr "communication"
+msgstr "Download Notifications"
 
 #: temp_ui/preferences.ui:448
 msgid "Notify when a file download completes"
 msgstr "Notify when a file download completes"
 
 #: temp_ui/preferences.ui:453
-#, fuzzy
 msgid "Notification Type"
-msgstr "communication"
+msgstr "Notification Type"
 
 #: temp_ui/preferences.ui:454
 msgid "How download notifications are displayed"
@@ -608,9 +583,8 @@ msgid "In-app Toast"
 msgstr "In-app Toast"
 
 #: temp_ui/preferences.ui:459
-#, fuzzy
 msgid "System Notification"
-msgstr "communication"
+msgstr "System Notification"
 
 #: temp_ui/window.ui:12 temp_ui/window.ui:23 src/main.rs:144 src/tray.rs:29
 #: src/tray.rs:73
@@ -618,9 +592,8 @@ msgid "Karere"
 msgstr "Karere"
 
 #: temp_ui/window.ui:24
-#, fuzzy
 msgid "GTK4 Whatsapp Web Client"
-msgstr "GTK4 WhatsApp Client"
+msgstr "GTK4 WhatsApp Web Client"
 
 #: temp_ui/window.ui:37
 msgid "Zoom Out"
@@ -639,9 +612,8 @@ msgid "Menu"
 msgstr "Menu"
 
 #: temp_ui/window.ui:73
-#, fuzzy
 msgid "Switch Account"
-msgstr "Add New Account"
+msgstr "Switch Account"
 
 #: temp_ui/window.ui:134
 msgid "Add new account"
@@ -736,43 +708,36 @@ msgid "Allow"
 msgstr "Allow"
 
 #: src/window.rs:841
-#, fuzzy
 msgid "WhatsApp Web Camera & Microphone Permission"
-msgstr "WhatsApp Web Microphone Permission"
+msgstr "WhatsApp Web Camera &amp; Microphone Permission"
 
 #: src/window.rs:842
-#, fuzzy
 msgid ""
 "WhatsApp Web wants to access your camera and microphone. Would you like to "
 "allow access?"
 msgstr ""
-"WhatsApp Web wants to access your microphone for voice messages and calls. "
-"Would you like to allow microphone access?"
+"WhatsApp Web wants to access your camera and microphone. Would you like to "
+"allow access?"
 
 #: src/window.rs:845
-#, fuzzy
 msgid "WhatsApp Web Camera Permission"
-msgstr "WhatsApp Web Microphone Permission"
+msgstr "WhatsApp Web Camera Permission"
 
 #: src/window.rs:846
-#, fuzzy
 msgid ""
 "WhatsApp Web wants to access your camera. Would you like to allow access?"
 msgstr ""
-"WhatsApp Web wants to access your microphone for voice messages and calls. "
-"Would you like to allow microphone access?"
+"WhatsApp Web wants to access your camera. Would you like to allow access?"
 
 #: src/window.rs:851
 msgid "WhatsApp Web Microphone Permission"
 msgstr "WhatsApp Web Microphone Permission"
 
 #: src/window.rs:852
-#, fuzzy
 msgid ""
 "WhatsApp Web wants to access your microphone. Would you like to allow access?"
 msgstr ""
-"WhatsApp Web wants to access your microphone for voice messages and calls. "
-"Would you like to allow microphone access?"
+"WhatsApp Web wants to access your microphone. Would you like to allow access?"
 
 #: src/window.rs:934
 msgid "WhatsApp"
@@ -787,9 +752,8 @@ msgid "New message received"
 msgstr "New message received"
 
 #: src/window.rs:1614
-#, fuzzy
 msgid "No account"
-msgstr "Remove account"
+msgstr "No account"
 
 #: src/window.rs:1729
 msgid "Add New Account"

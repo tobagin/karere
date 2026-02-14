@@ -4,48 +4,13 @@ use std::path::PathBuf;
 use gtk::prelude::*;
 use gtk::gdk;
 use libadwaita as adw;
+use cairo;
+use pango;
+use pangocairo;
 
-/// Predefined color palette for account avatars (GNOME-style)
-pub const ACCOUNT_COLORS: &[&str] = &[
-    "#3584e4", // Blue
-    "#33d17a", // Green
-    "#ff7800", // Orange
-    "#e01b24", // Red
-    "#9141ac", // Purple
-    "#f6d32d", // Yellow
-    "#26a269", // Teal
-    "#c061cb", // Pink
-    "#1c71d8", // Dark Blue
-    "#a51d2d", // Dark Red
-];
-
-/// Predefined emoji palette for account avatars
-pub const ACCOUNT_EMOJIS: &[&str] = &[
-    "💬", "🏠", "💼", "🎓", "👤", "👥", "🌟", "🔔",
-    "📱", "💻", "🎯", "🚀", "🎨", "🎵", "📷", "✈️",
-    "🌍", "❤️", "🔥", "⚡", "🌈", "🎮", "📚", "🏆",
-    "🍀", "🌸", "🦋", "🐱", "🐶", "🦊",
-];
-
+pub const DEFAULT_ACCOUNT_ID: &str = "default";
 pub const DEFAULT_COLOR: &str = "#3584e4";
 pub const DEFAULT_EMOJI: &str = "💬";
-
-/// Convert a hex color string (e.g. "#3584e4") to a gdk::RGBA
-pub fn hex_to_rgba(hex: &str) -> gdk::RGBA {
-    let hex = hex.trim_start_matches('#');
-    let r = u8::from_str_radix(&hex[0..2], 16).unwrap_or(53) as f32 / 255.0;
-    let g = u8::from_str_radix(&hex[2..4], 16).unwrap_or(132) as f32 / 255.0;
-    let b = u8::from_str_radix(&hex[4..6], 16).unwrap_or(228) as f32 / 255.0;
-    gdk::RGBA::new(r, g, b, 1.0)
-}
-
-/// Convert a gdk::RGBA to a hex color string (e.g. "#3584e4")
-pub fn rgba_to_hex(rgba: &gdk::RGBA) -> String {
-    let r = (rgba.red() * 255.0).round() as u8;
-    let g = (rgba.green() * 255.0).round() as u8;
-    let b = (rgba.blue() * 255.0).round() as u8;
-    format!("#{:02x}{:02x}{:02x}", r, g, b)
-}
 
 /// Recursively copy a directory and its contents
 fn copy_dir_recursive(src: &PathBuf, dst: &PathBuf) -> anyhow::Result<()> {
@@ -194,7 +159,7 @@ impl AccountManager {
     /// Remove an account (the default account can never be removed)
     pub fn remove_account(&self, account_id: &str) -> anyhow::Result<()> {
         // Protect the default account from removal
-        if account_id == "default" {
+        if account_id == DEFAULT_ACCOUNT_ID {
             return Err(anyhow::anyhow!("The default account cannot be removed"));
         }
 
@@ -257,13 +222,14 @@ impl AccountManager {
         Ok(())
     }
 
-    /// Update account name and emoji
-    pub fn update_account_identity(&self, account_id: &str, name: &str, emoji: &str) -> anyhow::Result<()> {
+    /// Update account name, emoji, and color
+    pub fn update_account_identity(&self, account_id: &str, name: &str, emoji: &str, color: &str) -> anyhow::Result<()> {
         let mut accounts = self.get_accounts()?;
 
         if let Some(account) = accounts.iter_mut().find(|a| a.id == account_id) {
             account.name = name.to_string();
             account.emoji = emoji.to_string();
+            account.color = color.to_string();
             self.save_accounts(&accounts)?;
         } else {
             return Err(anyhow::anyhow!("Account not found"));
@@ -452,7 +418,7 @@ impl AccountManager {
 
         // Create default account
         let mut default_account = Account::new(
-            "default".to_string(),
+            DEFAULT_ACCOUNT_ID.to_string(),
             "Primary Account".to_string(),
             DEFAULT_COLOR.to_string(),
             DEFAULT_EMOJI.to_string(),
@@ -528,20 +494,65 @@ impl Default for AccountManager {
     }
 }
 
-/// Apply account color to an `Adw.Avatar` via a unique CSS class
-pub fn apply_avatar_color(avatar: &adw::Avatar, color: &str) {
-    // Generate a unique class name from the color hex (strip #)
-    let class_name = format!("account-color-{}", color.trim_start_matches('#'));
-    let css = format!(
-        "avatar.{} {{ background-color: {}; color: white; }}",
-        class_name, color
+/// Generate a PNG icon with a colored circle and emoji for an account.
+/// Uses Cairo + Pango for proper color emoji rendering.
+/// Returns raw PNG bytes suitable for `Icon::Bytes` in portal notifications.
+pub fn create_account_icon_bytes(color: &str, emoji: &str, size: i32) -> Option<Vec<u8>> {
+    let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, size, size).ok()?;
+    let cr = cairo::Context::new(&surface).ok()?;
+
+    // Parse hex color
+    let hex = color.trim_start_matches('#');
+    let r = u8::from_str_radix(&hex[0..2], 16).unwrap_or(53) as f64 / 255.0;
+    let g = u8::from_str_radix(&hex[2..4], 16).unwrap_or(132) as f64 / 255.0;
+    let b = u8::from_str_radix(&hex[4..6], 16).unwrap_or(228) as f64 / 255.0;
+
+    // Draw colored circle
+    cr.arc(
+        size as f64 / 2.0,
+        size as f64 / 2.0,
+        size as f64 / 2.0,
+        0.0,
+        2.0 * std::f64::consts::PI,
     );
-    let provider = gtk::CssProvider::new();
-    provider.load_from_string(&css);
-    if let Some(display) = gdk::Display::default() {
-        gtk::style_context_add_provider_for_display(&display, &provider, gtk::STYLE_PROVIDER_PRIORITY_APPLICATION + 10);
+    cr.set_source_rgb(r, g, b);
+    let _ = cr.fill();
+
+    // Render emoji using Pango (handles color emoji fonts properly)
+    let layout = pangocairo::functions::create_layout(&cr);
+    layout.set_text(emoji);
+    let mut font_desc = pango::FontDescription::new();
+    let font_size = (28.0 * size as f64 / 64.0) as i32 * pango::SCALE;
+    font_desc.set_size(font_size);
+    layout.set_font_description(Some(&font_desc));
+
+    // Center the emoji on the circle
+    let (_, logical) = layout.pixel_extents();
+    let x = (size - logical.width()) as f64 / 2.0 - logical.x() as f64;
+    let y = (size - logical.height()) as f64 / 2.0 - logical.y() as f64;
+    cr.move_to(x, y);
+    pangocairo::functions::show_layout(&cr, &layout);
+
+    // Write PNG to in-memory buffer
+    drop(cr);
+    let mut buf = Vec::new();
+    surface.write_to_png(&mut buf).ok()?;
+    Some(buf)
+}
+
+/// Create a `gdk::Texture` from the colored-circle+emoji PNG.
+pub fn create_account_texture(color: &str, emoji: &str, size: i32) -> Option<gdk::Texture> {
+    let bytes = create_account_icon_bytes(color, emoji, size)?;
+    let glib_bytes = glib::Bytes::from(&bytes);
+    gdk::Texture::from_bytes(&glib_bytes).ok()
+}
+
+/// Apply a rendered PNG texture to an `adw::Avatar`, replacing any CSS color hack.
+pub fn apply_avatar_texture(avatar: &adw::Avatar, color: &str, emoji: &str) {
+    let pixel_size = avatar.size() * 2; // 2x for HiDPI
+    if let Some(texture) = create_account_texture(color, emoji, pixel_size) {
+        avatar.set_custom_image(Some(&texture));
     }
-    avatar.add_css_class(&class_name);
 }
 
 /// Create a ListBoxRow for an account with edit and delete buttons.
@@ -558,13 +569,9 @@ pub fn build_account_row(account: &Account) -> (gtk::ListBoxRow, gtk::Button, gt
     box_container.set_margin_top(8);
     box_container.set_margin_bottom(8);
 
-    // Colored emoji avatar
-    let avatar = adw::Avatar::builder()
-        .size(32)
-        .text(&account.emoji)
-        .show_initials(true)
-        .build();
-    apply_avatar_color(&avatar, &account.color);
+    // Colored emoji avatar (rendered as PNG texture)
+    let avatar = adw::Avatar::builder().size(32).build();
+    apply_avatar_texture(&avatar, &account.color, &account.emoji);
 
     // Unread indicator + name
     let label_text = if account.has_unread {
@@ -605,7 +612,7 @@ pub fn build_account_row(account: &Account) -> (gtk::ListBoxRow, gtk::Button, gt
     row.set_child(Some(&box_container));
 
     // Hide delete button for the default (primary) account — it can never be removed
-    if account.id == "default" {
+    if account.id == DEFAULT_ACCOUNT_ID {
         delete_btn.set_visible(false);
     }
 
