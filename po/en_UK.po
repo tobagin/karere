@@ -708,7 +708,7 @@ msgstr "Allow"
 
 #: src/window.rs:841
 msgid "WhatsApp Web Camera & Microphone Permission"
-msgstr "WhatsApp Web Camera &amp; Microphone Permission"
+msgstr "WhatsApp Web Camera & Microphone Permission"
 
 #: src/window.rs:842
 msgid ""
