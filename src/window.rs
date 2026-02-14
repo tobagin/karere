@@ -606,7 +606,7 @@ mod imp {
                 settings.set_enable_mediasource(true);
 
                 // User Agent Spoofing (Chrome Linux) — must match for all accounts
-                let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+                let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36";
                 settings.set_user_agent(Some(user_agent));
 
                 // Disable quirks to restore our manual Linux UA
@@ -692,10 +692,9 @@ mod imp {
             });
 
                  // User Agent Spoofing (Chrome Linux)
-                 let _version = "2.0.0"; 
-                 let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+                 let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36";
                  ws.set_user_agent(Some(&user_agent));
-                 
+
                  // Disable quirks to restore our manual Linux UA
                  ws.set_enable_site_specific_quirks(false);
                  
