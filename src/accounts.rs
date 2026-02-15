@@ -17,9 +17,13 @@ fn copy_dir_recursive(src: &PathBuf, dst: &PathBuf) -> anyhow::Result<()> {
     std::fs::create_dir_all(dst)?;
     for entry in std::fs::read_dir(src)? {
         let entry = entry?;
+        let file_type = entry.file_type()?;
+        if file_type.is_symlink() {
+            continue; // Skip symlinks to prevent traversal attacks
+        }
         let src_path = entry.path();
         let dst_path = dst.join(entry.file_name());
-        if src_path.is_dir() {
+        if file_type.is_dir() {
             copy_dir_recursive(&src_path, &dst_path)?;
         } else {
             std::fs::copy(&src_path, &dst_path)?;
@@ -115,9 +119,16 @@ impl AccountManager {
         let config_dir = glib::user_data_dir().join("karere").join("accounts");
         let accounts_file = config_dir.join("accounts.json");
 
-        // Create directories if they don't exist
+        // Create directories if they don't exist (mode 0700 for privacy)
         if !config_dir.exists() {
-            let _ = std::fs::create_dir_all(&config_dir);
+            use std::os::unix::fs::DirBuilderExt;
+            if let Err(e) = std::fs::DirBuilder::new()
+                .recursive(true)
+                .mode(0o700)
+                .create(&config_dir)
+            {
+                eprintln!("Karere: Failed to create config directory: {}", e);
+            }
         }
 
         Self {
@@ -373,10 +384,12 @@ impl AccountManager {
             .collect()
     }
 
-    /// Save accounts to file
+    /// Save accounts to file (atomic write via temp-then-rename)
     fn save_accounts(&self, accounts: &[Account]) -> anyhow::Result<()> {
         let content = serde_json::to_string_pretty(accounts)?;
-        std::fs::write(&self.accounts_file, content)?;
+        let tmp_path = self.accounts_file.with_extension("json.tmp");
+        std::fs::write(&tmp_path, &content)?;
+        std::fs::rename(&tmp_path, &self.accounts_file)?;
         Ok(())
     }
 

@@ -447,7 +447,7 @@ impl KarerePreferencesWindow {
              };
              let resource_path = format!("/io/github/tobagin/karere/sounds/{}.oga", sound_name);
              if let Ok(bytes) = gio::resources_lookup_data(&resource_path, gio::ResourceLookupFlags::NONE) {
-                  let temp_path = std::env::temp_dir().join("karere-preview.oga");
+                  let temp_path = glib::user_runtime_dir().join("karere-preview.oga");
                   if std::fs::write(&temp_path, &bytes).is_ok() {
                        let _ = std::process::Command::new("paplay")
                            .arg(temp_path)

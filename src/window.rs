@@ -697,7 +697,12 @@ mod imp {
 
                  // Disable quirks to restore our manual Linux UA
                  ws.set_enable_site_specific_quirks(false);
-                 
+
+                 // Security hardening: restrict file and data URL access
+                 ws.set_allow_file_access_from_file_urls(false);
+                 ws.set_allow_universal_access_from_file_urls(false);
+                 ws.set_allow_top_navigation_to_data_urls(false);
+
                  // CRITICAL: ANY JavaScript navigator override (userAgent OR platform) breaks dead key composition!
                  // Validated by user: platform-only override also causes dead key bug.
                  // We must NOT inject any scripts that modify navigator.
@@ -771,8 +776,57 @@ mod imp {
                 }
             });
             obj.add_action(&action_devtools);
-            
 
+            // Minimize Action (Ctrl+M)
+            let obj_weak_min = obj.downgrade();
+            let action_minimize = gio::SimpleAction::new("minimize", None);
+            action_minimize.connect_activate(move |_, _| {
+                if let Some(obj) = obj_weak_min.upgrade() {
+                    obj.minimize();
+                }
+            });
+            obj.add_action(&action_minimize);
+
+            // Toggle Fullscreen Action (F11)
+            let obj_weak_fs = obj.downgrade();
+            let action_fullscreen = gio::SimpleAction::new("toggle-fullscreen", None);
+            action_fullscreen.connect_activate(move |_, _| {
+                if let Some(obj) = obj_weak_fs.upgrade() {
+                    if obj.is_fullscreen() {
+                        obj.unfullscreen();
+                    } else {
+                        obj.fullscreen();
+                    }
+                }
+            });
+            obj.add_action(&action_fullscreen);
+
+            // Toggle High Contrast Action (Ctrl+Shift+H)
+            let action_high_contrast = gio::SimpleAction::new("toggle-high-contrast", None);
+            let settings_hc = settings.clone();
+            action_high_contrast.connect_activate(move |_, _| {
+                let current = settings_hc.boolean("high-contrast");
+                let _ = settings_hc.set_boolean("high-contrast", !current);
+            });
+            obj.add_action(&action_high_contrast);
+
+            // Toggle Focus Indicators Action (Ctrl+Shift+F)
+            let action_focus = gio::SimpleAction::new("toggle-focus-indicators", None);
+            let settings_fi = settings.clone();
+            action_focus.connect_activate(move |_, _| {
+                let current = settings_fi.boolean("focus-indicators");
+                let _ = settings_fi.set_boolean("focus-indicators", !current);
+            });
+            obj.add_action(&action_focus);
+
+            // Toggle Notifications Action (Ctrl+Shift+N)
+            let action_notify = gio::SimpleAction::new("toggle-notifications", None);
+            let settings_nt = settings.clone();
+            action_notify.connect_activate(move |_, _| {
+                let current = settings_nt.boolean("notifications-enabled");
+                let _ = settings_nt.set_boolean("notifications-enabled", !current);
+            });
+            obj.add_action(&action_notify);
 
             // 3. Downloads
             if let Some(session) = web_view.network_session() {
@@ -1234,7 +1288,7 @@ mod imp {
                             // Let's spawn separate local task to keep it async and clean
                             glib::MainContext::default().spawn_local(async move {
                                 let resource_path = format!("/io/github/tobagin/karere/sounds/{}.oga", sound_name);
-                                let temp_path = std::env::temp_dir().join("karere-notify.oga");
+                                let temp_path = glib::user_runtime_dir().join("karere-notify.oga");
                                 
                                 // Only write if not exists or size is 0 (simple cache)
                                 let needs_write = !temp_path.exists();
@@ -1558,6 +1612,12 @@ mod imp {
 
             web_view.connect_load_changed(move |webview, event| {
                 if event == webkit6::LoadEvent::Finished {
+                    // Reset transitioning flag unconditionally — the reload is done
+                    // regardless of whether JS injection succeeds or fires its callback.
+                    if let Some(window) = obj_weak_load.upgrade() {
+                        window.imp().mobile_layout_transitioning.set(false);
+                    }
+
                     // Get window width if available
                     let window_width = if let Some(window) = obj_weak_load.upgrade() {
                         window.width()
@@ -1567,20 +1627,14 @@ mod imp {
 
                     if should_use_mobile_layout(&settings_mobile_layout, window_width) {
                         let js_content = include_str!("mobile_responsive.js");
-                        let obj_weak_js = obj_weak_load.clone();
                         webview.evaluate_javascript(
                             &js_content,
                             None,
                             None,
                             Option::<&gio::Cancellable>::None,
                             move |result| {
-                                match result {
-                                    Ok(_) => {},
-                                    Err(e) => eprintln!("ERROR: Failed to inject mobile_responsive.js: {}", e),
-                                }
-                                // Reset transitioning flag after JS injection completes
-                                if let Some(window) = obj_weak_js.upgrade() {
-                                    window.imp().mobile_layout_transitioning.set(false);
+                                if let Err(e) = result {
+                                    eprintln!("ERROR: Failed to inject mobile_responsive.js: {}", e);
                                 }
                             },
                         );
@@ -1589,10 +1643,9 @@ mod imp {
                             window.imp().mobile_layout_active.set(true);
                         }
                     } else {
-                        // Update state and reset transitioning flag
+                        // Update state
                         if let Some(window) = obj_weak_load.upgrade() {
                             window.imp().mobile_layout_active.set(false);
-                            window.imp().mobile_layout_transitioning.set(false);
                         }
                     }
 
@@ -2042,8 +2095,8 @@ impl KarereWindow {
         let imp = self.imp();
 
         // Parse compound notification ID: "account_id:original_tag"
-        let (account_id, original_tag) = if let Some(colon_pos) = id.find(':') {
-            (&id[..colon_pos], &id[colon_pos + 1..])
+        let (account_id, original_tag) = if let Some((aid, tag)) = id.split_once(':') {
+            (aid, tag)
         } else {
             (DEFAULT_ACCOUNT_ID, id)
         };

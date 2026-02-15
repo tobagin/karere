@@ -46,6 +46,8 @@ fn main() -> anyhow::Result<()> {
         let current_dir = std::env::current_dir().expect("Failed to get current directory");
         let schema_dir = current_dir.join("data");
         if schema_dir.exists() {
+             // SAFETY: Called before any threads are spawned (single-threaded at
+             // this point), so there is no data race on environment variables.
              unsafe {
                  std::env::set_var("GSETTINGS_SCHEMA_DIR", schema_dir);
              }
@@ -84,8 +86,8 @@ fn main() -> anyhow::Result<()> {
         // Sync Autostart Action
         let action_sync_autostart = gio::SimpleAction::new("sync-autostart", Some(glib::VariantTy::BOOLEAN));
         action_sync_autostart.connect_activate(|_, parameter| {
-             let enabled = parameter.unwrap().get::<bool>().unwrap();
-             
+             let Some(enabled) = parameter.and_then(|p| p.get::<bool>()) else { return };
+
              RUNTIME.spawn(async move {
                 let request_future = ashpd::desktop::background::Background::request()
                     .reason("Syncing autostart preference")
@@ -223,15 +225,23 @@ fn main() -> anyhow::Result<()> {
         app.set_accels_for_action("win.zoom-out", &["<Control>minus", "<Control>KP_Subtract"]);
         app.set_accels_for_action("win.zoom-reset", &["<Control>0", "<Control>KP_0"]);
 
+        // Window Accelerators
+        app.set_accels_for_action("win.minimize", &["<Control>m"]);
+        app.set_accels_for_action("win.toggle-fullscreen", &["F11", "<Alt>Return"]);
+
+        // Accessibility Accelerators
+        app.set_accels_for_action("win.toggle-high-contrast", &["<Control><Shift>h"]);
+        app.set_accels_for_action("win.toggle-focus-indicators", &["<Control><Shift>f"]);
+
+        // Notification Accelerators
+        app.set_accels_for_action("win.toggle-notifications", &["<Control><Shift>n"]);
+
         // Open Download Action
         let action_open_download = gio::SimpleAction::new("open-download", Some(glib::VariantTy::STRING));
         let app_weak = app.downgrade();
         action_open_download.connect_activate(move |_, parameter| {
              if let Some(app) = app_weak.upgrade() {
-                 let uri_str = parameter
-                     .expect("Could not get parameter")
-                     .get::<String>()
-                     .expect("The value is not a string");
+                 let Some(uri_str) = parameter.and_then(|p| p.get::<String>()) else { return };
                  
                  // Extract file path from URI or treat as direct path
                  let file_obj = gio::File::for_uri(&uri_str);
@@ -389,10 +399,7 @@ fn main() -> anyhow::Result<()> {
     let tray_accounts_unread = tray_accounts.clone();
     
     action_set_unread.connect_activate(move |_, parameter| {
-        let is_unread = parameter
-            .expect("Could not get parameter")
-            .get::<bool>()
-            .expect("The value is not a boolean");
+        let Some(is_unread) = parameter.and_then(|p| p.get::<bool>()) else { return };
             
         // Only update if changed
         let was_unread = has_unread_clone_2.load(Ordering::Relaxed);
@@ -440,10 +447,7 @@ fn main() -> anyhow::Result<()> {
     // Action: Switch Account (from tray or other sources)
     let action_switch_account = gio::SimpleAction::new("switch-account", Some(glib::VariantTy::STRING));
     action_switch_account.connect_activate(move |_, parameter| {
-        let account_id = parameter
-            .expect("Could not get parameter")
-            .get::<String>()
-            .expect("The value is not a string");
+        let Some(account_id) = parameter.and_then(|p| p.get::<String>()) else { return };
 
         glib::MainContext::default().invoke(move || {
             if let Some(app) = gio::Application::default() {
