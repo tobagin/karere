@@ -95,6 +95,15 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="2.5.1" date="2026-02-15">
+      <description>
+        <ul>
+          <li>Fixed: Handle WebKit web process crashes with auto-reload and user notification</li>
+          <li>Fixed: JS injection and path traversal vulnerabilities</li>
+          <li>Fixed: Panic in notification handling</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.5.0" date="2026-02-14">
       <description>
         <ul>

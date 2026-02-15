@@ -11,14 +11,14 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.5.0 - Multi-Account Support
+## 🎉 Version 2.5.1 - Stability & Security Update
 
-**Karere 2.5.0** brings full multi-account support!
+**Karere 2.5.1** brings stability improvements and critical security fixes.
 
-### 🆕 What's New in 2.5.0
+### 🆕 What's New in 2.5.1
 
-- **Multi-Account**: Seamlessly switch between multiple WhatsApp accounts.
-- **Zoom**: Per-account zoom settings for better accessibility.
+- **Crash Handling**: Auto-reload and user notification on WebKit process crashes.
+- **Security**: Fixes for JS injection and path traversal vulnerabilities.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

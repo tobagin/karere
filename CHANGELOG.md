@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Fixed
 
+## [2.5.1] - 2026-02-15
+
+### Fixed
+- **Stability**: Handle WebKit web process crashes with auto-reload and user notification.
+- **Security**: Fix JS injection and path traversal vulnerabilities.
+- **Robustness**: Fix panic in notification handling and resolved all clippy warnings.
+
 ## [2.5.0] - 2026-02-14
 
 ### Added
