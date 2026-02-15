@@ -123,21 +123,17 @@ fn main() -> anyhow::Result<()> {
         // Capture app_id for closure
         let app_id_clone = app_id.clone();
         action_about.connect_activate(move |_, _| {
-            if let Some(app) = app_weak.upgrade() {
-                if let Some(window) = app.active_window() {
-                    let developers = vec![
-                        "Thiago Fernandes https://github.com/tobagin", 
+            if let Some(app) = app_weak.upgrade()
+                && let Some(window) = app.active_window() {
+                    let developers = ["Thiago Fernandes https://github.com/tobagin", 
                         "Aman9Das https://github.com/Aman9das", 
                         "Pascal Dietrich https://github.com/", 
                         "Sabri Ünal https://github.com/yakushabb",
                         "Enrico https://github.com/account1009",
-                        "Leandro Marques https://github.com/leandromqrs"
-                    ];
-                    let designers = vec!["Thiago Fernandes https://github.com/tobagin"];
-                    let artists = vec![
-                        "Thiago Fernandes https://github.com/tobagin", 
-                        "Rosabel https://github.com/oiimrosabel"
-                    ];
+                        "Leandro Marques https://github.com/leandromqrs"];
+                    let designers = ["Thiago Fernandes https://github.com/tobagin"];
+                    let artists = ["Thiago Fernandes https://github.com/tobagin", 
+                        "Rosabel https://github.com/oiimrosabel"];
                     
                     let is_devel = app_id_clone.contains("Devel") || app_id_clone.ends_with(".Dev");
                     let app_name = if is_devel { gettext("Karere (Dev)") } else { gettext("Karere") };
@@ -162,7 +158,7 @@ fn main() -> anyhow::Result<()> {
                         .designers(designers.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
                         .artists(artists.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
                         .translator_credits("Thiago Fernandes")
-                        .release_notes(&get_release_notes(env!("CARGO_PKG_VERSION")))
+                        .release_notes(get_release_notes(env!("CARGO_PKG_VERSION")))
                         .build();
                         
                     about.add_link(gettext("Source").as_str(), "https://github.com/tobagin/karere");
@@ -174,7 +170,6 @@ fn main() -> anyhow::Result<()> {
 
                     about.present(Some(&window));
                 }
-            }
         });
         app.add_action(&action_about);
 
@@ -182,11 +177,10 @@ fn main() -> anyhow::Result<()> {
         let action_preferences = gio::SimpleAction::new("preferences", None);
         let app_weak = app.downgrade();
         action_preferences.connect_activate(move |_, _| {
-             if let Some(app) = app_weak.upgrade() {
-                if let Some(window) = app.active_window() {
+             if let Some(app) = app_weak.upgrade()
+                && let Some(window) = app.active_window() {
                     preferences::show(&window);
                 }
-            }
         });
         app.add_action(&action_preferences);
 
@@ -194,8 +188,8 @@ fn main() -> anyhow::Result<()> {
         let action_help = gio::SimpleAction::new("show-help-overlay", None);
         let app_weak = app.downgrade();
         action_help.connect_activate(move |_, _| {
-            if let Some(app) = app_weak.upgrade() {
-                 if let Some(window) = app.active_window() {
+            if let Some(app) = app_weak.upgrade()
+                 && let Some(window) = app.active_window() {
                      let builder = gtk::Builder::from_resource("/io/github/tobagin/karere/ui/keyboard-shortcuts.ui");
                      // Support both Adw.Dialog (newer) and Gtk.Window (fallback)
                      if let Some(dialog) = builder.object::<adw::Dialog>("shortcuts_dialog") {
@@ -204,10 +198,9 @@ fn main() -> anyhow::Result<()> {
                         dialog.set_transient_for(Some(&window));
                         dialog.present();
                      } else {
-                         eprintln!("Failed to load shortcuts_dialog");
+                         log::error!("Failed to load shortcuts_dialog");
                      }
                  }
-            }
         });
         app.add_action(&action_help);
 
@@ -272,15 +265,15 @@ fn main() -> anyhow::Result<()> {
                                          .send_file(&file).await;
                                          
                                      if let Err(e) = result {
-                                         eprintln!("Failed to open file via portal: {}", e);
+                                         log::error!("Failed to open file via portal: {}", e);
                                      }
                              });
                          }
                      } else {
-                         eprintln!("Failed to open file for reading: {}", path.display());
+                         log::error!("Failed to open file for reading: {}", path.display());
                      }
                  } else {
-                     eprintln!("Invalid file URI/Path: {}", uri_str);
+                     log::error!("Invalid file URI/Path: {}", uri_str);
                  }
              }
         });
@@ -310,13 +303,10 @@ fn main() -> anyhow::Result<()> {
                      // Try extracting as string directly
                      if let Some(s) = v.get::<String>() {
                          s
-                     } 
-                     // Try extracting if it's a tuple containing a string (s)
-                     else if let Some(s) = v.child_value(0).get::<String>() {
-                         s
                      }
+                     // Try extracting if it's a tuple containing a string (s)
                      else {
-                         String::new()
+                         v.child_value(0).get::<String>().unwrap_or_default()
                      }
                  } else {
                      String::new()
@@ -331,13 +321,12 @@ fn main() -> anyhow::Result<()> {
                              win.set_visible(true);
                              win.present();
                          }
-                     } else if let Some(window) = app.windows().first() {
-                         if let Ok(win) = window.clone().downcast::<KarereWindow>() {
+                     } else if let Some(window) = app.windows().first()
+                         && let Ok(win) = window.clone().downcast::<KarereWindow>() {
                              win.process_notification_click(&id);
                              win.set_visible(true);
                              win.present();
                          }
-                     }
                  }
              }
         });
@@ -354,7 +343,7 @@ fn main() -> anyhow::Result<()> {
     let should_spawn_tray = match tray_behavior.as_str() {
         "disabled" => false,
         "enabled" => true,
-        "auto" | _ => {
+        _ => {
              let desktop = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default().to_lowercase();
              !desktop.contains("gnome")
         }
@@ -383,7 +372,7 @@ fn main() -> anyhow::Result<()> {
         match tray::spawn_tray(visible.clone(), has_unread.clone(), tray_accounts.clone()) {
             Ok(handle) => Some(handle),
             Err(e) => {
-                eprintln!("Warning: Failed to start tray icon: {}", e);
+                log::warn!("Failed to start tray icon: {}", e);
                 visible.store(true, Ordering::Relaxed);
                 None
             }
@@ -393,7 +382,7 @@ fn main() -> anyhow::Result<()> {
     };
     
     // Action: Set Unread Status
-    let action_set_unread = gio::SimpleAction::new("set-unread", Some(&*glib::VariantTy::BOOLEAN));
+    let action_set_unread = gio::SimpleAction::new("set-unread", Some(glib::VariantTy::BOOLEAN));
     let tray_handle_clone = tray_handle.clone();
     let has_unread_clone_2 = has_unread.clone();
     let tray_accounts_unread = tray_accounts.clone();
@@ -450,17 +439,14 @@ fn main() -> anyhow::Result<()> {
         let Some(account_id) = parameter.and_then(|p| p.get::<String>()) else { return };
 
         glib::MainContext::default().invoke(move || {
-            if let Some(app) = gio::Application::default() {
-                if let Ok(gtk_app) = app.downcast::<gtk::Application>() {
-                    if let Some(window) = gtk_app.active_window().or_else(|| gtk_app.windows().first().cloned()) {
-                        if let Ok(win) = window.downcast::<KarereWindow>() {
+            if let Some(app) = gio::Application::default()
+                && let Ok(gtk_app) = app.downcast::<gtk::Application>()
+                    && let Some(window) = gtk_app.active_window().or_else(|| gtk_app.windows().first().cloned())
+                        && let Ok(win) = window.downcast::<KarereWindow>() {
                             win.switch_to_account(&account_id);
                             win.set_visible(true);
                             win.present();
                         }
-                    }
-                }
-            }
         });
     });
     app.add_action(&action_switch_account);
@@ -526,25 +512,26 @@ fn main() -> anyhow::Result<()> {
 fn get_release_notes(version: &str) -> String {
     // Try possible paths for metainfo to read release notes
     let paths = [
-        format!("/app/share/metainfo/io.github.tobagin.karere.metainfo.xml"), // Flatpak sandbox path (renamed during build, but might be original name depending on install)
+        "/app/share/metainfo/io.github.tobagin.karere.metainfo.xml".to_string(), // Flatpak sandbox path (renamed during build, but might be original name depending on install)
         // Actually, in Devel build we rename it to io.github.tobagin.karere2.Devel.metainfo.xml
         // We should try checking env vars or multiple names
-        format!("/app/share/metainfo/io.github.tobagin.karere2.Devel.metainfo.xml"),
-        format!("/usr/share/metainfo/io.github.tobagin.karere.metainfo.xml"),
-        format!("data/io.github.tobagin.karere.metainfo.xml"), // Local dev
+        "/app/share/metainfo/io.github.tobagin.karere2.Devel.metainfo.xml".to_string(),
+        "/usr/share/metainfo/io.github.tobagin.karere.metainfo.xml".to_string(),
+        "data/io.github.tobagin.karere.metainfo.xml".to_string(), // Local dev
     ];
 
     for path in paths {
         if let Ok(content) = std::fs::read_to_string(&path) {
             let version_tag = format!("version=\"{}\"", version);
-            if let Some(pos) = content.find(&version_tag) {
-                if let Some(desc_start) = content[pos..].find("<description>") {
-                     if let Some(desc_end) = content[pos + desc_start..].find("</description>") {
-                         let raw = &content[pos + desc_start + 13 .. pos + desc_start + desc_end];
-                         return raw.trim().to_string();
+            if let Some(pos) = content.find(&version_tag)
+                && let Some(desc_start) = content[pos..].find("<description>")
+                     && let Some(desc_end) = content[pos + desc_start..].find("</description>") {
+                         let start = pos + desc_start + "<description>".len();
+                         let end = pos + desc_start + desc_end;
+                         if let Some(raw) = content.get(start..end) {
+                             return raw.trim().to_string();
+                         }
                      }
-                }
-            }
         }
     }
     String::new()

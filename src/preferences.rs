@@ -131,7 +131,7 @@ impl KarerePreferencesWindow {
             if let Some(app) = gio::Application::default() {
                 app.activate_action("sync-autostart", Some(&enabled.to_variant()));
             } else {
-                eprintln!("Failed to get default application to sync autostart.");
+                log::error!("Failed to get default application to sync autostart.");
             }
          });
 
@@ -143,7 +143,7 @@ impl KarerePreferencesWindow {
                 let val = variant.get::<String>().unwrap_or_else(|| "background".to_string());
                 let idx: u32 = match val.as_str() {
                     "quit" => 1,
-                    "background" | _ => 0,
+                    _ => 0,
                 };
                 Some(idx.to_value())
             })
@@ -163,7 +163,7 @@ impl KarerePreferencesWindow {
                 let idx: u32 = match val.as_str() {
                     "enabled" => 1,
                     "disabled" => 2,
-                    "auto" | _ => 0,
+                    _ => 0,
                 };
                 Some(idx.to_value())
             })
@@ -185,7 +185,7 @@ impl KarerePreferencesWindow {
                 let idx: u32 = match val.as_str() {
                     "light" => 1,
                     "dark" => 2,
-                    "system" | _ => 0,
+                    _ => 0,
                 };
                 Some(idx.to_value())
             })
@@ -206,7 +206,7 @@ impl KarerePreferencesWindow {
                 let idx: u32 = match val.as_str() {
                     "enabled" => 1,
                     "disabled" => 2,
-                    "auto" | _ => 0,
+                    _ => 0,
                 };
                 Some(idx.to_value())
             })
@@ -388,7 +388,7 @@ impl KarerePreferencesWindow {
                      "alert" => 2,
                      "soft" => 3,
                      "start" => 4,
-                     "whatsapp" | "default" | _ => 0,
+                     _ => 0,
                  };
                  Some(idx.to_value())
              })
@@ -482,11 +482,10 @@ impl KarerePreferencesWindow {
         settings.bind("spell-checking-languages", &*imp.row_spell_active_combo, "selected")
             .mapping(move |variant, _type| {
                 let langs = variant.get::<Vec<String>>().unwrap_or_default();
-                if let Some(first) = langs.first() {
-                    if let Some(idx) = available_dicts_clone.iter().position(|r| r == first) {
+                if let Some(first) = langs.first()
+                    && let Some(idx) = available_dicts_clone.iter().position(|r| r == first) {
                         return Some((idx as u32).to_value());
                     }
-                }
                 Some(0u32.to_value())
             })
             .set_mapping(move |value, _type| {
@@ -518,9 +517,9 @@ impl KarerePreferencesWindow {
              } else { None };
              
              let dialog = gtk::FileDialog::builder()
-                 .title(&gettext("Select Download Directory"))
+                 .title(gettext("Select Download Directory"))
                  .modal(true)
-                 .accept_label(&gettext("Select"))
+                 .accept_label(gettext("Select"))
                  .build();
              if let Some(f) = initial_file {
                  dialog.set_initial_folder(Some(&f));
@@ -528,16 +527,11 @@ impl KarerePreferencesWindow {
              
              let settings_inner = settings_clone_dl.clone();
              dialog.select_folder(root.as_ref(), gio::Cancellable::NONE, move |result| {
-                 match result {
-                     Ok(file) => {
-                         if let Some(path) = file.path() {
-                             if let Some(path_str) = path.to_str() {
-                                 let _ = settings_inner.set_string("download-directory", path_str);
-                             }
-                         }
-                     },
-                     Err(_) => {}
-                 }
+                 if let Ok(file) = result
+                     && let Some(path) = file.path()
+                     && let Some(path_str) = path.to_str() {
+                         let _ = settings_inner.set_string("download-directory", path_str);
+                     }
              });
         });
 
@@ -579,8 +573,8 @@ impl KarerePreferencesWindow {
             let obj_weak_inner = obj_weak.clone();
 
             let dialog = adw::AlertDialog::builder()
-                .heading(&gettext("Reset All Zoom Levels?"))
-                .body(&gettext("Changing the minimum zoom level will reset the zoom on all accounts to this value."))
+                .heading(gettext("Reset All Zoom Levels?"))
+                .body(gettext("Changing the minimum zoom level will reset the zoom on all accounts to this value."))
                 .default_response("apply")
                 .close_response("cancel")
                 .build();

@@ -8,19 +8,18 @@ fn main() {
     std::fs::create_dir_all(&ui_out).expect("Failed to create ui output dir");
 
     // Compile Blueprint files
-    // Compile Blueprint files
     let status = Command::new("blueprint-compiler")
-        .args(&["compile", "data/ui/window.blp", "--output", out_path.join("window.ui").to_str().unwrap()])
+        .args(["compile", "data/ui/window.blp", "--output", out_path.join("window.ui").to_str().expect("non-UTF-8 path")])
         .status()
         .expect("Failed to run blueprint-compiler (window)");
 
     let status_help = Command::new("blueprint-compiler")
-        .args(&["compile", "data/ui/keyboard-shortcuts.blp", "--output", out_path.join("keyboard-shortcuts.ui").to_str().unwrap()])
+        .args(["compile", "data/ui/keyboard-shortcuts.blp", "--output", out_path.join("keyboard-shortcuts.ui").to_str().expect("non-UTF-8 path")])
         .status()
         .expect("Failed to run blueprint-compiler (keyboard-shortcuts)");
 
     let status_pref = Command::new("blueprint-compiler")
-        .args(&["compile", "data/ui/preferences.blp", "--output", out_path.join("preferences.ui").to_str().unwrap()])
+        .args(["compile", "data/ui/preferences.blp", "--output", out_path.join("preferences.ui").to_str().expect("non-UTF-8 path")])
         .status()
         .expect("Failed to run blueprint-compiler (preferences)");
 
@@ -51,8 +50,8 @@ fn main() {
         .arg("--version")
         .status();
 
-    if let Ok(status) = status {
-        if status.success() {
+    if let Ok(status) = status
+        && status.success() {
             let po_dir = std::path::Path::new("po");
             let locale_dir = out_path.join("locale");
             std::fs::create_dir_all(&locale_dir).expect("Failed to create locale dir");
@@ -61,7 +60,7 @@ fn main() {
                 let entry = entry.expect("Failed to read po entry");
                 let path = entry.path();
                 if path.extension().and_then(|s| s.to_str()) == Some("po") {
-                    let lang = path.file_stem().unwrap().to_str().unwrap();
+                    let lang = path.file_stem().expect("missing file stem").to_str().expect("non-UTF-8 file stem");
                     let lang_dir = locale_dir.join(lang).join("LC_MESSAGES");
                     std::fs::create_dir_all(&lang_dir).expect("Failed to create lang dir");
                     
@@ -79,5 +78,4 @@ fn main() {
                 }
             }
         }
-    }
 }

@@ -1,4 +1,3 @@
-use ksni;
 use std::error::Error;
 use gtk::prelude::*;
 use gtk::{gio, glib};
@@ -42,9 +41,9 @@ impl ksni::Tray for KarereTray {
     fn activate(&mut self, _x: i32, _y: i32) {
         // Toggle window visibility on tray icon click
         glib::MainContext::default().invoke(move || {
-            if let Some(app) = gio::Application::default() {
-                if let Ok(gtk_app) = app.downcast::<gtk::Application>() {
-                    if let Some(window) = gtk_app.windows().first() {
+            if let Some(app) = gio::Application::default()
+                && let Ok(gtk_app) = app.downcast::<gtk::Application>()
+                    && let Some(window) = gtk_app.windows().first() {
                         let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
                         let settings = gio::Settings::new(&app_id);
                         
@@ -65,8 +64,6 @@ impl ksni::Tray for KarereTray {
                             window.present();
                         }
                     }
-                }
-            }
         });
     }
 
@@ -88,12 +85,12 @@ impl ksni::Tray for KarereTray {
 
         let mut items: Vec<ksni::MenuItem<Self>> = vec![
             StandardItem {
-                label: label.into(),
+                label,
                 activate: Box::new(|_| {
                     glib::MainContext::default().invoke(move || {
-                        if let Some(app) = gio::Application::default() {
-                            if let Ok(gtk_app) = app.downcast::<gtk::Application>() {
-                                if let Some(window) = gtk_app.windows().first() {
+                        if let Some(app) = gio::Application::default()
+                            && let Ok(gtk_app) = app.downcast::<gtk::Application>()
+                                && let Some(window) = gtk_app.windows().first() {
                                     let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
                                     let settings = gio::Settings::new(&app_id);
                                     
@@ -112,8 +109,6 @@ impl ksni::Tray for KarereTray {
                                         window.present();
                                     }
                                 }
-                            }
-                        }
                     });
                 }),
                 ..Default::default()
@@ -157,7 +152,7 @@ impl ksni::Tray for KarereTray {
 
         items.push(
             StandardItem {
-                label: gettext("Quit").into(),
+                label: gettext("Quit"),
                 activate: Box::new(|_| {
                      glib::MainContext::default().invoke(move || {
                         if let Some(app) = gio::Application::default() {

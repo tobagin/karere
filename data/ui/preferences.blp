@@ -291,17 +291,7 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
         subtitle: _("Improve compatibility with assistive technologies");
       }
 
-      Adw.ActionRow {
-        title: _("Screen Reader Status");
-        subtitle: _("Current screen reader detection state");
-
-        [suffix]
-        Gtk.Label {
-          label: _("Inactive"); // Static for now as per prev code
-          valign: center;
-        }
-      }
-    }
+}
 
     Adw.PreferencesGroup {
       title: _("Accessibility Shortcuts");

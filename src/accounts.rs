@@ -1,12 +1,8 @@
-use glib;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use gtk::prelude::*;
 use gtk::gdk;
 use libadwaita as adw;
-use cairo;
-use pango;
-use pangocairo;
 
 pub const DEFAULT_ACCOUNT_ID: &str = "default";
 pub const DEFAULT_COLOR: &str = "#3584e4";
@@ -127,7 +123,7 @@ impl AccountManager {
                 .mode(0o700)
                 .create(&config_dir)
             {
-                eprintln!("Karere: Failed to create config directory: {}", e);
+                log::error!("Failed to create config directory: {}", e);
             }
         }
 
@@ -141,6 +137,11 @@ impl AccountManager {
     pub fn get_accounts(&self) -> anyhow::Result<Vec<Account>> {
         if !self.accounts_file.exists() {
             return Ok(Vec::new());
+        }
+
+        let metadata = std::fs::metadata(&self.accounts_file)?;
+        if metadata.len() > 1_048_576 {
+            return Err(anyhow::anyhow!("Accounts file too large (>1MB), possible corruption"));
         }
 
         let content = std::fs::read_to_string(&self.accounts_file)?;
@@ -252,8 +253,8 @@ impl AccountManager {
 
     /// Get permission state for a specific account
     pub fn get_account_permission(&self, account_id: &str, asked_key: &str) -> (bool, bool) {
-        if let Ok(accounts) = self.get_accounts() {
-            if let Some(account) = accounts.iter().find(|a| a.id == account_id) {
+        if let Ok(accounts) = self.get_accounts()
+            && let Some(account) = accounts.iter().find(|a| a.id == account_id) {
                 return match asked_key {
                     "notification" => (account.notification_permission_asked, account.notification_permission_granted),
                     "microphone" => (account.microphone_permission_asked, account.microphone_permission_granted),
@@ -261,7 +262,6 @@ impl AccountManager {
                     _ => (false, false),
                 };
             }
-        }
         (false, false)
     }
 
@@ -295,11 +295,10 @@ impl AccountManager {
 
     /// Get zoom level for a specific account
     pub fn get_account_zoom(&self, account_id: &str) -> f64 {
-        if let Ok(accounts) = self.get_accounts() {
-            if let Some(account) = accounts.iter().find(|a| a.id == account_id) {
+        if let Ok(accounts) = self.get_accounts()
+            && let Some(account) = accounts.iter().find(|a| a.id == account_id) {
                 return account.zoom_level;
             }
-        }
         1.0
     }
 
@@ -470,7 +469,7 @@ impl AccountManager {
             return Ok(active.unwrap_or_else(|| existing_accounts[0].clone()));
         }
 
-        println!("Karere: No accounts found, creating default account...");
+        log::info!("No accounts found, creating default account...");
 
         // Check for legacy directories to migrate
         let (legacy_data, legacy_cache) = self.get_legacy_webkit_dirs();
@@ -492,7 +491,7 @@ impl AccountManager {
 
         // Migrate legacy data if it exists
         if has_legacy_data {
-            println!("Karere: Migrating legacy session to multi-account system...");
+            log::info!("Migrating legacy session to multi-account system...");
 
             // Ensure parent directories exist
             if let Some(parent) = new_data.parent() {
@@ -505,27 +504,27 @@ impl AccountManager {
             // Move the legacy data directory
             if legacy_data.exists() {
                 if let Err(e) = std::fs::rename(&legacy_data, &new_data) {
-                    eprintln!("Karere: Failed to move legacy data, copying instead: {}", e);
+                    log::warn!("Failed to move legacy data, copying instead: {}", e);
                     // Fallback: copy if rename fails (e.g., cross-device)
                     copy_dir_recursive(&legacy_data, &new_data)?;
                     let _ = std::fs::remove_dir_all(&legacy_data);
                 }
-                println!("Karere: Moved session data to {:?}", new_data);
+                log::info!("Moved session data to {:?}", new_data);
             }
 
             // Move the legacy cache directory
             if legacy_cache.exists() {
                 if let Err(e) = std::fs::rename(&legacy_cache, &new_cache) {
-                    eprintln!("Karere: Failed to move legacy cache, copying instead: {}", e);
+                    log::warn!("Failed to move legacy cache, copying instead: {}", e);
                     copy_dir_recursive(&legacy_cache, &new_cache)?;
                     let _ = std::fs::remove_dir_all(&legacy_cache);
                 }
-                println!("Karere: Moved session cache to {:?}", new_cache);
+                log::info!("Moved session cache to {:?}", new_cache);
             }
 
-            println!("Karere: Migration complete - created 'Primary Account' with existing session");
+            log::info!("Migration complete - created 'Primary Account' with existing session");
         } else {
-            println!("Karere: Created new 'Primary Account' (no existing session found)");
+            log::info!("Created new 'Primary Account' (no existing session found)");
         }
 
         // Save the account

@@ -82,7 +82,7 @@ mod imp {
         match mode.as_str() {
             "enabled" => true,
             "disabled" => false,
-            "auto" | _ => {
+            _ => {
                 // Check for mobile desktop environments
                 if let Ok(desktop) = std::env::var("XDG_CURRENT_DESKTOP") {
                     let desktop_lower = desktop.to_lowercase();
@@ -122,9 +122,9 @@ mod imp {
 
             // Debug Font Config
             if let Ok(val) = std::env::var("FONTCONFIG_FILE") {
-                println!("DEBUG: FONTCONFIG_FILE={}", val);
+                log::debug!("FONTCONFIG_FILE={}", val);
             } else {
-                println!("DEBUG: FONTCONFIG_FILE is NOT SET");
+                log::debug!("FONTCONFIG_FILE is NOT SET");
             }
 
             // Apply devel class if needed
@@ -144,8 +144,8 @@ mod imp {
             
             // Ensure a default account always exists (migrates legacy session if present)
             match account_manager.ensure_default_account() {
-                Ok(account) => println!("Karere: Active account: '{}' (has_session: {})", account.name, account.has_session),
-                Err(e) => eprintln!("Karere: Failed to ensure default account: {}", e),
+                Ok(account) => log::info!("Active account: '{}' (has_session: {})", account.name, account.has_session),
+                Err(e) => log::error!("Failed to ensure default account: {}", e),
             }
             
             *self.account_manager.borrow_mut() = Some(account_manager);
@@ -181,24 +181,24 @@ mod imp {
             let ctx = glib::MainContext::default();
             ctx.spawn_local(async move {
                 let _ = crate::RUNTIME.spawn(async {
-                    println!("Karere: Requesting Camera Access at Startup...");
+                    log::info!("Requesting Camera Access at Startup...");
                     if let Ok(proxy) = ashpd::desktop::camera::Camera::new().await {
                         match proxy.request_access().await {
-                            Ok(_) => println!("Karere: Camera Access GRANTED by System/User."),
-                            Err(e) => println!("Karere: Camera Access DENIED or FAILED: {:?}", e),
+                            Ok(_) => log::info!("Camera Access GRANTED by System/User."),
+                            Err(e) => log::warn!("Camera Access DENIED or FAILED: {:?}", e),
                         }
 
                         match proxy.is_present().await {
-                            Ok(present) => println!("Karere: Camera Is Present: {}", present),
-                            Err(e) => println!("Karere: Failed to check camera presence: {:?}", e),
+                            Ok(present) => log::info!("Camera Is Present: {}", present),
+                            Err(e) => log::warn!("Failed to check camera presence: {:?}", e),
                         }
 
                         match proxy.open_pipe_wire_remote().await {
-                            Ok(fd) => println!("Karere: Successfully opened PipeWire remote via Portal (FD: {:?})", fd),
-                            Err(e) => println!("Karere: Failed to open PipeWire remote: {:?}", e),
+                            Ok(fd) => log::info!("Successfully opened PipeWire remote via Portal (FD: {:?})", fd),
+                            Err(e) => log::warn!("Failed to open PipeWire remote: {:?}", e),
                         }
                     } else {
-                        println!("Karere: Failed to connect to Camera Portal.");
+                        log::warn!("Failed to connect to Camera Portal.");
                     }
                 }).await;
             });
@@ -211,11 +211,10 @@ mod imp {
                      }
                      // Clear unread for the active account
                      let account_id = window.imp().active_account_id.borrow().clone();
-                     if let Some(id) = account_id {
-                         if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                     if let Some(id) = account_id
+                         && let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
                              let _ = mgr.set_account_unread(&id, false);
                          }
-                     }
                      // Refresh account button to update unread indicators
                      window.imp().update_account_button();
 
@@ -239,11 +238,10 @@ mod imp {
             let action_refresh = gio::SimpleAction::new("refresh", None);
             let obj_weak = obj.downgrade();
             action_refresh.connect_activate(move |_, _| {
-                if let Some(obj) = obj_weak.upgrade() {
-                    if let Some(webview) = obj.imp().webview() {
+                if let Some(obj) = obj_weak.upgrade()
+                    && let Some(webview) = obj.imp().webview() {
                         webview.reload();
                     }
-                }
             });
             obj.add_action(&action_refresh);
 
@@ -251,8 +249,8 @@ mod imp {
             let action_new_chat = gio::SimpleAction::new("new-chat", None);
             let obj_weak_nc = obj.downgrade();
             action_new_chat.connect_activate(move |_, _| {
-                if let Some(obj) = obj_weak_nc.upgrade() {
-                    if let Some(webview) = obj.imp().webview() {
+                if let Some(obj) = obj_weak_nc.upgrade()
+                    && let Some(webview) = obj.imp().webview() {
                         let js = r#"
                             (function() {
                                 const ev = new KeyboardEvent('keydown', {
@@ -273,7 +271,6 @@ mod imp {
                         "#;
                         webview.evaluate_javascript(js, None, None, Option::<&gio::Cancellable>::None, |_| {});
                     }
-                }
             });
             obj.add_action(&action_new_chat);
 
@@ -295,11 +292,10 @@ mod imp {
             let obj_weak_list = obj.downgrade();
             self.accounts_list.connect_row_activated(move |_, row| {
                 let account_id = row.widget_name();
-                if !account_id.is_empty() {
-                    if let Some(obj) = obj_weak_list.upgrade() {
+                if !account_id.is_empty()
+                    && let Some(obj) = obj_weak_list.upgrade() {
                         obj.imp().switch_to_account(&account_id);
                     }
-                }
             });
 
             // Setup Add Account Action
@@ -339,13 +335,12 @@ mod imp {
                 if let Some(surface) = window.surface() {
                     let obj_weak = obj_weak_resize.clone();
                     surface.connect_layout(move |_surface, _width, _height| {
-                        if let Some(window) = obj_weak.upgrade() {
-                            if !window.is_maximized() {
+                        if let Some(window) = obj_weak.upgrade()
+                            && !window.is_maximized() {
                                 let w = window.width();
                                 let h = window.height();
                                 window.imp().last_unmaximized_size.set((w, h));
                             }
-                        }
                     });
                 }
             });
@@ -378,7 +373,7 @@ mod imp {
                             let is_mobile = should_use_mobile_layout(&settings_layout, width);
 
                             if is_mobile != was_mobile {
-                                println!("Karere: Layout Mode Change Detected (Mobile: {} -> {}). Reloading...", was_mobile, is_mobile);
+                                log::info!("Layout Mode Change Detected (Mobile: {} -> {}). Reloading...", was_mobile, is_mobile);
                                 window.imp().mobile_layout_active.set(is_mobile);
                                 window.imp().mobile_layout_transitioning.set(true);
                                 webview_layout.reload();
@@ -460,12 +455,11 @@ mod imp {
             // Mobile Layout Change Handler - Reload webview when mode changes
             let obj_weak_mobile_setting = obj.downgrade();
             settings.connect_changed(Some("mobile-layout"), move |_settings, _| {
-                if let Some(obj) = obj_weak_mobile_setting.upgrade() {
-                    if let Some(webview) = obj.imp().webview() {
+                if let Some(obj) = obj_weak_mobile_setting.upgrade()
+                    && let Some(webview) = obj.imp().webview() {
                         // Reload webview to apply/remove mobile layout
                         webview.reload();
                     }
-                }
             });
 
             // WebKit settings and signals moved to setup_webview
@@ -481,11 +475,10 @@ mod imp {
                 self.dictionary_dropdown.set_model(Some(&store));
                 
                 let current = settings.strv("spell-checking-languages");
-                if let Some(first) = current.first() {
-                    if let Some(idx) = avail_dicts.iter().position(|r| r == first.as_str()) {
+                if let Some(first) = current.first()
+                    && let Some(idx) = avail_dicts.iter().position(|r| r == first.as_str()) {
                          self.dictionary_dropdown.set_selected(idx as u32);
                     }
-                }
                 
                 let settings_dict = settings.clone();
                 let dicts_clone = avail_dicts.clone();
@@ -512,7 +505,7 @@ mod imp {
             }; // borrow dropped
 
             for (id, data_dir, cache_dir) in background_accounts {
-                println!("Karere: Initializing background webview for account '{}'", id);
+                log::info!("Initializing background webview for account '{}'", id);
                 self.setup_webview(&id, data_dir, cache_dir, false);
             }
 
@@ -526,13 +519,12 @@ mod imp {
                 let floor = settings.double("zoom-level");
                 if let Some(window) = obj_weak_zoom_floor.upgrade() {
                     // Reset all per-account zooms to the new floor
-                    if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
-                        if let Ok(accounts) = mgr.get_accounts() {
+                    if let Some(mgr) = window.imp().account_manager.borrow().as_ref()
+                        && let Ok(accounts) = mgr.get_accounts() {
                             for account in &accounts {
                                 let _ = mgr.set_account_zoom(&account.id, floor);
                             }
                         }
-                    }
                     // Apply to all live webviews
                     for wv in window.imp().webviews.borrow().values() {
                         wv.set_zoom_level(floor);
@@ -548,15 +540,14 @@ mod imp {
                 }
                 let floor = settings.double("zoom-level");
                 if let Some(window) = obj_weak_zoom_toggle.upgrade() {
-                    if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
-                        if let Ok(accounts) = mgr.get_accounts() {
+                    if let Some(mgr) = window.imp().account_manager.borrow().as_ref()
+                        && let Ok(accounts) = mgr.get_accounts() {
                             for account in &accounts {
                                 if account.zoom_level < floor {
                                     let _ = mgr.set_account_zoom(&account.id, floor);
                                 }
                             }
                         }
-                    }
                     for wv in window.imp().webviews.borrow().values() {
                         if wv.zoom_level() < floor {
                             wv.set_zoom_level(floor);
@@ -576,11 +567,10 @@ mod imp {
 
         pub fn setup_webview(&self, account_id: &str, data_dir: std::path::PathBuf, cache_dir: std::path::PathBuf, is_foreground: bool) -> webkit6::WebView {
             // Hide current WebView (don't destroy it — we keep it in the pool)
-            if is_foreground {
-                if let Some(current_wv) = self.webview() {
+            if is_foreground
+                && let Some(current_wv) = self.webview() {
                     current_wv.set_visible(false);
                 }
-            }
 
             // Ensure directories exist
             let _ = std::fs::create_dir_all(&data_dir);
@@ -682,18 +672,18 @@ mod imp {
             // Debug: Monitor Camera Capture State
             web_view.connect_notify_local(Some("camera-capture-state"), |webview, _| {
                 let state = webview.camera_capture_state();
-                println!("Karere: Camera Capture State Changed: {:?}", state);
+                log::debug!("Camera Capture State Changed: {:?}", state);
             });
 
             // Debug: Monitor Microphone Capture State
              web_view.connect_notify_local(Some("microphone-capture-state"), |webview, _| {
                 let state = webview.microphone_capture_state();
-                println!("Karere: Microphone Capture State Changed: {:?}", state);
+                log::debug!("Microphone Capture State Changed: {:?}", state);
             });
 
                  // User Agent Spoofing (Chrome Linux)
                  let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36";
-                 ws.set_user_agent(Some(&user_agent));
+                 ws.set_user_agent(Some(user_agent));
 
                  // Disable quirks to restore our manual Linux UA
                  ws.set_enable_site_specific_quirks(false);
@@ -758,7 +748,7 @@ mod imp {
                     // result is a webkit6::javascriptcore6::Value
                     if result.is_string() {
                         let s = result.to_string();
-                        println!("WEB-CONSOLE: {}", s);
+                        log::debug!("WEB-CONSOLE: {}", s);
                     }
                 });
             }
@@ -767,13 +757,11 @@ mod imp {
             let obj_weak_dev = obj.downgrade();
             let action_devtools = gio::SimpleAction::new("show-devtools", None);
             action_devtools.connect_activate(move |_, _| {
-                if let Some(obj) = obj_weak_dev.upgrade() {
-                    if let Some(webview) = obj.imp().webview() {
-                        if let Some(inspector) = webview.inspector() {
+                if let Some(obj) = obj_weak_dev.upgrade()
+                    && let Some(webview) = obj.imp().webview()
+                        && let Some(inspector) = webview.inspector() {
                             inspector.show();
                         }
-                    }
-                }
             });
             obj.add_action(&action_devtools);
 
@@ -971,8 +959,8 @@ mod imp {
                                // Actually, `overlay` is attached to window.
                                if let Some(window) = overlay.root().and_then(|w| w.downcast::<gtk::Window>().ok()) {
                                    let dialog = adw::AlertDialog::builder()
-                                       .heading(&gettext("Download Failed"))
-                                       .body(&gettext("An error occurred while downloading the file."))
+                                       .heading(gettext("Download Failed"))
+                                       .body(gettext("An error occurred while downloading the file."))
                                        .default_response("ok")
                                        .build();
                                    dialog.add_response("ok", &gettext("OK"));
@@ -999,8 +987,8 @@ mod imp {
 
                 if let Some(req) = request.downcast_ref::<webkit6::NotificationPermissionRequest>() {
                     // Check per-account persistence
-                    if let Some(window) = window_weak.upgrade() {
-                        if let Some(mgr) = get_mgr(&window) {
+                    if let Some(window) = window_weak.upgrade()
+                        && let Some(mgr) = get_mgr(&window) {
                             let (asked, granted) = mgr.get_account_permission(&account_id, "notification");
                             
                             if asked {
@@ -1010,8 +998,8 @@ mod imp {
 
                             // Show Dialog
                             let dialog = adw::AlertDialog::builder()
-                                .heading(&gettext("WhatsApp Web Notification Permission"))
-                                .body(&gettext("WhatsApp Web wants to show desktop notifications for new messages. Would you like to allow notifications?"))
+                                .heading(gettext("WhatsApp Web Notification Permission"))
+                                .body(gettext("WhatsApp Web wants to show desktop notifications for new messages. Would you like to allow notifications?"))
                                 .default_response("allow")
                                 .close_response("deny")
                                 .build();
@@ -1025,16 +1013,14 @@ mod imp {
                             let window_weak_d = window.downgrade();
                             dialog.choose(Some(&window), gio::Cancellable::NONE, move |response| {
                                 let granted = response == "allow";
-                                if let Some(w) = window_weak_d.upgrade() {
-                                    if let Some(m) = get_mgr(&w) {
+                                if let Some(w) = window_weak_d.upgrade()
+                                    && let Some(m) = get_mgr(&w) {
                                         let _ = m.set_account_permission(&account_id_d, "notification", true, granted);
                                     }
-                                }
                                 if granted { req_clone.allow(); } else { req_clone.deny(); }
                             });
                             return true;
                         }
-                    }
                 } else if let Some(req) = request.downcast_ref::<webkit6::UserMediaPermissionRequest>() {
                      let is_audio = req.is_for_audio_device();
                      let is_video = req.is_for_video_device();
@@ -1060,8 +1046,8 @@ mod imp {
                           gettext("WhatsApp Web wants to access your microphone. Would you like to allow access?"))
                      };
 
-                     if let Some(window) = window_weak.upgrade() {
-                         if let Some(mgr) = get_mgr(&window) {
+                     if let Some(window) = window_weak.upgrade()
+                         && let Some(mgr) = get_mgr(&window) {
                              let (asked, granted) = mgr.get_account_permission(&account_id, perm_key);
 
                              if asked {
@@ -1087,20 +1073,18 @@ mod imp {
                              let window_weak_d = window.downgrade();
                              dialog.choose(Some(&window), gio::Cancellable::NONE, move |response| {
                                  let granted = response == "allow";
-                                 if let Some(w) = window_weak_d.upgrade() {
-                                     if let Some(m) = get_mgr(&w) {
+                                 if let Some(w) = window_weak_d.upgrade()
+                                     && let Some(m) = get_mgr(&w) {
                                          let _ = m.set_account_permission(&account_id_d, &perm_key_owned, true, granted);
                                          // If granting camera+audio, implicitly grant microphone too
                                          if granted && is_video && is_audio {
                                              let _ = m.set_account_permission(&account_id_d, "microphone", true, true);
                                          }
                                      }
-                                 }
                                  if granted { req_clone.allow(); } else { req_clone.deny(); }
                              });
                              return true;
                          }
-                     }
                 }
                 
                 false
@@ -1123,8 +1107,8 @@ mod imp {
                     return true; // Suppress
                 }
 
-                if let Some(window) = window_weak.upgrade() {
-                    if let Some(app) = window.application() {
+                if let Some(window) = window_weak.upgrade()
+                    && let Some(app) = window.application() {
                         // 3. Tray Icon Update (Check Toggle)
                         if settings_notify_msg.boolean("notify-tray-icon") {
                              app.activate_action("set-unread", Some(&true.to_variant()));
@@ -1207,7 +1191,7 @@ mod imp {
                             let proxy = match proxy_cell.get_or_try_init(|| async {
                                 ashpd::desktop::notification::NotificationProxy::new().await
                                     .map_err(|e| {
-                                        eprintln!("ERROR: Failed to create notification proxy: {}", e);
+                                        log::error!("Failed to create notification proxy: {}", e);
                                         e
                                     })
                             }).await {
@@ -1228,10 +1212,10 @@ mod imp {
                                 if let Some(bytes) = create_account_icon_bytes(&account_color, &emoji, 64) {
                                     notif = notif.icon(ashpd::desktop::Icon::Bytes(bytes));
                                 } else {
-                                    notif = notif.icon(ashpd::desktop::Icon::with_names(&[&app_id]));
+                                    notif = notif.icon(ashpd::desktop::Icon::with_names([&app_id]));
                                 }
                             } else {
-                                notif = notif.icon(ashpd::desktop::Icon::with_names(&[&app_id]));
+                                notif = notif.icon(ashpd::desktop::Icon::with_names([&app_id]));
                             }
 
                             if let Err(_e) = proxy.add_notification(&portal_id, notif).await {
@@ -1293,11 +1277,10 @@ mod imp {
                                 // Only write if not exists or size is 0 (simple cache)
                                 let needs_write = !temp_path.exists();
                                 
-                                if needs_write {
-                                    if let Ok(bytes) = gio::resources_lookup_data(&resource_path, gio::ResourceLookupFlags::NONE) {
+                                if needs_write
+                                    && let Ok(bytes) = gio::resources_lookup_data(&resource_path, gio::ResourceLookupFlags::NONE) {
                                         let _ = tokio::fs::write(&temp_path, &bytes).await;
                                     }
-                                }
                                 
                                 if temp_path.exists() {
                                     match tokio::process::Command::new("paplay")
@@ -1307,10 +1290,10 @@ mod imp {
                                     {
                                         Ok(status) => {
                                             if !status.success() {
-                                                eprintln!("paplay failed");
+                                                log::error!("paplay failed");
                                             }
                                         },
-                                        Err(e) => eprintln!("Failed to run paplay: {}", e),
+                                        Err(e) => log::error!("Failed to run paplay: {}", e),
                                     }
                                 }
                             });
@@ -1318,7 +1301,6 @@ mod imp {
 
                         return true;
                     }
-                }
                 false
             });
 
@@ -1342,7 +1324,7 @@ mod imp {
 
                     // PASTE (Ctrl+V)
                     if keyval == gtk::gdk::Key::v || keyval == gtk::gdk::Key::V {
-                         let clipboard = gtk::gdk::Display::default().and_then(|d| Some(d.clipboard()));
+                         let clipboard = gtk::gdk::Display::default().map(|d| d.clipboard());
                          if let Some(clipboard) = clipboard {
                              let formats = clipboard.formats();
                              
@@ -1392,8 +1374,8 @@ mod imp {
                              else if formats.contains_type(gtk::gdk::FileList::static_type()) {
                                  let webview = webview_paste.clone();
                                  clipboard.read_value_async(gtk::gdk::FileList::static_type(), glib::Priority::default(), gio::Cancellable::NONE, move |res| {
-                                     if let Ok(value) = res {
-                                         if let Ok(file_list) = value.get::<gtk::gdk::FileList>() {
+                                     if let Ok(value) = res
+                                         && let Ok(file_list) = value.get::<gtk::gdk::FileList>() {
                                              let files = file_list.files();
                                              
                                              for file in files {
@@ -1450,12 +1432,11 @@ mod imp {
                                                              "#, safe_filename, b64, safe_mime, safe_filename, safe_mime);
                                                              webview_clone.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
                                                          },
-                                                         Err(e) => eprintln!("ERROR: Failed to read clipboard file: {}", e),
+                                                         Err(e) => log::error!("Failed to read clipboard file: {}", e),
                                                      }
                                                  });
                                              }
                                          }
-                                     }
                                  });
                                  return glib::Propagation::Stop;
                              }
@@ -1475,7 +1456,7 @@ mod imp {
                  // Claim the gesture to stop propagation to WebView's default handler
                  gesture.set_state(gtk::EventSequenceState::Claimed);
                  
-                 let clipboard = gtk::gdk::Display::default().and_then(|d| Some(d.primary_clipboard()));
+                 let clipboard = gtk::gdk::Display::default().map(|d| d.primary_clipboard());
                  if let Some(clipboard) = clipboard {
                      let webview = webview_mid.clone();
                      clipboard.read_text_async(gio::Cancellable::NONE, move |res: Result<Option<glib::GString>, glib::Error>| {
@@ -1557,7 +1538,7 @@ mod imp {
                                      "#, safe_filename, b64, safe_mime, safe_filename, safe_mime);
                                      webview.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
                                  },
-                                 Err(e) => eprintln!("ERROR: Failed to read dropped file: {}", e),
+                                 Err(e) => log::error!("Failed to read dropped file: {}", e),
                              }
                          });
                      }
@@ -1596,11 +1577,10 @@ mod imp {
                 web_view.connect_zoom_level_notify(move |webview| {
                     if let Some(window) = obj_weak_zoom.upgrade() {
                         let level = webview.zoom_level();
-                        if let Some(id) = window.imp().active_account_id.borrow().clone() {
-                            if let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
+                        if let Some(id) = window.imp().active_account_id.borrow().clone()
+                            && let Some(mgr) = window.imp().account_manager.borrow().as_ref() {
                                 let _ = mgr.set_account_zoom(&id, level);
                             }
-                        }
                     }
                 });
             }
@@ -1628,13 +1608,13 @@ mod imp {
                     if should_use_mobile_layout(&settings_mobile_layout, window_width) {
                         let js_content = include_str!("mobile_responsive.js");
                         webview.evaluate_javascript(
-                            &js_content,
+                            js_content,
                             None,
                             None,
                             Option::<&gio::Cancellable>::None,
                             move |result| {
                                 if let Err(e) = result {
-                                    eprintln!("ERROR: Failed to inject mobile_responsive.js: {}", e);
+                                    log::error!("Failed to inject mobile_responsive.js: {}", e);
                                 }
                             },
                         );
@@ -1712,9 +1692,9 @@ mod imp {
             web_view.connect_decide_policy(move |_, decision, decision_type| {
                 match decision_type {
                      webkit6::PolicyDecisionType::NavigationAction | webkit6::PolicyDecisionType::NewWindowAction => {
-                         if let Some(mut nav_action) = decision.downcast_ref::<webkit6::NavigationPolicyDecision>().and_then(|d| d.navigation_action()) {
-                             if let Some(req) = nav_action.request() {
-                                 if let Some(uri) = req.uri() {
+                         if let Some(mut nav_action) = decision.downcast_ref::<webkit6::NavigationPolicyDecision>().and_then(|d| d.navigation_action())
+                             && let Some(req) = nav_action.request()
+                                 && let Some(uri) = req.uri() {
                                      let uri_str = uri.as_str();
 
                                      // Enhanced V1-like Logic
@@ -1732,15 +1712,13 @@ mod imp {
                                          let uri_owned = uri_str.to_string();
                                          match gio::AppInfo::launch_default_for_uri(&uri_owned, Option::<&gio::AppLaunchContext>::None) {
                                              Ok(_) => {},
-                                             Err(e) => eprintln!("WARNING: Failed to launch external URI: {}", e),
+                                             Err(e) => log::warn!("Failed to launch external URI: {}", e),
                                          }
 
                                          decision.ignore();
                                          return true;
                                      }
                                  }
-                             }
-                         }
                      }
                      _ => {}
                 }
@@ -1834,12 +1812,11 @@ mod imp {
              let obj_weak_z = obj.downgrade();
              let action_zoom_in = gio::SimpleAction::new("zoom-in", None);
              action_zoom_in.connect_activate(move |_, _| {
-                 if let Some(obj) = obj_weak_z.upgrade() {
-                     if let Some(webview) = obj.imp().webview() {
+                 if let Some(obj) = obj_weak_z.upgrade()
+                     && let Some(webview) = obj.imp().webview() {
                          let level = webview.zoom_level();
                          webview.set_zoom_level(level + 0.1);
                      }
-                 }
              });
              obj.add_action(&action_zoom_in);
 
@@ -1847,8 +1824,8 @@ mod imp {
              let settings_zoom_out = settings.clone();
              let action_zoom_out = gio::SimpleAction::new("zoom-out", None);
              action_zoom_out.connect_activate(move |_, _| {
-                 if let Some(obj) = obj_weak_z.upgrade() {
-                     if let Some(webview) = obj.imp().webview() {
+                 if let Some(obj) = obj_weak_z.upgrade()
+                     && let Some(webview) = obj.imp().webview() {
                          let level = webview.zoom_level();
                          let floor = if settings_zoom_out.boolean("webview-zoom") {
                              settings_zoom_out.double("zoom-level")
@@ -1860,7 +1837,6 @@ mod imp {
                              webview.set_zoom_level(new_level);
                          }
                      }
-                 }
              });
              obj.add_action(&action_zoom_out);
 
@@ -1868,8 +1844,8 @@ mod imp {
              let settings_zoom_reset = settings.clone();
              let action_zoom_reset = gio::SimpleAction::new("zoom-reset", None);
              action_zoom_reset.connect_activate(move |_, _| {
-                 if let Some(obj) = obj_weak_z.upgrade() {
-                     if let Some(webview) = obj.imp().webview() {
+                 if let Some(obj) = obj_weak_z.upgrade()
+                     && let Some(webview) = obj.imp().webview() {
                          // Reset to floor if accessibility zoom is enabled, otherwise 1.0
                          let reset_to = if settings_zoom_reset.boolean("webview-zoom") {
                              settings_zoom_reset.double("zoom-level")
@@ -1878,7 +1854,6 @@ mod imp {
                          };
                          webview.set_zoom_level(reset_to);
                      }
-                 }
              });
              obj.add_action(&action_zoom_reset);
         }
@@ -2047,11 +2022,7 @@ mod imp {
                 *self.active_account_id.borrow_mut() = Some(account_id.to_string());
             } else {
                 // Create a new WebView for this account
-                let dirs = if let Some(mgr) = self.account_manager.borrow().as_ref() {
-                    Some((mgr.data_dir_for(account_id), mgr.cache_dir_for(account_id)))
-                } else {
-                    None
-                };
+                let dirs = self.account_manager.borrow().as_ref().map(|mgr| (mgr.data_dir_for(account_id), mgr.cache_dir_for(account_id)));
 
                 if let Some((data_dir, cache_dir)) = dirs {
                     self.setup_webview(account_id, data_dir, cache_dir, true);
@@ -2101,7 +2072,7 @@ impl KarereWindow {
             (DEFAULT_ACCOUNT_ID, id)
         };
 
-        println!("Karere: Notification clicked — Account: {}, Tag: {}", account_id, original_tag);
+        log::info!("Notification clicked — Account: {}, Tag: {}", account_id, original_tag);
 
         // Switch to the correct account first
         let current_account = imp.active_account_id.borrow().clone();
@@ -2136,13 +2107,13 @@ impl KarereWindow {
             let limit_enabled = settings.boolean("account-limit-enabled");
             let limit = settings.int("account-limit") as usize;
 
-            if limit_enabled {
-                if let Some(mgr) = self.imp().account_manager.borrow().as_ref() {
+            if limit_enabled
+                && let Some(mgr) = self.imp().account_manager.borrow().as_ref() {
                     let count = mgr.get_account_count();
                     if count >= limit {
                         let warning = adw::AlertDialog::builder()
-                            .heading(&gettext("Account Limit Reached"))
-                            .body(&format!(
+                            .heading(gettext("Account Limit Reached"))
+                            .body(format!(
                                 "{} ({}/{}). {}",
                                 gettext("You have reached the maximum number of accounts"),
                                 count, limit,
@@ -2156,7 +2127,6 @@ impl KarereWindow {
                         return;
                     }
                 }
-            }
         }
 
         let title = if is_edit { gettext("Edit Account") } else { gettext("Add New Account") };
@@ -2228,7 +2198,7 @@ impl KarereWindow {
 
         // --- Account Name EntryRow ---
         let name_row = adw::EntryRow::builder()
-            .title(&gettext("Account Name"))
+            .title(gettext("Account Name"))
             .text(&initial_name)
             .build();
         name_row.connect_map(|e| {
@@ -2258,7 +2228,7 @@ impl KarereWindow {
         emoji_button.add_css_class("flat");
 
         let emoji_row = adw::ActionRow::builder()
-            .title(&gettext("Emoji"))
+            .title(gettext("Emoji"))
             .activatable_widget(&emoji_button)
             .build();
         emoji_row.add_suffix(&emoji_button);
@@ -2278,7 +2248,7 @@ impl KarereWindow {
 
         // --- Color ActionRow with ColorDialogButton ---
         let color_dialog = gtk::ColorDialog::builder()
-            .title(&gettext("Choose Avatar Color"))
+            .title(gettext("Choose Avatar Color"))
             .with_alpha(false)
             .build();
 
@@ -2293,7 +2263,7 @@ impl KarereWindow {
             .build();
 
         let color_row = adw::ActionRow::builder()
-            .title(&gettext("Color"))
+            .title(gettext("Color"))
             .activatable_widget(&color_button)
             .build();
         color_row.add_suffix(&color_button);
@@ -2328,8 +2298,8 @@ impl KarereWindow {
         let account_id_clone = account_id.clone();
         action_btn.connect_clicked(move |_| {
             let name = name_row_ref.text();
-            if !name.is_empty() {
-                if let Some(window) = window_weak.upgrade() {
+            if !name.is_empty()
+                && let Some(window) = window_weak.upgrade() {
                     let emoji = selected_emoji_final.borrow().clone();
                     let color = selected_color_final.borrow().clone();
                     if let Some(ref id) = account_id_clone {
@@ -2343,7 +2313,6 @@ impl KarereWindow {
                         window.create_account(name.as_str(), &color, &emoji);
                     }
                 }
-            }
             if let Some(d) = dialog_weak.upgrade() {
                 d.close();
             }
@@ -2369,8 +2338,8 @@ impl KarereWindow {
         self.imp().account_bottom_sheet.set_open(false);
 
         let dialog = adw::AlertDialog::builder()
-            .heading(&format!("{} \"{}\"?", gettext("Remove account"), account_name))
-            .body(&gettext("This action cannot be undone."))
+            .heading(format!("{} \"{}\"?", gettext("Remove account"), account_name))
+            .body(gettext("This action cannot be undone."))
             .default_response("cancel")
             .close_response("cancel")
             .build();
@@ -2382,8 +2351,8 @@ impl KarereWindow {
         let account_id = account_id.to_string();
         let window_weak = self.downgrade();
         dialog.choose(Some(self), gio::Cancellable::NONE, move |response| {
-            if response == "remove" {
-                if let Some(window) = window_weak.upgrade() {
+            if response == "remove"
+                && let Some(window) = window_weak.upgrade() {
                     let imp = window.imp();
 
                     // Remove the deleted account's WebView from pool and container
@@ -2436,7 +2405,6 @@ impl KarereWindow {
 
                     imp.update_account_button();
                 }
-            }
         });
     }
 
