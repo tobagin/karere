@@ -71,6 +71,9 @@ mod imp {
 
         // Currently active account ID (matches a key in webviews)
         pub active_account_id: std::cell::RefCell<Option<String>>,
+
+        // Per-account crash counts for exponential backoff on auto-reload
+        pub crash_counts: std::cell::RefCell<std::collections::HashMap<String, u32>>,
     }
 
     /// Helper function to determine if mobile layout should be used
@@ -1598,6 +1601,11 @@ mod imp {
                         window.imp().mobile_layout_transitioning.set(false);
                     }
 
+                    // Reset crash counter on successful load (backoff resets after recovery)
+                    if let Some(window) = obj_weak_load.upgrade() {
+                        window.imp().crash_counts.borrow_mut().remove(&account_id_load);
+                    }
+
                     // Get window width if available
                     let window_width = if let Some(window) = obj_weak_load.upgrade() {
                         window.width()
@@ -1723,6 +1731,52 @@ mod imp {
                      _ => {}
                 }
                 false
+            });
+
+            // Handle web process crashes with auto-reload and user notification
+            let obj_weak_crash = obj.downgrade();
+            let account_id_crash = account_id.to_string();
+            web_view.connect_web_process_terminated(move |webview, reason| {
+                let reason_str = match reason {
+                    webkit6::WebProcessTerminationReason::Crashed => "crashed",
+                    webkit6::WebProcessTerminationReason::ExceededMemoryLimit => "exceeded memory limit",
+                    webkit6::WebProcessTerminationReason::TerminatedByApi => "terminated by API",
+                    _ => "terminated unexpectedly",
+                };
+                log::error!("Web process for account '{}' {}", account_id_crash, reason_str);
+
+                let Some(window) = obj_weak_crash.upgrade() else { return };
+                let imp = window.imp();
+
+                let count = {
+                    let mut counts = imp.crash_counts.borrow_mut();
+                    let entry = counts.entry(account_id_crash.clone()).or_insert(0);
+                    *entry += 1;
+                    *entry
+                };
+
+                let overlay = imp.toast_overlay.get();
+
+                if count <= 3 {
+                    let msg = gettext("Web process %s. Reloading\u{2026}").replace("%s", reason_str);
+                    let toast = adw::Toast::new(&msg);
+                    toast.set_timeout(3);
+                    overlay.add_toast(toast);
+
+                    let delay_secs = 1u64 << (count - 1); // 1s, 2s, 4s
+                    let webview_clone = webview.clone();
+                    glib::timeout_add_local_once(
+                        std::time::Duration::from_secs(delay_secs),
+                        move || {
+                            webview_clone.reload();
+                        },
+                    );
+                } else {
+                    let msg = gettext("Web process %s. Reload manually with Ctrl+R").replace("%s", reason_str);
+                    let toast = adw::Toast::new(&msg);
+                    toast.set_timeout(0);
+                    overlay.add_toast(toast);
+                }
             });
 
             web_view.load_uri("https://web.whatsapp.com");
