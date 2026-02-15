@@ -818,7 +818,10 @@ mod imp {
                                    let path = path.or_else(|| glib::user_special_dir(glib::UserDirectory::Downloads).map(|p| p.to_path_buf()));
 
                                    if let Some(path) = path {
-                                       let dest = path.join(filename.as_str());
+                                       let safe_name = std::path::Path::new(filename.as_str())
+                                          .file_name()
+                                          .unwrap_or(std::ffi::OsStr::new("download"));
+                                      let dest = path.join(safe_name);
                                        let dest_file = gio::File::for_path(&dest);
                                        let uri_str = dest_file.uri();
                                        download.set_destination(&uri_str);
@@ -1147,15 +1150,16 @@ mod imp {
                             let _guard = crate::RUNTIME.enter();
 
                             // Initialize Proxy if needed (Singleton pattern per window)
-                            let proxy = proxy_cell.get_or_init(|| async {
-                                match ashpd::desktop::notification::NotificationProxy::new().await {
-                                    Ok(p) => p,
-                                    Err(e) => {
+                            let proxy = match proxy_cell.get_or_try_init(|| async {
+                                ashpd::desktop::notification::NotificationProxy::new().await
+                                    .map_err(|e| {
                                         eprintln!("ERROR: Failed to create notification proxy: {}", e);
-                                        panic!("Failed to init notification proxy: {}", e);
-                                    }
-                                }
-                            }).await;
+                                        e
+                                    })
+                            }).await {
+                                Ok(p) => p,
+                                Err(_) => return,
+                            };
 
                             let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
 
@@ -1355,6 +1359,12 @@ mod imp {
                                                                         else { "application/octet-stream" };
 
 
+                                                             // Escape filename and mime for safe JS string interpolation
+                                                             let safe_filename = serde_json::Value::String(filename.clone()).to_string();
+                                                             let safe_filename = &safe_filename[1..safe_filename.len()-1];
+                                                             let safe_mime = serde_json::Value::String(mime.to_string()).to_string();
+                                                             let safe_mime = &safe_mime[1..safe_mime.len()-1];
+
                                                              let js = format!(r#"
                                                                  (function() {{
                                                                      try {{
@@ -1368,22 +1378,22 @@ mod imp {
                                                                          const byteArray = new Uint8Array(byteNumbers);
                                                                          const blob = new Blob([byteArray], {{type: '{}'}});
                                                                          const file = new File([blob], "{}", {{type: '{}', lastModified: new Date().getTime()}});
-                                                                         
+
                                                                          const dataTransfer = new DataTransfer();
                                                                          dataTransfer.items.add(file);
-                                                                         
+
                                                                          const pasteEvent = new ClipboardEvent('paste', {{
                                                                              bubbles: true,
                                                                              cancelable: true,
                                                                              clipboardData: dataTransfer
                                                                          }});
-                                                                         
+
                                                                          document.activeElement.dispatchEvent(pasteEvent);
                                                                      }} catch (e) {{
                                                                          console.error("Karere File Paste Error:", e);
                                                                      }}
                                                                  }})();
-                                                             "#, filename, b64, mime, filename, mime);
+                                                             "#, safe_filename, b64, safe_mime, safe_filename, safe_mime);
                                                              webview_clone.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
                                                          },
                                                          Err(e) => eprintln!("ERROR: Failed to read clipboard file: {}", e),
@@ -1454,6 +1464,12 @@ mod imp {
                                                 else { "application/octet-stream" };
 
 
+                                     // Escape filename and mime for safe JS string interpolation
+                                     let safe_filename = serde_json::Value::String(filename.clone()).to_string();
+                                     let safe_filename = &safe_filename[1..safe_filename.len()-1];
+                                     let safe_mime = serde_json::Value::String(mime.to_string()).to_string();
+                                     let safe_mime = &safe_mime[1..safe_mime.len()-1];
+
                                      // Reuse the same JS injection strategy as Paste
                                      let js = format!(r#"
                                          (function() {{
@@ -1468,10 +1484,10 @@ mod imp {
                                                  const byteArray = new Uint8Array(byteNumbers);
                                                  const blob = new Blob([byteArray], {{type: '{}'}});
                                                  const file = new File([blob], "{}", {{type: '{}', lastModified: new Date().getTime()}});
-                                                 
+
                                                  const dataTransfer = new DataTransfer();
                                                  dataTransfer.items.add(file);
-                                                 
+
                                                  // Use 'paste' event injection for attachments (proven to work)
                                                  const pasteEvent = new ClipboardEvent('paste', {{
                                                      bubbles: true,
@@ -1479,12 +1495,12 @@ mod imp {
                                                      clipboardData: dataTransfer
                                                  }});
                                                  document.activeElement.dispatchEvent(pasteEvent);
-                                                 
+
                                              }} catch (e) {{
                                                  console.error("Karere Drop Injection Error:", e);
                                              }}
                                          }})();
-                                     "#, filename, b64, mime, filename, mime);
+                                     "#, safe_filename, b64, safe_mime, safe_filename, safe_mime);
                                      webview.evaluate_javascript(&js, None, None, Option::<&gio::Cancellable>::None, |_| {});
                                  },
                                  Err(e) => eprintln!("ERROR: Failed to read dropped file: {}", e),
