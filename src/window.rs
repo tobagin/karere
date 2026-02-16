@@ -175,6 +175,16 @@ mod imp {
             };
 
 
+            // Configure memory pressure before creating any NetworkSession.
+            // Gives the web process more headroom before cleanup/kill thresholds
+            // kick in, reducing crashes when loading media-heavy pages (#113, #114).
+            let mut mem_settings = webkit6::MemoryPressureSettings::new();
+            mem_settings.set_memory_limit(2048);
+            mem_settings.set_conservative_threshold(0.50);
+            mem_settings.set_strict_threshold(0.75);
+            mem_settings.set_kill_threshold(0.90);
+            webkit6::NetworkSession::set_memory_pressure_settings(&mut mem_settings);
+
             // Create an initial WebView with a per-account session
             let web_view = self.setup_webview(&account_id, data_dir, cache_dir, true);
 
@@ -590,9 +600,9 @@ mod imp {
                 .network_session(&session)
                 .build();
 
-            // Enable Page Cache explicitly (Helpful for history navigation)
+            // WebView settings — memory optimization and media support
             if let Some(settings) = webkit6::prelude::WebViewExt::settings(&web_view) {
-                // Memory Optimization: Disable Page Cache (Back/Forward Cache)
+                // Disable page cache to reduce memory footprint (#113, #114)
                 settings.set_enable_page_cache(false);
                 settings.set_enable_webrtc(true);
                 settings.set_enable_media_stream(true);
@@ -846,31 +856,32 @@ mod imp {
                               false,
                               glib::closure_local! (move |download: webkit6::Download, filename: glib::GString| -> bool {
                                    let directory = settings_dl.string("download-directory");
-                                   let path = if !directory.is_empty() {
-                                       let mut path_str = directory.to_string();
-                                       // Expand ~
-                                       if path_str.starts_with("~") {
-                                           let home = glib::home_dir();
-                                           path_str = path_str.replacen("~", home.to_str().unwrap(), 1);
-                                       }
-                                       let p = std::path::PathBuf::from(path_str);
-                                       if p.exists() { Some(p) } else { None }
-                                   } else {
-                                       None
-                                   };
-
-                                   // Fall back to XDG Downloads dir (always accessible in Flatpak sandbox)
-                                   let path = path.or_else(|| glib::user_special_dir(glib::UserDirectory::Downloads).map(|p| p.to_path_buf()));
-
-                                   if let Some(path) = path {
-                                       let safe_name = std::path::Path::new(filename.as_str())
-                                          .file_name()
-                                          .unwrap_or(std::ffi::OsStr::new("download"));
-                                      let dest = path.join(safe_name);
-                                       download.set_destination(&dest.to_string_lossy());
-                                       return true;
+                                   if directory.is_empty() {
+                                       // No custom directory configured — let WebKit handle it
+                                       // natively (shows save dialog with proper filenames,
+                                       // uses portal in Flatpak)
+                                       return false;
                                    }
-                                   false
+
+                                   let mut path_str = directory.to_string();
+                                   // Expand ~
+                                   if path_str.starts_with("~") {
+                                       let home = glib::home_dir();
+                                       path_str = path_str.replacen("~", home.to_str().unwrap(), 1);
+                                   }
+                                   let path = std::path::PathBuf::from(path_str);
+                                   if !path.exists() {
+                                       // Configured directory doesn't exist — fall back to
+                                       // WebKit native handling
+                                       return false;
+                                   }
+
+                                   let safe_name = std::path::Path::new(filename.as_str())
+                                      .file_name()
+                                      .unwrap_or(std::ffi::OsStr::new("download"));
+                                   let dest = path.join(safe_name);
+                                   download.set_destination(&dest.to_string_lossy());
+                                   true
                               }
                           ));
                           
