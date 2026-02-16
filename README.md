@@ -11,14 +11,13 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.5.1 - Stability & Security Update
+## 🎉 Version 2.5.2 - Security Update
 
-**Karere 2.5.1** brings stability improvements and critical security fixes.
+**Karere 2.5.2** brings critical security fixes.
 
-### 🆕 What's New in 2.5.1
+### 🆕 What's New in 2.5.2
 
-- **Crash Handling**: Auto-reload and user notification on WebKit process crashes.
-- **Security**: Fixes for JS injection and path traversal vulnerabilities.
+- **Security**: Fixed JS injection and path traversal vulnerabilities in download handling.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

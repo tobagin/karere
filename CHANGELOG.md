@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Fixed
 
+## [2.5.2] - 2026-02-16
+
+### Fixed
+- **Security**: Fix JS injection and path traversal vulnerabilities in download handling.
+
 ## [2.5.1] - 2026-02-15
 
 ### Fixed
