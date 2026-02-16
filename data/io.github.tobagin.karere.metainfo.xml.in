@@ -95,6 +95,13 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="2.5.3" date="2026-02-16">
+      <description>
+        <ul>
+          <li>Fixed: Download destination path handling regression</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.5.2" date="2026-02-16">
       <description>
         <ul>

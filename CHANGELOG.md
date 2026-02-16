@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Fixed
 
+## [2.5.3] - 2026-02-16
+
+### Fixed
+- **Downloads**: Fixed download destination handling by using proper path string conversion (`to_string_lossy`) instead of URI format.
+
+
 ## [2.5.2] - 2026-02-16
 
 ### Fixed
