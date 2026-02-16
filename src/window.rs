@@ -867,9 +867,7 @@ mod imp {
                                           .file_name()
                                           .unwrap_or(std::ffi::OsStr::new("download"));
                                       let dest = path.join(safe_name);
-                                       let dest_file = gio::File::for_path(&dest);
-                                       let uri_str = dest_file.uri();
-                                       download.set_destination(&uri_str);
+                                       download.set_destination(&dest.to_string_lossy());
                                        return true;
                                    }
                                    false
