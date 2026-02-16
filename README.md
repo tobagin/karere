@@ -11,13 +11,14 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.5.3 - Bug Fix Release
+## 🎉 Version 2.5.4 - Stability & Fixes
 
-**Karere 2.5.3** fixes a regression in download handling.
+**Karere 2.5.4** brings important bug fixes for download handling and improved stability on media-heavy sites.
 
-### 🆕 What's New in 2.5.3
+### 🆕 What's New in 2.5.4
 
-- **Downloads**: Fixed issue with download file paths.
+- **Downloads**: Fixed issue with download filenames and paths.
+- **Stability**: Reduced crashes when viewing media-heavy content.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

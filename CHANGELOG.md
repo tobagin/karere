@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Fixed
 
+## [2.5.4] - 2026-02-16
+
+### Fixed
+- **Downloads**: Fixed download destination handling by correctly processing file paths.
+- **Stability**: Resolved WebKit process crashes on media-heavy pages.
+
+
 ## [2.5.3] - 2026-02-16
 
 ### Fixed
