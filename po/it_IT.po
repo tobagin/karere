@@ -466,8 +466,7 @@ msgstr "Scorciatoie notifiche"
 #: temp_ui/preferences.ui:343
 msgid "Enable keyboard shortcuts for notification actions"
 msgstr ""
-"Abilita le scorciatoie da tastiera per l'accessibilità per le azioni di "
-"notifica"
+"Abilita le scorciatoie da tastiera per le azioni di notifica"
 
 #: temp_ui/preferences.ui:359
 msgid "Enable Notifications"
@@ -600,11 +599,11 @@ msgstr "Cliente Web WhatsApp GTK4"
 
 #: temp_ui/window.ui:37
 msgid "Zoom Out"
-msgstr "Aumenta zoom"
+msgstr "Riduci zoom"
 
 #: temp_ui/window.ui:51
 msgid "Zoom In"
-msgstr "Riduci lo zoom"
+msgstr "Aumenta zoom"
 
 #: temp_ui/window.ui:60
 msgid "Spell Checking Language"
@@ -766,7 +765,7 @@ msgstr "Inserire nome account:"
 
 #: src/window.rs:1736
 msgid "Account name"
-msgstr "Account name"
+msgstr "Nome account"
 
 #: src/window.rs:1743 src/window.rs:1770
 msgid "_Cancel"
