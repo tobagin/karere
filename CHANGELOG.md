@@ -12,6 +12,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Fixed
 
+## [2.5.5] - 2026-03-02
+
+### Fixed
+- **Stability**: Fixed freezes when viewing media galleries by raising WebKit memory limit, enabling hardware acceleration, and using lighter cache model (#114).
+- **Crash**: Fixed crash on launch caused by WebKit memory pressure threshold ordering (#116).
+- **Downloads**: Fixed download destination and context menu issues (#110).
+- **Input**: Fixed dead key composition failing for first character in input fields.
+- **Flatpak**: Added GStreamer/PipeWire env vars to production manifest for efficient media handling.
+
+### Changed
+- **Translations**: Updated Italian translation.
+
 ## [2.5.4] - 2026-02-16
 
 ### Fixed

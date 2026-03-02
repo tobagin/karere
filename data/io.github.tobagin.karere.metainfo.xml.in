@@ -95,6 +95,17 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="2.5.5" date="2026-03-02">
+      <description>
+        <ul>
+          <li>Fixed freezes when viewing media galleries</li>
+          <li>Fixed crash on launch due to memory pressure threshold ordering</li>
+          <li>Fixed download destination and context menu issues</li>
+          <li>Fixed dead key composition for first character in input fields</li>
+          <li>Added GStreamer/PipeWire env vars to production Flatpak for efficient media handling</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.5.4" date="2026-02-16">
       <description>
         <ul>

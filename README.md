@@ -11,14 +11,15 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.5.4 - Stability & Fixes
+## 🎉 Version 2.5.5 - Media & Stability
 
-**Karere 2.5.4** brings important bug fixes for download handling and improved stability on media-heavy sites.
+**Karere 2.5.5** fixes freezes when viewing media galleries, a crash on launch, and improves dead key input handling.
 
-### 🆕 What's New in 2.5.4
+### 🆕 What's New in 2.5.5
 
-- **Downloads**: Fixed issue with download filenames and paths.
-- **Stability**: Reduced crashes when viewing media-heavy content.
+- **Media**: Fixed freezes when scrolling through media galleries.
+- **Stability**: Fixed crash on launch due to WebKit memory pressure settings.
+- **Input**: Fixed dead key composition for first character in input fields.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 
