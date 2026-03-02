@@ -1323,6 +1323,15 @@ mod imp {
             // WhatsApp Web often struggles with direct pasting from Linux/GDK clipboard in WebKit for images and files.
             // We manually detect them, encode, and inject synthetic Paste events.
             let key_controller = gtk::EventControllerKey::new();
+            // Use Capture phase so this controller fires BEFORE the WebView's internal
+            // IM context processes key events.  With the default Bubble phase the
+            // controller runs after the IM context, which can reset/disrupt dead-key
+            // composition state — particularly for the very first character typed in an
+            // empty input field (e.g. pressing dead_tilde then 'o' yields plain 'o'
+            // instead of 'õ').  In Capture phase we check for Ctrl modifiers first and
+            // return Proceed for everything else, letting the dead-key event reach the
+            // WebView's IM context untouched.
+            key_controller.set_propagation_phase(gtk::PropagationPhase::Capture);
             let webview_paste = web_view.clone();
             key_controller.connect_key_pressed(move |_, keyval, _keycode, state| {
                 if state.contains(gtk::gdk::ModifierType::CONTROL_MASK) {
