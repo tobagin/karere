@@ -179,10 +179,10 @@ mod imp {
             // Gives the web process more headroom before cleanup/kill thresholds
             // kick in, reducing crashes when loading media-heavy pages (#113, #114).
             let mut mem_settings = webkit6::MemoryPressureSettings::new();
-            mem_settings.set_memory_limit(2048);
+            mem_settings.set_memory_limit(3072);
             mem_settings.set_conservative_threshold(0.50);
             mem_settings.set_strict_threshold(0.75);
-            mem_settings.set_kill_threshold(0.90);
+            mem_settings.set_kill_threshold(0.95);
             webkit6::NetworkSession::set_memory_pressure_settings(&mut mem_settings);
 
             // Create an initial WebView with a per-account session
@@ -600,22 +600,6 @@ mod imp {
                 .network_session(&session)
                 .build();
 
-            // WebView settings — memory optimization and media support
-            if let Some(settings) = webkit6::prelude::WebViewExt::settings(&web_view) {
-                // Disable page cache to reduce memory footprint (#113, #114)
-                settings.set_enable_page_cache(false);
-                settings.set_enable_webrtc(true);
-                settings.set_enable_media_stream(true);
-                settings.set_enable_mediasource(true);
-
-                // User Agent Spoofing (Chrome Linux) — must match for all accounts
-                let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36";
-                settings.set_user_agent(Some(user_agent));
-
-                // Disable quirks to restore our manual Linux UA
-                settings.set_enable_site_specific_quirks(false);
-            }
-
             web_view.set_vexpand(true);
             web_view.set_hexpand(true);
 
@@ -682,6 +666,9 @@ mod imp {
                  ws.set_enable_mediasource(true);
                  ws.set_enable_webrtc(true);
 
+                 // Enable GPU compositing for media-heavy pages (#114)
+                 ws.set_hardware_acceleration_policy(webkit6::HardwareAccelerationPolicy::Always);
+
             // Debug: Monitor Camera Capture State
             web_view.connect_notify_local(Some("camera-capture-state"), |webview, _| {
                 let state = webview.camera_capture_state();
@@ -718,8 +705,11 @@ mod imp {
                    }
              }
 
-
-
+            // Use lighter caching strategy to reduce memory pressure during
+            // media-heavy browsing (#114)
+            if let Some(context) = webkit6::prelude::WebViewExt::context(&web_view) {
+                context.set_cache_model(webkit6::CacheModel::DocumentBrowser);
+            }
 
             // Inject Notification Persistence (Native Logic)
             // With PersistentNetworkSession, we rely on WebKit saving the permission state.
