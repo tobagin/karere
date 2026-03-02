@@ -876,10 +876,10 @@ mod imp {
                                        return false;
                                    }
 
-                                   let safe_name = std::path::Path::new(filename.as_str())
-                                      .file_name()
-                                      .unwrap_or(std::ffi::OsStr::new("download"));
-                                   let dest = path.join(safe_name);
+                                   if filename.is_empty() {
+                                       return false;
+                                   }
+                                   let dest = path.join(filename.as_str());
                                    download.set_destination(&dest.to_string_lossy());
                                    true
                               }
@@ -957,7 +957,8 @@ mod imp {
                           
                           // Handle Failed (Show Alert)
                           // let overlay_weak2 = overlay.downgrade();
-                          download.connect_failed(move |_, _error| {
+                          download.connect_failed(move |_, error| {
+                               log::error!("Download failed: {}", error);
                                if let Some(overlay) = overlay_weak_fail.upgrade() {
                                // Fallback to overlay if window logic is too complex to capture deep in closures without visual ref
                                // Actually, let's just use the overlay to find the window or just show a toast for error too slightly
@@ -1795,6 +1796,25 @@ mod imp {
                     toast.set_timeout(0);
                     overlay.add_toast(toast);
                 }
+            });
+
+            // Strip "Open in New Window" context menu actions (we have no multi-window support)
+            web_view.connect_context_menu(|_, menu, _| {
+                let dominated = [
+                    webkit6::ContextMenuAction::OpenLinkInNewWindow,
+                    webkit6::ContextMenuAction::OpenImageInNewWindow,
+                    webkit6::ContextMenuAction::OpenVideoInNewWindow,
+                    webkit6::ContextMenuAction::OpenAudioInNewWindow,
+                    webkit6::ContextMenuAction::OpenFrameInNewWindow,
+                ];
+                let items: Vec<webkit6::ContextMenuItem> = menu.items();
+                for item in items {
+                    let action = item.stock_action();
+                    if dominated.contains(&action) {
+                        menu.remove(&item);
+                    }
+                }
+                false
             });
 
             web_view.load_uri("https://web.whatsapp.com");
