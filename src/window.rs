@@ -180,9 +180,12 @@ mod imp {
             // kick in, reducing crashes when loading media-heavy pages (#113, #114).
             let mut mem_settings = webkit6::MemoryPressureSettings::new();
             mem_settings.set_memory_limit(3072);
-            mem_settings.set_conservative_threshold(0.50);
-            mem_settings.set_strict_threshold(0.75);
+            // Order matters: each setter asserts against the current value of
+            // adjacent thresholds (conservative < strict < kill), so set from
+            // highest to lowest to avoid tripping assertions (#116).
             mem_settings.set_kill_threshold(0.95);
+            mem_settings.set_strict_threshold(0.75);
+            mem_settings.set_conservative_threshold(0.50);
             webkit6::NetworkSession::set_memory_pressure_settings(&mut mem_settings);
 
             // Create an initial WebView with a per-account session
