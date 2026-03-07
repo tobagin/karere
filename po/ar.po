@@ -1,0 +1,806 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Muhammed Al-Basha <contact.mu7basha@gmail.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: unnamed project\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-09 22:06+0000\n"
+"PO-Revision-Date: 2026-03-07 10:42+0200\n"
+"Last-Translator: Muhammed Al-Basha <contact.mu7basha@gmail.com>\n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Gtranslator 49.0\n"
+"Plural-Forms: nplurals=6; plural= n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: temp_ui/keyboard-shortcuts.ui:12 temp_ui/preferences.ui:13
+#: temp_ui/preferences.ui:356
+msgid "General"
+msgstr "عام"
+
+#: temp_ui/keyboard-shortcuts.ui:15
+msgid "Show this help"
+msgstr "عرض هذه المساعدة"
+
+#: temp_ui/keyboard-shortcuts.ui:21 temp_ui/preferences.ui:10
+#: temp_ui/window.ui:152
+msgid "Preferences"
+msgstr "التفضيلات"
+
+#: temp_ui/keyboard-shortcuts.ui:27 temp_ui/window.ui:162
+msgid "About"
+msgstr "حول"
+
+#: temp_ui/keyboard-shortcuts.ui:33
+msgid "Quit application"
+msgstr "الخروج من التطبيق"
+
+#: temp_ui/keyboard-shortcuts.ui:41
+msgid "Window"
+msgstr "النافذة"
+
+#: temp_ui/keyboard-shortcuts.ui:44
+msgid "Minimize window"
+msgstr "تصغير النافذة"
+
+#: temp_ui/keyboard-shortcuts.ui:50
+msgid "Fullscreen"
+msgstr "ملأ الشاشة"
+
+#: temp_ui/keyboard-shortcuts.ui:58
+msgid "WhatsApp Web"
+msgstr "واتساب ويب"
+
+#: temp_ui/keyboard-shortcuts.ui:61
+msgid "Find in chat"
+msgstr "البحث في المحادثة"
+
+#: temp_ui/keyboard-shortcuts.ui:67
+msgid "Search chats"
+msgstr "بحث المحادثات"
+
+#: temp_ui/keyboard-shortcuts.ui:73
+msgid "New chat"
+msgstr "محادثة جديدة"
+
+#: temp_ui/keyboard-shortcuts.ui:79
+msgid "Archive current chat"
+msgstr "أرشفة المحادثة الحالية"
+
+#: temp_ui/keyboard-shortcuts.ui:85
+msgid "Open profile"
+msgstr "فتح الملف الشخصي"
+
+#: temp_ui/keyboard-shortcuts.ui:91
+msgid "Reload WhatsApp Web"
+msgstr "إعادة تحميل واتساب ويب"
+
+#: temp_ui/keyboard-shortcuts.ui:99
+msgid "WebView Zoom"
+msgstr "تقريب WebView"
+
+#: temp_ui/keyboard-shortcuts.ui:102
+msgid "Zoom in"
+msgstr "قرِّب"
+
+#: temp_ui/keyboard-shortcuts.ui:108
+msgid "Zoom out"
+msgstr "بعِّد"
+
+#: temp_ui/keyboard-shortcuts.ui:114
+msgid "Reset zoom"
+msgstr "تصفير التقريب"
+
+#: temp_ui/keyboard-shortcuts.ui:122 temp_ui/preferences.ui:213
+msgid "Accessibility"
+msgstr "الإتاحة"
+
+#: temp_ui/keyboard-shortcuts.ui:125
+msgid "Toggle high contrast"
+msgstr "تبديل التباين العالِ"
+
+#: temp_ui/keyboard-shortcuts.ui:131
+msgid "Toggle focus indicators"
+msgstr "تبديل مؤشرات التركيز"
+
+#: temp_ui/keyboard-shortcuts.ui:139
+msgid "Developer"
+msgstr "المطور"
+
+#: temp_ui/keyboard-shortcuts.ui:142
+msgid "Developer tools"
+msgstr "أدوات المطور"
+
+#: temp_ui/keyboard-shortcuts.ui:148
+msgid "Reload page"
+msgstr "إعادة تحميل الصفحة"
+
+#: temp_ui/keyboard-shortcuts.ui:154
+msgid "Force reload"
+msgstr "إجبار إعادة التحميل"
+
+#: temp_ui/keyboard-shortcuts.ui:162 temp_ui/preferences.ui:352
+msgid "Notifications"
+msgstr "الإشعارات"
+
+#: temp_ui/keyboard-shortcuts.ui:165
+msgid "Toggle notifications"
+msgstr "تبديل الإشعارات"
+
+#: temp_ui/keyboard-shortcuts.ui:171
+msgid "Toggle Do Not Disturb"
+msgstr "تبديل وضع عدم الإزعاج"
+
+#: temp_ui/preferences.ui:17
+msgid "Startup"
+msgstr "بدء التشغيل"
+
+#: temp_ui/preferences.ui:20
+msgid "Run on Startup"
+msgstr "التشغيل عند الولوج"
+
+#: temp_ui/preferences.ui:21
+msgid "Launch Karere automatically when you log in"
+msgstr "إطلاق كريري تلقائيًا عند ولوجك"
+
+#: temp_ui/preferences.ui:26
+msgid "Start in background"
+msgstr "البدء في الخلفية"
+
+#: temp_ui/preferences.ui:27
+msgid "Start minimized without showing the window"
+msgstr "ابدأ بشكل مصغر دون عرض نافذة"
+
+#: temp_ui/preferences.ui:32
+msgid "Window Close Behavior"
+msgstr "سلوك إغلاق النافذة"
+
+#: temp_ui/preferences.ui:33
+msgid "What happens when you close the window"
+msgstr "ماذا يحدث عند إغلاق النافذة"
+
+#: temp_ui/preferences.ui:37
+msgid "Run in Background"
+msgstr "شغِّل في الخلفية"
+
+#: temp_ui/preferences.ui:38
+msgid "Quit Application"
+msgstr "اخرج من التطبيق"
+
+#: temp_ui/preferences.ui:46
+msgid "System Tray Icon"
+msgstr "أيقونة درج النظام"
+
+#: temp_ui/preferences.ui:47
+msgid "Show an icon in the system tray"
+msgstr "إظهار ايقونة في درج النظام"
+
+#: temp_ui/preferences.ui:51 temp_ui/preferences.ui:87
+msgid "Auto"
+msgstr "تلقائي"
+
+#: temp_ui/preferences.ui:52 temp_ui/preferences.ui:88
+msgid "Enabled"
+msgstr "مُفعّلة"
+
+#: temp_ui/preferences.ui:53 temp_ui/preferences.ui:89
+msgid "Disabled"
+msgstr "مُعطّلة"
+
+#: temp_ui/preferences.ui:57
+msgid "Auto: Enabled for non-GNOME environments"
+msgstr "تلقائي: مفعل لأي بيئة سطح مكتب إلا جنوم"
+
+#: temp_ui/preferences.ui:64
+msgid "Appearance"
+msgstr "المظهر"
+
+#: temp_ui/preferences.ui:67
+msgid "Theme"
+msgstr "السمة"
+
+#: temp_ui/preferences.ui:68
+msgid "Choose the application color scheme"
+msgstr "اختار مخطط لون التطبيق"
+
+#: temp_ui/preferences.ui:72
+msgid "Follow System"
+msgstr "اتبع النظام"
+
+#: temp_ui/preferences.ui:73
+msgid "Light"
+msgstr "فاتح"
+
+#: temp_ui/preferences.ui:74
+msgid "Dark"
+msgstr "داكن"
+
+#: temp_ui/preferences.ui:82
+msgid "Mobile Layout (Experimental)"
+msgstr "تخطيط المحمول (تجريبي)"
+
+#: temp_ui/preferences.ui:83
+msgid "Optimize the interface for small screens"
+msgstr "تحسين الواجهة للشاشات الصغيرة"
+
+#: temp_ui/preferences.ui:93
+msgid "Auto: Enabled for mobile environments (Phosh, Plasma Mobile, etc.)"
+msgstr "تلقائي: مُفعَّل لبيئات المحمول (Phosh، Plasma Mobile، إلخ…)"
+
+#: temp_ui/preferences.ui:100
+msgid "Spell Checking"
+msgstr "التدقيق الإملائي"
+
+#: temp_ui/preferences.ui:103
+msgid "Enable Spell Checking"
+msgstr "تفعيل التدقيق الإملائي"
+
+#: temp_ui/preferences.ui:104
+msgid "Check spelling as you type"
+msgstr "فحص الإملاء عند الكتابة"
+
+#: temp_ui/preferences.ui:109
+msgid "Dictionary Status"
+msgstr "مجموع القواميس"
+
+#: temp_ui/preferences.ui:110
+msgid "Number of installed dictionaries"
+msgstr "عدد القواميس المُثبَّتة"
+
+#: temp_ui/preferences.ui:114
+msgid "Unknown"
+msgstr "مجهول"
+
+#: temp_ui/preferences.ui:121 temp_ui/preferences.ui:132
+msgid "Active Language"
+msgstr "اللغة الحالية"
+
+#: temp_ui/preferences.ui:122
+msgid "Automatically detected language"
+msgstr "اللغة المُتعرَف عليها تلقائيًا"
+
+#: temp_ui/preferences.ui:133
+msgid "Select the language for spell checking"
+msgstr "اختر لغة التدقيق الإملائي"
+
+#: temp_ui/preferences.ui:138
+msgid "Override Dictionary"
+msgstr "تجاوز القاموس"
+
+#: temp_ui/preferences.ui:139
+msgid "Manually select the spell checking language"
+msgstr "اختر يدويًا لغة التدقيق الإملائي"
+
+#: temp_ui/preferences.ui:144
+msgid "Enable Auto-Correct"
+msgstr "تفعيل التصحيح التلقائي"
+
+#: temp_ui/preferences.ui:145
+msgid "Automatically fix common spelling mistakes"
+msgstr "اصلاح الأخطاء الإملائية الشائعة تلقائيًا"
+
+#: temp_ui/preferences.ui:152 temp_ui/preferences.ui:444
+msgid "Downloads"
+msgstr "التنزيلات"
+
+#: temp_ui/preferences.ui:155
+msgid "Download Directory"
+msgstr "مجلد التنزيلات"
+
+#: temp_ui/preferences.ui:156 src/preferences.rs:272
+msgid "Default (Downloads)"
+msgstr "الافتراضي (Download)"
+
+#: temp_ui/preferences.ui:159
+msgid "Choose..."
+msgstr "تحديد..."
+
+#: temp_ui/preferences.ui:167
+msgid "Reset to default"
+msgstr "إعادة تعيين للافتراضي"
+
+#: temp_ui/preferences.ui:176
+msgid "Accounts"
+msgstr "الحسابات"
+
+#: temp_ui/preferences.ui:179
+msgid "Multi-Account Support"
+msgstr "دعم الحسابات المتعددة"
+
+#: temp_ui/preferences.ui:180
+msgid "Show account switcher in the header bar"
+msgstr "اظهر مُبدّل الحسابات في الشريط العلوي"
+
+#: temp_ui/preferences.ui:187 temp_ui/preferences.ui:196
+msgid "Developer Tools"
+msgstr "أدوات المطور"
+
+#: temp_ui/preferences.ui:190
+msgid "Enable Developer Tools"
+msgstr "تفعيل أدوات المطور"
+
+#: temp_ui/preferences.ui:191
+msgid "Allow inspecting and debugging the WebView"
+msgstr "يتيح فحص وتنقيح WebView"
+
+#: temp_ui/preferences.ui:197
+msgid "Open the WebKit inspector"
+msgstr "فتح فاحص WebKit"
+
+#: temp_ui/preferences.ui:200
+msgid "Open"
+msgstr "فتح"
+
+#: temp_ui/preferences.ui:217
+msgid "Keyboard Navigation"
+msgstr "التنقل بلوحة المفاتيح"
+
+#: temp_ui/preferences.ui:220 temp_ui/window.ui:158
+msgid "Keyboard Shortcuts"
+msgstr "اختصارات لوحة المفاتيح"
+
+#: temp_ui/preferences.ui:221
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "تفعيل اختصارات لوحة المفاتيح للإجراءات المعتادة"
+
+#: temp_ui/preferences.ui:226
+msgid "Focus Indicators"
+msgstr "مؤشرات التركيز"
+
+#: temp_ui/preferences.ui:227
+msgid "Show visible outlines around focused elements"
+msgstr "اظهر حدود واضحة حول العناصر المُركز عليها"
+
+#: temp_ui/preferences.ui:232
+msgid "View Keyboard Shortcuts"
+msgstr "عرض الاختصارات"
+
+#: temp_ui/preferences.ui:233
+msgid "See all available keyboard shortcuts"
+msgstr "ألقِ نظرة على كل الاختصارات المتاحة"
+
+#: temp_ui/preferences.ui:236
+msgid "View"
+msgstr "عرض"
+
+#: temp_ui/preferences.ui:247
+msgid "Visual Accessibility"
+msgstr "الإتاحة البصرية"
+
+#: temp_ui/preferences.ui:250
+msgid "High Contrast Mode"
+msgstr "وضع التباين العالِ"
+
+#: temp_ui/preferences.ui:251
+msgid "Increase contrast for better readability"
+msgstr "زيادة التباين لقراءة اوضح"
+
+#: temp_ui/preferences.ui:256
+msgid "Reduce Motion"
+msgstr "تقليل التحريك"
+
+#: temp_ui/preferences.ui:257
+msgid "Minimize animations and transitions"
+msgstr "يُقلل من الرسوم المتحركة والتحريكات"
+
+#: temp_ui/preferences.ui:264
+msgid "Webview Zoom"
+msgstr "تقريب Webview"
+
+#: temp_ui/preferences.ui:267
+msgid "Enable Webview Zoom"
+msgstr "تفعيل التقريب"
+
+#: temp_ui/preferences.ui:268
+msgid "Allow zooming in and out of the web content"
+msgstr "يتيح تكبير وتصغير محتوى الويب"
+
+#: temp_ui/preferences.ui:273
+msgid "Zoom Level"
+msgstr "مستوى التقريب"
+
+#: temp_ui/preferences.ui:274
+msgid "Adjust the magnification of the web content"
+msgstr "تعديل ضخامة محتوى الويب"
+
+#: temp_ui/preferences.ui:289 temp_ui/window.ui:44
+msgid "Reset Zoom"
+msgstr "إعادة تعيين التقريب"
+
+#: temp_ui/preferences.ui:290
+msgid "Restore zoom to the default level"
+msgstr "إعادة التقريب لمستواه الطبيعي"
+
+#: temp_ui/preferences.ui:293
+msgid "Reset"
+msgstr "تصفير"
+
+#: temp_ui/preferences.ui:304
+msgid "Screen Reader Support"
+msgstr "دعم قارئ الشاشة"
+
+#: temp_ui/preferences.ui:307
+msgid "Screen Reader Optimizations"
+msgstr "تحسينات لقارئ الشاشة"
+
+#: temp_ui/preferences.ui:308
+msgid "Improve compatibility with assistive technologies"
+msgstr "يُحسن التوافق مع التقنيات المساعدة"
+
+#: temp_ui/preferences.ui:313
+msgid "Screen Reader Status"
+msgstr "حالة قارئ الشاشة"
+
+#: temp_ui/preferences.ui:314
+msgid "Current screen reader detection state"
+msgstr "حالة قارئ الشاشة المُتعرف عليه حاليًا"
+
+#: temp_ui/preferences.ui:317
+msgid "Inactive"
+msgstr "غير نشط"
+
+#: temp_ui/preferences.ui:327 temp_ui/preferences.ui:330
+msgid "Accessibility Shortcuts"
+msgstr "اختصارات الإتاحة"
+
+#: temp_ui/preferences.ui:331
+msgid "Enable keyboard shortcuts for accessibility features"
+msgstr "تفعيل اختصارات المفاتيح لمميزات الإتاحة"
+
+#: temp_ui/preferences.ui:336
+msgid "Developer Shortcuts"
+msgstr "اختصارات المطور"
+
+#: temp_ui/preferences.ui:337
+msgid "Enable keyboard shortcuts for developer tools"
+msgstr "تفعيل اختصارات لوحة المفاتيح لأدوات المطور"
+
+#: temp_ui/preferences.ui:342
+msgid "Notification Shortcuts"
+msgstr "اختصارات التنبيهات"
+
+#: temp_ui/preferences.ui:343
+msgid "Enable keyboard shortcuts for notification actions"
+msgstr "تفعيل اختصارات لوحة المفاتيح لإجراءات الإشعارات"
+
+#: temp_ui/preferences.ui:359
+msgid "Enable Notifications"
+msgstr "تفعيل الإشعارات"
+
+#: temp_ui/preferences.ui:360
+msgid "Master toggle for all notifications"
+msgstr "الزر الأم لتبديل كل الإشعارات"
+
+#: temp_ui/preferences.ui:367
+msgid "Messages"
+msgstr "الرسائل"
+
+#: temp_ui/preferences.ui:370
+msgid "Message Notifications"
+msgstr "إشعارات الرسائل"
+
+#: temp_ui/preferences.ui:371
+msgid "Show notifications for incoming messages"
+msgstr "عرض الإشعارات للرسائل القادمة"
+
+#: temp_ui/preferences.ui:376
+msgid "Change Tray Icon on Message"
+msgstr "تحريك أيقونة الدرج للرسائل المستلمة"
+
+#: temp_ui/preferences.ui:377
+msgid "Animate the tray icon when a new message arrives"
+msgstr "تحريك أيقونة الدرج عند استلام رسالة جديدة"
+
+#: temp_ui/preferences.ui:384
+msgid "Message Preview"
+msgstr "معاينة الرسائل"
+
+#: temp_ui/preferences.ui:387
+msgid "Show Message Preview"
+msgstr "عرض معاينة للرسائل"
+
+#: temp_ui/preferences.ui:388
+msgid "Display message content in notifications"
+msgstr "عرض محتوى الرسالة داخل الإشعارات"
+
+#: temp_ui/preferences.ui:393
+msgid "Limit Message Preview Size"
+msgstr "حد حجم معاينة الرسائل"
+
+#: temp_ui/preferences.ui:394
+msgid "Truncate long messages in notifications"
+msgstr "بتر الرسائل الطويلة داخل الإشعارات"
+
+#: temp_ui/preferences.ui:399
+msgid "Preview Length (characters)"
+msgstr "طول المعاينة (بالحروف)"
+
+#: temp_ui/preferences.ui:400
+msgid "Maximum number of characters shown in previews"
+msgstr "الحد الأقصى للأحرف المعروضة داخل المعاينات"
+
+#: temp_ui/preferences.ui:416
+msgid "Sounds"
+msgstr "الأصوات"
+
+#: temp_ui/preferences.ui:419
+msgid "Notification Sounds"
+msgstr "أصوات الإشعارات"
+
+#: temp_ui/preferences.ui:420
+msgid "Play a sound when a notification arrives"
+msgstr "تشغيل صوت عند الحصول على إشعار"
+
+#: temp_ui/preferences.ui:425
+msgid "Sound"
+msgstr "الصوت"
+
+#: temp_ui/preferences.ui:426
+msgid "Choose the notification alert sound"
+msgstr "تغيير صوت الإشعارات"
+
+#: temp_ui/preferences.ui:430
+msgid "WhatsApp (Default)"
+msgstr "واتساب (الافتراضي)"
+
+#: temp_ui/preferences.ui:431
+msgid "Pop"
+msgstr "فرقعة"
+
+#: temp_ui/preferences.ui:432
+msgid "Alert"
+msgstr "إنذار"
+
+#: temp_ui/preferences.ui:433
+msgid "Soft"
+msgstr "ناعم"
+
+#: temp_ui/preferences.ui:434
+msgid "Start"
+msgstr "بدء"
+
+#: temp_ui/preferences.ui:447
+msgid "Download Notifications"
+msgstr "إشعارات التنزيلات"
+
+#: temp_ui/preferences.ui:448
+msgid "Notify when a file download completes"
+msgstr "ارسل إشعارًا عند إكتمال تنزيل ملف"
+
+#: temp_ui/preferences.ui:453
+msgid "Notification Type"
+msgstr "نوع الإشعارات"
+
+#: temp_ui/preferences.ui:454
+msgid "How download notifications are displayed"
+msgstr "كيف تُعرض إشعارات التنزيلات"
+
+#: temp_ui/preferences.ui:458
+msgid "In-app Toast"
+msgstr "إشعار منبثق داخل التطبيق"
+
+#: temp_ui/preferences.ui:459
+msgid "System Notification"
+msgstr "إشعارات النظام"
+
+#: temp_ui/window.ui:12 temp_ui/window.ui:23 src/main.rs:144 src/tray.rs:29
+#: src/tray.rs:73
+msgid "Karere"
+msgstr "كريري"
+
+#: temp_ui/window.ui:24
+msgid "GTK4 Whatsapp Web Client"
+msgstr "عميل واتساب ويب يعمل بـ«جتك4»"
+
+#: temp_ui/window.ui:37
+msgid "Zoom Out"
+msgstr "بعِّد"
+
+#: temp_ui/window.ui:51
+msgid "Zoom In"
+msgstr "قرِّب"
+
+#: temp_ui/window.ui:60
+msgid "Spell Checking Language"
+msgstr "لغة التدقيق الإملائي"
+
+#: temp_ui/window.ui:67
+msgid "Menu"
+msgstr "القائمة"
+
+#: temp_ui/window.ui:73
+msgid "Switch Account"
+msgstr "تبديل الحساب"
+
+#: temp_ui/window.ui:134
+msgid "Add new account"
+msgstr "اضِف حسابًا جديدًا"
+
+#: temp_ui/window.ui:148
+msgid "Refresh WhatsApp Web"
+msgstr "إنعاش واتساب ويب"
+
+#: temp_ui/window.ui:168 src/tray.rs:122
+msgid "Quit"
+msgstr "خروج"
+
+#: src/main.rs:144
+msgid "Karere (Dev)"
+msgstr "كريري (مطور)"
+
+#: src/main.rs:146
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities (Development Version)"
+msgstr ""
+"مُغلِف حديث وأصيل يعمل بـGTK4/LibAdwaita لواتساب ويب، يوفر توافق سلس مع سطح "
+"المكب، مع تسجيل دخول شامل وإمكانية الإبلاغ عن التعطلات (نسخة المطورين)"
+
+#: src/main.rs:148
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+"مُغلِف حديث وأصيل يعمل بـGTK4/LibAdwaita لواتساب ويب، يوفر توافق سلس مع سطح "
+"المكب، مع تسجيل دخول شامل وإمكانية الإبلاغ عن التعطلات"
+
+#: src/main.rs:169
+msgid "Source"
+msgstr "الشفرة المصدرية"
+
+#: src/main.rs:172
+msgid "Special Thanks"
+msgstr "شكر خاص"
+
+#: src/preferences.rs:430
+msgid "1 Dictionary"
+msgstr "قاموس واحد"
+
+#: src/preferences.rs:433
+msgid "Dictionaries"
+msgstr "قاموسًا"
+
+#: src/preferences.rs:483
+msgid "Select Download Directory"
+msgstr "تحديد مسار التنزيلات"
+
+#: src/preferences.rs:485
+msgid "Select"
+msgstr "تحديد"
+
+#: src/tray.rs:74
+msgid "Running via Rust & GTK4"
+msgstr "يعمل بـ Rust وجتك4"
+
+#: src/tray.rs:82
+msgid "Hide Window"
+msgstr "إخفاء النافذة"
+
+#: src/tray.rs:84
+msgid "Show Window"
+msgstr "عرض النافذة"
+
+#: src/window.rs:788
+msgid "WhatsApp Web Notification Permission"
+msgstr "صلاحية الإشعارات لواتساب ويب"
+
+#: src/window.rs:789
+msgid ""
+"WhatsApp Web wants to show desktop notifications for new messages. Would you "
+"like to allow notifications?"
+msgstr ""
+"واتساب ويب يرغب في عرض إشعارات سطح المكتب للرسائل الجديدة. هل تريد السماح "
+"بالإشعارات؟"
+
+#: src/window.rs:794 src/window.rs:878
+msgid "Deny"
+msgstr "تجاهل"
+
+#: src/window.rs:795 src/window.rs:879
+msgid "Allow"
+msgstr "سماح"
+
+#: src/window.rs:841
+msgid "WhatsApp Web Camera & Microphone Permission"
+msgstr "صلاحية الكاميرا والميكروفون لواستاب ويب"
+
+#: src/window.rs:842
+msgid ""
+"WhatsApp Web wants to access your camera and microphone. Would you like to "
+"allow access?"
+msgstr ""
+"واتساب ويب يطلب صلاحية الوصول إلى الكاميرا والميكروفون خاصتك. هل تريد السماح "
+"بالوصول؟"
+
+#: src/window.rs:845
+msgid "WhatsApp Web Camera Permission"
+msgstr "صلاحية الكاميرا لواتساب ويب"
+
+#: src/window.rs:846
+msgid ""
+"WhatsApp Web wants to access your camera. Would you like to allow access?"
+msgstr ""
+"واتساب ويب يطلب صلاحية الوصول إلى الكاميرا خاصتك. هل تريد السماح بالوصول؟"
+
+#: src/window.rs:851
+msgid "WhatsApp Web Microphone Permission"
+msgstr "صلاحية الميكروفون لواتساب ويب"
+
+#: src/window.rs:852
+msgid ""
+"WhatsApp Web wants to access your microphone. Would you like to allow access?"
+msgstr ""
+"واتساب ويب يطلب صلاحية الوصول إلى الميكروفون خاصتك. هل تريد السماح بالوصول؟"
+
+#: src/window.rs:934
+msgid "WhatsApp"
+msgstr "واتساب"
+
+#: src/window.rs:935
+msgid "New message"
+msgstr "رسالة جديدة"
+
+#: src/window.rs:940
+msgid "New message received"
+msgstr "تم استلام رسالة جديدة"
+
+#: src/window.rs:1614
+msgid "No account"
+msgstr "لا حسابات"
+
+#: src/window.rs:1729
+msgid "Add New Account"
+msgstr "أضِف حساب جديد"
+
+#: src/window.rs:1730
+msgid "Enter account name:"
+msgstr "أدخل اسم الحساب:"
+
+#: src/window.rs:1736
+msgid "Account name"
+msgstr "اسم الحساب"
+
+#: src/window.rs:1743 src/window.rs:1770
+msgid "_Cancel"
+msgstr "إل_غاء"
+
+#: src/window.rs:1744
+msgid "_Add"
+msgstr "إ_ضافة"
+
+#: src/window.rs:1764
+msgid "Remove account"
+msgstr "حذف الحساب"
+
+#: src/window.rs:1765
+msgid "This action cannot be undone."
+msgstr "لا يمكن التراجع عن هذا الإجراء."
+
+#: src/window.rs:1771
+msgid "_Remove"
+msgstr "_حذف"
+
+#: data/io.github.tobagin.karere.desktop.in:3
+msgid "@APP_NAME@"
+msgstr "كريري"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "عميل واستاب"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "عميل واتساب ويب أصيل لسطح مكتب لينكس"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;chat;messaging;web;communication;واتساب;محادثة;دردشة;ويب;تواصل;"
