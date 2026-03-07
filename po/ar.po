@@ -711,7 +711,7 @@ msgstr "سماح"
 
 #: src/window.rs:841
 msgid "WhatsApp Web Camera & Microphone Permission"
-msgstr "صلاحية الكاميرا والميكروفون لواستاب ويب"
+msgstr "صلاحية الكاميرا والميكروفون لواتساب ويب"
 
 #: src/window.rs:842
 msgid ""
@@ -795,7 +795,7 @@ msgstr "كريري"
 
 #: data/io.github.tobagin.karere.desktop.in:4
 msgid "WhatsApp Client"
-msgstr "عميل واستاب"
+msgstr "عميل واتساب"
 
 #: data/io.github.tobagin.karere.desktop.in:5
 msgid "Native WhatsApp Web client for Linux desktop"
