@@ -8,7 +8,7 @@ finish-args:
   - --share=ipc
   - --socket=fallback-x11
   - --socket=wayland
-  - --device=dri
+  - --device=all
   - --talk-name=org.kde.StatusNotifierWatcher
   - --filesystem=xdg-download
   - --filesystem=xdg-run/pipewire-0
@@ -22,6 +22,8 @@ finish-args:
   - --env=WEBRTC_USE_PIPEWIRE=1
   # Disable JIT to fix "NeedDebuggerBreak trap" crashes
   - --env=JSC_useJIT=0
+  # Enable SharedArrayBuffer without requiring cross-origin isolation
+  - --env=JSC_useSharedArrayBuffer=1
 
 
 sdk-extensions:
@@ -53,6 +55,47 @@ build-options:
     CARGO_HOME: /run/build/karere/cargo
 
 modules:
+  - name: unifdef
+    buildsystem: simple
+    build-commands:
+      - make install prefix=/app CFLAGS="-std=c11 -D_XOPEN_SOURCE=700"
+    sources:
+      - type: archive
+        url: https://dotat.at/prog/unifdef/unifdef-2.12.tar.xz
+        sha256: 43ce0f02ecdcdc723b2475575563ddb192e988c886d368260bc0a63aee3ac400
+
+  - name: webkitgtk
+    buildsystem: cmake-ninja
+    builddir: true
+    build-options:
+      cflags: '-g0'
+      cxxflags: '-g0 -DNDEBUG'
+      env:
+        # Limit parallel jobs to avoid OOM
+        NINJA_MAX_JOBS: '4'
+    config-opts:
+      - -DPORT=GTK
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_INSTALL_PREFIX=/app
+      # Enable WebRTC
+      - -DENABLE_WEB_RTC=ON
+      - -DENABLE_MEDIA_STREAM=ON
+      # Keep what we need
+      - -DENABLE_WEBDRIVER=OFF
+      - -DENABLE_MINIBROWSER=OFF
+      - -DENABLE_DOCUMENTATION=OFF
+      - -DENABLE_INTROSPECTION=OFF
+      - -DENABLE_GAMEPAD=OFF
+      - -DENABLE_BUBBLEWRAP_SANDBOX=OFF
+      - -DENABLE_SPEECH_SYNTHESIS=OFF
+      - -DUSE_SOUP2=OFF
+      - -DUSE_GTK4=ON
+      - -DUSE_LIBBACKTRACE=OFF
+    sources:
+      - type: archive
+        url: https://webkitgtk.org/releases/webkitgtk-2.50.5.tar.xz
+        sha256: 8737631bac3e9c7ad3e5208f9370e076c09d9c45b39980021ce54edadcc6f94f
+
   - name: hunspell-dictionaries
     buildsystem: simple
     build-commands:

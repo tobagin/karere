@@ -50,8 +50,7 @@ fn main() {
         .arg("--version")
         .status();
 
-    if let Ok(status) = status
-        && status.success() {
+    if status.is_ok_and(|s| s.success()) {
             let po_dir = std::path::Path::new("po");
             let locale_dir = out_path.join("locale");
             std::fs::create_dir_all(&locale_dir).expect("Failed to create locale dir");

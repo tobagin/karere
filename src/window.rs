@@ -652,6 +652,108 @@ mod imp {
                     &[]
                 );
                 ucm.add_script(&notif_script);
+
+                // Spoof Chrome-specific APIs and enable SharedArrayBuffer
+                // so WhatsApp Web enables calling support.
+                let chrome_spoof = r#"
+                    (function() {
+                        // Spoof window.chrome
+                        if (!window.chrome) {
+                            window.chrome = {
+                                runtime: {},
+                                csi: function() { return {}; },
+                                loadTimes: function() { return {}; }
+                            };
+                        }
+
+                        // Spoof navigator.userAgentData (Client Hints API)
+                        if (!navigator.userAgentData) {
+                            Object.defineProperty(navigator, 'userAgentData', {
+                                get: function() {
+                                    return {
+                                        brands: [
+                                            { brand: 'Chromium', version: '143' },
+                                            { brand: 'Google Chrome', version: '143' },
+                                            { brand: 'Not-A.Brand', version: '24' }
+                                        ],
+                                        mobile: false,
+                                        platform: 'Linux',
+                                        getHighEntropyValues: function(hints) {
+                                            return Promise.resolve({
+                                                brands: this.brands,
+                                                mobile: false,
+                                                platform: 'Linux',
+                                                platformVersion: '6.19.0',
+                                                architecture: 'x86',
+                                                bitness: '64',
+                                                model: '',
+                                                fullVersionList: [
+                                                    { brand: 'Chromium', version: '143.0.0.0' },
+                                                    { brand: 'Google Chrome', version: '143.0.0.0' },
+                                                    { brand: 'Not-A.Brand', version: '24.0.0.0' }
+                                                ]
+                                            });
+                                        }
+                                    };
+                                }
+                            });
+                        }
+
+                        // Spoof crossOriginIsolated for WhatsApp's feature detection.
+                        // The real SharedArrayBuffer is enabled via JSC_useSharedArrayBuffer=1.
+                        if (!window.crossOriginIsolated) {
+                            Object.defineProperty(window, 'crossOriginIsolated', {
+                                get: function() { return true; },
+                                configurable: true
+                            });
+                        }
+
+                        // Force enable_web_calling by patching modules and forcing re-render.
+                        var _patched = false;
+                        var patchInterval = setInterval(function() {
+                            if (_patched) return;
+                            try {
+                                if (typeof require !== 'function') return;
+                                var ab = require("WAWebABProps");
+                                var gating = require("WAWebVoipGatingUtils");
+                                if (!ab || !gating) return;
+                                _patched = true;
+                                clearInterval(patchInterval);
+
+                                var orig = ab.getABPropConfigValue;
+                                ab.getABPropConfigValue = function(key) {
+                                    if (key === 'enable_web_calling') return true;
+                                    return orig.apply(this, arguments);
+                                };
+                                gating.isCallingEnabled = function() { return true; };
+                                gating.isGroupCallingEnabled = function() { return true; };
+                                gating.isUnsupportedBrowserForWebCalling = function() { return false; };
+                                gating.getUnsupportedBrowserReason = function() { return null; };
+
+                                // Force React re-render by dispatching a resize event
+                                setTimeout(function() {
+                                    window.dispatchEvent(new Event('resize'));
+                                }, 500);
+                                // And navigate away and back to force component remount
+                                setTimeout(function() {
+                                    var chats = document.querySelectorAll('[data-testid="cell-frame-container"]');
+                                    if (chats.length >= 2) {
+                                        chats[1].click();
+                                        setTimeout(function() { chats[0].click(); }, 200);
+                                    }
+                                }, 1000);
+                            } catch(e) {}
+                        }, 50);
+                    })();
+                "#;
+                let chrome_spoof_script = webkit6::UserScript::new(
+                    chrome_spoof,
+                    webkit6::UserContentInjectedFrames::TopFrame,
+                    webkit6::UserScriptInjectionTime::Start,
+                    &[],
+                    &[]
+                );
+                ucm.add_script(&chrome_spoof_script);
             }
 
             let obj = self.obj();
@@ -665,9 +767,15 @@ mod imp {
                  // Memory Optimization: Disable Page Cache (Back/Forward Cache)
                  ws.set_enable_page_cache(false);
 
+                 // Media support
                  ws.set_enable_media_stream(true);
                  ws.set_enable_mediasource(true);
                  ws.set_enable_webrtc(true);
+                 ws.set_enable_media(true);
+                 ws.set_enable_media_capabilities(true);
+                 ws.set_enable_encrypted_media(true);
+                 ws.set_media_playback_requires_user_gesture(false);
+                 ws.set_media_playback_allows_inline(true);
 
                  // Enable GPU compositing for media-heavy pages (#114)
                  ws.set_hardware_acceleration_policy(webkit6::HardwareAccelerationPolicy::Always);
