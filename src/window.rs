@@ -55,7 +55,7 @@ mod imp {
         pub mobile_layout_transitioning: std::cell::Cell<bool>,
 
         // Notification Proxy (Reusable)
-        pub notification_proxy: Rc<OnceCell<ashpd::desktop::notification::NotificationProxy<'static>>>,
+        pub notification_proxy: Rc<OnceCell<ashpd::desktop::notification::NotificationProxy>>,
 
         // Window State Persistence
         pub last_unmaximized_size: std::cell::Cell<(i32, i32)>,
@@ -199,7 +199,7 @@ mod imp {
                 let _ = crate::RUNTIME.spawn(async {
                     log::info!("Requesting Camera Access at Startup...");
                     if let Ok(proxy) = ashpd::desktop::camera::Camera::new().await {
-                        match proxy.request_access().await {
+                        match proxy.request_access(ashpd::desktop::camera::CameraAccessOptions::default()).await {
                             Ok(_) => log::info!("Camera Access GRANTED by System/User."),
                             Err(e) => log::warn!("Camera Access DENIED or FAILED: {:?}", e),
                         }
@@ -209,7 +209,7 @@ mod imp {
                             Err(e) => log::warn!("Failed to check camera presence: {:?}", e),
                         }
 
-                        match proxy.open_pipe_wire_remote().await {
+                        match proxy.open_pipe_wire_remote(ashpd::desktop::camera::OpenPipeWireRemoteOptions::default()).await {
                             Ok(fd) => log::info!("Successfully opened PipeWire remote via Portal (FD: {:?})", fd),
                             Err(e) => log::warn!("Failed to open PipeWire remote: {:?}", e),
                         }
@@ -240,7 +240,8 @@ mod imp {
                          let proxy_cell = window.imp().notification_proxy.clone();
                          glib::MainContext::default().spawn_local(async move {
                              let _guard = crate::RUNTIME.enter();
-                             if let Some(proxy) = proxy_cell.get() {
+                             let proxy_opt: Option<&ashpd::desktop::notification::NotificationProxy> = proxy_cell.get();
+                             if let Some(proxy) = proxy_opt {
                                  for id in &portal_ids {
                                      let _ = proxy.remove_notification(id).await;
                                  }
@@ -1219,7 +1220,7 @@ mod imp {
                             let _guard = crate::RUNTIME.enter();
 
                             // Initialize Proxy if needed (Singleton pattern per window)
-                            let proxy = match proxy_cell.get_or_try_init(|| async {
+                            let proxy: &ashpd::desktop::notification::NotificationProxy = match proxy_cell.get_or_try_init(|| async {
                                 ashpd::desktop::notification::NotificationProxy::new().await
                                     .map_err(|e| {
                                         log::error!("Failed to create notification proxy: {}", e);

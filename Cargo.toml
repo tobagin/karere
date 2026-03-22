@@ -13,7 +13,7 @@ env_logger = "0.11.9"
 webkit6 = { version = "0.6.1", features = ["v2_42"] }
 anyhow = "1.0.102"
 glib = "0.22.3"
-ashpd = { version = "0.13.9", features = ["gtk4"] }
+ashpd = { version = "0.13.9", features = ["gtk4", "notification", "camera", "background", "open_uri"] }
 gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
 tokio = { version = "1.50.0", features = ["rt-multi-thread", "macros", "time"] }
 zbus = "5.14.0"
