@@ -1738,7 +1738,7 @@ mod imp {
             web_view.connect_decide_policy(move |_, decision, decision_type| {
                 match decision_type {
                      webkit6::PolicyDecisionType::NavigationAction | webkit6::PolicyDecisionType::NewWindowAction => {
-                         if let Some(mut nav_action) = decision.downcast_ref::<webkit6::NavigationPolicyDecision>().and_then(|d| d.navigation_action())
+                         if let Some(nav_action) = decision.downcast_ref::<webkit6::NavigationPolicyDecision>().and_then(|d| d.navigation_action())
                              && let Some(req) = nav_action.request()
                                  && let Some(uri) = req.uri() {
                                      let uri_str = uri.as_str();

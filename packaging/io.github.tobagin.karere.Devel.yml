@@ -20,8 +20,6 @@ finish-args:
   # Force GStreamer/WebKit to use PipeWire for camera
   - --env=GST_PLUGIN_FEATURE_RANK=pipewiresrc:MAX
   - --env=WEBRTC_USE_PIPEWIRE=1
-  # Disable JIT to fix "NeedDebuggerBreak trap" crashes
-  - --env=JSC_useJIT=0
 
 
 sdk-extensions:
