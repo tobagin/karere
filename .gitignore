@@ -11,4 +11,5 @@ build
 *~
 *.swp
 .vscode/
-karerev1*
+karerev1*repo
+repo/

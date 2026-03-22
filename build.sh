@@ -2,7 +2,7 @@
 set -e
 
 # Install required SDK extension
-flatpak install --user --noninteractive org.gnome.Sdk//49 org.gnome.Platform//49 org.freedesktop.Sdk.Extension.rust-stable//25.08
+flatpak install --user --noninteractive org.gnome.Sdk//50 org.gnome.Platform//50 org.freedesktop.Sdk.Extension.rust-stable//25.08
 
 # Define the manifest to use
 MANIFEST="packaging/io.github.tobagin.karere.yml"
@@ -14,5 +14,5 @@ else
     echo "Building Production version..."
 fi
 
-# Build the flatpak
-flatpak-builder --user --install --force-clean build-dir "$MANIFEST"
+# Build the flatpak using a named repo to avoid creating stale debug*-origin remotes
+flatpak-builder --user --install --force-clean --repo=repo build-dir "$MANIFEST"
