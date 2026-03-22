@@ -11,17 +11,13 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.5.6 - Calls, Keyboard & Dependency Updates
+## 🎉 Version 2.5.7 - Build Fix
 
-**Karere 2.5.6** fixes voice/video calls on WhatsApp Web, improves on-screen keyboard support on Phosh, and updates all dependencies.
+**Karere 2.5.7** fixes the Flatpak build by updating to the ashpd 0.13 API.
 
-### 🆕 What's New in 2.5.6
+### 🆕 What's New in 2.5.7
 
-- **Calls**: Fixed voice and video calls showing "Your browser doesn't support calling".
-- **Mobile**: Fixed on-screen keyboard not appearing reliably on Phosh and touch-based Linux environments.
-- **Downloads**: Fixed blob URL downloads (e.g. "Save Image" from the media viewer).
-- **Icons**: Redesigned application icons for both stable and development variants.
-- **Dependencies**: Updated all Rust dependencies and upgraded to GNOME Platform 50.
+- **Build**: Fixed Flatpak build failure caused by ashpd 0.13 feature gate changes.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

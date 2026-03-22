@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [2.5.7] - 2026-03-22
+
+### Fixed
+- **Build**: Fixed Flatpak build failure by enabling required ashpd feature flags (`notification`, `camera`, `background`, `open_uri`) and updating to ashpd 0.13 API (`NotificationProxy` lifetime removed, `request_access`/`open_pipe_wire_remote` now take options structs).
+
 ## [2.5.6] - 2026-03-22
 
 ### Fixed
