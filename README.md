@@ -11,15 +11,17 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.5.5 - Media & Stability
+## 🎉 Version 2.5.6 - Calls, Keyboard & Dependency Updates
 
-**Karere 2.5.5** fixes freezes when viewing media galleries, a crash on launch, and improves dead key input handling.
+**Karere 2.5.6** fixes voice/video calls on WhatsApp Web, improves on-screen keyboard support on Phosh, and updates all dependencies.
 
-### 🆕 What's New in 2.5.5
+### 🆕 What's New in 2.5.6
 
-- **Media**: Fixed freezes when scrolling through media galleries.
-- **Stability**: Fixed crash on launch due to WebKit memory pressure settings.
-- **Input**: Fixed dead key composition for first character in input fields.
+- **Calls**: Fixed voice and video calls showing "Your browser doesn't support calling".
+- **Mobile**: Fixed on-screen keyboard not appearing reliably on Phosh and touch-based Linux environments.
+- **Downloads**: Fixed blob URL downloads (e.g. "Save Image" from the media viewer).
+- **Icons**: Redesigned application icons for both stable and development variants.
+- **Dependencies**: Updated all Rust dependencies and upgraded to GNOME Platform 50.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

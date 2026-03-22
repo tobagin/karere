@@ -10,7 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
 ### Fixed
+
+## [2.5.6] - 2026-03-22
+
+### Fixed
+- **Calls**: Fixed voice and video calls showing "Your browser doesn't support calling" by spoofing a Windows Chrome user-agent, which WhatsApp requires for call support.
+- **Mobile**: Fixed on-screen keyboard not appearing reliably when tapping the message input on Phosh and other touch-based Linux environments.
+- **Downloads**: Fixed blob URL downloads (e.g. "Save Image" from the media viewer) by fetching the blob in JavaScript and re-triggering as a normal download.
+
+### Changed
+- **Icons**: Redesigned application icons for both stable and development variants.
+- **Dependencies**: Updated all Rust dependencies to their latest versions (gtk4 0.11, libadwaita 0.9, webkit6 0.6, glib 0.22, ashpd 0.13, tokio 1.50, zbus 5.14, and more).
+- **Flatpak**: Upgraded to GNOME Platform 50. Removed the ffmpeg-full extension (no longer required).
 
 ## [2.5.5] - 2026-03-02
 

@@ -95,6 +95,19 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="2.5.6" date="2026-03-22">
+      <description>
+        <ul>
+          <li>Fixed voice and video calls showing "Your browser doesn't support calling"</li>
+          <li>Fixed on-screen keyboard not appearing reliably on Phosh and touch-based Linux environments</li>
+          <li>Fixed blob URL downloads (e.g. Save Image from the media viewer)</li>
+          <li>Redesigned application icons for stable and development variants</li>
+          <li>Updated all Rust dependencies to latest versions</li>
+          <li>Upgraded to GNOME Platform 50</li>
+          <li>Removed ffmpeg-full extension (no longer required)</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.5.5" date="2026-03-02">
       <description>
         <ul>

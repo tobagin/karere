@@ -684,8 +684,11 @@ mod imp {
                 log::debug!("Microphone Capture State Changed: {:?}", state);
             });
 
-                 // User Agent Spoofing (Chrome Linux)
-                 let user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36";
+                 // User Agent Spoofing (Chrome Windows)
+                 // WhatsApp checks the UA platform to determine calling support.
+                 // Using a Linux UA causes WhatsApp to show "Your browser doesn't support calling."
+                 // A Windows Chrome UA enables voice/video calls (#122).
+                 let user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36";
                  ws.set_user_agent(Some(user_agent));
 
                  // Disable quirks to restore our manual Linux UA
@@ -839,33 +842,85 @@ mod imp {
                      false,
                      glib::closure_local! (move |_session: webkit6::NetworkSession, download: webkit6::Download| {
                           let settings_dl = settings_dl.clone();
-                           let overlay_weak = overlay_weak.clone();
-                           let settings_finished = settings_dl.clone();
-                           let overlay_weak_fin = overlay_weak.clone();
-                           let overlay_weak_fail = overlay_weak.clone();
-                          
+                          let overlay_weak = overlay_weak.clone();
+
+                          // Check if this is a blob: URL (e.g. "Save Image" from WhatsApp media viewer).
+                          // WebKit cannot download blob: URLs via network requests — the blob only
+                          // exists inside the page's JavaScript context. Handle it with JS instead.
+                          let download_uri = download.request()
+                              .and_then(|r| r.uri())
+                              .unwrap_or_default()
+                              .to_string();
+
+                          log::info!("Download started — URI scheme: {}", download_uri.split(':').next().unwrap_or("?"));
+                          log::debug!("Download started — full URI: {}", &download_uri[..download_uri.len().min(200)]);
+
+                          if download_uri.starts_with("blob:") {
+                              // Cancel BEFORE connecting handlers so connect_failed won't fire
+                              download.cancel();
+
+                              if let Some(web_view) = download.web_view() {
+                                  let uri_escaped = download_uri.replace('\\', "\\\\").replace('\'', "\\'");
+
+                                  // Fetch the blob in JS, convert to data: URL, and trigger
+                                  // a real download via <a download>.  The data: URL download
+                                  // re-enters our normal download-started pipeline.
+                                  let js = format!(r#"
+                                      (function() {{
+                                          fetch('{uri}')
+                                              .then(function(r) {{ return r.blob(); }})
+                                              .then(function(blob) {{
+                                                  var reader = new FileReader();
+                                                  reader.onload = function() {{
+                                                      var ext = (blob.type.split('/')[1] || 'bin').replace('jpeg', 'jpg');
+                                                      var a = document.createElement('a');
+                                                      a.href = reader.result;
+                                                      a.download = 'WhatsApp_Image.' + ext;
+                                                      a.style.display = 'none';
+                                                      document.body.appendChild(a);
+                                                      a.click();
+                                                      document.body.removeChild(a);
+                                                  }};
+                                                  reader.readAsDataURL(blob);
+                                              }})
+                                              .catch(function(e) {{
+                                                  console.error('Karere blob save failed:', e);
+                                              }});
+                                      }})()
+                                  "#, uri = uri_escaped);
+
+                                  web_view.evaluate_javascript(
+                                      &js, None, None,
+                                      Option::<&gio::Cancellable>::None,
+                                      |_| {},
+                                  );
+                              }
+                              return;
+                          }
+
+                          // Normal (non-blob) download handling
+                          let settings_finished = settings_dl.clone();
+                          let overlay_weak_fin = overlay_weak.clone();
+                          let overlay_weak_fail = overlay_weak.clone();
+
                           download.connect_closure(
                               "decide-destination",
                               false,
                               glib::closure_local! (move |download: webkit6::Download, filename: glib::GString| -> bool {
                                    let directory = settings_dl.string("download-directory");
+                                   log::info!("decide-destination — filename: '{}', download-directory setting: '{}'", filename, directory);
                                    if directory.is_empty() {
-                                       // No custom directory configured — let WebKit handle it
-                                       // natively (shows save dialog with proper filenames,
-                                       // uses portal in Flatpak)
+                                       log::info!("decide-destination — returning false (no custom dir, WebKit default)");
                                        return false;
                                    }
 
                                    let mut path_str = directory.to_string();
-                                   // Expand ~
                                    if path_str.starts_with("~") {
                                        let home = glib::home_dir();
                                        path_str = path_str.replacen("~", home.to_str().unwrap(), 1);
                                    }
                                    let path = std::path::PathBuf::from(path_str);
                                    if !path.exists() {
-                                       // Configured directory doesn't exist — fall back to
-                                       // WebKit native handling
                                        return false;
                                    }
 
@@ -877,54 +932,43 @@ mod imp {
                                    true
                               }
                           ));
-                          
-                          // Handle Finished (Show Toast)
-                          // let overlay_weak = overlay.downgrade();
+
                           download.connect_finished(move |download| {
                                let settings_dl = &settings_finished;
                                if let Some(overlay) = overlay_weak_fin.upgrade() {
-                                   // Try to get path from URI first (standard), fallback if needed
                                    let file_path = if let Some(uri) = download.destination() {
                                        gio::File::for_uri(&uri).path()
-                                           .or_else(|| gio::File::for_path(uri.as_str()).path()) // Fallback: maybe it was a path?
+                                           .or_else(|| gio::File::for_path(uri.as_str()).path())
                                    } else {
                                        None
                                    };
 
                                    if let Some(file) = file_path {
                                             let filename = file.file_name().unwrap_or_default().to_string_lossy();
-                                            // Downloads
-                                            // Check Master & Download Toggles
                                             let master_enabled = settings_dl.boolean("notifications-enabled");
                                             let dl_enabled = settings_dl.boolean("notify-downloads-enabled");
-                                            
+
                                             if master_enabled && dl_enabled {
                                                  let dl_type = settings_dl.string("notify-download-type");
-                                                 let filename_str = &filename; // Use deref for Cow<str>
+                                                 let filename_str = &filename;
 
                                                  if dl_type == "system" {
-                                                      // System Notification
                                                       let note = gio::Notification::new("Download Complete");
                                                       note.set_body(Some(filename_str));
                                                       note.set_icon(&gio::ThemedIcon::new("folder-download-symbolic"));
-                                                      
-                                                      // Add Open Action
-                                                      // "app.present-window" brings up app.
-                                                      // Use "app.open-download" with uri param
+
                                                       if let Some(uri) = download.destination() {
                                                           let uri_str = uri.to_string();
                                                           let detailed_action = gio::Action::print_detailed_name("app.open-download", Some(&uri_str.to_variant()));
                                                           note.set_default_action(&detailed_action);
                                                       }
-                                                
+
                                                       if let Some(app) = gio::Application::default() {
                                                           app.send_notification(Some(&format!("dl-{}", glib::monotonic_time())), &note);
                                                       }
                                                  } else {
-                                                      // Toast (Default)
                                                       let toast = adw::Toast::new(&format!("Download Complete: {}", filename_str));
-                                                      // Hardcoding standard timeout 
-                                                      toast.set_timeout(5); 
+                                                      toast.set_timeout(5);
 
                                                       toast.set_button_label(Some("Open"));
                                                       if let Some(uri) = download.destination() {
@@ -938,32 +982,14 @@ mod imp {
                                        }
                                    }
                                });
-                          
-                          // Handle Failed (Show Alert)
-                          // Use `obj` (strong - KarereWindow wrapper) if available? 
-                          // We are inside `constructed` method, so `obj` (Self) is available in outer scope.
-                          // But we need to capture it.
-                          // Let's assume we can capture `obj` from outer scope.
-                          // BUT `obj` was defined way up.
-                          // We need to pass it into the closure_local!
-                          // Re-define window_strong to be safe.
-                          
-                          // Handle Failed (Show Alert)
-                          // let overlay_weak2 = overlay.downgrade();
-                          download.connect_failed(move |_, error| {
-                               log::error!("Download failed: {}", error);
-                               if let Some(overlay) = overlay_weak_fail.upgrade() {
-                               // Fallback to overlay if window logic is too complex to capture deep in closures without visual ref
-                               // Actually, let's just use the overlay to find the window or just show a toast for error too slightly
-                               // Or just use the overlay to show error toast?
-                               // User asked for AlertDialog.
-                               // Use proper weak ref to window.
-                               // We need to capture `obj`.
-                               // We can't easily access `obj` here unless we captured it.
-                               // Let's modify the outer `glib::closure_local!` to capture `obj`.
-                               
-                               // Actually, `overlay` is attached to window.
-                               if let Some(window) = overlay.root().and_then(|w| w.downcast::<gtk::Window>().ok()) {
+
+                          download.connect_failed(move |download, error| {
+                               let dest = download.destination().unwrap_or_default();
+                               let uri = download.request().and_then(|r| r.uri()).unwrap_or_default();
+                               log::error!("Download failed — error: {} | dest: {} | uri: {}", error, dest, &uri[..uri.len().min(200)]);
+                               if let Some(overlay) = overlay_weak_fail.upgrade()
+                                   && let Some(window) = overlay.root().and_then(|w| w.downcast::<gtk::Window>().ok())
+                               {
                                    let dialog = adw::AlertDialog::builder()
                                        .heading(gettext("Download Failed"))
                                        .body(gettext("An error occurred while downloading the file."))
@@ -972,8 +998,7 @@ mod imp {
                                    dialog.add_response("ok", &gettext("OK"));
                                    dialog.choose(Some(&window), gio::Cancellable::NONE, |_| {});
                                }
-                           }
-                      });
+                          });
                      }
                 ));
             }

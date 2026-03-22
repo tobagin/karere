@@ -241,6 +241,14 @@ function main() {
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //-----------------------------------------------------------------------------------------
 
+// On touch devices (e.g. Phosh), touchstart fires before focusin.
+// Pre-setting lastClickEl here ensures the focusin handler in SECTION2.1
+// won't incorrectly suppress the on-screen keyboard when tapping the
+// message input field (#121).
+document.addEventListener('touchstart', function(event) {
+  lastClickEl = event.target;
+}, { passive: true });
+
 window.addEventListener("click", function () {
   //Register Last clicked element
   lastClickEl = event.target;

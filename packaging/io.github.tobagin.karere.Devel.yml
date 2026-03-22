@@ -1,6 +1,6 @@
 app-id: io.github.tobagin.karere.Dev
 runtime: org.gnome.Platform
-runtime-version: '49'
+runtime-version: '50'
 sdk: org.gnome.Sdk
 command: karere
 finish-args:
@@ -26,15 +26,6 @@ finish-args:
 
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
-
-add-extensions:
-  org.freedesktop.Platform.ffmpeg-full:
-    directory: lib/ffmpeg
-    version: '25.08'
-    add-ld-path: .
-
-cleanup-commands:
-  - mkdir -p ${FLATPAK_DEST}/lib/ffmpeg
 
 cleanup:
   - /include
