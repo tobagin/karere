@@ -18,9 +18,6 @@ finish-args:
   - --socket=pulseaudio
   # Configure WebKit spell checker dictionary paths (bundled and runtime)
   - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell
-  # Force GStreamer/WebKit to use PipeWire for camera
-  - --env=GST_PLUGIN_FEATURE_RANK=pipewiresrc:MAX
-  - --env=WEBRTC_USE_PIPEWIRE=1
   # Allow WebKit JIT in the dev sandbox — without this, JSC crashes with
   # "NeedDebuggerBreak trap" when JIT attempts to use mapped executable memory.
   - --allow=devel
