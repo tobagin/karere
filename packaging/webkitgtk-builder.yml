@@ -42,6 +42,10 @@ modules:
       - -DUSE_GTK4=ON
       - -DUSE_LIBBACKTRACE=OFF
       - -DENABLE_BUBBLEWRAP_SANDBOX=OFF
+      # Use GStreamer WebRTC backend instead of LibWebRTC (Google's Chromium stack).
+      # GStreamer WebRTC links to system gst-plugins-bad — same JS API, cuts build
+      # time from ~2 hours down to ~20 minutes.
+      - -DUSE_LIBWEBRTC=OFF
     sources:
       - type: archive
         url: https://webkitgtk.org/releases/webkitgtk-2.50.5.tar.xz
