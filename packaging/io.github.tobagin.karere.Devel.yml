@@ -55,8 +55,18 @@ modules:
   - name: webkitgtk
     buildsystem: simple
     build-commands:
-      - cp -a lib/. /app/lib/
-      - cp -a libexec/. /app/libexec/
+      - mkdir -p /app/lib/webkitgtk-6.0/injected-bundle /app/libexec/webkitgtk-6.0
+      - install -m755 lib/libwebkitgtk-6.0.so.*.*.* /app/lib/
+      - install -m755 lib/libjavascriptcoregtk-6.0.so.*.*.* /app/lib/
+      - ln -sf $(basename lib/libwebkitgtk-6.0.so.*.*.*) /app/lib/libwebkitgtk-6.0.so.4
+      - ln -sf libwebkitgtk-6.0.so.4 /app/lib/libwebkitgtk-6.0.so
+      - ln -sf $(basename lib/libjavascriptcoregtk-6.0.so.*.*.*) /app/lib/libjavascriptcoregtk-6.0.so.1
+      - ln -sf libjavascriptcoregtk-6.0.so.1 /app/lib/libjavascriptcoregtk-6.0.so
+      - install -m755 lib/webkitgtk-6.0/injected-bundle/libwebkitgtkinjectedbundle.so /app/lib/webkitgtk-6.0/injected-bundle/
+      - install -m755 libexec/webkitgtk-6.0/WebKitWebProcess /app/libexec/webkitgtk-6.0/
+      - install -m755 libexec/webkitgtk-6.0/WebKitNetworkProcess /app/libexec/webkitgtk-6.0/
+      - install -m755 libexec/webkitgtk-6.0/WebKitGPUProcess /app/libexec/webkitgtk-6.0/
+      - install -m755 libexec/webkitgtk-6.0/jsc /app/libexec/webkitgtk-6.0/
     sources:
       - type: archive
         url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.50.5-gnome50/webkitgtk-x86_64.tar.gz
