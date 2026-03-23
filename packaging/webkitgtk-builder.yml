@@ -2,7 +2,7 @@ app-id: io.github.tobagin.karere.WebKitBuilder
 runtime: org.gnome.Platform
 runtime-version: '50'
 sdk: org.gnome.Sdk
-command: sh
+command: webkitgtk-builder
 
 build-options:
   env:
@@ -46,3 +46,9 @@ modules:
       - type: archive
         url: https://webkitgtk.org/releases/webkitgtk-2.50.5.tar.xz
         sha256: 8737631bac3e9c7ad3e5208f9370e076c09d9c45b39980021ce54edadcc6f94f
+
+  # Dummy command required by flatpak-builder to finish the app
+  - name: dummy
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 /dev/null /app/bin/webkitgtk-builder
