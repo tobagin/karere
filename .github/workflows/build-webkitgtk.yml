@@ -46,7 +46,6 @@ jobs:
             --user \
             --force-clean \
             --disable-rofiles-fuse \
-            --stop-at=karere \
             build-dir \
             packaging/webkitgtk-builder.yml
 
