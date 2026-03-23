@@ -12,7 +12,7 @@ finish-args:
   - --device=all
   - --talk-name=org.kde.StatusNotifierWatcher
   - --filesystem=xdg-download
-  - --filesystem=xdg-run/pipewire-0
+  - --socket=pipewire
 
   # Audio for notification sounds and media
   - --socket=pulseaudio
