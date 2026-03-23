@@ -60,11 +60,11 @@ modules:
     sources:
       - type: archive
         url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.50.5-gnome50/webkitgtk-x86_64.tar.gz
-        sha256: PLACEHOLDER_X86_64
+        sha256: 2c1ff69b14e53e44c05fba94d4acbc06fa7fead529ae4f812695620253600ae8
         only-arches: [x86_64]
       - type: archive
         url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.50.5-gnome50/webkitgtk-aarch64.tar.gz
-        sha256: PLACEHOLDER_AARCH64
+        sha256: 02e50da56419704883702048d008f591ee899c5bbf98f17e888fd911c1e83550
         only-arches: [aarch64]
 
   - name: hunspell-dictionaries
