@@ -13,7 +13,7 @@ jobs:
     name: Build (${{ matrix.arch }})
     runs-on: ${{ matrix.runner }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         include:
           - arch: x86_64
