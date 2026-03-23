@@ -24,6 +24,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Restore flatpak-builder cache
+        uses: actions/cache@v4
+        with:
+          path: .flatpak-builder
+          key: flatpak-builder-${{ matrix.arch }}-${{ hashFiles('packaging/webkitgtk-builder.yml') }}
+          restore-keys: |
+            flatpak-builder-${{ matrix.arch }}-
+
       - name: Install flatpak and flatpak-builder
         run: |
           sudo apt-get update -q
