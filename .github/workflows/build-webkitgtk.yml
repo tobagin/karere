@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .flatpak-builder
-          key: flatpak-builder-${{ matrix.arch }}-${{ hashFiles('packaging/webkitgtk-builder.yml') }}
+          key: flatpak-builder-${{ matrix.arch }}-${{ github.run_id }}
           restore-keys: |
             flatpak-builder-${{ matrix.arch }}-
 

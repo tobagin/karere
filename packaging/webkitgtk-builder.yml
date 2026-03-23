@@ -30,6 +30,11 @@ modules:
       - -DPORT=GTK
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/app
+      # Force plain lib/ and libexec/ paths — the GNOME SDK is Ubuntu-based
+      # and defaults to multiarch paths (lib/x86_64-linux-gnu/ etc.) which
+      # breaks our tarball packaging and the Devel manifest install commands.
+      - -DCMAKE_INSTALL_LIBDIR=lib
+      - -DCMAKE_INSTALL_LIBEXECDIR=libexec
       - -DENABLE_WEB_RTC=ON
       - -DENABLE_MEDIA_STREAM=ON
       - -DENABLE_WEBDRIVER=OFF
