@@ -33,10 +33,19 @@ jobs:
             flatpak-builder-${{ matrix.arch }}-
           save-always: true
 
-      - name: Install flatpak and flatpak-builder
+      - name: Restore ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ccache
+          key: ccache-webkitgtk-${{ matrix.arch }}-${{ github.run_id }}
+          restore-keys: |
+            ccache-webkitgtk-${{ matrix.arch }}-
+          save-always: true
+
+      - name: Install flatpak, flatpak-builder and ccache
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y flatpak flatpak-builder
+          sudo apt-get install -y flatpak flatpak-builder ccache
 
       - name: Add Flathub remote
         run: |
@@ -55,6 +64,7 @@ jobs:
             --user \
             --force-clean \
             --disable-rofiles-fuse \
+            --ccache \
             build-dir \
             packaging/webkitgtk-builder.yml
 
@@ -103,7 +113,6 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           TAG="${{ github.event.inputs.tag_name }}"
-          # Extract webkit version from tag (e.g. webkitgtk-2.50.5-gnome50 -> 2.50.5)
           WEBKIT_VER=$(echo "$TAG" | grep -oP '\d+\.\d+\.\d+')
 
           gh release create "$TAG" \
