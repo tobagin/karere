@@ -8,7 +8,8 @@ finish-args:
   - --share=ipc
   - --socket=fallback-x11
   - --socket=wayland
-  - --device=dri
+  # Full device access required for camera and microphone in WebRTC calls
+  - --device=all
   - --talk-name=org.kde.StatusNotifierWatcher
   - --filesystem=xdg-download
   - --filesystem=xdg-run/pipewire-0
@@ -20,6 +21,11 @@ finish-args:
   # Force GStreamer/WebKit to use PipeWire for camera
   - --env=GST_PLUGIN_FEATURE_RANK=pipewiresrc:MAX
   - --env=WEBRTC_USE_PIPEWIRE=1
+  # Allow WebKit JIT in the dev sandbox — without this, JSC crashes with
+  # "NeedDebuggerBreak trap" when JIT attempts to use mapped executable memory.
+  - --allow=devel
+  # Enable SharedArrayBuffer without requiring cross-origin isolation headers
+  - --env=JSC_useSharedArrayBuffer=1
 
 
 sdk-extensions:
@@ -42,6 +48,25 @@ build-options:
     CARGO_HOME: /run/build/karere/cargo
 
 modules:
+  # Pre-compiled WebKitGTK 2.50.5 built inside the GNOME Platform 50 SDK
+  # with WebRTC enabled (-DENABLE_WEB_RTC=ON). Built by the build-webkitgtk
+  # GitHub Actions workflow — see packaging/webkitgtk-builder.yml.
+  # The GNOME Platform runtime ships WebKitGTK without WebRTC; this replaces it.
+  - name: webkitgtk
+    buildsystem: simple
+    build-commands:
+      - cp -a lib/. /app/lib/
+      - cp -a libexec/. /app/libexec/
+    sources:
+      - type: archive
+        url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.50.5-gnome50/webkitgtk-x86_64.tar.gz
+        sha256: PLACEHOLDER_X86_64
+        only-arches: [x86_64]
+      - type: archive
+        url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.50.5-gnome50/webkitgtk-aarch64.tar.gz
+        sha256: PLACEHOLDER_AARCH64
+        only-arches: [aarch64]
+
   - name: hunspell-dictionaries
     buildsystem: simple
     build-commands:

@@ -1,0 +1,48 @@
+app-id: io.github.tobagin.karere.WebKitBuilder
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+command: sh
+
+build-options:
+  env:
+    CFLAGS: '-g0'
+    CXXFLAGS: '-g0 -DNDEBUG'
+
+modules:
+  # unifdef is required by the WebKitGTK build system
+  - name: unifdef
+    buildsystem: simple
+    build-commands:
+      - make install prefix=/app CFLAGS="-std=c11 -D_XOPEN_SOURCE=700"
+    sources:
+      - type: archive
+        url: https://dotat.at/prog/unifdef/unifdef-2.12.tar.xz
+        sha256: 43ce0f02ecdcdc723b2475575563ddb192e988c886d368260bc0a63aee3ac400
+
+  # WebKitGTK built inside the GNOME Platform 50 SDK so all dependencies
+  # (libxml2, ICU, libsoup, etc.) match the runtime exactly.
+  # WebRTC is ON by default in 2.50.x; we keep it explicit for clarity.
+  - name: webkitgtk
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DPORT=GTK
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_INSTALL_PREFIX=/app
+      - -DENABLE_WEB_RTC=ON
+      - -DENABLE_MEDIA_STREAM=ON
+      - -DENABLE_WEBDRIVER=OFF
+      - -DENABLE_MINIBROWSER=OFF
+      - -DENABLE_DOCUMENTATION=OFF
+      - -DENABLE_INTROSPECTION=OFF
+      - -DENABLE_GAMEPAD=OFF
+      - -DENABLE_SPEECH_SYNTHESIS=OFF
+      - -DUSE_SOUP2=OFF
+      - -DUSE_GTK4=ON
+      - -DUSE_LIBBACKTRACE=OFF
+      - -DENABLE_BUBBLEWRAP_SANDBOX=OFF
+    sources:
+      - type: archive
+        url: https://webkitgtk.org/releases/webkitgtk-2.50.5.tar.xz
+        sha256: 8737631bac3e9c7ad3e5208f9370e076c09d9c45b39980021ce54edadcc6f94f

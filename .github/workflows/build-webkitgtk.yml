@@ -1,0 +1,112 @@
+name: Build WebKitGTK
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag (e.g. webkitgtk-2.50.5-gnome50)'
+        required: true
+        default: 'webkitgtk-2.50.5-gnome50'
+
+jobs:
+  build:
+    name: Build (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install flatpak and flatpak-builder
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y flatpak flatpak-builder
+
+      - name: Add Flathub remote
+        run: |
+          flatpak remote-add --user --if-not-exists flathub \
+            https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Install GNOME Platform 50 SDK
+        run: |
+          flatpak install --user -y flathub \
+            org.gnome.Platform//50 \
+            org.gnome.Sdk//50
+
+      - name: Build WebKitGTK
+        run: |
+          flatpak-builder \
+            --user \
+            --force-clean \
+            --disable-rofiles-fuse \
+            --stop-at=karere \
+            build-dir \
+            packaging/webkitgtk-builder.yml
+
+      - name: Package output
+        run: |
+          cd build-dir/files
+          # Verify the libraries are present
+          ls lib/libwebkitgtk-6.0.so* lib/libjavascriptcoregtk-6.0.so*
+          ls lib/webkitgtk-6.0/injected-bundle/
+          ls libexec/webkitgtk-6.0/
+          # Create tarball preserving symlinks
+          tar -czf ../../webkitgtk-${{ matrix.arch }}.tar.gz \
+            lib/libwebkitgtk-6.0.so* \
+            lib/libjavascriptcoregtk-6.0.so* \
+            lib/webkitgtk-6.0/ \
+            libexec/webkitgtk-6.0/
+          cd ../..
+          echo "### ${{ matrix.arch }} tarball" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          sha256sum webkitgtk-${{ matrix.arch }}.tar.gz >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webkitgtk-${{ matrix.arch }}
+          path: webkitgtk-${{ matrix.arch }}.tar.gz
+          if-no-files-found: error
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          TAG="${{ github.event.inputs.tag_name }}"
+          # Extract webkit version from tag (e.g. webkitgtk-2.50.5-gnome50 -> 2.50.5)
+          WEBKIT_VER=$(echo "$TAG" | grep -oP '\d+\.\d+\.\d+')
+
+          gh release create "$TAG" \
+            --title "WebKitGTK ${WEBKIT_VER} (GNOME Platform 50)" \
+            --notes "Pre-compiled WebKitGTK ${WEBKIT_VER} built inside the GNOME Platform 50 SDK with WebRTC enabled (\`-DENABLE_WEB_RTC=ON\`). Used by the Karere Flatpak to provide RTCPeerConnection support for WhatsApp calls.
+
+          | File | Architecture |
+          |------|-------------|
+          | \`webkitgtk-x86_64.tar.gz\` | x86_64 (amd64) |
+          | \`webkitgtk-aarch64.tar.gz\` | aarch64 (arm64) |
+
+          To update the manifest after a new build, get the sha256 from the job summary and update \`packaging/io.github.tobagin.karere.Devel.yml\` and \`packaging/io.github.tobagin.karere.yml\`." \
+            webkitgtk-x86_64.tar.gz \
+            webkitgtk-aarch64.tar.gz
