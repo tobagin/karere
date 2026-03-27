@@ -70,7 +70,6 @@ impl ksni::Tray for KarereTray {
     fn tool_tip(&self) -> ksni::ToolTip {
         ksni::ToolTip {
             title: gettext("Karere"),
-            description: gettext("Running via Rust & GTK4"),
             ..Default::default()
         }
     }
