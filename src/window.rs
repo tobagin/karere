@@ -4,6 +4,7 @@ use libadwaita as adw;
 use adw::prelude::*;
 use adw::subclass::prelude::*;
 use base64::prelude::*;
+use chrono;
 use webkit6::prelude::*;
 
 use crate::accounts::{Account, AccountManager, build_account_row, apply_avatar_texture, create_account_icon_bytes, DEFAULT_ACCOUNT_ID, DEFAULT_COLOR, DEFAULT_EMOJI};
@@ -862,6 +863,7 @@ mod imp {
 
                               if let Some(web_view) = download.web_view() {
                                   let uri_escaped = download_uri.replace('\\', "\\\\").replace('\'', "\\'");
+                                  let fractional_timestamp = chrono::offset::Local::now().format("%Y_%m_%d_%H_%M_%S_%3f");
 
                                   // Fetch the blob in JS, convert to data: URL, and trigger
                                   // a real download via <a download>.  The data: URL download
@@ -876,7 +878,7 @@ mod imp {
                                                       var ext = (blob.type.split('/')[1] || 'bin').replace('jpeg', 'jpg');
                                                       var a = document.createElement('a');
                                                       a.href = reader.result;
-                                                      a.download = 'WhatsApp_Image.' + ext;
+                                                      a.download = 'WhatsApp_Image_{fractional_timestamp}.' + ext;
                                                       a.style.display = 'none';
                                                       document.body.appendChild(a);
                                                       a.click();
