@@ -77,12 +77,13 @@ modules:
   - name: gst-plugin-audiofx
     buildsystem: simple
     build-commands:
-      - cargo build --release -p gst-plugin-audiofx
+      - cargo build --release --offline -p gst-plugin-audiofx
       - install -Dm755 target/release/libgstrsaudiofx.so /app/lib/gstreamer-1.0/libgstrsaudiofx.so
     sources:
       - type: git
         url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git
         tag: "0.14.4"
+        commit: 95a7172f82d0ec816e4e89111a762c24d5c47b22
       - cargo-sources-gst.json
     build-options:
       env:
@@ -110,4 +111,5 @@ modules:
       - type: git
         url: https://github.com/tobagin/karere
         tag: v3.0.1
+        commit: ba21b6bdeff55a781afd23d4e1d789a01bfdbd23
       - cargo-sources.json

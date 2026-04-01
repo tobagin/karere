@@ -1,35 +1,5 @@
 [
     {
-        "type": "git",
-        "url": "https://github.com/gtk-rs/gtk-rs-core",
-        "commit": "f1b0b52fb591d5164e90dc69d0567c5feb0276a5",
-        "dest": "flatpak-cargo/git/gtk-rs-core-f1b0b52"
-    },
-    {
-        "type": "git",
-        "url": "https://github.com/rust-av/ffv1",
-        "commit": "bd9eabfc14c9ad53c37b32279e276619f4390ab8",
-        "dest": "flatpak-cargo/git/ffv1-bd9eabf"
-    },
-    {
-        "type": "git",
-        "url": "https://github.com/rust-av/flavors",
-        "commit": "833508af656d298c269f2397c8541a084264d992",
-        "dest": "flatpak-cargo/git/flavors-833508a"
-    },
-    {
-        "type": "git",
-        "url": "https://github.com/gtk-rs/gtk4-rs",
-        "commit": "063c412ba57218b237e497aed934aa9e690179bf",
-        "dest": "flatpak-cargo/git/gtk4-rs-063c412"
-    },
-    {
-        "type": "git",
-        "url": "https://gitlab.freedesktop.org/gstreamer/gstreamer-rs",
-        "commit": "51e40346a321972fce9849af290dd6b3e1f2c587",
-        "dest": "flatpak-cargo/git/gstreamer-rs-51e4034"
-    },
-    {
         "type": "archive",
         "archive-type": "tar-gzip",
         "url": "https://static.crates.io/crates/adler2/adler2-2.0.1.crate",
