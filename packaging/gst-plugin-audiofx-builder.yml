@@ -21,6 +21,8 @@ modules:
     build-commands:
       - cargo build --release -p gst-plugin-audiofx
       - install -Dm755 target/release/libgstrsaudiofx.so /app/lib/gstreamer-1.0/libgstrsaudiofx.so
+      # Satisfy the flatpak manifest 'command: sh' requirement
+      - install -Dm755 /bin/sh /app/sh
     sources:
       - type: git
         url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git
