@@ -79,6 +79,13 @@ jobs:
         echo "  Tag: ${{ steps.version.outputs.tag_name }}"
         echo "  Commit: ${{ steps.version.outputs.commit_hash }}"
         
+        # Copy cargo-sources-gst.json if present (needed for gst-plugin-audiofx offline build)
+        if [[ -f "../packaging/cargo-sources-gst.json" ]]; then
+          cp ../packaging/cargo-sources-gst.json ./cargo-sources-gst.json
+          echo "✅ Copied cargo-sources-gst.json"
+        fi
+
+        git add io.github.tobagin.karere.yml cargo-sources.json cargo-sources-gst.json 2>/dev/null || \
         git add io.github.tobagin.karere.yml cargo-sources.json
         git commit -m "Update to ${{ steps.version.outputs.tag_name }}
 
