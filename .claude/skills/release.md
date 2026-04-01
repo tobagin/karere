@@ -2,101 +2,141 @@
 description: Create a new version release by analyzing changes, bumping version, updating changelogs, committing, tagging, and pushing
 ---
 
-# Release Workflow
+# Release Skill
 
-You are helping create a new release for Karere. Follow these steps:
+This skill automates the entire release process for Karere.
 
-## 1. Analyze Changes
+## Step 1: Analyze Changes Since Last Release
 
-Read the git log since the last release to understand what changed:
-- Run `git log --oneline $(git describe --tags --abbrev=0)..HEAD` to see commits since last tag
-- Categorize changes as: features (feat:), fixes (fix:), chores (chore:), breaking changes
-- Determine appropriate version bump (major, minor, patch) based on semantic versioning
+```bash
+# Get the last release tag
+git describe --tags --abbrev=0
 
-## 2. Determine New Version
+# List all commits since the last tag
+git log $(git describe --tags --abbrev=0)..HEAD --oneline --no-merges
 
-- Read current version from `Cargo.toml`
-- Ask user what version to release (suggest appropriate bump based on changes)
-- Version format: X.Y.Z (e.g., 2.4.3)
+# Check for uncommitted changes
+git status --short
+```
 
-## 3. Update Version Files
+Categorize all changes into:
+- **Added**: New features
+- **Changed**: Modifications to existing functionality
+- **Fixed**: Bug fixes
+- **Removed**: Removed features
+- **Breaking**: Breaking changes (triggers major version bump)
 
-Update version in these files:
-- `Cargo.toml`: Update `version = "X.Y.Z"` in [package] section
-- `packaging/io.github.tobagin.karere.yml`: Update `tag: vX.Y.Z` in the karere module sources
+## Step 2: Determine Version Bump
 
-## 4. Update CHANGELOG.md
+Follow [Semantic Versioning](https://semver.org/):
+- **MAJOR** (X.0.0): Breaking changes or major rewrites
+- **MINOR** (x.Y.0): New features, backward compatible
+- **PATCH** (x.y.Z): Bug fixes, metadata updates, backward compatible
 
-- Read existing `CHANGELOG.md`
-- Add new section at top with format:
-  ```markdown
-  ## [X.Y.Z] - YYYY-MM-DD
+Current version can be found in:
+- `Cargo.toml` (line ~3): `version = "X.Y.Z"`
+- `meson.build` (line ~2): `version: 'X.Y.Z'`
 
-  ### Added
-  - New features
+Ask the user to confirm the version before proceeding.
 
-  ### Fixed
-  - Bug fixes
+## Step 3: Update Version Numbers
 
-  ### Changed
-  - Changes
+Update the version in these files:
+1. **`Cargo.toml`**: `version = "X.Y.Z"`
+2. **`meson.build`**: `version: 'X.Y.Z'`
 
-  ### Removed
-  - Removals
-  ```
-- Populate sections based on git log analysis from step 1
-- Use current date
+## Step 4: Update CHANGELOG.md
 
-## 5. Update AppStream Metadata
+Move content from `[Unreleased]` section to a new version section:
 
-Update `data/io.github.tobagin.karere.metainfo.xml`:
-- Add new `<release>` entry at the top of the `<releases>` section
-- Format:
-  ```xml
-  <release version="X.Y.Z" date="YYYY-MM-DD">
-    <description>
-      <p>Brief summary of changes</p>
-      <ul>
-        <li>Key feature or fix 1</li>
-        <li>Key feature or fix 2</li>
-      </ul>
-    </description>
-  </release>
-  ```
+```markdown
+## [X.Y.Z] - YYYY-MM-DD
 
-## 6. Update Cargo Lock and Flatpak Sources
+### Added
+- Feature description
 
-Run these commands:
+### Changed
+- Change description
+
+### Fixed
+- Fix description
+```
+
+Reset the `[Unreleased]` section to empty placeholders.
+
+## Step 5: Update README.md
+
+Update the version header section (around line 14):
+```markdown
+## 🎉 Version X.Y.Z - [Short Title]
+
+**Karere X.Y.Z** brings [brief description of main changes].
+
+### 🆕 What's New in X.Y.Z
+
+- **Feature 1**: Description
+- **Feature 2**: Description
+```
+
+## Step 6: Update metainfo.xml.in
+
+Add a new `<release>` entry at the TOP of the `<releases>` section in `data/io.github.tobagin.karere.metainfo.xml.in`:
+
+```xml
+<release version="X.Y.Z" date="YYYY-MM-DD">
+  <description>
+    <ul>
+      <li>Change description 1</li>
+      <li>Change description 2</li>
+    </ul>
+  </description>
+</release>
+```
+
+No emojis in `<li>` items. Keep entries concise.
+
+## Step 7: Update Cargo Lock and Sources
+
 ```bash
 cargo generate-lockfile
 python3 tools/flatpak-cargo-generator.py Cargo.lock -o packaging/cargo-sources.json
 ```
 
-## 7. Commit Changes (Without Co-Author)
+## Step 8: Commit All Changes
 
-Stage and commit all changes:
+Stage and commit with a detailed message:
+
 ```bash
-git add Cargo.toml Cargo.lock CHANGELOG.md data/io.github.tobagin.karere.metainfo.xml packaging/cargo-sources.json packaging/io.github.tobagin.karere.yml
-git commit -m "Release vX.Y.Z"
+git add Cargo.toml meson.build Cargo.lock CHANGELOG.md README.md \
+  data/io.github.tobagin.karere.metainfo.xml.in \
+  packaging/cargo-sources.json
+git commit -m "Release vX.Y.Z
+
+Changes in this release:
+- [List main changes]
+- [One per line]
+
+Files updated:
+- Cargo.toml, meson.build (version bump)
+- CHANGELOG.md (release notes)
+- README.md (version header)
+- metainfo.xml.in (AppStream release)
+- Cargo.lock, cargo-sources.json (dependencies)"
 ```
 
-**IMPORTANT**: Do NOT add `Co-Authored-By: Claude` to the commit. Use only the user's name.
+**IMPORTANT**: Do NOT add `Co-Authored-By: Claude` to the commit.
 
-## 8. Tag Release
+## Step 9: Create and Push Tag
 
-Create annotated tag:
 ```bash
+# Create annotated tag
 git tag -a vX.Y.Z -m "Release vX.Y.Z"
+
+# Push commits and tags
+git push origin HEAD --tags
 ```
 
-## 9. Push to Remote
-
-Push commits and tags:
-```bash
-git push origin main --tags
-```
-
-## 10. Verify
+## Step 10: Verify
 
 Confirm with user:
 - Show the git tag created
@@ -104,11 +144,21 @@ Confirm with user:
 - Confirm push was successful
 - Remind user to create GitHub release if needed: `gh release create vX.Y.Z --generate-notes`
 
-## Notes
+## Important Notes
 
-- Always use semantic versioning (MAJOR.MINOR.PATCH)
-- Breaking changes = major bump
-- New features = minor bump
-- Bug fixes only = patch bump
+- Always use the format `vX.Y.Z` for tags (with the `v` prefix)
+- Date format in CHANGELOG.md and metainfo.xml.in is `YYYY-MM-DD`
+- The metainfo.xml.in release entries should be concise (no emojis in `<li>` items)
+- Keep README.md "What's New" section brief and user-friendly
+- CHANGELOG.md can be more detailed and technical
 - Never force push tags unless explicitly requested
-- Ensure CHANGELOG follows Keep a Changelog format
+
+## File Locations Summary
+
+| File | Version Location | Purpose |
+|------|------------------|---------|
+| `Cargo.toml` | Line ~3 | Rust package version |
+| `meson.build` | Line ~2 | Build system version |
+| `CHANGELOG.md` | New section after `[Unreleased]` | Detailed release notes |
+| `README.md` | Lines ~14-22 | User-facing highlights |
+| `data/io.github.tobagin.karere.metainfo.xml.in` | Top of `<releases>` | AppStream metadata |

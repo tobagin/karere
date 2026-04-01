@@ -54,6 +54,10 @@ mod imp {
         // Flag to prevent reload loops during mobile layout transitions
         pub mobile_layout_transitioning: std::cell::Cell<bool>,
 
+        // Enabled only after the first page load — prevents spurious reloads during
+        // GTK's initial layout negotiation where the window passes through transient sizes.
+        pub layout_watcher_enabled: std::cell::Cell<bool>,
+
         // Notification Proxy (Reusable)
         pub notification_proxy: Rc<OnceCell<ashpd::desktop::notification::NotificationProxy>>,
 
@@ -123,6 +127,11 @@ mod imp {
             self.parent_constructed(); // Call parent constructed first
             let obj = self.obj();
 
+            // Allow the WebKit content process (bwrap) sandbox to read GStreamer plugin
+            // directories so it can instantiate webrtcbin and its dependencies (dtls,
+            // nice, srtp, sctp). Without this, RTCPeerConnection is undefined in JS
+            // despite enable-webrtc=true. Must be done before any WebKit subprocess
+            // (network, GPU, or web process) is spawned.
             // Debug Font Config
             if let Ok(val) = std::env::var("FONTCONFIG_FILE") {
                 log::debug!("FONTCONFIG_FILE={}", val);
@@ -152,6 +161,43 @@ mod imp {
             }
             
             *self.account_manager.borrow_mut() = Some(account_manager);
+
+            // Migration: v3.0.0 introduced a new WebKitGTK build that invalidates
+            // all stored sessions. On first launch after upgrading, wipe all WebKit
+            // data/cache dirs and show a one-time dialog explaining why.
+            let migration_settings = gio::Settings::new(&app_id);
+            if migration_settings.int("schema-version") < 3 {
+                // Delete per-account WebKit session data
+                if let Some(mgr) = self.account_manager.borrow().as_ref() {
+                    let sessions_root = mgr.session_root_dir();
+                    if sessions_root.exists() {
+                        if let Err(e) = std::fs::remove_dir_all(&sessions_root) {
+                            log::warn!("Migration: failed to remove sessions dir: {}", e);
+                        }
+                    }
+                }
+                // Delete legacy single-account webkit dirs (pre-multi-account)
+                let _ = std::fs::remove_dir_all(glib::user_data_dir().join("karere").join("webkit"));
+                let _ = std::fs::remove_dir_all(glib::user_cache_dir().join("karere").join("webkit"));
+                log::info!("Migration to schema v3: cleared all WebKit session data");
+
+                migration_settings.set_int("schema-version", 3)
+                    .unwrap_or_else(|e| log::warn!("Failed to set schema-version: {}", e));
+
+                // Show dialog once the window is first mapped (visible on screen)
+                let fired = std::rc::Rc::new(std::cell::Cell::new(false));
+                let fired_clone = fired.clone();
+                obj.connect_map(move |window| {
+                    if fired_clone.replace(true) { return; }
+                    let dialog = adw::AlertDialog::builder()
+                        .heading(gettext("Re-authentication Required"))
+                        .body(gettext("Karere has been updated with a new browser engine that enables voice and video calls.\n\nYour existing WhatsApp session could not be transferred to the new engine. Please scan the QR code to re-link your account(s). This is a one-time step."))
+                        .build();
+                    dialog.add_response("ok", &gettext("_OK"));
+                    dialog.set_default_response(Some("ok"));
+                    dialog.present(Some(window));
+                });
+            }
 
             // Determine initial WebView directories based on active account
             let (account_id, data_dir, cache_dir) = {
@@ -335,12 +381,18 @@ mod imp {
             // Restore Window State
             let width = settings.int("window-width");
             let height = settings.int("window-height");
+            let restored_width = if width > 0 { width } else { 800 };
             if width > 0 && height > 0 {
                 obj.set_default_size(width, height);
                 obj.imp().last_unmaximized_size.set((width, height));
             } else {
                 obj.imp().last_unmaximized_size.set((800, 600));
             }
+
+            // Pre-initialize mobile layout state from the restored window width so the
+            // first connect_layout event (which fires with width=0) doesn't see a mismatch
+            // and trigger a spurious reload on startup.
+            obj.imp().mobile_layout_active.set(should_use_mobile_layout(&settings, restored_width));
 
             if settings.boolean("is-maximized") {
                 obj.maximize();
@@ -368,27 +420,33 @@ mod imp {
             let settings_resize = settings.clone();
             let webview_resize = web_view.clone();
             let obj_weak_resize = obj.downgrade();
-            obj.connect_realize(move |window| {
-                if let Some(surface) = window.surface() {
+            obj.connect_realize(move |_window| {
+                if let Some(surface) = _window.surface() {
                     let settings_layout = settings_resize.clone();
                     let webview_layout = webview_resize.clone();
                     let obj_weak_layout = obj_weak_resize.clone();
-                    
-                    // Initialize the mobile_layout_active state based on current width
-                    // Initialize the mobile_layout_active state based on current width
-                    let initial_width = window.width();
-                    window.imp().mobile_layout_active.set(should_use_mobile_layout(&settings_layout, initial_width));
-                    
+
                     surface.connect_layout(move |_, width, _| {
+                        // Skip zero-width events and events before the first load completes
+                        if width <= 0 { return; }
+
                         if let Some(window) = obj_weak_layout.upgrade() {
+                            // Don't act until the first page load is done — GTK passes through
+                            // transient sizes during initial layout that would cause a false reload.
+                            if !window.imp().layout_watcher_enabled.get() {
+                                // Still keep mobile_layout_active in sync with real sizes
+                                let is_mobile = should_use_mobile_layout(&settings_layout, width);
+                                window.imp().mobile_layout_active.set(is_mobile);
+                                return;
+                            }
+
                             // Skip if we're already in the middle of a layout transition reload
                             if window.imp().mobile_layout_transitioning.get() {
                                 return;
                             }
 
-                            let was_mobile = window.imp().mobile_layout_active.get();
                             let is_mobile = should_use_mobile_layout(&settings_layout, width);
-
+                            let was_mobile = window.imp().mobile_layout_active.get();
                             if is_mobile != was_mobile {
                                 log::info!("Layout Mode Change Detected (Mobile: {} -> {}). Reloading...", was_mobile, is_mobile);
                                 window.imp().mobile_layout_active.set(is_mobile);
@@ -599,10 +657,33 @@ mod imp {
                 cache_dir.to_str()
             );
 
-            // Create WebView Manually with Session
+            // Create WebView with per-account NetworkSession for storage isolation.
             let web_view = webkit6::WebView::builder()
                 .network_session(&session)
                 .build();
+
+            // Apply WebKit settings explicitly after construction.
+            // Using set_settings() is more reliable than the builder's .settings() method,
+            // which does not always propagate to the underlying WebKitWebView in WebKitGTK 6.
+            let ws = webkit6::Settings::new();
+            ws.set_enable_page_cache(false);
+            ws.set_enable_media(true);
+            ws.set_enable_media_stream(true);
+            ws.set_enable_mediasource(true);
+            ws.set_enable_media_capabilities(true);
+            ws.set_enable_encrypted_media(true);
+            ws.set_enable_webrtc(true);
+            ws.set_media_playback_requires_user_gesture(false);
+            ws.set_media_playback_allows_inline(true);
+            ws.set_hardware_acceleration_policy(webkit6::HardwareAccelerationPolicy::Always);
+
+            // Spoof a Windows Chrome UA — WhatsApp Web gates several features
+            // (call button visibility, full codec support) on a Chrome/Windows UA.
+            ws.set_user_agent(Some("Mozilla/5.0 (X11; Linux x86_64; rv:148.0) Gecko/20100101 Firefox/148.0"));
+            ws.set_allow_file_access_from_file_urls(false);
+            ws.set_allow_universal_access_from_file_urls(false);
+            ws.set_allow_top_navigation_to_data_urls(false);
+            web_view.set_settings(&ws);
 
             web_view.set_vexpand(true);
             web_view.set_hexpand(true);
@@ -624,6 +705,7 @@ mod imp {
                     Object.defineProperty(document, 'hidden', {get: function() { return false; }});
                     Object.defineProperty(document, 'visibilityState', {get: function() { return 'visible'; }});
                     document.dispatchEvent(new Event('visibilitychange'));
+                    Object.defineProperty(navigator, 'userAgent', {get: function() { return 'Mozilla/5.0 (X11; Linux x86_64; rv:148.0) Gecko/20100101 Firefox/148.0'; }, configurable: true});
                  "#;
                 let script = webkit6::UserScript::new(
                     source,
@@ -645,6 +727,7 @@ mod imp {
                 let notif_hook = r#"
                     Notification.prototype.close = function() {};
                 "#;
+
                 let notif_script = webkit6::UserScript::new(
                     notif_hook,
                     webkit6::UserContentInjectedFrames::TopFrame,
@@ -653,64 +736,92 @@ mod imp {
                     &[]
                 );
                 ucm.add_script(&notif_script);
+
+                // Spoof Chrome APIs so WhatsApp Web enables calling support.
+                // WhatsApp checks for window.chrome, navigator.userAgentData
+                // (Client Hints), and crossOriginIsolated before showing the
+                // call button. These spoofs must match the Chrome UA we set.
+                let chrome_spoof = r#"
+                    (function() {
+                        // Spoof window.chrome — WhatsApp checks for its existence
+                        if (!window.chrome) {
+                            window.chrome = {
+                                runtime: {},
+                                csi: function() { return {}; },
+                                loadTimes: function() { return {}; }
+                            };
+                        }
+
+                        // Spoof navigator.userAgentData (Client Hints API).
+                        // Chrome provides this; WebKit does not. WhatsApp uses
+                        // getHighEntropyValues() to verify the browser identity.
+                        if (!navigator.userAgentData) {
+                            Object.defineProperty(navigator, 'userAgentData', {
+                                get: function() {
+                                    return {
+                                        brands: [
+                                            { brand: 'Chromium', version: '143' },
+                                            { brand: 'Google Chrome', version: '143' },
+                                            { brand: 'Not-A.Brand', version: '24' }
+                                        ],
+                                        mobile: false,
+                                        platform: 'Linux',
+                                        getHighEntropyValues: function(hints) {
+                                            return Promise.resolve({
+                                                brands: this.brands,
+                                                mobile: false,
+                                                platform: 'Linux',
+                                                platformVersion: '6.19.0',
+                                                architecture: 'x86',
+                                                bitness: '64',
+                                                model: '',
+                                                fullVersionList: [
+                                                    { brand: 'Chromium', version: '143.0.0.0' },
+                                                    { brand: 'Google Chrome', version: '143.0.0.0' },
+                                                    { brand: 'Not-A.Brand', version: '24.0.0.0' }
+                                                ]
+                                            });
+                                        }
+                                    };
+                                }
+                            });
+                        }
+
+                        // Spoof crossOriginIsolated — required for SharedArrayBuffer
+                        // which WhatsApp's media pipeline uses. The real SAB support
+                        // is enabled via JSC_useSharedArrayBuffer=1 in the manifest.
+                        if (!window.crossOriginIsolated) {
+                            Object.defineProperty(window, 'crossOriginIsolated', {
+                                get: function() { return true; },
+                                configurable: true
+                            });
+                        }
+                    })();
+                "#;
+                let chrome_spoof_script = webkit6::UserScript::new(
+                    chrome_spoof,
+                    webkit6::UserContentInjectedFrames::TopFrame,
+                    webkit6::UserScriptInjectionTime::Start,
+                    &[],
+                    &[]
+                );
+                ucm.add_script(&chrome_spoof_script);
             }
 
             let obj = self.obj();
             let app_id = std::env::var("FLATPAK_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
             let settings = gio::Settings::new(&app_id);
-            // 2. WebKit Settings
-            // Also ensure main switch is toggled on WebView settings
-            if let Some(ws) = webkit6::prelude::WebViewExt::settings(&web_view) {
-                 settings.bind("enable-developer-tools", &ws, "enable-developer-extras").build();
-                 
-                 // Memory Optimization: Disable Page Cache (Back/Forward Cache)
-                 ws.set_enable_page_cache(false);
 
-                 ws.set_enable_media_stream(true);
-                 ws.set_enable_mediasource(true);
-                 ws.set_enable_webrtc(true);
+            // Bind developer tools toggle — use the settings object we already applied above
+            settings.bind("enable-developer-tools", &ws, "enable-developer-extras").build();
 
-                 // Enable GPU compositing for media-heavy pages (#114)
-                 ws.set_hardware_acceleration_policy(webkit6::HardwareAccelerationPolicy::Always);
-
-            // Debug: Monitor Camera Capture State
+            // Debug: Monitor Camera/Microphone Capture State
             web_view.connect_notify_local(Some("camera-capture-state"), |webview, _| {
-                let state = webview.camera_capture_state();
-                log::debug!("Camera Capture State Changed: {:?}", state);
+                log::debug!("Camera Capture State Changed: {:?}", webview.camera_capture_state());
             });
-
-            // Debug: Monitor Microphone Capture State
-             web_view.connect_notify_local(Some("microphone-capture-state"), |webview, _| {
-                let state = webview.microphone_capture_state();
-                log::debug!("Microphone Capture State Changed: {:?}", state);
+            web_view.connect_notify_local(Some("microphone-capture-state"), |webview, _| {
+                log::debug!("Microphone Capture State Changed: {:?}", webview.microphone_capture_state());
             });
-
-                 // User Agent Spoofing (Chrome Windows)
-                 // WhatsApp checks the UA platform to determine calling support.
-                 // Using a Linux UA causes WhatsApp to show "Your browser doesn't support calling."
-                 // A Windows Chrome UA enables voice/video calls (#122).
-                 let user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36";
-                 ws.set_user_agent(Some(user_agent));
-
-                 // Disable quirks to restore our manual Linux UA
-                 ws.set_enable_site_specific_quirks(false);
-
-                 // Security hardening: restrict file and data URL access
-                 ws.set_allow_file_access_from_file_urls(false);
-                 ws.set_allow_universal_access_from_file_urls(false);
-                 ws.set_allow_top_navigation_to_data_urls(false);
-
-                 // CRITICAL: ANY JavaScript navigator override (userAgent OR platform) breaks dead key composition!
-                 // Validated by user: platform-only override also causes dead key bug.
-                 // We must NOT inject any scripts that modify navigator.
-                 // The "Download for Mac" banner is cosmetic and unavoidable.
-                 
-                 if let Some(_ucm) = web_view.user_content_manager() {
-                       // Notification Persistence Sync (Proxy Strategy) - REMOVED
-                       // We now rely on Host-Driven Trigger (on Load Finished) and PersistentNetworkSession.
-                       // The Proxy is no longer needed to "lie" because we can now get the "truth" (native grant) fast enough.
-                   }
-             }
 
             // Use lighter caching strategy to reduce memory pressure during
             // media-heavy browsing (#114)
@@ -846,8 +957,6 @@ mod imp {
                           let overlay_weak = overlay_weak.clone();
 
                           // Check if this is a blob: URL (e.g. "Save Image" from WhatsApp media viewer).
-                          // WebKit cannot download blob: URLs via network requests — the blob only
-                          // exists inside the page's JavaScript context. Handle it with JS instead.
                           let download_uri = download.request()
                               .and_then(|r| r.uri())
                               .unwrap_or_default()
@@ -856,50 +965,7 @@ mod imp {
                           log::info!("Download started — URI scheme: {}", download_uri.split(':').next().unwrap_or("?"));
                           log::debug!("Download started — full URI: {}", &download_uri[..download_uri.len().min(200)]);
 
-                          if download_uri.starts_with("blob:") {
-                              // Cancel BEFORE connecting handlers so connect_failed won't fire
-                              download.cancel();
-
-                              if let Some(web_view) = download.web_view() {
-                                  let uri_escaped = download_uri.replace('\\', "\\\\").replace('\'', "\\'");
-
-                                  // Fetch the blob in JS, convert to data: URL, and trigger
-                                  // a real download via <a download>.  The data: URL download
-                                  // re-enters our normal download-started pipeline.
-                                  let js = format!(r#"
-                                      (function() {{
-                                          fetch('{uri}')
-                                              .then(function(r) {{ return r.blob(); }})
-                                              .then(function(blob) {{
-                                                  var reader = new FileReader();
-                                                  reader.onload = function() {{
-                                                      var ext = (blob.type.split('/')[1] || 'bin').replace('jpeg', 'jpg');
-                                                      var a = document.createElement('a');
-                                                      a.href = reader.result;
-                                                      a.download = 'WhatsApp_Image.' + ext;
-                                                      a.style.display = 'none';
-                                                      document.body.appendChild(a);
-                                                      a.click();
-                                                      document.body.removeChild(a);
-                                                  }};
-                                                  reader.readAsDataURL(blob);
-                                              }})
-                                              .catch(function(e) {{
-                                                  console.error('Karere blob save failed:', e);
-                                              }});
-                                      }})()
-                                  "#, uri = uri_escaped);
-
-                                  web_view.evaluate_javascript(
-                                      &js, None, None,
-                                      Option::<&gio::Cancellable>::None,
-                                      |_| {},
-                                  );
-                              }
-                              return;
-                          }
-
-                          // Normal (non-blob) download handling
+                          // Download handling
                           let settings_finished = settings_dl.clone();
                           let overlay_weak_fin = overlay_weak.clone();
                           let overlay_weak_fail = overlay_weak.clone();
@@ -928,7 +994,17 @@ mod imp {
                                    if filename.is_empty() {
                                        return false;
                                    }
-                                   let dest = path.join(filename.as_str());
+                                   // Auto-increment filename if it already exists
+                                   // e.g. photo.jpg → photo (1).jpg → photo (2).jpg
+                                   let base = std::path::Path::new(filename.as_str());
+                                   let stem = base.file_stem().unwrap_or_default().to_string_lossy();
+                                   let ext = base.extension().map(|e| format!(".{}", e.to_string_lossy())).unwrap_or_default();
+                                   let mut dest = path.join(filename.as_str());
+                                   let mut counter = 1u32;
+                                   while dest.exists() {
+                                       dest = path.join(format!("{} ({}){}", stem, counter, ext));
+                                       counter += 1;
+                                   }
                                    download.set_destination(&dest.to_string_lossy());
                                    true
                               }
@@ -1304,9 +1380,9 @@ mod imp {
                             // Let's spawn separate local task to keep it async and clean
                             glib::MainContext::default().spawn_local(async move {
                                 let resource_path = format!("/io/github/tobagin/karere/sounds/{}.oga", sound_name);
-                                let temp_path = glib::user_runtime_dir().join("karere-notify.oga");
-                                
-                                // Only write if not exists or size is 0 (simple cache)
+                                let temp_path = glib::user_runtime_dir().join(format!("karere-notify-{}.oga", sound_name));
+
+                                // Only write if not exists (simple cache per sound name)
                                 let needs_write = !temp_path.exists();
                                 
                                 if needs_write
@@ -1316,16 +1392,28 @@ mod imp {
                                 
                                 if temp_path.exists() {
                                     match tokio::process::Command::new("paplay")
-                                        .arg(temp_path)
-                                        .status() // awaits completion
-                                        .await 
+                                        .arg(&temp_path)
+                                        // Route through the notification stream so GNOME volume
+                                        // settings and per-app volume controls are respected
+                                        .arg("--property=media.role=notification")
+                                        .status()
+                                        .await
                                     {
-                                        Ok(status) => {
-                                            if !status.success() {
-                                                log::error!("paplay failed");
-                                            }
+                                        Ok(status) if status.success() => {},
+                                        Ok(_) => {
+                                            // paplay failed — fall back to pw-play (PipeWire native)
+                                            let _ = tokio::process::Command::new("pw-play")
+                                                .arg(&temp_path)
+                                                .status()
+                                                .await;
                                         },
-                                        Err(e) => log::error!("Failed to run paplay: {}", e),
+                                        Err(_) => {
+                                            // paplay not found — try pw-play directly
+                                            let _ = tokio::process::Command::new("pw-play")
+                                                .arg(&temp_path)
+                                                .status()
+                                                .await;
+                                        },
                                     }
                                 }
                             });
@@ -1633,10 +1721,27 @@ mod imp {
 
             web_view.connect_load_changed(move |webview, event| {
                 if event == webkit6::LoadEvent::Finished {
-                    // Reset transitioning flag unconditionally — the reload is done
-                    // regardless of whether JS injection succeeds or fires its callback.
                     if let Some(window) = obj_weak_load.upgrade() {
+                        // Always reset the transitioning flag — the reload (if any) is done.
                         window.imp().mobile_layout_transitioning.set(false);
+
+                        // Only enable the layout watcher from the foreground webview's load.
+                        // Background account webviews load at unpredictable times (often faster
+                        // than the foreground webview) and must not enable the watcher early,
+                        // which would cause a spurious mobile/desktop mismatch reload on startup.
+                        if is_foreground && !window.imp().layout_watcher_enabled.get() {
+                            // The connect_layout handler has been tracking mobile_layout_active
+                            // throughout loading. Only override it if we have a real (non-zero)
+                            // window width, since width=0 means the window isn't laid out yet
+                            // and should_use_mobile_layout would return false incorrectly.
+                            let current_width = window.width();
+                            if current_width > 0 {
+                                window.imp().mobile_layout_active.set(
+                                    should_use_mobile_layout(&settings_mobile_layout, current_width)
+                                );
+                            }
+                            window.imp().layout_watcher_enabled.set(true);
+                        }
                     }
 
                     // Reset crash counter on successful load (backoff resets after recovery)
@@ -1664,15 +1769,6 @@ mod imp {
                                 }
                             },
                         );
-                        // Update state
-                        if let Some(window) = obj_weak_load.upgrade() {
-                            window.imp().mobile_layout_active.set(true);
-                        }
-                    } else {
-                        // Update state
-                        if let Some(window) = obj_weak_load.upgrade() {
-                            window.imp().mobile_layout_active.set(false);
-                        }
                     }
 
                     // Auto-restore notification permission if previously granted

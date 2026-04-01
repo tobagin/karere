@@ -11,13 +11,18 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 2.5.7 - Build Fix
+## 🎉 Version 3.0.0 - Voice & Video Calls
 
-**Karere 2.5.7** fixes the Flatpak build by updating to the ashpd 0.13 API.
+**Karere 3.0.0** brings full voice and video call support via a custom WebKitGTK build with WebRTC enabled.
 
-### 🆕 What's New in 2.5.7
+> **Note:** This release requires re-linking your WhatsApp account(s). A dialog will explain this on first launch.
 
-- **Build**: Fixed Flatpak build failure caused by ashpd 0.13 feature gate changes.
+### 🆕 What's New in 3.0.0
+
+- **Voice & Video Calls**: WebRTC is now fully enabled — make and receive calls directly in Karere.
+- **Better Downloads**: Files now save with their original WhatsApp filename; downloading the same file twice auto-increments (e.g. `photo (1).jpg`).
+- **Window Behaviour**: Window now properly raises from minimized state when activated from the app launcher or tray.
+- **Notification Volume**: Notification sounds now respect GNOME's volume controls.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 

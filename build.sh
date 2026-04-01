@@ -51,7 +51,7 @@ REPO_DIR="$HOME/repo"
 REMOTE_NAME="local"
 
 echo "Running flatpak-builder..."
-flatpak-builder --force-clean --install-deps-from=flathub --repo="$REPO_DIR" "$BUILD_DIR" "$MANIFEST"
+flatpak-builder --force-clean --disable-rofiles-fuse --install-deps-from=flathub --repo="$REPO_DIR" "$BUILD_DIR" "$MANIFEST"
 
 echo "Installing from local repo..."
 flatpak remote-add --user --no-gpg-verify --if-not-exists "$REMOTE_NAME" "$REPO_DIR"
@@ -60,11 +60,4 @@ flatpak uninstall --user -y "$APP_ID" 2>/dev/null || true
 flatpak install --user -y "$REMOTE_NAME" "$APP_ID"
 
 echo "Build and installation complete!"
-
-# flatpak-builder 1.4.x doesn't support --socket=pipewire in manifests yet,
-# but flatpak itself does. Add it via override for camera/mic access in WebRTC.
-if [ "$BUILD_TYPE" = "dev" ]; then
-    flatpak override --user --socket=pipewire "$APP_ID" 2>/dev/null || true
-fi
-
 echo "Run with: flatpak run $APP_ID"

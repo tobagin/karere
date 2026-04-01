@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schemalist>
   <schema id="@APP_ID@" path="@APP_PATH@">
+    <key name="schema-version" type="i">
+      <default>0</default>
+      <summary>Schema version</summary>
+      <description>Internal schema version used for data migrations.</description>
+    </key>
     <key name="start-in-background" type="b">
       <default>false</default>
       <summary>Start in background</summary>

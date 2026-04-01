@@ -61,6 +61,8 @@ impl ksni::Tray for KarereTray {
                             if let Ok(adw_window) = window.clone().downcast::<adw::ApplicationWindow>() {
                                 adw_window.set_default_size(width, height);
                             }
+                            window.set_visible(true);
+                            window.unminimize();
                             window.present();
                         }
                     }

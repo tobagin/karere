@@ -74,6 +74,24 @@ modules:
         sha256: 02e50da56419704883702048d008f591ee899c5bbf98f17e888fd911c1e83550
         only-arches: [aarch64]
 
+  # GStreamer Rust audiofx plugin — provides the audiornnoise element used by
+  # WebKitGTK's WebRTC audio pipeline for noise suppression. Without it,
+  # the WebRTC audio pipeline fails to construct and calls don't work.
+  - name: gst-plugin-audiofx
+    buildsystem: simple
+    build-commands:
+      - cargo build --release -p gst-plugin-audiofx
+      - install -Dm755 target/release/libgstrsaudiofx.so /app/lib/gstreamer-1.0/libgstrsaudiofx.so
+    sources:
+      - type: git
+        url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git
+        tag: "0.14.4"
+    build-options:
+      env:
+        CARGO_HOME: /run/build/gst-plugin-audiofx/cargo
+      build-args:
+        - --share=network
+
   - name: hunspell-dictionaries
     buildsystem: simple
     build-commands:

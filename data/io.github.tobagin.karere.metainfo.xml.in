@@ -95,6 +95,18 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="3.0.0" date="2026-04-01">
+      <description>
+        <ul>
+          <li>Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5</li>
+          <li>Fixed download filenames now use WhatsApp's original filename</li>
+          <li>Fixed duplicate downloads auto-increment instead of failing</li>
+          <li>Fixed window now properly unminimizes when activated from launcher or tray</li>
+          <li>Fixed notification sounds now respect GNOME volume controls</li>
+          <li>Note: re-linking WhatsApp accounts is required after this upgrade</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.5.7" date="2026-03-22">
       <description>
         <ul>

@@ -13,6 +13,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.0.0] - 2026-04-01
+
+### Breaking
+- **Sessions**: Upgrading to v3.0.0 requires re-linking all WhatsApp accounts (re-scan QR code). A one-time migration dialog explains this on first launch. This is caused by the new WebKitGTK build which cannot transfer existing sessions.
+
+### Added
+- **Voice & Video Calls**: Full WebRTC support via a custom WebKitGTK 2.50.5 build compiled with `-DENABLE_WEB_RTC=ON`. Calls were previously blocked because the GNOME Platform 50 runtime ships WebKitGTK with WebRTC disabled.
+- **Noise Suppression**: Bundled `gst-plugin-audiofx` (gst-plugins-rs) providing the `audiornnoise` GStreamer element required by WebKit's WebRTC audio pipeline.
+- **Migration Dialog**: One-time dialog on first launch after upgrade explaining why re-authentication is required.
+- **British English Translation**: Added `en_GB` locale (renamed from incorrect `en_UK`).
+
+### Changed
+- **User Agent**: Switched to Firefox 148 on Linux for better WhatsApp Web compatibility on Linux.
+- **Downloads**: Removed the blob→data: URL workaround — WebKitGTK 2.50.x handles blob: downloads natively with correct filenames from WhatsApp.
+- **Downloads**: Duplicate downloads now auto-increment filenames (e.g. `photo.jpg` → `photo (1).jpg`) instead of failing.
+- **Notification Sounds**: Sounds now play via the notification audio stream so GNOME volume controls and per-app volume settings are respected.
+- **Translations**: Regenerated `.pot` template; added missing strings for account limits, zoom controls, download errors, and web process crash messages across all 8 languages.
+
+### Fixed
+- **Window**: Window now properly unminimizes when activated from GNOME app launcher or system tray (#125).
+- **Downloads**: Fixed download filenames being overridden with generic names; files now use WhatsApp's original filename (#127, #110).
+- **Notification Volume**: Notification sounds no longer ignore system volume settings (#124).
+- **PipeWire**: Removed forced PipeWire environment variables that caused UI freeze when initiating calls.
+
 ## [2.5.7] - 2026-03-22
 
 ### Fixed

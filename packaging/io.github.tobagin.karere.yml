@@ -8,7 +8,8 @@ finish-args:
   - --share=ipc
   - --socket=fallback-x11
   - --socket=wayland
-  - --device=dri
+  # Full device access required for camera and microphone in WebRTC calls
+  - --device=all
   - --talk-name=org.kde.StatusNotifierWatcher
 
   - --filesystem=xdg-download
@@ -18,9 +19,6 @@ finish-args:
   - --socket=pulseaudio
   # Configure WebKit spell checker dictionary paths (bundled and runtime)
   - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell
-  # Force GStreamer/WebKit to use PipeWire for camera
-  - --env=GST_PLUGIN_FEATURE_RANK=pipewiresrc:MAX
-  - --env=WEBRTC_USE_PIPEWIRE=1
 
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -42,6 +40,35 @@ build-options:
     CARGO_HOME: /run/build/karere/cargo
 
 modules:
+  # Pre-compiled WebKitGTK 2.50.5 built inside the GNOME Platform 50 SDK
+  # with WebRTC enabled (-DENABLE_WEB_RTC=ON). Built by the build-webkitgtk
+  # GitHub Actions workflow — see packaging/webkitgtk-builder.yml.
+  # The GNOME Platform runtime ships WebKitGTK without WebRTC; this replaces it.
+  - name: webkitgtk
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/lib/webkitgtk-6.0/injected-bundle /app/libexec/webkitgtk-6.0
+      - install -m755 libwebkitgtk-6.0.so.*.*.* /app/lib/
+      - install -m755 libjavascriptcoregtk-6.0.so.*.*.* /app/lib/
+      - ln -sf $(basename libwebkitgtk-6.0.so.*.*.*) /app/lib/libwebkitgtk-6.0.so.4
+      - ln -sf libwebkitgtk-6.0.so.4 /app/lib/libwebkitgtk-6.0.so
+      - ln -sf $(basename libjavascriptcoregtk-6.0.so.*.*.*) /app/lib/libjavascriptcoregtk-6.0.so.1
+      - ln -sf libjavascriptcoregtk-6.0.so.1 /app/lib/libjavascriptcoregtk-6.0.so
+      - install -m755 webkitgtk-6.0/injected-bundle/libwebkitgtkinjectedbundle.so /app/lib/webkitgtk-6.0/injected-bundle/
+      - install -m755 webkitgtk-6.0/WebKitWebProcess /app/libexec/webkitgtk-6.0/
+      - install -m755 webkitgtk-6.0/WebKitNetworkProcess /app/libexec/webkitgtk-6.0/
+      - install -m755 webkitgtk-6.0/WebKitGPUProcess /app/libexec/webkitgtk-6.0/
+      - install -m755 webkitgtk-6.0/jsc /app/libexec/webkitgtk-6.0/
+    sources:
+      - type: archive
+        url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.50.5-gnome50/webkitgtk-x86_64.tar.gz
+        sha256: 2c1ff69b14e53e44c05fba94d4acbc06fa7fead529ae4f812695620253600ae8
+        only-arches: [x86_64]
+      - type: archive
+        url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.50.5-gnome50/webkitgtk-aarch64.tar.gz
+        sha256: 02e50da56419704883702048d008f591ee899c5bbf98f17e888fd911c1e83550
+        only-arches: [aarch64]
+
   - name: hunspell-dictionaries
     buildsystem: simple
     build-commands:
@@ -63,5 +90,5 @@ modules:
     sources:
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v2.5.7
+        tag: v3.0.0
       - cargo-sources.json

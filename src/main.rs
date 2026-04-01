@@ -459,6 +459,7 @@ fn main() -> anyhow::Result<()> {
                 return;
             }
             window.set_visible(true);
+            window.unminimize();
             window.present();
             return;
         }
@@ -468,6 +469,7 @@ fn main() -> anyhow::Result<()> {
                 return;
             }
              window.set_visible(true);
+             window.unminimize();
              window.present();
              return;
         }

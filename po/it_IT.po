@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Karere 2.0.0\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-09 22:06+0000\n"
+"Report-Msgid-Bugs-To: https://github.com/tobagin/karere/issues\n"
+"POT-Creation-Date: 2026-03-31 00:00+0000\n"
 "PO-Revision-Date: 2026-02-20 09:17+0100\n"
 "Last-Translator: Jimmy Scionti <jimmy.scionti@gmail.com>\n"
 "Language-Team: Jimmy Scionti <jimmy.scionti@gmail.com>\n"
@@ -17,623 +17,638 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Gtranslator 49.0\n"
 
-#: temp_ui/keyboard-shortcuts.ui:12 temp_ui/preferences.ui:13
-#: temp_ui/preferences.ui:356
+#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui
 msgid "General"
 msgstr "Generale"
 
-#: temp_ui/keyboard-shortcuts.ui:15
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Show this help"
 msgstr "Mostra questo aiuto"
 
-#: temp_ui/keyboard-shortcuts.ui:21 temp_ui/preferences.ui:10
-#: temp_ui/window.ui:152
+#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui temp_ui/window.ui
 msgid "Preferences"
 msgstr "Preferenze"
 
-#: temp_ui/keyboard-shortcuts.ui:27 temp_ui/window.ui:162
+#: temp_ui/keyboard-shortcuts.ui temp_ui/window.ui
 msgid "About"
 msgstr "Informazioni su"
 
-#: temp_ui/keyboard-shortcuts.ui:33
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Quit application"
 msgstr "Chiudi applicazione"
 
-#: temp_ui/keyboard-shortcuts.ui:41
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Window"
 msgstr "Finestra"
 
-#: temp_ui/keyboard-shortcuts.ui:44
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Minimize window"
 msgstr "Minimizza finestra"
 
-#: temp_ui/keyboard-shortcuts.ui:50
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Fullscreen"
 msgstr "Schermo intero"
 
-#: temp_ui/keyboard-shortcuts.ui:58
+#: temp_ui/keyboard-shortcuts.ui
 msgid "WhatsApp Web"
 msgstr "WhatsApp Web"
 
-#: temp_ui/keyboard-shortcuts.ui:61
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Find in chat"
 msgstr "Cerca nella chat"
 
-#: temp_ui/keyboard-shortcuts.ui:67
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Search chats"
 msgstr "Cerca chat"
 
-#: temp_ui/keyboard-shortcuts.ui:73
+#: temp_ui/keyboard-shortcuts.ui
 msgid "New chat"
 msgstr "Nuova chat"
 
-#: temp_ui/keyboard-shortcuts.ui:79
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Archive current chat"
 msgstr "Archivia la chat corrente"
 
-#: temp_ui/keyboard-shortcuts.ui:85
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Open profile"
 msgstr "Apri profilo"
 
-#: temp_ui/keyboard-shortcuts.ui:91
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Reload WhatsApp Web"
 msgstr "Ricarica WhatsApp Web"
 
-#: temp_ui/keyboard-shortcuts.ui:99
+#: temp_ui/keyboard-shortcuts.ui
 msgid "WebView Zoom"
 msgstr "WebView Zoom"
 
-#: temp_ui/keyboard-shortcuts.ui:102
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Zoom in"
 msgstr "Aumenta zoom"
 
-#: temp_ui/keyboard-shortcuts.ui:108
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Zoom out"
 msgstr "Riduci zoom"
 
-#: temp_ui/keyboard-shortcuts.ui:114
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Reset zoom"
 msgstr "Ripristina zoom"
 
-#: temp_ui/keyboard-shortcuts.ui:122 temp_ui/preferences.ui:213
+#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui
 msgid "Accessibility"
 msgstr "Accessibilità"
 
-#: temp_ui/keyboard-shortcuts.ui:125
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Toggle high contrast"
 msgstr "Attiva/disattiva contrasto elevato"
 
-#: temp_ui/keyboard-shortcuts.ui:131
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Toggle focus indicators"
 msgstr "Attiva/disattiva indicatori focus"
 
-#: temp_ui/keyboard-shortcuts.ui:139
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Developer"
 msgstr "Sviluppatore"
 
-#: temp_ui/keyboard-shortcuts.ui:142
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Developer tools"
 msgstr "Strumenti sviluppatore"
 
-#: temp_ui/keyboard-shortcuts.ui:148
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Reload page"
 msgstr "Ricarica pagina"
 
-#: temp_ui/keyboard-shortcuts.ui:154
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Force reload"
 msgstr "Forza ricarica"
 
-#: temp_ui/keyboard-shortcuts.ui:162 temp_ui/preferences.ui:352
+#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui
 msgid "Notifications"
 msgstr "Notifiche"
 
-#: temp_ui/keyboard-shortcuts.ui:165
+#: temp_ui/keyboard-shortcuts.ui
 msgid "Toggle notifications"
 msgstr "Attiva/disattiva notifiche"
 
-#: temp_ui/keyboard-shortcuts.ui:171
-msgid "Toggle Do Not Disturb"
-msgstr "Attiva/disattiva non disturbare"
-
-#: temp_ui/preferences.ui:17
+#: temp_ui/preferences.ui
 msgid "Startup"
 msgstr "Avvio"
 
-#: temp_ui/preferences.ui:20
+#: temp_ui/preferences.ui
 msgid "Run on Startup"
 msgstr "Esegui all'avvio"
 
-#: temp_ui/preferences.ui:21
+#: temp_ui/preferences.ui
 msgid "Launch Karere automatically when you log in"
 msgstr "Esegue Karere in automatico all'accesso"
 
-#: temp_ui/preferences.ui:26
+#: temp_ui/preferences.ui
 msgid "Start in background"
 msgstr "Avvia in secondo piano"
 
-#: temp_ui/preferences.ui:27
+#: temp_ui/preferences.ui
 msgid "Start minimized without showing the window"
 msgstr "Avvia l'applicazione in stato minimizzato"
 
-#: temp_ui/preferences.ui:32
+#: temp_ui/preferences.ui
 msgid "Window Close Behavior"
 msgstr "Comportamento tasto chiudi finestra"
 
-#: temp_ui/preferences.ui:33
+#: temp_ui/preferences.ui
 msgid "What happens when you close the window"
 msgstr "Ciò che succede quando si chiude la finestra"
 
-#: temp_ui/preferences.ui:37
+#: temp_ui/preferences.ui
 msgid "Run in Background"
 msgstr "Esegui in secondo piano"
 
-#: temp_ui/preferences.ui:38
+#: temp_ui/preferences.ui
 msgid "Quit Application"
 msgstr "Chiudi l'applicazione"
 
-#: temp_ui/preferences.ui:46
+#: temp_ui/preferences.ui
 msgid "System Tray Icon"
 msgstr "Icona nel pannello"
 
-#: temp_ui/preferences.ui:47
+#: temp_ui/preferences.ui
 msgid "Show an icon in the system tray"
 msgstr "Mostra un'icona nel pannello"
 
-#: temp_ui/preferences.ui:51 temp_ui/preferences.ui:87
+#: temp_ui/preferences.ui
 msgid "Auto"
 msgstr "Auto"
 
-#: temp_ui/preferences.ui:52 temp_ui/preferences.ui:88
+#: temp_ui/preferences.ui
 msgid "Enabled"
 msgstr "Abilitato"
 
-#: temp_ui/preferences.ui:53 temp_ui/preferences.ui:89
+#: temp_ui/preferences.ui
 msgid "Disabled"
 msgstr "Disabilitato"
 
-#: temp_ui/preferences.ui:57
+#: temp_ui/preferences.ui
 msgid "Auto: Enabled for non-GNOME environments"
 msgstr "Auto: Abilitato per ambienti non-GNOME"
 
-#: temp_ui/preferences.ui:64
+#: temp_ui/preferences.ui
 msgid "Appearance"
 msgstr "Aspetto"
 
-#: temp_ui/preferences.ui:67
+#: temp_ui/preferences.ui
 msgid "Theme"
 msgstr "Tema"
 
-#: temp_ui/preferences.ui:68
+#: temp_ui/preferences.ui
 msgid "Choose the application color scheme"
 msgstr "Scegli lo schema di colore dell'applicazione"
 
-#: temp_ui/preferences.ui:72
+#: temp_ui/preferences.ui
 msgid "Follow System"
 msgstr "Segui il sistema"
 
-#: temp_ui/preferences.ui:73
+#: temp_ui/preferences.ui
 msgid "Light"
 msgstr "Chiaro"
 
-#: temp_ui/preferences.ui:74
+#: temp_ui/preferences.ui
 msgid "Dark"
 msgstr "Scuro"
 
-#: temp_ui/preferences.ui:82
+#: temp_ui/preferences.ui
 msgid "Mobile Layout (Experimental)"
 msgstr "Disposizione mobile (sperimentale)"
 
-#: temp_ui/preferences.ui:83
+#: temp_ui/preferences.ui
 msgid "Optimize the interface for small screens"
 msgstr "Ottimizza l'interfaccia per schermi piccoli"
 
-#: temp_ui/preferences.ui:93
+#: temp_ui/preferences.ui
 msgid "Auto: Enabled for mobile environments (Phosh, Plasma Mobile, etc.)"
 msgstr "Auto: Abilitato per ambienti mobile (Phosh, Plasma Mobile, ecc.)"
 
-#: temp_ui/preferences.ui:100
+#: temp_ui/preferences.ui
 msgid "Spell Checking"
 msgstr "Correttore ortografico"
 
-#: temp_ui/preferences.ui:103
+#: temp_ui/preferences.ui
 msgid "Enable Spell Checking"
 msgstr "Abilita correttore ortografico"
 
-#: temp_ui/preferences.ui:104
+#: temp_ui/preferences.ui
 msgid "Check spelling as you type"
 msgstr "Controlla l'ortografia durante la digitazione"
 
-#: temp_ui/preferences.ui:109
+#: temp_ui/preferences.ui
 msgid "Dictionary Status"
 msgstr "Stato dizionario"
 
-#: temp_ui/preferences.ui:110
+#: temp_ui/preferences.ui
 msgid "Number of installed dictionaries"
 msgstr "Numero di dizionari installati"
 
-#: temp_ui/preferences.ui:114
+#: temp_ui/preferences.ui
 msgid "Unknown"
 msgstr "Sconosciuto"
 
-#: temp_ui/preferences.ui:121 temp_ui/preferences.ui:132
+#: temp_ui/preferences.ui
 msgid "Active Language"
 msgstr "Lingua attiva"
 
-#: temp_ui/preferences.ui:122
+#: temp_ui/preferences.ui
 msgid "Automatically detected language"
 msgstr "Lingua rilevata automaticamente"
 
-#: temp_ui/preferences.ui:133
+#: temp_ui/preferences.ui
 msgid "Select the language for spell checking"
 msgstr "Seleziona la lingua per il correttore ortografico"
 
-#: temp_ui/preferences.ui:138
+#: temp_ui/preferences.ui
 msgid "Override Dictionary"
 msgstr "Sovrascrivi dizionario"
 
-#: temp_ui/preferences.ui:139
+#: temp_ui/preferences.ui
 msgid "Manually select the spell checking language"
 msgstr "Seleziona manualmente la lingua del correttore ortografico"
 
-#: temp_ui/preferences.ui:144
+#: temp_ui/preferences.ui
 msgid "Enable Auto-Correct"
 msgstr "Abilita autocorrezione"
 
-#: temp_ui/preferences.ui:145
+#: temp_ui/preferences.ui
 msgid "Automatically fix common spelling mistakes"
 msgstr "Corregge automaticamente gli errori di digitazione comuni"
 
-#: temp_ui/preferences.ui:152 temp_ui/preferences.ui:444
+#: temp_ui/preferences.ui
 msgid "Downloads"
 msgstr "Scaricati"
 
-#: temp_ui/preferences.ui:155
-msgid "Download Directory"
-msgstr "Cartella di scaricamento"
-
-#: temp_ui/preferences.ui:156 src/preferences.rs:272
+#: temp_ui/preferences.ui src/preferences.rs
 msgid "Default (Downloads)"
 msgstr "Predefinita (Scaricati)"
 
-#: temp_ui/preferences.ui:159
+#: temp_ui/preferences.ui
+msgid "Download Directory"
+msgstr "Cartella di scaricamento"
+
+#: temp_ui/preferences.ui
 msgid "Choose..."
 msgstr "Scegli…"
 
-#: temp_ui/preferences.ui:167
+#: temp_ui/preferences.ui
 msgid "Reset to default"
 msgstr "Ripristina i predefiniti"
 
-#: temp_ui/preferences.ui:176
+#: temp_ui/preferences.ui
 msgid "Accounts"
 msgstr "Account"
 
-#: temp_ui/preferences.ui:179
+#: temp_ui/preferences.ui
 msgid "Multi-Account Support"
 msgstr "Supporto account multipli"
 
-#: temp_ui/preferences.ui:180
+#: temp_ui/preferences.ui
 msgid "Show account switcher in the header bar"
 msgstr "Mostra il selettore di account nella barra d'intestazione"
 
-#: temp_ui/preferences.ui:187 temp_ui/preferences.ui:196
+#: temp_ui/preferences.ui
+msgid "Limit Number of Accounts"
+msgstr "Limita il numero di account"
+
+#: temp_ui/preferences.ui
+msgid "Restrict how many accounts can be created"
+msgstr "Limita quanti account possono essere creati"
+
+#: temp_ui/preferences.ui
+#, fuzzy
+msgid "Maximum Accounts"
+msgstr "Account"
+
+#: temp_ui/preferences.ui
+#, fuzzy
+msgid "Maximum number of accounts allowed"
+msgstr "Numero massimo di caratteri mostrati nelle anteprime"
+
+#: temp_ui/preferences.ui
 msgid "Developer Tools"
 msgstr "Strumenti sviluppatore"
 
-#: temp_ui/preferences.ui:190
+#: temp_ui/preferences.ui
 msgid "Enable Developer Tools"
 msgstr "Abilita strumenti sviluppatore"
 
-#: temp_ui/preferences.ui:191
+#: temp_ui/preferences.ui
 msgid "Allow inspecting and debugging the WebView"
 msgstr "Permette l'ispezione e il debug di WebView"
 
-#: temp_ui/preferences.ui:197
+#: temp_ui/preferences.ui
 msgid "Open the WebKit inspector"
 msgstr "Apre l'ispettore WebKit"
 
-#: temp_ui/preferences.ui:200
+#: temp_ui/preferences.ui
 msgid "Open"
 msgstr "Apri"
 
-#: temp_ui/preferences.ui:217
+#: temp_ui/preferences.ui
 msgid "Keyboard Navigation"
 msgstr "Navigazione da tastiera"
 
-#: temp_ui/preferences.ui:220 temp_ui/window.ui:158
+#: temp_ui/preferences.ui temp_ui/window.ui
 msgid "Keyboard Shortcuts"
 msgstr "Scorciatoie da tastiera"
 
-#: temp_ui/preferences.ui:221
+#: temp_ui/preferences.ui
 msgid "Enable keyboard shortcuts for common actions"
 msgstr "Abilita le scorciatoie da tastiera per azioni comuni"
 
-#: temp_ui/preferences.ui:226
+#: temp_ui/preferences.ui
 msgid "Focus Indicators"
 msgstr "Indicatori focus"
 
-#: temp_ui/preferences.ui:227
+#: temp_ui/preferences.ui
 msgid "Show visible outlines around focused elements"
 msgstr "Mostra contorni visibili attorno agli elementi con focus"
 
-#: temp_ui/preferences.ui:232
+#: temp_ui/preferences.ui
 msgid "View Keyboard Shortcuts"
 msgstr "Mostra scorciatoie da tastiera"
 
-#: temp_ui/preferences.ui:233
+#: temp_ui/preferences.ui
 msgid "See all available keyboard shortcuts"
 msgstr "Mostra tutte le scorciatoie da tastiera"
 
-#: temp_ui/preferences.ui:236
+#: temp_ui/preferences.ui
 msgid "View"
 msgstr "Vista"
 
-#: temp_ui/preferences.ui:247
+#: temp_ui/preferences.ui
 msgid "Visual Accessibility"
 msgstr "Accessibilità visiva"
 
-#: temp_ui/preferences.ui:250
+#: temp_ui/preferences.ui
 msgid "High Contrast Mode"
 msgstr "Modalità ad alto contrasto"
 
-#: temp_ui/preferences.ui:251
+#: temp_ui/preferences.ui
 msgid "Increase contrast for better readability"
 msgstr "Aumenta il contrasto per migliorare la leggibilità"
 
-#: temp_ui/preferences.ui:256
+#: temp_ui/preferences.ui
 msgid "Reduce Motion"
 msgstr "Movimento ridotto"
 
-#: temp_ui/preferences.ui:257
+#: temp_ui/preferences.ui
 msgid "Minimize animations and transitions"
 msgstr "Riduce le animazioni e le transizioni"
 
-#: temp_ui/preferences.ui:264
-msgid "Webview Zoom"
-msgstr "Zoom Webview"
+#: temp_ui/preferences.ui
+#, fuzzy
+msgid "Accessibility Zoom"
+msgstr "Accessibilità"
 
-#: temp_ui/preferences.ui:267
-msgid "Enable Webview Zoom"
-msgstr "Abilita lo zoom Webview"
-
-#: temp_ui/preferences.ui:268
-msgid "Allow zooming in and out of the web content"
-msgstr "Permette di aumentare e ridurre lo zoom dei contenuti web"
-
-#: temp_ui/preferences.ui:273
-msgid "Zoom Level"
+#: temp_ui/preferences.ui
+#, fuzzy
+msgid "Minimum Zoom Level"
 msgstr "Livello zoom"
 
-#: temp_ui/preferences.ui:274
-msgid "Adjust the magnification of the web content"
-msgstr "Aggiusta l'ingrandimento del contenuto web"
+#: temp_ui/preferences.ui
+msgid "Set a minimum zoom level for all accounts"
+msgstr "Imposta un livello di zoom minimo per tutti gli account"
 
-#: temp_ui/preferences.ui:289 temp_ui/window.ui:44
+#: temp_ui/preferences.ui
+msgid "Applied to all webviews — changing this resets all accounts"
+msgstr "Applicato a tutte le WebView — modificarlo reimposta tutti gli account"
+
+#: temp_ui/preferences.ui
+#, fuzzy
+msgid "Reset Zoom Level"
+msgstr "Livello zoom"
+
+#: temp_ui/preferences.ui
+msgid "Reset minimum zoom to 1.0 for all accounts"
+msgstr "Reimposta lo zoom minimo a 1.0 per tutti gli account"
+
+#: temp_ui/preferences.ui
+msgid "Header Bar Zoom Controls"
+msgstr "Controlli zoom nella barra del titolo"
+
+#: temp_ui/preferences.ui
+msgid "Show zoom buttons in the header bar (affects current account only)"
+msgstr "Mostra i pulsanti zoom nella barra del titolo (riguarda solo l'account corrente)"
+
+#: temp_ui/preferences.ui temp_ui/window.ui
 msgid "Reset Zoom"
 msgstr "Ripristina lo zoom"
 
-#: temp_ui/preferences.ui:290
-msgid "Restore zoom to the default level"
-msgstr "Ripristina lo zoom al livello predefinito"
-
-#: temp_ui/preferences.ui:293
+#: temp_ui/preferences.ui
 msgid "Reset"
 msgstr "Ripristina"
 
-#: temp_ui/preferences.ui:304
+#: temp_ui/preferences.ui
 msgid "Screen Reader Support"
 msgstr "Supporto lettura schermo"
 
-#: temp_ui/preferences.ui:307
+#: temp_ui/preferences.ui
 msgid "Screen Reader Optimizations"
 msgstr "Ottimizzazioni lettore schermo"
 
-#: temp_ui/preferences.ui:308
+#: temp_ui/preferences.ui
 msgid "Improve compatibility with assistive technologies"
 msgstr "Aumenta la compatibilità con le tecnologie di assistenza"
 
-#: temp_ui/preferences.ui:313
-msgid "Screen Reader Status"
-msgstr "Stato lettore schermo"
-
-#: temp_ui/preferences.ui:314
-msgid "Current screen reader detection state"
-msgstr "Stato attuale del rilevamento del lettore schermo"
-
-#: temp_ui/preferences.ui:317
-msgid "Inactive"
-msgstr "Inattivo"
-
-#: temp_ui/preferences.ui:327 temp_ui/preferences.ui:330
+#: temp_ui/preferences.ui
 msgid "Accessibility Shortcuts"
 msgstr "Scorciatoie accessibilità"
 
-#: temp_ui/preferences.ui:331
+#: temp_ui/preferences.ui
 msgid "Enable keyboard shortcuts for accessibility features"
 msgstr "Abilita le scorciatoie da tastiera per l'accessibilità"
 
-#: temp_ui/preferences.ui:336
+#: temp_ui/preferences.ui
 msgid "Developer Shortcuts"
 msgstr "Scorciatoie sviluppatore"
 
-#: temp_ui/preferences.ui:337
+#: temp_ui/preferences.ui
 msgid "Enable keyboard shortcuts for developer tools"
 msgstr "Abilita le scorciatoie da tastiera per gli strumenti sviluppatore"
 
-#: temp_ui/preferences.ui:342
+#: temp_ui/preferences.ui
 msgid "Notification Shortcuts"
 msgstr "Scorciatoie notifiche"
 
-#: temp_ui/preferences.ui:343
+#: temp_ui/preferences.ui
 msgid "Enable keyboard shortcuts for notification actions"
-msgstr ""
-"Abilita le scorciatoie da tastiera per le azioni di notifica"
+msgstr "Abilita le scorciatoie da tastiera per le azioni di notifica"
 
-#: temp_ui/preferences.ui:359
+#: temp_ui/preferences.ui
 msgid "Enable Notifications"
 msgstr "Abilita le notifiche"
 
-#: temp_ui/preferences.ui:360
+#: temp_ui/preferences.ui
 msgid "Master toggle for all notifications"
 msgstr "Attiva/disattiva tutte le notifiche"
 
-#: temp_ui/preferences.ui:367
+#: temp_ui/preferences.ui
 msgid "Messages"
 msgstr "Messaggi"
 
-#: temp_ui/preferences.ui:370
+#: temp_ui/preferences.ui
 msgid "Message Notifications"
 msgstr "Messaggi di notifica"
 
-#: temp_ui/preferences.ui:371
+#: temp_ui/preferences.ui
 msgid "Show notifications for incoming messages"
 msgstr "Mostra notifiche per i messaggi in arrivo"
 
-#: temp_ui/preferences.ui:376
+#: temp_ui/preferences.ui
 msgid "Change Tray Icon on Message"
 msgstr "Mostra indicatore notifica sul pannello"
 
-#: temp_ui/preferences.ui:377
+#: temp_ui/preferences.ui
 msgid "Animate the tray icon when a new message arrives"
 msgstr "Anima l'icona sul pannello quando arriva un nuovo messaggio"
 
-#: temp_ui/preferences.ui:384
+#: temp_ui/preferences.ui
 msgid "Message Preview"
 msgstr "Anteprima messaggio"
 
-#: temp_ui/preferences.ui:387
+#: temp_ui/preferences.ui
 msgid "Show Message Preview"
 msgstr "Mostra anteprima messaggio"
 
-#: temp_ui/preferences.ui:388
+#: temp_ui/preferences.ui
 msgid "Display message content in notifications"
 msgstr "Mostra contenuto messaggio nelle notifiche"
 
-#: temp_ui/preferences.ui:393
+#: temp_ui/preferences.ui
 msgid "Limit Message Preview Size"
 msgstr "Limita la dimensione dell'anteprima messaggi"
 
-#: temp_ui/preferences.ui:394
+#: temp_ui/preferences.ui
 msgid "Truncate long messages in notifications"
 msgstr "Tronca i messaggi lunghi nelle notifiche"
 
-#: temp_ui/preferences.ui:399
+#: temp_ui/preferences.ui
 msgid "Preview Length (characters)"
 msgstr "Lunghezza anteprima (caratteri)"
 
-#: temp_ui/preferences.ui:400
+#: temp_ui/preferences.ui
 msgid "Maximum number of characters shown in previews"
 msgstr "Numero massimo di caratteri mostrati nelle anteprime"
 
-#: temp_ui/preferences.ui:416
+#: temp_ui/preferences.ui
 msgid "Sounds"
 msgstr "Suoni"
 
-#: temp_ui/preferences.ui:419
+#: temp_ui/preferences.ui
 msgid "Notification Sounds"
 msgstr "Suoni di notifica"
 
-#: temp_ui/preferences.ui:420
+#: temp_ui/preferences.ui
 msgid "Play a sound when a notification arrives"
 msgstr "Riproduci un suono quando arriva una notifica"
 
-#: temp_ui/preferences.ui:425
+#: temp_ui/preferences.ui
 msgid "Sound"
 msgstr "Suono"
 
-#: temp_ui/preferences.ui:426
+#: temp_ui/preferences.ui
 msgid "Choose the notification alert sound"
 msgstr "Selezionare un suono di notifica"
 
-#: temp_ui/preferences.ui:430
+#: temp_ui/preferences.ui
 msgid "WhatsApp (Default)"
 msgstr "WhatsApp (Predefinito)"
 
-#: temp_ui/preferences.ui:431
+#: temp_ui/preferences.ui
 msgid "Pop"
 msgstr "Scoppio"
 
-#: temp_ui/preferences.ui:432
+#: temp_ui/preferences.ui
 msgid "Alert"
 msgstr "Sveglia"
 
-#: temp_ui/preferences.ui:433
+#: temp_ui/preferences.ui
 msgid "Soft"
 msgstr "Morbido"
 
-#: temp_ui/preferences.ui:434
+#: temp_ui/preferences.ui
 msgid "Start"
 msgstr "Avvio"
 
-#: temp_ui/preferences.ui:447
+#: temp_ui/preferences.ui
 msgid "Download Notifications"
 msgstr "Notifica scaricamento"
 
-#: temp_ui/preferences.ui:448
+#: temp_ui/preferences.ui
 msgid "Notify when a file download completes"
 msgstr "Notificare il termine di uno scaricamento"
 
-#: temp_ui/preferences.ui:453
+#: temp_ui/preferences.ui
 msgid "Notification Type"
 msgstr "Tipo di notifica"
 
-#: temp_ui/preferences.ui:454
+#: temp_ui/preferences.ui
 msgid "How download notifications are displayed"
 msgstr "Come sono mostrate le notifiche di scaricamento"
 
-#: temp_ui/preferences.ui:458
+#: temp_ui/preferences.ui
 msgid "In-app Toast"
 msgstr "Banner nell'app"
 
-#: temp_ui/preferences.ui:459
+#: temp_ui/preferences.ui
 msgid "System Notification"
 msgstr "Notifica di sistema"
 
-#: temp_ui/window.ui:12 temp_ui/window.ui:23 src/main.rs:144 src/tray.rs:29
-#: src/tray.rs:73
+#: temp_ui/window.ui src/main.rs src/tray.rs
 msgid "Karere"
 msgstr "Karere"
 
-#: temp_ui/window.ui:24
-msgid "GTK4 Whatsapp Web Client"
+#: temp_ui/window.ui
+#, fuzzy
+msgid "GTK4 WhatsApp Web Client"
 msgstr "Cliente Web WhatsApp GTK4"
 
-#: temp_ui/window.ui:37
+#: temp_ui/window.ui
+#, fuzzy
+msgid "Zoom"
+msgstr "Aumenta zoom"
+
+#: temp_ui/window.ui
 msgid "Zoom Out"
 msgstr "Riduci zoom"
 
-#: temp_ui/window.ui:51
+#: temp_ui/window.ui
 msgid "Zoom In"
 msgstr "Aumenta zoom"
 
-#: temp_ui/window.ui:60
+#: temp_ui/window.ui
 msgid "Spell Checking Language"
 msgstr "Lingua correttore ortografico"
 
-#: temp_ui/window.ui:67
+#: temp_ui/window.ui
 msgid "Menu"
 msgstr "Menu"
 
-#: temp_ui/window.ui:73
+#: temp_ui/window.ui
 msgid "Switch Account"
 msgstr "Cambia account"
 
-#: temp_ui/window.ui:134
+#: temp_ui/window.ui
 msgid "Add new account"
 msgstr "Aggiungi nuovo account"
 
-#: temp_ui/window.ui:148
+#: temp_ui/window.ui
 msgid "Refresh WhatsApp Web"
 msgstr "Aggiorna WhatsApp Web"
 
-#: temp_ui/window.ui:168 src/tray.rs:122
+#: temp_ui/window.ui src/tray.rs
 msgid "Quit"
 msgstr "Chiudi"
 
-#: src/main.rs:144
+#: src/main.rs
 msgid "Karere (Dev)"
 msgstr "Karere (Sviluppatore)"
 
-#: src/main.rs:146
+#: src/main.rs
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
 "seamless desktop integration with comprehensive logging and crash reporting "
@@ -644,7 +659,7 @@ msgstr ""
 "funzionalità complete di registrazione e segnalazione degli arresti anomali "
 "(versione di sviluppo)"
 
-#: src/main.rs:148
+#: src/main.rs
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
 "seamless desktop integration with comprehensive logging and crash reporting "
@@ -654,47 +669,83 @@ msgstr ""
 "fornisce un'integrazione desktop senza soluzione di continuità con "
 "funzionalità complete di registrazione e segnalazione degli arresti anomali"
 
-#: src/main.rs:169
+#: src/main.rs
 msgid "Source"
 msgstr "Sorgente"
 
-#: src/main.rs:172
+#: src/main.rs
 msgid "Special Thanks"
 msgstr "Ringraziamenti speciali"
 
-#: src/preferences.rs:430
+#: src/preferences.rs
 msgid "1 Dictionary"
 msgstr "1 dizionario"
 
-#: src/preferences.rs:433
+#: src/preferences.rs
 msgid "Dictionaries"
 msgstr "Dizionari"
 
-#: src/preferences.rs:483
+#: src/preferences.rs
 msgid "Select Download Directory"
 msgstr "Seleziona la cartella scaricamenti"
 
-#: src/preferences.rs:485
+#: src/preferences.rs
 msgid "Select"
 msgstr "Seleziona"
 
-#: src/tray.rs:74
+#: src/tray.rs
 msgid "Running via Rust & GTK4"
 msgstr "Esecuzione con Rust & GTK4"
 
-#: src/tray.rs:82
+#: src/tray.rs
 msgid "Hide Window"
 msgstr "Nascondi finestra"
 
-#: src/tray.rs:84
+#: src/tray.rs
 msgid "Show Window"
 msgstr "Mostra finestra"
 
-#: src/window.rs:788
+#: src/window.rs
+msgid "Re-authentication Required"
+msgstr "Riautenticazione Richiesta"
+
+#: src/window.rs
+msgid ""
+"Karere has been updated with a new browser engine that enables voice and "
+"video calls.\n"
+"\n"
+"Your existing WhatsApp session could not be transferred to the new engine. "
+"Please scan the QR code to re-link your account(s). This is a one-time step."
+msgstr ""
+"Karere è stato aggiornato con un nuovo motore del browser che consente "
+"chiamate vocali e video.\n"
+"\n"
+"La tua sessione WhatsApp esistente non ha potuto essere trasferita al nuovo "
+"motore. Esegui la scansione del codice QR per ricollegare il/i tuo/i "
+"account. Questo è un passaggio da eseguire una sola volta."
+
+#: src/window.rs
+msgid "_OK"
+msgstr "_OK"
+
+#: src/window.rs
+#, fuzzy
+msgid "Download Failed"
+msgstr "Cartella di scaricamento"
+
+#: src/window.rs
+msgid "An error occurred while downloading the file."
+msgstr "Si è verificato un errore durante il download del file."
+
+#: src/window.rs
+msgid "OK"
+msgstr "OK"
+
+#: src/window.rs
 msgid "WhatsApp Web Notification Permission"
 msgstr "Permessi di notifica WhatsApp Web"
 
-#: src/window.rs:789
+#: src/window.rs
 msgid ""
 "WhatsApp Web wants to show desktop notifications for new messages. Would you "
 "like to allow notifications?"
@@ -702,106 +753,188 @@ msgstr ""
 "WhatsApp Web vuole mostrare notifiche all'arrivo di nuovi messaggi. "
 "Permettere le notifiche?"
 
-#: src/window.rs:794 src/window.rs:878
+#: src/window.rs
 msgid "Deny"
 msgstr "Nega"
 
-#: src/window.rs:795 src/window.rs:879
+#: src/window.rs
 msgid "Allow"
 msgstr "Permetti"
 
-#: src/window.rs:841
+#: src/window.rs
 msgid "WhatsApp Web Camera & Microphone Permission"
 msgstr "Permessi camera e microfono WhatsApp Web"
 
-#: src/window.rs:842
+#: src/window.rs
 msgid ""
 "WhatsApp Web wants to access your camera and microphone. Would you like to "
 "allow access?"
 msgstr ""
 "WhatsApp Web richiede l'accesso a camera e microfono. Permettere l'accesso?"
 
-#: src/window.rs:845
+#: src/window.rs
 msgid "WhatsApp Web Camera Permission"
 msgstr "Permessi camera WhatsApp Web"
 
-#: src/window.rs:846
+#: src/window.rs
 msgid ""
 "WhatsApp Web wants to access your camera. Would you like to allow access?"
 msgstr "WhatsApp Web richiede l'accesso alla camera. Permettere l'accesso?"
 
-#: src/window.rs:851
+#: src/window.rs
 msgid "WhatsApp Web Microphone Permission"
 msgstr "Permessi microfono WhatsApp Web"
 
-#: src/window.rs:852
+#: src/window.rs
 msgid ""
 "WhatsApp Web wants to access your microphone. Would you like to allow access?"
 msgstr "WhatsApp Web richiede l'accesso al microfono. Permettere l'accesso?"
 
-#: src/window.rs:934
+#: src/window.rs
 msgid "WhatsApp"
 msgstr "WhatsApp"
 
-#: src/window.rs:935
+#: src/window.rs
 msgid "New message"
 msgstr "Nuovo messaggio"
 
-#: src/window.rs:940
+#: src/window.rs
 msgid "New message received"
 msgstr "Ricevuto nuovo messaggio"
 
-#: src/window.rs:1614
+#: src/window.rs
+msgid "Web process %s. Reloading…"
+msgstr "Processo web %s. Ricaricamento in corso…"
+
+#: src/window.rs
+msgid "Web process %s. Reload manually with Ctrl+R"
+msgstr "Processo web %s. Ricarica manualmente con Ctrl+R"
+
+#: src/window.rs
 msgid "No account"
 msgstr "Nessun account"
 
-#: src/window.rs:1729
+#: src/window.rs
+#, fuzzy
+msgid "Account Limit Reached"
+msgstr "Nome account"
+
+#: src/window.rs
+msgid "You have reached the maximum number of accounts"
+msgstr "Hai raggiunto il numero massimo di account"
+
+#: src/window.rs
+msgid "You can increase or disable this limit in Preferences → Accounts."
+msgstr "Puoi aumentare o disabilitare questo limite in Preferenze → Account."
+
+#: src/window.rs
+#, fuzzy
+msgid "Edit Account"
+msgstr "Cambia account"
+
+#: src/window.rs
 msgid "Add New Account"
 msgstr "Aggiungi nuovo account"
 
-#: src/window.rs:1730
-msgid "Enter account name:"
-msgstr "Inserire nome account:"
-
-#: src/window.rs:1736
-msgid "Account name"
+#: src/window.rs
+#, fuzzy
+msgid "Account Name"
 msgstr "Nome account"
 
-#: src/window.rs:1743 src/window.rs:1770
+#: src/window.rs
+msgid "Emoji"
+msgstr "Emoji"
+
+#: src/window.rs
+msgid "Choose Avatar Color"
+msgstr "Scegli il colore dell'avatar"
+
+#: src/window.rs
+msgid "Color"
+msgstr "Colore"
+
+#: src/window.rs
+msgid "Save"
+msgstr "Salva"
+
+#: src/window.rs
+#, fuzzy
+msgid "Add Account"
+msgstr "Aggiungi nuovo account"
+
+#: src/window.rs
 msgid "_Cancel"
 msgstr "A_nnulla"
 
-#: src/window.rs:1744
-msgid "_Add"
-msgstr "_Aggiungi"
-
-#: src/window.rs:1764
+#: src/window.rs
 msgid "Remove account"
 msgstr "Rimuovi account"
 
-#: src/window.rs:1765
+#: src/window.rs
 msgid "This action cannot be undone."
 msgstr "Questa azione non può essere annullata."
 
-#: src/window.rs:1771
+#: src/window.rs
 msgid "_Remove"
 msgstr "_Rimuovi"
 
-#: data/io.github.tobagin.karere.desktop.in:3
+#: src/window.rs
+#, fuzzy
+msgid "Reset All Zoom Levels?"
+msgstr "Livello zoom"
+
+#: src/window.rs
+msgid "_Apply"
+msgstr "_Applica"
+
+#: data/io.github.tobagin.karere.desktop.in
 msgid "@APP_NAME@"
 msgstr "@APP_NAME@"
 
-#: data/io.github.tobagin.karere.desktop.in:4
+#: data/io.github.tobagin.karere.desktop.in
 msgid "WhatsApp Client"
 msgstr "Cliente WhatsApp"
 
-#: data/io.github.tobagin.karere.desktop.in:5
+#: data/io.github.tobagin.karere.desktop.in
 msgid "Native WhatsApp Web client for Linux desktop"
 msgstr "Cliente WhatsApp Web nativo per desktop Linux"
 
-#: data/io.github.tobagin.karere.desktop.in:10
+#: data/io.github.tobagin.karere.desktop.in
 msgid "whatsapp;chat;messaging;web;communication;"
 msgstr "whatsapp;chat;messaggistica;web;comunicazione;"
+
+#~ msgid "Toggle Do Not Disturb"
+#~ msgstr "Attiva/disattiva non disturbare"
+
+#~ msgid "Webview Zoom"
+#~ msgstr "Zoom Webview"
+
+#~ msgid "Enable Webview Zoom"
+#~ msgstr "Abilita lo zoom Webview"
+
+#~ msgid "Allow zooming in and out of the web content"
+#~ msgstr "Permette di aumentare e ridurre lo zoom dei contenuti web"
+
+#~ msgid "Adjust the magnification of the web content"
+#~ msgstr "Aggiusta l'ingrandimento del contenuto web"
+
+#~ msgid "Restore zoom to the default level"
+#~ msgstr "Ripristina lo zoom al livello predefinito"
+
+#~ msgid "Screen Reader Status"
+#~ msgstr "Stato lettore schermo"
+
+#~ msgid "Current screen reader detection state"
+#~ msgstr "Stato attuale del rilevamento del lettore schermo"
+
+#~ msgid "Inactive"
+#~ msgstr "Inattivo"
+
+#~ msgid "Enter account name:"
+#~ msgstr "Inserire nome account:"
+
+#~ msgid "_Add"
+#~ msgstr "_Aggiungi"
 
 #~ msgid "About dialog showing application information"
 #~ msgstr "About dialog showing application information"
