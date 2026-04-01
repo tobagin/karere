@@ -1,0 +1,28 @@
+app-id: io.github.tobagin.karere.gst-builder
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+command: sh
+
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+
+modules:
+  - name: gst-plugin-audiofx
+    buildsystem: simple
+    build-options:
+      env:
+        CARGO_HOME: /run/build/gst-plugin-audiofx/cargo
+      build-args:
+        - --share=network
+    build-commands:
+      - cargo build --release -p gst-plugin-audiofx
+      - install -Dm755 target/release/libgstrsaudiofx.so /app/lib/gstreamer-1.0/libgstrsaudiofx.so
+    sources:
+      - type: git
+        url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git
+        tag: "0.14.4"
+        commit: 95a7172f82d0ec816e4e89111a762c24d5c47b22

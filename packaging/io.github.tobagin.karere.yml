@@ -71,23 +71,25 @@ modules:
         sha256: 02e50da56419704883702048d008f591ee899c5bbf98f17e888fd911c1e83550
         only-arches: [aarch64]
 
-  # GStreamer Rust audiofx plugin — provides the audiornnoise element used by
-  # WebKitGTK's WebRTC audio pipeline for noise suppression. Without it,
-  # the WebRTC audio pipeline fails to construct and calls don't work.
+  # Pre-compiled gst-plugin-audiofx (gst-plugins-rs 0.14.4) built inside the
+  # GNOME Platform 50 SDK. Provides the audiornnoise GStreamer element required
+  # by WebKitGTK's WebRTC audio pipeline. Built by the build-gst-plugin-audiofx
+  # GitHub Actions workflow — see packaging/gst-plugin-audiofx-builder.yml.
   - name: gst-plugin-audiofx
     buildsystem: simple
     build-commands:
-      - cargo build --release --offline -p gst-plugin-audiofx
-      - install -Dm755 target/release/libgstrsaudiofx.so /app/lib/gstreamer-1.0/libgstrsaudiofx.so
+      - install -Dm755 libgstrsaudiofx.so /app/lib/gstreamer-1.0/libgstrsaudiofx.so
     sources:
-      - type: git
-        url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git
-        tag: "0.14.4"
-        commit: 95a7172f82d0ec816e4e89111a762c24d5c47b22
-      - cargo-sources-gst.json
-    build-options:
-      env:
-        CARGO_HOME: /run/build/gst-plugin-audiofx/cargo
+      - type: file
+        url: https://github.com/tobagin/karere/releases/download/gst-plugin-audiofx-0.14.4-gnome50/libgstrsaudiofx-x86_64.so
+        sha256: PLACEHOLDER_X86_64
+        dest-filename: libgstrsaudiofx.so
+        only-arches: [x86_64]
+      - type: file
+        url: https://github.com/tobagin/karere/releases/download/gst-plugin-audiofx-0.14.4-gnome50/libgstrsaudiofx-aarch64.so
+        sha256: PLACEHOLDER_AARCH64
+        dest-filename: libgstrsaudiofx.so
+        only-arches: [aarch64]
 
   - name: hunspell-dictionaries
     buildsystem: simple

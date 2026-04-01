@@ -1,0 +1,122 @@
+name: Build gst-plugin-audiofx
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag (e.g. gst-plugin-audiofx-0.14.4-gnome50)'
+        required: true
+        default: 'gst-plugin-audiofx-0.14.4-gnome50'
+
+jobs:
+  build:
+    name: Build (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore flatpak-builder cache
+        uses: actions/cache@v4
+        with:
+          path: .flatpak-builder
+          key: flatpak-builder-gst-${{ matrix.arch }}-${{ github.run_id }}
+          restore-keys: |
+            flatpak-builder-gst-${{ matrix.arch }}-
+          save-always: true
+
+      - name: Restore cargo cache
+        uses: actions/cache@v4
+        with:
+          path: .flatpak-builder/cache
+          key: cargo-gst-${{ matrix.arch }}-${{ github.run_id }}
+          restore-keys: |
+            cargo-gst-${{ matrix.arch }}-
+          save-always: true
+
+      - name: Install flatpak and flatpak-builder
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y flatpak flatpak-builder
+
+      - name: Add Flathub remote
+        run: |
+          flatpak remote-add --user --if-not-exists flathub \
+            https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Install GNOME Platform 50 SDK + Rust extension
+        run: |
+          flatpak install --user -y flathub \
+            org.gnome.Platform//50 \
+            org.gnome.Sdk//50 \
+            org.freedesktop.Sdk.Extension.rust-stable//24.08
+
+      - name: Build gst-plugin-audiofx
+        run: |
+          flatpak-builder \
+            --user \
+            --force-clean \
+            --disable-rofiles-fuse \
+            build-dir \
+            packaging/gst-plugin-audiofx-builder.yml
+
+      - name: Package output
+        run: |
+          SO_FILE="build-dir/files/lib/gstreamer-1.0/libgstrsaudiofx.so"
+          ls -lh "$SO_FILE"
+          cp "$SO_FILE" "libgstrsaudiofx-${{ matrix.arch }}.so"
+          echo "### ${{ matrix.arch }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          sha256sum "libgstrsaudiofx-${{ matrix.arch }}.so" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gst-plugin-audiofx-${{ matrix.arch }}
+          path: libgstrsaudiofx-${{ matrix.arch }}.so
+          if-no-files-found: error
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          TAG="${{ github.event.inputs.tag_name }}"
+          GST_VER=$(echo "$TAG" | grep -oP '\d+\.\d+\.\d+' | head -1)
+
+          gh release create "$TAG" \
+            --title "gst-plugin-audiofx ${GST_VER} (GNOME Platform 50)" \
+            --notes "Pre-compiled \`libgstrsaudiofx.so\` (from gst-plugins-rs ${GST_VER}) built inside the GNOME Platform 50 SDK.
+
+Provides the \`audiornnoise\` GStreamer element required by WebKitGTK's WebRTC audio pipeline for noise suppression during calls.
+
+| File | Architecture |
+|------|-------------|
+| \`libgstrsaudiofx-x86_64.so\` | x86_64 (amd64) |
+| \`libgstrsaudiofx-aarch64.so\` | aarch64 (arm64) |
+
+To update the manifest after a new build, get the sha256 from the job summary and update \`packaging/io.github.tobagin.karere.yml\`." \
+            libgstrsaudiofx-x86_64.so \
+            libgstrsaudiofx-aarch64.so
