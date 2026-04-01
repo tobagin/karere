@@ -106,17 +106,10 @@ jobs:
           TAG="${{ github.event.inputs.tag_name }}"
           GST_VER=$(echo "$TAG" | grep -oP '\d+\.\d+\.\d+' | head -1)
 
+          NOTES="Pre-compiled libgstrsaudiofx.so (from gst-plugins-rs ${GST_VER}) built inside the GNOME Platform 50 SDK. Provides the audiornnoise GStreamer element required by WebKitGTK's WebRTC audio pipeline."
+
           gh release create "$TAG" \
             --title "gst-plugin-audiofx ${GST_VER} (GNOME Platform 50)" \
-            --notes "Pre-compiled \`libgstrsaudiofx.so\` (from gst-plugins-rs ${GST_VER}) built inside the GNOME Platform 50 SDK.
-
-Provides the \`audiornnoise\` GStreamer element required by WebKitGTK's WebRTC audio pipeline for noise suppression during calls.
-
-| File | Architecture |
-|------|-------------|
-| \`libgstrsaudiofx-x86_64.so\` | x86_64 (amd64) |
-| \`libgstrsaudiofx-aarch64.so\` | aarch64 (arm64) |
-
-To update the manifest after a new build, get the sha256 from the job summary and update \`packaging/io.github.tobagin.karere.yml\`." \
+            --notes "$NOTES" \
             libgstrsaudiofx-x86_64.so \
             libgstrsaudiofx-aarch64.so
