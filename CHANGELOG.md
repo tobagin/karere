@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.0.1] - 2026-03-31
+
+### Fixed
+- **Calls**: Added missing `gst-plugin-audiofx` (audiornnoise GStreamer element) to production Flatpak manifest. Voice and video calls were broken in v3.0.0 because the noise suppression plugin required by WebKitGTK's WebRTC audio pipeline was only included in the development build.
+
 ## [3.0.0] - 2026-04-01
 
 ### Breaking

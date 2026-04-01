@@ -95,6 +95,13 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="3.0.1" date="2026-03-31">
+      <description>
+        <ul>
+          <li>Fixed voice and video calls not working in the production build (missing noise suppression plugin)</li>
+        </ul>
+      </description>
+    </release>
     <release version="3.0.0" date="2026-04-01">
       <description>
         <ul>

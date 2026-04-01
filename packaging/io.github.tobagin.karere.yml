@@ -19,6 +19,8 @@ finish-args:
   - --socket=pulseaudio
   # Configure WebKit spell checker dictionary paths (bundled and runtime)
   - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell
+  # Enable SharedArrayBuffer without requiring cross-origin isolation headers
+  - --env=JSC_useSharedArrayBuffer=1
 
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -69,6 +71,23 @@ modules:
         sha256: 02e50da56419704883702048d008f591ee899c5bbf98f17e888fd911c1e83550
         only-arches: [aarch64]
 
+  # GStreamer Rust audiofx plugin — provides the audiornnoise element used by
+  # WebKitGTK's WebRTC audio pipeline for noise suppression. Without it,
+  # the WebRTC audio pipeline fails to construct and calls don't work.
+  - name: gst-plugin-audiofx
+    buildsystem: simple
+    build-commands:
+      - cargo build --release -p gst-plugin-audiofx
+      - install -Dm755 target/release/libgstrsaudiofx.so /app/lib/gstreamer-1.0/libgstrsaudiofx.so
+    sources:
+      - type: git
+        url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git
+        tag: "0.14.4"
+      - cargo-sources-gst.json
+    build-options:
+      env:
+        CARGO_HOME: /run/build/gst-plugin-audiofx/cargo
+
   - name: hunspell-dictionaries
     buildsystem: simple
     build-commands:
@@ -90,5 +109,5 @@ modules:
     sources:
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v3.0.0
+        tag: v3.0.1
       - cargo-sources.json
