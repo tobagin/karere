@@ -52,12 +52,12 @@ jobs:
           flatpak remote-add --user --if-not-exists flathub \
             https://flathub.org/repo/flathub.flatpakrepo
 
-      - name: Install GNOME Platform 50 SDK + Rust extension
+      - name: Install freedesktop SDK 25.08 + Rust extension
         run: |
           flatpak install --user -y flathub \
-            org.gnome.Platform//50 \
-            org.gnome.Sdk//50 \
-            org.freedesktop.Sdk.Extension.rust-stable//24.08
+            org.freedesktop.Platform//25.08 \
+            org.freedesktop.Sdk//25.08 \
+            org.freedesktop.Sdk.Extension.rust-stable//25.08
 
       - name: Build gst-plugin-audiofx
         run: |

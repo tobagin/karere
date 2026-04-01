@@ -1,7 +1,7 @@
 app-id: io.github.tobagin.karere.gst-builder
-runtime: org.gnome.Platform
-runtime-version: '50'
-sdk: org.gnome.Sdk
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
 command: sh
 
 sdk-extensions:
