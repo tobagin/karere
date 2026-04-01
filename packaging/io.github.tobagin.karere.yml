@@ -82,12 +82,12 @@ modules:
     sources:
       - type: file
         url: https://github.com/tobagin/karere/releases/download/gst-plugin-audiofx-0.14.4-gnome50/libgstrsaudiofx-x86_64.so
-        sha256: PLACEHOLDER_X86_64
+        sha256: 1acb3fe0f4ef712d709d4c557dd9d2949ca3adb749f69c9c9414708e1a138d98
         dest-filename: libgstrsaudiofx.so
         only-arches: [x86_64]
       - type: file
         url: https://github.com/tobagin/karere/releases/download/gst-plugin-audiofx-0.14.4-gnome50/libgstrsaudiofx-aarch64.so
-        sha256: PLACEHOLDER_AARCH64
+        sha256: 8c199baa76e76fa8a28da0410672a097229de0757547fbd73b4f4136fe501774
         dest-filename: libgstrsaudiofx.so
         only-arches: [aarch64]
 
@@ -112,6 +112,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v3.0.1
-        commit: ba21b6bdeff55a781afd23d4e1d789a01bfdbd23
+        tag: v3.0.2
+        commit: PLACEHOLDER_COMMIT
       - cargo-sources.json

@@ -11,13 +11,13 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 3.0.1 - Call Fix
+## 🎉 Version 3.0.2 - Call Fix
 
-**Karere 3.0.1** is a patch release that fixes voice and video calls in the production build.
+**Karere 3.0.2** is a patch release that fixes voice and video calls in the production build.
 
 > **Note:** If upgrading from v2.x, re-linking your WhatsApp account(s) is required. A dialog will explain this on first launch.
 
-### 🆕 What's New in 3.0.1
+### 🆕 What's New in 3.0.2
 
 - **Calls Fixed**: Voice and video calls now work correctly in the production Flatpak (missing noise suppression plugin was preventing calls from connecting).
 

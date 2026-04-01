@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.0.2] - 2026-04-01
+
+### Fixed
+- **Calls**: Replaced cargo-built `gst-plugin-audiofx` with a pre-compiled binary in the production manifest. The previous cargo source approach used `git`/`shell` source types that fail Flathub's manifest linter. The plugin is now built in a separate CI workflow and distributed as a GitHub release binary (same approach as WebKitGTK).
+
 ## [3.0.1] - 2026-03-31
 
 ### Fixed
