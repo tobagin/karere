@@ -145,7 +145,7 @@ mod imp {
                 .and_then(|app| app.application_id())
                 .map(|s| s.to_string())
                 .or_else(|| std::env::var("FLATPAK_ID").ok())
-                .unwrap_or_default();
+                .unwrap_or("io.github.tobagin.karere".to_string());
 
             if app_id.contains("Dev") || app_id.contains("Devel") {
                  obj.add_css_class("devel");

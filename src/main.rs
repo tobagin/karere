@@ -69,6 +69,14 @@ fn main() -> anyhow::Result<()> {
     app.connect_startup(move |app| {
         adw::init().expect("Failed to initialize Libadwaita");
 
+        let _ = RUNTIME.block_on(async move {
+            ashpd::register_host_app("io.github.tobagin.karere".parse().unwrap()).await
+                .map_err(|e| {
+                    log::error!("Failed to register app with portal: {}", e);
+                    e
+                })
+        });
+
         // Sync Autostart Status
         // We ensure the portal permission matches the user preference on every startup.
         // We ensure the portal permission matches the user preference on every startup.
@@ -91,6 +99,7 @@ fn main() -> anyhow::Result<()> {
              RUNTIME.spawn(async move {
                 let request_future = ashpd::desktop::background::Background::request()
                     .reason("Syncing autostart preference")
+                    .command(if ashpd::is_sandboxed() { vec![] } else { vec!["karere"] })
                     .auto_start(enabled)
                     .send();
 
