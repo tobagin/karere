@@ -21,6 +21,13 @@ finish-args:
   - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell
   # Enable SharedArrayBuffer without requiring cross-origin isolation headers
   - --env=JSC_useSharedArrayBuffer=1
+  # Disable WebKit's *inner* sandbox (the outer Flatpak sandbox still applies).
+  # Required on GNOME 50 / glibc 2.42+ where WebKit's bwrap launcher fails
+  # resolving /proc/self/fd/N for glibc's new anonymous memfd-backed ld-so-conf,
+  # causing "readPIDFromPeer: Unexpected short read from PID socket" crashes on
+  # launch. See #131. Remove once WebKitGTK's BubblewrapLauncher migrates all
+  # path-based binds to --bind-fd.
+  - --env=WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1
 
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
