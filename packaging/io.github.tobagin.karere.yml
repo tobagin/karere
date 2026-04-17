@@ -21,6 +21,9 @@ finish-args:
   - --env=WEBKIT_SPELL_CHECKER_DIR=/app/share/hunspell
   # Enable SharedArrayBuffer without requiring cross-origin isolation headers
   - --env=JSC_useSharedArrayBuffer=1
+  # Skip pipewiresrc/pipewiresink — PipeWire connections time out from the
+  # Flatpak sandbox. Use pulsesrc/pulsesink via --socket=pulseaudio instead.
+  - --env=GST_PLUGIN_FEATURE_RANK=pipewiresrc:0,pipewiresink:0
 
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable

@@ -656,6 +656,10 @@ mod imp {
                 data_dir.to_str(),
                 cache_dir.to_str()
             );
+            // Allow TLS connections to servers with mismatched/invalid certificates.
+            // WhatsApp relay servers on port 3480 present TLS certs for their domain names
+            // but PJSIP (Emscripten WebSocket) connects to raw IP:port, causing cert mismatch.
+            session.set_tls_errors_policy(webkit6::TLSErrorsPolicy::Ignore);
 
             // Create WebView with per-account NetworkSession for storage isolation.
             let web_view = webkit6::WebView::builder()
@@ -673,16 +677,63 @@ mod imp {
             ws.set_enable_media_capabilities(true);
             ws.set_enable_encrypted_media(true);
             ws.set_enable_webrtc(true);
+            ws.set_enable_webaudio(true);
             ws.set_media_playback_requires_user_gesture(false);
             ws.set_media_playback_allows_inline(true);
             ws.set_hardware_acceleration_policy(webkit6::HardwareAccelerationPolicy::Always);
 
-            // Spoof a Windows Chrome UA — WhatsApp Web gates several features
-            // (call button visibility, full codec support) on a Chrome/Windows UA.
-            ws.set_user_agent(Some("Mozilla/5.0 (X11; Linux x86_64; rv:148.0) Gecko/20100101 Firefox/148.0"));
+            // Spoof a Chrome Linux UA — WhatsApp Web gates call button visibility
+            // and codec negotiation on a Chrome UA. Must match the Chrome API spoof
+            // (window.chrome, navigator.userAgentData) injected below.
+            ws.set_user_agent(Some("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"));
             ws.set_allow_file_access_from_file_urls(false);
             ws.set_allow_universal_access_from_file_urls(false);
             ws.set_allow_top_navigation_to_data_urls(false);
+            // Relax WebKit's same-origin / CORS enforcement. Does not fully
+            // bypass CSP (worker-src still blocks blob: workers), but reduces
+            // other cross-origin restrictions that WhatsApp Web may hit when
+            // running in a non-Chrome WebKit engine.
+            ws.set_disable_web_security(true);
+
+            // Enable WebTransport (and HTTP3) as WebKit experimental features if available.
+            // WhatsApp's VoIP relay handler requires WebTransport (QUIC datagrams) to forward
+            // sendDataToRelay packets to WhatsApp's relay servers. Without it calls hang at
+            // "connecting" because relay packets are never delivered.
+            let try_enable_feature = |name: &str| {
+                for list_opt in [
+                    webkit6::Settings::experimental_features(),
+                    webkit6::Settings::development_features(),
+                    webkit6::Settings::all_features(),
+                ] {
+                    if let Some(list) = list_opt {
+                        for i in 0..list.length() {
+                            if let Some(feat) = list.get(i) {
+                                let feat_name = feat.name()
+                                    .map(|s| s.to_string())
+                                    .unwrap_or_default();
+                                if feat_name.to_lowercase().contains(name) {
+                                    eprintln!("[WebKit] Enabling feature: {feat_name}");
+                                    ws.set_feature_enabled(&feat, true);
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+                false
+            };
+            // Log all available features once (first webview only) so we know what's in this build
+            if let Some(list) = webkit6::Settings::all_features() {
+                let mut names: Vec<String> = (0..list.length())
+                    .filter_map(|i| list.get(i))
+                    .filter_map(|f| f.name().map(|s| s.to_string()))
+                    .collect();
+                names.sort();
+                eprintln!("[WebKit] Available features: {}", names.join(", "));
+            }
+            try_enable_feature("webtransport");
+            try_enable_feature("http3");
+
             web_view.set_settings(&ws);
 
             web_view.set_vexpand(true);
@@ -701,11 +752,18 @@ mod imp {
 
             // Spoof Page Visibility API to ensure notifications firing in background
             if let Some(ucm) = web_view.user_content_manager() {
+                // Register "vf" script-message handler so JS can relay diagnostics to stderr.
+                // JS calls: window.webkit.messageHandlers.vf.postMessage("text")
+                ucm.register_script_message_handler("vf", None);
+                ucm.connect_script_message_received(Some("vf"), move |_ucm, value: &webkit6::javascriptcore::Value| {
+                    eprintln!("[VF] {}", value.to_str());
+                });
+
                 let source = r#"
                     Object.defineProperty(document, 'hidden', {get: function() { return false; }});
                     Object.defineProperty(document, 'visibilityState', {get: function() { return 'visible'; }});
                     document.dispatchEvent(new Event('visibilitychange'));
-                    Object.defineProperty(navigator, 'userAgent', {get: function() { return 'Mozilla/5.0 (X11; Linux x86_64; rv:148.0) Gecko/20100101 Firefox/148.0'; }, configurable: true});
+                    Object.defineProperty(navigator, 'userAgent', {get: function() { return 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36'; }, configurable: true});
                  "#;
                 let script = webkit6::UserScript::new(
                     source,
@@ -760,8 +818,8 @@ mod imp {
                                 get: function() {
                                     return {
                                         brands: [
-                                            { brand: 'Chromium', version: '143' },
-                                            { brand: 'Google Chrome', version: '143' },
+                                            { brand: 'Chromium', version: '146' },
+                                            { brand: 'Google Chrome', version: '146' },
                                             { brand: 'Not-A.Brand', version: '24' }
                                         ],
                                         mobile: false,
@@ -776,8 +834,8 @@ mod imp {
                                                 bitness: '64',
                                                 model: '',
                                                 fullVersionList: [
-                                                    { brand: 'Chromium', version: '143.0.0.0' },
-                                                    { brand: 'Google Chrome', version: '143.0.0.0' },
+                                                    { brand: 'Chromium', version: '146.0.0.0' },
+                                                    { brand: 'Google Chrome', version: '146.0.0.0' },
                                                     { brand: 'Not-A.Brand', version: '24.0.0.0' }
                                                 ]
                                             });
@@ -788,14 +846,15 @@ mod imp {
                         }
 
                         // Spoof crossOriginIsolated — required for SharedArrayBuffer
-                        // which WhatsApp's media pipeline uses. The real SAB support
-                        // is enabled via JSC_useSharedArrayBuffer=1 in the manifest.
+                        // which WhatsApp's media pipeline uses, and also gated by
+                        // WhatsApp before showing the call button.
                         if (!window.crossOriginIsolated) {
                             Object.defineProperty(window, 'crossOriginIsolated', {
                                 get: function() { return true; },
                                 configurable: true
                             });
                         }
+
                     })();
                 "#;
                 let chrome_spoof_script = webkit6::UserScript::new(
@@ -806,6 +865,526 @@ mod imp {
                     &[]
                 );
                 ucm.add_script(&chrome_spoof_script);
+
+                // Polyfill MediaStreamTrackProcessor for WebKit.
+                // WhatsApp's VoIP video capture uses this Chrome 94+ API to pipe
+                // camera frames from a MediaStream into the PJSIP WASM worker.
+                // WebKitGTK doesn't implement it natively; we emulate it using
+                // AudioContext + ScriptProcessor (AudioData available in 2.50).
+                let mstp_polyfill = r#"
+                    (function() {
+                        if (typeof MediaStreamTrackProcessor !== 'undefined') return;
+                        if (typeof AudioContext === 'undefined') {
+                            console.warn('[MSTP-POLY] AudioContext unavailable, skipping');
+                            return;
+                        }
+                        if (typeof AudioData === 'undefined') {
+                            console.warn('[MSTP-POLY] AudioData unavailable, skipping');
+                            return;
+                        }
+                        console.log('[MSTP-POLY] Installing MediaStreamTrackProcessor polyfill');
+                        window.MediaStreamTrackProcessor = function MediaStreamTrackProcessor(init) {
+                            var track = init.track;
+                            var ctx, source, proc;
+                            this.readable = new ReadableStream({
+                                start: function(controller) {
+                                    ctx = new AudioContext();
+                                    source = ctx.createMediaStreamSource(new MediaStream([track]));
+                                    // 512-frame ScriptProcessor at 48 kHz ≈ 10.6 ms per chunk
+                                    proc = ctx.createScriptProcessor(512, 1, 1);
+                                    var ts = 0;
+                                    proc.onaudioprocess = function(e) {
+                                        var ib = e.inputBuffer;
+                                        var frames = ib.length;
+                                        var nch = ib.numberOfChannels;
+                                        var buf = new Float32Array(frames * nch);
+                                        for (var i = 0; i < nch; i++) {
+                                            buf.set(ib.getChannelData(i), i * frames);
+                                        }
+                                        try {
+                                            controller.enqueue(new AudioData({
+                                                format: 'f32-planar',
+                                                sampleRate: ib.sampleRate,
+                                                numberOfFrames: frames,
+                                                numberOfChannels: nch,
+                                                timestamp: ts,
+                                                data: buf
+                                            }));
+                                            ts += Math.round(frames * 1e6 / ib.sampleRate);
+                                        } catch(ex) {
+                                            console.warn('[MSTP-POLY] AudioData enqueue failed:', ex);
+                                        }
+                                    };
+                                    source.connect(proc);
+                                    proc.connect(ctx.destination);
+                                    console.log('[MSTP-POLY] audio capture pipeline started sampleRate=' + ctx.sampleRate);
+                                },
+                                cancel: function() {
+                                    if (proc) proc.disconnect();
+                                    if (source) source.disconnect();
+                                    if (ctx) ctx.close();
+                                }
+                            });
+                        };
+                        console.log('[MSTP-POLY] MediaStreamTrackProcessor ready');
+                    })();
+                "#;
+                let mstp_script = webkit6::UserScript::new(
+                    mstp_polyfill,
+                    webkit6::UserContentInjectedFrames::TopFrame,
+                    webkit6::UserScriptInjectionTime::Start,
+                    &[],
+                    &[]
+                );
+                ucm.add_script(&mstp_script);
+
+                // VoIP audio fix: WhatsApp's prod-nonlab WASM has External Audio compiled out,
+                // which causes calls to get stuck at "connecting" (the Chrome VoIP path needs
+                // External Audio to complete). We pre-compile the prod-lab WASM (which has
+                // External Audio) and provide it directly in the cmd:load message
+                // (wasmVariant='prod-lab' + wasmModule). This bypasses the nested loader worker
+                // (WAWebVoipWebWasmLoader_ProdLab_internal.worker) that previously failed to
+                // instantiate. The coordinator selects JS glue based on wasmVariant, so this
+                // should activate the prod-lab External Audio EM_ASM path.
+                // If the module isn't compiled yet when cmd:load arrives, we wait up to 30s
+                // before falling back to prod-nonlab.
+                let voip_fix = r#"
+                    (function() {
+                        var OrigWorker = window.Worker;
+                        var origFetch = window.fetch;
+                        if (!OrigWorker || !origFetch) return;
+
+                        function vfLog(s) {
+                            console.warn('[VF] ' + s);
+                            try { window.webkit.messageHandlers.vf.postMessage(String(s)); } catch(e) {}
+                        }
+                        vfLog('interceptor installed');
+
+                        // Probe relay server reachability via both HTTPS fetch and WebTransport
+                        // (runs after 5s to let VoIP init complete first)
+                        setTimeout(function() {
+                            var relayIp = '31.13.73.51';
+                            // HTTPS fetch probe (expected to fail — relay only speaks WebTransport)
+                            origFetch.call(window, 'https://' + relayIp + ':3480/', {
+                                mode: 'no-cors', cache: 'no-store', signal: AbortSignal.timeout(5000)
+                            }).then(function() {
+                                vfLog('relay-probe: HTTPS reachable ' + relayIp + ':3480');
+                            }).catch(function(e) {
+                                vfLog('relay-probe: ' + relayIp + ':3480 → ' + String(e));
+                            });
+                            // WebTransport probe — this is the actual relay protocol
+                            if (window.WebTransport) {
+                                vfLog('WT-probe: trying https://' + relayIp + ':3480');
+                                try {
+                                    var wtProbe = new window.WebTransport('https://' + relayIp + ':3480');
+                                    wtProbe.ready
+                                        .then(function() {
+                                            vfLog('WT-probe: CONNECTED https://' + relayIp + ':3480 — relay works!');
+                                            wtProbe.close();
+                                        })
+                                        .catch(function(e) {
+                                            vfLog('WT-probe: FAILED https://' + relayIp + ':3480 — ' + String(e));
+                                        });
+                                } catch(e) {
+                                    vfLog('WT-probe: EXCEPTION ' + String(e));
+                                }
+                            } else {
+                                vfLog('WT-probe: WebTransport unavailable');
+                            }
+                        }, 5000);
+
+                        // Intercept WebSocket to see if WhatsApp opens relay connections
+                        // (WhatsApp JS sends sendDataToRelay binary data via WebSocket to relay servers)
+                        var OrigWS = window.WebSocket;
+                        if (OrigWS) {
+                            window.WebSocket = function(url, protocols) {
+                                var urlStr = String(url);
+                                // Filter to non-WhatsApp WS connections (relay servers)
+                                var isRelay = urlStr.indexOf('whatsapp') === -1 &&
+                                              urlStr.indexOf('fbcdn') === -1;
+                                if (isRelay) vfLog('WS connect: ' + urlStr);
+                                var ws = protocols ? new OrigWS(url, protocols) : new OrigWS(url);
+                                if (isRelay) {
+                                    ws.addEventListener('open', function() {
+                                        vfLog('WS open: ' + urlStr);
+                                    });
+                                    ws.addEventListener('error', function() {
+                                        vfLog('WS error: ' + urlStr);
+                                    });
+                                    ws.addEventListener('close', function(e) {
+                                        vfLog('WS close: ' + urlStr + ' code=' + e.code + ' reason=' + e.reason);
+                                    });
+                                    ws.addEventListener('message', function(e) {
+                                        var sz = (e.data && typeof e.data.byteLength !== 'undefined') ?
+                                            e.data.byteLength : (e.data ? e.data.length : 0);
+                                        vfLog('WS recv: ' + urlStr + ' bytes=' + sz);
+                                    });
+                                }
+                                return ws;
+                            };
+                            window.WebSocket.prototype = OrigWS.prototype;
+                            window.WebSocket.CONNECTING = OrigWS.CONNECTING;
+                            window.WebSocket.OPEN = OrigWS.OPEN;
+                            window.WebSocket.CLOSING = OrigWS.CLOSING;
+                            window.WebSocket.CLOSED = OrigWS.CLOSED;
+                        }
+
+                        // WebTransport interception / polyfill.
+                        // WhatsApp's relay handler uses WebTransport (QUIC/HTTP3 datagrams) to
+                        // forward sendDataToRelay packets to relay servers. If the native
+                        // WebTransport API is unavailable (WebKitGTK 2.50.x without HTTP3),
+                        // we provide a polyfill backed by WebSocket binary frames so the
+                        // relay connections can still be made (relay servers accept both).
+                        var OrigWT = window.WebTransport;
+                        if (OrigWT) {
+                            vfLog('WebTransport API available (native)');
+                            window.WebTransport = function(url, opts) {
+                                vfLog('WebTransport connect: ' + url);
+                                var wt = new OrigWT(url, opts);
+                                wt.ready.then(function() { vfLog('WebTransport open: ' + url); })
+                                        .catch(function(e) { vfLog('WebTransport open failed: ' + url + ' ' + String(e)); });
+                                wt.closed.then(function() { vfLog('WebTransport closed: ' + url); })
+                                         .catch(function() {});
+                                return wt;
+                            };
+                            window.WebTransport.prototype = OrigWT.prototype;
+                        } else {
+                            vfLog('WebTransport API NOT available — installing WebSocket polyfill');
+                            // Polyfill: map WebTransport datagram API to WebSocket binary frames.
+                            // Implements the subset WhatsApp uses for relay:
+                            //   new WebTransport(url, opts)
+                            //   .ready / .closed promises
+                            //   .datagrams.writable (WritableStream) — send bytes
+                            //   .datagrams.readable (ReadableStream) — recv bytes
+                            window.WebTransport = function WebTransportPolyfill(url, opts) {
+                                var wsUrl = url.replace(/^https:\/\//, 'wss://').replace(/^http:\/\//, 'ws://');
+                                vfLog('WebTransport-polyfill: connecting ' + wsUrl);
+                                var ws;
+                                try {
+                                    ws = OrigWS ? new OrigWS(wsUrl) : new WebSocket(wsUrl);
+                                } catch(e) {
+                                    vfLog('WebTransport-polyfill: WS constructor error ' + String(e));
+                                    this.ready = Promise.reject(new Error(String(e)));
+                                    this.closed = Promise.resolve();
+                                    this.datagrams = { writable: new WritableStream(), readable: new ReadableStream() };
+                                    return;
+                                }
+                                ws.binaryType = 'arraybuffer';
+
+                                var sendQueue = [];
+                                var dataBuf = [];
+                                var dataReaders = [];
+                                var readyRes, readyRej, closedRes;
+
+                                this.ready = new Promise(function(res, rej) { readyRes = res; readyRej = rej; });
+                                this.closed = new Promise(function(res) { closedRes = res; });
+
+                                ws.addEventListener('open', function() {
+                                    vfLog('WebTransport-polyfill: WS open ' + wsUrl);
+                                    readyRes(undefined);
+                                    for (var i = 0; i < sendQueue.length; i++) ws.send(sendQueue[i]);
+                                    sendQueue = [];
+                                });
+                                ws.addEventListener('error', function() {
+                                    vfLog('WebTransport-polyfill: WS error ' + wsUrl);
+                                    readyRej(new Error('WebSocket connection failed'));
+                                });
+                                ws.addEventListener('close', function(ev) {
+                                    vfLog('WebTransport-polyfill: WS close ' + wsUrl + ' code=' + ev.code);
+                                    closedRes({ closeCode: ev.code, reason: ev.reason });
+                                    // Drain pending readers
+                                    while (dataReaders.length) dataReaders.shift()({ value: undefined, done: true });
+                                });
+                                ws.addEventListener('message', function(ev) {
+                                    var bytes = new Uint8Array(ev.data);
+                                    vfLog('WebTransport-polyfill: recv ' + bytes.length + ' bytes from ' + wsUrl);
+                                    if (dataReaders.length) {
+                                        dataReaders.shift()({ value: bytes, done: false });
+                                    } else {
+                                        dataBuf.push(bytes);
+                                    }
+                                });
+
+                                var self = this;
+                                this.datagrams = {
+                                    writable: new WritableStream({
+                                        write: function(chunk) {
+                                            var b = chunk instanceof Uint8Array ? chunk : new Uint8Array(chunk.buffer || chunk);
+                                            if (ws.readyState === 1 /*OPEN*/) ws.send(b);
+                                            else if (ws.readyState === 0 /*CONNECTING*/) sendQueue.push(b);
+                                            return Promise.resolve();
+                                        }
+                                    }),
+                                    readable: new ReadableStream({
+                                        pull: function(ctrl) {
+                                            if (dataBuf.length) { ctrl.enqueue(dataBuf.shift()); return Promise.resolve(); }
+                                            return new Promise(function(res) {
+                                                dataReaders.push(function(v) { if (!v.done) ctrl.enqueue(v.value); res(); });
+                                            });
+                                        }
+                                    })
+                                };
+                                this.close = function(info) { ws.close((info && info.closeCode) || 1000, (info && info.reason) || ''); };
+                                this.createBidirectionalStream = function() { return Promise.reject(new Error('not implemented')); };
+                                this.createUnidirectionalStream = function() { return Promise.reject(new Error('not implemented')); };
+                                this.incomingBidirectionalStreams = new ReadableStream();
+                                this.incomingUnidirectionalStreams = new ReadableStream();
+                            };
+                        }
+
+                        // Intercept RTCPeerConnection to capture ICE events from PJSIP
+                        var OrigRTCPC = window.RTCPeerConnection;
+                        if (OrigRTCPC) {
+                            window.RTCPeerConnection = function(config, constraints) {
+                                var servers = config && config.iceServers;
+                                if (servers && servers.length) {
+                                    var urls = servers.map(function(s) {
+                                        return (Array.isArray(s.urls) ? s.urls : [s.urls]).join(';');
+                                    }).join('|');
+                                    vfLog('RTCPeerConnection created iceServers=' + urls.substring(0, 200));
+                                } else {
+                                    vfLog('RTCPeerConnection created (no iceServers)');
+                                }
+                                var pc = config ? new OrigRTCPC(config, constraints) : new OrigRTCPC();
+                                pc.addEventListener('iceconnectionstatechange', function() {
+                                    vfLog('ICE state: ' + pc.iceConnectionState);
+                                });
+                                pc.addEventListener('icegatheringstatechange', function() {
+                                    vfLog('ICE gathering: ' + pc.iceGatheringState);
+                                });
+                                pc.addEventListener('connectionstatechange', function() {
+                                    vfLog('PC state: ' + pc.connectionState);
+                                });
+                                pc.addEventListener('icecandidate', function(e) {
+                                    if (e.candidate) {
+                                        vfLog('ICE candidate: ' + e.candidate.candidate.substring(0, 120));
+                                    } else {
+                                        vfLog('ICE gathering complete');
+                                    }
+                                });
+                                return pc;
+                            };
+                            window.RTCPeerConnection.prototype = OrigRTCPC.prototype;
+                        }
+
+                        // Track which relay IPs we've already probed to avoid spamming
+                        var relayProbed = {};
+
+                        // Active WebTransport connections to relay servers, keyed by "ip:port"
+                        var relayConnections = {};
+
+                        // Pre-compile prod-lab WASM as soon as we know its URL.
+                        var prodLabModulePromise = null;
+                        // Only one coordinator gets prod-lab — running all 6 simultaneously
+                        // causes the WebKitGTK process to freeze under the memory/CPU load of
+                        // 6 concurrent External Audio + PJSIP initializations.
+                        var prodLabSent = false;
+
+                        function startProdLabFetch(url) {
+                            if (prodLabModulePromise) return;
+                            vfLog('pre-compiling prod-lab WASM');
+                            prodLabModulePromise = origFetch.call(window, url)
+                                .then(function(r) { return WebAssembly.compileStreaming(r); })
+                                .then(function(m) { vfLog('prod-lab module ready'); return m; })
+                                .catch(function(e) { vfLog('prod-lab compile failed: ' + String(e)); return null; });
+                        }
+
+                        window.Worker = function(workerUrl, opts) {
+                            var w = new OrigWorker(workerUrl, opts);
+                            var origPM = w.postMessage.bind(w);
+                            var isVoipWorker = false;
+
+                            w.addEventListener('message', function(e) {
+                                if (!isVoipWorker) return;
+                                var d = e.data;
+                                if (!d) return;
+                                var type = d.type || d.cmd || d.name || Object.keys(d)[0];
+                                vfLog('coordinator→main: type=' + type +
+                                      ' keys=' + Object.keys(d).join(','));
+                                if (d.type === 'waWasmWorkerCompatibleCallback') {
+                                    if (d.message !== undefined)
+                                        vfLog('[PJSIP] ' + (d.__name||'') + ' [' + (d.level||'') + '] ' + d.message);
+                                    if (d.event !== undefined)
+                                        vfLog('[PJSIP-event] ' + (d.__name||'') + ' event=' + d.event + ' id=' + (d.connectionId||''));
+                                    if (d.stats !== undefined)
+                                        vfLog('[PJSIP-stats] id=' + (d.connectionId||'') + ' ' + JSON.stringify(d.stats).substring(0, 300));
+                                    // Dump unknown callbacks fully so we don't miss call-state events
+                                    var knownNames = ['loggingCallback','dataChannelStateCallback'];
+                                    if (knownNames.indexOf(d.__name) === -1) {
+                                        try { vfLog('[PJSIP-unknown] ' + JSON.stringify(d).substring(0, 400)); } catch(e) {}
+                                    }
+                                    // RELAY HANDLER: when PJSIP asks JS to send data to a relay
+                                    // server, establish a WebTransport connection and forward it.
+                                    // WhatsApp's own relay handler may run inside a Worker where
+                                    // WebTransport was previously unavailable; this main-thread
+                                    // handler supplements it so PJSIP gets relay responses.
+                                    if (d.__name === 'sendDataToRelay' && d.ip && d.port && d.data) {
+                                        var rKey = d.ip + ':' + d.port;
+                                        var capturedOrigPM = origPM; // capture for async use
+
+                                        // Convert PJSIP's {0:b, 1:b, ...} data object to Uint8Array
+                                        var rLen = d.len || Object.keys(d.data).length;
+                                        var rBytes = new Uint8Array(rLen);
+                                        for (var bi = 0; bi < rLen; bi++) rBytes[bi] = d.data[bi] || 0;
+
+                                        if (!relayConnections[rKey]) {
+                                            var rIp = d.ip;
+                                            var rPort = d.port;
+                                            var rIpFmt = rIp.indexOf(':') !== -1 ? '[' + rIp + ']' : rIp;
+                                            var wtUrl = 'https://' + rIpFmt + ':' + rPort;
+                                            vfLog('relay: connecting via WebTransport to ' + wtUrl);
+                                            var conn = {
+                                                wt: null, writer: null,
+                                                queue: [rBytes], ready: false
+                                            };
+                                            relayConnections[rKey] = conn;
+                                            try {
+                                                var wt = new window.WebTransport(wtUrl, {allowPooling: false});
+                                                conn.wt = wt;
+                                                wt.ready.then(function() {
+                                                    vfLog('relay: WebTransport open ' + wtUrl);
+                                                    conn.ready = true;
+                                                    var writer = wt.datagrams.writable.getWriter();
+                                                    conn.writer = writer;
+                                                    // Flush queued packets
+                                                    for (var qi = 0; qi < conn.queue.length; qi++) {
+                                                        writer.write(conn.queue[qi]).catch(function(e) {
+                                                            vfLog('relay: write error ' + String(e));
+                                                        });
+                                                    }
+                                                    conn.queue = [];
+                                                    // Start reading incoming relay data
+                                                    var reader = wt.datagrams.readable.getReader();
+                                                    function readLoop() {
+                                                        reader.read().then(function(result) {
+                                                            if (result.done) return;
+                                                            var bytes = result.value;
+                                                            vfLog('relay: recv ' + bytes.length + ' bytes from ' + wtUrl);
+                                                            // Convert Uint8Array to PJSIP's {0:b,1:b,...} format
+                                                            var dataObj = {};
+                                                            for (var ri = 0; ri < bytes.length; ri++) dataObj[ri] = bytes[ri];
+                                                            capturedOrigPM({
+                                                                type: 'cmd', cmd: 'jsWorkerCmd',
+                                                                jsWorkerCmd: 'receiveDataFromRelay',
+                                                                data: dataObj, len: bytes.length,
+                                                                ip: rIp, port: rPort,
+                                                                __timing: {receiveDateTime:-1,receiveTimestamp:-1,sendDateTime:Date.now(),sendDelayHighPrecision:0,sendDelayLowPrecision:0}
+                                                            });
+                                                            readLoop();
+                                                        }).catch(function(e) {
+                                                            vfLog('relay: read loop ended ' + String(e));
+                                                        });
+                                                    }
+                                                    readLoop();
+                                                }).catch(function(e) {
+                                                    vfLog('relay: WebTransport connect failed ' + wtUrl + ' ' + String(e));
+                                                    delete relayConnections[rKey];
+                                                });
+                                                wt.closed.then(function() {
+                                                    vfLog('relay: WebTransport closed ' + wtUrl);
+                                                    delete relayConnections[rKey];
+                                                }).catch(function() {});
+                                            } catch(wtErr) {
+                                                vfLog('relay: WebTransport exception ' + String(wtErr));
+                                                delete relayConnections[rKey];
+                                            }
+                                        } else {
+                                            var conn2 = relayConnections[rKey];
+                                            if (conn2.ready && conn2.writer) {
+                                                conn2.writer.write(rBytes).catch(function(e) {
+                                                    vfLog('relay: write error ' + String(e));
+                                                });
+                                            } else {
+                                                conn2.queue.push(rBytes);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+                            w.postMessage = function(msg, transfer) {
+                                // msg #1: identify VoIP coordinator; kick off prod-lab pre-compile
+                                if (msg && msg.resource &&
+                                    msg.resource.name === 'WAWebVoipWebWasmWorkerBundle') {
+                                    isVoipWorker = true;
+                                    var bxData = msg.resource.hsdp && msg.resource.hsdp.bxData;
+                                    var nonlabUrl = bxData && bxData['32180'] && bxData['32180'].uri;
+                                    var prodLabUrl = bxData && bxData['78864'] && bxData['78864'].uri;
+                                    vfLog('VoIP msg1 nonlab=' + (nonlabUrl ? 'ok':'null') +
+                                          ' prodLab=' + (prodLabUrl ? 'ok':'null'));
+                                    if (prodLabUrl) startProdLabFetch(prodLabUrl);
+                                }
+
+                                // msg #2: intercept cmd:load and upgrade ONE coordinator to
+                                // prod-lab (the one that wins the race to get the compiled module).
+                                // The remaining coordinators use prod-nonlab so they initialise
+                                // normally without freezing the process. One prod-lab instance is
+                                // enough for External Audio support during calls.
+                                if (isVoipWorker && msg && msg.cmd === 'load' &&
+                                    msg.wasmVariant === 'prod-nonlab') {
+                                    var capturedMsg = msg;
+                                    var capturedTransfer = transfer;
+
+                                    if (!prodLabSent && prodLabModulePromise) {
+                                        // Candidate for prod-lab upgrade — wait up to 30s.
+                                        vfLog('cmd:load: candidate for prod-lab upgrade');
+                                        prodLabSent = true; // Reserve the slot immediately
+                                        var moduleWait = Promise.race([
+                                            prodLabModulePromise,
+                                            new Promise(function(resolve) {
+                                                setTimeout(resolve, 30000, null);
+                                            })
+                                        ]);
+                                        moduleWait.then(function(m) {
+                                            if (m) {
+                                                var patched = {};
+                                                for (var k in capturedMsg) {
+                                                    if (Object.prototype.hasOwnProperty.call(capturedMsg, k))
+                                                        patched[k] = capturedMsg[k];
+                                                }
+                                                patched.wasmVariant = 'prod-lab';
+                                                patched.wasmModule = m;
+                                                vfLog('cmd:load: sending prod-lab with module');
+                                                origPM(patched, capturedTransfer || []);
+                                            } else {
+                                                vfLog('cmd:load: timeout, falling back to prod-nonlab');
+                                                origPM(capturedMsg, capturedTransfer);
+                                            }
+                                        });
+                                        return;
+                                    }
+                                    // All other coordinators: pass prod-nonlab through unchanged.
+                                    vfLog('cmd:load: prod-nonlab (secondary coordinator)');
+                                }
+
+                                if (isVoipWorker && msg && msg.cmd === 'load') {
+                                    vfLog('cmd:load variant=' + msg.wasmVariant +
+                                          ' hasModule=' + (!!msg.wasmModule));
+                                }
+                                // Log all other commands sent to VoIP worker
+                                if (isVoipWorker && msg && msg.cmd && msg.cmd !== 'load') {
+                                    try {
+                                        var msgStr = JSON.stringify(msg);
+                                        vfLog('main→coordinator cmd=' + msg.cmd + ' ' + msgStr.substring(0, 200));
+                                    } catch(e) {
+                                        vfLog('main→coordinator cmd=' + msg.cmd);
+                                    }
+                                }
+                                return origPM(msg, transfer);
+                            };
+                            return w;
+                        };
+                        window.Worker.prototype = OrigWorker.prototype;
+                    })();
+                "#;
+                let voip_fix_script = webkit6::UserScript::new(
+                    voip_fix,
+                    webkit6::UserContentInjectedFrames::TopFrame,
+                    webkit6::UserScriptInjectionTime::Start,
+                    &[],
+                    &[]
+                );
+                ucm.add_script(&voip_fix_script);
             }
 
             let obj = self.obj();
@@ -834,45 +1413,6 @@ mod imp {
             // When requestPermission is called by the site, our Rust handler (below) intercepts it.
 
 
-
-            // Setup JS->Rust Logging Channel
-            if let Some(ucm) = web_view.user_content_manager() {
-                ucm.register_script_message_handler("log", None);
-
-                // Inject Console Override Script
-                let console_script = r#"
-                    (function() {
-                        function send(level, args) {
-                            try {
-                                var msg = Array.from(args).map(obj => String(obj)).join(' ');
-                                window.webkit.messageHandlers.log.postMessage(level + ': ' + msg);
-                            } catch(e) {}
-                        }
-                        var oldLog = console.log;
-                        var oldWarn = console.warn;
-                        var oldError = console.error;
-                        console.log = function() { send('LOG', arguments); oldLog.apply(console, arguments); };
-                        console.warn = function() { send('WARN', arguments); oldWarn.apply(console, arguments); };
-                        console.error = function() { send('ERROR', arguments); oldError.apply(console, arguments); };
-                    })();
-                "#;
-                let script = webkit6::UserScript::new(
-                    console_script,
-                    webkit6::UserContentInjectedFrames::TopFrame,
-                    webkit6::UserScriptInjectionTime::Start,
-                    &[],
-                    &[]
-                );
-                ucm.add_script(&script);
-
-                ucm.connect_script_message_received(Some("log"), |_, result| {
-                    // result is a webkit6::javascriptcore6::Value
-                    if result.is_string() {
-                        let s = result.to_string();
-                        log::debug!("WEB-CONSOLE: {}", s);
-                    }
-                });
-            }
 
             // 9. Developer Tools Action
             let obj_weak_dev = obj.downgrade();

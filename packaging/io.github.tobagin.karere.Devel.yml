@@ -23,6 +23,12 @@ finish-args:
   - --allow=devel
   # Enable SharedArrayBuffer without requiring cross-origin isolation headers
   - --env=JSC_useSharedArrayBuffer=1
+  # GStreamer WebRTC prefers pipewiresrc for audio capture, but PipeWire
+  # connections from the Flatpak sandbox time out (pipewiresrc connects to the
+  # native PipeWire socket which isn't fully accessible from the sandbox).
+  # Setting rank to 0 makes GStreamer skip pipewiresrc/pipewiresink and fall
+  # back to pulsesrc/pulsesink via --socket=pulseaudio, which works correctly.
+  - --env=GST_PLUGIN_FEATURE_RANK=pipewiresrc:0,pipewiresink:0
 
 
 sdk-extensions:
