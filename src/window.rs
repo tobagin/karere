@@ -546,24 +546,107 @@ mod imp {
                 
             let avail_dicts = crate::spellcheck::get_available_dictionaries();
             if !avail_dicts.is_empty() {
-                // The model still stores raw locale codes (en_GB, pt_BR, ...) so the
-                // selection logic and settings persistence stay simple. The two factories
-                // below render those codes as user-friendly text:
-                //   - list (popup):   "English (UK)" / "Portuguese (Brazil)"
-                //   - selected (button shown when collapsed): "EN" / "PT"
-                let store = gtk::StringList::new(&avail_dicts.iter().map(|s| s.as_str()).collect::<Vec<&str>>());
-                self.dictionary_dropdown.set_model(Some(&store));
+                use std::collections::HashSet;
+                use std::rc::Rc;
+                use std::cell::RefCell;
 
+                // The store holds raw locale codes; SortListModel reorders them so
+                // favorites sit at the top alphabetically, then everything else
+                // alphabetically. The custom sorter reads from a shared HashSet
+                // that mirrors the favorite-spell-check-languages GSetting so a
+                // toggle re-sorts without rebuilding the model.
+                let store = gtk::StringList::new(&avail_dicts.iter().map(|s| s.as_str()).collect::<Vec<&str>>());
+                let favorites: Rc<RefCell<HashSet<String>>> = Rc::new(RefCell::new(
+                    settings.strv("favorite-spell-check-languages").iter()
+                        .map(|s| s.to_string()).collect()
+                ));
+
+                let favs_for_sort = favorites.clone();
+                let sorter = gtk::CustomSorter::new(move |a, b| {
+                    let a = a.downcast_ref::<gtk::StringObject>().unwrap().string();
+                    let b = b.downcast_ref::<gtk::StringObject>().unwrap().string();
+                    let fav = favs_for_sort.borrow();
+                    let af = fav.contains(a.as_str());
+                    let bf = fav.contains(b.as_str());
+                    match (af, bf) {
+                        (true, false) => gtk::Ordering::Smaller,
+                        (false, true) => gtk::Ordering::Larger,
+                        _ => a.as_str().cmp(b.as_str()).into(),
+                    }
+                });
+                let sorted = gtk::SortListModel::new(Some(store), Some(sorter.clone()));
+                self.dictionary_dropdown.set_model(Some(&sorted));
+
+                // Keep favorites set + sorter in sync with the setting on every change.
+                let favs_for_settings = favorites.clone();
+                let sorter_for_settings = sorter.clone();
+                settings.connect_changed(Some("favorite-spell-check-languages"), move |s, _| {
+                    *favs_for_settings.borrow_mut() = s.strv("favorite-spell-check-languages")
+                        .iter().map(|x| x.to_string()).collect();
+                    sorter_for_settings.changed(gtk::SorterChange::Different);
+                });
+
+                // Popup factory: star toggle (favorite) + display name. Toggling the
+                // star updates GSettings; the changed handler above re-sorts.
                 let list_factory = gtk::SignalListItemFactory::new();
                 list_factory.connect_setup(|_, item| {
                     let item = item.downcast_ref::<gtk::ListItem>().unwrap();
-                    item.set_child(Some(&gtk::Label::builder().xalign(0.0).build()));
+                    let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+                    let star = gtk::ToggleButton::builder()
+                        .icon_name("non-starred-symbolic")
+                        .has_frame(false)
+                        .tooltip_text(gettext("Pin to top"))
+                        .build();
+                    star.add_css_class("flat");
+                    let label = gtk::Label::builder().xalign(0.0).hexpand(true).build();
+                    row.append(&star);
+                    row.append(&label);
+                    item.set_child(Some(&row));
                 });
-                list_factory.connect_bind(|_, item| {
+                let favs_for_factory = favorites.clone();
+                let settings_for_star = settings.clone();
+                list_factory.connect_bind(move |_, item| {
                     let item = item.downcast_ref::<gtk::ListItem>().unwrap();
-                    let label = item.child().and_downcast::<gtk::Label>().unwrap();
                     let so = item.item().and_downcast::<gtk::StringObject>().unwrap();
-                    label.set_text(&crate::spellcheck::display_name(&so.string()));
+                    let code = so.string().to_string();
+                    let row = item.child().and_downcast::<gtk::Box>().unwrap();
+                    let star = row.first_child().and_downcast::<gtk::ToggleButton>().unwrap();
+                    let label = row.last_child().and_downcast::<gtk::Label>().unwrap();
+
+                    label.set_text(&crate::spellcheck::display_name(&code));
+
+                    // Block the toggled handler while we sync state from settings,
+                    // so syncing doesn't recursively flip the setting back.
+                    let is_fav = favs_for_factory.borrow().contains(&code);
+                    let handler_id = unsafe { star.data::<glib::SignalHandlerId>("karere-star-handler") };
+                    if let Some(id) = handler_id {
+                        star.block_signal(unsafe { id.as_ref() });
+                    }
+                    star.set_active(is_fav);
+                    star.set_icon_name(if is_fav { "starred-symbolic" } else { "non-starred-symbolic" });
+                    if let Some(id) = handler_id {
+                        star.unblock_signal(unsafe { id.as_ref() });
+                    } else {
+                        let settings_for_handler = settings_for_star.clone();
+                        let code_for_handler = code.clone();
+                        let id = star.connect_toggled(move |btn| {
+                            let mut current: Vec<String> = settings_for_handler
+                                .strv("favorite-spell-check-languages")
+                                .iter().map(|s| s.to_string()).collect();
+                            let active = btn.is_active();
+                            if active && !current.contains(&code_for_handler) {
+                                current.push(code_for_handler.clone());
+                            } else if !active {
+                                current.retain(|c| c != &code_for_handler);
+                            }
+                            let _ = settings_for_handler.set_strv(
+                                "favorite-spell-check-languages",
+                                current.iter().map(|s| s.as_str()).collect::<Vec<_>>(),
+                            );
+                            btn.set_icon_name(if active { "starred-symbolic" } else { "non-starred-symbolic" });
+                        });
+                        unsafe { star.set_data("karere-star-handler", id); }
+                    }
                 });
                 self.dictionary_dropdown.set_list_factory(Some(&list_factory));
 
@@ -580,20 +663,28 @@ mod imp {
                 });
                 self.dictionary_dropdown.set_factory(Some(&button_factory));
 
+                // Selection persistence: read by code (the model order is no longer
+                // alphabetical), and on user change write the active item's code.
                 let current = settings.strv("spell-checking-languages");
-                if let Some(first) = current.first()
-                    && let Some(idx) = avail_dicts.iter().position(|r| r == first.as_str()) {
-                         self.dictionary_dropdown.set_selected(idx as u32);
+                if let Some(first) = current.first() {
+                    let target = first.as_str();
+                    let n = sorted.n_items();
+                    for i in 0..n {
+                        if let Some(obj) = sorted.item(i)
+                            && let Some(so) = obj.downcast_ref::<gtk::StringObject>()
+                            && so.string() == target {
+                                self.dictionary_dropdown.set_selected(i);
+                                break;
+                            }
                     }
-
+                }
                 let settings_dict = settings.clone();
-                let dicts_clone = avail_dicts.clone();
                 self.dictionary_dropdown.connect_selected_notify(move |dropdown| {
-                     let idx = dropdown.selected() as usize;
-                     if idx < dicts_clone.len() {
-                         let selected = &dicts_clone[idx];
-                         let _ = settings_dict.set_strv("spell-checking-languages", [selected.as_str()]);
-                     }
+                    if let Some(obj) = dropdown.selected_item()
+                        && let Some(so) = obj.downcast_ref::<gtk::StringObject>() {
+                            let code = so.string();
+                            let _ = settings_dict.set_strv("spell-checking-languages", [code.as_str()]);
+                        }
                 });
             }
 

@@ -72,6 +72,10 @@
       <default>[]</default>
       <summary>Enabled spell checking languages</summary>
     </key>
+    <key name="favorite-spell-check-languages" type="as">
+      <default>[]</default>
+      <summary>Pinned spell-check languages shown at top of dropdown</summary>
+    </key>
     <key name="download-directory" type="s">
       <default>''</default>
       <summary>Download directory</summary>
