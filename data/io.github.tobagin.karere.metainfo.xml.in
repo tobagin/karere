@@ -95,6 +95,20 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="3.1.0" date="2026-05-10">
+      <description>
+        <ul>
+          <li>Added: pin favorite spell-check languages to the top of the dropdown</li>
+          <li>Added: spell-check dropdown shows natural language names ("English (UK)") instead of locale codes</li>
+          <li>Added: account switcher uses a popover on desktop windows (bottom sheet preserved on mobile)</li>
+          <li>Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)</li>
+          <li>Fixed: locale-dependent crash that required manually setting LC_ALL=en_GB.UTF-8</li>
+          <li>Fixed: mobile layout broken by recent WhatsApp Web DOM changes</li>
+          <li>Fixed: downloaded files with duplicate names silently overwriting each other (now appends (1), (2), ...)</li>
+          <li>Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust dependencies to latest compatible versions</li>
+        </ul>
+      </description>
+    </release>
     <release version="3.0.2" date="2026-04-01">
       <description>
         <ul>

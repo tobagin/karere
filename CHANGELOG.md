@@ -13,6 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.1.0] - 2026-05-10
+
+### Added
+- **Spell-check**: Pin/favorite languages to the top of the dictionary dropdown via a star toggle. Pinned languages persist across restarts in a new `favorite-spell-check-languages` GSetting. (#142)
+- **Spell-check**: The dropdown now displays natural language names (e.g. "English (UK)", "Portuguese (Brazil)") instead of raw locale codes; the collapsed button shows a short uppercase code ("EN", "PT"). (#143)
+- **Multi-account**: On wide windows, the account switcher now opens as a popover anchored to the avatar button instead of the bottom sheet. Mobile/narrow windows keep the bottom sheet. (#145)
+
+### Fixed
+- **Launch**: Disabled WebKit's inner sandbox via `WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1` (the outer Flatpak sandbox still applies). Fixes the `readPIDFromPeer: Unexpected short read from PID socket` / `bwrap: Can't find source path /proc/self/fd/N` crash on GNOME 50 / glibc 2.42+ systems. (#131)
+- **Launch**: Added missing `setlocale(LC_ALL, "")` at startup with a `C.UTF-8` fallback. Fixes the locale-dependent crash that required users to manually set `LC_ALL=en_GB.UTF-8`. (#141)
+- **Mobile layout**: Updated the responsive script from upstream `pparent76/Whatslectron-UT` to track recent WhatsApp Web DOM changes that broke the mobile layout toggle. (#130)
+- **Downloads**: Files with duplicate names now get an auto-incremented `(1)`, `(2)`, ... suffix instead of silently overwriting existing files. (#140)
+
+### Changed
+- **Spell dictionaries**: Bumped LibreOffice dictionaries from 26.2.0.2 to 26.2.3.2.
+- **Dependencies**: Bumped Rust crates to latest compatible versions (`tokio` 1.50→1.52, `zbus` 5.14→5.15, `pango` 0.22.0→0.22.6, others).
+
 ## [3.0.2] - 2026-04-01
 
 ### Fixed

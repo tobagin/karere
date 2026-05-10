@@ -11,15 +11,22 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 3.0.2 - Call Fix
+## 🎉 Version 3.1.0 - Quality of Life
 
-**Karere 3.0.2** is a patch release that fixes voice and video calls in the production build.
+**Karere 3.1.0** ships several user-experience improvements and important launch-stability fixes.
 
 > **Note:** If upgrading from v2.x, re-linking your WhatsApp account(s) is required. A dialog will explain this on first launch.
 
-### 🆕 What's New in 3.0.2
+### 🆕 What's New in 3.1.0
 
-- **Calls Fixed**: Voice and video calls now work correctly in the production Flatpak (missing noise suppression plugin was preventing calls from connecting).
+- **Spell-check**: Pin favorite languages to the top of the dropdown with a star toggle.
+- **Spell-check**: Dropdown shows natural language names ("English (UK)", "Portuguese (Brazil)") instead of locale codes.
+- **Multi-account**: Account switcher opens as a popover on desktop windows (bottom sheet preserved on mobile).
+- **Launch stability**: Fixed the GNOME 50 / glibc 2.42+ launch crash affecting users on Arch, Fedora 43, CachyOS, Bazzite, postmarketOS.
+- **Launch stability**: Fixed the locale-dependent crash that previously required setting `LC_ALL=en_GB.UTF-8` manually.
+- **Mobile layout**: Tracking the latest WhatsApp Web DOM changes again.
+- **Downloads**: Duplicate filenames no longer overwrite — auto-incremented `(1)`, `(2)`, ... like every other file manager.
+- **Under the hood**: Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, plus updated Rust dependencies.
 
 ### What was new in 3.0.0
 

@@ -70,12 +70,12 @@ modules:
       - install -m755 webkitgtk-6.0/jsc /app/libexec/webkitgtk-6.0/
     sources:
       - type: archive
-        url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.50.5-gnome50/webkitgtk-x86_64.tar.gz
-        sha256: 2c1ff69b14e53e44c05fba94d4acbc06fa7fead529ae4f812695620253600ae8
+        url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.52.3-gnome50/webkitgtk-x86_64.tar.gz
+        sha256: c5d5f6ceb38245f7ab26439def38daa7fe313d7c9926631a444d4db85f8f436d
         only-arches: [x86_64]
       - type: archive
-        url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.50.5-gnome50/webkitgtk-aarch64.tar.gz
-        sha256: 02e50da56419704883702048d008f591ee899c5bbf98f17e888fd911c1e83550
+        url: https://github.com/tobagin/karere/releases/download/webkitgtk-2.52.3-gnome50/webkitgtk-aarch64.tar.gz
+        sha256: 243f3121ee095d2af6e960700f59dab4df1e29415e75b3e30d73c8c8db8f0232
         only-arches: [aarch64]
 
   # Pre-compiled gst-plugin-audiofx (gst-plugins-rs 0.14.4) built inside the
@@ -111,8 +111,8 @@ modules:
         done
     sources:
       - type: archive
-        url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-26.2.0.2.zip
-        sha256: 4b076ff20485af78036fc896804754c64f760b227aa692de84200f762ee471bc
+        url: https://github.com/LibreOffice/dictionaries/archive/refs/tags/libreoffice-26.2.3.2.zip
+        sha256: d61d36f2dbeea97989fe057bd5f92eb725c63327301916b9c54556d02c464638
 
   - name: karere
     buildsystem: meson
