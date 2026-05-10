@@ -23,10 +23,23 @@ pub static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
 fn main() -> anyhow::Result<()> {
     env_logger::init();
 
+    // Initialize the user's locale (LC_ALL=""). gettextrs::setlocale returns
+    // None when the user's LANG / LC_* points at a locale that the runtime
+    // can't load — typically because the GNOME Platform runtime ships only
+    // a subset of system locales and the user's host locale wasn't included.
+    // Without this call gettext/glib silently fall back to the C locale,
+    // which on some setups (notably Fedora KDE 44 with non-English LANG)
+    // crashes the auxiliary WebKit process before the window is shown
+    // (#141). Fall back to C.UTF-8 so launch always succeeds.
+    if gettextrs::setlocale(LocaleCategory::LcAll, "").is_none() {
+        log::warn!("setlocale(LC_ALL, \"\") failed — falling back to C.UTF-8");
+        let _ = gettextrs::setlocale(LocaleCategory::LcAll, "C.UTF-8");
+    }
+
     // Initialize gettext
     textdomain("karere")?;
     bind_textdomain_codeset("karere", "UTF-8")?;
-    
+
     let locale_dir = if std::env::var("FLATPAK_ID").is_ok() {
         std::path::PathBuf::from("/app/share/locale")
     } else {
@@ -36,7 +49,7 @@ fn main() -> anyhow::Result<()> {
         // Let's use a local 'locale' folder if it exists
         std::env::current_dir()?.join("locale")
     };
-    
+
     bindtextdomain("karere", locale_dir)?;
 
     
