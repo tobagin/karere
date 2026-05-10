@@ -546,15 +546,46 @@ mod imp {
                 
             let avail_dicts = crate::spellcheck::get_available_dictionaries();
             if !avail_dicts.is_empty() {
+                // The model still stores raw locale codes (en_GB, pt_BR, ...) so the
+                // selection logic and settings persistence stay simple. The two factories
+                // below render those codes as user-friendly text:
+                //   - list (popup):   "English (UK)" / "Portuguese (Brazil)"
+                //   - selected (button shown when collapsed): "EN" / "PT"
                 let store = gtk::StringList::new(&avail_dicts.iter().map(|s| s.as_str()).collect::<Vec<&str>>());
                 self.dictionary_dropdown.set_model(Some(&store));
-                
+
+                let list_factory = gtk::SignalListItemFactory::new();
+                list_factory.connect_setup(|_, item| {
+                    let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+                    item.set_child(Some(&gtk::Label::builder().xalign(0.0).build()));
+                });
+                list_factory.connect_bind(|_, item| {
+                    let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+                    let label = item.child().and_downcast::<gtk::Label>().unwrap();
+                    let so = item.item().and_downcast::<gtk::StringObject>().unwrap();
+                    label.set_text(&crate::spellcheck::display_name(&so.string()));
+                });
+                self.dictionary_dropdown.set_list_factory(Some(&list_factory));
+
+                let button_factory = gtk::SignalListItemFactory::new();
+                button_factory.connect_setup(|_, item| {
+                    let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+                    item.set_child(Some(&gtk::Label::new(None)));
+                });
+                button_factory.connect_bind(|_, item| {
+                    let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+                    let label = item.child().and_downcast::<gtk::Label>().unwrap();
+                    let so = item.item().and_downcast::<gtk::StringObject>().unwrap();
+                    label.set_text(&crate::spellcheck::short_code(&so.string()));
+                });
+                self.dictionary_dropdown.set_factory(Some(&button_factory));
+
                 let current = settings.strv("spell-checking-languages");
                 if let Some(first) = current.first()
                     && let Some(idx) = avail_dicts.iter().position(|r| r == first.as_str()) {
                          self.dictionary_dropdown.set_selected(idx as u32);
                     }
-                
+
                 let settings_dict = settings.clone();
                 let dicts_clone = avail_dicts.clone();
                 self.dictionary_dropdown.connect_selected_notify(move |dropdown| {
