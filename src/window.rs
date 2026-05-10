@@ -78,6 +78,11 @@ mod imp {
 
         // Per-account crash counts for exponential backoff on auto-reload
         pub crash_counts: std::cell::RefCell<std::collections::HashMap<String, u32>>,
+
+        // Desktop popover for account switching (sibling of the bottom sheet)
+        // — used when the window is wide enough to skip mobile layout (#145).
+        pub account_popover: std::cell::RefCell<Option<gtk::Popover>>,
+        pub accounts_list_popover: std::cell::RefCell<Option<gtk::ListBox>>,
     }
 
     /// Helper function to determine if mobile layout should be used
@@ -337,12 +342,76 @@ mod imp {
             });
             obj.add_action(&action_new_chat);
 
-            // Connect account button to toggle the bottom sheet
+            // Build a desktop popover anchored to the account button (#145).
+            // The bottom sheet remains the mobile UX; the popover is preferred
+            // on wide windows where dragging to a sheet at the bottom is awkward.
+            let popover = gtk::Popover::new();
+            popover.set_parent(&*self.account_button);
+            popover.set_position(gtk::PositionType::Bottom);
+            popover.set_autohide(true);
+
+            let pbox = gtk::Box::new(gtk::Orientation::Vertical, 6);
+            pbox.set_margin_top(6);
+            pbox.set_margin_bottom(6);
+            pbox.set_margin_start(6);
+            pbox.set_margin_end(6);
+
+            let pscroll = gtk::ScrolledWindow::new();
+            pscroll.set_propagate_natural_height(true);
+            pscroll.set_max_content_height(400);
+            pscroll.set_min_content_width(280);
+            pscroll.set_hscrollbar_policy(gtk::PolicyType::Never);
+
+            let plist = gtk::ListBox::new();
+            plist.set_selection_mode(gtk::SelectionMode::None);
+            plist.add_css_class("boxed-list");
+            pscroll.set_child(Some(&plist));
+
+            let psep = gtk::Separator::new(gtk::Orientation::Horizontal);
+            let padd = gtk::Button::new();
+            let padd_content = adw::ButtonContent::new();
+            padd_content.set_icon_name("list-add-symbolic");
+            padd_content.set_label(&gettext("Add new account"));
+            padd.set_child(Some(&padd_content));
+            padd.set_action_name(Some("win.add-account"));
+
+            pbox.append(&pscroll);
+            pbox.append(&psep);
+            pbox.append(&padd);
+            popover.set_child(Some(&pbox));
+
+            // Switching from popover row also dismisses the popover.
+            let obj_weak_plist = obj.downgrade();
+            let popover_weak = popover.downgrade();
+            plist.connect_row_activated(move |_, row| {
+                let account_id = row.widget_name();
+                if !account_id.is_empty()
+                    && let Some(obj) = obj_weak_plist.upgrade() {
+                        obj.imp().switch_to_account(&account_id);
+                    }
+                if let Some(p) = popover_weak.upgrade() {
+                    p.popdown();
+                }
+            });
+
+            *self.account_popover.borrow_mut() = Some(popover.clone());
+            *self.accounts_list_popover.borrow_mut() = Some(plist);
+
+            // Connect account button: mobile → bottom sheet, desktop → popover.
             let obj_weak_sheet = obj.downgrade();
             self.account_button.connect_clicked(move |_| {
                 if let Some(obj) = obj_weak_sheet.upgrade() {
-                    let sheet = &obj.imp().account_bottom_sheet;
-                    sheet.set_open(!sheet.is_open());
+                    let imp = obj.imp();
+                    if imp.mobile_layout_active.get() {
+                        let sheet = &imp.account_bottom_sheet;
+                        sheet.set_open(!sheet.is_open());
+                        if let Some(p) = imp.account_popover.borrow().as_ref() {
+                            p.popdown();
+                        }
+                    } else if let Some(p) = imp.account_popover.borrow().as_ref() {
+                        if p.is_visible() { p.popdown(); } else { p.popup(); }
+                        imp.account_bottom_sheet.set_open(false);
+                    }
                 }
             });
 
@@ -2251,75 +2320,95 @@ mod imp {
             apply_avatar_texture(&self.account_avatar, &account.color, &account.emoji);
         }
 
+        /// Dismiss whichever account picker is currently open (mobile bottom
+        /// sheet or desktop popover). Safe to call when neither is open.
+        pub fn close_account_picker(&self) {
+            self.account_bottom_sheet.set_open(false);
+            if let Some(p) = self.account_popover.borrow().as_ref() {
+                p.popdown();
+            }
+        }
+
         fn clear_account_list(&self) {
             while let Some(row) = self.accounts_list.first_child() {
                 self.accounts_list.remove(&row);
             }
+            if let Some(plist) = self.accounts_list_popover.borrow().as_ref() {
+                while let Some(row) = plist.first_child() {
+                    plist.remove(&row);
+                }
+            }
         }
 
         fn populate_account_list(&self, accounts: &[Account]) {
-            // For reorder buttons: only non-default accounts can be reordered,
-            // so compute first/last among non-default accounts only
+            // Each row widget can only have one parent, so for each account we
+            // build a separate row instance per list (mobile bottom sheet +
+            // desktop popover) and wire identical handlers to both copies.
             let non_default: Vec<&str> = accounts.iter()
                 .filter(|a| a.id != DEFAULT_ACCOUNT_ID)
                 .map(|a| a.id.as_str())
                 .collect();
 
+            // Snapshot the popover list to avoid holding the borrow across closures.
+            let popover_list = self.accounts_list_popover.borrow().clone();
+
             for account in accounts {
                 let non_default_idx = non_default.iter().position(|id| *id == account.id);
                 let is_first_reorderable = non_default_idx == Some(0);
                 let is_last_reorderable = non_default_idx == Some(non_default.len().saturating_sub(1));
-                let (row, edit_btn, delete_btn, up_btn, down_btn) = build_account_row(account, is_first_reorderable, is_last_reorderable);
 
-                let account_id_del = account.id.clone();
-                let account_name_del = account.name.clone();
-                let obj_weak_del = self.obj().downgrade();
-                delete_btn.connect_clicked(move |_| {
-                    if let Some(obj) = obj_weak_del.upgrade() {
-                        obj.confirm_delete_account(&account_id_del, &account_name_del);
-                    }
-                });
+                for target_list in [Some(&*self.accounts_list), popover_list.as_ref()].into_iter().flatten() {
+                    let (row, edit_btn, delete_btn, up_btn, down_btn) =
+                        build_account_row(account, is_first_reorderable, is_last_reorderable);
 
-                let account_clone = account.clone();
-                let obj_weak_edit = self.obj().downgrade();
-                edit_btn.connect_clicked(move |_| {
-                    if let Some(obj) = obj_weak_edit.upgrade() {
-                        obj.show_account_dialog(Some(&account_clone));
-                    }
-                });
-
-                // Move up
-                let account_id_up = account.id.clone();
-                let obj_weak_up = self.obj().downgrade();
-                up_btn.connect_clicked(move |_| {
-                    if let Some(obj) = obj_weak_up.upgrade() {
-                        if let Some(mgr) = obj.imp().account_manager.borrow().as_ref() {
-                            let _ = mgr.reorder_account(&account_id_up, -1);
+                    let account_id_del = account.id.clone();
+                    let account_name_del = account.name.clone();
+                    let obj_weak_del = self.obj().downgrade();
+                    delete_btn.connect_clicked(move |_| {
+                        if let Some(obj) = obj_weak_del.upgrade() {
+                            obj.confirm_delete_account(&account_id_del, &account_name_del);
                         }
-                        obj.imp().update_account_button();
-                    }
-                });
+                    });
 
-                // Move down
-                let account_id_down = account.id.clone();
-                let obj_weak_down = self.obj().downgrade();
-                down_btn.connect_clicked(move |_| {
-                    if let Some(obj) = obj_weak_down.upgrade() {
-                        if let Some(mgr) = obj.imp().account_manager.borrow().as_ref() {
-                            let _ = mgr.reorder_account(&account_id_down, 1);
+                    let account_clone = account.clone();
+                    let obj_weak_edit = self.obj().downgrade();
+                    edit_btn.connect_clicked(move |_| {
+                        if let Some(obj) = obj_weak_edit.upgrade() {
+                            obj.show_account_dialog(Some(&account_clone));
                         }
-                        obj.imp().update_account_button();
-                    }
-                });
+                    });
 
-                self.accounts_list.append(&row);
+                    let account_id_up = account.id.clone();
+                    let obj_weak_up = self.obj().downgrade();
+                    up_btn.connect_clicked(move |_| {
+                        if let Some(obj) = obj_weak_up.upgrade() {
+                            if let Some(mgr) = obj.imp().account_manager.borrow().as_ref() {
+                                let _ = mgr.reorder_account(&account_id_up, -1);
+                            }
+                            obj.imp().update_account_button();
+                        }
+                    });
+
+                    let account_id_down = account.id.clone();
+                    let obj_weak_down = self.obj().downgrade();
+                    down_btn.connect_clicked(move |_| {
+                        if let Some(obj) = obj_weak_down.upgrade() {
+                            if let Some(mgr) = obj.imp().account_manager.borrow().as_ref() {
+                                let _ = mgr.reorder_account(&account_id_down, 1);
+                            }
+                            obj.imp().update_account_button();
+                        }
+                    });
+
+                    target_list.append(&row);
+                }
             }
         }
 
         pub fn switch_to_account(&self, account_id: &str) {
             // Already active — nothing to do
             if self.active_account_id.borrow().as_deref() == Some(account_id) {
-                self.account_bottom_sheet.set_open(false);
+                self.close_account_picker();
                 return;
             }
 
@@ -2370,7 +2459,7 @@ mod imp {
             }
 
             self.update_account_button();
-            self.account_bottom_sheet.set_open(false);
+            self.close_account_picker();
         }
     }
 
@@ -2436,7 +2525,7 @@ impl KarereWindow {
     }
 
     fn show_account_dialog(&self, existing: Option<&Account>) {
-        self.imp().account_bottom_sheet.set_open(false);
+        self.imp().close_account_picker();
 
         let is_edit = existing.is_some();
 
@@ -2675,7 +2764,7 @@ impl KarereWindow {
 
 
     fn confirm_delete_account(&self, account_id: &str, account_name: &str) {
-        self.imp().account_bottom_sheet.set_open(false);
+        self.imp().close_account_picker();
 
         let dialog = adw::AlertDialog::builder()
             .heading(format!("{} \"{}\"?", gettext("Remove account"), account_name))
