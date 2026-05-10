@@ -974,27 +974,37 @@ mod imp {
                               "decide-destination",
                               false,
                               glib::closure_local! (move |download: webkit6::Download, filename: glib::GString| -> bool {
-                                   let directory = settings_dl.string("download-directory");
-                                   log::info!("decide-destination — filename: '{}', download-directory setting: '{}'", filename, directory);
-                                   if directory.is_empty() {
-                                       log::info!("decide-destination — returning false (no custom dir, WebKit default)");
-                                       return false;
-                                   }
-
-                                   let mut path_str = directory.to_string();
-                                   if path_str.starts_with("~") {
-                                       let home = glib::home_dir();
-                                       path_str = path_str.replacen("~", home.to_str().unwrap(), 1);
-                                   }
-                                   let path = std::path::PathBuf::from(path_str);
-                                   if !path.exists() {
-                                       return false;
-                                   }
-
                                    if filename.is_empty() {
                                        return false;
                                    }
-                                   // Auto-increment filename if it already exists
+
+                                   // Resolve destination directory: custom setting > xdg-download.
+                                   // Always intercept so WebKit's original filename is preserved
+                                   // unless it already exists, in which case (1), (2)... is
+                                   // appended. WebKit on its own silently overwrites (#140).
+                                   let directory = settings_dl.string("download-directory");
+                                   let path = if directory.is_empty() {
+                                       match glib::user_special_dir(glib::UserDirectory::Downloads) {
+                                           Some(p) => p,
+                                           None => {
+                                               log::warn!("decide-destination — no XDG Downloads dir, falling back to WebKit default");
+                                               return false;
+                                           }
+                                       }
+                                   } else {
+                                       let mut path_str = directory.to_string();
+                                       if path_str.starts_with("~") {
+                                           let home = glib::home_dir();
+                                           path_str = path_str.replacen("~", home.to_str().unwrap(), 1);
+                                       }
+                                       std::path::PathBuf::from(path_str)
+                                   };
+                                   if !path.exists() {
+                                       log::warn!("decide-destination — directory does not exist: {}", path.display());
+                                       return false;
+                                   }
+
+                                   // Use WebKit's suggested filename; only suffix on collision.
                                    // e.g. photo.jpg → photo (1).jpg → photo (2).jpg
                                    let base = std::path::Path::new(filename.as_str());
                                    let stem = base.file_stem().unwrap_or_default().to_string_lossy();
@@ -1005,6 +1015,7 @@ mod imp {
                                        dest = path.join(format!("{} ({}){}", stem, counter, ext));
                                        counter += 1;
                                    }
+                                   log::info!("decide-destination — saving to {}", dest.display());
                                    download.set_destination(&dest.to_string_lossy());
                                    true
                               }
