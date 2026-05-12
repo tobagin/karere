@@ -11,6 +11,15 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
+## 🎉 Version 3.1.1 - Stability Fixes
+
+**Karere 3.1.1** is a patch release fixing stale notifications on GNOME 50 and the blank-window race on autostart.
+
+### 🆕 What's New in 3.1.1
+
+- **Notifications**: Lingering badges/banners now disappear when you focus the Karere window again (GNOME 50 removed the auto-clear behavior that GNOME 49 had).
+- **Autostart**: WebView load failures now retry with exponential backoff, fixing the blank-window race when Karere starts before the network/portal stack is ready.
+
 ## 🎉 Version 3.1.0 - Quality of Life
 
 **Karere 3.1.0** ships several user-experience improvements and important launch-stability fixes.

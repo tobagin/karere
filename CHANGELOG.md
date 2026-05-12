@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.1.1] - 2026-05-12
+
+### Fixed
+- **Notifications**: Lingering notification badges/banners are now actively dismissed when the window is focused. GNOME 49 cleared notifications automatically on window focus; GNOME 50 stopped doing that, leaving stale badges visible until manually cleared. Both portal and WebKit-native notifications are now withdrawn explicitly on focus. (#146)
+- **Autostart**: Added auto-retry with exponential backoff (2s → 60s, up to 6 attempts) on WebView load failure. Fixes the blank-window race condition that occurred when Karere autostarted before the network/portal stack was ready (Fedora KDE 44, both GNOME and KDE sessions). (#147)
+
 ## [3.1.0] - 2026-05-10
 
 ### Added

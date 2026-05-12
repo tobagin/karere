@@ -95,6 +95,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="3.1.1" date="2026-05-12">
+      <description>
+        <ul>
+          <li>Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-clear behavior removed upstream — Karere now dismisses notifications explicitly)</li>
+          <li>Fixed: blank-window race when autostarted before the network/portal stack is ready (auto-retry with exponential backoff)</li>
+        </ul>
+      </description>
+    </release>
     <release version="3.1.0" date="2026-05-10">
       <description>
         <ul>

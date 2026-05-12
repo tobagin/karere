@@ -285,7 +285,11 @@ mod imp {
                      // Refresh account button to update unread indicators
                      window.imp().update_account_button();
 
-                     // Withdraw all desktop notifications
+                     // Withdraw all desktop notifications. GNOME 49 cleared
+                     // notifications automatically when the source window gained
+                     // focus; GNOME 50 stopped doing that, so we explicitly
+                     // dismiss both portal notifications and WebKit-native
+                     // notifications here (#146).
                      let portal_ids: Vec<String> = window.imp().portal_notification_ids.borrow_mut().drain(..).collect();
                      if !portal_ids.is_empty() {
                          let proxy_cell = window.imp().notification_proxy.clone();
@@ -298,6 +302,13 @@ mod imp {
                                  }
                              }
                          });
+                     }
+
+                     // Close any lingering WebKit-native notifications.
+                     let webkit_notifs: Vec<webkit6::Notification> = window.imp()
+                         .active_notifications.borrow_mut().drain().map(|(_, n)| n).collect();
+                     for n in webkit_notifs {
+                         n.close();
                      }
                 }
             });
@@ -2132,6 +2143,48 @@ mod imp {
                     }
                 }
                 false
+            });
+
+            // Auto-retry on load failure. Mainly mitigates the autostart blank-window
+            // race condition (#147) where Karere starts before the network/portal stack
+            // is ready, causing the initial WhatsApp Web load to fail. Retries with
+            // exponential backoff (2s, 4s, 8s, 16s, 32s, capped at 60s) up to 6 times.
+            let account_id_fail = account_id.to_string();
+            web_view.connect_load_failed(move |wv, _event, failing_uri, error| {
+                log::warn!(
+                    "Load failed for account '{}': {} (URI: {})",
+                    account_id_fail, error.message(), failing_uri
+                );
+                let uri = failing_uri.to_string();
+                let wv_weak = wv.downgrade();
+                // Track retry count via a widget data slot so we don't reuse crash_counts
+                // (which tracks WebProcess crashes, not transient load failures).
+                let key = "karere-load-retry-count";
+                let count: u32 = unsafe {
+                    wv.data::<u32>(key).map(|p| *p.as_ref()).unwrap_or(0)
+                };
+                if count >= 6 {
+                    log::error!("Load failed 6 times for '{}'; giving up auto-retry", account_id_fail);
+                    return false; // let WebKit show its default error page
+                }
+                let next = count + 1;
+                unsafe { wv.set_data::<u32>(key, next); }
+                let delay_ms = std::cmp::min((1u64 << next) * 1000, 60_000);
+                log::info!("Retrying load for '{}' in {}ms (attempt {})", account_id_fail, delay_ms, next);
+                glib::timeout_add_local_once(std::time::Duration::from_millis(delay_ms), move || {
+                    if let Some(wv) = wv_weak.upgrade() {
+                        wv.load_uri(&uri);
+                    }
+                });
+                true // suppress default error page while we retry
+            });
+
+            // Reset the retry counter on successful load so a later transient failure
+            // (e.g. mid-session network drop) gets its own fresh backoff schedule.
+            web_view.connect_load_changed(|wv, event| {
+                if event == webkit6::LoadEvent::Finished {
+                    unsafe { wv.set_data::<u32>("karere-load-retry-count", 0); }
+                }
             });
 
             web_view.load_uri("https://web.whatsapp.com");
