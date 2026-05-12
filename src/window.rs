@@ -2187,7 +2187,14 @@ mod imp {
                 }
             });
 
-            web_view.load_uri("https://web.whatsapp.com");
+            // Make sure web_view has loaded first
+            if web_view.is_realized() {
+                web_view.load_uri("https://web.whatsapp.com");
+            } else {
+                web_view.connect_realize(|wv| {
+                    wv.load_uri("https://web.whatsapp.com");
+                });
+            }
             web_view
         }
 
