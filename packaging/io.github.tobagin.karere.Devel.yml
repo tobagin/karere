@@ -52,7 +52,7 @@ build-options:
     CARGO_HOME: /run/build/karere/cargo
 
 modules:
-  # Pre-compiled WebKitGTK 2.50.5 built inside the GNOME Platform 50 SDK
+  # Pre-compiled WebKitGTK 2.52.3 built inside the GNOME Platform 50 SDK
   # with WebRTC enabled (-DENABLE_WEB_RTC=ON). Built by the build-webkitgtk
   # GitHub Actions workflow — see packaging/webkitgtk-builder.yml.
   # The GNOME Platform runtime ships WebKitGTK without WebRTC; this replaces it.
