@@ -22,7 +22,18 @@ modules:
 
   # WebKitGTK built inside the GNOME Platform 50 SDK so all dependencies
   # (libxml2, ICU, libsoup, etc.) match the runtime exactly.
-  # WebRTC is ON by default in 2.50.x; we keep it explicit for clarity.
+  #
+  # Pinned to latest WebKitGTK upstream (2.53.x is the development branch
+  # — odd minor numbers are dev snapshots, but we follow them so call
+  # support improves as Apple/Igalia patch the LibWebRTC integration).
+  # LibWebRTC backend is enabled — without
+  # it WhatsApp Web's call-button component throws inside React (Invariant
+  # Violation #11797 in the gkx module) at render time because the
+  # GStreamer webrtcbin backend reports a subset of WebRTC behaviour that
+  # WA's calling code rejects. The 2.50.5-gnome50 release tarball was
+  # built with this same config and is what currently ships in the
+  # production Devel manifest. This file updates that recipe to the
+  # latest stable tag so a fresh CI run rebuilds a 2.52.3 LibWebRTC tarball.
   - name: webkitgtk
     buildsystem: cmake-ninja
     builddir: true
@@ -47,14 +58,18 @@ modules:
       - -DUSE_GTK4=ON
       - -DUSE_LIBBACKTRACE=OFF
       - -DENABLE_BUBBLEWRAP_SANDBOX=OFF
-      # Use GStreamer WebRTC backend instead of LibWebRTC (Google's Chromium stack).
-      # GStreamer WebRTC links to system gst-plugins-bad — same JS API, cuts build
-      # time from ~2 hours down to ~20 minutes.
-      - -DUSE_LIBWEBRTC=OFF
+      # Use Google's LibWebRTC (Chromium WebRTC stack) instead of the
+      # GStreamer webrtcbin backend. LibWebRTC is what WhatsApp Web's call
+      # code is implemented against — switching backends regresses the
+      # call button to a "Something went wrong" disabled fallback because
+      # WA's render-time capability probes reject the GST shape. Build
+      # time is ~2 hours instead of ~20 minutes; that's paid once per
+      # WebKitGTK release in CI.
+      - -DUSE_LIBWEBRTC=ON
     sources:
       - type: archive
-        url: https://webkitgtk.org/releases/webkitgtk-2.50.5.tar.xz
-        sha256: 8737631bac3e9c7ad3e5208f9370e076c09d9c45b39980021ce54edadcc6f94f
+        url: https://webkitgtk.org/releases/webkitgtk-2.53.3.tar.xz
+        sha256: 369863f6c32672d1b10b4e749e7e22f6f081aacab02b92b0bdf5c0706eebf7f8
 
   # Dummy command required by flatpak-builder to finish the app
   - name: dummy
