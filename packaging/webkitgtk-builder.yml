@@ -20,6 +20,21 @@ modules:
         url: https://dotat.at/prog/unifdef/unifdef-2.12.tar.xz
         sha256: 43ce0f02ecdcdc723b2475575563ddb192e988c886d368260bc0a63aee3ac400
 
+  # libevent — required by LibWebRTC's threading/event loop. The GNOME
+  # Platform 50 SDK doesn't ship it; build it inside the Flatpak so the
+  # WebKitGTK module can find it during cmake configure.
+  - name: libevent
+    buildsystem: autotools
+    config-opts:
+      - --disable-static
+      - --disable-debug-mode
+      - --disable-libevent-regress
+      - --disable-samples
+    sources:
+      - type: archive
+        url: https://github.com/libevent/libevent/releases/download/release-2.1.12-stable/libevent-2.1.12-stable.tar.gz
+        sha256: 92e6de1be9ec176428fd2367677e61ceffc2ee1cb119035037a27d346b0403bb
+
   # WebKitGTK built inside the GNOME Platform 50 SDK so all dependencies
   # (libxml2, ICU, libsoup, etc.) match the runtime exactly.
   #
