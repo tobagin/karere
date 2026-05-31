@@ -23,17 +23,20 @@ modules:
   # WebKitGTK built inside the GNOME Platform 50 SDK so all dependencies
   # (libxml2, ICU, libsoup, etc.) match the runtime exactly.
   #
-  # Pinned to latest WebKitGTK upstream (2.53.x is the development branch
-  # — odd minor numbers are dev snapshots, but we follow them so call
-  # support improves as Apple/Igalia patch the LibWebRTC integration).
-  # LibWebRTC backend is enabled — without
-  # it WhatsApp Web's call-button component throws inside React (Invariant
-  # Violation #11797 in the gkx module) at render time because the
-  # GStreamer webrtcbin backend reports a subset of WebRTC behaviour that
-  # WA's calling code rejects. The 2.50.5-gnome50 release tarball was
-  # built with this same config and is what currently ships in the
-  # production Devel manifest. This file updates that recipe to the
-  # latest stable tag so a fresh CI run rebuilds a 2.52.3 LibWebRTC tarball.
+  # Source is fetched from the full WebKit git repository (NOT the
+  # webkitgtk.org release tarball) because the release tarballs strip
+  # out Source/ThirdParty/libwebrtc, which is required to build the
+  # LibWebRTC backend. The git checkout is ~5GB and the configure
+  # step alone enumerates ~200k files — total build is ~3-4h per arch
+  # in CI, paid once per WebKitGTK release.
+  #
+  # USE_GSTREAMER_WEBRTC=OFF is the key flip. The cmake logic in
+  # Source/cmake/GStreamerChecks.cmake auto-derives USE_LIBWEBRTC from
+  # USE_GSTREAMER_WEBRTC (USE_LIBWEBRTC=ON has no effect on its own —
+  # it gets silently overridden to FALSE whenever USE_GSTREAMER_WEBRTC
+  # is ON, which is the cmake default). Setting USE_GSTREAMER_WEBRTC=OFF
+  # both selects the LibWebRTC backend AND skips the librice/libnice
+  # checks that would otherwise FATAL_ERROR a libwebrtc-only build.
   - name: webkitgtk
     buildsystem: cmake-ninja
     builddir: true
@@ -58,18 +61,15 @@ modules:
       - -DUSE_GTK4=ON
       - -DUSE_LIBBACKTRACE=OFF
       - -DENABLE_BUBBLEWRAP_SANDBOX=OFF
-      # Use Google's LibWebRTC (Chromium WebRTC stack) instead of the
-      # GStreamer webrtcbin backend. LibWebRTC is what WhatsApp Web's call
-      # code is implemented against — switching backends regresses the
-      # call button to a "Something went wrong" disabled fallback because
-      # WA's render-time capability probes reject the GST shape. Build
-      # time is ~2 hours instead of ~20 minutes; that's paid once per
-      # WebKitGTK release in CI.
-      - -DUSE_LIBWEBRTC=ON
+      # Flip OFF the GStreamer webrtcbin backend so the cmake logic
+      # auto-selects USE_LIBWEBRTC=TRUE. This is the ONLY way to actually
+      # build with LibWebRTC — see comment above.
+      - -DUSE_GSTREAMER_WEBRTC=OFF
     sources:
-      - type: archive
-        url: https://webkitgtk.org/releases/webkitgtk-2.53.3.tar.xz
-        sha256: 369863f6c32672d1b10b4e749e7e22f6f081aacab02b92b0bdf5c0706eebf7f8
+      - type: git
+        url: https://github.com/WebKit/WebKit.git
+        tag: webkitgtk-2.53.3
+        commit: 9cd50fb44653d91ceb8d7a6b70d693b2ad1aa0a7
 
   # Dummy command required by flatpak-builder to finish the app
   - name: dummy
