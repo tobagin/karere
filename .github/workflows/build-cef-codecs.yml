@@ -72,8 +72,10 @@ jobs:
       - name: Build CEF with proprietary codecs
         env:
           # THE switches: proprietary_codecs + ffmpeg_branding=Chrome = H.264/AAC.
-          # symbol_level=0 shrinks disk/time substantially (no local debugging).
-          GN_DEFINES: "is_official_build=true proprietary_codecs=true ffmpeg_branding=Chrome symbol_level=0 blink_symbol_level=0"
+          # use_thin_lto=false + chrome_pgo_phase=false cut the heaviest link/PGO
+          # stages (the usual OOM/timeout killers on CI); symbol_level=0 shrinks
+          # disk/time further. (Flags per scalibq's "build CEF with MP4" guide.)
+          GN_DEFINES: "is_official_build=true is_component_build=false proprietary_codecs=true ffmpeg_branding=Chrome use_thin_lto=false chrome_pgo_phase=false symbol_level=0 blink_symbol_level=0"
           CEF_USE_GN: "1"
         run: |
           set -eux
