@@ -361,6 +361,25 @@ impl AccountManager {
         self.emit_changed();
     }
 
+    /// Persist `id`'s per-account zoom (linear factor). Saves to disk but does
+    /// NOT emit `accounts-changed`: zoom does not affect the switcher UI, and
+    /// emitting on every Ctrl+plus step would trigger a switcher rebuild-storm.
+    /// (M18)
+    pub fn set_zoom(&self, id: &str, zoom: f64) {
+        {
+            let mut list = self.imp().accounts.borrow_mut();
+            if let Some(a) = list.iter_mut().find(|a| a.id == id) {
+                if (a.zoom_level - zoom).abs() < f64::EPSILON {
+                    return;
+                }
+                a.zoom_level = zoom;
+            } else {
+                return;
+            }
+        }
+        let _ = self.save();
+    }
+
     /// Look up a single account by id.
     pub fn get(&self, id: &str) -> Option<Account> {
         self.imp().accounts.borrow().iter().find(|a| a.id == id).cloned()

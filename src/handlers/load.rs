@@ -95,6 +95,9 @@ wrap_load_handler! {
             // reset on navigation.
             if let Some(browser) = browser {
                 apply_autocorrect_from_settings(browser);
+                // M18 4.1: restore this account's persisted zoom (floor-lifted)
+                // on first paint and after each navigation.
+                crate::web_view::apply_zoom_from_account(browser);
             }
         }
 

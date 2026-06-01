@@ -54,7 +54,7 @@ When GSetting `zoom-controls-headerbar` is `true`, the headerbar SHALL display a
 - **THEN** the same effect as `win.zoom-in` occurs (zoom × 1.1, persisted, label updates)
 
 ### Requirement: Persisted GSettings keys
-The schema SHALL define `zoom-level` (`d`, default `1.0`) for the pre-M20 fallback and `zoom-controls-headerbar` (`b`, default `false`) for the headerbar opt-in.
+The schema SHALL define `zoom-level` (`d`, default `1.0`) — the accessibility-floor value, also the pre-M20 single-key zoom fallback — and `zoom-controls-headerbar` (`b`, default `false`) for the headerbar opt-in. With M20 present, per-account zoom is stored in `Account::zoom_level`, not `zoom-level`.
 
 #### Scenario: Defaults
 - **WHEN** the schema is freshly installed

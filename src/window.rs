@@ -91,6 +91,10 @@ mod imp {
         pub account_avatar: TemplateChild<adw::Avatar>,
         #[template_child]
         pub accounts_list: TemplateChild<gtk::ListBox>,
+        #[template_child]
+        pub zoom_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub zoom_label: TemplateChild<gtk::Label>,
 
         /// Wide-variant switcher popover (from `account_switcher.blp`), parented
         /// to `account_button`; its list mirrors `accounts_list`.
@@ -139,6 +143,16 @@ mod imp {
                 .bind("is-maximized", &*window, "maximized")
                 .flags(gio::SettingsBindFlags::DEFAULT)
                 .build();
+
+            // M18 6.3: headerbar zoom-box visibility follows the opt-in setting.
+            settings
+                .bind("zoom-controls-headerbar", &*self.zoom_box, "visible")
+                .flags(gio::SettingsBindFlags::GET)
+                .build();
+            // Seed the label from the active account's persisted zoom (floor-lifted).
+            self.update_zoom_label(
+                Self::load_zoom_for_active_account().max(Self::zoom_floor()),
+            );
 
             settings.connect_changed(
                 Some("close-button-action"),
@@ -634,6 +648,13 @@ mod imp {
             crate::accounts::manager().activate(id);
             if let Some(web) = self.web_view.borrow().as_ref() {
                 web.spawn_account(id, true);
+                // M18 4.2: reflect the new account's zoom. An already-loaded
+                // browser retains its CEF zoom level across hide/show; a
+                // freshly-spawned one re-applies on its own first `on_load_end`.
+                // Either way the headerbar label must track the active account.
+                let z = Self::load_zoom_for_active_account().max(Self::zoom_floor());
+                web.set_zoom_linear(z);
+                self.update_zoom_label(z);
             }
         }
 
@@ -963,21 +984,74 @@ mod imp {
             ));
             window.add_action(&switch_index);
 
-            for (name, milestone) in [
-                ("zoom-in", "M18"),
-                ("zoom-out", "M18"),
-                ("zoom-reset", "M18"),
-            ] {
-                let action = gio::SimpleAction::new(name, None);
-                let name_owned = name.to_string();
-                let milestone = milestone.to_string();
-                action.connect_activate(move |_, _| {
-                    log::warn!(
-                        "action win.{name_owned} not yet implemented (milestone {milestone})"
-                    );
-                });
+            // M18: zoom actions. Each steps the active account's linear zoom,
+            // applies it through the CEF boundary (respecting the accessibility
+            // floor), persists it, and refreshes the headerbar label.
+            for verb in ["zoom-in", "zoom-out", "zoom-reset"] {
+                let action = gio::SimpleAction::new(verb, None);
+                let verb_owned = verb.to_string();
+                action.connect_activate(clone!(
+                    #[weak(rename_to = this)]
+                    self,
+                    move |_, _| this.zoom_step(&verb_owned)
+                ));
                 window.add_action(&action);
             }
+        }
+    }
+
+    impl KarereWindow {
+        /// Effective accessibility floor (linear). (M18, delegates to the
+        /// shared `web_view::zoom_floor`.)
+        fn zoom_floor() -> f64 {
+            crate::web_view::zoom_floor()
+        }
+
+        /// Persisted linear zoom for the active account (M20 `Account::zoom_level`),
+        /// defaulting to `1.0`. (M18 2.2)
+        fn load_zoom_for_active_account() -> f64 {
+            crate::accounts::manager()
+                .active()
+                .map(|a| a.zoom_level)
+                .unwrap_or(1.0)
+        }
+
+        /// Persist `linear` as the active account's zoom (M18 2.3). Does not
+        /// emit `accounts-changed` (see `AccountManager::set_zoom`).
+        fn persist_zoom(linear: f64) {
+            if let Some(a) = crate::accounts::manager().active() {
+                crate::accounts::manager().set_zoom(&a.id, linear);
+            }
+        }
+
+        /// Apply `linear` (lifted to the floor) to the live browser, persist the
+        /// effective value, and update the headerbar label. (M18 2.4 / 5.2)
+        fn apply_and_persist_zoom(&self, linear: f64) {
+            let effective = linear.max(Self::zoom_floor());
+            if let Some(web) = self.web_view.borrow().as_ref() {
+                web.set_zoom_linear(effective);
+            }
+            Self::persist_zoom(effective);
+            self.update_zoom_label(effective);
+        }
+
+        /// Handle `win.zoom-in` / `win.zoom-out` / `win.zoom-reset`. (M18 3.x)
+        fn zoom_step(&self, verb: &str) {
+            let floor = Self::zoom_floor();
+            let cur = Self::load_zoom_for_active_account().max(floor);
+            let target = match verb {
+                "zoom-in" => cur * 1.1,
+                // Clamp the step-down up to the floor; never cross it. (5.3)
+                "zoom-out" => (cur / 1.1).max(floor),
+                _ => 1.0_f64.max(floor),
+            };
+            self.apply_and_persist_zoom(target);
+        }
+
+        /// Refresh the headerbar `<int>%` label from a linear factor. (M18 6.4)
+        fn update_zoom_label(&self, linear: f64) {
+            self.zoom_label
+                .set_label(&format!("{}%", (linear * 100.0).round() as i32));
         }
     }
 
@@ -1094,16 +1168,21 @@ mod imp {
             let settings = gio::Settings::new(APP_ID);
             let dropdown = self.dictionary_dropdown.get();
 
-            // Visible only when spellcheck is enabled; keep it in sync.
-            dropdown.set_visible(settings.boolean("enable-spell-checking"));
-            settings.connect_changed(
-                Some("enable-spell-checking"),
-                clone!(
-                    #[weak]
-                    dropdown,
-                    move |s, _| dropdown.set_visible(s.boolean("enable-spell-checking"))
-                ),
-            );
+            // Visible only when spellcheck is enabled AND the headerbar control
+            // is opted in; keep it in sync with both keys.
+            let spell_dropdown_visible =
+                |s: &gio::Settings| s.boolean("enable-spell-checking") && s.boolean("spellcheck-headerbar");
+            dropdown.set_visible(spell_dropdown_visible(&settings));
+            for key in ["enable-spell-checking", "spellcheck-headerbar"] {
+                settings.connect_changed(
+                    Some(key),
+                    clone!(
+                        #[weak]
+                        dropdown,
+                        move |s, _| dropdown.set_visible(spell_dropdown_visible(s))
+                    ),
+                );
+            }
 
             // Live auto-correct toggle: push the flag into the running page (the
             // load handler also re-seeds it on every navigation).

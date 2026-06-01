@@ -26,6 +26,7 @@ M8 already declared `win.zoom-in` / `win.zoom-out` / `win.zoom-reset` as stub ac
 - **Apply after first `on_load_end`.** Setting zoom before the first paint is racy in CEF; we defer to the first load-end callback per browser, then on every subsequent step we apply immediately.
 - **Headerbar zoom-box is opt-in.** Default `zoom-controls-headerbar=false` keeps the chrome clean for keyboard users; the label updates by subscribing to the same zoom-changed signal that persistence uses.
 - **Step factor 1.1 (matches v3) not 1.2 (CEF unit).** Storing linear means the step is independent of CEF's logarithmic unit; conversion absorbs the mismatch.
+- **Schema reconciled with shipped M20/M22.** M20 (`Account::zoom_level`) and M22 (prefs UI + gschema) landed before this milestone's handlers. The shipped schema models the floor as a boolean master toggle `webview-zoom` gating the floor *value* `zoom-level` (`d`), rather than `webview-zoom` itself being the `d` floor as originally drafted. Per-account persistence uses `Account::zoom_level` directly; the `zoom-level` GSetting is the floor value (and the pre-M20 single-key fallback). The implementation targets the shipped schema; the floor lives in `web_view::zoom_floor()` (`webview-zoom ? zoom-level : 0.5`).
 
 ## Risks / Trade-offs
 

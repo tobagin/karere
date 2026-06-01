@@ -161,6 +161,8 @@ mod imp {
         #[template_child]
         pub row_auto_correct: TemplateChild<adw::SwitchRow>,
         #[template_child]
+        pub row_spell_headerbar: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub row_spell_lang: TemplateChild<adw::ComboRow>,
 
         // Privacy
@@ -360,6 +362,7 @@ mod imp {
             bind_switch(settings, "enable-spell-checking", &self.row_spell_enable);
             bind_switch(settings, "auto-detect-language", &self.row_auto_detect);
             bind_switch(settings, "enable-auto-correct", &self.row_auto_correct);
+            bind_switch(settings, "spellcheck-headerbar", &self.row_spell_headerbar);
 
             let favorites: Vec<String> = settings
                 .strv("favorite-spell-check-languages")

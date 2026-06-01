@@ -19,27 +19,34 @@ template $KarereWindow: Adw.ApplicationWindow {
           [start]
           Gtk.Box zoom_box {
             visible: false;
+            spacing: 6;
 
-            styles [
-              "linked",
-            ]
+            Gtk.Box {
+              styles [
+                "linked",
+              ]
 
-            Gtk.Button {
-              icon-name: "zoom-out-symbolic";
-              action-name: "win.zoom-out";
-              tooltip-text: _("Zoom Out");
-            }
+              Gtk.Button {
+                icon-name: "zoom-out-symbolic";
+                action-name: "win.zoom-out";
+                tooltip-text: _("Zoom Out");
+              }
 
-            Gtk.Button {
-              icon-name: "zoom-original-symbolic";
-              action-name: "win.zoom-reset";
-              tooltip-text: _("Reset Zoom");
-            }
+              Gtk.Button zoom_reset_button {
+                action-name: "win.zoom-reset";
+                tooltip-text: _("Reset Zoom");
 
-            Gtk.Button {
-              icon-name: "zoom-in-symbolic";
-              action-name: "win.zoom-in";
-              tooltip-text: _("Zoom In");
+                child: Gtk.Label zoom_label {
+                  label: "100%";
+                  width-chars: 4;
+                };
+              }
+
+              Gtk.Button {
+                icon-name: "zoom-in-symbolic";
+                action-name: "win.zoom-in";
+                tooltip-text: _("Zoom In");
+              }
             }
           }
 

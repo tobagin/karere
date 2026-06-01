@@ -51,6 +51,19 @@ impl KarereWebView {
         self.imp().stop_finding();
     }
 
+    /// Set the active browser's zoom to `linear` (1.0 = 100 %), clamped to
+    /// `[0.5, 3.0]` and converted to CEF's logarithmic level. No-op if no live
+    /// browser. (M18)
+    pub fn set_zoom_linear(&self, linear: f64) {
+        self.imp().set_zoom_linear(linear);
+    }
+
+    /// The active browser's current zoom as a linear factor (1.0 = 100 %), or
+    /// `1.0` if no live browser. (M18)
+    pub fn get_zoom_linear(&self) -> f64 {
+        self.imp().get_zoom_linear()
+    }
+
     /// Forward Ctrl+Shift+C into this (DevTools) view to toggle its element
     /// picker. Only meaningful on the embedded DevTools view.
     pub fn dispatch_inspect_shortcut(&self) {
@@ -100,6 +113,60 @@ impl KarereWebView {
             // No life-span handler yet → no browser to wait on.
             None => true,
         }
+    }
+}
+
+/// Minimum / maximum linear zoom factor the CEF boundary will apply. Clamping
+/// here keeps callers from pushing CEF into pathological levels. (M18)
+pub(crate) const ZOOM_MIN: f64 = 0.5;
+pub(crate) const ZOOM_MAX: f64 = 3.0;
+
+/// Convert a linear zoom factor (1.0 = 100 %) to CEF's logarithmic
+/// `BrowserHost` level, where each unit is a factor of `1.2` and `0` is 100 %.
+/// Input is clamped to `[ZOOM_MIN, ZOOM_MAX]` first. (M18)
+pub(crate) fn linear_to_cef(linear: f64) -> f64 {
+    linear.clamp(ZOOM_MIN, ZOOM_MAX).ln() / 1.2_f64.ln()
+}
+
+/// Inverse of [`linear_to_cef`]: CEF logarithmic level → linear factor. (M18)
+pub(crate) fn cef_to_linear(cef: f64) -> f64 {
+    (cef * 1.2_f64.ln()).exp()
+}
+
+/// The effective accessibility floor (linear). When the `webview-zoom` toggle
+/// is enabled, the `zoom-level` setting is the minimum; otherwise the floor is
+/// the hard CEF minimum. Shared by the window's zoom actions and the load
+/// handler's first-paint apply. (M18 5.x)
+pub(crate) fn zoom_floor() -> f64 {
+    use gtk::gio;
+    use gtk::prelude::SettingsExt;
+    let s = gio::Settings::new(crate::application::APP_ID);
+    if s.boolean("webview-zoom") {
+        s.double("zoom-level").clamp(ZOOM_MIN, ZOOM_MAX)
+    } else {
+        ZOOM_MIN
+    }
+}
+
+/// Apply the per-account persisted zoom (lifted to the accessibility floor) to
+/// `browser`, and rewrite the persisted value if the floor lifted it. Called
+/// from `on_load_end` so each account's browser restores its own zoom on first
+/// paint and after every navigation. (M18 4.1 / 5.2)
+pub(crate) fn apply_zoom_from_account(browser: &cef::Browser) {
+    use cef::{ImplBrowser, ImplBrowserHost};
+    let Some(id) = crate::accounts::account_for_browser(browser.identifier()) else {
+        return;
+    };
+    let persisted = crate::accounts::manager()
+        .get(&id)
+        .map(|a| a.zoom_level)
+        .unwrap_or(1.0);
+    let effective = persisted.max(zoom_floor());
+    if let Some(host) = browser.host() {
+        host.set_zoom_level(linear_to_cef(effective));
+    }
+    if (effective - persisted).abs() >= f64::EPSILON {
+        crate::accounts::manager().set_zoom(&id, effective);
     }
 }
 
@@ -591,6 +658,29 @@ mod imp {
                 let code = CefString::from(script);
                 let url = CefString::from("karere://notify");
                 frame.execute_java_script(Some(&code), Some(&url), 0);
+            }
+        }
+
+        /// Set the foreground browser's zoom from a linear factor (clamped +
+        /// converted to CEF's logarithmic level). Must run on the CEF UI thread
+        /// (the glib main thread under the external pump). (M18)
+        pub fn set_zoom_linear(&self, linear: f64) {
+            if let Some(browser) = self.browser.lock().as_ref().cloned()
+                && let Some(host) = browser.host()
+            {
+                host.set_zoom_level(super::linear_to_cef(linear));
+            }
+        }
+
+        /// Read the foreground browser's zoom as a linear factor, or `1.0` if no
+        /// live browser. (M18)
+        pub fn get_zoom_linear(&self) -> f64 {
+            if let Some(browser) = self.browser.lock().as_ref().cloned()
+                && let Some(host) = browser.host()
+            {
+                super::cef_to_linear(host.zoom_level())
+            } else {
+                1.0
             }
         }
 
@@ -1825,5 +1915,26 @@ void main() {
             }
             s
         }
+    }
+}
+
+#[cfg(test)]
+mod zoom_tests {
+    use super::{cef_to_linear, linear_to_cef, ZOOM_MAX};
+
+    /// 1.3: linear → CEF → linear round-trips within 1e-9 across the range.
+    #[test]
+    fn round_trip_linear() {
+        for x in [0.5_f64, 1.0, 1.1, 1.331, 3.0] {
+            let back = cef_to_linear(linear_to_cef(x));
+            assert!((back - x).abs() < 1e-9, "round-trip {x} -> {back}");
+        }
+    }
+
+    /// 1.4: out-of-range input clamps to the max linear factor (3.0).
+    #[test]
+    fn clamp_above_max() {
+        let back = cef_to_linear(linear_to_cef(5.0));
+        assert!((back - ZOOM_MAX).abs() < 1e-9, "clamp 5.0 -> {back}");
     }
 }
