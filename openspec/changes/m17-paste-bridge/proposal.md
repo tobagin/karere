@@ -18,13 +18,18 @@ Karere v3 (`window.rs:1640-1891`) reads the GDK clipboard on Ctrl+V, builds a sy
 - `clipboard-paste-bridge`: GDK→page paste pipeline that intercepts Ctrl+V before CEF, marshals image/file/text clipboard content over the M13 IPC envelope, and synthesizes a DOM `paste` event on `document.activeElement`. Includes a tempfile path for payloads >1 MB scoped under `$XDG_RUNTIME_DIR/karere/`.
 - `drag-drop-files`: `gtk::DropTarget` wired to the same `DispatchPasteEvent` envelope so dragged files are surfaced to the page as a `drop` event on the element under the cursor.
 - `primary-clipboard-paste`: Middle-click handler that reads `gdk::Display::primary_clipboard()` and dispatches the text as a `paste` event without swallowing the click (preserves middle-click link semantics).
+- `outbound-clipboard`: Page→host clipboard mirror (the reverse direction). `data/js/50-copy-bridge.js` reports the page selection to the host via `RendererMessage::SetClipboard`; the host writes it to the GDK PRIMARY selection (`selectionchange`) and, on Ctrl+C, promotes PRIMARY→CLIPBOARD at the GTK layer. Added because CEF's offscreen copy never reaches the system clipboard and the DOM `copy` event does not fire in windowless mode, so copy/select in WhatsApp would otherwise be invisible to other applications.
 
 ### Modified Capabilities
-<!-- None: M17 is purely additive on top of M3 input plumbing and M13 IPC. -->
+<!-- M17 input/IPC is additive on top of M3 + M13; `outbound-clipboard` reverses
+     the M13 IPC direction (renderer→browser `SetClipboard`). -->
 
 ## Impact
 
-- New files: `data/js/paste_bridge.js`.
+- New files: `data/js/40-paste-bridge.js`, `data/js/50-copy-bridge.js`.
+- IPC: adds `RendererMessage::SetClipboard { text, primary }` (outbound) plus
+  `BrowserMessage::DragHover` (hover priming, see drag-drop) and
+  `RendererMessage::PasteConsumed`.
 - Modified files: `src/cef_gtk_area.rs` (Ctrl+V intercept, DropTarget, middle-click extension), `src/handlers/render_process.rs` (route `DispatchPasteEvent`), `src/cef_runtime.rs` (add `--allow-file-access-from-files` switch), `src/handlers/request.rs` (scope file:// access to `$XDG_RUNTIME_DIR/karere/`).
 - Runtime: clipboard reads are async; payloads >1 MB hit disk under `$XDG_RUNTIME_DIR/karere/paste-<uuid>` (mode 0600) and are cleaned up post-dispatch.
 - Depends on: M3 (input controllers), M13 (IPC envelope, JS injection pipeline).

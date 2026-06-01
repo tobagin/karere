@@ -15,7 +15,7 @@ The M13 IPC envelope already defines `BrowserMessage::DispatchPasteEvent { mime,
 **Non-Goals:**
 - Rich-text / HTML paste. Text falls through to CEF's native Ctrl+V handler; HTML is downgraded to plain text.
 - Animated-GIF preservation as more than an `image/gif` Blob — Chromium will inspect frames itself if the site cares.
-- Outbound copy (page → GDK clipboard). M17 is one-way IN.
+- ~~Outbound copy (page → GDK clipboard).~~ **Brought into scope** during implementation: CEF's offscreen copy never reaches the system clipboard and the DOM `copy` event doesn't fire in windowless mode, so without it copy/select in WhatsApp is invisible to other apps. See the `outbound-clipboard` spec and the decision below.
 - Subframe paste targeting. Only the main frame is wired.
 
 ## Decisions
@@ -52,6 +52,12 @@ The M13 IPC envelope already defines `BrowserMessage::DispatchPasteEvent { mime,
   - `application/*` or `text/*` with `kind === "drop"`: builds files preserving the original filename if provided.
   - `text/plain` with `kind === "paste"` (middle-click only): dispatches a `paste` event whose `clipboardData.getData('text/plain')` returns the string; no `File`.
 - **Why**: Mirrors how Chromium's native paste populates `DataTransfer` for each path.
+
+### Decision: Outbound clipboard via selectionchange (PRIMARY) + GTK Ctrl+C (CLIPBOARD)
+- **Choice**: `50-copy-bridge.js` mirrors the page selection to the host on `selectionchange` (debounced) as `RendererMessage::SetClipboard { primary: true }`; the host writes `gdk::Display::primary_clipboard()`. The regular CLIPBOARD is driven NOT from the page but from the GTK `EventControllerKey`: on Ctrl+C the host reads PRIMARY and writes it to `gdk::Display::clipboard()`.
+- **Why**: Testing showed the DOM `copy` event does not fire under CEF windowless rendering (verified: `wl-paste` returned stale content after Ctrl+C, while PRIMARY tracked the selection). The page `copy` handler is therefore unreliable. PRIMARY, driven by `selectionchange`, does propagate cross-app; promoting PRIMARY→CLIPBOARD at the GTK layer on Ctrl+C is robust and needs no DOM event.
+- **Trade-off**: Ctrl+C copies the current PRIMARY selection, which equals the user's selection for normal text copies; a page that copies something other than the selection on Ctrl+C is not mirrored. Accepted.
+- **Alternatives**: (a) Rely on the DOM `copy` event + `preventDefault` — non-functional in OSR (event never fires). (b) Have CEF own the system clipboard — not exposed for windowless mode.
 
 ## Risks / Trade-offs
 

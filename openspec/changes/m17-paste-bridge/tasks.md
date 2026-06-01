@@ -66,6 +66,15 @@
 - [~] 8.6 PARTIAL — the `file://` deny guard (`resource_request_handler` → `PasteFileGuard`) is implemented and rejects any `file://` outside the paste dir; the "succeeds during active paste" half is moot since the tempfile/file:// path is unused (see 8.5).
 - [x] 8.7 Confirm text-only Ctrl+V works — copy text, focus chat input, press Ctrl+V → text inserted (now via GDK intercept, not CEF native; see correction note)
 
+## 9. Outbound clipboard (page → host) — added during implementation
+
+- [x] 9.1 Add `RendererMessage::SetClipboard { text: String, primary: bool }` to `src/ipc.rs` (+ `KNOWN_TAGS`, `variant_tag`, roundtrip test)
+- [x] 9.2 Add `data/js/50-copy-bridge.js`: on debounced `selectionchange`, send `SetClipboard { primary: true }` with `window.getSelection().toString()`
+- [x] 9.3 In `src/handlers/client.rs`, handle `SetClipboard` → `gdk::Display::default().{primary_clipboard,clipboard}().set_text()` on the main thread
+- [x] 9.4 On Ctrl+C in the GTK key controller, promote PRIMARY → CLIPBOARD (`promote_primary_to_clipboard`) — the DOM `copy` event never fires under CEF windowless rendering
+- [x] 9.5 Verify: select WhatsApp text → middle-click in another app pastes it (PRIMARY)
+- [x] 9.6 Verify: select WhatsApp text → Ctrl+C → Ctrl+V in another app pastes it (CLIPBOARD)
+
 ## Implementation notes (deviations)
 
 - **§2.4 / §7.1 — tempfile map home.** The pending-tempfile `HashMap<PathBuf, Instant>`
