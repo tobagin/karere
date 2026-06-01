@@ -1,0 +1,108 @@
+name: Build CEF (proprietary codecs)
+
+# Compile a CEF binary distribution WITH proprietary codecs (H.264 / AAC) so
+# WhatsApp MP4 videos play in Karere. The Spotify CEF builds Karere normally
+# ships are ffmpeg_branding=Chromium (no H.264/AAC); this rebuilds Chromium+CEF
+# with the proprietary-codec GN args and uploads the resulting
+# cef_binary_*_minimal.tar.bz2 (+ sha256) as a run artifact. Point
+# packaging/io.github.tobagin.karere.yml at that tarball afterwards.
+#
+# ── Reality check ───────────────────────────────────────────────────────────
+# This is a FULL Chromium build: ~100 GB disk and many hours. GitHub's FREE
+# ubuntu runners (14 GB disk, 6 h job cap) almost certainly cannot finish it.
+# Use one of:
+#   * a GitHub larger runner (more cores + disk),  or
+#   * a self-hosted runner with >=120 GB free and no 6 h limit.
+# Set the runner via the `runner` input. The disk-maximizing step below frees
+# ~70 GB on stock runners as a best effort.
+
+on:
+  workflow_dispatch:
+    inputs:
+      cef_branch:
+        description: "CEF branch number for Chromium 148 (see https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)"
+        required: true
+        type: string
+      runner:
+        description: "Runner label(s). Default = GitHub free runner (likely too small). Override with a larger/self-hosted runner."
+        required: false
+        default: "ubuntu-22.04"
+        type: string
+
+jobs:
+  build:
+    name: Build CEF (x64, proprietary codecs)
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 4320   # honored by self-hosted; free runners still hard-cap at 6 h
+    steps:
+      - name: Maximize build disk
+        # Reclaim ~30 GB of preinstalled toolchains and span root+/mnt into one
+        # large LVM mounted at the build dir. Best effort on stock runners.
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 4096
+          swap-size-mb: 4096
+          remove-dotnet: "true"
+          remove-android: "true"
+          remove-haskell: "true"
+          remove-codeql: "true"
+          remove-docker-images: "true"
+          build-mount-path: /cef-build
+
+      - name: Checkout (for the build script)
+        uses: actions/checkout@v4
+
+      - name: Install build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            git python3 python3-pip curl ca-certificates lsb-release sudo \
+            build-essential pkg-config
+
+      - name: Fetch depot_tools + automate-git.py
+        run: |
+          set -eux
+          sudo chown -R "$USER" /cef-build
+          cd /cef-build
+          git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          curl -fsSL \
+            "https://bitbucket.org/chromiumembedded/cef/raw/master/tools/automate/automate-git.py" \
+            -o automate-git.py
+
+      - name: Build CEF with proprietary codecs
+        env:
+          # THE switches: proprietary_codecs + ffmpeg_branding=Chrome = H.264/AAC.
+          # symbol_level=0 shrinks disk/time substantially (no local debugging).
+          GN_DEFINES: "is_official_build=true proprietary_codecs=true ffmpeg_branding=Chrome symbol_level=0 blink_symbol_level=0"
+          CEF_USE_GN: "1"
+        run: |
+          set -eux
+          export PATH="/cef-build/depot_tools:$PATH"
+          cd /cef-build
+          python3 automate-git.py \
+            --download-dir=/cef-build/cef \
+            --branch="${{ inputs.cef_branch }}" \
+            --minimal-distrib \
+            --no-debug-build \
+            --build-target=cefsimple \
+            --x64-build \
+            --force-clean
+
+      - name: Locate tarball + sha256
+        id: dist
+        run: |
+          set -eux
+          DIST=/cef-build/cef/chromium/src/cef/binary_distrib
+          TARBALL="$(ls -t "$DIST"/cef_binary_*_linux64_minimal.tar.bz2 | head -1)"
+          echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
+          sha256sum "$TARBALL" | tee "$TARBALL.sha256"
+
+      - name: Upload CEF distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: cef-148-proprietary-codecs-linux64
+          path: |
+            ${{ steps.dist.outputs.tarball }}
+            ${{ steps.dist.outputs.tarball }}.sha256
+          retention-days: 14
+          if-no-files-found: error
