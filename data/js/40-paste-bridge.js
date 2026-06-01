@@ -67,24 +67,54 @@
     });
   }
 
-  // WhatsApp mounts its "Drag file here" dropzone overlay asynchronously (React)
-  // on the first dragenter/dragover. Keep nudging dragover at the point until a
-  // new topmost element appears (the overlay) or we time out (~600 ms), then
-  // return that element so the caller drops on it — giving single-drag drops.
-  async function waitForDropzone(x, y, original, opts) {
-    var last = original;
-    for (var i = 0; i < 15; i++) {
-      var el = document.elementFromPoint(x, y) || original;
-      if (el && el !== original && el !== document.body && el !== document.documentElement) {
-        el.dispatchEvent(new DragEvent("dragenter", opts));
-        el.dispatchEvent(new DragEvent("dragover", opts));
-        return el;
-      }
-      el.dispatchEvent(new DragEvent("dragover", opts));
-      last = el;
-      await sleep(40);
+  // ---- Hover-driven dropzone priming ----------------------------------
+  // CEF only delivers the actual drop on release, but GTK reports the drag hover
+  // (enter/motion/leave) in real time. We replay those as synthetic
+  // dragenter/dragover carrying a Files-typed DataTransfer so WhatsApp mounts its
+  // dropzone overlay DURING the physical hover — then the real drop lands on it.
+  var hoverDT = null;
+  function getHoverDT() {
+    if (!hoverDT) {
+      hoverDT = new DataTransfer();
+      try {
+        hoverDT.items.add(new File([new Uint8Array(0)], "drag"));
+      } catch (e) {}
     }
-    return last;
+    return hoverDT;
+  }
+
+  // A "leave" fired on release would dismiss the overlay just before the drop;
+  // delay it so a drop arriving within the window can cancel it.
+  var pendingLeave = 0;
+  function cancelPendingLeave() {
+    if (pendingLeave) {
+      clearTimeout(pendingLeave);
+      pendingLeave = 0;
+    }
+  }
+
+  function handleHover(d) {
+    var opts = {
+      dataTransfer: getHoverDT(),
+      clientX: d.x,
+      clientY: d.y,
+      bubbles: true,
+      cancelable: true,
+    };
+    if (d.phase === "leave") {
+      cancelPendingLeave();
+      pendingLeave = setTimeout(function () {
+        pendingLeave = 0;
+        document.dispatchEvent(new DragEvent("dragleave", opts));
+      }, 250);
+      return;
+    }
+    cancelPendingLeave();
+    var el = document.elementFromPoint(d.x, d.y) || document.body;
+    if (d.phase === "enter") el.dispatchEvent(new DragEvent("dragenter", opts));
+    el.dispatchEvent(new DragEvent("dragover", opts));
+    // React's delegated drag listener sits at the document root.
+    document.dispatchEvent(new DragEvent("dragover", opts));
   }
 
   // Resolve a payload object into a Blob.
@@ -164,13 +194,18 @@
         bubbles: true,
         cancelable: true,
       };
+      // The overlay was mounted during the hover; keep a release-time leave from
+      // dismissing it, re-assert the drag, then drop on the topmost element
+      // (the overlay, which elementFromPoint now returns since it's on top).
+      cancelPendingLeave();
       target.dispatchEvent(new DragEvent("dragenter", dndOpts));
       target.dispatchEvent(new DragEvent("dragover", dndOpts));
-      // Wait for WhatsApp's async dropzone overlay to mount, then drop on it.
-      var dropTarget = await waitForDropzone(detail.x, detail.y, target, dndOpts);
+      await sleep(60);
+      var dropTarget = document.elementFromPoint(detail.x, detail.y) || target;
       try {
         console.log("karere drop: final target=" + (dropTarget && dropTarget.tagName));
       } catch (e) {}
+      dropTarget.dispatchEvent(new DragEvent("dragover", dndOpts));
       dropTarget.dispatchEvent(new DragEvent("drop", dndOpts));
     } else {
       target.dispatchEvent(
@@ -197,6 +232,13 @@
       } catch (err) {
         warn("karere paste bridge threw: " + (err && err.stack ? err.stack : err));
       }
+    });
+
+    // Real-time drag hover (enter/over/leave) → prime WhatsApp's dropzone.
+    window.addEventListener("karere:drag-hover", function (ev) {
+      try {
+        handleHover(ev.detail || {});
+      } catch (e) {}
     });
   } catch (err) {
     warn("karere paste bridge install failed: " + (err && err.stack ? err.stack : err));

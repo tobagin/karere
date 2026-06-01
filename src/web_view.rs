@@ -938,6 +938,36 @@ mod imp {
             gdk::FileList::static_type(),
             gdk::DragAction::COPY,
         );
+        // Forward hover (enter/motion/leave) to the page in real time so its
+        // dropzone overlay mounts DURING the physical hover — CEF only delivers
+        // the actual drop on release, far too late to mount it first.
+        drop_target.connect_enter(glib::clone!(
+            #[weak] widget,
+            #[upgrade_or] gdk::DragAction::COPY,
+            move |_t, x, y| {
+                send_drag_hover(&widget, "enter", x, y);
+                gdk::DragAction::COPY
+            }
+        ));
+        let last_motion = std::cell::Cell::new(std::time::Instant::now());
+        drop_target.connect_motion(glib::clone!(
+            #[weak] widget,
+            #[upgrade_or] gdk::DragAction::COPY,
+            move |_t, x, y| {
+                // Throttle to ~10/s: enough to keep the page dropzone alive
+                // without flooding the IPC with execute_java_script calls.
+                let now = std::time::Instant::now();
+                if now.duration_since(last_motion.get()) >= std::time::Duration::from_millis(100) {
+                    last_motion.set(now);
+                    send_drag_hover(&widget, "over", x, y);
+                }
+                gdk::DragAction::COPY
+            }
+        ));
+        drop_target.connect_leave(glib::clone!(
+            #[weak] widget,
+            move |_t| send_drag_hover(&widget, "leave", 0.0, 0.0)
+        ));
         drop_target.connect_drop(glib::clone!(
             #[weak] widget,
             #[upgrade_or] false,
@@ -1201,6 +1231,19 @@ mod imp {
                 kind: kind.to_string(),
                 payload,
                 name,
+                x,
+                y,
+            },
+        );
+    }
+
+    /// Notify the page that a file drag is hovering so it can pre-mount its
+    /// dropzone before the drop commits.
+    fn send_drag_hover(widget: &super::KarereWebView, phase: &str, x: f64, y: f64) {
+        send_browser_message(
+            widget,
+            crate::ipc::BrowserMessage::DragHover {
+                phase: phase.to_string(),
                 x,
                 y,
             },

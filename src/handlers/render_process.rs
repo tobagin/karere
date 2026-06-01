@@ -149,6 +149,19 @@ fn dispatch(msg: BrowserMessage, frame: Option<&mut Frame>) {
                 0,
             );
         }
+        BrowserMessage::DragHover { phase, x, y } => {
+            if let Some(frame) = frame {
+                let detail = serde_json::json!({ "phase": phase, "x": x, "y": y });
+                let script = format!(
+                    "window.dispatchEvent(new CustomEvent('karere:drag-hover',{{detail:{detail}}}))"
+                );
+                frame.execute_java_script(
+                    Some(&CefString::from(script.as_str())),
+                    Some(&CefString::from("karere://drag")),
+                    0,
+                );
+            }
+        }
         BrowserMessage::SetViewportSize { w, h } => {
             log::debug!("renderer: SetViewportSize {w}x{h} — stub (M14)");
         }

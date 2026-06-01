@@ -59,7 +59,7 @@
 ## 8. Verify
 
 - [x] 8.1 Take a screenshot (Spectacle / `gnome-screenshot --area`) so an image lands on the GDK clipboard; focus the WhatsApp chat input; press Ctrl+V → attachment preview shows the image
-- [ ] 8.2 Drag a PDF from Files onto the karere window over the chat input → attachment preview shows the PDF
+- [x] 8.2 Drag a PDF from Files onto the karere window over the chat input → attachment preview shows the PDF
 - [ ] 8.3 Highlight text in another window (selects to primary clipboard); middle-click in chat input → text appears in the input
 - [ ] 8.4 Middle-click a link inside an open chat (with primary-clipboard text present) → link opens in system browser AND the link element is unaffected (no paste applied to it)
 - [ ] 8.5 Paste a >5 MB PNG → preview appears; verify `$XDG_RUNTIME_DIR/karere/paste-*` exists during dispatch and is gone within 30 s

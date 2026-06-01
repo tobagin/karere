@@ -59,6 +59,10 @@ pub enum BrowserMessage {
         x: Option<f64>,
         y: Option<f64>,
     },
+    /// A file drag is hovering over the embedding widget (no payload yet) so the
+    /// page can mount its dropzone before the drop commits. `phase` is
+    /// `"enter"` / `"over"` / `"leave"`; `x`/`y` are widget coordinates.
+    DragHover { phase: String, x: f64, y: f64 },
     /// Inform the page of the host viewport size (drives responsive layout).
     SetViewportSize { w: i32, h: i32 },
     /// Ask the page to dismiss the notification tagged `tag`.
@@ -177,6 +181,7 @@ impl BrowserMessage {
     /// Variant tags carried in the `ProcessMessage` name field.
     const KNOWN_TAGS: &'static [&'static str] = &[
         "DispatchPasteEvent",
+        "DragHover",
         "SetViewportSize",
         "CloseNotifByTag",
         #[cfg(debug_assertions)]
@@ -187,6 +192,7 @@ impl BrowserMessage {
     pub fn variant_tag(&self) -> &'static str {
         match self {
             BrowserMessage::DispatchPasteEvent { .. } => "DispatchPasteEvent",
+            BrowserMessage::DragHover { .. } => "DragHover",
             BrowserMessage::SetViewportSize { .. } => "SetViewportSize",
             BrowserMessage::CloseNotifByTag { .. } => "CloseNotifByTag",
             #[cfg(debug_assertions)]
@@ -281,6 +287,11 @@ mod tests {
                 name: Some("x.pdf".into()),
                 x: Some(12.0),
                 y: Some(34.0),
+            },
+            BrowserMessage::DragHover {
+                phase: "over".into(),
+                x: 12.5,
+                y: 34.0,
             },
             BrowserMessage::SetViewportSize { w: 800, h: 600 },
             BrowserMessage::CloseNotifByTag { tag: "chat-42".into() },
