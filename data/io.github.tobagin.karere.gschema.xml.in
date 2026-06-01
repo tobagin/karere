@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schemalist>
+  <enum id="@APP_ID@.NotifyDownloadType">
+    <value nick="toast" value="0"/>
+    <value nick="notification" value="1"/>
+    <value nick="both" value="2"/>
+  </enum>
+  <enum id="@APP_ID@.NotifyPreviewLength">
+    <value nick="short" value="0"/>
+    <value nick="medium" value="1"/>
+    <value nick="long" value="2"/>
+  </enum>
+  <schema id="@APP_ID@" path="@APP_PATH@">
+    <key name="schema-version" type="i">
+      <default>0</default>
+      <summary>Schema version</summary>
+      <description>Internal schema version used for data migrations.</description>
+    </key>
+    <key name="start-in-background" type="b">
+      <default>false</default>
+      <summary>Start in background</summary>
+      <description>Whether to start the application in the background.</description>
+    </key>
+    <key name="close-button-action" type="s">
+      <default>'background'</default>
+      <summary>Action to take when close button is clicked</summary>
+      <description>Action to take when close button is clicked (background, quit).</description>
+    </key>
+    <key name="systray-icon" type="s">
+      <default>'auto'</default>
+      <summary>System Tray Icon</summary>
+      <description>System tray icon behavior (auto, enabled, disabled).</description>
+    </key>
+    <key name="run-on-startup" type="b">
+      <default>false</default>
+      <summary>Run on startup</summary>
+      <description>Whether to start the application automatically when the user logs in.</description>
+    </key>
+    <key name="window-width" type="i">
+      <default>800</default>
+      <summary>Window width</summary>
+      <description>Last window width</description>
+    </key>
+    <key name="window-height" type="i">
+      <default>600</default>
+      <summary>Window height</summary>
+      <description>Last window height</description>
+    </key>
+    <key name="is-maximized" type="b">
+      <default>false</default>
+      <summary>Window maximized state</summary>
+      <description>Whether the window is maximized</description>
+    </key>
+    <key name="zoom-level" type="d">
+      <default>1.0</default>
+      <summary>Zoom level</summary>
+      <description>The zoom level of the webview.</description>
+    </key>
+    <key name="theme" type="s">
+      <default>'system'</default>
+      <summary>Theme</summary>
+      <description>Application theme (system, light, dark).</description>
+    </key>
+    <key name="mobile-layout" type="s">
+      <default>'auto'</default>
+      <summary>Mobile Layout (Experimental)</summary>
+      <description>Mobile layout mode: auto (detect environment), enabled, or disabled.</description>
+    </key>
+    <key name="enable-spell-checking" type="b">
+      <default>true</default>
+      <summary>Enable spell checking</summary>
+    </key>
+    <key name="auto-detect-language" type="b">
+      <default>true</default>
+      <summary>Auto-detect language</summary>
+    </key>
+    <key name="enable-auto-correct" type="b">
+      <default>true</default>
+      <summary>Enable auto-correct</summary>
+    </key>
+    <key name="spell-checking-languages" type="as">
+      <default>[]</default>
+      <summary>Enabled spell checking languages</summary>
+    </key>
+    <key name="favorite-spell-check-languages" type="as">
+      <default>[]</default>
+      <summary>Pinned spell-check languages shown at top of dropdown</summary>
+    </key>
+    <key name="download-directory" type="s">
+      <default>''</default>
+      <summary>Download directory</summary>
+    </key>
+    <key name="enable-developer-tools" type="b">
+      <default>false</default>
+      <summary>Enable developer tools</summary>
+    </key>
+    <key name="permission-decisions" type="a{sa{ui}}">
+      <default>{}</default>
+      <summary>Remembered permission decisions</summary>
+      <description>Per-origin permission decisions keyed by CEF permission-mask bit: 0=Ask, 1=Allow, 2=Deny. Written only when the user checks "Remember this choice".</description>
+    </key>
+    <key name="enable-multi-account" type="b">
+      <default>false</default>
+      <summary>Enable multi-account support</summary>
+      <description>Whether to show the account switcher button in the header bar.</description>
+    </key>
+    <key name="account-limit-enabled" type="b">
+      <default>true</default>
+      <summary>Enable account limit</summary>
+      <description>Whether to limit the number of accounts that can be created.</description>
+    </key>
+    <key name="account-limit" type="i">
+      <default>2</default>
+      <summary>Maximum number of accounts</summary>
+      <description>The maximum number of accounts when the account limit is enabled (1-10).</description>
+    </key>
+    <!-- Accessibility -->
+    <key name="enable-shortcuts" type="b">
+      <default>true</default>
+      <summary>Enable keyboard shortcuts</summary>
+    </key>
+    <key name="focus-indicators" type="b">
+      <default>false</default>
+      <summary>Enable focus indicators</summary>
+    </key>
+    <key name="high-contrast" type="b">
+      <default>false</default>
+      <summary>High contrast mode</summary>
+    </key>
+    <key name="reduce-motion" type="b">
+      <default>false</default>
+      <summary>Reduce motion</summary>
+    </key>
+    <key name="webview-zoom" type="b">
+      <default>false</default>
+      <summary>Enable accessibility zoom</summary>
+      <description>Master toggle for the accessibility zoom system. When enabled, the zoom-level setting acts as a minimum zoom floor for all webviews.</description>
+    </key>
+    <key name="zoom-controls-headerbar" type="b">
+      <default>false</default>
+      <summary>Show zoom controls in header bar</summary>
+      <description>Show zoom in/out/reset buttons in the header bar. These controls only affect the currently displayed webview.</description>
+    </key>
+    <key name="screen-reader-opts" type="b">
+      <default>false</default>
+      <summary>Screen reader optimizations</summary>
+    </key>
+    <key name="a11y-shortcuts" type="b">
+      <default>true</default>
+      <summary>Enable accessibility shortcuts</summary>
+    </key>
+    <key name="dev-shortcuts" type="b">
+      <default>true</default>
+      <summary>Enable developer shortcuts</summary>
+    </key>
+    <key name="notify-shortcuts" type="b">
+      <default>true</default>
+      <summary>Enable notification shortcuts</summary>
+    </key>
+    <!-- Notifications -->
+    <key name="notifications-enabled" type="b">
+      <default>true</default>
+      <summary>Master notification toggle</summary>
+    </key>
+    <key name="notify-messages" type="b">
+      <default>true</default>
+      <summary>Message notifications</summary>
+    </key>
+    <key name="notify-tray-icon" type="b">
+      <default>true</default>
+      <summary>Change tray icon on new message</summary>
+    </key>
+    <key name="notify-sound-enabled" type="b">
+      <!-- Default off: WhatsApp Web plays its own in-page notification ding
+           (page <audio>, independent of the desktop notification), so a Karere
+           sound on top is always a double-ding. The custom-sound machinery
+           remains for users who want it, but it is opt-in. -->
+      <default>false</default>
+      <summary>Enable notification sounds</summary>
+    </key>
+    <key name="notify-sound-file" type="s">
+      <default>'whatsapp'</default>
+      <summary>Notification sound file</summary>
+      <description>Bundled sound name (without extension) played for each notification, e.g. "whatsapp" or "alert". Resolved to &lt;gresource&gt;/sounds/&lt;name&gt;.oga.</description>
+    </key>
+    <key name="notify-downloads-enabled" type="b">
+      <default>true</default>
+      <summary>Enable download notifications</summary>
+    </key>
+    <key name="notify-download-type" enum="@APP_ID@.NotifyDownloadType">
+      <default>'toast'</default>
+      <summary>Download notification type</summary>
+      <description>How to surface completed downloads: toast, notification, or both.</description>
+    </key>
+    <!--
+      Preview keys compose the Karere-rendered banner only. Because Karere
+      intercepts window.Notification and re-emits its own gio::Notification, it
+      controls the title/body directly and these keys ARE enforced for that
+      banner. They have NO effect on any Chromium-rendered notification banner
+      (that path is suppressed), and the same composed values are what the
+      future tray peek UI (M15) will display.
+    -->
+    <key name="notify-preview-name" type="b">
+      <default>true</default>
+      <summary>Show sender/group name in notifications</summary>
+      <description>When false, the banner title is a generic label instead of the contact or group name.</description>
+    </key>
+    <key name="notify-preview-message" type="b">
+      <default>true</default>
+      <summary>Show message preview in notifications</summary>
+      <description>When false, the banner body is a generic string instead of the message text.</description>
+    </key>
+    <key name="notify-preview-length" enum="@APP_ID@.NotifyPreviewLength">
+      <default>'medium'</default>
+      <summary>Message preview length</summary>
+      <description>How much of the message body the banner shows: short, medium, or long.</description>
+    </key>
+  </schema>
+</schemalist>

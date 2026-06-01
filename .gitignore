@@ -1,0 +1,19 @@
+/target
+/build
+/builddir
+/build-dir
+/repo
+/.flatpak-builder
+/cef-binaries
+# flatpak/build dirs at any depth (e.g. packaging/.flatpak-builder, packaging/build-dir)
+**/.flatpak-builder/
+**/build-dir/
+# local Claude Code agent state
+.claude/
+*.gresource
+/data/ui/*.ui
+/build-pot
+/po/*.pot~
+.idea/
+.vscode/
+*.swp

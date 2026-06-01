@@ -1,0 +1,54 @@
+[package]
+name = "karere"
+version = "4.0.0-dev"
+edition = "2024"
+description = "GTK4 + libadwaita + CEF native WhatsApp client (Karere v4)"
+license = "GPL-3.0-or-later"
+publish = false
+exclude = [
+    "packaging/build-dir/**",
+    "packaging/.flatpak-builder/**",
+    "build/**",
+    "builddir/**",
+    "build-dir/**",
+    "repo/**",
+    ".flatpak-builder/**",
+    "cef-binaries/**",
+]
+
+[[bin]]
+name = "karere"
+path = "src/main.rs"
+
+[dependencies]
+gtk = { package = "gtk4", version = "0.11", features = ["v4_12"] }
+libadwaita = { version = "0.9", features = ["v1_6"] }
+glib = "0.22"
+gio = "0.22"
+gdk-pixbuf = "0.22"
+cef = { version = "148", features = ["build-util"] }
+epoxy = "0.1"
+gl = "0.14"
+libloading = "0.8"
+anyhow = "1"
+log = "0.4"
+env_logger = "0.11"
+parking_lot = "0.12"
+once_cell = "1"
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
+toml = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+ashpd = { version = "0.13", default-features = false, features = ["gtk4", "background", "open_uri", "tokio"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+ksni = "0.3"
+zbus = "5"
+
+[build-dependencies]
+glib-build-tools = "0.22"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"

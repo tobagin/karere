@@ -1,0 +1,9 @@
+src/main.rs
+src/window.rs
+src/application.rs
+src/web_view.rs
+data/ui/window.ui
+data/ui/preferences.ui
+data/ui/keyboard-shortcuts.ui
+data/io.github.tobagin.karere.desktop.in
+data/io.github.tobagin.karere.metainfo.xml.in

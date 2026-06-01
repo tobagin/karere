@@ -1,0 +1,75 @@
+app-id: io.github.tobagin.karere
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: karere
+appstream-compose: false
+
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+  env:
+    CARGO_HOME: /run/build/karere/cargo
+    CARGO_NET_OFFLINE: 'true'
+    CEF_PATH: /app/lib/cef
+    # Cap parallel rustc jobs so the heavy crate graph (cef, gtk, ...) does not
+    # spike memory and trip the OOM killer (build was SIGKILLed with code 137).
+    CARGO_BUILD_JOBS: '6'
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --device=all
+  - --filesystem=xdg-download
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.freedesktop.portal.Desktop
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --env=LD_LIBRARY_PATH=/app/lib/cef
+
+modules:
+  - name: cef-binaries
+    buildsystem: simple
+    build-commands:
+      # Merge the CEF tarball into one flat layout: cmake prereqs (include/,
+      # libcef_dll/, cmake/, CMakeLists.txt) + Release/ binaries + Resources/
+      # data files. cef-dll-sys build.rs runs cmake against this dir and
+      # copies all root files (plus locales/) next to the compiled binary, so
+      # both build-time and runtime expect the merged layout.
+      - mkdir -p /app/lib/cef
+      - cp -a include libcef_dll cmake CMakeLists.txt /app/lib/cef/
+      - cp -a Release/. /app/lib/cef/
+      - cp -a Resources/. /app/lib/cef/
+      - chmod +x /app/lib/cef/chrome-sandbox || true
+      - install -Dm644 archive.json /app/lib/cef/archive.json
+    sources:
+      - type: archive
+        only-arches: [x86_64]
+        url: https://cef-builds.spotifycdn.com/cef_binary_148.0.8%2Bg18e00ea%2Bchromium-148.0.7778.96_linux64_minimal.tar.bz2
+        sha256: f392c1724256792b73610082d725e750208b557c49842ce66e5a29710d7bb84e
+      - type: archive
+        only-arches: [aarch64]
+        url: https://cef-builds.spotifycdn.com/cef_binary_148.0.8%2Bg18e00ea%2Bchromium-148.0.7778.96_linuxarm64_minimal.tar.bz2
+        sha1: 7bccca86d0a44ba34fe928a0a7e91d80901a5be6
+      - type: inline
+        only-arches: [x86_64]
+        contents: |
+          {"type":"minimal","name":"cef_binary_148.0.8+g18e00ea+chromium-148.0.7778.96_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
+        dest-filename: archive.json
+      - type: inline
+        only-arches: [aarch64]
+        contents: |
+          {"type":"minimal","name":"cef_binary_148.0.8+g18e00ea+chromium-148.0.7778.96_linuxarm64_minimal.tar.bz2","sha1":"7bccca86d0a44ba34fe928a0a7e91d80901a5be6"}
+        dest-filename: archive.json
+
+  - name: karere
+    buildsystem: meson
+    config-opts:
+      - -Dprofile=default
+    sources:
+      - type: dir
+        path: ..
+      - cargo-sources.json

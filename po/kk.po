@@ -1,0 +1,886 @@
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: https://github.com/tobagin/karere/issues\n"
+"POT-Creation-Date: 2026-03-31 00:00+0000\n"
+"PO-Revision-Date: 2026-04-24 00:00+0000\n"
+"Last-Translator: AnmiTaliDev <anmitalidev@nuros.org>\n"
+"Language-Team: Kazakh\n"
+"Language: kk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui
+msgid "General"
+msgstr "Жалпы"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Show this help"
+msgstr "Осы анықтаманы көрсету"
+
+#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui temp_ui/window.ui
+msgid "Preferences"
+msgstr "Параметрлер"
+
+#: temp_ui/keyboard-shortcuts.ui temp_ui/window.ui
+msgid "About"
+msgstr "Бағдарлама туралы"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Quit application"
+msgstr "Бағдарламадан шығу"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Window"
+msgstr "Терезе"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Minimize window"
+msgstr "Терезені кішірейту"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Fullscreen"
+msgstr "Толық экран"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "WhatsApp Web"
+msgstr "WhatsApp Web"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Find in chat"
+msgstr "Чаттан іздеу"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Search chats"
+msgstr "Чаттарды іздеу"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "New chat"
+msgstr "Жаңа чат"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Archive current chat"
+msgstr "Ағымдағы чатты мұрағаттау"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Open profile"
+msgstr "Профильді ашу"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Reload WhatsApp Web"
+msgstr "WhatsApp Web-ті қайта жүктеу"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "WebView Zoom"
+msgstr "WebView ұлғайтуы"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Zoom in"
+msgstr "Үлкейту"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Zoom out"
+msgstr "Кішірейту"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Reset zoom"
+msgstr "Ұлғайтуды қалпына келтіру"
+
+#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui
+msgid "Accessibility"
+msgstr "Арнайы мүмкіндіктер"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Toggle high contrast"
+msgstr "Жоғары контрасты қосу/өшіру"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Toggle focus indicators"
+msgstr "Фокус индикаторларын қосу/өшіру"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Developer"
+msgstr "Әзірлеуші"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Developer tools"
+msgstr "Әзірлеуші құралдары"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Reload page"
+msgstr "Бетті қайта жүктеу"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Force reload"
+msgstr "Мәжбүрлі қайта жүктеу"
+
+#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui
+msgid "Notifications"
+msgstr "Хабарландырулар"
+
+#: temp_ui/keyboard-shortcuts.ui
+msgid "Toggle notifications"
+msgstr "Хабарландыруларды қосу/өшіру"
+
+#: temp_ui/preferences.ui
+msgid "Startup"
+msgstr "Іске қосу"
+
+#: temp_ui/preferences.ui
+msgid "Run on Startup"
+msgstr "Жүйе іске қосылғанда жұмыс істеу"
+
+#: temp_ui/preferences.ui
+msgid "Launch Karere automatically when you log in"
+msgstr "Жүйеге кіргенде Karere-ді автоматты түрде іске қосу"
+
+#: temp_ui/preferences.ui
+msgid "Start in background"
+msgstr "Фонда іске қосу"
+
+#: temp_ui/preferences.ui
+msgid "Start minimized without showing the window"
+msgstr "Терезені көрсетпей кішірейтілген күйде іске қосу"
+
+#: temp_ui/preferences.ui
+msgid "Window Close Behavior"
+msgstr "Терезені жабу әрекеті"
+
+#: temp_ui/preferences.ui
+msgid "What happens when you close the window"
+msgstr "Терезені жапқанда не болады"
+
+#: temp_ui/preferences.ui
+msgid "Run in Background"
+msgstr "Фонда жұмыс істеу"
+
+#: temp_ui/preferences.ui
+msgid "Quit Application"
+msgstr "Бағдарламадан шығу"
+
+#: temp_ui/preferences.ui
+msgid "System Tray Icon"
+msgstr "Жүйелік науашадағы белгіше"
+
+#: temp_ui/preferences.ui
+msgid "Show an icon in the system tray"
+msgstr "Жүйелік науашада белгіше көрсету"
+
+#: temp_ui/preferences.ui
+msgid "Auto"
+msgstr "Автоматты"
+
+#: temp_ui/preferences.ui
+msgid "Enabled"
+msgstr "Қосылған"
+
+#: temp_ui/preferences.ui
+msgid "Disabled"
+msgstr "Өшірілген"
+
+#: temp_ui/preferences.ui
+msgid "Auto: Enabled for non-GNOME environments"
+msgstr "Автоматты: GNOME емес орталарда қосылады"
+
+#: temp_ui/preferences.ui
+msgid "Appearance"
+msgstr "Сыртқы түр"
+
+#: temp_ui/preferences.ui
+msgid "Theme"
+msgstr "Тақырып"
+
+#: temp_ui/preferences.ui
+msgid "Choose the application color scheme"
+msgstr "Бағдарламаның түс схемасын таңдау"
+
+#: temp_ui/preferences.ui
+msgid "Follow System"
+msgstr "Жүйе параметрін қолдану"
+
+#: temp_ui/preferences.ui
+msgid "Light"
+msgstr "Ашық"
+
+#: temp_ui/preferences.ui
+msgid "Dark"
+msgstr "Қараңғы"
+
+#: temp_ui/preferences.ui
+msgid "Mobile Layout (Experimental)"
+msgstr "Мобильді орналасу (Тәжірибелік)"
+
+#: temp_ui/preferences.ui
+msgid "Optimize the interface for small screens"
+msgstr "Интерфейсті кішкентай экрандарға бейімдеу"
+
+#: temp_ui/preferences.ui
+msgid "Auto: Enabled for mobile environments (Phosh, Plasma Mobile, etc.)"
+msgstr "Автоматты: мобильді орталарда қосылады (Phosh, Plasma Mobile, т.б.)"
+
+#: temp_ui/preferences.ui
+msgid "Spell Checking"
+msgstr "Емлені тексеру"
+
+#: temp_ui/preferences.ui
+msgid "Enable Spell Checking"
+msgstr "Емлені тексеруді қосу"
+
+#: temp_ui/preferences.ui
+msgid "Check spelling as you type"
+msgstr "Теру кезінде емлені тексеру"
+
+#: temp_ui/preferences.ui
+msgid "Dictionary Status"
+msgstr "Сөздік күйі"
+
+#: temp_ui/preferences.ui
+msgid "Number of installed dictionaries"
+msgstr "Орнатылған сөздіктер саны"
+
+#: temp_ui/preferences.ui
+msgid "Unknown"
+msgstr "Белгісіз"
+
+#: temp_ui/preferences.ui
+msgid "Active Language"
+msgstr "Белсенді тіл"
+
+#: temp_ui/preferences.ui
+msgid "Automatically detected language"
+msgstr "Автоматты анықталған тіл"
+
+#: temp_ui/preferences.ui
+msgid "Select the language for spell checking"
+msgstr "Емлені тексеру үшін тілді таңдау"
+
+#: temp_ui/preferences.ui
+msgid "Override Dictionary"
+msgstr "Сөздікті қолмен таңдау"
+
+#: temp_ui/preferences.ui
+msgid "Manually select the spell checking language"
+msgstr "Емлені тексеру тілін қолмен таңдау"
+
+#: temp_ui/preferences.ui
+msgid "Enable Auto-Correct"
+msgstr "Автотүзетуді қосу"
+
+#: temp_ui/preferences.ui
+msgid "Automatically fix common spelling mistakes"
+msgstr "Жиі кездесетін емле қателерін автоматты түзету"
+
+#: temp_ui/preferences.ui
+msgid "Downloads"
+msgstr "Жүктеулер"
+
+#: temp_ui/preferences.ui src/preferences.rs
+msgid "Default (Downloads)"
+msgstr "Әдепкі (Жүктеулер)"
+
+#: temp_ui/preferences.ui
+msgid "Download Directory"
+msgstr "Жүктеу қалтасы"
+
+#: temp_ui/preferences.ui
+msgid "Choose..."
+msgstr "Таңдау…"
+
+#: temp_ui/preferences.ui
+msgid "Reset to default"
+msgstr "Әдепкіге қайтару"
+
+#: temp_ui/preferences.ui
+msgid "Accounts"
+msgstr "Аккаунттар"
+
+#: temp_ui/preferences.ui
+msgid "Multi-Account Support"
+msgstr "Бірнеше аккаунтты қолдау"
+
+#: temp_ui/preferences.ui
+msgid "Show account switcher in the header bar"
+msgstr "Тақырып жолағында аккаунт ауыстырғышты көрсету"
+
+#: temp_ui/preferences.ui
+msgid "Limit Number of Accounts"
+msgstr "Аккаунттар санын шектеу"
+
+#: temp_ui/preferences.ui
+msgid "Restrict how many accounts can be created"
+msgstr "Жасалуы мүмкін аккаунттар санын шектеу"
+
+#: temp_ui/preferences.ui
+msgid "Maximum Accounts"
+msgstr "Аккаунттардың ең көп саны"
+
+#: temp_ui/preferences.ui
+msgid "Maximum number of accounts allowed"
+msgstr "Рұқсат етілген аккаунттардың ең көп саны"
+
+#: temp_ui/preferences.ui
+msgid "Developer Tools"
+msgstr "Әзірлеуші құралдары"
+
+#: temp_ui/preferences.ui
+msgid "Enable Developer Tools"
+msgstr "Әзірлеуші құралдарын қосу"
+
+#: temp_ui/preferences.ui
+msgid "Allow inspecting and debugging the WebView"
+msgstr "WebView-ді тексеруге және жөндеуге рұқсат беру"
+
+#: temp_ui/preferences.ui
+msgid "Open the WebKit inspector"
+msgstr "WebKit инспекторын ашу"
+
+#: temp_ui/preferences.ui
+msgid "Open"
+msgstr "Ашу"
+
+#: temp_ui/preferences.ui
+msgid "Keyboard Navigation"
+msgstr "Пернетақта арқылы шарлау"
+
+#: temp_ui/preferences.ui temp_ui/window.ui
+msgid "Keyboard Shortcuts"
+msgstr "Пернелер тіркесімдері"
+
+#: temp_ui/preferences.ui
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "Жалпы әрекеттер үшін пернелер тіркесімдерін қосу"
+
+#: temp_ui/preferences.ui
+msgid "Focus Indicators"
+msgstr "Фокус индикаторлары"
+
+#: temp_ui/preferences.ui
+msgid "Show visible outlines around focused elements"
+msgstr "Фокустелген элементтер айналасында көрінетін жиектерді көрсету"
+
+#: temp_ui/preferences.ui
+msgid "View Keyboard Shortcuts"
+msgstr "Пернелер тіркесімдерін қарау"
+
+#: temp_ui/preferences.ui
+msgid "See all available keyboard shortcuts"
+msgstr "Барлық қолжетімді пернелер тіркесімдерін қарау"
+
+#: temp_ui/preferences.ui
+msgid "View"
+msgstr "Қарау"
+
+#: temp_ui/preferences.ui
+msgid "Visual Accessibility"
+msgstr "Визуалды арнайы мүмкіндіктер"
+
+#: temp_ui/preferences.ui
+msgid "High Contrast Mode"
+msgstr "Жоғары контраст режимі"
+
+#: temp_ui/preferences.ui
+msgid "Increase contrast for better readability"
+msgstr "Оқылымдылықты жақсарту үшін контрастты арттыру"
+
+#: temp_ui/preferences.ui
+msgid "Reduce Motion"
+msgstr "Қозғалысты азайту"
+
+#: temp_ui/preferences.ui
+msgid "Minimize animations and transitions"
+msgstr "Анимациялар мен өтулерді азайту"
+
+#: temp_ui/preferences.ui
+msgid "Accessibility Zoom"
+msgstr "Арнайы мүмкіндіктер ұлғайтуы"
+
+#: temp_ui/preferences.ui
+msgid "Minimum Zoom Level"
+msgstr "Ең аз ұлғайту деңгейі"
+
+#: temp_ui/preferences.ui
+msgid "Set a minimum zoom level for all accounts"
+msgstr "Барлық аккаунттар үшін ең аз ұлғайту деңгейін орнату"
+
+#: temp_ui/preferences.ui
+msgid "Applied to all webviews — changing this resets all accounts"
+msgstr "Барлық веб-қарауларға қолданылады — бұны өзгерту барлық аккаунттарды қалпына келтіреді"
+
+#: temp_ui/preferences.ui
+msgid "Reset Zoom Level"
+msgstr "Ұлғайту деңгейін қалпына келтіру"
+
+#: temp_ui/preferences.ui
+msgid "Reset minimum zoom to 1.0 for all accounts"
+msgstr "Барлық аккаунттар үшін ең аз ұлғайтуды 1.0-ге қайтару"
+
+#: temp_ui/preferences.ui
+msgid "Header Bar Zoom Controls"
+msgstr "Тақырып жолағындағы ұлғайту басқару элементтері"
+
+#: temp_ui/preferences.ui
+msgid "Show zoom buttons in the header bar (affects current account only)"
+msgstr "Тақырып жолағында ұлғайту түймелерін көрсету (тек ағымдағы аккаунтқа әсер етеді)"
+
+#: temp_ui/preferences.ui temp_ui/window.ui
+msgid "Reset Zoom"
+msgstr "Ұлғайтуды қалпына келтіру"
+
+#: temp_ui/preferences.ui
+msgid "Reset"
+msgstr "Қалпына келтіру"
+
+#: temp_ui/preferences.ui
+msgid "Screen Reader Support"
+msgstr "Экран оқу құралын қолдау"
+
+#: temp_ui/preferences.ui
+msgid "Screen Reader Optimizations"
+msgstr "Экран оқу құралын оңтайландыру"
+
+#: temp_ui/preferences.ui
+msgid "Improve compatibility with assistive technologies"
+msgstr "Көмекші технологиялармен үйлесімділікті жақсарту"
+
+#: temp_ui/preferences.ui
+msgid "Accessibility Shortcuts"
+msgstr "Арнайы мүмкіндіктер пернелер тіркесімдері"
+
+#: temp_ui/preferences.ui
+msgid "Enable keyboard shortcuts for accessibility features"
+msgstr "Арнайы мүмкіндіктер үшін пернелер тіркесімдерін қосу"
+
+#: temp_ui/preferences.ui
+msgid "Developer Shortcuts"
+msgstr "Әзірлеуші пернелер тіркесімдері"
+
+#: temp_ui/preferences.ui
+msgid "Enable keyboard shortcuts for developer tools"
+msgstr "Әзірлеуші құралдары үшін пернелер тіркесімдерін қосу"
+
+#: temp_ui/preferences.ui
+msgid "Notification Shortcuts"
+msgstr "Хабарландыру пернелер тіркесімдері"
+
+#: temp_ui/preferences.ui
+msgid "Enable keyboard shortcuts for notification actions"
+msgstr "Хабарландыру әрекеттері үшін пернелер тіркесімдерін қосу"
+
+#: temp_ui/preferences.ui
+msgid "Enable Notifications"
+msgstr "Хабарландыруларды қосу"
+
+#: temp_ui/preferences.ui
+msgid "Master toggle for all notifications"
+msgstr "Барлық хабарландырулар үшін негізгі ауыстырғыш"
+
+#: temp_ui/preferences.ui
+msgid "Messages"
+msgstr "Хабарламалар"
+
+#: temp_ui/preferences.ui
+msgid "Message Notifications"
+msgstr "Хабарлама хабарландырулары"
+
+#: temp_ui/preferences.ui
+msgid "Show notifications for incoming messages"
+msgstr "Кіріс хабарламалар үшін хабарландыруларды көрсету"
+
+#: temp_ui/preferences.ui
+msgid "Change Tray Icon on Message"
+msgstr "Хабарлама келгенде науаша белгішесін өзгерту"
+
+#: temp_ui/preferences.ui
+msgid "Animate the tray icon when a new message arrives"
+msgstr "Жаңа хабарлама келгенде науаша белгішесін анимациялау"
+
+#: temp_ui/preferences.ui
+msgid "Message Preview"
+msgstr "Хабарлама алдын ала қарауы"
+
+#: temp_ui/preferences.ui
+msgid "Show Message Preview"
+msgstr "Хабарлама алдын ала қарауын көрсету"
+
+#: temp_ui/preferences.ui
+msgid "Display message content in notifications"
+msgstr "Хабарландыруларда хабарлама мазмұнын көрсету"
+
+#: temp_ui/preferences.ui
+msgid "Limit Message Preview Size"
+msgstr "Хабарлама алдын ала қарау өлшемін шектеу"
+
+#: temp_ui/preferences.ui
+msgid "Truncate long messages in notifications"
+msgstr "Хабарландыруларда ұзын хабарламаларды қысқарту"
+
+#: temp_ui/preferences.ui
+msgid "Preview Length (characters)"
+msgstr "Алдын ала қарау ұзындығы (таңба)"
+
+#: temp_ui/preferences.ui
+msgid "Maximum number of characters shown in previews"
+msgstr "Алдын ала қарауда көрсетілетін таңбалардың ең көп саны"
+
+#: temp_ui/preferences.ui
+msgid "Sounds"
+msgstr "Дыбыстар"
+
+#: temp_ui/preferences.ui
+msgid "Notification Sounds"
+msgstr "Хабарландыру дыбыстары"
+
+#: temp_ui/preferences.ui
+msgid "Play a sound when a notification arrives"
+msgstr "Хабарландыру келгенде дыбыс ойнату"
+
+#: temp_ui/preferences.ui
+msgid "Sound"
+msgstr "Дыбыс"
+
+#: temp_ui/preferences.ui
+msgid "Choose the notification alert sound"
+msgstr "Хабарландыру дыбыс сигналын таңдау"
+
+#: temp_ui/preferences.ui
+msgid "WhatsApp (Default)"
+msgstr "WhatsApp (Әдепкі)"
+
+#: temp_ui/preferences.ui
+msgid "Pop"
+msgstr "Поп"
+
+#: temp_ui/preferences.ui
+msgid "Alert"
+msgstr "Дабыл"
+
+#: temp_ui/preferences.ui
+msgid "Soft"
+msgstr "Жұмсақ"
+
+#: temp_ui/preferences.ui
+msgid "Start"
+msgstr "Іске қосу"
+
+#: temp_ui/preferences.ui
+msgid "Download Notifications"
+msgstr "Жүктеу хабарландырулары"
+
+#: temp_ui/preferences.ui
+msgid "Notify when a file download completes"
+msgstr "Файл жүктелу аяқталғанда хабарландыру"
+
+#: temp_ui/preferences.ui
+msgid "Notification Type"
+msgstr "Хабарландыру түрі"
+
+#: temp_ui/preferences.ui
+msgid "How download notifications are displayed"
+msgstr "Жүктеу хабарландырулары қалай көрсетіледі"
+
+#: temp_ui/preferences.ui
+msgid "In-app Toast"
+msgstr "Бағдарлама ішіндегі тост"
+
+#: temp_ui/preferences.ui
+msgid "System Notification"
+msgstr "Жүйелік хабарландыру"
+
+#: temp_ui/window.ui src/main.rs src/tray.rs
+msgid "Karere"
+msgstr "Karere"
+
+#: temp_ui/window.ui
+msgid "GTK4 WhatsApp Web Client"
+msgstr "GTK4 WhatsApp Web клиенті"
+
+#: temp_ui/window.ui
+msgid "Zoom"
+msgstr "Ұлғайту"
+
+#: temp_ui/window.ui
+msgid "Zoom Out"
+msgstr "Кішірейту"
+
+#: temp_ui/window.ui
+msgid "Zoom In"
+msgstr "Үлкейту"
+
+#: temp_ui/window.ui
+msgid "Spell Checking Language"
+msgstr "Емлені тексеру тілі"
+
+#: temp_ui/window.ui
+msgid "Menu"
+msgstr "Мәзір"
+
+#: temp_ui/window.ui
+msgid "Switch Account"
+msgstr "Аккаунтты ауыстыру"
+
+#: temp_ui/window.ui
+msgid "Add new account"
+msgstr "Жаңа аккаунт қосу"
+
+#: temp_ui/window.ui
+msgid "Refresh WhatsApp Web"
+msgstr "WhatsApp Web-ті жаңарту"
+
+#: temp_ui/window.ui src/tray.rs
+msgid "Quit"
+msgstr "Шығу"
+
+#: src/main.rs
+msgid "Karere (Dev)"
+msgstr "Karere (Әзірлеме)"
+
+#: src/main.rs
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities (Development Version)"
+msgstr ""
+"WhatsApp Web үшін жан-жақты журналдау және авариялық есеп беру "
+"мүмкіндіктерімен жұмыс үстелімен тікелей интеграцияны қамтамасыз ететін "
+"заманауи, нативті GTK4/LibAdwaita қаптамасы (Әзірлеме нұсқасы)"
+
+#: src/main.rs
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+"WhatsApp Web үшін жан-жақты журналдау және авариялық есеп беру "
+"мүмкіндіктерімен жұмыс үстелімен тікелей интеграцияны қамтамасыз ететін "
+"заманауи, нативті GTK4/LibAdwaita қаптамасы"
+
+#: src/main.rs
+msgid "Source"
+msgstr "Бастапқы код"
+
+#: src/main.rs
+msgid "Special Thanks"
+msgstr "Арнайы алғыс"
+
+#: src/preferences.rs
+msgid "1 Dictionary"
+msgstr "1 сөздік"
+
+#: src/preferences.rs
+msgid "Dictionaries"
+msgstr "сөздік"
+
+#: src/preferences.rs
+msgid "Select Download Directory"
+msgstr "Жүктеу қалтасын таңдау"
+
+#: src/preferences.rs
+msgid "Select"
+msgstr "Таңдау"
+
+#: src/tray.rs
+msgid "Running via Rust & GTK4"
+msgstr "Rust және GTK4 арқылы жұмыс істеуде"
+
+#: src/tray.rs
+msgid "Hide Window"
+msgstr "Терезені жасыру"
+
+#: src/tray.rs
+msgid "Show Window"
+msgstr "Терезені көрсету"
+
+#: src/window.rs
+msgid "Re-authentication Required"
+msgstr "Қайта аутентификация қажет"
+
+#: src/window.rs
+msgid ""
+"Karere has been updated with a new browser engine that enables voice and "
+"video calls.\n"
+"\n"
+"Your existing WhatsApp session could not be transferred to the new engine. "
+"Please scan the QR code to re-link your account(s). This is a one-time step."
+msgstr ""
+"Karere дауыстық және бейнеқоңыраулар мүмкіндігін беретін жаңа браузер "
+"қозғалтқышымен жаңартылды.\n"
+"\n"
+"Бар WhatsApp сессияңыз жаңа қозғалтқышқа ауыстырылмады. "
+"Аккаунтыңызды(дарыңызды) қайта байланыстыру үшін QR-кодты сканерлеңіз. Бұл бір реттік қадам."
+
+#: src/window.rs
+msgid "_OK"
+msgstr "_Жарайды"
+
+#: src/window.rs
+msgid "Download Failed"
+msgstr "Жүктеу сәтсіз аяқталды"
+
+#: src/window.rs
+msgid "An error occurred while downloading the file."
+msgstr "Файлды жүктеу кезінде қате орын алды."
+
+#: src/window.rs
+msgid "OK"
+msgstr "Жарайды"
+
+#: src/window.rs
+msgid "WhatsApp Web Notification Permission"
+msgstr "WhatsApp Web хабарландыру рұқсаты"
+
+#: src/window.rs
+msgid ""
+"WhatsApp Web wants to show desktop notifications for new messages. Would you "
+"like to allow notifications?"
+msgstr ""
+"WhatsApp Web жаңа хабарламалар үшін жұмыс үстелі хабарландыруларын "
+"көрсеткісі келеді. Хабарландыруларға рұқсат бергіңіз келе ме?"
+
+#: src/window.rs
+msgid "Deny"
+msgstr "Бас тарту"
+
+#: src/window.rs
+msgid "Allow"
+msgstr "Рұқсат беру"
+
+#: src/window.rs
+msgid "WhatsApp Web Camera & Microphone Permission"
+msgstr "WhatsApp Web камера және микрофон рұқсаты"
+
+#: src/window.rs
+msgid ""
+"WhatsApp Web wants to access your camera and microphone. Would you like to "
+"allow access?"
+msgstr ""
+"WhatsApp Web камераңыз бен микрофоныңызға кіргісі келеді. "
+"Кіруге рұқсат бергіңіз келе ме?"
+
+#: src/window.rs
+msgid "WhatsApp Web Camera Permission"
+msgstr "WhatsApp Web камера рұқсаты"
+
+#: src/window.rs
+msgid ""
+"WhatsApp Web wants to access your camera. Would you like to allow access?"
+msgstr ""
+"WhatsApp Web камераңызға кіргісі келеді. Кіруге рұқсат бергіңіз келе ме?"
+
+#: src/window.rs
+msgid "WhatsApp Web Microphone Permission"
+msgstr "WhatsApp Web микрофон рұқсаты"
+
+#: src/window.rs
+msgid ""
+"WhatsApp Web wants to access your microphone. Would you like to allow access?"
+msgstr ""
+"WhatsApp Web микрофоныңызға кіргісі келеді. Кіруге рұқсат бергіңіз келе ме?"
+
+#: src/window.rs
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: src/window.rs
+msgid "New message"
+msgstr "Жаңа хабарлама"
+
+#: src/window.rs
+msgid "New message received"
+msgstr "Жаңа хабарлама алынды"
+
+#: src/window.rs
+msgid "Web process %s. Reloading…"
+msgstr "Веб-процесс %s. Қайта жүктелуде…"
+
+#: src/window.rs
+msgid "Web process %s. Reload manually with Ctrl+R"
+msgstr "Веб-процесс %s. Ctrl+R арқылы қолмен қайта жүктеңіз"
+
+#: src/window.rs
+msgid "No account"
+msgstr "Аккаунт жоқ"
+
+#: src/window.rs
+msgid "Account Limit Reached"
+msgstr "Аккаунттар шегіне жетті"
+
+#: src/window.rs
+msgid "You have reached the maximum number of accounts"
+msgstr "Сіз аккаунттардың ең көп санына жеттіңіз"
+
+#: src/window.rs
+msgid "You can increase or disable this limit in Preferences → Accounts."
+msgstr "Бұл шекті Параметрлер → Аккаунттар бөлімінде арттыруға немесе өшіруге болады."
+
+#: src/window.rs
+msgid "Edit Account"
+msgstr "Аккаунтты өңдеу"
+
+#: src/window.rs
+msgid "Add New Account"
+msgstr "Жаңа аккаунт қосу"
+
+#: src/window.rs
+msgid "Account Name"
+msgstr "Аккаунт атауы"
+
+#: src/window.rs
+msgid "Emoji"
+msgstr "Эмодзи"
+
+#: src/window.rs
+msgid "Choose Avatar Color"
+msgstr "Аватар түсін таңдау"
+
+#: src/window.rs
+msgid "Color"
+msgstr "Түс"
+
+#: src/window.rs
+msgid "Save"
+msgstr "Сақтау"
+
+#: src/window.rs
+msgid "Add Account"
+msgstr "Аккаунт қосу"
+
+#: src/window.rs
+msgid "_Cancel"
+msgstr "_Бас тарту"
+
+#: src/window.rs
+msgid "Remove account"
+msgstr "Аккаунтты жою"
+
+#: src/window.rs
+msgid "This action cannot be undone."
+msgstr "Бұл әрекетті болдырмау мүмкін емес."
+
+#: src/window.rs
+msgid "_Remove"
+msgstr "_Жою"
+
+#: src/window.rs
+msgid "Reset All Zoom Levels?"
+msgstr "Барлық ұлғайту деңгейлерін қалпына келтіру керек пе?"
+
+#: src/window.rs
+msgid "_Apply"
+msgstr "_Қолдану"
+
+#: data/io.github.tobagin.karere.desktop.in
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
+
+#: data/io.github.tobagin.karere.desktop.in
+msgid "WhatsApp Client"
+msgstr "WhatsApp клиенті"
+
+#: data/io.github.tobagin.karere.desktop.in
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Linux жұмыс үстелі үшін нативті WhatsApp Web клиенті"
+
+#: data/io.github.tobagin.karere.desktop.in
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;чат;хабарлама;веб;байланыс;"

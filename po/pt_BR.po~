@@ -1,0 +1,355 @@
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-09 22:04+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: temp_ui/keyboard-shortcuts.ui:12
+msgid "General"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:15
+msgid "Show this help"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:21 temp_ui/window.ui:152
+msgid "Preferences"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:27 temp_ui/window.ui:162
+msgid "About"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:33
+msgid "Quit application"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:41
+#, fuzzy
+msgid "Window"
+msgstr "Ocultar Janela"
+
+#: temp_ui/keyboard-shortcuts.ui:44
+#, fuzzy
+msgid "Minimize window"
+msgstr "Ocultar Janela"
+
+#: temp_ui/keyboard-shortcuts.ui:50
+msgid "Fullscreen"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:58
+msgid "WhatsApp Web"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:61
+msgid "Find in chat"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:67
+msgid "Search chats"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:73
+msgid "New chat"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:79
+msgid "Archive current chat"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:85
+msgid "Open profile"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:91
+msgid "Reload WhatsApp Web"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:99
+msgid "WebView Zoom"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:102
+msgid "Zoom in"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:108
+msgid "Zoom out"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:114
+msgid "Reset zoom"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:122
+msgid "Accessibility"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:125
+msgid "Toggle high contrast"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:131
+msgid "Toggle focus indicators"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:139
+msgid "Developer"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:142
+msgid "Developer tools"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:148
+msgid "Reload page"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:154
+msgid "Force reload"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:162
+msgid "Notifications"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:165
+msgid "Toggle notifications"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:171
+msgid "Toggle Do Not Disturb"
+msgstr ""
+
+#: temp_ui/window.ui:37
+msgid "Zoom Out"
+msgstr ""
+
+#: temp_ui/window.ui:44
+msgid "Reset Zoom"
+msgstr ""
+
+#: temp_ui/window.ui:51
+msgid "Zoom In"
+msgstr ""
+
+#: temp_ui/window.ui:60
+msgid "Spell Checking Language"
+msgstr ""
+
+#: temp_ui/window.ui:67
+msgid "Menu"
+msgstr ""
+
+#: temp_ui/window.ui:73
+#, fuzzy
+msgid "Switch Account"
+msgstr "Adicionar Nova Conta"
+
+#: temp_ui/window.ui:134
+msgid "Add new account"
+msgstr "Adicionar nova conta"
+
+#: temp_ui/window.ui:148
+msgid "Refresh WhatsApp Web"
+msgstr ""
+
+#: temp_ui/window.ui:158
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: temp_ui/window.ui:168 src/tray.rs:122
+msgid "Quit"
+msgstr "Sair"
+
+#: src/main.rs:144
+msgid "Karere (Dev)"
+msgstr ""
+
+#: src/main.rs:144 src/tray.rs:29 src/tray.rs:73
+msgid "Karere"
+msgstr ""
+
+#: src/main.rs:146
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities (Development Version)"
+msgstr ""
+
+#: src/main.rs:148
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+
+#: src/main.rs:169
+msgid "Source"
+msgstr ""
+
+#: src/main.rs:172
+msgid "Special Thanks"
+msgstr ""
+
+#: src/preferences.rs:272
+msgid "Default (Downloads)"
+msgstr "Padrão (Downloads)"
+
+#: src/preferences.rs:430
+msgid "1 Dictionary"
+msgstr "1 Dicionário"
+
+#: src/preferences.rs:433
+msgid "Dictionaries"
+msgstr "Dicionários"
+
+#: src/preferences.rs:483
+msgid "Select Download Directory"
+msgstr "Selecionar Diretório de Download"
+
+#: src/preferences.rs:485
+msgid "Select"
+msgstr "Selecionar"
+
+#: src/tray.rs:74
+msgid "Running via Rust & GTK4"
+msgstr ""
+
+#: src/tray.rs:82
+msgid "Hide Window"
+msgstr "Ocultar Janela"
+
+#: src/tray.rs:84
+msgid "Show Window"
+msgstr "Mostrar Janela"
+
+#: src/window.rs:788
+msgid "WhatsApp Web Notification Permission"
+msgstr "Permissão de Notificação do WhatsApp Web"
+
+#: src/window.rs:789
+msgid ""
+"WhatsApp Web wants to show desktop notifications for new messages. Would you "
+"like to allow notifications?"
+msgstr ""
+"O WhatsApp Web deseja exibir notificações na área de trabalho para novas "
+"mensagens. Você gostaria de permitir as notificações?"
+
+#: src/window.rs:794 src/window.rs:878
+msgid "Deny"
+msgstr "Negar"
+
+#: src/window.rs:795 src/window.rs:879
+msgid "Allow"
+msgstr "Permitir"
+
+#: src/window.rs:841
+#, fuzzy
+msgid "WhatsApp Web Camera & Microphone Permission"
+msgstr "Permissão de Microfone do WhatsApp Web"
+
+#: src/window.rs:842
+#, fuzzy
+msgid ""
+"WhatsApp Web wants to access your camera and microphone. Would you like to "
+"allow access?"
+msgstr ""
+"O WhatsApp Web deseja acessar seu microfone para mensagens de voz e "
+"chamadas. Você gostaria de permitir o acesso ao microfone?"
+
+#: src/window.rs:845
+#, fuzzy
+msgid "WhatsApp Web Camera Permission"
+msgstr "Permissão de Microfone do WhatsApp Web"
+
+#: src/window.rs:846
+#, fuzzy
+msgid ""
+"WhatsApp Web wants to access your camera. Would you like to allow access?"
+msgstr ""
+"O WhatsApp Web deseja acessar seu microfone para mensagens de voz e "
+"chamadas. Você gostaria de permitir o acesso ao microfone?"
+
+#: src/window.rs:851
+msgid "WhatsApp Web Microphone Permission"
+msgstr "Permissão de Microfone do WhatsApp Web"
+
+#: src/window.rs:852
+#, fuzzy
+msgid ""
+"WhatsApp Web wants to access your microphone. Would you like to allow access?"
+msgstr ""
+"O WhatsApp Web deseja acessar seu microfone para mensagens de voz e "
+"chamadas. Você gostaria de permitir o acesso ao microfone?"
+
+#: src/window.rs:934
+msgid "WhatsApp"
+msgstr ""
+
+#: src/window.rs:935
+msgid "New message"
+msgstr "Nova mensagem"
+
+#: src/window.rs:940
+msgid "New message received"
+msgstr "Nova mensagem recebida"
+
+#: src/window.rs:1614
+#, fuzzy
+msgid "No account"
+msgstr "Remover conta"
+
+#: src/window.rs:1729
+msgid "Add New Account"
+msgstr "Adicionar Nova Conta"
+
+#: src/window.rs:1730
+msgid "Enter account name:"
+msgstr "Digite o nome da conta:"
+
+#: src/window.rs:1736
+msgid "Account name"
+msgstr "Nome da conta"
+
+#: src/window.rs:1743 src/window.rs:1770
+msgid "_Cancel"
+msgstr "_Cancelar"
+
+#: src/window.rs:1744
+msgid "_Add"
+msgstr "_Adicionar"
+
+#: src/window.rs:1764
+msgid "Remove account"
+msgstr "Remover conta"
+
+#: src/window.rs:1765
+msgid "This action cannot be undone."
+msgstr "Essa ação não pode ser desfeita"
+
+#: src/window.rs:1771
+msgid "_Remove"
+msgstr ""
+
+#: data/io.github.tobagin.karere.desktop.in:3
+msgid "@APP_NAME@"
+msgstr ""
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr ""
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr ""
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr ""
+
+#, fuzzy
+#~ msgid "✅ Fixed WhatsApp Web notification banner persistence"
+#~ msgstr "Permissão de Notificação do WhatsApp Web"

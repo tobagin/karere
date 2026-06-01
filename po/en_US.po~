@@ -1,0 +1,965 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Karere package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Karere 2.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-09 22:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: temp_ui/keyboard-shortcuts.ui:12
+msgid "General"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:15
+msgid "Show this help"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:21 temp_ui/window.ui:152
+msgid "Preferences"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:27 temp_ui/window.ui:162
+msgid "About"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:33
+msgid "Quit application"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:41
+#, fuzzy
+msgid "Window"
+msgstr "Hide Window"
+
+#: temp_ui/keyboard-shortcuts.ui:44
+#, fuzzy
+msgid "Minimize window"
+msgstr "Hide Window"
+
+#: temp_ui/keyboard-shortcuts.ui:50
+msgid "Fullscreen"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:58
+#, fuzzy
+msgid "WhatsApp Web"
+msgstr "WhatsApp"
+
+#: temp_ui/keyboard-shortcuts.ui:61
+msgid "Find in chat"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:67
+msgid "Search chats"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:73
+#, fuzzy
+msgid "New chat"
+msgstr "chat"
+
+#: temp_ui/keyboard-shortcuts.ui:79
+msgid "Archive current chat"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:85
+msgid "Open profile"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:91
+msgid "Reload WhatsApp Web"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:99
+msgid "WebView Zoom"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:102
+msgid "Zoom in"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:108
+msgid "Zoom out"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:114
+msgid "Reset zoom"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:122
+msgid "Accessibility"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:125
+msgid "Toggle high contrast"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:131
+msgid "Toggle focus indicators"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:139
+msgid "Developer"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:142
+msgid "Developer tools"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:148
+msgid "Reload page"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:154
+msgid "Force reload"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:162
+#, fuzzy
+msgid "Notifications"
+msgstr "communication"
+
+#: temp_ui/keyboard-shortcuts.ui:165
+msgid "Toggle notifications"
+msgstr ""
+
+#: temp_ui/keyboard-shortcuts.ui:171
+msgid "Toggle Do Not Disturb"
+msgstr ""
+
+#: temp_ui/window.ui:37
+msgid "Zoom Out"
+msgstr ""
+
+#: temp_ui/window.ui:44
+msgid "Reset Zoom"
+msgstr ""
+
+#: temp_ui/window.ui:51
+msgid "Zoom In"
+msgstr ""
+
+#: temp_ui/window.ui:60
+msgid "Spell Checking Language"
+msgstr ""
+
+#: temp_ui/window.ui:67
+msgid "Menu"
+msgstr ""
+
+#: temp_ui/window.ui:73
+#, fuzzy
+msgid "Switch Account"
+msgstr "Add New Account"
+
+#: temp_ui/window.ui:134
+msgid "Add new account"
+msgstr "Add new account"
+
+#: temp_ui/window.ui:148
+msgid "Refresh WhatsApp Web"
+msgstr ""
+
+#: temp_ui/window.ui:158
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: temp_ui/window.ui:168 src/tray.rs:122
+msgid "Quit"
+msgstr "Quit"
+
+#: src/main.rs:144
+msgid "Karere (Dev)"
+msgstr "Karere (Dev)"
+
+#: src/main.rs:144 src/tray.rs:29 src/tray.rs:73
+msgid "Karere"
+msgstr "Karere"
+
+#: src/main.rs:146
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities (Development Version)"
+msgstr ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities (Development Version)"
+
+#: src/main.rs:148
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+
+#: src/main.rs:169
+msgid "Source"
+msgstr "Source"
+
+#: src/main.rs:172
+msgid "Special Thanks"
+msgstr "Special Thanks"
+
+#: src/preferences.rs:272
+msgid "Default (Downloads)"
+msgstr "Default (Downloads)"
+
+#: src/preferences.rs:430
+msgid "1 Dictionary"
+msgstr "1 Dictionary"
+
+#: src/preferences.rs:433
+msgid "Dictionaries"
+msgstr "Dictionaries"
+
+#: src/preferences.rs:483
+msgid "Select Download Directory"
+msgstr "Select Download Directory"
+
+#: src/preferences.rs:485
+msgid "Select"
+msgstr "Select"
+
+#: src/tray.rs:74
+msgid "Running via Rust & GTK4"
+msgstr "Running via Rust & GTK4"
+
+#: src/tray.rs:82
+msgid "Hide Window"
+msgstr "Hide Window"
+
+#: src/tray.rs:84
+msgid "Show Window"
+msgstr "Show Window"
+
+#: src/window.rs:788
+msgid "WhatsApp Web Notification Permission"
+msgstr "WhatsApp Web Notification Permission"
+
+#: src/window.rs:789
+msgid ""
+"WhatsApp Web wants to show desktop notifications for new messages. Would you "
+"like to allow notifications?"
+msgstr ""
+"WhatsApp Web wants to show desktop notifications for new messages. Would you "
+"like to allow notifications?"
+
+#: src/window.rs:794 src/window.rs:878
+msgid "Deny"
+msgstr "Deny"
+
+#: src/window.rs:795 src/window.rs:879
+msgid "Allow"
+msgstr "Allow"
+
+#: src/window.rs:841
+#, fuzzy
+msgid "WhatsApp Web Camera & Microphone Permission"
+msgstr "WhatsApp Web Microphone Permission"
+
+#: src/window.rs:842
+#, fuzzy
+msgid ""
+"WhatsApp Web wants to access your camera and microphone. Would you like to "
+"allow access?"
+msgstr ""
+"WhatsApp Web wants to access your microphone for voice messages and calls. "
+"Would you like to allow microphone access?"
+
+#: src/window.rs:845
+#, fuzzy
+msgid "WhatsApp Web Camera Permission"
+msgstr "WhatsApp Web Microphone Permission"
+
+#: src/window.rs:846
+#, fuzzy
+msgid ""
+"WhatsApp Web wants to access your camera. Would you like to allow access?"
+msgstr ""
+"WhatsApp Web wants to access your microphone for voice messages and calls. "
+"Would you like to allow microphone access?"
+
+#: src/window.rs:851
+msgid "WhatsApp Web Microphone Permission"
+msgstr "WhatsApp Web Microphone Permission"
+
+#: src/window.rs:852
+#, fuzzy
+msgid ""
+"WhatsApp Web wants to access your microphone. Would you like to allow access?"
+msgstr ""
+"WhatsApp Web wants to access your microphone for voice messages and calls. "
+"Would you like to allow microphone access?"
+
+#: src/window.rs:934
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: src/window.rs:935
+msgid "New message"
+msgstr "New message"
+
+#: src/window.rs:940
+msgid "New message received"
+msgstr "New message received"
+
+#: src/window.rs:1614
+#, fuzzy
+msgid "No account"
+msgstr "Remove account"
+
+#: src/window.rs:1729
+msgid "Add New Account"
+msgstr "Add New Account"
+
+#: src/window.rs:1730
+msgid "Enter account name:"
+msgstr "Enter account name:"
+
+#: src/window.rs:1736
+msgid "Account name"
+msgstr "Account name"
+
+#: src/window.rs:1743 src/window.rs:1770
+msgid "_Cancel"
+msgstr "_Cancel"
+
+#: src/window.rs:1744
+msgid "_Add"
+msgstr "_Add"
+
+#: src/window.rs:1764
+msgid "Remove account"
+msgstr "Remove account"
+
+#: src/window.rs:1765
+msgid "This action cannot be undone."
+msgstr "This action cannot be undone."
+
+#: src/window.rs:1771
+msgid "_Remove"
+msgstr ""
+
+#: data/io.github.tobagin.karere.desktop.in:3
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "WhatsApp Client"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Native WhatsApp Web client for Linux desktop"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;chat;messaging;web;communication;"
+
+#~ msgid "About dialog showing application information"
+#~ msgstr "About dialog showing application information"
+
+#~ msgid ""
+#~ "Added WebKit cache control setting for improved rendering consistency"
+#~ msgstr ""
+#~ "Added WebKit cache control setting for improved rendering consistency"
+
+#~ msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+#~ msgstr "Added compile-time conditional compilation using DEVELOPMENT flag"
+
+#~ msgid "Added contributors Aman Das and Cameo to about dialog"
+#~ msgstr "Added contributors Aman Das and Cameo to about dialog"
+
+#~ msgid ""
+#~ "Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+#~ msgstr ""
+#~ "Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+
+#~ msgid "Added subpixel font scaling and advanced rendering optimizations"
+#~ msgstr "Added subpixel font scaling and advanced rendering optimizations"
+
+#~ msgid "Advanced notification system with native desktop integration"
+#~ msgstr "Advanced notification system with native desktop integration"
+
+#~ msgid "Application preferences and settings dialog"
+#~ msgstr "Application preferences and settings dialog"
+
+#~ msgid ""
+#~ "BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+#~ "performance and integration."
+#~ msgstr ""
+#~ "BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+#~ "performance and integration."
+
+#~ msgid "Better build system compatibility with different environments"
+#~ msgstr "Better build system compatibility with different environments"
+
+#~ msgid "Better error handling for network disconnections"
+#~ msgstr "Better error handling for network disconnections"
+
+#~ msgid "Better error handling for network timeouts"
+#~ msgstr "Better error handling for network timeouts"
+
+#~ msgid "Better sandboxed environment compatibility"
+#~ msgstr "Better sandboxed environment compatibility"
+
+#~ msgid "Better support for modern desktop environments"
+#~ msgstr "Better support for modern desktop environments"
+
+#~ msgid "Blueprint UI with declarative interface design"
+#~ msgstr "Blueprint UI with declarative interface design"
+
+#~ msgid "Bug Fixes:"
+#~ msgstr "Bug Fixes:"
+
+#~ msgid "Cache disabled by default to prevent emoji rendering issues"
+#~ msgstr "Cache disabled by default to prevent emoji rendering issues"
+
+#~ msgid "Code Quality Improvements:"
+#~ msgstr "Code Quality Improvements:"
+
+#~ msgid "Complete internationalization support"
+#~ msgstr "Complete internationalization support"
+
+#~ msgid "Comprehensive accessibility support"
+#~ msgstr "Comprehensive accessibility support"
+
+#~ msgid "Comprehensive crash reporting with privacy controls"
+#~ msgstr "Comprehensive crash reporting with privacy controls"
+
+#~ msgid "Comprehensive test suite with unit and integration tests"
+#~ msgstr "Comprehensive test suite with unit and integration tests"
+
+#~ msgid "Connected show_notification signal handler for WebKit notifications"
+#~ msgstr "Connected show_notification signal handler for WebKit notifications"
+
+#~ msgid "Converted template files to preprocessor directives for cleaner code"
+#~ msgstr ""
+#~ "Converted template files to preprocessor directives for cleaner code"
+
+#~ msgid "Corrected AppStream metainfo format compliance"
+#~ msgstr "Corrected AppStream metainfo format compliance"
+
+#~ msgid "Corrected accessibility focus handling"
+#~ msgstr "Corrected accessibility focus handling"
+
+#~ msgid "Corrected dependency version specifications in meson.build"
+#~ msgstr "Corrected dependency version specifications in meson.build"
+
+#~ msgid "Corrected window state persistence on shutdown"
+#~ msgstr "Corrected window state persistence on shutdown"
+
+#~ msgid "Disabled problematic WebKit caches causing font corruption"
+#~ msgstr "Disabled problematic WebKit caches causing font corruption"
+
+#~ msgid "Documentation:"
+#~ msgstr "Documentation:"
+
+#~ msgid "Eliminated .vala.in template substitution system"
+#~ msgstr "Eliminated .vala.in template substitution system"
+
+#~ msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+#~ msgstr "Eliminated WebKit cache corruption affecting emoji rendering"
+
+#~ msgid "Enhanced 2D canvas acceleration for better graphics performance"
+#~ msgstr "Enhanced 2D canvas acceleration for better graphics performance"
+
+#~ msgid "Enhanced CI/CD pipeline stability"
+#~ msgstr "Enhanced CI/CD pipeline stability"
+
+#~ msgid "Enhanced Flathub compliance and validation"
+#~ msgstr "Enhanced Flathub compliance and validation"
+
+#~ msgid "Enhanced URL validation for external link detection"
+#~ msgstr "Enhanced URL validation for external link detection"
+
+#~ msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+#~ msgstr "Enhanced WebKit rendering with maximum hardware acceleration"
+
+#~ msgid "Enhanced WebKitGTK 6.0 integration"
+#~ msgstr "Enhanced WebKitGTK 6.0 integration"
+
+#~ msgid "Enhanced logging for external link operations"
+#~ msgstr "Enhanced logging for external link operations"
+
+#~ msgid "Enhanced packaging for better compatibility"
+#~ msgstr "Enhanced packaging for better compatibility"
+
+#~ msgid "Enhanced performance and stability"
+#~ msgstr "Enhanced performance and stability"
+
+#~ msgid "Enhanced security with proper sandboxing"
+#~ msgstr "Enhanced security with proper sandboxing"
+
+#~ msgid "Enhanced stability and performance optimizations"
+#~ msgstr "Enhanced stability and performance optimizations"
+
+#~ msgid "Enhanced stability during long sessions"
+#~ msgstr "Enhanced stability during long sessions"
+
+#~ msgid "Enhanced stability for extended usage"
+#~ msgstr "Enhanced stability for extended usage"
+
+#~ msgid "Enhanced visual documentation for users"
+#~ msgstr "Enhanced visual documentation for users"
+
+#~ msgid "Ensure application starts properly in the background without delay"
+#~ msgstr "Ensure application starts properly in the background without delay"
+
+#~ msgid "Features:"
+#~ msgstr "Features:"
+
+#~ msgid ""
+#~ "Fixed Ctrl+V paste for text content - now works for both text and images"
+#~ msgstr ""
+#~ "Fixed Ctrl+V paste for text content - now works for both text and images"
+
+#~ msgid "Fixed WebView zoom being enabled by default (now disabled)"
+#~ msgstr "Fixed WebView zoom being enabled by default (now disabled)"
+
+#~ msgid ""
+#~ "Fixed WhatsApp notification permission not persisting across sessions"
+#~ msgstr ""
+#~ "Fixed WhatsApp notification permission not persisting across sessions"
+
+#~ msgid "Fixed application freeze during lifecycle events"
+#~ msgstr "Fixed application freeze during lifecycle events"
+
+#~ msgid "Fixed clipboard manager intercepting all paste events"
+#~ msgstr "Fixed clipboard manager intercepting all paste events"
+
+#~ msgid "Fixed crash when handling invalid notification data"
+#~ msgstr "Fixed crash when handling invalid notification data"
+
+#~ msgid "Fixed crash when handling invalid user input data"
+#~ msgstr "Fixed crash when handling invalid user input data"
+
+#~ msgid ""
+#~ "Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+#~ "activation"
+#~ msgstr ""
+#~ "Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+#~ "activation"
+
+#~ msgid "Fixed duplicate provides tags in metainfo validation"
+#~ msgstr "Fixed duplicate provides tags in metainfo validation"
+
+#~ msgid ""
+#~ "Fixed external links not opening in default browser when running in "
+#~ "Flatpak"
+#~ msgstr ""
+#~ "Fixed external links not opening in default browser when running in "
+#~ "Flatpak"
+
+#~ msgid "Fixed invalid meson version requirement preventing builds"
+#~ msgstr "Fixed invalid meson version requirement preventing builds"
+
+#~ msgid "Fixed missing dictionaries on startup"
+#~ msgstr "Fixed missing dictionaries on startup"
+
+#~ msgid "Fixed notifications banner appearing on every app launch"
+#~ msgstr "Fixed notifications banner appearing on every app launch"
+
+#~ msgid "Fixed potential rendering inconsistencies"
+#~ msgstr "Fixed potential rendering inconsistencies"
+
+#~ msgid "Fixed random emoji display issues and blank emoji problems"
+#~ msgstr "Fixed random emoji display issues and blank emoji problems"
+
+#~ msgid "Fixed:"
+#~ msgstr "Fixed:"
+
+#~ msgid "Full WhatsApp Web functionality with desktop integration"
+#~ msgstr "Full WhatsApp Web functionality with desktop integration"
+
+#~ msgid "Full rewrite in Rust! 🦀"
+#~ msgstr "Full rewrite in Rust! 🦀"
+
+#~ msgid "GTK4 WhatsApp Client"
+#~ msgstr "GTK4 WhatsApp Client"
+
+#~ msgid "Graceful shutdown with window state persistence"
+#~ msgstr "Graceful shutdown with window state persistence"
+
+#~ msgid "Granular privacy and notification controls"
+#~ msgstr "Granular privacy and notification controls"
+
+#~ msgid "Hardware-accelerated WebKit rendering"
+#~ msgstr "Hardware-accelerated WebKit rendering"
+
+#~ msgid "Hardware-accelerated rendering"
+#~ msgstr "Hardware-accelerated rendering"
+
+#~ msgid "Implemented Flatpak portal system for external link handling"
+#~ msgstr "Implemented Flatpak portal system for external link handling"
+
+#~ msgid "Implemented UserScript injection for Notification.permission state"
+#~ msgstr "Implemented UserScript injection for Notification.permission state"
+
+#~ msgid "Improved build system maintainability and type safety"
+#~ msgstr "Improved build system maintainability and type safety"
+
+#~ msgid "Improved build system with cleaner dependency management"
+#~ msgstr "Improved build system with cleaner dependency management"
+
+#~ msgid "Improved emoji consistency with bundled font system"
+#~ msgstr "Improved emoji consistency with bundled font system"
+
+#~ msgid "Improved error handling and recovery mechanisms"
+#~ msgstr "Improved error handling and recovery mechanisms"
+
+#~ msgid "Improved external link handling with proper Flatpak portal support"
+#~ msgstr "Improved external link handling with proper Flatpak portal support"
+
+#~ msgid "Improved font loading stability and reduced race conditions"
+#~ msgstr "Improved font loading stability and reduced race conditions"
+
+#~ msgid "Improved memory efficiency and startup performance"
+#~ msgstr "Improved memory efficiency and startup performance"
+
+#~ msgid "Improved system integration with latest platform libraries"
+#~ msgstr "Improved system integration with latest platform libraries"
+
+#~ msgid "Improved translation file consistency"
+#~ msgstr "Improved translation file consistency"
+
+#~ msgid "Improvements:"
+#~ msgstr "Improvements:"
+
+#~ msgid ""
+#~ "Karere is a production-ready GTK4 WhatsApp client that provides a native "
+#~ "desktop experience for WhatsApp Web. Built with Vala, GTK4, and "
+#~ "Libadwaita, it offers a clean and intuitive interface that integrates "
+#~ "seamlessly with your Linux desktop."
+#~ msgstr ""
+#~ "Karere is a production-ready GTK4 WhatsApp client that provides a native "
+#~ "desktop experience for WhatsApp Web. Built with Vala, GTK4, and "
+#~ "Libadwaita, it offers a clean and intuitive interface that integrates "
+#~ "seamlessly with your Linux desktop."
+
+#~ msgid "Keyboard shortcuts and productivity features"
+#~ msgstr "Keyboard shortcuts and productivity features"
+
+#~ msgid "Main application window with WhatsApp Web integration"
+#~ msgstr "Main application window with WhatsApp Web integration"
+
+#~ msgid "Migrated from Python 3 to native Vala compilation"
+#~ msgstr "Migrated from Python 3 to native Vala compilation"
+
+#~ msgid "Minor README corrections"
+#~ msgstr "Minor README corrections"
+
+#~ msgid "Minor bug fixes and stability improvements"
+#~ msgstr "Minor bug fixes and stability improvements"
+
+#~ msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+#~ msgstr "Modern LibAdwaita UI with Blueprint declarative interface"
+
+#~ msgid "Modern Meson build system with Blueprint UI compilation"
+#~ msgstr "Modern Meson build system with Blueprint UI compilation"
+
+#~ msgid "More reliable link opening mechanism"
+#~ msgstr "More reliable link opening mechanism"
+
+#~ msgid "More robust dependency handling"
+#~ msgstr "More robust dependency handling"
+
+#~ msgid "Multi-language spell checking support"
+#~ msgstr "Multi-language spell checking support"
+
+#~ msgid "Native GTK4 interface with Libadwaita styling"
+#~ msgstr "Native GTK4 interface with Libadwaita styling"
+
+#~ msgid "Native Vala/GTK4 implementation for optimal performance"
+#~ msgstr "Native Vala/GTK4 implementation for optimal performance"
+
+#~ msgid "New Features:"
+#~ msgstr "New Features:"
+
+#~ msgid "New System Tray Icon support"
+#~ msgstr "New System Tray Icon support"
+
+#~ msgid "Notifications fully working with persistence fixes"
+#~ msgstr "Notifications fully working with persistence fixes"
+
+#~ msgid "Optimized font loading to eliminate display conflicts"
+#~ msgstr "Optimized font loading to eliminate display conflicts"
+
+#~ msgid "Performance optimizations for faster startup"
+#~ msgstr "Performance optimizations for faster startup"
+
+#~ msgid "Performance optimizations for scrolling"
+#~ msgstr "Performance optimizations for scrolling"
+
+#~ msgid "Persistent login data and cookie management"
+#~ msgstr "Persistent login data and cookie management"
+
+#~ msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+#~ msgstr "Ported from Vala to native Rust/GTK4/Libadwaita"
+
+#~ msgid "Production hardening with security enhancements"
+#~ msgstr "Production hardening with security enhancements"
+
+#~ msgid "Production-ready error handling and crash recovery"
+#~ msgstr "Production-ready error handling and crash recovery"
+
+#~ msgid "Professional logging and crash reporting system"
+#~ msgstr "Professional logging and crash reporting system"
+
+#~ msgid "Professional logging system with rotation"
+#~ msgstr "Professional logging system with rotation"
+
+#~ msgid "Redesigned/streamlined preferences dialog"
+#~ msgstr "Redesigned/streamlined preferences dialog"
+
+#~ msgid "Refreshed About dialog screenshot"
+#~ msgstr "Refreshed About dialog screenshot"
+
+#~ msgid ""
+#~ "Removed hardcoded blueprint compiler paths for cross-architecture support"
+#~ msgstr ""
+#~ "Removed hardcoded blueprint compiler paths for cross-architecture support"
+
+#~ msgid ""
+#~ "Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+#~ "only)"
+#~ msgstr ""
+#~ "Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+#~ "only)"
+
+#~ msgid ""
+#~ "Replaced window.vala.in and preferences.vala.in with direct .vala files"
+#~ msgstr ""
+#~ "Replaced window.vala.in and preferences.vala.in with direct .vala files"
+
+#~ msgid "Resolved compatibility issues with newer GNOME environments"
+#~ msgstr "Resolved compatibility issues with newer GNOME environments"
+
+#~ msgid "Resolved flatpak-builder compatibility issues"
+#~ msgstr "Resolved flatpak-builder compatibility issues"
+
+#~ msgid "Resolved invalid markup in release descriptions"
+#~ msgstr "Resolved invalid markup in release descriptions"
+
+#~ msgid "Resolved memory leak in WebKit manager cleanup"
+#~ msgstr "Resolved memory leak in WebKit manager cleanup"
+
+#~ msgid "Resolved memory leak in notification cleanup"
+#~ msgstr "Resolved memory leak in notification cleanup"
+
+#~ msgid "Restored Safari Linux user agent for native WebKit experience"
+#~ msgstr "Restored Safari Linux user agent for native WebKit experience"
+
+#~ msgid "Settings dialog with theme selection and privacy controls"
+#~ msgstr "Settings dialog with theme selection and privacy controls"
+
+#~ msgid "Signal handling for proper system integration"
+#~ msgstr "Signal handling for proper system integration"
+
+#~ msgid "Simplified emoji font configuration to single high-quality source"
+#~ msgstr "Simplified emoji font configuration to single high-quality source"
+
+#~ msgid "Simplified source file management in build system"
+#~ msgstr "Simplified source file management in build system"
+
+#~ msgid "Streamlined font stack for consistent emoji appearance"
+#~ msgstr "Streamlined font stack for consistent emoji appearance"
+
+#~ msgid "Technical Changes:"
+#~ msgstr "Technical Changes:"
+
+#~ msgid "Technical Improvements:"
+#~ msgstr "Technical Improvements:"
+
+#~ msgid "Thiago Fernandes"
+#~ msgstr "Thiago Fernandes"
+
+#~ msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+#~ msgstr "Updated GNOME runtime to version 49 for enhanced compatibility"
+
+#~ msgid "Updated SettingsManager to be the default for all settings access"
+#~ msgstr "Updated SettingsManager to be the default for all settings access"
+
+#~ msgid "Updated about dialog screenshot"
+#~ msgstr "Updated about dialog screenshot"
+
+#~ msgid "Updated all references from appdata to metainfo format"
+#~ msgstr "Updated all references from appdata to metainfo format"
+
+#~ msgid "Updated application screenshots"
+#~ msgstr "Updated application screenshots"
+
+#~ msgid "Updated application screenshots with current UI appearance"
+#~ msgstr "Updated application screenshots with current UI appearance"
+
+#~ msgid "Updated build configuration and dependencies"
+#~ msgstr "Updated build configuration and dependencies"
+
+#~ msgid "Updated meson.build to use Vala preprocessor directives"
+#~ msgstr "Updated meson.build to use Vala preprocessor directives"
+
+#~ msgid "WebKitGTK 6.0 storage persistence verified and documented"
+#~ msgstr "WebKitGTK 6.0 storage persistence verified and documented"
+
+#~ msgid "messaging"
+#~ msgstr "messaging"
+
+#~ msgid "web"
+#~ msgstr "web"
+
+#~ msgid "whatsapp"
+#~ msgstr "whatsapp"
+
+#~ msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+#~ msgstr "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+
+#~ msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+#~ msgstr "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+
+#~ msgid "♻️ Refactored Window.vala into specialized manager components"
+#~ msgstr "♻️ Refactored Window.vala into specialized manager components"
+
+#~ msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+#~ msgstr ""
+#~ "♻️ Removed custom logging and crash reporting (use system journalctl)"
+
+#~ msgid ""
+#~ "♿ Enhanced accessibility with screen reader optimization and keyboard "
+#~ "navigation"
+#~ msgstr ""
+#~ "♿ Enhanced accessibility with screen reader optimization and keyboard "
+#~ "navigation"
+
+#~ msgid ""
+#~ "⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+#~ "with WhatsApp Web as this is a completely new application implementation."
+#~ msgstr ""
+#~ "⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+#~ "with WhatsApp Web as this is a completely new application implementation."
+
+#~ msgid "⚡ Performance optimizations for startup and shutdown"
+#~ msgstr "⚡ Performance optimizations for startup and shutdown"
+
+#~ msgid "✅ Fixed WhatsApp Web notification banner persistence"
+#~ msgstr "✅ Fixed WhatsApp Web notification banner persistence"
+
+#~ msgid "✅ Fixed notifications not working properly"
+#~ msgstr "✅ Fixed notifications not working properly"
+
+#~ msgid ""
+#~ "✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+#~ msgstr ""
+#~ "✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+
+#~ msgid "🎉 Feature Release"
+#~ msgstr "🎉 Feature Release"
+
+#~ msgid "🎉 Major Release 2.0.0"
+#~ msgstr "🎉 Major Release 2.0.0"
+
+#~ msgid "🎉 Version 1.0.0 - Major Milestone Release"
+#~ msgstr "🎉 Version 1.0.0 - Major Milestone Release"
+
+#~ msgid "🎤 Microphone permission support for voice notes"
+#~ msgstr "🎤 Microphone permission support for voice notes"
+
+#~ msgid "🐛 Bug Fix Release"
+#~ msgstr "🐛 Bug Fix Release"
+
+#~ msgid "🐛 Bug Fixes and Improvements"
+#~ msgstr "🐛 Bug Fixes and Improvements"
+
+#~ msgid "🐛 Runtime Update and Bug Fixes"
+#~ msgstr "🐛 Runtime Update and Bug Fixes"
+
+#~ msgid "📖 Added MPRIS workaround documentation"
+#~ msgstr "📖 Added MPRIS workaround documentation"
+
+#~ msgid "📚 Added spell checking configuration guide"
+#~ msgstr "📚 Added spell checking configuration guide"
+
+#~ msgid "📚 Documented all keyboard shortcuts by category"
+#~ msgstr "📚 Documented all keyboard shortcuts by category"
+
+#~ msgid "📚 Enhanced README with accessibility features documentation"
+#~ msgstr "📚 Enhanced README with accessibility features documentation"
+
+#~ msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+#~ msgstr "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+
+#~ msgid "📝 Added comprehensive spell checking system with auto-detection"
+#~ msgstr "📝 Added comprehensive spell checking system with auto-detection"
+
+#~ msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+#~ msgstr "📝 Async dictionary loading for smoother Spell Check initialization"
+
+#~ msgid "📝 Documentation and Metadata Update"
+#~ msgstr "📝 Documentation and Metadata Update"
+
+#~ msgid ""
+#~ "📥 Implemented download manager with custom directory and toast "
+#~ "notifications"
+#~ msgstr ""
+#~ "📥 Implemented download manager with custom directory and toast "
+#~ "notifications"
+
+#~ msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+#~ msgstr "📸 Reorganized screenshots into data/screenshots/ directory"
+
+#~ msgid "📸 Screenshots and Documentation Update"
+#~ msgstr "📸 Screenshots and Documentation Update"
+
+#~ msgid "🔄 Manual reload and auto-reload on network reconnection"
+#~ msgstr "🔄 Manual reload and auto-reload on network reconnection"
+
+#~ msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+#~ msgstr "🔤 Integrated 80+ language dictionaries from LibreOffice"
+
+#~ msgid "🔧 Code Refactoring and Architecture Improvements"
+#~ msgstr "🔧 Code Refactoring and Architecture Improvements"
+
+#~ msgid "🔧 Maintenance Release"
+#~ msgstr "🔧 Maintenance Release"
+
+#~ msgid "🔧 Metadata and Standards Compliance"
+#~ msgstr "🔧 Metadata and Standards Compliance"
+
+#~ msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+#~ msgstr "🖼️ Added image paste support via clipboard (Ctrl+V)"
+
+#~ msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+#~ msgstr "🗑️ Cleaned up obsolete test files and unused dependencies"
+
+#~ msgid ""
+#~ "🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+#~ msgstr ""
+#~ "🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+
+#~ msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+#~ msgstr "🗑️ Removed json-glib, gee, and libsoup dependencies"
+
+#~ msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+#~ msgstr "🚀 Major Architecture Migration: Python to Vala/GTK4"
+
+#~ msgid "🚀 Start in background option for autostart"
+#~ msgstr "🚀 Start in background option for autostart"
+
+#~ msgid "🧹 Centralized settings management with SettingsManager singleton"
+#~ msgstr "🧹 Centralized settings management with SettingsManager singleton"
+
+#~ msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+#~ msgstr "🧹 Removed DependencyContainer.vala (unused dependency injection)"

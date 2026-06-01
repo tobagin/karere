@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>@APP_ID@</id>
+
+  <!-- Flatpak ID transition support -->
+  <provides>
+    <id>com.mudeprolinux.whakarere</id>
+  </provides>
+  <replaces>
+    <id>com.mudeprolinux.whakarere</id>
+  </replaces>
+
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>@APP_NAME@</name>
+  <summary>Chat on WhatsApp</summary>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#25D366</color>
+    <color type="primary" scheme_preference="dark">#128C7E</color>
+  </branding>
+
+  <description>
+    <p>
+      Karere brings WhatsApp to your Linux desktop with a native look and feel. It integrates
+      seamlessly with your environment, offering a clean, modern interface that respects your
+      system's theme and workflow. By wrapping WhatsApp Web, it ensures you have access to
+      all the latest features while adding powerful desktop-specific capabilities.
+    </p>
+    <p>Key features include:</p>
+    <ul>
+      <li>Native system notifications and tray icon support</li>
+      <li>Persistent login sessions so you don't need to scan the QR code every time</li>
+      <li>Privacy controls and comprehensive spell-checking settings</li>
+      <li>Smooth performance with hardware acceleration</li>
+      <li>Proper clipboard integration for text and images</li>
+    </ul>
+  </description>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/tobagin/karere/blob/main/data/screenshots/main-window.png?raw=true</image>
+      <caption>Main application window with WhatsApp Web integration</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/tobagin/karere/blob/main/data/screenshots/about.png?raw=true</image>
+      <caption>About dialog showing application information</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/tobagin/karere/blob/main/data/screenshots/preferences.png?raw=true</image>
+      <caption>Application preferences and settings dialog</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/tobagin/karere/blob/main/data/screenshots/shortcuts.png?raw=true</image>
+      <caption>Keyboard shortcuts and productivity features</caption>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://github.com/tobagin/karere</url>
+  <url type="bugtracker">https://github.com/tobagin/karere/issues</url>
+  <url type="help">https://github.com/tobagin/karere/discussions</url>
+  <url type="donation">https://github.com/sponsors/tobagin</url>
+  <url type="contact">https://github.com/tobagin</url>
+  <url type="contribute">https://github.com/tobagin/karere</url>
+  <url type="vcs-browser">https://github.com/tobagin/karere</url>
+
+  <developer id="io.github.tobagin">
+    <name>Thiago Fernandes</name>
+  </developer>
+
+  <requires>
+    <display_length compare="ge">768</display_length>
+  </requires>
+
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </recommends>
+
+  <categories>
+    <category>Network</category>
+    <category>InstantMessaging</category>
+    <category>Chat</category>
+  </categories>
+
+  <keywords>
+    <keyword>whatsapp</keyword>
+    <keyword>chat</keyword>
+    <keyword>messaging</keyword>
+    <keyword>web</keyword>
+    <keyword>communication</keyword>
+  </keywords>
+
+  <launchable type="desktop-id">@APP_ID@.desktop</launchable>
+
+  <releases>
+    <release version="3.1.1" date="2026-05-12">
+      <description>
+        <ul>
+          <li>Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-clear behavior removed upstream — Karere now dismisses notifications explicitly)</li>
+          <li>Fixed: blank-window race when autostarted before the network/portal stack is ready (auto-retry with exponential backoff)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="3.1.0" date="2026-05-10">
+      <description>
+        <ul>
+          <li>Added: pin favorite spell-check languages to the top of the dropdown</li>
+          <li>Added: spell-check dropdown shows natural language names ("English (UK)") instead of locale codes</li>
+          <li>Added: account switcher uses a popover on desktop windows (bottom sheet preserved on mobile)</li>
+          <li>Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)</li>
+          <li>Fixed: locale-dependent crash that required manually setting LC_ALL=en_GB.UTF-8</li>
+          <li>Fixed: mobile layout broken by recent WhatsApp Web DOM changes</li>
+          <li>Fixed: downloaded files with duplicate names silently overwriting each other (now appends (1), (2), ...)</li>
+          <li>Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust dependencies to latest compatible versions</li>
+        </ul>
+      </description>
+    </release>
+    <release version="3.0.2" date="2026-04-01">
+      <description>
+        <ul>
+          <li>Fixed voice and video calls in production Flatpak (Flathub linter-compatible pre-built plugin)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="3.0.1" date="2026-03-31">
+      <description>
+        <ul>
+          <li>Fixed voice and video calls not working in the production build (missing noise suppression plugin)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="3.0.0" date="2026-04-01">
+      <description>
+        <ul>
+          <li>Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5</li>
+          <li>Fixed download filenames now use WhatsApp's original filename</li>
+          <li>Fixed duplicate downloads auto-increment instead of failing</li>
+          <li>Fixed window now properly unminimizes when activated from launcher or tray</li>
+          <li>Fixed notification sounds now respect GNOME volume controls</li>
+          <li>Note: re-linking WhatsApp accounts is required after this upgrade</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.5.7" date="2026-03-22">
+      <description>
+        <ul>
+          <li>Fixed Flatpak build failure caused by ashpd 0.13 API changes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.5.6" date="2026-03-22">
+      <description>
+        <ul>
+          <li>Fixed voice and video calls showing "Your browser doesn't support calling"</li>
+          <li>Fixed on-screen keyboard not appearing reliably on Phosh and touch-based Linux environments</li>
+          <li>Fixed blob URL downloads (e.g. Save Image from the media viewer)</li>
+          <li>Redesigned application icons for stable and development variants</li>
+          <li>Updated all Rust dependencies to latest versions</li>
+          <li>Upgraded to GNOME Platform 50</li>
+          <li>Removed ffmpeg-full extension (no longer required)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.5.5" date="2026-03-02">
+      <description>
+        <ul>
+          <li>Fixed freezes when viewing media galleries</li>
+          <li>Fixed crash on launch due to memory pressure threshold ordering</li>
+          <li>Fixed download destination and context menu issues</li>
+          <li>Fixed dead key composition for first character in input fields</li>
+          <li>Added GStreamer/PipeWire env vars to production Flatpak for efficient media handling</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.5.4" date="2026-02-16">
+      <description>
+        <ul>
+          <li>Fixed download destination handling</li>
+          <li>Resolved WebKit crashes on media-heavy pages</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.5.3" date="2026-02-16">
+      <description>
+        <ul>
+          <li>Fixed: Download destination path handling regression</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.5.2" date="2026-02-16">
+      <description>
+        <ul>
+          <li>Fixed: JS injection and path traversal vulnerabilities in download handling</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.5.1" date="2026-02-15">
+      <description>
+        <ul>
+          <li>Fixed: Handle WebKit web process crashes with auto-reload and user notification</li>
+          <li>Fixed: JS injection and path traversal vulnerabilities</li>
+          <li>Fixed: Panic in notification handling</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.5.0" date="2026-02-14">
+      <description>
+        <ul>
+          <li>Added complete multi-account support with sidebar and tray integration</li>
+          <li>Added per-account zoom settings and improved accessibility</li>
+          <li>Fixed startup race conditions and resource usage issues</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.4.2" date="2026-02-08">
+      <description>
+        <ul>
+          <li>Added Zoom support (Ctrl +/-/0) with persistence and preference controls</li>
+          <li>Fixed window size increasing on every restart</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.4.1" date="2026-02-06">
+      <description>
+        <ul>
+          <li>Fixed: Resolved webview reload loop on startup due to incorrect window size detection</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.4.0" date="2026-02-06">
+      <description>
+        <ul>
+          <li>Added WebRTC permission handling in preparation for WhatsApp Web voice/video calls</li>
+          <li>Improved mobile UI resizing consistency</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.3.6" date="2026-02-04">
+      <description>
+        <ul>
+          <li>Fixed: App now respects system "Do Not Disturb" settings on GNOME (silences sounds)</li>
+          <li>Fixed: Notifications bypass DND visuals (priority lowered to Normal)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.3.5" date="2026-02-02">
+      <description>
+        <ul>
+          <li>Fixed tray icons on KDE/GNOME (visible on both light/dark themes)</li>
+          <li>Restored correct app icons and transparent backgrounds</li>
+          <li>Improved icon compatibility across desktop environments</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.3.4" date="2026-02-02">
+      <description>
+        <ul>
+          <li>Fixed application freezing on resume by reverting aggressive cache optimization</li>
+          <li>Fixed background validation to ensure app starts correctly</li>
+          <li>Optimized memory usage in mobile responsive scripts</li>
+          <li>Improved icon rendering (symbolic icons now use currentColor)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.3.3" date="2026-01-24">
+      <description>
+        <ul>
+          <li>Fixed window resize behavior to prevent excessive reloading</li>
+          <li>Fixed background notifications reliability</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.3.2" date="2026-01-18">
+      <description>
+        <ul>
+          <li>Fixed Flatpak build failure by correcting config</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.3.1" date="2026-01-18">
+      <description>
+        <ul>
+          <li>Fixed "Too many open files" crash by reusing notification resources</li>
+          <li>Fixed zombie process accumulation</li>
+          <li>Improved overall stability</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.3.0" date="2026-01-17">
+      <description>
+        <ul>
+          <li>Ctrl+N keyboard shortcut for opening a new chat</li>
+          <li>Mobile layout support with auto-detection for Phosh, Plasma Mobile, and Lomiri</li>
+          <li>Tray icon click now toggles window visibility</li>
+          <li>Window size is saved and restored when hiding/showing</li>
+          <li>Mobile layout setting changed to dropdown (auto/enabled/disabled)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.2.2" date="2026-01-12">
+      <description>
+        <ul>
+          <li>Updated application summary and description for better AppStream compliance</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.2.1" date="2026-01-11">
+      <description>
+        <ul>
+          <li>Notification Chat Linking: Clicking a notification now opens the specific chat in Karere.</li>
+          <li>Webcam Support: Added support for using the webcam (Status updates, Video calls) with a new permission dialog.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.1.0" date="2026-01-10">
+      <description>
+        <ul>
+          <li>Enhanced image paste with Base64 encoding for reliable WhatsApp Web compatibility</li>
+          <li>Added middle-click paste from primary selection (selected text)</li>
+          <li>Fixed double-paste issue with middle-click</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.9" date="2026-01-07">
+      <description>
+        <ul>
+          <li>Fixed missing GSettings schema in Flatpak builds</li>
+          <li>Added new application icons</li>
+          <li>Corrected metadata description references</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.8" date="2026-01-06">
+      <description>
+        <ul>
+          <li>Switch to XDG Notification Portal (ashpd) for better sandboxing support</li>
+          <li>Remove direct D-Bus notification permissions for cleaner manifest</li>
+          <li>Fixed Open action for downloaded files</li>
+          <li>Fixed Dead Key/composition input issues</li>
+          <li>Migrated Flatpak build logic to meson.build</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.7" date="2026-01-02">
+      <description>
+        <ul>
+          <li>Switch to XDG Background Portal for autostart (improves security and compatibility)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.6" date="2026-01-02">
+      <description>
+        <ul>
+          <li>Add new contributor Sabri Ünal to the About dialog</li>
+          <li>General improvements and versioning updates</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.5" date="2026-01-02">
+      <description>
+        <ul>
+          <li>Restore autostart permission for improved compatibility</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.4" date="2026-01-02">
+      <description>
+        <ul>
+          <li>Remove unnecessary autostart permission to satisfy linter</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.3" date="2026-01-02">
+      <description>
+        <ul>
+          <li>Add xdg-config/autostart permission for autostart support</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.2" date="2026-01-02">
+      <description>
+        <p>Bug Fix Release</p>
+        <p>Changes:</p>
+        <ul>
+          <li>Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.1" date="2026-01-01">
+      <description>
+        <p>Update and Bug Fix Release</p>
+        <p>Changes:</p>
+        <ul>
+          <li>Added "Run on Startup" toggle in preferences (default: false)</li>
+          <li>Fixed autostart toggle pathing for Flatpak environments</li>
+          <li>Fixed tray icon quit behavior</li>
+          <li>Added striped symbolic icons for development version</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.0" date="2025-12-29">
+      <description>
+        <p>🎉 Major Release 2.0.0</p>
+        <p>New Features:</p>
+        <ul>
+          <li>Full rewrite in Rust! 🦀</li>
+          <li>New System Tray Icon support</li>
+          <li>Notifications fully working with persistence fixes</li>
+          <li>Ported from Vala to native Rust/GTK4/Libadwaita</li>
+          <li>Redesigned/streamlined preferences dialog</li>
+          <li>Enhanced performance and stability</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.1.1" date="2025-12-25">
+      <description>
+        <p>🐛 Bug Fix Release</p>
+        <p>Fixed:</p>
+        <ul>
+          <li>Fixed critical startup freeze (spinner) issue by implementing D-Bus activation</li>
+          <li>Ensure application starts properly in the background without delay</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.1.0" date="2025-12-12">
+      <description>
+        <p>🎉 Feature Release</p>
+        <p>New Features:</p>
+        <ul>
+          <li>🎤 Microphone permission support for voice notes</li>
+          <li>🚀 Start in background option for autostart</li>
+          <li>🔄 Manual reload and auto-reload on network reconnection</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>⚡ Performance optimizations for startup and shutdown</li>
+          <li>📝 Async dictionary loading for smoother Spell Check initialization</li>
+          <li>📖 Added MPRIS workaround documentation</li>
+        </ul>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed missing dictionaries on startup</li>
+          <li>Fixed application freeze during lifecycle events</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.0.3" date="2025-10-21">
+      <description>
+        <p>🔧 Maintenance Release</p>
+        <p>Improvements:</p>
+        <ul>
+          <li>Updated build configuration and dependencies</li>
+          <li>Enhanced packaging for better compatibility</li>
+          <li>Minor bug fixes and stability improvements</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.0.2" date="2025-10-20">
+      <description>
+        <p>📝 Documentation and Metadata Update</p>
+        <p>Improvements:</p>
+        <ul>
+          <li>Updated about dialog screenshot</li>
+          <li>Updated application screenshots</li>
+          <li>Minor README corrections</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.0.1" date="2025-10-19">
+      <description>
+        <p>📸 Screenshots and Documentation Update</p>
+        <p>Improvements:</p>
+        <ul>
+          <li>Updated application screenshots with current UI appearance</li>
+          <li>Refreshed About dialog screenshot</li>
+          <li>Enhanced visual documentation for users</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.0.0" date="2025-10-19">
+      <description>
+        <p>🎉 Version 1.0.0 - Major Milestone Release</p>
+        <p>New Features:</p>
+        <ul>
+          <li>✅ Fixed WhatsApp Web notification banner persistence</li>
+          <li>✅ Fixed notifications not working properly</li>
+          <li>🖼️ Added image paste support via clipboard (Ctrl+V)</li>
+          <li>📥 Implemented download manager with custom directory and toast notifications</li>
+          <li>♿ Enhanced accessibility with screen reader optimization and keyboard navigation</li>
+          <li>📝 Added comprehensive spell checking system with auto-detection</li>
+          <li>🔤 Integrated 80+ language dictionaries from LibreOffice</li>
+          <li>⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog</li>
+        </ul>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed Ctrl+V paste for text content - now works for both text and images</li>
+          <li>Fixed WhatsApp notification permission not persisting across sessions</li>
+          <li>Fixed notifications banner appearing on every app launch</li>
+          <li>Fixed WebView zoom being enabled by default (now disabled)</li>
+          <li>Fixed clipboard manager intercepting all paste events</li>
+          <li>Removed hardcoded blueprint compiler paths for cross-architecture support</li>
+        </ul>
+        <p>Code Quality Improvements:</p>
+        <ul>
+          <li>♻️ Major refactor: Reorganized codebase with PascalCase filenames</li>
+          <li>♻️ Refactored Window.vala into specialized manager components</li>
+          <li>♻️ Removed custom logging and crash reporting (use system journalctl)</li>
+          <li>🗑️ Removed Do Not Disturb feature (handled by system notification daemon)</li>
+          <li>🗑️ Cleaned up obsolete test files and unused dependencies</li>
+          <li>🗑️ Removed json-glib, gee, and libsoup dependencies</li>
+          <li>🧹 Centralized settings management with SettingsManager singleton</li>
+          <li>🧹 Removed DependencyContainer.vala (unused dependency injection)</li>
+          <li>📸 Reorganized screenshots into data/screenshots/ directory</li>
+        </ul>
+        <p>Technical Changes:</p>
+        <ul>
+          <li>Implemented UserScript injection for Notification.permission state</li>
+          <li>Connected show_notification signal handler for WebKit notifications</li>
+          <li>WebKitGTK 6.0 storage persistence verified and documented</li>
+          <li>Updated SettingsManager to be the default for all settings access</li>
+          <li>Improved build system with cleaner dependency management</li>
+        </ul>
+        <p>Documentation:</p>
+        <ul>
+          <li>📚 Enhanced README with accessibility features documentation</li>
+          <li>📚 Documented all keyboard shortcuts by category</li>
+          <li>📚 Added spell checking configuration guide</li>
+          <li>📚 Fixed GitHub repository URLs (karere-vala → karere)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.9.4" date="2025-09-18">
+      <description>
+        <p>🐛 Runtime Update and Bug Fixes</p>
+        <p>Improvements:</p>
+        <ul>
+          <li>Updated GNOME runtime to version 49 for enhanced compatibility</li>
+          <li>Improved system integration with latest platform libraries</li>
+          <li>Better support for modern desktop environments</li>
+          <li>Enhanced stability and performance optimizations</li>
+        </ul>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Resolved compatibility issues with newer GNOME environments</li>
+          <li>Fixed potential rendering inconsistencies</li>
+          <li>Improved error handling and recovery mechanisms</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.9.3" date="2025-09-15">
+      <description>
+        <p>✨ Enhanced Emoji Support, External Link Handling, and Build Improvements</p>
+        <p>New Features:</p>
+        <ul>
+          <li>Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)</li>
+          <li>Enhanced WebKit rendering with maximum hardware acceleration</li>
+          <li>Improved emoji consistency with bundled font system</li>
+          <li>Optimized font loading to eliminate display conflicts</li>
+          <li>Added WebKit cache control setting for improved rendering consistency</li>
+          <li>Cache disabled by default to prevent emoji rendering issues</li>
+        </ul>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed external links not opening in default browser when running in Flatpak</li>
+          <li>Improved external link handling with proper Flatpak portal support</li>
+          <li>Fixed random emoji display issues and blank emoji problems</li>
+          <li>Fixed invalid meson version requirement preventing builds</li>
+          <li>Corrected dependency version specifications in meson.build</li>
+          <li>Resolved flatpak-builder compatibility issues</li>
+          <li>Enhanced URL validation for external link detection</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Eliminated WebKit cache corruption affecting emoji rendering</li>
+          <li>Streamlined font stack for consistent emoji appearance</li>
+          <li>Enhanced 2D canvas acceleration for better graphics performance</li>
+          <li>Improved font loading stability and reduced race conditions</li>
+          <li>Better sandboxed environment compatibility</li>
+          <li>More reliable link opening mechanism</li>
+          <li>Enhanced logging for external link operations</li>
+          <li>Better build system compatibility with different environments</li>
+          <li>Enhanced CI/CD pipeline stability</li>
+          <li>More robust dependency handling</li>
+        </ul>
+        <p>Technical Changes:</p>
+        <ul>
+          <li>Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-only)</li>
+          <li>Disabled problematic WebKit caches causing font corruption</li>
+          <li>Simplified emoji font configuration to single high-quality source</li>
+          <li>Restored Safari Linux user agent for native WebKit experience</li>
+          <li>Added subpixel font scaling and advanced rendering optimizations</li>
+          <li>Implemented Flatpak portal system for external link handling</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.8.5" date="2025-08-25">
+      <description>
+        <p>🔧 Code Refactoring and Architecture Improvements</p>
+        <p>Improvements:</p>
+        <ul>
+          <li>Converted template files to preprocessor directives for cleaner code</li>
+          <li>Eliminated .vala.in template substitution system</li>
+          <li>Added compile-time conditional compilation using DEVELOPMENT flag</li>
+          <li>Improved build system maintainability and type safety</li>
+          <li>Added contributors Aman Das and Cameo to about dialog</li>
+        </ul>
+        <p>Technical Changes:</p>
+        <ul>
+          <li>Replaced window.vala.in and preferences.vala.in with direct .vala files</li>
+          <li>Updated meson.build to use Vala preprocessor directives</li>
+          <li>Simplified source file management in build system</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.8.4" date="2025-08-25">
+      <description>
+        <p>🐛 Bug Fixes and Improvements</p>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed crash when handling invalid user input data</li>
+          <li>Resolved memory leak in notification cleanup</li>
+          <li>Corrected accessibility focus handling</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Better error handling for network timeouts</li>
+          <li>Enhanced stability for extended usage</li>
+          <li>Performance optimizations for scrolling</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.8.3" date="2025-08-25">
+      <description>
+        <p>🔧 Metadata and Standards Compliance</p>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed duplicate provides tags in metainfo validation</li>
+          <li>Corrected AppStream metainfo format compliance</li>
+          <li>Resolved invalid markup in release descriptions</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Updated all references from appdata to metainfo format</li>
+          <li>Enhanced Flathub compliance and validation</li>
+          <li>Improved translation file consistency</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.8.2" date="2025-08-25">
+      <description>
+        <p>🐛 Bug Fixes and Improvements</p>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Fixed crash when handling invalid notification data</li>
+          <li>Resolved memory leak in WebKit manager cleanup</li>
+          <li>Corrected window state persistence on shutdown</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Better error handling for network disconnections</li>
+          <li>Enhanced stability during long sessions</li>
+          <li>Performance optimizations for faster startup</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.8.0" date="2025-08-24">
+      <description>
+        <p>🚀 Major Architecture Migration: Python to Vala/GTK4</p>
+        <p>BREAKING CHANGE: Complete rewrite from Python to native Vala for better performance and integration.</p>
+        <p>⚠️ Important: After upgrading, you will need to re-sync your mobile device with WhatsApp Web as this is a completely new application implementation.</p>
+        <p>New Features:</p>
+        <ul>
+          <li>Native Vala/GTK4 implementation for optimal performance</li>
+          <li>Modern LibAdwaita UI with Blueprint declarative interface</li>
+          <li>Enhanced WebKitGTK 6.0 integration</li>
+          <li>Advanced notification system with native desktop integration</li>
+          <li>Comprehensive accessibility support</li>
+          <li>Professional logging and crash reporting system</li>
+          <li>Keyboard shortcuts and productivity features</li>
+          <li>Multi-language spell checking support</li>
+          <li>Granular privacy and notification controls</li>
+          <li>Hardware-accelerated rendering</li>
+          <li>Improved memory efficiency and startup performance</li>
+        </ul>
+        <p>Technical Improvements:</p>
+        <ul>
+          <li>Migrated from Python 3 to native Vala compilation</li>
+          <li>Modern Meson build system with Blueprint UI compilation</li>
+          <li>Comprehensive test suite with unit and integration tests</li>
+          <li>Production-ready error handling and crash recovery</li>
+          <li>Enhanced security with proper sandboxing</li>
+          <li>Complete internationalization support</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">moderate</content_attribute>
+    <content_attribute id="social-info">mild</content_attribute>
+  </content_rating>
+</component>

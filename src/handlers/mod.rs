@@ -1,0 +1,96 @@
+pub mod client;
+pub mod context_menu;
+pub mod display;
+pub mod download;
+pub mod find;
+pub mod life_span;
+pub mod load;
+pub mod permission;
+pub mod render;
+pub mod render_process;
+pub mod request;
+
+use parking_lot::Mutex;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::time::Instant;
+
+pub use client::ClientBuilder;
+pub use context_menu::ShellContextMenuHandlerBuilder;
+pub use render::FrameBuffer;
+pub use request::{ShellRequestHandler, ShellRequestHandlerBuilder};
+
+/// Request to surface the "web view keeps crashing" dialog, drained by the
+/// window's crash poll loop.
+#[derive(Clone)]
+pub struct CrashDialog {
+    pub title: String,
+    pub body: String,
+}
+
+/// Latest `FindHandler::on_find_result` payload, drained by the GTK poll loop to
+/// render the "active of count" search counter.
+#[derive(Clone, Copy, Default)]
+pub struct FindResult {
+    pub count: i32,
+    pub active: i32,
+}
+
+/// A finished download, drained by the poll loop to raise a completion toast.
+#[derive(Clone)]
+pub struct DownloadCompleted {
+    pub path: PathBuf,
+    pub name: String,
+}
+
+/// A failed (canceled / errored) download, drained by the poll loop to raise a
+/// failure dialog.
+#[derive(Clone)]
+pub struct DownloadFailed {
+    pub name: String,
+    pub reason: String,
+}
+
+/// State shared between the CEF handlers (CEF UI thread, which is the glib
+/// main thread under external_message_pump) and the GTK widget.
+#[derive(Default)]
+pub struct SharedState {
+    pub frame: FrameBuffer,
+    pub size: (i32, i32),
+    pub scale_factor: f32,
+    pub title: String,
+    pub is_loading: bool,
+    /// Pending toast text published by the crash handler; drained by the poll loop.
+    pub crash_toast: Option<String>,
+    /// Renderer-termination timestamps inside the active 60 s window.
+    pub crash_history: Vec<Instant>,
+    /// Set once the crash storm threshold is crossed; drained by the poll loop.
+    pub crash_dialog_request: Option<CrashDialog>,
+    /// In-flight load-error retry timer, cancelled on successful load.
+    pub pending_reload: Option<glib::SourceId>,
+    /// Consecutive load failures driving the retry backoff.
+    pub load_error_count: u32,
+    /// Main-frame load currently failing — drives the offline overlay.
+    pub offline: bool,
+    /// Latest find-in-page result; drained by the poll loop to update the counter.
+    pub find_result: Option<FindResult>,
+    /// Completed downloads awaiting a completion toast; drained by the poll loop.
+    pub downloads_completed: Vec<DownloadCompleted>,
+    /// Failed downloads awaiting a failure dialog; drained by the poll loop.
+    pub downloads_failed: Vec<DownloadFailed>,
+    /// Latest CEF cursor as a GTK/CSS cursor name, plus a dirty flag. CEF
+    /// reports cursor changes via `DisplayHandler::on_cursor_change` (OSR never
+    /// touches the GTK cursor itself); the widget tick callback applies this.
+    pub cursor_name: &'static str,
+    pub cursor_dirty: bool,
+}
+
+pub type SharedRef = Arc<Mutex<SharedState>>;
+
+pub fn new_shared(size: (i32, i32), scale: f32) -> SharedRef {
+    Arc::new(Mutex::new(SharedState {
+        size,
+        scale_factor: scale,
+        ..Default::default()
+    }))
+}

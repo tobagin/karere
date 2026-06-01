@@ -1,0 +1,849 @@
+use gtk::glib;
+use gtk::prelude::*;
+use gtk::subclass::prelude::*;
+use libadwaita as adw;
+
+use crate::web_view::KarereWebView;
+
+glib::wrapper! {
+    pub struct KarereWindow(ObjectSubclass<imp::KarereWindow>)
+        @extends adw::ApplicationWindow, gtk::ApplicationWindow, gtk::Window, gtk::Widget,
+        @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Native, gtk::Root, gtk::ShortcutManager, gio::ActionGroup, gio::ActionMap;
+}
+
+impl KarereWindow {
+    pub fn new(app: &adw::Application, url: &str) -> Self {
+        let _ = KarereWebView::static_type();
+        let obj: Self = glib::Object::builder().property("application", app).build();
+        obj.imp().init_web_view(url);
+        obj
+    }
+
+    /// Force a real quit, bypassing the `close-button-action=background` branch.
+    pub fn quit_now(&self) {
+        self.imp().force_quit.set(true);
+        self.close();
+    }
+
+    /// Run `script` in the page's main frame (used by notification click
+    /// routing to re-enter the page via `__karereActivateNotif`).
+    pub fn run_page_js(&self, script: &str) {
+        if let Some(web) = self.imp().web_view.borrow().as_ref() {
+            web.run_js(script);
+        }
+    }
+}
+
+mod imp {
+    use std::cell::{Cell, RefCell};
+    use std::rc::Rc;
+    use std::sync::Arc;
+
+    use parking_lot::Mutex;
+
+    use adw::subclass::prelude::*;
+    use glib::clone;
+    use gtk::gio;
+    use gtk::glib;
+    use gtk::prelude::*;
+    use gtk::subclass::prelude::*;
+    use gtk::{CompositeTemplate, TemplateChild};
+    use libadwaita as adw;
+    use libadwaita::prelude::*;
+
+    use crate::application::APP_ID;
+    use crate::handlers::{CrashDialog, DownloadCompleted, DownloadFailed};
+    use crate::web_view::KarereWebView;
+
+    #[derive(CompositeTemplate, Default)]
+    #[template(resource = "/io/github/tobagin/karere/ui/window.ui")]
+    pub struct KarereWindow {
+        #[template_child]
+        pub view_container: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub toast_overlay: TemplateChild<adw::ToastOverlay>,
+        #[template_child]
+        pub split: TemplateChild<gtk::Paned>,
+        #[template_child]
+        pub devtools_container: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub search_bar: TemplateChild<gtk::SearchBar>,
+        #[template_child]
+        pub search_entry: TemplateChild<gtk::SearchEntry>,
+        #[template_child]
+        pub find_prev_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub find_next_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub find_counter_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub dictionary_dropdown: TemplateChild<gtk::DropDown>,
+
+        pub web_view: RefCell<Option<KarereWebView>>,
+        /// Embedded DevTools OSR view, present only while DevTools is open.
+        pub devtools_view: RefCell<Option<KarereWebView>>,
+        /// Most recent query, reused by Next/Prev so Chromium cycles the match set.
+        pub last_query: RefCell<String>,
+        pub closing: std::cell::Cell<bool>,
+        pub force_quit: std::cell::Cell<bool>,
+    }
+
+    #[glib::object_subclass]
+    impl ObjectSubclass for KarereWindow {
+        const NAME: &'static str = "KarereWindow";
+        type Type = super::KarereWindow;
+        type ParentType = adw::ApplicationWindow;
+
+        fn class_init(klass: &mut Self::Class) {
+            KarereWebView::ensure_type();
+            klass.bind_template();
+        }
+
+        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
+            obj.init_template();
+        }
+    }
+
+    impl ObjectImpl for KarereWindow {
+        fn constructed(&self) {
+            self.parent_constructed();
+            let window = self.obj();
+
+            let settings = gio::Settings::new(APP_ID);
+            settings
+                .bind("window-width", &*window, "default-width")
+                .flags(gio::SettingsBindFlags::DEFAULT)
+                .build();
+            settings
+                .bind("window-height", &*window, "default-height")
+                .flags(gio::SettingsBindFlags::DEFAULT)
+                .build();
+            settings
+                .bind("is-maximized", &*window, "maximized")
+                .flags(gio::SettingsBindFlags::DEFAULT)
+                .build();
+
+            settings.connect_changed(
+                Some("close-button-action"),
+                |s, _key| {
+                    log::info!(
+                        "close-button-action changed to {:?}",
+                        s.string("close-button-action").as_str()
+                    );
+                },
+            );
+
+            let settings_for_close = settings.clone();
+            window.connect_close_request(clone!(
+                #[weak(rename_to = this)]
+                self,
+                #[upgrade_or]
+                glib::Propagation::Stop,
+                move |win| {
+                    let action = settings_for_close.string("close-button-action");
+                    if action.as_str() == "background" && !this.force_quit.get() {
+                        win.set_visible(false);
+                        return glib::Propagation::Stop;
+                    }
+
+                    // "quit", unknown, or forced quit: fall through to M4 CEF-close gate.
+                    // Tear down embedded DevTools first so its browser closes too.
+                    this.close_devtools();
+                    let web_opt = this.web_view.borrow().clone();
+                    let Some(web) = web_opt else {
+                        return glib::Propagation::Proceed;
+                    };
+                    if this.closing.get() && web.is_browser_closed() {
+                        return glib::Propagation::Proceed;
+                    }
+                    if !this.closing.get() {
+                        this.closing.set(true);
+                        web.close_browser();
+                        let win_weak = win.downgrade();
+                        let web_weak = web.downgrade();
+                        glib::timeout_add_local(
+                            std::time::Duration::from_millis(50),
+                            move || {
+                                let (Some(win), Some(web)) = (win_weak.upgrade(), web_weak.upgrade()) else {
+                                    return glib::ControlFlow::Break;
+                                };
+                                if web.is_browser_closed() {
+                                    win.close();
+                                    glib::ControlFlow::Break
+                                } else {
+                                    glib::ControlFlow::Continue
+                                }
+                            },
+                        );
+                    }
+                    glib::Propagation::Stop
+                }
+            ));
+
+            self.register_win_actions();
+            self.setup_search();
+            self.setup_focus_withdraw();
+            self.setup_spellcheck();
+
+            // M15: keep the tray menu's Show/Hide label in sync with window
+            // visibility (fires on every show/hide, incl. close-to-background).
+            window.connect_visible_notify(|win| {
+                crate::tray::set_window_visible(win.is_visible());
+            });
+            crate::tray::set_window_visible(window.is_visible());
+        }
+    }
+
+    impl WidgetImpl for KarereWindow {}
+    impl WindowImpl for KarereWindow {}
+    impl ApplicationWindowImpl for KarereWindow {}
+    impl AdwApplicationWindowImpl for KarereWindow {}
+
+    impl KarereWindow {
+        pub fn init_web_view(&self, url: &str) {
+            let web = KarereWebView::new();
+            web.set_hexpand(true);
+            web.set_vexpand(true);
+
+            // Overlay an offline status page over the GLArea so a failed load
+            // shows a message instead of the blank GLArea / Chromium error page.
+            // Wrap the status page in a `.background` box so it paints an opaque
+            // window-coloured fill that fully covers the view underneath.
+            let overlay = gtk::Overlay::new();
+            overlay.set_hexpand(true);
+            overlay.set_vexpand(true);
+            overlay.set_child(Some(&web));
+
+            let offline = gtk::Box::new(gtk::Orientation::Vertical, 0);
+            offline.add_css_class("background");
+            offline.set_hexpand(true);
+            offline.set_vexpand(true);
+            offline.set_visible(false);
+            offline.append(
+                &adw::StatusPage::builder()
+                    .icon_name("network-offline-symbolic")
+                    .title("No connection")
+                    .description("Waiting for the network — retrying…")
+                    .vexpand(true)
+                    .build(),
+            );
+            overlay.add_overlay(&offline);
+
+            self.view_container.append(&overlay);
+            web.load_url(url);
+            self.start_state_poll(&web, &offline);
+            *self.web_view.borrow_mut() = Some(web);
+        }
+
+        /// Poll the shared handler state at 100 ms and surface it on the GTK
+        /// side: crash toasts, the crash-storm dialog, and the offline overlay.
+        ///
+        /// The overlay is driven by the OS network state (via `GNetworkMonitor`)
+        /// as well as the load-error `offline` flag: WhatsApp Web's service
+        /// worker serves a cached page when offline, so a load error never
+        /// fires and the network monitor is the only reliable offline signal.
+        fn start_state_poll(&self, web: &KarereWebView, offline: &gtk::Box) {
+            use gtk::gio::prelude::NetworkMonitorExt;
+
+            let toast_overlay = self.toast_overlay.get();
+            let web_weak = web.downgrade();
+            let win_weak = self.obj().downgrade();
+            let offline_weak = offline.downgrade();
+            let counter_weak = self.find_counter_label.downgrade();
+            let monitor = gtk::gio::NetworkMonitor::default();
+            let dialog_open = Rc::new(Cell::new(false));
+            let was_net_down = Rc::new(Cell::new(false));
+
+            glib::timeout_add_local(std::time::Duration::from_millis(100), move || {
+                let Some(web) = web_weak.upgrade() else {
+                    return glib::ControlFlow::Break;
+                };
+                let shared = web.shared();
+                let (toast, dialog, flag_offline, find, completed, failed) = {
+                    let mut s = shared.lock();
+                    (
+                        s.crash_toast.take(),
+                        s.crash_dialog_request.take(),
+                        s.offline,
+                        s.find_result.take(),
+                        std::mem::take(&mut s.downloads_completed),
+                        std::mem::take(&mut s.downloads_failed),
+                    )
+                };
+
+                if let Some(find) = find
+                    && let Some(label) = counter_weak.upgrade()
+                {
+                    if find.count == 0 {
+                        label.set_visible(false);
+                    } else {
+                        label.set_text(&format!("{} of {}", find.active, find.count));
+                        label.set_visible(true);
+                    }
+                }
+
+                if let Some(text) = toast {
+                    toast_overlay.add_toast(adw::Toast::new(&text));
+                }
+                if let Some(req) = dialog
+                    && !dialog_open.get()
+                    && let Some(win) = win_weak.upgrade()
+                {
+                    dialog_open.set(true);
+                    show_crash_dialog(&win, req, dialog_open.clone());
+                }
+
+                if !completed.is_empty() || !failed.is_empty() {
+                    if let Some(win) = win_weak.upgrade() {
+                        for dl in completed {
+                            show_download_toast(&toast_overlay, &win, dl);
+                        }
+                        for fail in failed {
+                            show_download_failed(&win, fail);
+                        }
+                    }
+                }
+
+                let net_down = !monitor.is_network_available();
+                // Network just came back: reload so the cached page reconnects.
+                if was_net_down.get() && !net_down {
+                    web.reload();
+                }
+                was_net_down.set(net_down);
+
+                if let Some(page) = offline_weak.upgrade() {
+                    page.set_visible(flag_offline || net_down);
+                }
+                glib::ControlFlow::Continue
+            });
+        }
+
+        /// Withdraw live notification banners when the window regains focus
+        /// (M14 4.1). A short debounce coalesces rapid focus toggles so we don't
+        /// stampede `execute_java_script` on every flicker (4.2).
+        fn setup_focus_withdraw(&self) {
+            let window = self.obj();
+            let pending: Rc<RefCell<Option<glib::SourceId>>> = Rc::new(RefCell::new(None));
+
+            window.connect_is_active_notify(move |win| {
+                if !win.is_active() {
+                    return;
+                }
+                // M15: focus clears the unread tray indicator.
+                if let Some(app) = gio::Application::default() {
+                    app.activate_action("set-unread", Some(&0u32.to_variant()));
+                }
+                // Restart the debounce timer on each activation edge.
+                if let Some(id) = pending.borrow_mut().take() {
+                    id.remove();
+                }
+                let win_weak = win.downgrade();
+                let pending_inner = pending.clone();
+                let id = glib::timeout_add_local_once(
+                    std::time::Duration::from_millis(150),
+                    move || {
+                        pending_inner.borrow_mut().take();
+                        let Some(win) = win_weak.upgrade() else {
+                            return;
+                        };
+                        let web = win.imp().web_view.borrow().clone();
+                        if let Some(web) = web {
+                            crate::notifications::tracker()
+                                .on_focus_gained(|js| web.run_js(js));
+                        }
+                    },
+                );
+                *pending.borrow_mut() = Some(id);
+            });
+        }
+
+        fn register_win_actions(&self) {
+            let window = self.obj();
+
+            let toggle_fullscreen = gio::SimpleAction::new("toggle-fullscreen", None);
+            toggle_fullscreen.connect_activate(clone!(
+                #[weak]
+                window,
+                move |_, _| {
+                    window.set_fullscreened(!window.is_fullscreen());
+                }
+            ));
+            window.add_action(&toggle_fullscreen);
+
+            let minimize = gio::SimpleAction::new("minimize", None);
+            minimize.connect_activate(clone!(
+                #[weak]
+                window,
+                move |_, _| {
+                    window.minimize();
+                }
+            ));
+            window.add_action(&minimize);
+
+            let close = gio::SimpleAction::new("close", None);
+            close.connect_activate(clone!(
+                #[weak]
+                window,
+                move |_, _| {
+                    window.close();
+                }
+            ));
+            window.add_action(&close);
+
+            let show_devtools = gio::SimpleAction::new("show-devtools", None);
+            show_devtools.connect_activate(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_, _| this.toggle_devtools()
+            ));
+            window.add_action(&show_devtools);
+
+            let close_devtools = gio::SimpleAction::new("close-devtools", None);
+            close_devtools.connect_activate(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_, _| this.close_devtools()
+            ));
+            window.add_action(&close_devtools);
+
+            let find_in_page = gio::SimpleAction::new("find-in-page", None);
+            find_in_page.connect_activate(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_, _| {
+                    this.search_bar.set_search_mode(true);
+                    this.search_entry.grab_focus();
+                }
+            ));
+            window.add_action(&find_in_page);
+
+            let refresh = gio::SimpleAction::new("refresh", None);
+            refresh.connect_activate(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_, _| {
+                    if let Some(web) = this.web_view.borrow().as_ref() {
+                        web.reload();
+                    }
+                }
+            ));
+            window.add_action(&refresh);
+
+            let refresh_hard = gio::SimpleAction::new("refresh-hard", None);
+            refresh_hard.connect_activate(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_, _| {
+                    if let Some(web) = this.web_view.borrow().as_ref() {
+                        web.reload_hard();
+                    }
+                }
+            ));
+            window.add_action(&refresh_hard);
+
+            for (name, milestone) in [
+                ("zoom-in", "M18"),
+                ("zoom-out", "M18"),
+                ("zoom-reset", "M18"),
+            ] {
+                let action = gio::SimpleAction::new(name, None);
+                let name_owned = name.to_string();
+                let milestone = milestone.to_string();
+                action.connect_activate(move |_, _| {
+                    log::warn!(
+                        "action win.{name_owned} not yet implemented (milestone {milestone})"
+                    );
+                });
+                window.add_action(&action);
+            }
+        }
+    }
+
+    impl KarereWindow {
+        /// F12 / Ctrl+Shift+I: open the embedded DevTools pane, or close it if
+        /// already open.
+        fn toggle_devtools(&self) {
+            if self.devtools_view.borrow().is_some() {
+                self.close_devtools();
+            } else {
+                self.open_devtools();
+            }
+        }
+
+        /// Open embedded DevTools: dock a fresh OSR view in the bottom pane and
+        /// load the CDP DevTools frontend for the active page into it.
+        ///
+        /// CEF 148 cannot render `ShowDevTools` windowless, so DevTools is the
+        /// frontend page served by `--remote-debugging-port`, loaded like any
+        /// other URL. The target URL is resolved off the main thread.
+        fn open_devtools(&self) {
+            if self.web_view.borrow().is_none() {
+                log::warn!("open_devtools: no web view");
+                return;
+            }
+
+            let dv = KarereWebView::new_devtools();
+            dv.set_hexpand(true);
+            dv.set_vexpand(true);
+            self.devtools_container.append(&dv);
+            self.devtools_container.set_visible(true);
+
+            // Dock at ~60% so the page keeps the majority of the height.
+            let height = self.obj().height();
+            if height > 0 {
+                self.split.set_position((height as f64 * 0.6) as i32);
+            }
+
+            *self.devtools_view.borrow_mut() = Some(dv.clone());
+
+            // Resolve the frontend URL on a worker thread; a short poll loads it
+            // once ready (or toasts + collapses the pane on failure).
+            let slot: Arc<Mutex<Option<Result<String, String>>>> = Arc::new(Mutex::new(None));
+            let slot_bg = slot.clone();
+            std::thread::spawn(move || {
+                let res = crate::devtools::fetch_frontend_url(crate::devtools::DEVTOOLS_PORT);
+                *slot_bg.lock() = Some(res);
+            });
+
+            let dv_weak = dv.downgrade();
+            let toast = self.toast_overlay.get();
+            let win_weak = self.obj().downgrade();
+            glib::timeout_add_local(std::time::Duration::from_millis(50), move || {
+                let Some(res) = slot.lock().take() else {
+                    return glib::ControlFlow::Continue;
+                };
+                match res {
+                    Ok(url) => {
+                        log::info!("devtools frontend: {url}");
+                        if let Some(dv) = dv_weak.upgrade() {
+                            dv.load_url(&url);
+                        }
+                    }
+                    Err(e) => {
+                        log::warn!("devtools frontend unavailable: {e}");
+                        toast.add_toast(adw::Toast::new(&format!("DevTools unavailable: {e}")));
+                        if let Some(win) = win_weak.upgrade() {
+                            win.imp().close_devtools();
+                        }
+                    }
+                }
+                glib::ControlFlow::Break
+            });
+        }
+
+        /// Close the DevTools view and collapse the bottom pane.
+        fn close_devtools(&self) {
+            let Some(dv) = self.devtools_view.borrow_mut().take() else {
+                return;
+            };
+            dv.close_browser();
+            self.devtools_container.remove(&dv);
+            self.devtools_container.set_visible(false);
+
+            // Removing the second GLArea leaves the main view without a fresh
+            // render; force it to repaint so it doesn't stay black.
+            if let Some(main) = self.web_view.borrow().as_ref() {
+                let main = main.clone();
+                glib::idle_add_local_once(move || main.queue_render());
+            }
+        }
+
+        /// Wire the headerbar spellcheck-language dropdown (M16): a sorted view
+        /// of `KNOWN_LANGUAGES` with star-pin favorites. Selecting a language
+        /// persists `spell-checking-languages` and switches the live browser via
+        /// `KarereWebView::set_spellcheck_languages` (no reload). Toggling a row
+        /// star persists `favorite-spell-check-languages` and re-sorts.
+        fn setup_spellcheck(&self) {
+            use crate::spellcheck_ui::{self, SpellLang};
+            use gtk::gio::prelude::SettingsExtManual;
+            use std::rc::Rc;
+
+            let settings = gio::Settings::new(APP_ID);
+            let dropdown = self.dictionary_dropdown.get();
+
+            // Visible only when spellcheck is enabled; keep it in sync.
+            dropdown.set_visible(settings.boolean("enable-spell-checking"));
+            settings.connect_changed(
+                Some("enable-spell-checking"),
+                clone!(
+                    #[weak]
+                    dropdown,
+                    move |s, _| dropdown.set_visible(s.boolean("enable-spell-checking"))
+                ),
+            );
+
+            let favorites = strv_vec(&settings, "favorite-spell-check-languages");
+            let store = spellcheck_ui::build_store(&favorites);
+            let sorter = spellcheck_ui::build_sorter();
+            let sort_model = gtk::SortListModel::new(Some(store), Some(sorter.clone()));
+            dropdown.set_model(Some(&sort_model));
+            dropdown.set_factory(Some(&spellcheck_ui::build_button_factory()));
+
+            // Star toggle → persist favorites and re-sort.
+            let on_toggle: Rc<dyn Fn(&SpellLang, bool)> = Rc::new(clone!(
+                #[strong]
+                settings,
+                #[strong]
+                sorter,
+                move |lang: &SpellLang, now: bool| {
+                    lang.set_favorite(now);
+                    let mut favs = strv_vec(&settings, "favorite-spell-check-languages");
+                    let code = lang.code();
+                    if now {
+                        if !favs.contains(&code) {
+                            favs.push(code);
+                        }
+                    } else {
+                        favs.retain(|c| c != &code);
+                    }
+                    let refs: Vec<&str> = favs.iter().map(String::as_str).collect();
+                    let _ = settings.set_strv("favorite-spell-check-languages", refs);
+                    sorter.changed(gtk::SorterChange::Different);
+                }
+            ));
+            dropdown.set_list_factory(Some(&spellcheck_ui::build_list_factory(on_toggle)));
+
+            // Resolve the effective startup language: explicit list first, else
+            // a single auto-detected code (mirrors cef_runtime). The Chromium
+            // command-line switch alone does NOT populate `spellcheck.dictionaries`
+            // — only `set_preference` does — so the active list must be pushed to
+            // the live browser at startup, otherwise nothing is checked until the
+            // user changes the dropdown.
+            let startup_langs = resolve_startup_languages(&settings);
+
+            // Initialise the active row from the resolved language BEFORE wiring
+            // the change handler, so restoring state doesn't write back.
+            if let Some(want) = startup_langs.first() {
+                let n = sort_model.n_items();
+                for i in 0..n {
+                    if let Some(lang) = sort_model.item(i).and_downcast::<SpellLang>()
+                        && &lang.code() == want
+                    {
+                        dropdown.set_selected(i);
+                        break;
+                    }
+                }
+            }
+
+            // NOTE: the startup language is applied to the browser by the load
+            // handler on the first main-frame `on_load_end` (setting the
+            // preference before the page/spellcheck service is ready is ignored).
+            // Here we only seed the dropdown's visible selection.
+
+            let win = self.obj().downgrade();
+            dropdown.connect_selected_item_notify(clone!(
+                #[strong]
+                settings,
+                move |dd| {
+                    let Some(lang) = dd.selected_item().and_downcast::<SpellLang>() else {
+                        return;
+                    };
+                    let code = lang.code();
+                    let _ = settings.set_strv("spell-checking-languages", [code.as_str()]);
+                    if let Some(win) = win.upgrade()
+                        && let Some(web) = win.imp().web_view.borrow().as_ref()
+                    {
+                        web.set_spellcheck_languages(&[code], true);
+                    }
+                }
+            ));
+        }
+
+        /// Wire the find-in-page search bar to Chromium's `BrowserHost::find`.
+        fn setup_search(&self) {
+            // Standard reveal/hide + Escape handling provided by GtkSearchBar.
+            self.search_bar.connect_entry(&*self.search_entry);
+
+            // Fresh search on every keystroke (find_next=false restarts the match set).
+            self.search_entry.connect_search_changed(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |entry| {
+                    let text = entry.text().to_string();
+                    *this.last_query.borrow_mut() = text.clone();
+                    let Some(web) = this.web_view.borrow().clone() else {
+                        return;
+                    };
+                    if text.is_empty() {
+                        web.stop_finding();
+                        this.find_counter_label.set_visible(false);
+                    } else {
+                        web.find(&text, true, false);
+                    }
+                }
+            ));
+
+            // Next/Prev reuse the last query with find_next=true so Chromium cycles.
+            self.find_next_button.connect_clicked(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_| {
+                    let query = this.last_query.borrow().clone();
+                    if query.is_empty() {
+                        return;
+                    }
+                    if let Some(web) = this.web_view.borrow().as_ref() {
+                        web.find(&query, true, true);
+                    }
+                }
+            ));
+            self.find_prev_button.connect_clicked(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_| {
+                    let query = this.last_query.borrow().clone();
+                    if query.is_empty() {
+                        return;
+                    }
+                    if let Some(web) = this.web_view.borrow().as_ref() {
+                        web.find(&query, false, true);
+                    }
+                }
+            ));
+
+            // Escape hides the bar and drops highlights.
+            self.search_bar.connect_search_mode_enabled_notify(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |bar| {
+                    if !bar.is_search_mode() {
+                        this.find_counter_label.set_visible(false);
+                        if let Some(web) = this.web_view.borrow().as_ref() {
+                            web.stop_finding();
+                        }
+                    }
+                }
+            ));
+        }
+    }
+
+    /// Read a GSettings `as` key into an owned `Vec<String>`.
+    fn strv_vec(settings: &gio::Settings, key: &str) -> Vec<String> {
+        use gtk::gio::prelude::SettingsExtManual;
+        settings.strv(key).iter().map(|s| s.to_string()).collect()
+    }
+
+    /// Effective spellcheck languages at startup (explicit selection, else
+    /// closest auto-detected locale). Thin wrapper over
+    /// `spellcheck::resolve_languages` reading the app's GSettings.
+    fn resolve_startup_languages(settings: &gio::Settings) -> Vec<String> {
+        use gtk::prelude::SettingsExt;
+        let explicit = strv_vec(settings, "spell-checking-languages");
+        crate::spellcheck::resolve_languages(&explicit, settings.boolean("auto-detect-language"))
+    }
+
+    fn show_crash_dialog(
+        win: &super::KarereWindow,
+        req: CrashDialog,
+        dialog_open: Rc<Cell<bool>>,
+    ) {
+        let dialog = adw::AlertDialog::new(Some(&req.title), Some(&req.body));
+        dialog.add_response("cancel", "Cancel");
+        dialog.add_response("logs", "Open logs");
+        dialog.set_response_appearance("logs", adw::ResponseAppearance::Suggested);
+        dialog.set_default_response(Some("logs"));
+        dialog.set_close_response("cancel");
+        dialog.connect_response(None, move |_dialog, response| {
+            dialog_open.set(false);
+            if response == "logs" {
+                open_logs();
+            }
+        });
+        dialog.present(Some(win));
+    }
+
+    /// Raise the completion toast for a finished download: `"<name> downloaded"`
+    /// with "Open" (the file) and "Show in Folder" (its parent) buttons, both
+    /// routed through the `app.open-download` action.
+    fn show_download_toast(
+        overlay: &adw::ToastOverlay,
+        win: &super::KarereWindow,
+        dl: DownloadCompleted,
+    ) {
+        let DownloadCompleted { path, name } = dl;
+        let file_path = path.to_string_lossy().into_owned();
+        let parent_path = path
+            .parent()
+            .map(|p| p.to_string_lossy().into_owned())
+            .unwrap_or_else(|| file_path.clone());
+
+        // AdwToast carries a single native action button; a custom title widget
+        // lets us offer both "Open" and "Show in Folder".
+        let row = gtk::Box::new(gtk::Orientation::Horizontal, 12);
+        row.set_valign(gtk::Align::Center);
+        let label = gtk::Label::new(Some(&format!("{name} downloaded")));
+        label.set_hexpand(true);
+        label.set_xalign(0.0);
+        label.set_ellipsize(gtk::pango::EllipsizeMode::End);
+        let open = gtk::Button::with_label("Open");
+        open.add_css_class("flat");
+        let show = gtk::Button::with_label("Show in Folder");
+        show.add_css_class("flat");
+        row.append(&label);
+        row.append(&open);
+        row.append(&show);
+
+        let toast = adw::Toast::new("");
+        toast.set_custom_title(Some(&row));
+        toast.set_timeout(6);
+
+        open.connect_clicked(clone!(
+            #[weak]
+            win,
+            #[weak]
+            toast,
+            move |_| {
+                invoke_open_download(&win, &file_path);
+                toast.dismiss();
+            }
+        ));
+        show.connect_clicked(clone!(
+            #[weak]
+            win,
+            #[weak]
+            toast,
+            move |_| {
+                invoke_open_download(&win, &parent_path);
+                toast.dismiss();
+            }
+        ));
+
+        overlay.add_toast(toast);
+    }
+
+    /// Activate `app.open-download <path>` from a widget callback.
+    fn invoke_open_download(win: &super::KarereWindow, path: &str) {
+        if let Some(app) = win.application() {
+            app.activate_action("open-download", Some(&path.to_variant()));
+        } else {
+            log::warn!("open-download: window has no application");
+        }
+    }
+
+    /// Surface a failed download as an `AdwAlertDialog`.
+    fn show_download_failed(win: &super::KarereWindow, fail: DownloadFailed) {
+        let title = format!("Download failed: {}", fail.reason);
+        let dialog = if fail.name.is_empty() {
+            adw::AlertDialog::new(Some(&title), None)
+        } else {
+            let body = format!("“{}” could not be saved.", fail.name);
+            adw::AlertDialog::new(Some(&title), Some(&body))
+        };
+        dialog.add_response("ok", "OK");
+        dialog.set_default_response(Some("ok"));
+        dialog.set_close_response("ok");
+        dialog.present(Some(win));
+    }
+
+    /// Best-effort: open the directory where logs are written. A dedicated
+    /// in-app log viewer is future work.
+    fn open_logs() {
+        let dir = glib::user_data_dir().join(APP_ID);
+        let uri = format!("file://{}", dir.display());
+        if let Err(err) =
+            gio::AppInfo::launch_default_for_uri(&uri, None::<&gio::AppLaunchContext>)
+        {
+            log::warn!("open-logs: could not open {uri}: {err}");
+        }
+    }
+}

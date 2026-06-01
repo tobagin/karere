@@ -1,0 +1,240 @@
+# Karere
+
+> **Note:** This is the **Karere v4 CEF rewrite** — a hard-fork of `gtk-cef-shell` that ports Karere v3.1.1 from WebKitGTK to Chromium Embedded Framework (CEF). The on-disk worktree is still named `gtk-cef-shell`; the Cargo package, binary, app-id, and assets are all `karere`. The README below is preserved verbatim from karere v3; v4 retains feature parity while swapping the rendering backend.
+
+A fast, native WhatsApp client for Linux that feels right at home on your desktop.
+
+<div align="center">
+
+![Karere Application](https://raw.githubusercontent.com/tobagin/karere/main/data/screenshots/main-window.png)
+
+<a href="https://flathub.org/en/apps/io.github.tobagin.karere"><img src="https://flathub.org/api/badge" height="110" alt="Get it on Flathub"></a>
+<a href="https://ko-fi.com/tobagin"><img src="data/kofi_button.png" height="82" alt="Support me on Ko-Fi"></a>
+
+</div>
+
+## 🎉 Version 3.1.1 - Stability Fixes
+
+**Karere 3.1.1** is a patch release fixing stale notifications on GNOME 50 and the blank-window race on autostart.
+
+### 🆕 What's New in 3.1.1
+
+- **Notifications**: Lingering badges/banners now disappear when you focus the Karere window again (GNOME 50 removed the auto-clear behavior that GNOME 49 had).
+- **Autostart**: WebView load failures now retry with exponential backoff, fixing the blank-window race when Karere starts before the network/portal stack is ready.
+
+## 🎉 Version 3.1.0 - Quality of Life
+
+**Karere 3.1.0** ships several user-experience improvements and important launch-stability fixes.
+
+> **Note:** If upgrading from v2.x, re-linking your WhatsApp account(s) is required. A dialog will explain this on first launch.
+
+### 🆕 What's New in 3.1.0
+
+- **Spell-check**: Pin favorite languages to the top of the dropdown with a star toggle.
+- **Spell-check**: Dropdown shows natural language names ("English (UK)", "Portuguese (Brazil)") instead of locale codes.
+- **Multi-account**: Account switcher opens as a popover on desktop windows (bottom sheet preserved on mobile).
+- **Launch stability**: Fixed the GNOME 50 / glibc 2.42+ launch crash affecting users on Arch, Fedora 43, CachyOS, Bazzite, postmarketOS.
+- **Launch stability**: Fixed the locale-dependent crash that previously required setting `LC_ALL=en_GB.UTF-8` manually.
+- **Mobile layout**: Tracking the latest WhatsApp Web DOM changes again.
+- **Downloads**: Duplicate filenames no longer overwrite — auto-incremented `(1)`, `(2)`, ... like every other file manager.
+- **Under the hood**: Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, plus updated Rust dependencies.
+
+### What was new in 3.0.0
+
+- **Voice & Video Calls**: WebRTC is now fully enabled — make and receive calls directly in Karere.
+- **Better Downloads**: Files now save with their original WhatsApp filename; downloading the same file twice auto-increments (e.g. `photo (1).jpg`).
+- **Window Behaviour**: Window now properly raises from minimized state when activated from the app launcher or tray.
+- **Notification Volume**: Notification sounds now respect GNOME's volume controls.
+
+For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
+
+## Features
+
+### Core Features
+- **Native Experience**: Designed to look and feel like a native application on your desktop.
+- **System Integration**: Notifications, themes, and shortcuts work exactly as you expect.
+- **Privacy Focused**: Sandboxed communication with comprehensive privacy controls.
+- **Efficient**: Optimized to be lightweight and fast.
+### User Experience
+- **System Tray Icon**: Dynamic icon showing unread status, with background run support
+- **Custom Notification Sounds**: Select from 'WhatsApp', 'Pop', 'Alert', 'Soft', or 'Start' sounds
+- **Image & Text Paste**: Seamless Ctrl+V support for both mixed content types
+- **Download Manager**: Custom directory selection (e.g., `~/Downloads`) with toast notifications
+
+### Accessibility
+- **Screen Reader Ready**: Fully labeled interface for screen reader users.
+- **Keyboard Navigation**: Use the entire app without a mouse.
+- **Visual Aids**: High contrast support, zoom controls, and reduced motion.
+- **Auto-Correct**: Smart text correction with dictionary support
+
+### Spell Checking
+- **Multi-Language Support**: 80+ dictionaries from LibreOffice
+- **Auto-Detection**: Smart language detection based on system locale
+- **Dictionary Management**: Override auto-detect to select specific languages
+- **Auto-Correct Toggle**: Enable or disable automatic text replacement
+
+### Privacy & Customization
+- **Granular Notification Controls**: Master toggle, plus individual settings for sound, previews, and downloads
+- **Privacy Settings**: Control message previews and system tray behavior
+- **Theme Selection**: Light, Dark, or System preference
+- **Permission Management**: Persistent controls for Microphone and Notifications
+- **Startup Control**: Toggle automatic launch on login
+
+## Building from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/tobagin/karere.git
+cd karere
+
+# Build and install development version
+./build.sh --dev
+```
+
+**Note**: After installation, you'll need to scan the QR code with your mobile WhatsApp to connect.
+
+## Usage
+
+### Basic Usage
+
+Launch Karere from your applications menu or run:
+```bash
+flatpak run io.github.tobagin.karere
+```
+
+The application will load WhatsApp Web and provide native desktop integration.
+
+### Preferences
+
+Access preferences through the application menu or keyboard shortcut (`Ctrl+,`) to configure:
+
+- **General**: Theme selection, developer tools
+- **Accessibility**: Keyboard shortcuts, focus indicators, high contrast, reduced motion, zoom settings, screen reader optimization
+- **Notifications**: Native notification preferences, preview settings, background notifications
+- **Spell Checking**: Multi-language spell checking with auto-detect
+
+### Keyboard Shortcuts
+
+#### Standard
+- `Ctrl+N` - New Chat
+- `Ctrl+,` - Open Preferences
+- `Ctrl+Q` - Quit Application
+- `F1` - Show Keyboard Shortcuts Help
+
+#### Zoom
+- `Ctrl++` - Zoom In
+- `Ctrl+-` - Zoom Out
+- `Ctrl+0` - Reset Zoom
+
+#### Developer (when enabled)
+- `Ctrl+Shift+D` - Open Developer Tools
+- `Ctrl+R` - Reload Page
+
+#### WhatsApp Web
+- `Ctrl+F` - Find in Chat
+- `Ctrl+Shift+F` - Search Chats
+
+### Accessibility Features
+
+Karere includes comprehensive accessibility support:
+
+- **Screen Reader Support**: Full ARIA labels and semantic HTML
+- **Keyboard Navigation**: Complete keyboard-only navigation with visible focus indicators
+- **High Contrast Mode**: Automatic detection and adaptation
+- **Reduced Motion**: Respects system reduce-motion preferences
+- **Configurable Shortcuts**: All keyboard shortcuts can be enabled/disabled
+- **Focus Management**: 82 focusable elements in a logical focus chain
+
+## Architecture
+
+Karere is built using modern GNOME technologies:
+
+- **Rust**: Primary programming language for memory safety and performance
+- **GTK4**: Modern toolkit with excellent Wayland support
+- **LibAdwaita**: Native GNOME design language and components
+- **WebKitGTK 6.0**: Efficient web rendering engine
+- **Blueprint**: Declarative UI definition language
+- **Flatpak**: Secure application distribution
+
+## Privacy & Security
+
+Karere is designed with privacy in mind:
+
+- **Sandboxed**: Runs in a Flatpak sandbox with minimal permissions
+- **Opt-in Telemetry**: All logging and crash reporting is disabled by default
+- **Local Storage**: Uses standard user data directories, no external services
+- **Transparent**: Open source code available for audit
+
+## Known Limitations
+
+### Video Attachments
+Due to compatibility limitations between WebKitGTK and WhatsApp Web, **video attachments are currently not supported**. This is a platform-level limitation that affects all WebKitGTK-based browsers (including GNOME Web/Epiphany).
+
+**What works:**
+- ✅ Text messages
+- ✅ Image attachments
+- ✅ Document attachments
+- ✅ Audio messages
+- ✅ Downloading videos sent by others
+
+This limitation is being tracked and will be resolved if/when WebKitGTK adds better support for WhatsApp Web's video processing APIs.
+
+### MPRIS and WebKit Issue
+There is a known issue with MPRIS and WebKit that causes a bug on Karere! See [WebKit Bug 282000](https://bugs.webkit.org/show_bug.cgi?id=282000).
+
+As a workaround you can disable MPRIS for the application of your interest.
+To do this, create the file `/etc/dbus-1/session.d/block-karere-mpris.conf` with this content:
+
+```xml
+<busconfig>
+  <policy context="mandatory">
+    <deny own_prefix="org.mpris.MediaPlayer2.io.github.tobagin.karere"/>
+  </policy>
+</busconfig>
+```
+
+**Note:** This will block all instances of Karere from registering on MPRIS, because it uses the `own_prefix` prefix which also covers Sandboxed instances. It requires a system reboot or session restart to work.
+
+![MPRIS Workaround](data/screenshots/mpris-bug.png)
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
+
+- Setting up your development environment
+- Code style and conventions
+- Testing and building
+- Submitting pull requests
+- Reporting bugs and feature requests
+
+For questions or discussions, please use [GitHub Discussions](https://github.com/tobagin/karere/discussions).
+
+## License
+
+Karere is licensed under the GNU General Public License v3.0 or later. See [LICENSE](LICENSE) for the full license text.
+
+## Support
+
+- **Discussions**: Use [GitHub Discussions](https://github.com/tobagin/karere/discussions) for questions
+- **Issues**: Use [GitHub Issues](https://github.com/tobagin/karere/issues) for bugs and feature requests
+
+## Acknowledgments
+
+- **GNOME Project**: For the excellent GTK4 and LibAdwaita frameworks
+- **WebKitGTK Team**: For the efficient web rendering engine
+- **Rust Community**: For the amazing language and tools
+- **WhatsApp Inc.**: For WhatsApp Web
+
+## Screenshots
+
+| Main Window | About Dialog |
+|-------------|--------------|
+| ![Main Window](data/screenshots/main-window.png) | ![About](data/screenshots/about.png) |
+
+| Preferences | Shortcuts |
+|-------------|-----------|
+| ![Preferences](data/screenshots/preferences.png) | ![Shortcuts](data/screenshots/shortcuts.png) |
+
+---
+
+**Karere** - Native WhatsApp Web client for Linux desktop environments.
