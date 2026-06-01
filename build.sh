@@ -1,63 +1,50 @@
-#!/bin/bash
-
-# Karere build script
-# Usage: ./build.sh [--dev]
-
-set -e
-
+#!/usr/bin/env bash
+# Karere v4 (GTK4 + CEF / Rust) — local Flatpak build + install.
+#
+# v4 fetches CEF as a Flatpak module and builds the Rust app offline from the
+# vendored crate manifest (packaging/cargo-sources.json). Regenerate that
+# manifest with --regen-sources whenever Cargo.toml / Cargo.lock change.
+set -euo pipefail
 cd "$(dirname "$0")"
 
-BUILD_TYPE="prod"
+APP_ID="io.github.tobagin.karere"
+MANIFEST="packaging/io.github.tobagin.karere.yml"
+BUILD_DIR="build-dir"
+
+INSTALL=1
+REGEN_SOURCES=0
 
 while [[ $# -gt 0 ]]; do
-    case $1 in
-        --dev)
-            BUILD_TYPE="dev"
-            shift
-            ;;
-        --help)
-            echo "Usage: $0 [--dev]"
-            echo "  --dev      Build development version (uses Devel manifest)"
-            echo "Default: Build production version"
-            echo ""
-            echo "The Flatpak will always be installed after building."
-            exit 0
-            ;;
-        *)
-            echo "Unknown option: $1"
-            echo "Use --help for usage information"
-            exit 1
-            ;;
+    case "$1" in
+        --no-install)    INSTALL=0; shift ;;
+        --regen-sources) REGEN_SOURCES=1; shift ;;
+        --help|-h)
+            cat <<EOF
+Usage: $0 [--regen-sources] [--no-install]
+
+  --regen-sources  Regenerate packaging/cargo-sources.json from Cargo.lock
+                   first (run after any Cargo.toml / Cargo.lock change — the
+                   Flatpak build is offline and needs every crate vendored).
+  --no-install     Build only; do not install the resulting Flatpak.
+
+Default: build the production manifest and install it for the current user.
+Run with: flatpak run $APP_ID
+EOF
+            exit 0 ;;
+        *) echo "Unknown option: $1 (see --help)" >&2; exit 1 ;;
     esac
 done
 
-if [ "$BUILD_TYPE" = "dev" ]; then
-    MANIFEST="packaging/io.github.tobagin.karere.Devel.yml"
-    APP_ID="io.github.tobagin.karere.Dev"
-    echo "Building development version..."
-else
-    MANIFEST="packaging/io.github.tobagin.karere.yml"
-    APP_ID="io.github.tobagin.karere"
-    echo "Building production version..."
+if [[ "$REGEN_SOURCES" == 1 ]]; then
+    echo "Regenerating $MANIFEST sources from Cargo.lock…"
+    python3 tools/flatpak-cargo-generator.py Cargo.lock -o packaging/cargo-sources.json
 fi
 
-BUILD_DIR="build"
+ARGS=(--force-clean --user)
+[[ "$INSTALL" == 1 ]] && ARGS+=(--install)
 
-echo "Using manifest: $MANIFEST"
-echo "Build directory: $BUILD_DIR"
+echo "flatpak-builder ${ARGS[*]} $BUILD_DIR $MANIFEST"
+flatpak-builder "${ARGS[@]}" "$BUILD_DIR" "$MANIFEST"
 
-# Shared local Flatpak repo (reused across all local apps)
-REPO_DIR="$HOME/repo"
-REMOTE_NAME="local"
-
-echo "Running flatpak-builder..."
-flatpak-builder --force-clean --disable-rofiles-fuse --install-deps-from=flathub --repo="$REPO_DIR" "$BUILD_DIR" "$MANIFEST"
-
-echo "Installing from local repo..."
-flatpak remote-add --user --no-gpg-verify --if-not-exists "$REMOTE_NAME" "$REPO_DIR"
-# Uninstall any existing installation (may reference a stale remote)
-flatpak uninstall --user -y "$APP_ID" 2>/dev/null || true
-flatpak install --user -y "$REMOTE_NAME" "$APP_ID"
-
-echo "Build and installation complete!"
-echo "Run with: flatpak run $APP_ID"
+echo "Build complete."
+[[ "$INSTALL" == 1 ]] && echo "Run with: flatpak run $APP_ID"

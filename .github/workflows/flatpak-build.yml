@@ -1,0 +1,40 @@
+name: Flatpak Build
+
+# Build the CEF/Rust Flatpak to verify the app compiles and packages. Uses the
+# GNOME Flatpak SDK (org.gnome.Sdk//50 + rust-stable), which provides the right
+# GTK4/libadwaita 1.6 the crate features require — a bare cargo build on the
+# Ubuntu runner can't, since its libadwaita is older than v1_6.
+#
+# This replaces the v3 WebKitGTK/gst build workflows: v4 fetches CEF as a
+# Flatpak module (no custom WebKit build), so only the app manifest is built.
+
+on:
+  push:
+    branches: [karere-4-gtk-cef]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: flatpak-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flatpak:
+    name: Build (x86_64)
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: io.github.tobagin.karere.flatpak
+          manifest-path: packaging/io.github.tobagin.karere.yml
+          # The manifest targets runtime 50; the action installs it from Flathub.
+          install-deps-from: flathub
+          cache-key: flatpak-builder-${{ github.sha }}
+          # CEF + the full Rust crate graph is heavy; don't fail the cache on miss.
+          restore-cache: true
