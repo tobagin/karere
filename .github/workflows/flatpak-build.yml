@@ -11,6 +11,12 @@ name: Flatpak Build
 on:
   push:
     branches: [karere-4-gtk-cef]
+    # Don't rebuild the app for CI/tooling/docs-only commits.
+    paths-ignore:
+      - '.github/workflows/build-cef-codecs.yml'
+      - 'tools/**'
+      - 'openspec/**'
+      - '**/*.md'
   pull_request:
   workflow_dispatch:
 
