@@ -61,7 +61,7 @@
 - [x] 8.1 Take a screenshot (Spectacle / `gnome-screenshot --area`) so an image lands on the GDK clipboard; focus the WhatsApp chat input; press Ctrl+V → attachment preview shows the image
 - [x] 8.2 Drag a PDF from Files onto the karere window over the chat input → attachment preview shows the PDF
 - [x] 8.3 Highlight text in another window (selects to primary clipboard); middle-click in chat input → text appears in the input
-- [ ] 8.4 Middle-click a link inside an open chat (with primary-clipboard text present) → link opens in system browser AND the link element is unaffected (no paste applied to it)
+- [x] 8.4 Middle-click a link inside an open chat (with primary-clipboard text present) → link opens in system browser AND the link element is unaffected (no paste applied to it)
 - [~] 8.5 N/A — superseded. An https origin (web.whatsapp.com) cannot `fetch("file://…")`, so the >1 MB tempfile path is non-functional; payloads inline as base64 up to 64 MiB instead (see paste.rs `B64_INLINE_MAX`). No tempfile is created for normal pastes, so there is nothing to observe under `$XDG_RUNTIME_DIR/karere/`.
 - [~] 8.6 PARTIAL — the `file://` deny guard (`resource_request_handler` → `PasteFileGuard`) is implemented and rejects any `file://` outside the paste dir; the "succeeds during active paste" half is moot since the tempfile/file:// path is unused (see 8.5).
 - [x] 8.7 Confirm text-only Ctrl+V works — copy text, focus chat input, press Ctrl+V → text inserted (now via GDK intercept, not CEF native; see correction note)

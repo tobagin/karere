@@ -852,7 +852,7 @@ mod imp {
                     // click is NOT claimed, so CEF still receives the middle
                     // button (preserving middle-click-to-open-link).
                     if button == 2 {
-                        read_primary_clipboard_paste(&widget);
+                        read_primary_clipboard_paste(&widget, x, y);
                     }
                 }
             ));
@@ -1261,8 +1261,14 @@ mod imp {
         );
     }
 
-    /// Marshal primary-clipboard text (middle-click) as a `text/plain` paste.
-    fn send_text_paste(widget: &super::KarereWebView, text: &str) {
+    /// Marshal primary-clipboard text (middle-click) as a `text/plain` paste,
+    /// carrying the click coordinates so the page can target the element under
+    /// the cursor (only an editable target receives the paste).
+    fn send_text_paste(widget: &super::KarereWebView, text: &str, coords: Option<(f64, f64)>) {
+        let (x, y) = match coords {
+            Some((x, y)) => (Some(x), Some(y)),
+            None => (None, None),
+        };
         send_browser_message(
             widget,
             crate::ipc::BrowserMessage::DispatchPasteEvent {
@@ -1270,8 +1276,8 @@ mod imp {
                 kind: "paste".to_string(),
                 payload: crate::ipc::PasteBlob::Base64(crate::paste::b64(text.as_bytes())),
                 name: None,
-                x: None,
-                y: None,
+                x,
+                y,
             },
         );
     }
@@ -1325,7 +1331,9 @@ mod imp {
             glib::clone!(
                 #[weak] widget,
                 move |res| match res {
-                    Ok(Some(text)) if !text.is_empty() => send_text_paste(&widget, text.as_str()),
+                    Ok(Some(text)) if !text.is_empty() => {
+                        send_text_paste(&widget, text.as_str(), None)
+                    }
                     Ok(_) => {}
                     Err(err) => log::warn!("clipboard text read failed: {err}"),
                 }
@@ -1430,8 +1438,10 @@ mod imp {
         );
     }
 
-    /// Middle-click: paste primary-clipboard text. Empty selection sends nothing.
-    fn read_primary_clipboard_paste(widget: &super::KarereWebView) {
+    /// Middle-click: paste primary-clipboard text into the element at `(x, y)`,
+    /// but only if it is editable (the page enforces this). Empty selection
+    /// sends nothing.
+    fn read_primary_clipboard_paste(widget: &super::KarereWebView, x: f64, y: f64) {
         let Some(display) = gtk::gdk::Display::default() else {
             return;
         };
@@ -1440,7 +1450,9 @@ mod imp {
             glib::clone!(
                 #[weak] widget,
                 move |res| match res {
-                    Ok(Some(text)) if !text.is_empty() => send_text_paste(&widget, text.as_str()),
+                    Ok(Some(text)) if !text.is_empty() => {
+                        send_text_paste(&widget, text.as_str(), Some((x, y)))
+                    }
                     Ok(_) => {}
                     Err(err) => log::debug!("primary clipboard read failed: {err}"),
                 }

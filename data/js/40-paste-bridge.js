@@ -36,6 +36,16 @@
     } catch (e) {}
   }
 
+  // An element that can receive a text paste: a form field or anything inside a
+  // contenteditable (the WhatsApp composer). `isContentEditable` is inherited,
+  // so it's true for descendants of the composer too.
+  function isEditable(el) {
+    if (!el) return false;
+    if (el.isContentEditable) return true;
+    var tag = el.tagName;
+    return tag === "INPUT" || tag === "TEXTAREA";
+  }
+
   // Map an image MIME to a file extension for the synthesized `paste.<ext>`.
   function extFromMime(mime) {
     var map = {
@@ -145,9 +155,19 @@
         );
       } catch (e) {}
     } else {
-      target = document.activeElement;
-      if (!target || target === document.body || target === document.documentElement) {
-        warn("karere paste bridge: no focused element for paste");
+      // Middle-click (text/plain with coords) targets the element UNDER the
+      // cursor; Ctrl+V (image/file/text) targets the focused element. Either
+      // way the target must be editable — a middle-click on a link or message
+      // text pastes nothing (the click just opens the link).
+      if (detail.mime === "text/plain" && typeof detail.x === "number") {
+        target = document.elementFromPoint(detail.x, detail.y);
+      } else {
+        target = document.activeElement;
+      }
+      if (!isEditable(target)) {
+        if (detail.mime !== "text/plain") {
+          warn("karere paste bridge: no editable target for paste");
+        }
         ack(detail.payload && detail.payload.path);
         return;
       }
