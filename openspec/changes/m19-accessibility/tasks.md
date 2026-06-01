@@ -28,4 +28,4 @@
 ## 5. Documentation & integration
 
 - [ ] 5.1 Note restart-required semantics for `screen-reader-opts` in code comments near the GSetting read site.
-- [ ] 5.2 Coordinate with M22 to expose all three switches in the preferences page and surface the restart-required hint for `screen-reader-opts`.
+- [ ] 5.2 Coordinate with M22 to expose all three switches in the preferences page and surface the restart-required hint for `screen-reader-opts`. (Delivered by `m22-preferences-shortcuts-dialog`: the Accessibility page binds `reduce-motion`, `focus-indicators`, and `screen-reader-opts`, the latter with the restart-required subtitle.)

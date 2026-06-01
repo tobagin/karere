@@ -80,9 +80,14 @@ fn register_present_window(app: &KarereApplication) {
 
 fn register_preferences(app: &KarereApplication) {
     let action = gio::SimpleAction::new("preferences", None);
-    action.connect_activate(|_, _| {
-        log::warn!("action app.preferences not yet implemented (milestone M22)");
-    });
+    action.connect_activate(glib::clone!(
+        #[weak]
+        app,
+        move |_, _| {
+            let dialog = crate::preferences::KarerePreferencesDialog::new(&app);
+            dialog.present(app.active_window().as_ref());
+        }
+    ));
     app.add_action(&action);
 }
 
@@ -92,20 +97,15 @@ fn register_help_overlay(app: &KarereApplication) {
         #[weak]
         app,
         move |_, _| {
-            let Some(win) = app.active_window() else {
-                log::warn!("app.show-help-overlay: no active window");
-                return;
-            };
             let builder =
                 gtk::Builder::from_resource("/io/github/tobagin/karere/ui/keyboard-shortcuts.ui");
-            if let Some(shortcuts) = builder.object::<gtk::ShortcutsWindow>("help_overlay") {
-                shortcuts.set_transient_for(Some(&win));
-                shortcuts.present();
-            } else {
-                log::warn!(
-                    "action app.show-help-overlay has no help_overlay object (milestone Mxx)"
-                );
-            }
+            // AdwShortcutsDialog (libadwaita 1.8) has no Rust binding under the
+            // crate's v1_6 feature; load it as its AdwDialog base instead.
+            let Some(dialog) = builder.object::<adw::Dialog>("shortcuts_dialog") else {
+                log::warn!("app.show-help-overlay: keyboard-shortcuts.ui has no shortcuts_dialog");
+                return;
+            };
+            dialog.present(app.active_window().as_ref());
         }
     ));
     app.add_action(&action);

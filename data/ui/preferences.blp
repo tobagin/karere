@@ -1,9 +1,10 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $KarerePreferencesWindow: Adw.PreferencesDialog {
+template $KarerePreferencesDialog: Adw.PreferencesDialog {
   title: _("Preferences");
 
+  // ----------------------------------------------------------------- General
   Adw.PreferencesPage {
     title: _("General");
     icon-name: "preferences-system-symbolic";
@@ -17,9 +18,13 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
       }
 
       Adw.SwitchRow row_background {
-        title: _("Start in background");
+        title: _("Start in Background");
         subtitle: _("Start minimized without showing the window");
       }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Window");
 
       Adw.ComboRow row_close_action {
         title: _("Window Close Behavior");
@@ -35,7 +40,7 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
 
       Adw.ComboRow row_tray {
         title: _("System Tray Icon");
-        subtitle: _("Show an icon in the system tray");
+        subtitle: _("Auto: enabled for non-GNOME environments");
 
         model: Gtk.StringList {
           strings [
@@ -44,8 +49,6 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
             _("Disabled"),
           ]
         };
-
-        tooltip-text: _("Auto: Enabled for non-GNOME environments");
       }
     }
 
@@ -67,7 +70,7 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
 
       Adw.ComboRow row_mobile_layout {
         title: _("Mobile Layout (Experimental)");
-        subtitle: _("Optimize the interface for small screens");
+        subtitle: _("Auto: enabled on mobile shells (Phosh, Plasma Mobile)");
 
         model: Gtk.StringList {
           strings [
@@ -75,103 +78,6 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
             _("Enabled"),
             _("Disabled"),
           ]
-        };
-
-        tooltip-text: _("Auto: Enabled for mobile environments (Phosh, Plasma Mobile, etc.)");
-      }
-    }
-
-    Adw.PreferencesGroup {
-      title: _("Spell Checking");
-
-      Adw.SwitchRow row_spell_enable {
-        title: _("Enable Spell Checking");
-        subtitle: _("Check spelling as you type");
-      }
-
-      Adw.ActionRow row_spell_status {
-        title: _("Dictionary Status");
-        subtitle: _("Number of installed dictionaries");
-
-        [suffix]
-        Gtk.Label label_spell_status {
-          valign: center;
-          label: _("Unknown");
-        }
-      }
-
-      Adw.ActionRow row_spell_active_label {
-        title: _("Active Language");
-        subtitle: _("Automatically detected language");
-
-        [suffix]
-        Gtk.Label label_active_lang {
-          valign: center;
-        }
-      }
-
-      Adw.ComboRow row_spell_active_combo {
-        title: _("Active Language");
-        subtitle: _("Select the language for spell checking");
-        // Model populated in code
-      }
-
-      Adw.SwitchRow row_spell_override {
-        title: _("Override Dictionary");
-        subtitle: _("Manually select the spell checking language");
-      }
-
-      Adw.SwitchRow row_auto_correct {
-        title: _("Enable Auto-Correct");
-        subtitle: _("Automatically fix common spelling mistakes");
-      }
-    }
-
-    Adw.PreferencesGroup {
-      title: _("Downloads");
-
-      Adw.ActionRow row_download {
-        title: _("Download Directory");
-        subtitle: _("Default (Downloads)");
-
-        [suffix]
-        Gtk.Button btn_download_choose {
-          label: _("Choose...");
-          valign: center;
-        }
-
-        [suffix]
-        Gtk.Button btn_download_reset {
-          icon-name: "edit-clear-symbolic";
-          valign: center;
-          tooltip-text: _("Reset to default");
-        }
-      }
-    }
-
-    Adw.PreferencesGroup {
-      title: _("Accounts");
-
-      Adw.SwitchRow row_multi_account {
-        title: _("Multi-Account Support");
-        subtitle: _("Show account switcher in the header bar");
-      }
-
-      Adw.SwitchRow row_account_limit_enabled {
-        title: _("Limit Number of Accounts");
-        subtitle: _("Restrict how many accounts can be created");
-      }
-
-      Adw.SpinRow row_account_limit {
-        title: _("Maximum Accounts");
-        subtitle: _("Maximum number of accounts allowed");
-
-        adjustment: Gtk.Adjustment {
-          lower: 1;
-          upper: 10;
-          step-increment: 1;
-          page-increment: 1;
-          value: 2;
         };
       }
     }
@@ -183,141 +89,44 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
         title: _("Enable Developer Tools");
         subtitle: _("Allow inspecting and debugging the WebView");
       }
-
-      Adw.ActionRow row_dev_open {
-        title: _("Developer Tools");
-        subtitle: _("Open the WebKit inspector");
-
-        [suffix]
-        Gtk.Button {
-          label: _("Open");
-          valign: center;
-          action-name: "win.show-devtools";
-        }
-      }
     }
-  }
-
-  Adw.PreferencesPage {
-    title: _("Accessibility");
-    icon-name: "preferences-desktop-accessibility-symbolic";
 
     Adw.PreferencesGroup {
-      title: _("Keyboard Navigation");
+      title: _("About");
 
-      Adw.SwitchRow row_kb_shortcuts {
-        title: _("Keyboard Shortcuts");
-        subtitle: _("Enable keyboard shortcuts for common actions");
-      }
+      Adw.ActionRow row_version {
+        title: _("Version");
 
-      Adw.SwitchRow row_focus {
-        title: _("Focus Indicators");
-        subtitle: _("Show visible outlines around focused elements");
+        [suffix]
+        Gtk.Label label_version {
+          valign: center;
+
+          styles [
+            "dim-label",
+            "numeric",
+          ]
+        }
       }
 
       Adw.ActionRow {
-        title: _("View Keyboard Shortcuts");
-        subtitle: _("See all available keyboard shortcuts");
+        title: _("License");
+        subtitle: _("GNU General Public License v3.0");
 
         [suffix]
-        Gtk.Button {
+        Gtk.Button btn_license {
           label: _("View");
           valign: center;
-          action-name: "win.show-help-overlay";
         }
-      }
-    }
-
-    Adw.PreferencesGroup {
-      title: _("Visual Accessibility");
-
-      Adw.SwitchRow row_contrast {
-        title: _("High Contrast Mode");
-        subtitle: _("Increase contrast for better readability");
-      }
-
-      Adw.SwitchRow row_motion {
-        title: _("Reduce Motion");
-        subtitle: _("Minimize animations and transitions");
-      }
-    }
-
-    Adw.PreferencesGroup {
-      title: _("Zoom");
-
-      Adw.SwitchRow row_zoom {
-        title: _("Accessibility Zoom");
-        subtitle: _("Set a minimum zoom level for all accounts");
-      }
-
-      Adw.SpinRow row_zoom_level {
-        title: _("Minimum Zoom Level");
-        subtitle: _("Applied to all webviews — changing this resets all accounts");
-
-        adjustment: Gtk.Adjustment {
-          lower: 0.5;
-          upper: 5.0;
-          value: 1.0;
-          step-increment: 0.1;
-          page-increment: 0.5;
-        };
-
-        digits: 1;
-      }
-
-      Adw.ActionRow row_zoom_reset {
-        title: _("Reset Zoom Level");
-        subtitle: _("Reset minimum zoom to 1.0 for all accounts");
-
-        [suffix]
-        Gtk.Button btn_zoom_reset {
-          label: _("Reset");
-          valign: center;
-          icon-name: "edit-clear-symbolic";
-        }
-      }
-
-      Adw.SwitchRow row_zoom_headerbar {
-        title: _("Header Bar Zoom Controls");
-        subtitle: _("Show zoom buttons in the header bar (affects current account only)");
-      }
-    }
-
-    Adw.PreferencesGroup {
-      title: _("Screen Reader Support");
-
-      Adw.SwitchRow row_sr_opts {
-        title: _("Screen Reader Optimizations");
-        subtitle: _("Improve compatibility with assistive technologies");
-      }
-
-}
-
-    Adw.PreferencesGroup {
-      title: _("Accessibility Shortcuts");
-
-      Adw.SwitchRow row_a11y_shortcuts {
-        title: _("Accessibility Shortcuts");
-        subtitle: _("Enable keyboard shortcuts for accessibility features");
-      }
-
-      Adw.SwitchRow row_dev_shortcuts {
-        title: _("Developer Shortcuts");
-        subtitle: _("Enable keyboard shortcuts for developer tools");
-      }
-
-      Adw.SwitchRow row_notify_shortcuts {
-        title: _("Notification Shortcuts");
-        subtitle: _("Enable keyboard shortcuts for notification actions");
       }
     }
   }
 
+  // ----------------------------------------------------------- Notifications
   Adw.PreferencesPage {
     title: _("Notifications");
     icon-name: "preferences-system-notifications-symbolic";
 
-    Adw.PreferencesGroup group_master {
+    Adw.PreferencesGroup {
       title: _("General");
 
       Adw.SwitchRow row_master_toggle {
@@ -326,7 +135,7 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
       }
     }
 
-    Adw.PreferencesGroup group_messages {
+    Adw.PreferencesGroup {
       title: _("Messages");
 
       Adw.SwitchRow row_notify_msg {
@@ -340,34 +149,35 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
       }
     }
 
-    Adw.PreferencesGroup group_preview {
+    Adw.PreferencesGroup {
       title: _("Message Preview");
+      description: _("Some settings only apply when Karere controls the popup");
 
-      Adw.SwitchRow row_preview_show {
-        title: _("Show Message Preview");
+      Adw.SwitchRow row_preview_name {
+        title: _("Show Sender Name");
+        subtitle: _("Display the contact name in notifications");
+      }
+
+      Adw.SwitchRow row_preview_message {
+        title: _("Show Message Text");
         subtitle: _("Display message content in notifications");
       }
 
-      Adw.SwitchRow row_preview_limit {
-        title: _("Limit Message Preview Size");
-        subtitle: _("Truncate long messages in notifications");
-      }
+      Adw.ComboRow row_preview_len {
+        title: _("Preview Length");
+        subtitle: _("How much of the message to show");
 
-      Adw.SpinRow row_preview_len {
-        title: _("Preview Length (characters)");
-        subtitle: _("Maximum number of characters shown in previews");
-
-        adjustment: Gtk.Adjustment {
-          lower: 1.0;
-          upper: 500.0;
-          value: 20.0; // Default
-          step-increment: 1.0;
-          page-increment: 10.0;
+        model: Gtk.StringList {
+          strings [
+            _("Short"),
+            _("Medium"),
+            _("Long"),
+          ]
         };
       }
     }
 
-    Adw.PreferencesGroup group_sounds {
+    Adw.PreferencesGroup {
       title: _("Sounds");
 
       Adw.SwitchRow row_sound_enable {
@@ -390,9 +200,37 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
         };
       }
     }
+  }
 
-    Adw.PreferencesGroup group_dl_notify {
-      title: _("Downloads");
+  // --------------------------------------------------------------- Downloads
+  Adw.PreferencesPage {
+    title: _("Downloads");
+    icon-name: "folder-download-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Location");
+
+      Adw.ActionRow row_download {
+        title: _("Download Directory");
+        subtitle: _("Default (Downloads)");
+
+        [suffix]
+        Gtk.Button btn_download_choose {
+          label: _("Choose…");
+          valign: center;
+        }
+
+        [suffix]
+        Gtk.Button btn_download_reset {
+          icon-name: "edit-clear-symbolic";
+          valign: center;
+          tooltip-text: _("Reset to default");
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Notifications");
 
       Adw.SwitchRow row_dl_enable {
         title: _("Download Notifications");
@@ -407,8 +245,149 @@ template $KarerePreferencesWindow: Adw.PreferencesDialog {
           strings [
             _("In-app Toast"),
             _("System Notification"),
+            _("Both"),
           ]
         };
+      }
+    }
+  }
+
+  // --------------------------------------------------------------- Spellcheck
+  Adw.PreferencesPage {
+    title: _("Spellcheck");
+    icon-name: "tools-check-spelling-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Spell Checking");
+
+      Adw.SwitchRow row_spell_enable {
+        title: _("Enable Spell Checking");
+        subtitle: _("Check spelling as you type");
+      }
+
+      Adw.SwitchRow row_auto_detect {
+        title: _("Auto-Detect Language");
+        subtitle: _("Detect the writing language automatically");
+      }
+
+      Adw.SwitchRow row_auto_correct {
+        title: _("Enable Auto-Correct");
+        subtitle: _("Automatically fix common spelling mistakes");
+      }
+
+      Adw.ComboRow row_spell_lang {
+        title: _("Language");
+        subtitle: _("Star a language to pin it to the top");
+        // Model, sorter and star factory populated in code (mirrors headerbar).
+      }
+    }
+  }
+
+  // ----------------------------------------------------------------- Privacy
+  Adw.PreferencesPage {
+    title: _("Privacy");
+    icon-name: "security-high-symbolic";
+
+    Adw.PreferencesGroup group_permissions {
+      title: _("Site Permissions");
+      description: _("Stored allow/deny decisions for websites");
+      // Rows populated in code from the M11 permission registry.
+
+      [header-suffix]
+      Gtk.Button btn_clear_all {
+        label: _("Clear All");
+        valign: center;
+
+        styles [
+          "destructive-action",
+        ]
+      }
+    }
+  }
+
+  // ----------------------------------------------------------- Accessibility
+  Adw.PreferencesPage {
+    title: _("Accessibility");
+    icon-name: "preferences-desktop-accessibility-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Motion & Focus");
+
+      Adw.SwitchRow row_motion {
+        title: _("Reduce Motion");
+        subtitle: _("Minimize animations and transitions");
+      }
+
+      Adw.SwitchRow row_focus {
+        title: _("Focus Indicators");
+        subtitle: _("Show visible outlines around focused elements");
+      }
+
+      Adw.SwitchRow row_contrast {
+        title: _("High Contrast Mode");
+        subtitle: _("Increase contrast for better readability");
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Zoom");
+
+      Adw.SwitchRow row_zoom {
+        title: _("Accessibility Zoom");
+        subtitle: _("Set a minimum zoom level for all accounts");
+      }
+
+      Adw.SpinRow row_zoom_level {
+        title: _("Minimum Zoom Level");
+        subtitle: _("Applied to all webviews");
+
+        adjustment: Gtk.Adjustment {
+          lower: 0.5;
+          upper: 5.0;
+          value: 1.0;
+          step-increment: 0.1;
+          page-increment: 0.5;
+        };
+
+        digits: 1;
+      }
+
+      Adw.SwitchRow row_zoom_headerbar {
+        title: _("Header Bar Zoom Controls");
+        subtitle: _("Show zoom buttons in the header bar");
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Screen Reader Support");
+
+      Adw.SwitchRow row_sr_opts {
+        title: _("Screen Reader Optimizations");
+        subtitle: _("Improve compatibility with assistive technologies — restart required");
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Shortcuts");
+
+      Adw.SwitchRow row_kb_shortcuts {
+        title: _("Keyboard Shortcuts");
+        subtitle: _("Enable keyboard shortcuts for common actions");
+      }
+
+      Adw.SwitchRow row_a11y_shortcuts {
+        title: _("Accessibility Shortcuts");
+        subtitle: _("Enable shortcuts for accessibility features");
+      }
+
+      Adw.SwitchRow row_dev_shortcuts {
+        title: _("Developer Shortcuts");
+        subtitle: _("Enable shortcuts for developer tools");
+      }
+
+      Adw.SwitchRow row_notify_shortcuts {
+        title: _("Notification Shortcuts");
+        subtitle: _("Enable shortcuts for notification actions");
       }
     }
   }

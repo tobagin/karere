@@ -102,6 +102,38 @@ pub fn get(origin: &str, mask: u32) -> Decision {
     resolve(map.get(origin), mask)
 }
 
+/// Every stored decision flattened to `(origin, single-bit, state)` triples.
+/// Only concrete Allow/Deny are ever persisted, so each entry is one of those.
+/// Used by the Preferences Privacy page to render the registry (M22 2.8).
+pub fn entries() -> Vec<(String, u32, State)> {
+    let map = load();
+    let mut out = Vec::new();
+    for (origin, inner) in &map {
+        for (bit, state) in inner {
+            out.push((origin.clone(), *bit, State::from_i32(*state)));
+        }
+    }
+    out
+}
+
+/// Remove a single `(origin, bit)` decision. Drops the origin row when its last
+/// bit is removed so the dict never retains empty entries (M22 2.8).
+pub fn remove(origin: &str, bit: u32) {
+    let mut map = load();
+    if let Some(inner) = map.get_mut(origin) {
+        inner.remove(&bit);
+        if inner.is_empty() {
+            map.remove(origin);
+        }
+        save(&map);
+    }
+}
+
+/// Empty the entire permission registry (Privacy page Clear-all, M22 2.8).
+pub fn clear() {
+    save(&Store::new());
+}
+
 /// Persist the user's `decision` for every bit in `mask`. Allow/Deny are stored
 /// (so the prompt never re-fires for that origin+mask); Ask states are not
 /// written, keeping the dict free of empty rows.

@@ -14,6 +14,7 @@ mod ipc;
 mod notifications;
 mod paste;
 mod permissions_store;
+mod preferences;
 mod sound;
 mod spellcheck;
 mod spellcheck_ui;

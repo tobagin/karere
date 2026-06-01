@@ -16,14 +16,70 @@ using Gtk 4.0;
 using Adw 1;
 
 Adw.ShortcutsDialog shortcuts_dialog {
-  // General Section (always visible)
   Adw.ShortcutsSection {
-    title: _("General");
+    title: _("Navigation");
 
     Adw.ShortcutsItem {
-      title: _("Show this help");
-      accelerator: "<Primary>question <Primary>slash";
+      title: _("Reload WhatsApp Web");
+      accelerator: "<Primary>r F5";
     }
+
+    Adw.ShortcutsItem {
+      title: _("Force Reload");
+      accelerator: "<Primary><Shift>r";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Close Window");
+      accelerator: "<Primary>w";
+    }
+  }
+
+  Adw.ShortcutsSection {
+    title: _("Editing");
+
+    Adw.ShortcutsItem {
+      title: _("Find in Page");
+      accelerator: "<Primary>f";
+    }
+  }
+
+  Adw.ShortcutsSection {
+    title: _("View");
+
+    Adw.ShortcutsItem {
+      title: _("Fullscreen");
+      accelerator: "F11 <Alt>Return";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Minimize Window");
+      accelerator: "<Primary>m";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Zoom In");
+      accelerator: "<Primary>plus <Primary>equal <Primary>KP_Add";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Zoom Out");
+      accelerator: "<Primary>minus <Primary>KP_Subtract";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Reset Zoom");
+      accelerator: "<Primary>0 <Primary>KP_0";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Toggle Header Bar Zoom Controls");
+      accelerator: "<Primary>b";
+    }
+  }
+
+  Adw.ShortcutsSection {
+    title: _("System");
 
     Adw.ShortcutsItem {
       title: _("Preferences");
@@ -31,128 +87,18 @@ Adw.ShortcutsDialog shortcuts_dialog {
     }
 
     Adw.ShortcutsItem {
-      title: _("About");
-      accelerator: "F1";
+      title: _("Keyboard Shortcuts");
+      accelerator: "<Primary>question";
     }
 
     Adw.ShortcutsItem {
-      title: _("Quit application");
+      title: _("Developer Tools");
+      accelerator: "F12 <Primary><Shift>i";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Quit");
       accelerator: "<Primary>q";
-    }
-  }
-
-  // Window Section (always visible)
-  Adw.ShortcutsSection {
-    title: _("Window");
-
-    Adw.ShortcutsItem {
-      title: _("Minimize window");
-      accelerator: "<Primary>m";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("Fullscreen");
-      accelerator: "F11 <Alt>Return";
-    }
-  }
-
-  // WhatsApp Web Section (always visible)
-  Adw.ShortcutsSection {
-    title: _("WhatsApp Web");
-
-    Adw.ShortcutsItem {
-      title: _("Find in chat");
-      accelerator: "<Primary>f";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("Search chats");
-      accelerator: "<Primary><Shift>f";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("New chat");
-      accelerator: "<Primary>n";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("Archive current chat");
-      accelerator: "<Primary>e";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("Open profile");
-      accelerator: "<Primary>p";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("Reload WhatsApp Web");
-      accelerator: "F5";
-    }
-  }
-
-  // WebView Zoom Section (conditional)
-  Adw.ShortcutsSection {
-    title: _("WebView Zoom");
-
-    Adw.ShortcutsItem {
-      title: _("Zoom in");
-      accelerator: "<Primary>plus <Primary>equal <Primary>KP_Add";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("Zoom out");
-      accelerator: "<Primary>minus <Primary>KP_Subtract";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("Reset zoom");
-      accelerator: "<Primary>0 <Primary>KP_0";
-    }
-  }
-
-  // Accessibility Section (conditional)
-  Adw.ShortcutsSection {
-    title: _("Accessibility");
-
-    Adw.ShortcutsItem {
-      title: _("Toggle high contrast");
-      accelerator: "<Primary><Shift>h";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("Toggle focus indicators");
-      accelerator: "<Primary><Shift>f";
-    }
-  }
-
-  // Developer Section (conditional)
-  Adw.ShortcutsSection {
-    title: _("Developer");
-
-    Adw.ShortcutsItem {
-      title: _("Developer tools");
-      accelerator: "F12 <Primary><Shift>d";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("Reload page");
-      accelerator: "F5 <Primary>r";
-    }
-
-    Adw.ShortcutsItem {
-      title: _("Force reload");
-      accelerator: "<Shift>F5 <Primary><Shift>r";
-    }
-  }
-
-  // Notifications Section (conditional)
-  Adw.ShortcutsSection {
-    title: _("Notifications");
-
-    Adw.ShortcutsItem {
-      title: _("Toggle notifications");
-      accelerator: "<Primary><Shift>n";
     }
   }
 }

@@ -162,7 +162,7 @@ fn active_window() -> Option<gtk::Window> {
     app.active_window()
 }
 
-fn describe_permissions(mask: u32) -> String {
+pub(crate) fn describe_permissions(mask: u32) -> String {
     use cef::sys::cef_permission_request_types_t as P;
     let mut parts = Vec::new();
     if mask & (P::CEF_PERMISSION_TYPE_CAMERA_STREAM as u32) != 0 { parts.push("camera"); }
