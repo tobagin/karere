@@ -37,7 +37,15 @@
             var sel = window.getSelection();
             text = sel ? sel.toString() : "";
           }
-          if (text) send("SetClipboard", { text: text, primary: false });
+          try {
+            console.log("karere copy event: " + (text ? text.length + " chars" : "EMPTY"));
+          } catch (_) {}
+          if (text) {
+            send("SetClipboard", { text: text, primary: false });
+            // Stop Chromium's OSR-native copy from clobbering our GDK clipboard
+            // write (its windowless clipboard doesn't reach the system clipboard).
+            e.preventDefault();
+          }
         } catch (_) {}
       },
       false
@@ -58,7 +66,7 @@
               var text = sel ? sel.toString() : "";
               if (text) send("SetClipboard", { text: text, primary: true });
             } catch (_) {}
-          }, 150);
+          }, 50);
         } catch (_) {}
       },
       false

@@ -899,6 +899,17 @@ mod imp {
                 {
                     return glib::Propagation::Stop;
                 }
+                // M17 outbound: CEF's offscreen copy never reaches the system
+                // clipboard and the DOM `copy` event doesn't fire in OSR. The
+                // page selection is already mirrored to PRIMARY (50-copy-bridge),
+                // so on Ctrl+C promote PRIMARY → CLIPBOARD at the GTK layer. The
+                // key still forwards to CEF below (in-page copy/UX unaffected).
+                if state.contains(ModifierType::CONTROL_MASK)
+                    && !state.intersects(ModifierType::ALT_MASK | ModifierType::SUPER_MASK)
+                    && matches!(keyval, Key::c | Key::C)
+                {
+                    promote_primary_to_clipboard();
+                }
                 send_key(&widget, keyval, keycode, state, true);
                 // Let accelerator-style combos bubble to window/app shortcuts
                 // (Ctrl/Alt/Super + key, or F5/F11); consume everything else so
@@ -1397,6 +1408,26 @@ mod imp {
         gtk::gio::content_type_get_mime_type(content_type.as_str())
             .map(|m| m.to_string())
             .unwrap_or_else(|| "application/octet-stream".to_string())
+    }
+
+    /// Ctrl+C: copy the PRIMARY selection (kept in sync with the page selection
+    /// by `50-copy-bridge.js`) into the regular CLIPBOARD, since CEF's offscreen
+    /// copy never reaches the system clipboard.
+    fn promote_primary_to_clipboard() {
+        let Some(display) = gtk::gdk::Display::default() else {
+            return;
+        };
+        let clipboard = display.clipboard();
+        display.primary_clipboard().read_text_async(
+            gtk::gio::Cancellable::NONE,
+            move |res| {
+                if let Ok(Some(text)) = res
+                    && !text.is_empty()
+                {
+                    clipboard.set_text(text.as_str());
+                }
+            },
+        );
     }
 
     /// Middle-click: paste primary-clipboard text. Empty selection sends nothing.
