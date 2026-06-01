@@ -8,8 +8,9 @@
 # flatpak/build dirs at any depth (e.g. packaging/.flatpak-builder, packaging/build-dir)
 **/.flatpak-builder/
 **/build-dir/
-# local Claude Code agent state
-.claude/
+# Claude Code: ignore personal/local state, but track shared workflow tooling
+# (.claude/skills, .claude/commands) so /opsx OpenSpec commands work in-repo.
+.claude/settings.local.json
 *.gresource
 /data/ui/*.ui
 /build-pot
