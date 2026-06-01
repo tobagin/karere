@@ -12,6 +12,7 @@ mod devtools;
 mod handlers;
 mod ipc;
 mod notifications;
+mod paste;
 mod permissions_store;
 mod sound;
 mod spellcheck;

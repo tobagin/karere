@@ -97,6 +97,16 @@ wrap_client! {
                     crate::notifications::tracker().on_closed(&tag);
                     1
                 }
+                Ok(RendererMessage::PasteConsumed { tempfile_path }) => {
+                    if let Some(path) = tempfile_path {
+                        crate::paste::consume(&path);
+                    }
+                    1
+                }
+                Ok(RendererMessage::SetClipboard { text, primary }) => {
+                    write_host_clipboard(&text, primary);
+                    1
+                }
                 #[cfg(debug_assertions)]
                 Ok(RendererMessage::Pong) => {
                     log::info!("IPC verify: Pong received from renderer");
@@ -117,6 +127,22 @@ wrap_client! {
             }
         }
     }
+}
+
+/// Mirror page-reported selection/copy text onto the host GDK clipboard.
+/// Runs on the CEF UI thread, which is the glib main thread under the external
+/// message pump, so GDK clipboard access is safe here.
+fn write_host_clipboard(text: &str, primary: bool) {
+    use gtk::prelude::*;
+    let Some(display) = gtk::gdk::Display::default() else {
+        return;
+    };
+    let clipboard = if primary {
+        display.primary_clipboard()
+    } else {
+        display.clipboard()
+    };
+    clipboard.set_text(text);
 }
 
 impl ClientBuilder {

@@ -82,6 +82,12 @@ wrap_app! {
                 Some(&"auto".into()),
             );
             cmd.append_switch(Some(&"enable-webrtc-vea-vda".into()));
+            // M17 paste bridge: large clipboard/drop payloads round-trip through
+            // a tempfile the renderer fetches over file://. Chromium blocks
+            // file:// fetches from non-file origins by default; this re-enables
+            // them. The reach is scoped to `$XDG_RUNTIME_DIR/karere/` by the
+            // resource request handler (`handlers::request`).
+            cmd.append_switch(Some(&"allow-file-access-from-files".into()));
             cmd.append_switch(Some(&"no-startup-window".into()));
             cmd.append_switch(Some(&"noerrdialogs".into()));
             cmd.append_switch(Some(&"hide-crash-restore-bubble".into()));
@@ -227,6 +233,9 @@ impl ShellBrowserProcessHandlerBuilder {
 
 
 pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
+    // Reclaim any paste tempfiles leaked by a prior crash before CEF starts.
+    crate::paste::sweep_old();
+
     // NOTE: do NOT set cache_path/root_cache_path here. CEF defaults
     // root_cache_path to `$XDG_CONFIG_HOME/cef_user_data`, which already
     // persists the profile (cookies, IndexedDB → the WhatsApp login) AND the

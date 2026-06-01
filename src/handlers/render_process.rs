@@ -21,7 +21,7 @@ use cef::{
     wrap_v8_handler,
 };
 
-use crate::ipc::{self, BrowserMessage, RendererMessage};
+use crate::ipc::{self, BrowserMessage, PasteBlob, RendererMessage};
 
 /// The concatenated `data/js/*.js` bundle, embedded at build time so the shipped
 /// binary needs no runtime `data/js/` lookup (works under flatpak/relocation).
@@ -112,8 +112,42 @@ impl ShellRenderProcessHandlerBuilder {
 /// with `Pong` on the originating frame's channel.
 fn dispatch(msg: BrowserMessage, frame: Option<&mut Frame>) {
     match msg {
-        BrowserMessage::DispatchPasteEvent { mime, .. } => {
-            log::debug!("renderer: DispatchPasteEvent (mime={mime}) — stub (M17)");
+        BrowserMessage::DispatchPasteEvent {
+            mime,
+            kind,
+            payload,
+            name,
+            x,
+            y,
+        } => {
+            let Some(frame) = frame else { return };
+            // Re-shape the payload into a JS-friendly discriminated object so
+            // `paste_bridge.js` can branch on `payload.kind` without knowing
+            // serde's externally-tagged encoding.
+            let payload_json = match payload {
+                PasteBlob::Base64(data) => serde_json::json!({ "kind": "Base64", "data": data }),
+                PasteBlob::FilePath(path) => {
+                    serde_json::json!({ "kind": "FilePath", "path": path.to_string_lossy() })
+                }
+            };
+            let detail = serde_json::json!({
+                "mime": mime,
+                "kind": kind,
+                "name": name,
+                "x": x,
+                "y": y,
+                "payload": payload_json,
+            });
+            // JSON is a syntactic subset of a JS object literal, so inlining the
+            // serialized detail is safe.
+            let script = format!(
+                "window.dispatchEvent(new CustomEvent('karere:dispatch-paste',{{detail:{detail}}}))"
+            );
+            frame.execute_java_script(
+                Some(&CefString::from(script.as_str())),
+                Some(&CefString::from("karere://paste")),
+                0,
+            );
         }
         BrowserMessage::SetViewportSize { w, h } => {
             log::debug!("renderer: SetViewportSize {w}x{h} — stub (M14)");

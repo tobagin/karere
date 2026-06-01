@@ -1,9 +1,10 @@
 use std::time::{Duration, Instant};
 
 use cef::{
-    self, Browser, CefString, Frame, ImplBrowser, ImplFrame, ImplRequest, ImplRequestHandler,
-    Request, RequestHandler, TerminationStatus, WindowOpenDisposition, WrapRequestHandler, rc::Rc,
-    wrap_request_handler,
+    self, Browser, Callback, CefString, Frame, ImplBrowser, ImplFrame, ImplRequest,
+    ImplRequestHandler, ImplResourceRequestHandler, Request, RequestHandler, ResourceRequestHandler,
+    ReturnValue, TerminationStatus, WindowOpenDisposition, WrapRequestHandler,
+    WrapResourceRequestHandler, rc::Rc, wrap_request_handler, wrap_resource_request_handler,
 };
 
 use super::{CrashDialog, SharedRef};
@@ -69,6 +70,35 @@ wrap_request_handler! {
             1
         }
 
+        // Scope renderer file:// access (enabled by --allow-file-access-from-files
+        // for the M17 paste tempfile path) to the paste directory only. We return
+        // a resource handler exclusively for file:// loads so non-file requests
+        // keep CEF's default handling; that handler cancels any file:// URL not
+        // inside `$XDG_RUNTIME_DIR/karere/`.
+        fn resource_request_handler(
+            &self,
+            _browser: Option<&mut Browser>,
+            _frame: Option<&mut Frame>,
+            request: Option<&mut Request>,
+            _is_navigation: ::std::os::raw::c_int,
+            _is_download: ::std::os::raw::c_int,
+            _request_initiator: Option<&CefString>,
+            _disable_default_handling: Option<&mut ::std::os::raw::c_int>,
+        ) -> Option<ResourceRequestHandler> {
+            // DevTools (permissive) view: trusted Chromium chrome, do not scope.
+            if self.handler.permissive {
+                return None;
+            }
+            let url = request
+                .map(|r| CefString::from(&r.url()).to_string())
+                .unwrap_or_default();
+            if url.starts_with("file://") {
+                Some(PasteFileGuard::new())
+            } else {
+                None
+            }
+        }
+
         fn on_open_urlfrom_tab(
             &self,
             browser: Option<&mut Browser>,
@@ -124,6 +154,33 @@ wrap_request_handler! {
 impl ShellRequestHandlerBuilder {
     pub fn build(handler: ShellRequestHandler) -> RequestHandler {
         Self::new(handler)
+    }
+}
+
+// Per-`file://`-request guard: cancels any load whose path is not inside the M17
+// paste tempfile directory. Returned by `resource_request_handler` only for
+// `file://` URLs, so it never sees other schemes.
+wrap_resource_request_handler! {
+    pub struct PasteFileGuard;
+
+    impl ResourceRequestHandler {
+        fn on_before_resource_load(
+            &self,
+            _browser: Option<&mut Browser>,
+            _frame: Option<&mut Frame>,
+            request: Option<&mut Request>,
+            _callback: Option<&mut Callback>,
+        ) -> ReturnValue {
+            let url = request
+                .map(|r| CefString::from(&r.url()).to_string())
+                .unwrap_or_default();
+            if crate::paste::is_allowed_file_url(&url) {
+                ReturnValue::CONTINUE
+            } else {
+                log::warn!("blocked file:// load outside paste dir: {url}");
+                ReturnValue::CANCEL
+            }
+        }
     }
 }
 

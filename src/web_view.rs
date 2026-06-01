@@ -848,6 +848,12 @@ mod imp {
                     set_focus(&widget, true);
                     let modifiers = modifiers_from_state(gesture.current_event_state());
                     send_click(&widget, x, y, button, true, n_press, modifiers);
+                    // M17: middle-click also pastes the primary selection. The
+                    // click is NOT claimed, so CEF still receives the middle
+                    // button (preserving middle-click-to-open-link).
+                    if button == 2 {
+                        read_primary_clipboard_paste(&widget);
+                    }
                 }
             ));
             click.connect_released(glib::clone!(
@@ -881,6 +887,18 @@ mod imp {
             #[weak] widget,
             #[upgrade_or] glib::Propagation::Proceed,
             move |_ctrl, keyval, keycode, state| {
+                use gtk::gdk::{Key, ModifierType};
+                // M17: intercept Ctrl+V before CEF. If the GDK clipboard holds an
+                // image or files, synthesize the paste ourselves and swallow the
+                // key so CEF's GDK-blind native paste does not also fire. A
+                // text-only / empty clipboard falls through to CEF's handler.
+                if state.contains(ModifierType::CONTROL_MASK)
+                    && !state.intersects(ModifierType::ALT_MASK | ModifierType::SUPER_MASK)
+                    && matches!(keyval, Key::v | Key::V)
+                    && try_intercept_paste(&widget)
+                {
+                    return glib::Propagation::Stop;
+                }
                 send_key(&widget, keyval, keycode, state, true);
                 // Let accelerator-style combos bubble to window/app shortcuts
                 // (Ctrl/Alt/Super + key, or F5/F11); consume everything else so
@@ -911,6 +929,31 @@ mod imp {
             move |_| set_focus(&widget, false)
         ));
         widget.add_controller(focus);
+
+        // Drag-drop ----------------------------------------------------------
+        // M17: accept file drops and surface each as a synthetic `drop` event on
+        // the element under the cursor (paste_bridge.js targets it via the drop
+        // coordinates carried in the envelope).
+        let drop_target = gtk::DropTarget::new(
+            gdk::FileList::static_type(),
+            gdk::DragAction::COPY,
+        );
+        drop_target.connect_drop(glib::clone!(
+            #[weak] widget,
+            #[upgrade_or] false,
+            move |_target, value, x, y| {
+                match value.get::<gdk::FileList>() {
+                    Ok(list) => {
+                        for file in list.files() {
+                            load_and_send_file(&widget, file, "drop", Some((x, y)));
+                        }
+                        true
+                    }
+                    Err(_) => false,
+                }
+            }
+        ));
+        widget.add_controller(drop_target);
 
         let _ = gdk::ModifierType::SHIFT_MASK;  // suppress unused import warning shape
     }
@@ -1121,6 +1164,214 @@ mod imp {
 
     fn set_focus(widget: &super::KarereWebView, focused: bool) {
         with_host(widget, |host| host.set_focus(focused as i32));
+    }
+
+    // ---- M17 paste / drop bridge ---------------------------------------
+
+    /// Send a [`crate::ipc::BrowserMessage`] to the renderer's main frame.
+    fn send_browser_message(widget: &super::KarereWebView, msg: crate::ipc::BrowserMessage) {
+        if let Some(browser) = resolved_browser(widget.imp())
+            && let Some(frame) = browser.main_frame()
+            && let Some(mut m) = msg.to_cef_message()
+        {
+            frame.send_process_message(cef::ProcessId::RENDERER, Some(&mut m));
+        }
+    }
+
+    /// Marshal a binary clipboard/drop payload into a `DispatchPasteEvent`
+    /// (`kind` is `"paste"` or `"drop"`). Large payloads round-trip via a
+    /// scoped tempfile (see [`crate::paste::make_blob`]).
+    fn send_blob_paste(
+        widget: &super::KarereWebView,
+        mime: String,
+        kind: &str,
+        bytes: &[u8],
+        name: Option<String>,
+        coords: Option<(f64, f64)>,
+    ) {
+        let payload = crate::paste::make_blob(bytes);
+        let (x, y) = match coords {
+            Some((x, y)) => (Some(x), Some(y)),
+            None => (None, None),
+        };
+        send_browser_message(
+            widget,
+            crate::ipc::BrowserMessage::DispatchPasteEvent {
+                mime,
+                kind: kind.to_string(),
+                payload,
+                name,
+                x,
+                y,
+            },
+        );
+    }
+
+    /// Marshal primary-clipboard text (middle-click) as a `text/plain` paste.
+    fn send_text_paste(widget: &super::KarereWebView, text: &str) {
+        send_browser_message(
+            widget,
+            crate::ipc::BrowserMessage::DispatchPasteEvent {
+                mime: "text/plain".to_string(),
+                kind: "paste".to_string(),
+                payload: crate::ipc::PasteBlob::Base64(crate::paste::b64(text.as_bytes())),
+                name: None,
+                x: None,
+                y: None,
+            },
+        );
+    }
+
+    /// On Ctrl+V, inspect the GDK clipboard. If it holds an image or files, kick
+    /// off an async read that dispatches a synthetic paste and return `true` so
+    /// the caller swallows the keystroke (CEF's GDK-blind native paste must not
+    /// also fire). Text-only / empty clipboards return `false` to fall through.
+    fn try_intercept_paste(widget: &super::KarereWebView) -> bool {
+        let Some(display) = gtk::gdk::Display::default() else {
+            return false;
+        };
+        let clipboard = display.clipboard();
+        let formats = clipboard.formats();
+
+        let has_image = formats.contains_type(gtk::gdk::Texture::static_type())
+            || formats.contain_mime_type("image/png")
+            || formats.contain_mime_type("image/jpeg")
+            || formats.contain_mime_type("image/gif")
+            || formats.contain_mime_type("image/webp");
+        if has_image {
+            read_clipboard_image(widget, &clipboard);
+            return true;
+        }
+
+        let has_files = formats.contains_type(gtk::gdk::FileList::static_type())
+            || formats.contain_mime_type("text/uri-list");
+        if has_files {
+            read_clipboard_files(widget, &clipboard);
+            return true;
+        }
+
+        // CEF's offscreen (windowless) clipboard does not consult GDK, so its
+        // native Ctrl+V pastes nothing. Read GDK clipboard text ourselves and
+        // synthesize the paste, same as the image/file paths.
+        let has_text = formats.contains_type(glib::Type::STRING)
+            || formats.contain_mime_type("text/plain")
+            || formats.contain_mime_type("text/plain;charset=utf-8")
+            || formats.contain_mime_type("UTF8_STRING");
+        if has_text {
+            read_clipboard_text(widget, &clipboard);
+            return true;
+        }
+
+        false
+    }
+
+    fn read_clipboard_text(widget: &super::KarereWebView, clipboard: &gtk::gdk::Clipboard) {
+        clipboard.read_text_async(
+            gtk::gio::Cancellable::NONE,
+            glib::clone!(
+                #[weak] widget,
+                move |res| match res {
+                    Ok(Some(text)) if !text.is_empty() => send_text_paste(&widget, text.as_str()),
+                    Ok(_) => {}
+                    Err(err) => log::warn!("clipboard text read failed: {err}"),
+                }
+            ),
+        );
+    }
+
+    fn read_clipboard_image(widget: &super::KarereWebView, clipboard: &gtk::gdk::Clipboard) {
+        clipboard.read_texture_async(
+            gtk::gio::Cancellable::NONE,
+            glib::clone!(
+                #[weak] widget,
+                move |res| match res {
+                    Ok(Some(texture)) => {
+                        let bytes = texture.save_to_png_bytes();
+                        send_blob_paste(
+                            &widget,
+                            "image/png".to_string(),
+                            "paste",
+                            &bytes,
+                            None,
+                            None,
+                        );
+                    }
+                    Ok(None) => log::debug!("clipboard image read: empty"),
+                    Err(err) => log::warn!("clipboard image read failed: {err}"),
+                }
+            ),
+        );
+    }
+
+    fn read_clipboard_files(widget: &super::KarereWebView, clipboard: &gtk::gdk::Clipboard) {
+        clipboard.read_value_async(
+            gtk::gdk::FileList::static_type(),
+            glib::Priority::DEFAULT,
+            gtk::gio::Cancellable::NONE,
+            glib::clone!(
+                #[weak] widget,
+                move |res| match res {
+                    Ok(value) => match value.get::<gtk::gdk::FileList>() {
+                        Ok(list) => {
+                            for file in list.files() {
+                                load_and_send_file(&widget, file, "paste", None);
+                            }
+                        }
+                        Err(err) => log::warn!("clipboard file list decode failed: {err}"),
+                    },
+                    Err(err) => log::warn!("clipboard file read failed: {err}"),
+                }
+            ),
+        );
+    }
+
+    /// Load one file's contents asynchronously and dispatch it as a paste/drop.
+    fn load_and_send_file(
+        widget: &super::KarereWebView,
+        file: gtk::gio::File,
+        kind: &'static str,
+        coords: Option<(f64, f64)>,
+    ) {
+        let name = file.basename().map(|p| p.to_string_lossy().into_owned());
+        file.load_contents_async(
+            gtk::gio::Cancellable::NONE,
+            glib::clone!(
+                #[weak] widget,
+                move |res| match res {
+                    Ok((bytes, _etag)) => {
+                        let mime = guess_mime(name.as_deref(), &bytes);
+                        send_blob_paste(&widget, mime, kind, &bytes, name, coords);
+                    }
+                    Err(err) => log::warn!("read dropped/pasted file failed: {err}"),
+                }
+            ),
+        );
+    }
+
+    /// Best-effort MIME from filename + leading bytes; defaults to octet-stream.
+    fn guess_mime(name: Option<&str>, bytes: &[u8]) -> String {
+        let (content_type, _certain) = gtk::gio::content_type_guess(name, bytes);
+        gtk::gio::content_type_get_mime_type(content_type.as_str())
+            .map(|m| m.to_string())
+            .unwrap_or_else(|| "application/octet-stream".to_string())
+    }
+
+    /// Middle-click: paste primary-clipboard text. Empty selection sends nothing.
+    fn read_primary_clipboard_paste(widget: &super::KarereWebView) {
+        let Some(display) = gtk::gdk::Display::default() else {
+            return;
+        };
+        display.primary_clipboard().read_text_async(
+            gtk::gio::Cancellable::NONE,
+            glib::clone!(
+                #[weak] widget,
+                move |res| match res {
+                    Ok(Some(text)) if !text.is_empty() => send_text_paste(&widget, text.as_str()),
+                    Ok(_) => {}
+                    Err(err) => log::debug!("primary clipboard read failed: {err}"),
+                }
+            ),
+        );
     }
 
     fn gdk_key_to_vk(keyval: gtk::gdk::Key) -> i32 {

@@ -47,8 +47,18 @@ pub enum PasteBlob {
 /// Messages sent from the browser process to the renderer subprocess.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum BrowserMessage {
-    /// Synthesize a paste of `payload` (MIME `mime`) into the focused element.
-    DispatchPasteEvent { mime: String, payload: PasteBlob },
+    /// Synthesize a paste (`kind == "paste"`) or drop (`kind == "drop"`) of
+    /// `payload` (MIME `mime`) into the page. For drops, `x`/`y` are the widget
+    /// coordinates of the release so the renderer can target the element under
+    /// the cursor; `name` carries the original filename for file/drop payloads.
+    DispatchPasteEvent {
+        mime: String,
+        kind: String,
+        payload: PasteBlob,
+        name: Option<String>,
+        x: Option<f64>,
+        y: Option<f64>,
+    },
     /// Inform the page of the host viewport size (drives responsive layout).
     SetViewportSize { w: i32, h: i32 },
     /// Ask the page to dismiss the notification tagged `tag`.
@@ -83,6 +93,14 @@ pub enum RendererMessage {
     NotificationClosed { tag: String },
     /// Forwarded `console.log/warn/error` output.
     ConsoleLog { level: String, msg: String },
+    /// The renderer finished synthesizing a paste/drop; the host may unlink the
+    /// backing tempfile (when the payload was a [`PasteBlob::FilePath`]).
+    PasteConsumed { tempfile_path: Option<PathBuf> },
+    /// Mirror a page text selection / copy to the GDK clipboard (outbound): CEF
+    /// windowless mode never owns the system clipboard, so the page reports its
+    /// selection and the host writes it. `primary` targets the PRIMARY selection
+    /// (Linux middle-click) instead of the regular clipboard.
+    SetClipboard { text: String, primary: bool },
     /// Debug-only reply to [`BrowserMessage::Ping`].
     #[cfg(debug_assertions)]
     Pong,
@@ -199,6 +217,8 @@ impl RendererMessage {
         "NotificationSeen",
         "NotificationClosed",
         "ConsoleLog",
+        "PasteConsumed",
+        "SetClipboard",
         #[cfg(debug_assertions)]
         "Pong",
     ];
@@ -213,6 +233,8 @@ impl RendererMessage {
             RendererMessage::NotificationSeen { .. } => "NotificationSeen",
             RendererMessage::NotificationClosed { .. } => "NotificationClosed",
             RendererMessage::ConsoleLog { .. } => "ConsoleLog",
+            RendererMessage::PasteConsumed { .. } => "PasteConsumed",
+            RendererMessage::SetClipboard { .. } => "SetClipboard",
             #[cfg(debug_assertions)]
             RendererMessage::Pong => "Pong",
         }
@@ -246,11 +268,19 @@ mod tests {
         let cases = vec![
             BrowserMessage::DispatchPasteEvent {
                 mime: "image/png".into(),
+                kind: "paste".into(),
                 payload: PasteBlob::Base64("AAAA".into()),
+                name: None,
+                x: None,
+                y: None,
             },
             BrowserMessage::DispatchPasteEvent {
-                mime: "text/uri-list".into(),
+                mime: "application/pdf".into(),
+                kind: "drop".into(),
                 payload: PasteBlob::FilePath("/tmp/x.png".into()),
+                name: Some("x.pdf".into()),
+                x: Some(12.0),
+                y: Some(34.0),
             },
             BrowserMessage::SetViewportSize { w: 800, h: 600 },
             BrowserMessage::CloseNotifByTag { tag: "chat-42".into() },
@@ -291,6 +321,14 @@ mod tests {
             RendererMessage::ConsoleLog {
                 level: "log".into(),
                 msg: "hi".into(),
+            },
+            RendererMessage::PasteConsumed {
+                tempfile_path: Some("/run/user/1000/karere/paste-abc".into()),
+            },
+            RendererMessage::PasteConsumed { tempfile_path: None },
+            RendererMessage::SetClipboard {
+                text: "hello".into(),
+                primary: true,
             },
             #[cfg(debug_assertions)]
             RendererMessage::Pong,

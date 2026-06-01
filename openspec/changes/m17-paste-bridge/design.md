@@ -21,7 +21,8 @@ The M13 IPC envelope already defines `BrowserMessage::DispatchPasteEvent { mime,
 ## Decisions
 
 ### Decision: Intercept Ctrl+V at the EventControllerKey BEFORE `send_key`
-- **Choice**: The existing `connect_key_pressed` closure (M3) gets a guard: if `state.contains(CONTROL_MASK)` and `keyval == Key::v`, read the GDK clipboard. If image or file content is present, dispatch via IPC and return `Propagation::Stop`. Text-only falls through (`Propagation::Proceed`) so CEF's built-in clipboard handler answers the paste.
+- **Choice**: The existing `connect_key_pressed` closure (M3) gets a guard: if `state.contains(CONTROL_MASK)` and `keyval == Key::v`, read the GDK clipboard. If image, file, **or text** content is present, dispatch via IPC and return `Propagation::Stop`. Only an empty clipboard falls through (`Propagation::Proceed`).
+- **Correction (implementation)**: The original design let text-only Ctrl+V fall through to CEF's native handler. Testing showed CEF's offscreen/windowless clipboard does not consult GDK, so native text paste was a no-op. Text is therefore intercepted and synthesized through the same `DispatchPasteEvent` envelope (`mime: "text/plain"`, base64 payload) as image/file content — `paste_bridge.js` already had the text/plain branch (shared with middle-click).
 - **Why**: CEF's offscreen mode does not consult GDK. The only place where the host owns the keystroke before it is committed to the renderer is the GTK controller callback. Returning `Stop` is what prevents the duplicate paste.
 - **Alternatives**: (a) Override CEF's `RequestContextHandler::on_request_context_initialized` to swap clipboard provider — not supported in cef-rs. (b) Always synthesize, never let CEF paste — loses native text fast-path and breaks paste inside DevTools where we do not control the surface.
 

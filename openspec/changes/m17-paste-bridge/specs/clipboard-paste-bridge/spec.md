@@ -16,10 +16,17 @@ The system SHALL intercept Ctrl+V at the GTK `EventControllerKey` callback befor
 - **THEN** the host iterates each file, builds one `DispatchPasteEvent` per file (or a single envelope with multiple blobs in implementation order), and sends it via M13 IPC
 - **AND** the callback returns `Propagation::Stop`
 
-#### Scenario: Text-only clipboard falls through to CEF
+#### Scenario: Text-only clipboard is read from GDK and synthesized
 - **WHEN** the user presses Ctrl+V and the GDK clipboard contains only text
-- **THEN** the callback returns `Propagation::Proceed`
-- **AND** CEF's built-in clipboard handler answers the paste
+- **THEN** the host reads the GDK clipboard text asynchronously
+- **AND** sends `BrowserMessage::DispatchPasteEvent { mime: "text/plain", kind: "paste", payload: PasteBlob::Base64(<b64>) }`
+- **AND** the callback returns `Propagation::Stop`
+
+> Note (implementation): CEF's offscreen (windowless) clipboard does not consult
+> GDK, so its native Ctrl+V pastes nothing. The original design deferred text to
+> CEF's built-in handler; that was found non-functional in OSR, so text is now
+> intercepted and synthesized via the same bridge as image/file content. An
+> empty clipboard still returns `Propagation::Proceed`.
 
 ### Requirement: Renderer dispatches synthetic paste event on focused element
 The renderer-side `paste_bridge.js` SHALL listen for `karere:dispatch-paste` CustomEvents and dispatch a DOM `paste` event on `document.activeElement` whose `clipboardData` is a populated `DataTransfer`.
