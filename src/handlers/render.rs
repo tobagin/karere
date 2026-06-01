@@ -1,6 +1,6 @@
 use cef::{
     self, Browser, ImplRenderHandler, PaintElementType, Rect, RenderHandler, ScreenInfo,
-    WrapRenderHandler, rc::Rc, wrap_render_handler,
+    TextInputMode, WrapRenderHandler, rc::Rc, wrap_render_handler,
 };
 
 use super::SharedRef;
@@ -86,6 +86,35 @@ wrap_render_handler! {
             s.frame.height = height;
             s.frame.dirty = true;
             log::debug!("on_paint {}x{}", width, height);
+        }
+
+        // Fires when an editable field gains focus (input_mode != NONE) — a
+        // reliable signal the renderer's spellcheck service is live. Apply the
+        // dictionaries once per page load here, instead of guessing renderer
+        // readiness with fixed timers in the load handler.
+        fn on_virtual_keyboard_requested(
+            &self,
+            browser: Option<&mut Browser>,
+            input_mode: TextInputMode,
+        ) {
+            if input_mode == TextInputMode::NONE {
+                return;
+            }
+            let Some(browser) = browser else { return };
+            let (enabled, langs) = super::load::resolve_spellcheck_settings();
+            let force_clear;
+            {
+                let mut s = self.handler.shared.lock();
+                if s.spellcheck_last.as_ref() == Some(&(enabled, langs.clone())) {
+                    return; // already applied this exact config — avoid re-check flash
+                }
+                // First apply of this page load → force the [] transition; a
+                // later change (live switch) sets directly (no [] teardown).
+                force_clear = s.spellcheck_last.is_none();
+                s.spellcheck_last = Some((enabled, langs.clone()));
+            }
+            log::debug!("editable focused → applying spellcheck {langs:?} (force_clear={force_clear})");
+            crate::web_view::apply_spellcheck_to_browser(browser, &langs, enabled, force_clear);
         }
     }
 }

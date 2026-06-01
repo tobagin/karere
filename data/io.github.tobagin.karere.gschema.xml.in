@@ -75,7 +75,7 @@
       <summary>Auto-detect language</summary>
     </key>
     <key name="enable-auto-correct" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Enable auto-correct</summary>
     </key>
     <key name="spell-checking-languages" type="as">

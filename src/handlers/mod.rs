@@ -78,6 +78,12 @@ pub struct SharedState {
     pub downloads_completed: Vec<DownloadCompleted>,
     /// Failed downloads awaiting a failure dialog; drained by the poll loop.
     pub downloads_failed: Vec<DownloadFailed>,
+    /// Last (enabled, languages) applied to the browser via the editable-focus
+    /// trigger. `None` until the first apply of the current page load (reset on
+    /// each main-frame load start). The focus trigger re-applies only when the
+    /// resolved settings differ from this, so returning focus to the composer
+    /// after a live language switch re-checks in the new language.
+    pub spellcheck_last: Option<(bool, Vec<String>)>,
     /// Latest CEF cursor as a GTK/CSS cursor name, plus a dirty flag. CEF
     /// reports cursor changes via `DisplayHandler::on_cursor_change` (OSR never
     /// touches the GTK cursor itself); the widget tick callback applies this.

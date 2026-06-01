@@ -34,8 +34,13 @@ Key constraint: `run_context_menu` is invoked on the CEF UI thread, which in thi
 - **Auto-correct suggestion source** → without a host-queryable per-word checker, autocorrect quality is limited. Mitigation: scope to top-suggestion replace; surface accuracy expectations; keep it opt-in (default off may be safer — decide in specs).
 - **WhatsApp re-suppressing the menu** → if the composer changes its event handling, the unblock JS may need updating. Mitigation: capture-phase `stopImmediatePropagation` already runs first; monitor.
 
-## Open Questions
+## Open Questions (resolved)
 
-- Auto-correct suggestion source: reuse Chromium's via a hidden right-click round-trip (hacky), bundle a lightweight checker, or limit autocorrect to a small built-in common-typos map? Resolve before implementing the autocorrect tasks.
-- Auto-correct default: on or off out of the box.
-- Whether "Add to dictionary" should persist to Chromium's custom dictionary (cache_path) automatically — confirm the command id round-trips through `cont`.
+- **Auto-correct suggestion source** → **small built-in common-typos map** in injected JS (`data/js/30-autocorrect.js`). Chromium exposes no JS spellcheck API and no desktop autocorrect preference, and a hidden right-click round-trip is hacky and racy; a conservative typo map gives unambiguous, high-confidence fixes with no host round-trip. The JS detects word completion (space/punctuation) and replaces via `execCommand('insertText')` (contenteditable) or `.value` splice (input/textarea), preserving capitalization; unknown words are left untouched (still underlined).
+- **Auto-correct default** → **off** (`enable-auto-correct` schema default set to `false`). The limited typo-map source means auto-replace should be opt-in to avoid surprising substitutions; the user enables it in Preferences.
+- **"Add to dictionary" persistence** → handled by Chromium itself: the spellcheck "Add to dictionary" command id arrives in the snapshotted `MenuModel` and round-trips through `RunContextMenuCallback::cont`, so Chromium writes its custom dictionary under `cef_user_data` and stops underlining the word. The host does not special-case it.
+
+## Implementation notes
+
+- Spellcheck suggestions + "Add to dictionary" + cut/copy/paste are surfaced by **mirroring the whole `MenuModel`** (which already contains them for an editable misspelled-word right-click), not by hand-building from `misspelled_word()`/`dictionary_suggestions()`. The params are still read (debug logging) to confirm the suggestion set, but the model is the source of truth so command ids are always correct.
+- The non-`Send` `RunContextMenuCallback` reaches the widget via a **main-thread `thread_local` registry keyed by CEF browser id** (`web_view.rs::CTX_MENU_WIDGETS`); the widget registers on browser spawn and unregisters (cancelling any in-flight menu) on close/unrealize.

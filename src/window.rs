@@ -572,6 +572,21 @@ mod imp {
                 ),
             );
 
+            // Live auto-correct toggle: push the flag into the running page (the
+            // load handler also re-seeds it on every navigation).
+            let win_ac = self.obj().downgrade();
+            settings.connect_changed(
+                Some("enable-auto-correct"),
+                move |s, _| {
+                    let on = s.boolean("enable-auto-correct");
+                    if let Some(win) = win_ac.upgrade()
+                        && let Some(web) = win.imp().web_view.borrow().as_ref()
+                    {
+                        web.run_js(&format!("window.__karereAutoCorrect = {on};"));
+                    }
+                },
+            );
+
             let favorites = strv_vec(&settings, "favorite-spell-check-languages");
             let store = spellcheck_ui::build_store(&favorites);
             let sorter = spellcheck_ui::build_sorter();

@@ -90,15 +90,70 @@ impl KarereWebView {
 /// the page — and its spellcheck service — is up).
 ///
 /// Must run on the CEF UI thread (the glib main thread here).
-pub(crate) fn apply_spellcheck_to_browser(
-    browser: &cef::Browser,
-    langs: &[String],
-    enabled: bool,
-) {
+/// Force Chromium to re-spellcheck the currently-focused editable. Changing
+/// `spellcheck.dictionaries` only affects text typed AFTER the change — existing
+/// text keeps its old-language markers — so toggling the focused element's
+/// `spellcheck` property off→on makes Chromium drop and recompute the markers
+/// with the new dictionary. Must run on the CEF UI thread.
+fn force_spellcheck_recheck(browser: &cef::Browser) {
+    use cef::{CefString, ImplBrowser, ImplFrame};
+    let Some(frame) = browser.main_frame() else { return };
+    let js = "(function(){var e=document.activeElement;if(!e)return;\
+try{var t=e.closest&&e.closest('[contenteditable=\"true\"],input,textarea');var n=t||e;\
+n.spellcheck=false;void n.offsetHeight;n.spellcheck=true;}catch(_){}})();";
+    frame.execute_java_script(
+        Some(&CefString::from(js)),
+        Some(&CefString::from("karere://spellrecheck")),
+        0,
+    );
+}
+
+/// Write the `spellcheck.dictionaries` list preference on the browser's request
+/// context. Returns false on failure. Must run on the CEF UI thread.
+fn write_spellcheck_dictionaries(browser: &cef::Browser, langs: &[String]) -> bool {
     use cef::{
         CefString, ImplBrowser, ImplBrowserHost, ImplListValue, ImplPreferenceManager, ImplValue,
         list_value_create, value_create,
     };
+
+    let Some(host) = browser.host() else { return false };
+    let Some(ctx) = host.request_context() else { return false };
+    let Some(mut list) = list_value_create() else {
+        return false;
+    };
+    list.set_size(langs.len());
+    for (i, lang) in langs.iter().enumerate() {
+        let s = CefString::from(lang.as_str());
+        list.set_string(i, Some(&s));
+    }
+    let Some(mut v) = value_create() else {
+        return false;
+    };
+    v.set_list(Some(&mut list));
+    let name = CefString::from("spellcheck.dictionaries");
+    let mut err = CefString::from("");
+    ctx.set_preference(Some(&name), Some(&mut v), Some(&mut err)) != 0
+}
+
+/// Apply the spellcheck enable flag + dictionary list to a live browser.
+///
+/// `force_clear` selects how the dictionary list is written:
+/// - `true` (first apply of a page load): Chromium ignores a `Set` whose value
+///   equals the persisted pref, so to make the initial language actually take
+///   effect we force a real `[]`→`[lang]` transition (decoupled across a loop
+///   tick so the renderer sees two distinct updates).
+/// - `false` (a live language switch): the value genuinely differs, so set
+///   `[lang]` DIRECTLY. The `[]` clear must NOT be used here — clearing to empty
+///   after spellcheck is already running tears the service down in OSR and the
+///   re-set does not revive it (spellcheck dies until restart).
+pub(crate) fn apply_spellcheck_to_browser(
+    browser: &cef::Browser,
+    langs: &[String],
+    enabled: bool,
+    force_clear: bool,
+) {
+    use cef::ImplBrowser;
+    use cef::{CefString, ImplBrowserHost, ImplPreferenceManager, ImplValue, value_create};
 
     let Some(host) = browser.host() else { return };
     let Some(ctx) = host.request_context() else {
@@ -116,48 +171,96 @@ pub(crate) fn apply_spellcheck_to_browser(
         }
     }
 
-    // Write the `spellcheck.dictionaries` list. Returns false on failure.
-    let set_dictionaries = |items: &[String]| -> bool {
-        let Some(mut list) = list_value_create() else {
-            return false;
-        };
-        list.set_size(items.len());
-        for (i, lang) in items.iter().enumerate() {
-            let s = CefString::from(lang.as_str());
-            list.set_string(i, Some(&s));
-        }
-        let Some(mut v) = value_create() else {
-            return false;
-        };
-        v.set_list(Some(&mut list));
-        let name = CefString::from("spellcheck.dictionaries");
-        let mut err = CefString::from("");
-        ctx.set_preference(Some(&name), Some(&mut v), Some(&mut err)) != 0
-    };
-
-    // Chromium only re-spellchecks when the dictionaries list actually CHANGES.
-    // CEF persists the pref to disk, so at startup the value we want is often
-    // already the persisted value → setting it is a silent no-op and nothing
-    // gets underlined until the user picks a different language. Force a real
-    // transition by clearing to `[]` first (the empty→target change triggers a
-    // re-check). PrefService notifies observers synchronously per Set.
-    if !langs.is_empty() {
-        set_dictionaries(&[]);
+    if force_clear && !langs.is_empty() {
+        // First apply: force the [] → [lang] transition across a loop tick.
+        write_spellcheck_dictionaries(browser, &[]);
         log::info!("spellcheck.dictionaries = [] (force re-check)");
+        let browser = browser.clone();
+        let langs = langs.to_vec();
+        glib::idle_add_local_once(move || {
+            if write_spellcheck_dictionaries(&browser, &langs) {
+                log::info!("spellcheck.dictionaries = {langs:?}");
+            } else {
+                log::warn!("set spellcheck.dictionaries failed");
+            }
+        });
+        return;
     }
-    if set_dictionaries(langs) {
-        log::info!("spellcheck.dictionaries = {:?}", langs);
+
+    // Live switch (or disable): write directly, no [] teardown.
+    if write_spellcheck_dictionaries(browser, langs) {
+        log::info!("spellcheck.dictionaries = {langs:?} (direct)");
     } else {
         log::warn!("set spellcheck.dictionaries failed");
+    }
+    if !langs.is_empty() {
+        // Best-effort: nudge Chromium to re-scan existing text in the new
+        // language (a pref change alone only affects newly-typed text). Deferred
+        // so the new dictionary has propagated to the renderer first.
+        let browser = browser.clone();
+        glib::timeout_add_local_once(std::time::Duration::from_millis(200), move || {
+            force_spellcheck_recheck(&browser);
+        });
+    }
+}
+
+// ---- context-menu widget registry (main-thread only) ----------------------
+//
+// `ContextMenuHandler::run_context_menu` runs on the CEF UI thread, which under
+// the external message pump IS the glib main thread, so this registry and the
+// `RunContextMenuCallback` it carries never cross threads (deliberately NOT
+// routed through the `Arc<Mutex>` `SharedRef`, since the callback is not `Send`).
+// The map links a CEF browser id to the widget rendering it.
+thread_local! {
+    static CTX_MENU_WIDGETS: std::cell::RefCell<
+        std::collections::HashMap<i32, glib::WeakRef<KarereWebView>>,
+    > = std::cell::RefCell::new(std::collections::HashMap::new());
+}
+
+pub(crate) fn register_context_menu_widget(id: i32, view: &KarereWebView) {
+    use glib::prelude::ObjectExt;
+    CTX_MENU_WIDGETS.with(|m| {
+        m.borrow_mut().insert(id, view.downgrade());
+    });
+}
+
+pub(crate) fn unregister_context_menu_widget(id: i32) {
+    CTX_MENU_WIDGETS.with(|m| {
+        m.borrow_mut().remove(&id);
+    });
+}
+
+/// Route a snapshotted context menu (from `ContextMenuHandler::run_context_menu`)
+/// to the widget that owns `browser_id`. If the widget is gone, the callback is
+/// cancelled so CEF never leaks the pending-menu state. Main-thread only.
+pub fn dispatch_context_menu(
+    browser_id: i32,
+    items: Vec<crate::handlers::context_menu::MenuEntry>,
+    x: i32,
+    y: i32,
+    callback: cef::RunContextMenuCallback,
+) {
+    let view = CTX_MENU_WIDGETS.with(|m| {
+        m.borrow()
+            .get(&browser_id)
+            .and_then(|w| w.upgrade())
+    });
+    match view {
+        Some(v) => v.imp().show_context_menu(items, x, y, callback),
+        None => {
+            use cef::ImplRunContextMenuCallback;
+            callback.cancel();
+        }
     }
 }
 
 mod imp {
     use cef::{
-        self, Browser, BrowserSettings, CefString, ImplBrowser, ImplBrowserHost, ImplFrame,
-        KeyEvent, KeyEventType, MouseButtonType, MouseEvent, WindowInfo,
-        browser_host_create_browser_sync, sys,
+        self, Browser, BrowserSettings, CefString, EventFlags, ImplBrowser, ImplBrowserHost,
+        ImplFrame, ImplRunContextMenuCallback, KeyEvent, KeyEventType, MouseButtonType, MouseEvent,
+        RunContextMenuCallback, WindowInfo, browser_host_create_browser_sync, sys,
     };
+    use std::cell::RefCell;
     use gl::types::{GLenum, GLint, GLuint};
     use glib::subclass::Signal;
     use gtk::glib;
@@ -189,6 +292,21 @@ mod imp {
         /// under the cursor instead of the top-left corner.
         last_mouse_x: AtomicI32,
         last_mouse_y: AtomicI32,
+        /// CEF browser id, used to (de)register this widget in the context-menu
+        /// registry. Set once the browser spawns; `0` before then.
+        browser_id: AtomicI32,
+        /// Pending OSR context-menu callback (non-`Send`, main-thread only). Held
+        /// for the lifetime of the open menu and resolved exactly once in the
+        /// popover `closed` handler: `cont(command)` if an item was activated,
+        /// else `cancel()`. Dispatching from `closed` (after popdown) means the
+        /// webview is re-focused before the command runs — required for
+        /// spellcheck-replace and the edit commands to actually apply.
+        pub pending_menu_callback: RefCell<Option<RunContextMenuCallback>>,
+        /// Command id selected by item activation, consumed by the `closed`
+        /// handler. `None` → the menu was dismissed without a selection.
+        pub pending_menu_command: std::cell::Cell<Option<i32>>,
+        /// The currently-displayed context popover, kept alive while open.
+        pub context_popover: RefCell<Option<gtk::Popover>>,
     }
 
     #[glib::object_subclass]
@@ -320,11 +438,98 @@ mod imp {
         }
 
         pub fn close_browser(&self) {
+            // Cancel any in-flight OSR context menu so CEF never leaks the
+            // pending-menu state when the widget goes away mid-menu, and drop the
+            // popover.
+            if let Some(cb) = self.pending_menu_callback.borrow_mut().take() {
+                cb.cancel();
+            }
+            if let Some(pop) = self.context_popover.borrow_mut().take() {
+                pop.unparent();
+            }
+            let id = self.browser_id.swap(0, Ordering::Relaxed);
+            if id != 0 {
+                super::unregister_context_menu_widget(id);
+            }
+
             if let Some(browser) = self.browser.lock().as_ref()
                 && let Some(host) = browser.host()
             {
                 host.close_browser(0);
             }
+        }
+
+        /// Present the snapshotted CEF context menu as a GTK `Popover` of buttons
+        /// anchored at the cursor over the `GLArea`. Main-thread only. Stores the
+        /// callback in `pending_menu_callback`; a button click records the command
+        /// and pops down, and the `closed` handler dispatches `cont`/`cancel` —
+        /// exactly one fires. (A manual button popover is used instead of
+        /// `PopoverMenu`+`gio::Menu`: the model menu's actions did not activate
+        /// when parented to the OSR `GLArea`.)
+        pub fn show_context_menu(
+            &self,
+            items: Vec<crate::handlers::context_menu::MenuEntry>,
+            x_dev: i32,
+            y_dev: i32,
+            callback: RunContextMenuCallback,
+        ) {
+            // Replace any stale menu cleanly (shouldn't normally overlap).
+            if let Some(old) = self.context_popover.borrow_mut().take() {
+                old.unparent();
+            }
+            if let Some(cb) = self.pending_menu_callback.borrow_mut().take() {
+                cb.cancel();
+            }
+            *self.pending_menu_callback.borrow_mut() = Some(callback);
+            self.pending_menu_command.set(None);
+
+            let obj = self.obj();
+            let popover = gtk::Popover::new();
+            popover.set_parent(&*obj);
+            popover.set_has_arrow(false);
+            popover.set_autohide(true);
+            popover.set_position(gtk::PositionType::Bottom);
+            popover.add_css_class("menu");
+
+            let container = gtk::Box::new(gtk::Orientation::Vertical, 0);
+            build_menu_box(&items, &container, &obj, &popover);
+            popover.set_child(Some(&container));
+
+            // `run_context_menu` reports the cursor in view (device-pixel)
+            // coordinates; GTK widget coordinates are logical, so divide by the
+            // scale factor (inverse of the input-forwarding multiply).
+            let s = scale(&obj);
+            let rect = gtk::gdk::Rectangle::new(x_dev / s, y_dev / s, 1, 1);
+            popover.set_pointing_to(Some(&rect));
+
+            // Resolve the callback once, here, AFTER the popover is down so the
+            // webview is focused again: dispatch the activated command, or cancel
+            // if dismissed without a selection.
+            popover.connect_closed(glib::clone!(
+                #[weak] obj,
+                move |pop| {
+                    let imp = obj.imp();
+                    let cmd = imp.pending_menu_command.take();
+                    if let Some(cb) = imp.pending_menu_callback.borrow_mut().take() {
+                        // Re-assert CEF focus on the view before running the
+                        // command (spellcheck-replace / cut / paste act on the
+                        // focused frame's selection).
+                        set_focus(&obj, true);
+                        match cmd {
+                            Some(id) => {
+                                log::debug!("context menu: cont(id={id})");
+                                cb.cont(id, EventFlags::default());
+                            }
+                            None => cb.cancel(),
+                        }
+                    }
+                    pop.unparent();
+                    *imp.context_popover.borrow_mut() = None;
+                }
+            ));
+
+            *self.context_popover.borrow_mut() = Some(popover.clone());
+            popover.popup();
         }
 
         pub fn run_js(&self, script: &str) {
@@ -346,7 +551,9 @@ mod imp {
                 log::warn!("set_spellcheck_languages: no live browser");
                 return;
             };
-            super::apply_spellcheck_to_browser(&browser, langs, enabled);
+            // Dropdown-driven live switch: never use the [] force-clear (it
+            // tears down spellcheck in OSR); set the new language directly.
+            super::apply_spellcheck_to_browser(&browser, langs, enabled, false);
         }
 
         pub fn reload(&self) {
@@ -401,6 +608,11 @@ mod imp {
             match browser {
                 Some(b) => {
                     log::info!("browser spawned");
+                    // Register in the context-menu widget registry so the OSR
+                    // `run_context_menu` handler can reach this widget by id.
+                    let id = b.identifier();
+                    self.browser_id.store(id, Ordering::Relaxed);
+                    super::register_context_menu_widget(id, &self.obj());
                     // Debug IPC verification: once the renderer has had time to
                     // build its V8 context, send a Ping and expect the browser
                     // log to show the matching Pong (handled in ClientBuilder).
@@ -725,6 +937,62 @@ mod imp {
         if state.contains(ModifierType::BUTTON2_MASK) { m |= F::EVENTFLAG_MIDDLE_MOUSE_BUTTON.0; }
         if state.contains(ModifierType::BUTTON3_MASK) { m |= F::EVENTFLAG_RIGHT_MOUSE_BUTTON.0; }
         m
+    }
+
+    /// Populate `container` with one widget per [`MenuEntry`] snapshot entry:
+    /// flat `gtk::Button`s for commands (click → record command id + popdown),
+    /// `gtk::Separator`s between sections, and dim heading labels for submenus
+    /// (flattened inline — the real menus are flat). Disabled items are
+    /// insensitive.
+    fn build_menu_box(
+        entries: &[crate::handlers::context_menu::MenuEntry],
+        container: &gtk::Box,
+        obj: &super::KarereWebView,
+        popover: &gtk::Popover,
+    ) {
+        use crate::handlers::context_menu::MenuEntry;
+        use gtk::prelude::*;
+
+        for e in entries {
+            match e {
+                MenuEntry::Separator => {
+                    container.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+                }
+                MenuEntry::Submenu { label, items } => {
+                    let heading = gtk::Label::new(Some(label));
+                    heading.set_xalign(0.0);
+                    heading.add_css_class("dim-label");
+                    container.append(&heading);
+                    build_menu_box(items, container, obj, popover);
+                }
+                MenuEntry::Item {
+                    label,
+                    command_id,
+                    enabled,
+                } => {
+                    let btn = gtk::Button::with_label(label);
+                    btn.set_has_frame(false);
+                    btn.add_css_class("flat");
+                    btn.set_sensitive(*enabled);
+                    if let Some(lbl) = btn.child().and_downcast::<gtk::Label>() {
+                        lbl.set_xalign(0.0);
+                    }
+                    let cmd = *command_id;
+                    btn.connect_clicked(glib::clone!(
+                        #[weak] obj,
+                        #[weak] popover,
+                        move |_| {
+                            log::debug!("context menu: item activated id={cmd}");
+                            // Record the choice; the popover `closed` handler runs
+                            // `cont` once it is down and the view is re-focused.
+                            obj.imp().pending_menu_command.set(Some(cmd));
+                            popover.popdown();
+                        }
+                    ));
+                    container.append(&btn);
+                }
+            }
+        }
     }
 
     /// The browser driving this view: a `Page` view stores it directly, a

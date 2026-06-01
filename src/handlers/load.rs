@@ -38,6 +38,9 @@ wrap_load_handler! {
             let is_main = frame.is_none_or(|f| f.is_main() == 1);
             if is_main {
                 crate::notifications::tracker().on_load_start();
+                // New page → spellcheck must be re-applied once the renderer is
+                // live again (signalled by the first editable-field focus).
+                self.handler.shared.lock().spellcheck_last = None;
             }
         }
 
@@ -85,22 +88,13 @@ wrap_load_handler! {
                 s.offline = false;
             }
 
-            // Apply the spellcheck language once the page is up. The
-            // `--spell-check-languages` switch does not populate
-            // `spellcheck.dictionaries`; only the request-context preference
-            // does. on_load_end fires before WhatsApp's SPA and the renderer's
-            // spellcheck are fully live, so an apply here alone is lost —
-            // schedule delayed re-applies so the change lands once the renderer
-            // is ready (mirrors what a manual dropdown change does seconds later).
+            // Spellcheck is applied by the first editable-field focus (see
+            // `render.rs::on_virtual_keyboard_requested`), which proves the
+            // renderer is live — `on_load_end` is too early for it to stick.
+            // The auto-correct flag IS pushed here since the page's `window`
+            // reset on navigation.
             if let Some(browser) = browser {
-                let browser = browser.clone();
-                apply_spellcheck_from_settings(&browser);
-                for delay_ms in [1500u64, 4000] {
-                    let browser = browser.clone();
-                    glib::timeout_add_local_once(Duration::from_millis(delay_ms), move || {
-                        apply_spellcheck_from_settings(&browser);
-                    });
-                }
+                apply_autocorrect_from_settings(browser);
             }
         }
 
@@ -156,10 +150,9 @@ impl ShellLoadHandlerBuilder {
     }
 }
 
-/// Read the spellcheck GSettings and push the resolved language list to `browser`
-/// via the request-context preference. Called on every successful main-frame
-/// load so spellcheck is active without a manual dropdown change.
-fn apply_spellcheck_from_settings(browser: &Browser) {
+/// Resolve the effective spellcheck `(enabled, languages)` from GSettings —
+/// explicit list, else auto-detected locale; empty when spellcheck is disabled.
+pub(crate) fn resolve_spellcheck_settings() -> (bool, Vec<String>) {
     use gtk::gio;
     use gtk::prelude::{SettingsExt, SettingsExtManual};
 
@@ -175,5 +168,24 @@ fn apply_spellcheck_from_settings(browser: &Browser) {
     } else {
         Vec::new()
     };
-    crate::web_view::apply_spellcheck_to_browser(browser, &langs, enabled);
+    (enabled, langs)
+}
+
+/// Seed the injected auto-correct bundle's runtime flag (`enable-auto-correct`)
+/// in the page's main frame. Called on every successful main-frame load and
+/// whenever the preference changes, so the JS knows whether to replace words.
+pub(crate) fn apply_autocorrect_from_settings(browser: &Browser) {
+    use gtk::gio;
+    use gtk::prelude::SettingsExt;
+
+    let on = gio::Settings::new(crate::application::APP_ID).boolean("enable-auto-correct");
+    let Some(frame) = browser.main_frame() else {
+        return;
+    };
+    let js = format!("window.__karereAutoCorrect = {on};");
+    frame.execute_java_script(
+        Some(&CefString::from(js.as_str())),
+        Some(&CefString::from("karere://autocorrect")),
+        0,
+    );
 }
