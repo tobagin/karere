@@ -212,14 +212,33 @@ fn register_refresh_tray_accounts(app: &KarereApplication) {
     app.add_action(&action);
 }
 
-/// `app.switch-account <id>`: registered no-op stub so per-account menu items
-/// can target it without runtime errors. M20 fills in the account switch.
+/// `app.switch-account <id>`: switch the active window to account `id` (target
+/// of the tray's per-account menu entries).
 fn register_switch_account(app: &KarereApplication) {
     let action = gio::SimpleAction::new("switch-account", Some(glib::VariantTy::STRING));
-    action.connect_activate(|_, param| {
-        let id = param.and_then(|v| v.str()).unwrap_or_default();
-        log::debug!("app.switch-account({id:?}) — no-op stub (milestone M20)");
-    });
+    action.connect_activate(glib::clone!(
+        #[weak]
+        app,
+        move |_, param| {
+            let id = param.and_then(|v| v.str()).unwrap_or_default();
+            if id.is_empty() {
+                return;
+            }
+            let Some(win) = app
+                .active_window()
+                .or_else(|| app.windows().into_iter().next())
+            else {
+                return;
+            };
+            // Always surface the window (never toggle) — the tray entry's job is
+            // "show this account", not "toggle visibility".
+            win.set_visible(true);
+            win.present();
+            if let Some(win) = win.downcast_ref::<crate::window::KarereWindow>() {
+                win.switch_account(id);
+            }
+        }
+    ));
     app.add_action(&action);
 }
 

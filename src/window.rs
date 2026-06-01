@@ -25,6 +25,11 @@ impl KarereWindow {
         self.close();
     }
 
+    /// Switch the active account (driven by the tray's per-account entries).
+    pub fn switch_account(&self, id: &str) {
+        self.imp().switch_account(id);
+    }
+
     /// Run `script` in the page's main frame (used by notification click
     /// routing to re-enter the page via `__karereActivateNotif`).
     pub fn run_page_js(&self, script: &str) {
@@ -78,7 +83,19 @@ mod imp {
         pub find_counter_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub dictionary_dropdown: TemplateChild<gtk::DropDown>,
+        #[template_child]
+        pub account_bottom_sheet: TemplateChild<adw::BottomSheet>,
+        #[template_child]
+        pub account_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub account_avatar: TemplateChild<adw::Avatar>,
+        #[template_child]
+        pub accounts_list: TemplateChild<gtk::ListBox>,
 
+        /// Wide-variant switcher popover (from `account_switcher.blp`), parented
+        /// to `account_button`; its list mirrors `accounts_list`.
+        pub account_popover: RefCell<Option<gtk::Popover>>,
+        pub accounts_list_popover: RefCell<Option<gtk::ListBox>>,
         pub web_view: RefCell<Option<KarereWebView>>,
         /// Embedded DevTools OSR view, present only while DevTools is open.
         pub devtools_view: RefCell<Option<KarereWebView>>,
@@ -184,6 +201,7 @@ mod imp {
             self.setup_search();
             self.setup_focus_withdraw();
             self.setup_spellcheck();
+            self.setup_account_switcher();
 
             // M15: keep the tray menu's Show/Hide label in sync with window
             // visibility (fires on every show/hide, incl. close-to-background).
@@ -197,6 +215,30 @@ mod imp {
     impl WidgetImpl for KarereWindow {}
     impl WindowImpl for KarereWindow {}
     impl ApplicationWindowImpl for KarereWindow {}
+
+    /// Hard cap on linked accounts (matches the Alt+1..9 switch shortcuts).
+    const MAX_ACCOUNTS: usize = 9;
+
+    /// Primary display name for an account row / avatar / tray: the discovered
+    /// WhatsApp name (pushname) first, then the user label, then a placeholder.
+    fn row_title(account: &crate::accounts::Account) -> String {
+        account
+            .pushname
+            .clone()
+            .or_else(|| account.user_label.clone())
+            .unwrap_or_else(|| gettextrs::gettext("Account"))
+    }
+
+    /// Decode account PNG bytes into a `gdk::Texture` for `Adw.Avatar`'s
+    /// custom-image. Uses a Pixbuf loader so it works regardless of the GTK
+    /// `Texture::from_bytes` availability.
+    fn texture_from_png(bytes: &[u8]) -> Option<gtk::gdk::Texture> {
+        let loader = gtk::gdk_pixbuf::PixbufLoader::new();
+        loader.write(bytes).ok()?;
+        loader.close().ok()?;
+        let pixbuf = loader.pixbuf()?;
+        Some(gtk::gdk::Texture::for_pixbuf(&pixbuf))
+    }
     impl AdwApplicationWindowImpl for KarereWindow {}
 
     impl KarereWindow {
@@ -357,6 +399,439 @@ mod imp {
             });
         }
 
+        // ---- M20 account switcher ------------------------------------------
+
+        pub fn setup_account_switcher(&self) {
+            // Instantiate the wide-variant popover from its own resource and
+            // parent it to the header account button.
+            let builder = gtk::Builder::from_resource(
+                "/io/github/tobagin/karere/ui/account_switcher.ui",
+            );
+            if let Some(popover) = builder.object::<gtk::Popover>("account_switcher_popover") {
+                popover.set_parent(&*self.account_button);
+                *self.account_popover.borrow_mut() = Some(popover);
+            }
+            *self.accounts_list_popover.borrow_mut() =
+                builder.object::<gtk::ListBox>("accounts_list_popover");
+
+            // Header button opens the popover on wide windows, the bottom sheet
+            // on narrow ones.
+            self.account_button.connect_clicked(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |btn| {
+                    if btn.width().max(this.obj().width()) >= 600
+                        && let Some(pop) = this.account_popover.borrow().as_ref()
+                    {
+                        pop.popup();
+                    } else {
+                        this.account_bottom_sheet.set_open(true);
+                    }
+                }
+            ));
+
+            // Rebuild rows on every account-list / runtime-state change.
+            let mgr = crate::accounts::manager();
+            mgr.connect_local(
+                "accounts-changed",
+                false,
+                clone!(
+                    #[weak(rename_to = this)]
+                    self,
+                    #[upgrade_or]
+                    None,
+                    move |_| {
+                        this.rebuild_account_rows();
+                        None
+                    }
+                ),
+            );
+            self.rebuild_account_rows();
+        }
+
+        fn rebuild_account_rows(&self) {
+            let mgr = crate::accounts::manager();
+            let accounts = mgr.get_accounts_sorted();
+
+            // Disable "Add account" at the hard cap (matches the Alt+1..9 jumps).
+            if let Some(add) = self
+                .obj()
+                .lookup_action("add-account")
+                .and_downcast::<gio::SimpleAction>()
+            {
+                add.set_enabled(accounts.len() < MAX_ACCOUNTS);
+            }
+
+            // Populate both the bottom-sheet list and the popover list.
+            let mut lists: Vec<gtk::ListBox> = vec![self.accounts_list.get()];
+            if let Some(pop_list) = self.accounts_list_popover.borrow().as_ref() {
+                lists.push(pop_list.clone());
+            }
+            for list in &lists {
+                while let Some(child) = list.first_child() {
+                    list.remove(&child);
+                }
+                let can_remove = accounts.len() > 1;
+                for account in &accounts {
+                    list.append(&self.make_account_row(account, can_remove));
+                }
+            }
+
+            // Mirror the account list into the tray (§9): name + avatar pixmap.
+            let summaries = accounts
+                .iter()
+                .map(|a| crate::tray::AccountSummary {
+                    id: a.id.clone(),
+                    name: row_title(a),
+                    has_unread: a.has_unread,
+                    icon_png: a.avatar_png.clone(),
+                })
+                .collect();
+            crate::tray::set_accounts(summaries);
+
+            // Sync the header avatar to the active (or MRU-first) account.
+            let active = mgr.active().or_else(|| accounts.first().cloned());
+            if let Some(a) = active {
+                let label = row_title(&a);
+                self.account_avatar.set_text(Some(&label));
+                match a.avatar_png.as_deref().and_then(texture_from_png) {
+                    Some(tex) => self.account_avatar.set_custom_image(Some(&tex)),
+                    None => self.account_avatar.set_custom_image(None::<&gtk::gdk::Texture>),
+                }
+            }
+        }
+
+        fn make_account_row(
+            &self,
+            account: &crate::accounts::Account,
+            can_remove: bool,
+        ) -> adw::ActionRow {
+            let runtime = crate::accounts::runtime_state(&account.id);
+            let title = row_title(account);
+            let id = account.id.clone();
+
+            let row = adw::ActionRow::builder()
+                .title(glib::markup_escape_text(&title))
+                .activatable(true)
+                .build();
+            // Title = account name (pushname); subtitle = the user label. Before
+            // pairing (no pushname yet) show the waiting state instead.
+            if runtime.awaiting_pairing && account.pushname.is_none() {
+                row.set_subtitle(&gettextrs::gettext("Waiting for QR scan…"));
+            } else if let Some(label) = account.user_label.as_deref() {
+                row.set_subtitle(&glib::markup_escape_text(label));
+            }
+
+            // Prefix: avatar (custom image or initials).
+            let avatar = adw::Avatar::new(36, Some(&title), true);
+            if let Some(tex) = account.avatar_png.as_deref().and_then(texture_from_png) {
+                avatar.set_custom_image(Some(&tex));
+            }
+            row.add_prefix(&avatar);
+
+            // Awaiting-pairing spinner.
+            if runtime.awaiting_pairing {
+                let spinner = gtk::Spinner::new();
+                spinner.set_spinning(true);
+                spinner.set_valign(gtk::Align::Center);
+                row.add_suffix(&spinner);
+            }
+
+            // Persistent degraded-mode yellow badge.
+            if runtime.degraded {
+                let badge = gtk::Label::new(Some(&gettextrs::gettext("degraded")));
+                badge.add_css_class("warning");
+                badge.add_css_class("caption-heading");
+                badge.set_valign(gtk::Align::Center);
+                if let Some(reason) = runtime.degraded_reason.as_deref() {
+                    badge.set_tooltip_text(Some(reason));
+                }
+                row.add_suffix(&badge);
+            }
+
+            // Edit + remove affordances (no reorder controls — MRU only).
+            let edit = gtk::Button::from_icon_name("document-edit-symbolic");
+            edit.add_css_class("flat");
+            edit.set_valign(gtk::Align::Center);
+            edit.set_tooltip_text(Some(&gettextrs::gettext("Edit account")));
+            edit.connect_clicked(clone!(
+                #[weak(rename_to = this)]
+                self,
+                #[strong]
+                id,
+                move |_| this.open_account_dialog(&id, false)
+            ));
+            row.add_suffix(&edit);
+
+            let remove = gtk::Button::from_icon_name("user-trash-symbolic");
+            remove.add_css_class("flat");
+            remove.set_valign(gtk::Align::Center);
+            // The last remaining account cannot be removed (there must always be
+            // at least one).
+            remove.set_sensitive(can_remove);
+            remove.set_tooltip_text(Some(&if can_remove {
+                gettextrs::gettext("Remove account")
+            } else {
+                gettextrs::gettext("Can't remove the only account")
+            }));
+            remove.connect_clicked(clone!(
+                #[weak(rename_to = this)]
+                self,
+                #[strong]
+                id,
+                move |_| this.confirm_remove_account(&id)
+            ));
+            row.add_suffix(&remove);
+
+            // Row activation switches to the account.
+            row.connect_activated(clone!(
+                #[weak(rename_to = this)]
+                self,
+                #[strong]
+                id,
+                move |_| this.switch_account(&id)
+            ));
+            row
+        }
+
+        /// Close both switcher surfaces (popover + bottom sheet). Done before
+        /// presenting a dialog so the autohide popover's input grab does not
+        /// swallow the dialog's events.
+        fn close_switcher(&self) {
+            if let Some(pop) = self.account_popover.borrow().as_ref() {
+                pop.popdown();
+            }
+            self.account_bottom_sheet.set_open(false);
+        }
+
+        /// Switch to the account at `idx` in MRU order (no-op if out of range).
+        fn switch_to_index(&self, idx: usize) {
+            if let Some(a) = crate::accounts::manager().get_accounts_sorted().get(idx) {
+                self.switch_account(&a.id);
+            }
+        }
+
+        /// Cycle the active account by `delta` (+1 next, -1 previous) in MRU order.
+        fn cycle_account(&self, delta: i32) {
+            let mgr = crate::accounts::manager();
+            let accts = mgr.get_accounts_sorted();
+            if accts.len() < 2 {
+                return;
+            }
+            let cur = mgr.active().map(|a| a.id);
+            let here = cur
+                .and_then(|id| accts.iter().position(|a| a.id == id))
+                .unwrap_or(0) as i32;
+            let n = accts.len() as i32;
+            let next = ((here + delta) % n + n) % n;
+            self.switch_account(&accts[next as usize].id);
+        }
+
+        /// Make `id` the active account and bring its browser to the foreground.
+        pub fn switch_account(&self, id: &str) {
+            log::info!("switch_account({id})");
+            self.close_switcher();
+            crate::accounts::manager().activate(id);
+            if let Some(web) = self.web_view.borrow().as_ref() {
+                web.spawn_account(id, true);
+            }
+        }
+
+        /// `win.add-account`: create an account with a unique default label, give
+        /// it the foreground browser so its QR is visible immediately, and close
+        /// the switcher. No upfront prompt — the real name fills in from the
+        /// Store hook on pairing; the label is editable later via the pencil.
+        fn add_account(&self) {
+            let mgr = crate::accounts::manager();
+            let count = mgr.get_accounts_sorted().len();
+            if count >= MAX_ACCOUNTS {
+                self.close_switcher();
+                self.toast_overlay.add_toast(adw::Toast::new(&gettextrs::gettext(
+                    "Maximum of 9 accounts reached",
+                )));
+                return;
+            }
+            let n = count + 1;
+            let account = mgr.add();
+            mgr.update_user_label(&account.id, Some(format!("Account {n}")));
+            if let Some(web) = self.web_view.borrow().as_ref() {
+                web.spawn_account(&account.id, true);
+            }
+            mgr.activate(&account.id);
+            self.close_switcher();
+        }
+
+        /// Add/edit dialog: only `user_label` is editable; identity fields are
+        /// shown read-only. When `is_new`, the dialog auto-closes once the
+        /// account's `pushname` is discovered (pairing complete).
+        fn open_account_dialog(&self, id: &str, is_new: bool) {
+            let mgr = crate::accounts::manager();
+            let Some(account) = mgr.get(id) else { return };
+            let id = account.id.clone();
+
+            let page = adw::PreferencesPage::new();
+            let group = adw::PreferencesGroup::new();
+
+            let label_row = adw::EntryRow::builder()
+                .title(gettextrs::gettext("Label"))
+                .text(account.user_label.as_deref().unwrap_or(""))
+                .build();
+            group.add(&label_row);
+
+            let dim = |title: &str, value: Option<&str>| -> adw::ActionRow {
+                let r = adw::ActionRow::builder()
+                    .title(title)
+                    .subtitle(value.unwrap_or("—"))
+                    .build();
+                r.set_sensitive(false); // greyed / read-only
+                r.add_css_class("property");
+                r
+            };
+            group.add(&dim(&gettextrs::gettext("Name"), account.pushname.as_deref()));
+            group.add(&dim(&gettextrs::gettext("WhatsApp ID"), account.wid.as_deref()));
+            group.add(&dim(
+                &gettextrs::gettext("Avatar URL"),
+                account.avatar_url.as_deref(),
+            ));
+            page.add(&group);
+
+            let toolbar = adw::ToolbarView::new();
+            let header = adw::HeaderBar::new();
+            header.set_show_end_title_buttons(false);
+            header.set_show_start_title_buttons(false);
+            let cancel = gtk::Button::with_label(&gettextrs::gettext("Cancel"));
+            let save = gtk::Button::with_label(&gettextrs::gettext("Save"));
+            save.add_css_class("suggested-action");
+            header.pack_start(&cancel);
+            header.pack_end(&save);
+            toolbar.add_top_bar(&header);
+            toolbar.set_content(Some(&page));
+
+            let dialog = adw::Dialog::builder()
+                .title(if is_new {
+                    gettextrs::gettext("Add Account")
+                } else {
+                    gettextrs::gettext("Edit Account")
+                })
+                .content_width(420)
+                .child(&toolbar)
+                .build();
+
+            cancel.connect_clicked(clone!(
+                #[weak]
+                dialog,
+                move |_| {
+                    dialog.close();
+                }
+            ));
+            save.connect_clicked(clone!(
+                #[weak]
+                dialog,
+                #[strong]
+                id,
+                move |_| {
+                    let text = label_row.text();
+                    let label = (!text.trim().is_empty()).then(|| text.to_string());
+                    crate::accounts::manager().update_user_label(&id, label);
+                    dialog.close();
+                }
+            ));
+
+            // For a new account, close automatically once it pairs (pushname set).
+            if is_new {
+                let mgr2 = crate::accounts::manager();
+                let handler_id = std::rc::Rc::new(RefCell::new(None));
+                let dialog_weak = dialog.downgrade();
+                let id_owned = id.clone();
+                let sig = mgr2.connect_local("accounts-changed", false, move |_| {
+                    if let Some(a) = crate::accounts::manager().get(&id_owned)
+                        && a.pushname.is_some()
+                        && let Some(d) = dialog_weak.upgrade()
+                    {
+                        d.close();
+                    }
+                    None
+                });
+                *handler_id.borrow_mut() = Some(sig);
+                // Disconnect the watcher when the dialog goes away.
+                dialog.connect_closed(clone!(
+                    #[strong]
+                    handler_id,
+                    move |_| {
+                        if let Some(sig) = handler_id.borrow_mut().take() {
+                            crate::accounts::manager().disconnect(sig);
+                        }
+                    }
+                ));
+            }
+
+            dialog.present(Some(&*self.obj()));
+        }
+
+        fn confirm_remove_account(&self, id: &str) {
+            log::info!("confirm_remove_account({id})");
+            let mgr = crate::accounts::manager();
+            if mgr.get_accounts_sorted().len() <= 1 {
+                log::info!("refusing to remove the only account");
+                return;
+            }
+            self.close_switcher();
+            let name = mgr.get(id).map(|a| row_title(&a)).unwrap_or_default();
+            let dialog = adw::AlertDialog::new(
+                Some(&gettextrs::gettext("Remove account?")),
+                Some(&format!(
+                    "{} {}. {}",
+                    gettextrs::gettext("This removes the local session for"),
+                    name,
+                    gettextrs::gettext(
+                        "The device stays linked on your phone until you remove it there."
+                    ),
+                )),
+            );
+            dialog.add_response("cancel", &gettextrs::gettext("Cancel"));
+            dialog.add_response("remove", &gettextrs::gettext("Remove"));
+            dialog.set_response_appearance("remove", adw::ResponseAppearance::Destructive);
+            dialog.set_default_response(Some("cancel"));
+            dialog.set_close_response("cancel");
+            dialog.connect_response(
+                None,
+                clone!(
+                    #[weak(rename_to = this)]
+                    self,
+                    #[strong(rename_to = id)]
+                    id.to_owned(),
+                    move |_, resp| {
+                        if resp != "remove" {
+                            return;
+                        }
+                        let mgr = crate::accounts::manager();
+                        // Was the removed account the visible one?
+                        let was_active = mgr.active().map(|a| a.id) == Some(id.clone());
+                        if let Some(web) = this.web_view.borrow().as_ref() {
+                            web.close_account(&id);
+                        }
+                        mgr.remove(&id);
+                        // Wipe the on-disk session shortly after the browser
+                        // closes (give CEF a moment to release the profile).
+                        let id_del = id.clone();
+                        glib::timeout_add_local_once(
+                            std::time::Duration::from_millis(1500),
+                            move || crate::accounts::delete_session_dir(&id_del),
+                        );
+                        // Removing the foreground account leaves no visible
+                        // browser; promote the MRU-first survivor so the view
+                        // doesn't go blank until restart.
+                        if was_active
+                            && let Some(next) = mgr.get_accounts_sorted().first()
+                        {
+                            this.switch_account(&next.id);
+                        }
+                    }
+                ),
+            );
+            dialog.present(Some(&*self.obj()));
+        }
+
         fn register_win_actions(&self) {
             let window = self.obj();
 
@@ -397,6 +872,14 @@ mod imp {
                 move |_, _| this.toggle_devtools()
             ));
             window.add_action(&show_devtools);
+
+            let inspect_element = gio::SimpleAction::new("inspect-element", None);
+            inspect_element.connect_activate(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_, _| this.inspect_element()
+            ));
+            window.add_action(&inspect_element);
 
             let close_devtools = gio::SimpleAction::new("close-devtools", None);
             close_devtools.connect_activate(clone!(
@@ -441,6 +924,45 @@ mod imp {
             ));
             window.add_action(&refresh_hard);
 
+            let add_account = gio::SimpleAction::new("add-account", None);
+            add_account.connect_activate(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_, _| this.add_account()
+            ));
+            window.add_action(&add_account);
+
+            // Account-switch shortcuts: cycle next/prev + jump-to-Nth (MRU order).
+            let next_account = gio::SimpleAction::new("next-account", None);
+            next_account.connect_activate(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_, _| this.cycle_account(1)
+            ));
+            window.add_action(&next_account);
+
+            let prev_account = gio::SimpleAction::new("prev-account", None);
+            prev_account.connect_activate(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_, _| this.cycle_account(-1)
+            ));
+            window.add_action(&prev_account);
+
+            let switch_index =
+                gio::SimpleAction::new("switch-account-index", Some(glib::VariantTy::INT32));
+            switch_index.connect_activate(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_, param| {
+                    let n = param.and_then(|v| v.get::<i32>()).unwrap_or(0);
+                    if n >= 1 {
+                        this.switch_to_index((n - 1) as usize);
+                    }
+                }
+            ));
+            window.add_action(&switch_index);
+
             for (name, milestone) in [
                 ("zoom-in", "M18"),
                 ("zoom-out", "M18"),
@@ -467,6 +989,17 @@ mod imp {
                 self.close_devtools();
             } else {
                 self.open_devtools();
+            }
+        }
+
+        /// Ctrl+Shift+C: open DevTools if closed; otherwise forward Ctrl+Shift+C
+        /// into the DevTools view so its frontend toggles the element picker.
+        /// (First press opens — the frontend loads async — second press inspects.)
+        fn inspect_element(&self) {
+            let open = self.devtools_view.borrow().clone();
+            match open {
+                Some(dv) => dv.dispatch_inspect_shortcut(),
+                None => self.open_devtools(),
             }
         }
 

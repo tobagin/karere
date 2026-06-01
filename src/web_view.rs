@@ -51,6 +51,12 @@ impl KarereWebView {
         self.imp().stop_finding();
     }
 
+    /// Forward Ctrl+Shift+C into this (DevTools) view to toggle its element
+    /// picker. Only meaningful on the embedded DevTools view.
+    pub fn dispatch_inspect_shortcut(&self) {
+        imp::send_inspect_shortcut(self);
+    }
+
     pub fn shared(&self) -> crate::handlers::SharedRef {
         self.imp().shared.lock().as_ref().unwrap().clone()
     }
@@ -70,6 +76,22 @@ impl KarereWebView {
     /// `enabled = true` lets Chromium keep its current/auto behaviour.
     pub fn set_spellcheck_languages(&self, langs: &[String], enabled: bool) {
         self.imp().set_spellcheck_languages(langs, enabled);
+    }
+
+    /// Spawn (or, if already present, surface) the browser for `account_id`.
+    /// `foreground` makes it the visible account immediately.
+    pub fn spawn_account(&self, account_id: &str, foreground: bool) {
+        self.imp().spawn_browser(Some(account_id.to_owned()), foreground);
+    }
+
+    /// Switch the visible account to `account_id` (must already be spawned).
+    pub fn switch_to_account(&self, account_id: &str) {
+        self.imp().switch_to(account_id);
+    }
+
+    /// Close and drop the browser for `account_id` (the account-removal path).
+    pub fn close_account(&self, account_id: &str) {
+        self.imp().close_account_browser(account_id);
     }
 
     pub fn is_browser_closed(&self) -> bool {
@@ -257,10 +279,14 @@ pub fn dispatch_context_menu(
 mod imp {
     use cef::{
         self, Browser, BrowserSettings, CefString, EventFlags, ImplBrowser, ImplBrowserHost,
-        ImplFrame, ImplRunContextMenuCallback, KeyEvent, KeyEventType, MouseButtonType, MouseEvent,
-        RunContextMenuCallback, WindowInfo, browser_host_create_browser_sync, sys,
+        ImplFrame, ImplRequestContextHandler, ImplRunContextMenuCallback, KeyEvent, KeyEventType,
+        MouseButtonType, MouseEvent, RequestContext, RequestContextHandler, RequestContextSettings,
+        RunContextMenuCallback, WindowInfo, WrapRequestContextHandler,
+        browser_host_create_browser_sync, rc::Rc, request_context_create_context, sys,
+        wrap_request_context_handler,
     };
     use std::cell::RefCell;
+    use std::collections::HashMap;
     use gl::types::{GLenum, GLint, GLuint};
     use glib::subclass::Signal;
     use gtk::glib;
@@ -277,7 +303,21 @@ mod imp {
     #[derive(Default)]
     pub struct KarereWebView {
         pub shared: Mutex<Option<SharedRef>>,
+        /// The foreground browser (a clone of the `browsers` entry for
+        /// `foreground`). All existing input/render/spellcheck paths resolve
+        /// through this, so they always target the visible account.
         pub browser: Mutex<Option<Browser>>,
+        /// M20 browser pool: every account's CEF browser, keyed by account id.
+        /// Background browsers stay alive (paused via `was_hidden(true)`) so a
+        /// switch never logs the account out.
+        pub browsers: Mutex<HashMap<String, Browser>>,
+        /// Per-account life-span handlers, kept alive alongside their browsers.
+        pub life_spans: Mutex<HashMap<String, ShellLifeSpanHandler>>,
+        /// RequestContexts awaiting their init callback (kept alive until the
+        /// browser is created against them). Keyed by account id.
+        pub pending_contexts: Mutex<HashMap<String, RequestContext>>,
+        /// The account id whose browser is currently foreground.
+        pub foreground: Mutex<Option<String>>,
         pub life_span: Mutex<Option<ShellLifeSpanHandler>>,
         pub pending_url: Mutex<Option<String>>,
         /// Set for the embedded DevTools view; selects the permissive client.
@@ -382,7 +422,7 @@ mod imp {
             unsafe {
                 self.init_gl();
             }
-            self.create_browser();
+            self.bootstrap_pool();
         }
 
         fn unrealize(&self) {
@@ -452,11 +492,23 @@ mod imp {
                 super::unregister_context_menu_widget(id);
             }
 
-            if let Some(browser) = self.browser.lock().as_ref()
+            // Close every pooled account browser, then the legacy/DevTools single
+            // browser if it lives outside the pool.
+            let pooled: Vec<Browser> = self.browsers.lock().drain().map(|(_, b)| b).collect();
+            self.life_spans.lock().clear();
+            *self.foreground.lock() = None;
+            for browser in &pooled {
+                if let Some(host) = browser.host() {
+                    host.close_browser(0);
+                }
+            }
+            if pooled.is_empty()
+                && let Some(browser) = self.browser.lock().as_ref()
                 && let Some(host) = browser.host()
             {
                 host.close_browser(0);
             }
+            *self.browser.lock() = None;
         }
 
         /// Present the snapshotted CEF context menu as a GTK `Popover` of buttons
@@ -568,17 +620,112 @@ mod imp {
             }
         }
 
-        fn create_browser(&self) {
-            if self.browser.lock().is_some() {
+        /// WhatsApp Web entry point; every account browser starts here.
+        const WHATSAPP_URL: &'static str = "https://web.whatsapp.com/";
+
+        /// Bring up the account pool on first realize. Ensures at least one
+        /// account exists (the DevTools view is account-less and uses the legacy
+        /// single-browser path), then spawns the MRU-first account's browser as
+        /// foreground. Background accounts are spawned lazily on first switch.
+        fn bootstrap_pool(&self) {
+            if self.devtools.load(Ordering::Relaxed) {
+                // The embedded DevTools view is not an account; keep it as a
+                // single legacy browser with the default request context.
+                self.spawn_browser(None, true);
                 return;
             }
+
+            let mgr = crate::accounts::manager();
+            let mut accounts = mgr.get_accounts_sorted();
+            if accounts.is_empty() {
+                mgr.add();
+                accounts = mgr.get_accounts_sorted();
+            }
+            let Some(first) = accounts.first() else {
+                log::error!("bootstrap_pool: no account after add()");
+                return;
+            };
+            mgr.activate(&first.id);
+            self.spawn_browser(Some(first.id.clone()), true);
+        }
+
+        /// Spawn a CEF browser for `account_id` (or the legacy default context
+        /// when `None`, used only by the DevTools view). When `make_foreground`
+        /// it becomes the visible browser; otherwise it starts paused.
+        ///
+        /// For a per-account browser the isolated `RequestContext` must finish
+        /// initializing before `CreateBrowserSync` will succeed (CEF Chrome
+        /// runtime), so creation is deferred to the context's init callback
+        /// ([`on_account_context_ready`]). The DevTools/legacy path uses the
+        /// global context and is created synchronously.
+        pub fn spawn_browser(&self, account_id: Option<String>, make_foreground: bool) {
+            if let Some(id) = account_id.as_ref()
+                && self.browsers.lock().contains_key(id)
+            {
+                if make_foreground {
+                    self.switch_to(id);
+                }
+                return;
+            }
+
+            let Some(id) = account_id else {
+                // Legacy / DevTools view: global context, synchronous create.
+                self.create_browser_now(None, None, make_foreground);
+                return;
+            };
+
+            // Per-account: build the isolated context now, create the browser
+            // once it signals initialized. The context is held in
+            // `pending_contexts` so it stays alive until then.
+            let cache = crate::accounts::session_cache_path(&id);
+            let _ = std::fs::create_dir_all(&cache);
+            let rc_settings = RequestContextSettings {
+                cache_path: CefString::from(cache.to_string_lossy().as_ref()),
+                persist_session_cookies: 1,
+                ..Default::default()
+            };
+            let mut handler =
+                ContextReadyHandler::new(self.obj().downgrade(), id.clone(), make_foreground);
+            match request_context_create_context(Some(&rc_settings), Some(&mut handler)) {
+                Some(ctx) => {
+                    self.pending_contexts.lock().insert(id, ctx);
+                }
+                None => log::error!("request_context_create_context returned None for {id}"),
+            }
+        }
+
+        /// Continuation invoked from the per-account `RequestContext` init
+        /// callback: the context is now ready, so create the browser against it.
+        pub fn on_account_context_ready(
+            &self,
+            request_context: Option<&mut RequestContext>,
+            account_id: &str,
+            make_foreground: bool,
+        ) {
+            self.create_browser_now(
+                request_context,
+                Some(account_id.to_owned()),
+                make_foreground,
+            );
+            // The browser now holds its own ref to the context; release the
+            // pending hold that kept it alive until this callback.
+            self.pending_contexts.lock().remove(account_id);
+        }
+
+        /// Actually create the browser (sync) against `request_context` (or the
+        /// global context when `None`) and wire it into the pool.
+        fn create_browser_now(
+            &self,
+            request_context: Option<&mut RequestContext>,
+            account_id: Option<String>,
+            make_foreground: bool,
+        ) {
             let shared = self.shared.lock().as_ref().unwrap().clone();
             let (client, life) = if self.devtools.load(Ordering::Relaxed) {
                 ClientBuilder::build_devtools_for(shared.clone())
             } else {
                 ClientBuilder::build_for(shared.clone())
             };
-            *self.life_span.lock() = Some(life);
 
             let window_info = WindowInfo {
                 windowless_rendering_enabled: 1,
@@ -593,7 +740,7 @@ mod imp {
                 .pending_url
                 .lock()
                 .take()
-                .unwrap_or_else(|| "about:blank".to_owned());
+                .unwrap_or_else(|| Self::WHATSAPP_URL.to_owned());
             let url = CefString::from(url_string.as_str());
 
             let mut client = client;
@@ -603,41 +750,120 @@ mod imp {
                 Some(&url),
                 Some(&settings),
                 None,
-                None,
+                request_context,
             );
-            match browser {
-                Some(b) => {
-                    log::info!("browser spawned");
-                    // Register in the context-menu widget registry so the OSR
-                    // `run_context_menu` handler can reach this widget by id.
-                    let id = b.identifier();
-                    self.browser_id.store(id, Ordering::Relaxed);
-                    super::register_context_menu_widget(id, &self.obj());
-                    // Debug IPC verification: once the renderer has had time to
-                    // build its V8 context, send a Ping and expect the browser
-                    // log to show the matching Pong (handled in ClientBuilder).
-                    #[cfg(debug_assertions)]
+            let Some(b) = browser else {
+                log::error!("browser_host_create_browser_sync returned None");
+                return;
+            };
+            log::info!("browser spawned (account={account_id:?}, foreground={make_foreground})");
+
+            if let Some(id) = account_id.clone() {
+                crate::accounts::register_browser(b.identifier(), &id);
+                self.browsers.lock().insert(id.clone(), b.clone());
+                self.life_spans.lock().insert(id, life.clone());
+            }
+
+            #[cfg(debug_assertions)]
+            {
+                let browser = b.clone();
+                glib::timeout_add_local_once(std::time::Duration::from_secs(2), move || {
+                    if let Some(frame) = browser.main_frame()
+                        && let Some(mut msg) = crate::ipc::BrowserMessage::Ping.to_cef_message()
                     {
-                        let browser = b.clone();
-                        glib::timeout_add_local_once(
-                            std::time::Duration::from_secs(2),
-                            move || {
-                                if let Some(frame) = browser.main_frame()
-                                    && let Some(mut msg) =
-                                        crate::ipc::BrowserMessage::Ping.to_cef_message()
-                                {
-                                    frame.send_process_message(
-                                        cef::ProcessId::RENDERER,
-                                        Some(&mut msg),
-                                    );
-                                    log::info!("IPC verify: Ping sent to renderer");
-                                }
-                            },
-                        );
+                        frame.send_process_message(cef::ProcessId::RENDERER, Some(&mut msg));
+                        log::info!("IPC verify: Ping sent to renderer");
                     }
-                    *self.browser.lock() = Some(b);
+                });
+            }
+
+            if make_foreground {
+                self.adopt_foreground(account_id, b, life);
+            } else if let Some(host) = b.host() {
+                // Background browser: pause it until switched in.
+                host.was_hidden(1);
+            }
+        }
+
+        /// Make `browser` the foreground: cache it for the input/render paths,
+        /// publish its CEF id for paint gating, register it in the context-menu
+        /// registry, and show it.
+        fn adopt_foreground(
+            &self,
+            account_id: Option<String>,
+            browser: Browser,
+            life: ShellLifeSpanHandler,
+        ) {
+            // Unregister the previous foreground from the context-menu registry.
+            let prev_id = self.browser_id.swap(0, Ordering::Relaxed);
+            if prev_id != 0 {
+                super::unregister_context_menu_widget(prev_id);
+            }
+
+            let id = browser.identifier();
+            self.browser_id.store(id, Ordering::Relaxed);
+            super::register_context_menu_widget(id, &self.obj());
+            if let Some(shared) = self.shared.lock().as_ref() {
+                shared.lock().foreground_browser_id = id;
+            }
+            *self.foreground.lock() = account_id;
+            *self.life_span.lock() = Some(life);
+            *self.browser.lock() = Some(browser.clone());
+
+            if let Some(host) = browser.host() {
+                host.was_hidden(0);
+                host.notify_screen_info_changed();
+                host.was_resized();
+            }
+            self.obj().queue_render();
+        }
+
+        /// Switch the foreground to the account `new_id`, pausing the previous
+        /// foreground and resuming the target. No-op if already foreground or the
+        /// target has no spawned browser.
+        pub fn switch_to(&self, new_id: &str) {
+            if self.foreground.lock().as_deref() == Some(new_id) {
+                return;
+            }
+            // Pause the outgoing foreground.
+            if let Some(prev) = self.browser.lock().as_ref()
+                && let Some(host) = prev.host()
+            {
+                host.was_hidden(1);
+            }
+            let Some(browser) = self.browsers.lock().get(new_id).cloned() else {
+                log::warn!("switch_to: no spawned browser for account {new_id}");
+                return;
+            };
+            let life = self.life_spans.lock().get(new_id).cloned();
+            let Some(life) = life else {
+                log::warn!("switch_to: no life-span handler for account {new_id}");
+                return;
+            };
+            self.adopt_foreground(Some(new_id.to_owned()), browser, life);
+        }
+
+        /// Close and drop the browser for `account_id` (the `remove(id)` path).
+        pub fn close_account_browser(&self, account_id: &str) {
+            let was_foreground = self.foreground.lock().as_deref() == Some(account_id);
+            self.life_spans.lock().remove(account_id);
+            if let Some(browser) = self.browsers.lock().remove(account_id) {
+                crate::accounts::unregister_browser(browser.identifier());
+                if let Some(host) = browser.host() {
+                    host.close_browser(1);
                 }
-                None => log::error!("browser_host_create_browser_sync returned None"),
+            }
+            if was_foreground {
+                let id = self.browser_id.swap(0, Ordering::Relaxed);
+                if id != 0 {
+                    super::unregister_context_menu_widget(id);
+                }
+                *self.browser.lock() = None;
+                *self.life_span.lock() = None;
+                *self.foreground.lock() = None;
+                if let Some(shared) = self.shared.lock().as_ref() {
+                    shared.lock().foreground_browser_id = 0;
+                }
             }
         }
 
@@ -1079,8 +1305,31 @@ mod imp {
         }
     }
 
-    /// The browser driving this view: a `Page` view stores it directly, a
-    /// `DevTools` view receives it asynchronously via its life-span handler.
+    // Bridges a per-account `RequestContext`'s init callback back to the widget
+    // so the browser is created only once the context is ready.
+    wrap_request_context_handler! {
+        pub struct ContextReadyHandler {
+            widget: glib::object::WeakRef<super::KarereWebView>,
+            account_id: String,
+            make_foreground: bool,
+        }
+
+        impl RequestContextHandler {
+            fn on_request_context_initialized(
+                &self,
+                request_context: Option<&mut RequestContext>,
+            ) {
+                if let Some(widget) = self.widget.upgrade() {
+                    widget.imp().on_account_context_ready(
+                        request_context,
+                        &self.account_id,
+                        self.make_foreground,
+                    );
+                }
+            }
+        }
+    }
+
     fn resolved_browser(imp: &KarereWebView) -> Option<Browser> {
         if let Some(b) = imp.browser.lock().as_ref() {
             return Some(b.clone());
@@ -1205,6 +1454,33 @@ mod imp {
 
     fn set_focus(widget: &super::KarereWebView, focused: bool) {
         with_host(widget, |host| host.set_focus(focused as i32));
+    }
+
+    /// Synthesize Ctrl+Shift+C into this view's browser. Used to drive the
+    /// embedded DevTools frontend's native "inspect element" toggle.
+    pub fn send_inspect_shortcut(widget: &super::KarereWebView) {
+        use sys::cef_event_flags_t as F;
+        let modifiers = F::EVENTFLAG_CONTROL_DOWN.0 | F::EVENTFLAG_SHIFT_DOWN.0;
+        let down = KeyEvent {
+            size: std::mem::size_of::<sys::_cef_key_event_t>(),
+            type_: KeyEventType::RAWKEYDOWN,
+            modifiers,
+            windows_key_code: 0x43, // VK_C
+            native_key_code: 0,
+            is_system_key: 0,
+            character: 0,
+            unmodified_character: 0,
+            focus_on_editable_field: 0,
+        };
+        let up = KeyEvent {
+            type_: KeyEventType::KEYUP,
+            ..down.clone()
+        };
+        with_host(widget, |host| {
+            host.set_focus(1);
+            host.send_key_event(Some(&down));
+            host.send_key_event(Some(&up));
+        });
     }
 
     // ---- M17 paste / drop bridge ---------------------------------------

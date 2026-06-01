@@ -1,7 +1,7 @@
 use cef::{
-    self, Client, ContextMenuHandler, DisplayHandler, DownloadHandler, FindHandler, ImplClient,
-    LifeSpanHandler, LoadHandler, PermissionHandler, RenderHandler, RequestHandler, WrapClient,
-    rc::Rc, wrap_client,
+    self, CefString, Client, ContextMenuHandler, DisplayHandler, DownloadHandler, FindHandler,
+    ImplBrowser, ImplClient, ImplFrame, LifeSpanHandler, LoadHandler, PermissionHandler,
+    RenderHandler, RequestHandler, WrapClient, rc::Rc, wrap_client,
 };
 
 use super::display::{ShellDisplayHandler, ShellDisplayHandlerBuilder};
@@ -13,6 +13,11 @@ use super::permission::ShellPermissionHandlerBuilder;
 use super::render::{ShellRenderHandler, ShellRenderHandlerBuilder};
 use super::{ShellContextMenuHandlerBuilder, ShellRequestHandler, ShellRequestHandlerBuilder};
 use super::SharedRef;
+use base64::Engine;
+
+/// Degraded-mode DOM scraper (M20 §6). NOT part of the injected bundle — it is
+/// executed in an account's main frame only on `StoreUnavailable`.
+const DOM_FALLBACK_JS: &str = include_str!("../../data/js-deferred/profile_dom_fallback.js");
 
 wrap_client! {
     pub struct ClientBuilder {
@@ -61,13 +66,16 @@ wrap_client! {
         // Pong probe; logs unknown / malformed messages without crashing.
         fn on_process_message_received(
             &self,
-            _browser: Option<&mut cef::Browser>,
-            _frame: Option<&mut cef::Frame>,
+            browser: Option<&mut cef::Browser>,
+            frame: Option<&mut cef::Frame>,
             _source_process: cef::ProcessId,
             message: Option<&mut cef::ProcessMessage>,
         ) -> ::std::os::raw::c_int {
             use crate::ipc::{IpcError, RendererMessage};
             let Some(message) = message else { return 0 };
+            // Attribute the message to its account via the sending browser's id.
+            let cef_id = browser.as_ref().map(|b| b.identifier()).unwrap_or(0);
+            let account_id = crate::accounts::account_for_browser(cef_id);
             match RendererMessage::try_from_cef_message(message) {
                 Ok(RendererMessage::ConsoleLog { level, msg }) => {
                     match level.as_str() {
@@ -107,13 +115,58 @@ wrap_client! {
                     write_host_clipboard(&text, primary);
                     1
                 }
+                Ok(RendererMessage::ProfileIdentity { wid, pushname, source }) => {
+                    if let Some(id) = account_id.as_deref() {
+                        // Identity availability means the page is connected — clear
+                        // the awaiting-pairing state. A Store-sourced identity is a
+                        // successful hook attachment, so it also clears the degraded
+                        // badge (the only thing that ever does).
+                        crate::accounts::set_awaiting_pairing(id, false);
+                        if source.as_deref() == Some("store") {
+                            crate::accounts::clear_degraded(id);
+                        }
+                        crate::accounts::manager().update_identity(id, wid, Some(pushname));
+                    } else {
+                        log::warn!("ProfileIdentity for unknown browser id {cef_id}");
+                    }
+                    1
+                }
+                Ok(RendererMessage::ProfileAvatar { base64_png, source: _ }) => {
+                    if let Some(id) = account_id.as_deref() {
+                        match base64::engine::general_purpose::STANDARD.decode(base64_png.as_bytes())
+                        {
+                            Ok(bytes) => crate::accounts::manager().update_avatar(id, bytes),
+                            Err(e) => log::warn!("ProfileAvatar: bad base64: {e}"),
+                        }
+                    }
+                    1
+                }
+                Ok(RendererMessage::AwaitingPairing) => {
+                    if let Some(id) = account_id.as_deref() {
+                        crate::accounts::set_awaiting_pairing(id, true);
+                    }
+                    1
+                }
+                Ok(RendererMessage::StoreUnavailable { reason }) => {
+                    if let Some(id) = account_id.as_deref() {
+                        // Only act on the first transition into degraded — the
+                        // hook may report this many times per second.
+                        let newly_degraded = crate::accounts::set_degraded(id, reason.clone());
+                        if newly_degraded {
+                            log::warn!("account {id}: Store hook unavailable: {reason}");
+                            // §6.1: inject the degraded DOM fallback into this frame.
+                            if let Some(frame) = frame.as_ref() {
+                                let code = CefString::from(DOM_FALLBACK_JS);
+                                let url = CefString::from("karere://profile-dom-fallback");
+                                frame.execute_java_script(Some(&code), Some(&url), 0);
+                            }
+                        }
+                    }
+                    1
+                }
                 #[cfg(debug_assertions)]
                 Ok(RendererMessage::Pong) => {
                     log::info!("IPC verify: Pong received from renderer");
-                    1
-                }
-                Ok(other) => {
-                    log::debug!("browser: renderer message {:?} — stub", other.variant_tag());
                     1
                 }
                 Err(IpcError::UnknownVariant(name)) => {

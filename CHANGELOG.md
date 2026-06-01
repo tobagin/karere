@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- **Multi-account (v4)**: Each WhatsApp account now runs in its own CEF `RequestContext` (isolated cookies/storage) under `~/.local/share/karere/accounts/sessions/<id>/`. Account identity (name + avatar) is auto-discovered from WhatsApp Web's internal `Store` via a Webpack hook, with a degraded DOM-scrape fallback. Accounts are ordered most-recently-used; there is no manual reordering.
 
 ### Changed
+- **⚠️ v4 is a hard-fork (CEF rewrite); existing accounts must be re-linked.** v3 stored sessions under WebKit's data manager; v4 uses CEF `RequestContext` directories and a new `accounts/accounts.json` record format. There is no migration: on first v4 launch, scan the QR code again for each account.
 
 ### Fixed
 

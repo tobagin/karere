@@ -1,6 +1,6 @@
 use cef::{
-    self, Browser, ImplRenderHandler, PaintElementType, Rect, RenderHandler, ScreenInfo,
-    TextInputMode, WrapRenderHandler, rc::Rc, wrap_render_handler,
+    self, Browser, ImplBrowser, ImplRenderHandler, PaintElementType, Rect, RenderHandler,
+    ScreenInfo, TextInputMode, WrapRenderHandler, rc::Rc, wrap_render_handler,
 };
 
 use super::SharedRef;
@@ -30,8 +30,12 @@ wrap_render_handler! {
     }
 
     impl RenderHandler {
-        fn view_rect(&self, _browser: Option<&mut Browser>, rect: Option<&mut Rect>) {
+        fn view_rect(&self, browser: Option<&mut Browser>, rect: Option<&mut Rect>) {
             let Some(rect) = rect else { return };
+            // Background browsers (M20 pool) report the cached foreground
+            // viewport: the OSR surface is shared and only ever sized to the
+            // foreground, so handing a hidden browser the same rect keeps its
+            // layout consistent for the moment it is switched in.
             let s = self.handler.shared.lock();
             let (w, h) = s.size;
             rect.x = 0;
@@ -64,7 +68,7 @@ wrap_render_handler! {
 
         fn on_paint(
             &self,
-            _browser: Option<&mut Browser>,
+            browser: Option<&mut Browser>,
             _type_: PaintElementType,
             _dirty_rects: Option<&[Rect]>,
             buffer: *const u8,
@@ -73,6 +77,19 @@ wrap_render_handler! {
         ) {
             if buffer.is_null() || width <= 0 || height <= 0 {
                 return;
+            }
+            // M20 paint gating: discard frames from non-foreground browsers so a
+            // background account never overwrites the visible GL texture. A
+            // foreground id of 0 means the pool isn't wired (single-browser
+            // startup) and lets every paint through.
+            {
+                let fg = self.handler.shared.lock().foreground_browser_id;
+                if fg != 0 {
+                    let painting = browser.as_ref().map(|b| b.identifier()).unwrap_or(0);
+                    if painting != fg {
+                        return;
+                    }
+                }
             }
             let len = (width as usize) * (height as usize) * 4;
             let slice = unsafe { std::slice::from_raw_parts(buffer, len) };

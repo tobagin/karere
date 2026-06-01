@@ -4,6 +4,7 @@ use gettextrs::{LocaleCategory, bind_textdomain_codeset, bindtextdomain, gettext
 use gtk::glib;
 use gtk::prelude::*;
 
+mod accounts;
 mod actions;
 mod application;
 mod cdp;

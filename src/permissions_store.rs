@@ -19,7 +19,7 @@ const KEY: &str = "permission-decisions";
 
 /// Stored per-bit state. Matches the integer values persisted in GSettings
 /// (the schema value type is `i`, so these are stored as `i32`).
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, serde::Serialize, serde::Deserialize)]
 pub enum State {
     Ask = 0,
     Allow = 1,
@@ -27,7 +27,8 @@ pub enum State {
 }
 
 impl State {
-    fn from_i32(v: i32) -> State {
+    /// Decode a persisted `i32` (GSettings / account JSON) into a `State`.
+    pub fn from_i32(v: i32) -> State {
         match v {
             1 => State::Allow,
             2 => State::Deny,

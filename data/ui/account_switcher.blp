@@ -1,0 +1,50 @@
+using Gtk 4.0;
+using Adw 1;
+
+// Wide/desktop account-switcher variant (M20 §7.1). The narrow/mobile variant
+// is the Adw.BottomSheet embedded in window.blp; both surfaces share the same
+// row list, rebuilt in Rust on every `accounts-changed`. This popover is
+// instantiated from the resource and parented to the header `account_button`.
+Popover account_switcher_popover {
+  has-arrow: true;
+  position: bottom;
+
+  child: Gtk.Box {
+    orientation: vertical;
+    margin-top: 8;
+    margin-bottom: 8;
+    margin-start: 8;
+    margin-end: 8;
+    spacing: 6;
+    width-request: 300;
+
+    Gtk.ScrolledWindow {
+      vexpand: true;
+      hexpand: true;
+      propagate-natural-height: true;
+      max-content-height: 400;
+
+      Gtk.ListBox accounts_list_popover {
+        selection-mode: none;
+
+        styles [
+          "boxed-list",
+        ]
+      }
+    }
+
+    Gtk.Separator {
+      margin-top: 4;
+      margin-bottom: 4;
+    }
+
+    Gtk.Button {
+      child: Adw.ButtonContent {
+        icon-name: "list-add-symbolic";
+        label: _("Add new account");
+      };
+
+      action-name: "win.add-account";
+    }
+  };
+}

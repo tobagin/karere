@@ -89,6 +89,11 @@ pub struct SharedState {
     /// touches the GTK cursor itself); the widget tick callback applies this.
     pub cursor_name: &'static str,
     pub cursor_dirty: bool,
+    /// CEF `identifier()` of the foreground browser (M20 browser pool). All
+    /// account browsers share this `SharedState`/widget; only the foreground's
+    /// paint output is uploaded to the GL texture. `0` means "no pool wired yet"
+    /// (single-browser startup) and lets every paint through.
+    pub foreground_browser_id: i32,
 }
 
 pub type SharedRef = Arc<Mutex<SharedState>>;

@@ -21,15 +21,16 @@ use ksni::TrayMethods;
 
 use crate::application::APP_ID;
 
-/// One account row, reserved for M20's per-account tray UI. Not surfaced in the
-/// current menu (which is app-level only); kept so `app.refresh-tray-accounts`
-/// has a state slot to populate.
+/// One account row rendered in the tray's right-click menu (M20 §9). `icon_png`
+/// is the account's avatar PNG bytes (the same bytes the switcher uses); `ksni`
+/// renders `StandardItem::icon_data` directly from PNG.
 #[derive(Clone)]
-#[allow(dead_code)]
 pub struct AccountSummary {
     pub id: String,
     pub name: String,
+    #[allow(dead_code)]
     pub has_unread: bool,
+    pub icon_png: Option<Vec<u8>>,
 }
 
 /// Cross-thread tray state shared between the tokio tray task (reads) and the
@@ -120,14 +121,45 @@ impl ksni::Tray for KarereTray {
             }
         };
 
-        // Menu: Show/Hide Window, separator, app-menu actions, separator, Quit.
-        vec![
+        // Per-account entries (M20 §9): each shows the account's avatar and
+        // switches to it (presenting the window first). Empty until the main
+        // thread pushes summaries via `set_accounts`.
+        let account_items: Vec<ksni::MenuItem<Self>> = {
+            let state = self.state.lock().unwrap_or_else(|e| e.into_inner());
+            state
+                .accounts
+                .iter()
+                .map(|a| {
+                    let id = a.id.clone();
+                    StandardItem {
+                        label: a.name.clone(),
+                        icon_data: a.icon_png.clone().unwrap_or_default(),
+                        activate: Box::new(move |_| {
+                            // switch-account surfaces the window itself (no toggle).
+                            activate_app_action("switch-account", Some(id.to_variant()));
+                        }),
+                        ..Default::default()
+                    }
+                    .into()
+                })
+                .collect()
+        };
+
+        // Menu: Show/Hide Window, separator, accounts, separator, app-menu
+        // actions, separator, Quit.
+        let mut items: Vec<ksni::MenuItem<Self>> = vec![
             StandardItem {
                 label: toggle_label,
                 activate: Box::new(|_| activate_app_action("present-window", None)),
                 ..Default::default()
             }
             .into(),
+        ];
+        if !account_items.is_empty() {
+            items.push(MenuItem::Separator);
+            items.extend(account_items);
+        }
+        items.extend([
             MenuItem::Separator,
             StandardItem {
                 label: gettext("Preferences"),
@@ -154,7 +186,8 @@ impl ksni::Tray for KarereTray {
                 ..Default::default()
             }
             .into(),
-        ]
+        ]);
+        items
     }
 }
 
@@ -291,9 +324,19 @@ pub fn set_window_visible(visible: bool) {
     refresh(&tray.handle);
 }
 
+/// Replace the per-account menu entries (M20 §9) and re-render. Called from the
+/// main thread on every `accounts-changed`; the summaries carry pre-decoded
+/// avatar pixmaps so `menu()` (on the tray thread) does no image work.
+pub fn set_accounts(accounts: Vec<AccountSummary>) {
+    let Some(tray) = TRAY.get() else { return };
+    tray.state
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .accounts = accounts;
+    refresh(&tray.handle);
+}
+
 /// Re-render the menu after an account-list change (`app.refresh-tray-accounts`).
-/// A no-op on state until M20 wires `AccountManager`, but still pokes the tray
-/// so the next `menu()` reflects any future mutation.
 pub fn refresh_accounts() {
     let Some(tray) = TRAY.get() else { return };
     refresh(&tray.handle);

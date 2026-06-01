@@ -2,6 +2,10 @@
 
 > **Note:** This is the **Karere v4 CEF rewrite** — a hard-fork of `gtk-cef-shell` that ports Karere v3.1.1 from WebKitGTK to Chromium Embedded Framework (CEF). The on-disk worktree is still named `gtk-cef-shell`; the Cargo package, binary, app-id, and assets are all `karere`. The README below is preserved verbatim from karere v3; v4 retains feature parity while swapping the rendering backend.
 
+> **v4 multi-account & identity discovery.** Each account runs in an isolated CEF `RequestContext`; accounts are listed most-recently-used (no manual ordering) and existing v3 accounts must be re-linked (no migration). Account name and avatar are discovered from WhatsApp Web's internal `Store` through a Webpack hook (the same technique as `@wppconnect/wa-js`).
+>
+> **Degraded-mode contract.** If a future WhatsApp release restructures its Webpack bundle and the Store hook can't attach, the affected account falls back to scraping the DOM (`#side header`) for its name and avatar, and its switcher row shows a **persistent yellow "degraded mode" badge**. The badge does **not** clear when the DOM fallback succeeds — it is cleared only when a later page load lets the Store hook attach successfully again (typically after the hook is updated for the new WhatsApp release). The badge is intentional: it surfaces the fragile scrape path so it gets fixed rather than silently masking breakage.
+
 A fast, native WhatsApp client for Linux that feels right at home on your desktop.
 
 <div align="center">

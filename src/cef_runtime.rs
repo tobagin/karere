@@ -236,15 +236,20 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
     // Reclaim any paste tempfiles leaked by a prior crash before CEF starts.
     crate::paste::sweep_old();
 
-    // NOTE: do NOT set cache_path/root_cache_path here. CEF defaults
-    // root_cache_path to `$XDG_CONFIG_HOME/cef_user_data`, which already
-    // persists the profile (cookies, IndexedDB → the WhatsApp login) AND the
-    // spellchecker's `.bdic` dictionaries across launches. Overriding it to a
-    // different directory orphans the existing logged-in profile.
+    // M20 multi-account: each account's RequestContext gets its own cache_path
+    // under accounts/sessions/<id>/data. CEF requires a request-context
+    // cache_path to be a SUBDIRECTORY of the global root_cache_path, so root it
+    // at accounts/sessions here. (v4 is a hard-fork; the old single
+    // cef_user_data profile is intentionally orphaned and accounts re-linked —
+    // see CHANGELOG.) The shared `.bdic` spellcheck dictionaries live under this
+    // root too and still persist across launches.
+    let root_cache = crate::accounts::accounts_root().join("sessions");
+    let _ = std::fs::create_dir_all(&root_cache);
     let settings = Settings {
         windowless_rendering_enabled: 1,
         external_message_pump: 1,
         no_sandbox: 1,
+        root_cache_path: cef::CefString::from(root_cache.to_string_lossy().as_ref()),
         log_severity: cef::LogSeverity::WARNING,
         ..Default::default()
     };

@@ -75,10 +75,24 @@ pub enum BrowserMessage {
 /// Messages sent from the renderer subprocess to the browser process.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum RendererMessage {
-    /// The signed-in account identity.
-    ProfileIdentity { wid: String, pushname: String },
-    /// The account avatar as a base64-encoded PNG.
-    ProfileAvatar { base64_png: String },
+    /// The signed-in account identity. `wid` is `None` when reported by the DOM
+    /// fallback (which cannot read the internal id). `source` is `Some("store")`
+    /// for the first-class Store hook and `Some("dom-fallback")` for the degraded
+    /// path, distinguishing the two so the UI can keep its degraded badge.
+    ProfileIdentity {
+        #[serde(default)]
+        wid: Option<String>,
+        pushname: String,
+        #[serde(default)]
+        source: Option<String>,
+    },
+    /// The account avatar as a base64-encoded PNG. `source` distinguishes the
+    /// Store hook (`Some("store")`) from the DOM fallback (`Some("dom-fallback")`).
+    ProfileAvatar {
+        base64_png: String,
+        #[serde(default)]
+        source: Option<String>,
+    },
     /// The page is showing the pairing / QR screen (not logged in).
     AwaitingPairing,
     /// The page store could not be reached; `reason` is a human-readable note.
@@ -311,11 +325,13 @@ mod tests {
     fn renderer_roundtrip_every_variant() {
         let cases = vec![
             RendererMessage::ProfileIdentity {
-                wid: "123@c.us".into(),
+                wid: Some("123@c.us".into()),
                 pushname: "Ada".into(),
+                source: Some("store".into()),
             },
             RendererMessage::ProfileAvatar {
                 base64_png: "iVBOR".into(),
+                source: Some("store".into()),
             },
             RendererMessage::AwaitingPairing,
             RendererMessage::StoreUnavailable {
