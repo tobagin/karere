@@ -17,12 +17,12 @@ The system SHALL render account avatars with `Adw.Avatar`, never with a custom C
 
 #### Scenario: Custom-image path when avatar_png present
 - **WHEN** an account has `avatar_png: Some(bytes)`
-- **THEN** the row's `Adw.Avatar` has `custom-image` set to `gdk::Texture::from_bytes(&Bytes::from(&bytes))`
+- **THEN** the row's `Adw.Avatar` `custom-image` is a `gdk::Texture` decoded from the bytes via a `gdk_pixbuf::PixbufLoader` (works for JPEG/PNG regardless of the GTK `Texture::from_bytes` availability)
 
 #### Scenario: Initials path when avatar_png absent
 - **WHEN** an account has `avatar_png: None`
 - **THEN** the row's `Adw.Avatar` has `show-initials = true`
-- **AND** `text = user_label.or(pushname).unwrap_or("?")`
+- **AND** `text` is the account name (pushname), else the user label, else `"Account"`
 - **AND** Adw.Avatar's built-in color hash provides the tint
 
 ### Requirement: MRU-ordered row layout
@@ -53,18 +53,17 @@ The switcher SHALL display a persistent yellow "degraded mode" badge on any row 
 - **WHEN** the DOM fallback successfully reports identity and avatar
 - **THEN** the badge remains visible
 
-### Requirement: Awaiting-pairing row state
-The switcher SHALL display a "Waiting for QR scan…" subtitle and a spinner on rows whose account has not yet reached `Store.AppState.state === 'CONNECTED'`.
+### Requirement: Row shows name as title and label as subtitle
+Each row SHALL show the account's WhatsApp name (pushname) as the title and the user label as the subtitle, falling back sensibly before pairing.
 
-#### Scenario: AwaitingPairing renders spinner
-- **WHEN** `RendererMessage::AwaitingPairing` has been received for an account and no subsequent CONNECTED event
-- **THEN** the row subtitle reads "Waiting for QR scan…"
-- **AND** a spinner is shown in the row
+#### Scenario: Paired row
+- **WHEN** the account has a pushname
+- **THEN** the row title is the pushname and the subtitle is the user label
 
-#### Scenario: Connected clears spinner
-- **WHEN** the account transitions to CONNECTED
-- **THEN** the subtitle is replaced with the account's `pushname` (or `user_label`)
-- **AND** the spinner is removed
+#### Scenario: Unpaired row
+- **WHEN** the account has no pushname yet
+- **THEN** the row title is the user label (e.g. the auto-assigned "Account N")
+- **AND** the subtitle reads "Waiting for QR scan…" with a spinner, until pairing completes
 
 ### Requirement: Add/edit dialog
 The system SHALL provide an add/edit dialog ported from `karere/src/window.rs:2597-2829`, with emoji and color fields removed.
@@ -75,8 +74,27 @@ The system SHALL provide an add/edit dialog ported from `karere/src/window.rs:25
 - **AND** `wid`, `pushname`, `avatar_url` are displayed read-only (greyed)
 - **AND** no emoji picker or color picker is present
 
-#### Scenario: New account opens dialog and spawns hidden browser
+#### Scenario: Add account is prompt-free and goes straight to the QR
 - **WHEN** the user invokes "Add account"
-- **THEN** a new `Account` row is created
-- **AND** a hidden CEF browser is spawned for it pointing at `https://web.whatsapp.com`
-- **AND** the dialog closes when `RendererMessage::ProfileIdentity` arrives or the user cancels
+- **THEN** a new `Account` is created with a unique default label ("Account N", user-editable later)
+- **AND** its CEF browser is spawned as the foreground pointing at `https://web.whatsapp.com` so the QR is visible immediately
+- **AND** no dialog is shown upfront (the real name fills in from identity discovery on pairing)
+
+### Requirement: Account count is capped and the last account is protected
+The system SHALL cap linked accounts at 9 (matching the Alt+1..9 switch shortcuts) and SHALL NOT allow removing the only account.
+
+#### Scenario: Add disabled at the cap
+- **WHEN** 9 accounts exist
+- **THEN** the "Add account" action is disabled and invoking it shows a "Maximum of 9 accounts reached" toast
+
+#### Scenario: Last account cannot be removed
+- **WHEN** only one account exists
+- **THEN** its row's remove control is disabled and removal is refused
+
+### Requirement: Keyboard shortcuts switch accounts
+The system SHALL provide shortcuts to switch accounts in MRU order.
+
+#### Scenario: Jump and cycle
+- **WHEN** the user presses `Alt+1` … `Alt+9`
+- **THEN** the switcher activates the account at that 1-based MRU position
+- **AND** `Ctrl+Tab` / `Ctrl+Shift+Tab` cycle to the next / previous account
