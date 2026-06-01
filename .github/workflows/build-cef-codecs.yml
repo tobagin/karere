@@ -41,8 +41,9 @@ jobs:
         uses: easimon/maximize-build-space@master
         with:
           # Leave enough on the root fs for the runner's own logs + apt + git
-          # checkout (4 GB filled instantly and the job died before building).
-          root-reserve-mb: 10240
+          # checkout (4 GB filled instantly and the job died before building);
+          # 6 GB is a safe floor that hands the rest to the build LVM.
+          root-reserve-mb: 6144
           swap-size-mb: 1024
           remove-dotnet: "true"
           remove-android: "true"
@@ -70,6 +71,7 @@ jobs:
           curl -fsSL \
             "https://bitbucket.org/chromiumembedded/cef/raw/master/tools/automate/automate-git.py" \
             -o automate-git.py
+          df -h /cef-build
 
       - name: Build CEF with proprietary codecs
         env:
@@ -83,14 +85,21 @@ jobs:
           set -eux
           export PATH="/cef-build/depot_tools:$PATH"
           cd /cef-build
+          # `--no-chromium-history` syncs Chromium WITHOUT full git history
+          # (gclient `--no-history` instead of `--with_branch_heads`). The
+          # previous runs died with `No space left on device` during the
+          # checkout: the full-history tree overran the ~70 GB build LVM. This is
+          # the documented CEF disk-saver and trims tens of GB off the checkout.
           python3 automate-git.py \
             --download-dir=/cef-build/cef \
             --branch="${{ inputs.cef_branch }}" \
+            --no-chromium-history \
             --minimal-distrib \
             --no-debug-build \
             --build-target=cefsimple \
             --x64-build \
             --force-clean
+          df -h /cef-build || true
 
       - name: Locate tarball + sha256
         id: dist
