@@ -142,6 +142,22 @@ mod imp {
             crate::actions::register_app_actions(&app);
             register_accels(&app);
 
+            // M19 enhanced focus indicators: load the bundled stylesheet once,
+            // for the whole process, at APPLICATION priority (so user theme
+            // overrides still win). The rules are scoped under `.enhanced-focus`;
+            // the window toggles that class from the `focus-indicators` GSetting,
+            // so this provider is inert until a window opts in. No per-window
+            // CssProvider allocation occurs.
+            if let Some(display) = gtk::gdk::Display::default() {
+                let provider = gtk::CssProvider::new();
+                provider.load_from_resource(&format!("{RESOURCE_BASE_PATH}/style.css"));
+                gtk::style_context_add_provider_for_display(
+                    &display,
+                    &provider,
+                    gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+                );
+            }
+
             // Start the SNI tray (M15). Honors the GNOME skip policy and the
             // KARERE_FORCE_TRAY override internally; safe to call unconditionally.
             crate::tray::start();

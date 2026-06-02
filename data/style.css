@@ -1,0 +1,31 @@
+/*
+ * M19 accessibility: enhanced focus indicators.
+ *
+ * Loaded once at application startup as a STYLE_PROVIDER_PRIORITY_APPLICATION
+ * provider (see application.rs). All rules are scoped under `.enhanced-focus`
+ * so they only take effect while the root window carries that class, which the
+ * window toggles from the `focus-indicators` GSetting. Priority APPLICATION (not
+ * USER) keeps user theme overrides winning where appropriate.
+ */
+
+.enhanced-focus *:focus {
+    outline: 3px solid @accent_color;
+    outline-offset: 2px;
+}
+
+/* Entries draw their focus ring on the inner `text` node; give it the same
+ * high-visibility treatment so typing targets are obvious. */
+.enhanced-focus entry:focus-within,
+.enhanced-focus entry text:focus {
+    outline: 3px solid @accent_color;
+    outline-offset: 2px;
+}
+
+/* List/grid rows: a flat accent outline reads better than the default subtle
+ * background tint for low-vision users. */
+.enhanced-focus row:focus,
+.enhanced-focus row:focus-within,
+.enhanced-focus listview > *:focus {
+    outline: 3px solid @accent_color;
+    outline-offset: -2px;
+}

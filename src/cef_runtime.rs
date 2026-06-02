@@ -34,6 +34,7 @@ wrap_app! {
                 .unwrap_or(true);
             if is_browser_process {
                 append_spellcheck_switches(cmd);
+                append_screen_reader_switches(cmd);
             }
             // Embedded DevTools (CDP): expose a loopback debugging endpoint and
             // allow the bundled frontend page (served from the same port) to
@@ -138,6 +139,23 @@ pub fn build_app() -> App {
 /// `.bdic` dictionaries into the cache on first need; no Hunspell module is
 /// bundled. A live language change goes through
 /// `KarereWebView::recreate_active_browser()` (see web_view.rs).
+/// M19 screen-reader optimizations: append `--enable-caret-browsing` when the
+/// `screen-reader-opts` GSetting is on. RESTART-REQUIRED: Chromium reads
+/// command-line switches once at subprocess launch, so toggling this GSetting
+/// has no effect until the app is restarted (surfaced in the M22 preferences
+/// page with a restart-required subtitle). Browser-process only, matching the
+/// spellcheck-switch gate.
+fn append_screen_reader_switches(cmd: &mut CommandLine) {
+    use gtk::gio;
+    use gtk::prelude::SettingsExt;
+
+    let settings = gio::Settings::new(crate::application::APP_ID);
+    if settings.boolean("screen-reader-opts") {
+        cmd.append_switch(Some(&"enable-caret-browsing".into()));
+        log::info!("screen-reader: --enable-caret-browsing (restart-required)");
+    }
+}
+
 fn append_spellcheck_switches(cmd: &mut CommandLine) {
     use gtk::gio;
     use gtk::prelude::{SettingsExt, SettingsExtManual};

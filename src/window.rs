@@ -154,6 +154,30 @@ mod imp {
                 Self::load_zoom_for_active_account().max(Self::zoom_floor()),
             );
 
+            // M19 reduce-motion: drive the process-wide GtkSettings
+            // `gtk-enable-animations` (inverted) from the GSetting, with live
+            // propagation. This skips AdwAnimation transitions and toast
+            // slide-ins for every top-level window, which is the intended
+            // application-global behavior.
+            apply_reduce_motion(&settings);
+            settings.connect_changed(Some("reduce-motion"), |s, _key| {
+                apply_reduce_motion(s);
+            });
+
+            // M19 enhanced focus indicators: toggle the `enhanced-focus` CSS
+            // class on the root window from the `focus-indicators` GSetting.
+            // The bundled stylesheet (loaded at application startup) scopes all
+            // enhanced-focus rules under this class.
+            apply_focus_indicators(&settings, &window);
+            settings.connect_changed(
+                Some("focus-indicators"),
+                clone!(
+                    #[weak]
+                    window,
+                    move |s, _key| apply_focus_indicators(s, &window)
+                ),
+            );
+
             settings.connect_changed(
                 Some("close-button-action"),
                 |s, _key| {
@@ -1341,6 +1365,29 @@ mod imp {
                     }
                 }
             ));
+        }
+    }
+
+    /// M19: mirror the `reduce-motion` GSetting onto the process-wide
+    /// `GtkSettings::gtk-enable-animations` property (inverted). Affects all
+    /// top-level windows by design.
+    fn apply_reduce_motion(settings: &gio::Settings) {
+        use gtk::prelude::SettingsExt;
+        let reduce = settings.boolean("reduce-motion");
+        if let Some(gtk_settings) = gtk::Settings::default() {
+            gtk_settings.set_property("gtk-enable-animations", !reduce);
+        }
+    }
+
+    /// M19: toggle the `enhanced-focus` CSS class on the root window to match
+    /// the `focus-indicators` GSetting. The bundled stylesheet scopes its
+    /// high-visibility focus rules under that class.
+    fn apply_focus_indicators(settings: &gio::Settings, window: &super::KarereWindow) {
+        use gtk::prelude::{SettingsExt, WidgetExt};
+        if settings.boolean("focus-indicators") {
+            window.add_css_class("enhanced-focus");
+        } else {
+            window.remove_css_class("enhanced-focus");
         }
     }
 
