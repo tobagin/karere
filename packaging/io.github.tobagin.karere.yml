@@ -46,14 +46,19 @@ modules:
       - chmod +x /app/lib/cef/chrome-sandbox || true
       - install -Dm644 archive.json /app/lib/cef/archive.json
     sources:
+      # Proprietary-codec CEF (H.264/AAC) built via tools/build-cef-codecs.sh,
+      # hosted on the cef-148.0.10-proprietary-codecs release. chromium-148.0.7778.218.
+      # API-compatible with the cef 148.0.8 bindings (CEF freezes its C API per
+      # branch); the archive.json below keeps the .8 name so the crate's version
+      # check passes.
       - type: archive
         only-arches: [x86_64]
-        url: https://cef-builds.spotifycdn.com/cef_binary_148.0.8%2Bg18e00ea%2Bchromium-148.0.7778.96_linux64_minimal.tar.bz2
-        sha256: f392c1724256792b73610082d725e750208b557c49842ce66e5a29710d7bb84e
+        url: https://github.com/tobagin/karere/releases/download/cef-148.0.10-proprietary-codecs/cef_binary_148.0.10%2Bg7ee53f5%2Bchromium-148.0.7778.218_linux64_minimal.zip
+        sha256: c8a39eaf956131699012c1160f597bb81dda2e4a0995a8f8d6833dc0b0b25d20
       - type: archive
         only-arches: [aarch64]
-        url: https://cef-builds.spotifycdn.com/cef_binary_148.0.8%2Bg18e00ea%2Bchromium-148.0.7778.96_linuxarm64_minimal.tar.bz2
-        sha1: 7bccca86d0a44ba34fe928a0a7e91d80901a5be6
+        url: https://github.com/tobagin/karere/releases/download/cef-148.0.10-proprietary-codecs/cef_binary_148.0.10%2Bg7ee53f5%2Bchromium-148.0.7778.218_linuxarm64_minimal.zip
+        sha256: 5ad0d764ac9973a4a343879984afbbd1a742e225f28c7f6c57b61a21c6a1deda
       - type: inline
         only-arches: [x86_64]
         contents: |
