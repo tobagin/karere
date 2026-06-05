@@ -1,0 +1,108 @@
+app-id: io.github.tobagin.karere
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: karere
+appstream-compose: true
+
+# Detached debug symbols live in a separate, optional extension so the base
+# bundle stays small. flatpak-builder auto-populates /app/lib/debug/<binary>.debug
+# (the karere binary is built unstripped — see Cargo.toml [profile.release]).
+# `coredumpctl debug karere` picks them up once the user installs the extension.
+add-extensions:
+  io.github.tobagin.karere.Debug:
+    directory: lib/debug
+    autodelete: true
+    no-autodownload: true
+
+# Drop dev-only artifacts Flathub reviewers flag. /lib/cef/include is NOT under
+# /include, so CEF's headers (consumed by the embedded loader) survive this.
+cleanup:
+  - '*.la'
+  - '*.a'
+  - /include
+
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+  env:
+    CARGO_HOME: /run/build/karere/cargo
+    CARGO_NET_OFFLINE: 'true'
+    CEF_PATH: /app/lib/cef
+    # Cap parallel rustc jobs so the heavy crate graph (cef, gtk, ...) does not
+    # spike memory and trip the OOM killer (build was SIGKILLed with code 137).
+    CARGO_BUILD_JOBS: '6'
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --device=all
+  # home (not just xdg-download) so the user can pick any download folder under
+  # ~ and the file chooser returns its real path instead of a transient
+  # document-portal path (/run/user/.../doc/<id>/…) that can't persist.
+  - --filesystem=home
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.kde.StatusNotifierWatcher
+  # NOTE: autostart is handled by the XDG Background portal (ashpd `background`
+  # feature), so no --filesystem=xdg-config/autostart and no
+  # --talk-name=org.freedesktop.portal.Desktop are needed — portal busnames are
+  # granted automatically and the Flathub linter flags both as unnecessary.
+  - --env=LD_LIBRARY_PATH=/app/lib/cef
+
+modules:
+  - name: cef-binaries
+    buildsystem: simple
+    build-commands:
+      # Merge the CEF tarball into one flat layout: cmake prereqs (include/,
+      # libcef_dll/, cmake/, CMakeLists.txt) + Release/ binaries + Resources/
+      # data files. cef-dll-sys build.rs runs cmake against this dir and
+      # copies all root files (plus locales/) next to the compiled binary, so
+      # both build-time and runtime expect the merged layout.
+      - mkdir -p /app/lib/cef
+      - cp -a include libcef_dll cmake CMakeLists.txt /app/lib/cef/
+      - cp -a Release/. /app/lib/cef/
+      - cp -a Resources/. /app/lib/cef/
+      - chmod +x /app/lib/cef/chrome-sandbox || true
+      - install -Dm644 archive.json /app/lib/cef/archive.json
+    sources:
+      # Proprietary-codec CEF (H.264/AAC) built via tools/build-cef-codecs.sh,
+      # hosted on the cef-148.0.10-proprietary-codecs release. chromium-148.0.7778.218.
+      # API-compatible with the cef 148.0.8 bindings (CEF freezes its C API per
+      # branch); the archive.json below keeps the .8 name so the crate's version
+      # check passes.
+      - type: archive
+        only-arches: [x86_64]
+        url: https://github.com/tobagin/karere/releases/download/cef-148.0.10-proprietary-codecs/cef_binary_148.0.10%2Bg7ee53f5%2Bchromium-148.0.7778.218_linux64_minimal.zip
+        sha256: c8a39eaf956131699012c1160f597bb81dda2e4a0995a8f8d6833dc0b0b25d20
+      - type: archive
+        only-arches: [aarch64]
+        url: https://github.com/tobagin/karere/releases/download/cef-148.0.10-proprietary-codecs/cef_binary_148.0.10%2Bg7ee53f5%2Bchromium-148.0.7778.218_linuxarm64_minimal.zip
+        sha256: 5ad0d764ac9973a4a343879984afbbd1a742e225f28c7f6c57b61a21c6a1deda
+      - type: inline
+        only-arches: [x86_64]
+        contents: |
+          {"type":"minimal","name":"cef_binary_148.0.8+g18e00ea+chromium-148.0.7778.96_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
+        dest-filename: archive.json
+      - type: inline
+        only-arches: [aarch64]
+        contents: |
+          {"type":"minimal","name":"cef_binary_148.0.8+g18e00ea+chromium-148.0.7778.96_linuxarm64_minimal.tar.bz2","sha1":"7bccca86d0a44ba34fe928a0a7e91d80901a5be6"}
+        dest-filename: archive.json
+
+  - name: karere
+    buildsystem: meson
+    config-opts:
+      - -Dprofile=default
+    sources:
+      # Flathub build pulls the tagged source from GitHub (NOT the local `dir`
+      # used by the in-tree dev manifest). Update `tag` + `commit` for each beta:
+      #   git rev-list -n1 v4.0.0-beta1
+      - type: git
+        url: https://github.com/tobagin/karere
+        tag: v4.0.0-beta1
+        commit: 18618db2d92802c2c5a816dd65f49ccdfb194914
+      - cargo-sources.json
