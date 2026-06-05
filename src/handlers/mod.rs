@@ -89,6 +89,11 @@ pub struct SharedState {
     /// touches the GTK cursor itself); the widget tick callback applies this.
     pub cursor_name: &'static str,
     pub cursor_dirty: bool,
+    /// Pending JS-initiated fullscreen request from `DisplayHandler::
+    /// on_fullscreen_mode_change` (M21): `Some(true)` = enter, `Some(false)` =
+    /// exit. Drained by the window poll loop on the GTK main thread, which owns
+    /// the `ApplicationWindow` (the CEF callback must not touch GTK widgets).
+    pub fullscreen_request: Option<bool>,
     /// CEF `identifier()` of the foreground browser (M20 browser pool). All
     /// account browsers share this `SharedState`/widget; only the foreground's
     /// paint output is uploaded to the GL texture. `0` means "no pool wired yet"

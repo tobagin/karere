@@ -24,7 +24,10 @@ finish-args:
   - --socket=fallback-x11
   - --socket=pulseaudio
   - --device=all
-  - --filesystem=xdg-download
+  # home (not just xdg-download) so the user can pick any download folder under
+  # ~ and the file chooser returns its real path instead of a transient
+  # document-portal path (/run/user/.../doc/<id>/…) that can't persist.
+  - --filesystem=home
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.freedesktop.portal.Desktop
   - --talk-name=org.kde.StatusNotifierWatcher

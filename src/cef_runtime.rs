@@ -61,10 +61,15 @@ wrap_app! {
                     &"BlockInsecurePrivateNetworkRequests,\
                       LocalNetworkAccessChecks,\
                       PrivateNetworkAccessForNavigations,\
-                      PrivateNetworkAccessForWorkers"
+                      PrivateNetworkAccessForWorkers,\
+                      DocumentPictureInPictureAPI"
                         .into(),
                 ),
             );
+            // ^ DocumentPictureInPictureAPI: WhatsApp's "open call in another
+            // window" uses Document Picture-in-Picture, which can't be hosted by
+            // the OSR shell — invoking it dropped the call and blanked the view.
+            // Disabling the API makes WhatsApp keep the call in the main webview.
             // NOTE: do NOT disable SystemNotifications/NativeNotifications —
             // that makes Chromium fall back to its own in-window message-center
             // popup instead of suppressing. Suppression is done in the SW shim

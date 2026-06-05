@@ -40,6 +40,10 @@ impl KarereApplication {
             log::info!(
                 "start-in-background=true and tray configured — window built but not presented"
             );
+            // The OSR webview only realizes (and spawns its browsers) when the
+            // window is shown. Pre-warm every account's browser now so WhatsApp
+            // loads and delivers notifications while we stay in the background.
+            window.prewarm();
         } else {
             if settings.boolean("start-in-background") && !crate::tray::is_active() {
                 log::info!(
@@ -167,6 +171,44 @@ mod imp {
             settings.connect_changed(
                 Some("theme"),
                 |s, _| apply_theme(s),
+            );
+            // Live tray enable/disable/auto: re-apply the `systray-icon` setting.
+            settings.connect_changed(Some("systray-icon"), |_, _| {
+                crate::tray::apply_setting();
+            });
+            // Live mobile-layout: reload every account so the page gate
+            // (should_use_mobile_layout) re-evaluates on the next on_load_end.
+            settings.connect_changed(
+                Some("mobile-layout"),
+                glib::clone!(
+                    #[weak(rename_to = app)]
+                    app,
+                    move |_, _| {
+                        for win in app.windows() {
+                            if let Some(kw) = win.downcast_ref::<KarereWindow>() {
+                                kw.reload_all_accounts();
+                            }
+                        }
+                    }
+                ),
+            );
+            // Live notification-sound / master-toggle: re-apply audio muting so
+            // WhatsApp's ding is silenced/restored without a restart.
+            settings.connect_changed(
+                None,
+                glib::clone!(
+                    #[weak(rename_to = app)]
+                    app,
+                    move |_, key| {
+                        if key == "notify-sound-enabled" || key == "notifications-enabled" {
+                            for win in app.windows() {
+                                if let Some(kw) = win.downcast_ref::<KarereWindow>() {
+                                    kw.apply_audio_mute();
+                                }
+                            }
+                        }
+                    }
+                ),
             );
             // Keep the Settings instance alive so the change handler keeps firing.
             let _ = self.settings.set(settings);

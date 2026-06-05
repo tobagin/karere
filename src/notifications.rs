@@ -5,7 +5,6 @@
 //! for live notification tags in the browser process. It:
 //!
 //! - records seen tags (for unread counts — M20 — and focus-driven withdrawal),
-//! - triggers optional custom sound playback ([`crate::sound`]), and
 //! - re-emits a Karere-branded `gio::Notification` so the desktop attributes the
 //!   banner to Karere (app name + icon) rather than Chromium.
 //!
@@ -48,9 +47,9 @@ impl Tracker {
         }
     }
 
-    /// A notification became visible in the page. Records the tag, bumps the
-    /// per-account unread count (stubbed until M20), plays the custom sound when
-    /// enabled, and emits the branded banner (3.2 + 3.7).
+    /// A notification became visible in the page. Records the tag, sets the
+    /// per-account unread dot (unless the account is already foregrounded),
+    /// bumps the global tray count, and emits the branded banner (3.2 + 3.7).
     pub fn on_seen(
         &self,
         tag: &str,
@@ -74,20 +73,32 @@ impl Tracker {
 
         self.live.lock().insert(tag.to_owned(), Instant::now());
 
-        // M20 will consume this per-account unread bump; log for now.
-        log::debug!("notifications: unread bump for account {account_id:?} (tag {tag})");
+        // Per-account unread dot (switcher + tray). Skip the active account: a
+        // banner for the account already in the foreground should not badge the
+        // row the user is looking at. Cleared when an account becomes the focused
+        // foreground (window focus / switch).
+        let is_active = crate::accounts::manager()
+            .active()
+            .is_some_and(|a| a.id == account_id);
+        if !is_active {
+            crate::accounts::set_unread(account_id, true);
+        }
 
         // M15: feed the tray unread indicator. Activate `app.set-unread` with
         // current+1 so the tray module stays the single owner of the count.
-        if let Some(app) = gio::Application::default() {
+        // Gated on `notify-tray-icon`: when off, the tray icon must not change on
+        // a new message.
+        if settings.boolean("notify-tray-icon")
+            && let Some(app) = gio::Application::default()
+        {
             let next = crate::tray::unread_count().saturating_add(1);
             app.activate_action("set-unread", Some(&next.to_variant()));
         }
 
-        if settings.boolean("notify-sound-enabled") {
-            let name = settings.string("notify-sound-file");
-            crate::sound::play_sound(name.as_str());
-        }
+        // Notification sound is WhatsApp's own in-page ding, gated at the audio
+        // layer (see `web_view::apply_audio_mute`, driven by `notify-sound-enabled`
+        // + the master toggle). Karere plays no separate sound — that was the
+        // source of the double-ding.
 
         self.emit(&settings, tag, title, body, icon);
     }

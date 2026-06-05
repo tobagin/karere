@@ -41,18 +41,38 @@ wrap_life_span_handler! {
             _popup_id: ::std::os::raw::c_int,
             target_url: Option<&CefString>,
             _target_frame_name: Option<&CefString>,
-            _target_disposition: WindowOpenDisposition,
-            _user_gesture: ::std::os::raw::c_int,
+            target_disposition: WindowOpenDisposition,
+            user_gesture: ::std::os::raw::c_int,
             _popup_features: Option<&PopupFeatures>,
-            _window_info: Option<&mut WindowInfo>,
+            window_info: Option<&mut WindowInfo>,
             _client: Option<&mut Option<Client>>,
             _settings: Option<&mut BrowserSettings>,
             _extra_info: Option<&mut Option<DictionaryValue>>,
             _no_javascript_access: Option<&mut ::std::os::raw::c_int>,
         ) -> ::std::os::raw::c_int {
-            // Suppress every popup: route the target ourselves and cancel the
-            // new CEF window so the shell stays a single window.
             let url = target_url.map(CefString::to_string).unwrap_or_default();
+            log::info!(
+                "on_before_popup url={url:?} disposition={target_disposition:?} gesture={user_gesture}"
+            );
+
+            // Deliberate popups (the call "pop-out"/expand → NEW_POPUP to
+            // `web.whatsapp.com/call/popout`, plus blank/blob `window.open()` call
+            // surfaces) must be SUPPRESSED, not hosted: under OSR a native popup
+            // renders blank and freezes the UI, and navigating the main frame
+            // drops the session. The call keeps running in WhatsApp's in-page
+            // floating window, so cancel the popup and leave the main frame alone.
+            let _ = window_info;
+            let scheme = url.split_once(':').map(|(s, _)| s.to_ascii_lowercase());
+            let suppress = url.is_empty()
+                || target_disposition == WindowOpenDisposition::NEW_POPUP
+                || matches!(scheme.as_deref(), Some("about") | Some("blob"));
+            if suppress {
+                return 1;
+            }
+
+            // Everything else stays single-window: WhatsApp links load in the
+            // main frame, external links open in the system browser. Cancel the
+            // CEF popup.
             route_target(browser, &url);
             1
         }

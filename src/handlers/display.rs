@@ -77,6 +77,20 @@ wrap_display_handler! {
             log::debug!("title: {t}");
         }
 
+        // M21: WhatsApp video-call UI calls `element.requestFullscreen()`,
+        // surfaced here by CEF. This runs on the CEF UI thread, so it must NOT
+        // touch GTK widgets directly — it only records the request in
+        // `SharedState`. The window poll loop (GTK main thread) drains it and
+        // calls `window.fullscreen()` / `unfullscreen()`; headerbar visibility
+        // then follows the window's `notify::fullscreened` signal.
+        fn on_fullscreen_mode_change(
+            &self,
+            _browser: Option<&mut Browser>,
+            fullscreen: ::std::os::raw::c_int,
+        ) {
+            self.handler.shared.lock().fullscreen_request = Some(fullscreen != 0);
+        }
+
         // OSR: CEF never sets the platform cursor, so record the requested
         // cursor (as a CSS name) for the widget tick callback to apply. Returns
         // 1 to signal we handled the cursor.

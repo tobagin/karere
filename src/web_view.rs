@@ -43,6 +43,22 @@ impl KarereWebView {
         self.imp().reload_hard();
     }
 
+    /// Reload every account's browser (live setting change, e.g. mobile-layout).
+    pub fn reload_all(&self) {
+        self.imp().reload_all();
+    }
+
+    /// Record chrome-window visibility (drives notification-sound muting).
+    pub fn set_window_visible(&self, visible: bool) {
+        self.imp().set_window_visible(visible);
+    }
+
+    /// Re-apply notification-sound muting from the current settings (call after a
+    /// `notify-sound-enabled` / `notifications-enabled` change).
+    pub fn apply_audio_mute(&self) {
+        self.imp().apply_audio_mute();
+    }
+
     pub fn find(&self, text: &str, forward: bool, find_next: bool) {
         self.imp().find(text, forward, find_next);
     }
@@ -97,6 +113,14 @@ impl KarereWebView {
         self.imp().spawn_browser(Some(account_id.to_owned()), foreground);
     }
 
+    /// Pre-warm every account's browser without making any of them the visible
+    /// foreground. Used when the app launches into the background (tray) so
+    /// WhatsApp loads and notifications work before the window is ever shown.
+    /// Idempotent — safe to call again on realize.
+    pub fn prewarm(&self) {
+        self.imp().spawn_all_accounts(false);
+    }
+
     /// Switch the visible account to `account_id` (must already be spawned).
     pub fn switch_to_account(&self, account_id: &str) {
         self.imp().switch_to(account_id);
@@ -146,6 +170,90 @@ pub(crate) fn zoom_floor() -> f64 {
     } else {
         ZOOM_MIN
     }
+}
+
+/// The width (logical px) below which `auto` mode switches WhatsApp Web to the
+/// single-pane mobile layout. Matches karere v3's `MOBILE_WIDTH_THRESHOLD`. (M21)
+pub(crate) const MOBILE_WIDTH_THRESHOLD: i32 = 768;
+
+/// The verbatim karere v3 `mobile_responsive.js`, embedded for on-demand
+/// injection (NOT part of the always-run M13 bundle). Source of truth:
+/// karere v3 `src/mobile_responsive.js` (git `890148c`). It applies the
+/// single-pane mobile layout unconditionally when run, so the host gates *when*
+/// it runs (see [`should_use_mobile_layout`] / [`apply_mobile_layout`]). (M21)
+const EMBED_MOBILE: &str = include_str!("../data/js-deferred/mobile_responsive.js");
+
+/// Decide whether WhatsApp Web should use the single-pane mobile layout, mirroring
+/// karere v3's `should_use_mobile_layout`: the `mobile-layout` GSetting forces
+/// `enabled`/`disabled`; `auto` is true on a mobile desktop environment
+/// (phosh / plasma-mobile / lomiri) or when the logical window width is in the open
+/// interval `(0, MOBILE_WIDTH_THRESHOLD)`. (M21)
+pub(crate) fn should_use_mobile_layout(width_logical_px: i32) -> bool {
+    use gtk::gio;
+    use gtk::prelude::SettingsExt;
+
+    match gio::Settings::new(crate::application::APP_ID)
+        .string("mobile-layout")
+        .as_str()
+    {
+        "enabled" => true,
+        "disabled" => false,
+        _ => {
+            if let Ok(desktop) = std::env::var("XDG_CURRENT_DESKTOP") {
+                let d = desktop.to_lowercase();
+                if ["phosh", "plasma-mobile", "lomiri"].iter().any(|m| d.contains(m)) {
+                    return true;
+                }
+            }
+            width_logical_px > 0 && width_logical_px < MOBILE_WIDTH_THRESHOLD
+        }
+    }
+}
+
+/// Inject the verbatim mobile-responsive script into `browser`'s main frame when
+/// the host decides the layout is mobile for `width_logical_px`. Idempotent within
+/// a page lifetime via a `window.__karereMobileApplied` guard. Called from
+/// `on_load_end`, mirroring karere v3's inject-on-load. The script only un-applies
+/// via a full page reload (handled by the resize gate in `size_allocate`). (M21)
+pub(crate) fn apply_mobile_layout(browser: &cef::Browser, width_logical_px: i32) {
+    use cef::{CefString, ImplBrowser, ImplFrame};
+    if !should_use_mobile_layout(width_logical_px) {
+        return;
+    }
+    let Some(frame) = browser.main_frame() else {
+        return;
+    };
+    // Guard so a re-entrant load_end (or any double call) never runs the script
+    // twice in the same page; the flag resets naturally on navigation.
+    let guarded = format!(
+        "(function(){{if(window.__karereMobileApplied)return;\
+window.__karereMobileApplied=true;{EMBED_MOBILE}\n}})();"
+    );
+    frame.execute_java_script(
+        Some(&CefString::from(guarded.as_str())),
+        Some(&CefString::from("karere://mobile-responsive")),
+        0,
+    );
+}
+
+/// Push `window.__karereMuteNotifSound` into `browser`'s page so the bundle hook
+/// (70-notification-sound.js) blocks WhatsApp's notification/UI tones when the
+/// master toggle or notification-sound setting is off. Called from `on_load_end`
+/// (so the flag survives navigation) and on a live settings change. (M14x)
+pub(crate) fn apply_notif_sound_from_settings(browser: &cef::Browser) {
+    use cef::{CefString, ImplBrowser, ImplFrame};
+    use gtk::prelude::SettingsExt;
+    let s = gtk::gio::Settings::new(crate::application::APP_ID);
+    let muted = !s.boolean("notifications-enabled") || !s.boolean("notify-sound-enabled");
+    let Some(frame) = browser.main_frame() else {
+        return;
+    };
+    let js = format!("window.__karereMuteNotifSound = {muted};");
+    frame.execute_java_script(
+        Some(&CefString::from(js.as_str())),
+        Some(&CefString::from("karere://notif-sound")),
+        0,
+    );
 }
 
 /// Apply the per-account persisted zoom (lifted to the accessibility floor) to
@@ -389,6 +497,10 @@ mod imp {
         pub pending_url: Mutex<Option<String>>,
         /// Set for the embedded DevTools view; selects the permissive client.
         pub devtools: AtomicBool,
+        /// Last known chrome-window visibility (recorded for potential future use;
+        /// notification-sound gating no longer depends on it).
+        #[allow(dead_code)]
+        pub window_visible: AtomicBool,
         program: AtomicU32,
         vao: AtomicU32,
         vbo: AtomicU32,
@@ -414,6 +526,12 @@ mod imp {
         pub pending_menu_command: std::cell::Cell<Option<i32>>,
         /// The currently-displayed context popover, kept alive while open.
         pub context_popover: RefCell<Option<gtk::Popover>>,
+        /// M21 mobile-layout resize gate. `mobile_active` is the last-known
+        /// mobile/desktop decision; `mobile_init` guards the first allocation so
+        /// it seeds state without a spurious reload. A later width-threshold
+        /// crossing reloads the page so `on_load_end` re-evaluates the gate.
+        pub mobile_active: std::cell::Cell<bool>,
+        pub mobile_init: std::cell::Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -432,7 +550,10 @@ mod imp {
             widget.set_auto_render(false);
 
             let scale = widget.scale_factor() as f32;
-            let shared = new_shared((1, 1), scale);
+            // Seed a sane default viewport so browsers created before the widget
+            // is ever sized (background-start prewarm) still lay WhatsApp out at a
+            // usable size; the real allocation replaces this on first show.
+            let shared = new_shared((1280, 800), scale);
             *self.shared.lock() = Some(shared.clone());
 
             // CEF on_paint runs on glib main thread (external_message_pump
@@ -517,6 +638,24 @@ mod imp {
             {
                 host.notify_screen_info_changed();
                 host.was_resized();
+            }
+
+            // M21: gate the mobile single-pane layout on logical width. The
+            // verbatim v3 script can't un-apply its DOM/CSS, so a threshold
+            // crossing reloads the page and `on_load_end` re-injects (or not).
+            if width > 0 {
+                let is_mobile = super::should_use_mobile_layout(width);
+                if !self.mobile_init.get() {
+                    // First real allocation: seed state; the first on_load_end
+                    // performs the initial injection if mobile.
+                    self.mobile_init.set(true);
+                    self.mobile_active.set(is_mobile);
+                } else if is_mobile != self.mobile_active.get() {
+                    self.mobile_active.set(is_mobile);
+                    if let Some(browser) = resolved_browser(self) {
+                        browser.reload();
+                    }
+                }
             }
         }
     }
@@ -704,6 +843,62 @@ mod imp {
             }
         }
 
+        /// Reload every account's browser (foreground + background). Used when a
+        /// global setting that the page gate reads on load changes — e.g.
+        /// `mobile-layout` — so each account re-evaluates it via `on_load_end`.
+        pub fn reload_all(&self) {
+            let browsers = self.browsers.lock();
+            if browsers.is_empty() {
+                if let Some(browser) = self.browser.lock().as_ref() {
+                    browser.reload();
+                }
+                return;
+            }
+            for browser in browsers.values() {
+                browser.reload();
+            }
+        }
+
+        /// Record window visibility (kept for callers; sound gating no longer
+        /// depends on it — the JS hook blocks the ding precisely).
+        pub fn set_window_visible(&self, visible: bool) {
+            self.window_visible.store(visible, Ordering::Relaxed);
+        }
+
+        /// Push the notification-sound mute flag (`window.__karereMuteNotifSound`)
+        /// to every account's page. The bundle hook (70-notification-sound.js)
+        /// blocks WhatsApp's static notification/UI tones when set — precisely,
+        /// without touching WebRTC call audio or voice-note playback. Muted when
+        /// the master toggle is off OR notification sounds are off.
+        pub fn apply_audio_mute(&self) {
+            use gtk::prelude::SettingsExt;
+            let s = gtk::gio::Settings::new(crate::application::APP_ID);
+            let muted =
+                !s.boolean("notifications-enabled") || !s.boolean("notify-sound-enabled");
+
+            let push = |b: &Browser| {
+                if let Some(frame) = b.main_frame() {
+                    let js = format!("window.__karereMuteNotifSound = {muted};");
+                    frame.execute_java_script(
+                        Some(&CefString::from(js.as_str())),
+                        Some(&CefString::from("karere://notif-sound")),
+                        0,
+                    );
+                }
+            };
+
+            let browsers = self.browsers.lock();
+            if browsers.is_empty() {
+                if let Some(b) = self.browser.lock().as_ref() {
+                    push(b);
+                }
+            } else {
+                for b in browsers.values() {
+                    push(b);
+                }
+            }
+        }
+
         pub fn reload_hard(&self) {
             if let Some(browser) = self.browser.lock().as_ref() {
                 browser.reload_ignore_cache();
@@ -718,6 +913,21 @@ mod imp {
         /// single-browser path), then spawns the MRU-first account's browser as
         /// foreground. Background accounts are spawned lazily on first switch.
         fn bootstrap_pool(&self) {
+            // Window is being realized/shown: spawn every account and adopt the
+            // active one as the visible foreground.
+            self.spawn_all_accounts(true);
+        }
+
+        /// Spawn a CEF browser for EVERY account so each one loads WhatsApp Web
+        /// and delivers notifications, not just the visible account. When
+        /// `adopt_active` the active account becomes the visible foreground;
+        /// otherwise all accounts stay paused/hidden (`was_hidden`) — used for
+        /// background-start prewarm, where there is no window yet so every account
+        /// runs hidden and notifications arrive via the service-worker path.
+        ///
+        /// Idempotent: [`spawn_browser`] skips accounts whose browser already
+        /// exists, so realize-after-prewarm only adopts the foreground.
+        pub fn spawn_all_accounts(&self, adopt_active: bool) {
             if self.devtools.load(Ordering::Relaxed) {
                 // The embedded DevTools view is not an account; keep it as a
                 // single legacy browser with the default request context.
@@ -731,12 +941,15 @@ mod imp {
                 mgr.add();
                 accounts = mgr.get_accounts_sorted();
             }
-            let Some(first) = accounts.first() else {
-                log::error!("bootstrap_pool: no account after add()");
+            let Some(first) = accounts.first().cloned() else {
+                log::error!("spawn_all_accounts: no account after add()");
                 return;
             };
             mgr.activate(&first.id);
-            self.spawn_browser(Some(first.id.clone()), true);
+            for acc in &accounts {
+                let foreground = adopt_active && acc.id == first.id;
+                self.spawn_browser(Some(acc.id.clone()), foreground);
+            }
         }
 
         /// Spawn a CEF browser for `account_id` (or the legacy default context
@@ -873,6 +1086,8 @@ mod imp {
                 // Background browser: pause it until switched in.
                 host.was_hidden(1);
             }
+            // Apply notification-sound muting to the newly-spawned browser.
+            self.apply_audio_mute();
         }
 
         /// Make `browser` the foreground: cache it for the input/render paths,
@@ -906,6 +1121,8 @@ mod imp {
                 host.was_resized();
             }
             self.obj().queue_render();
+            // Foreground changed → re-evaluate which browsers stay audible.
+            self.apply_audio_mute();
         }
 
         /// Switch the foreground to the account `new_id`, pausing the previous
@@ -1845,7 +2062,17 @@ mod imp {
             Key::Down => 0x28,
             Key::Insert => 0x2D,
             Key::Delete => 0x2E,
-            _ => keyval.to_unicode().map(|c| c.to_ascii_uppercase() as i32).unwrap_or(0),
+            // Only letters/digits map cleanly to a Windows VK via their ASCII
+            // code (A–Z = 0x41–0x5A, 0–9 = 0x30–0x39). For punctuation the ASCII
+            // value collides with named VKs — e.g. '.' = 0x2E = VK_DELETE,
+            // '-' = 0x2D = VK_INSERT — which made Chromium treat the keydown as a
+            // command and drop the character. Use 0 for those; the CHAR event in
+            // `send_key` still carries the character so it is inserted as text.
+            _ => keyval
+                .to_unicode()
+                .filter(|c| c.is_ascii_alphanumeric())
+                .map(|c| c.to_ascii_uppercase() as i32)
+                .unwrap_or(0),
         }
     }
 

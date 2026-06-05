@@ -17,87 +17,133 @@ using Adw 1;
 
 Adw.ShortcutsDialog shortcuts_dialog {
   Adw.ShortcutsSection {
-    title: _("Navigation");
+    title: _("WhatsApp");
 
     Adw.ShortcutsItem {
       title: _("Reload WhatsApp Web");
+      subtitle: _("Reload the current page");
       accelerator: "<Primary>r F5";
     }
 
     Adw.ShortcutsItem {
       title: _("Force Reload");
+      subtitle: _("Reload, bypassing the cache");
       accelerator: "<Primary><Shift>r";
     }
 
     Adw.ShortcutsItem {
-      title: _("Close Window");
-      accelerator: "<Primary>w";
-    }
-  }
-
-  Adw.ShortcutsSection {
-    title: _("Editing");
-
-    Adw.ShortcutsItem {
       title: _("Find in Page");
+      subtitle: _("Search the current page");
       accelerator: "<Primary>f";
     }
   }
 
   Adw.ShortcutsSection {
-    title: _("View");
+    title: _("Accounts");
+
+    Adw.ShortcutsItem {
+      title: _("Next Account");
+      subtitle: _("Switch to the next account");
+      accelerator: "<Primary>Tab <Primary>Page_Down";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Previous Account");
+      subtitle: _("Switch to the previous account");
+      accelerator: "<Primary><Shift>Tab <Primary>Page_Up";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Switch Account");
+      subtitle: _("Jump to account 1–9 (Alt+1 … Alt+9)");
+      accelerator: "<Alt>1";
+    }
+  }
+
+  Adw.ShortcutsSection {
+    title: _("Window");
 
     Adw.ShortcutsItem {
       title: _("Fullscreen");
+      subtitle: _("Toggle fullscreen mode");
       accelerator: "F11 <Alt>Return";
     }
 
     Adw.ShortcutsItem {
       title: _("Minimize Window");
+      subtitle: _("Minimize the window");
       accelerator: "<Primary>m";
     }
 
     Adw.ShortcutsItem {
+      title: _("Close Window");
+      subtitle: _("Close the window");
+      accelerator: "<Primary>w";
+    }
+  }
+
+  Adw.ShortcutsSection {
+    title: _("Zoom");
+
+    Adw.ShortcutsItem {
       title: _("Zoom In");
+      subtitle: _("Increase the zoom level");
       accelerator: "<Primary>plus <Primary>equal <Primary>KP_Add";
     }
 
     Adw.ShortcutsItem {
       title: _("Zoom Out");
+      subtitle: _("Decrease the zoom level");
       accelerator: "<Primary>minus <Primary>KP_Subtract";
     }
 
     Adw.ShortcutsItem {
       title: _("Reset Zoom");
+      subtitle: _("Reset zoom to 100%");
       accelerator: "<Primary>0 <Primary>KP_0";
     }
 
     Adw.ShortcutsItem {
       title: _("Toggle Header Bar Zoom Controls");
+      subtitle: _("Show or hide the zoom buttons");
       accelerator: "<Primary>b";
     }
   }
 
   Adw.ShortcutsSection {
-    title: _("System");
+    title: _("Developer");
+
+    Adw.ShortcutsItem {
+      title: _("Developer Tools");
+      subtitle: _("Open the developer tools");
+      accelerator: "F12 <Primary><Shift>i";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Inspect Element");
+      subtitle: _("Pick an element to inspect");
+      accelerator: "<Primary><Shift>c";
+    }
+  }
+
+  Adw.ShortcutsSection {
+    title: _("Application");
 
     Adw.ShortcutsItem {
       title: _("Preferences");
+      subtitle: _("Open preferences");
       accelerator: "<Primary>comma";
     }
 
     Adw.ShortcutsItem {
       title: _("Keyboard Shortcuts");
+      subtitle: _("Show this shortcuts dialog");
       accelerator: "<Primary>question";
     }
 
     Adw.ShortcutsItem {
-      title: _("Developer Tools");
-      accelerator: "F12 <Primary><Shift>i";
-    }
-
-    Adw.ShortcutsItem {
       title: _("Quit");
+      subtitle: _("Quit Karere");
       accelerator: "<Primary>q";
     }
   }

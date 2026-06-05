@@ -11,7 +11,7 @@
 //! and, on GNOME without an AppIndicator-style `org.kde.StatusNotifierWatcher`
 //! owner, skips the service unless `KARERE_FORCE_TRAY=1` is set.
 
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::{Arc, Mutex};
 
 use gettextrs::gettext;
 use gtk::gio;
@@ -28,7 +28,6 @@ use crate::application::APP_ID;
 pub struct AccountSummary {
     pub id: String,
     pub name: String,
-    #[allow(dead_code)]
     pub has_unread: bool,
     pub icon_png: Option<Vec<u8>>,
 }
@@ -38,8 +37,7 @@ pub struct AccountSummary {
 #[derive(Default)]
 pub struct TrayState {
     pub unread_count: u32,
-    /// Reserved for M20; not rendered in the current app-level menu.
-    #[allow(dead_code)]
+    /// Per-account rows rendered in the tray menu (switch + unread marker).
     pub accounts: Vec<AccountSummary>,
     /// Drives the dynamic `Show / Hide` menu label. Synced from the window's
     /// `notify::visible` (M15).
@@ -131,8 +129,15 @@ impl ksni::Tray for KarereTray {
                 .iter()
                 .map(|a| {
                     let id = a.id.clone();
+                    // Prefix a bullet on accounts with an unread banner (ksni
+                    // menu labels carry no rich badge slot).
+                    let label = if a.has_unread {
+                        format!("● {}", a.name)
+                    } else {
+                        a.name.clone()
+                    };
                     StandardItem {
-                        label: a.name.clone(),
+                        label,
                         icon_data: a.icon_png.clone().unwrap_or_default(),
                         activate: Box::new(move |_| {
                             // switch-account surfaces the window itself (no toggle).
@@ -208,16 +213,28 @@ struct TrayHolder {
     handle: ksni::Handle<KarereTray>,
 }
 
-static TRAY: OnceLock<TrayHolder> = OnceLock::new();
+static TRAY: Mutex<Option<TrayHolder>> = Mutex::new(None);
 
-/// Start the tray service, honoring the GNOME auto-detect skip policy and the
-/// `KARERE_FORCE_TRAY=1` override. Idempotent: a second call is a no-op.
+fn tray_lock() -> std::sync::MutexGuard<'static, Option<TrayHolder>> {
+    TRAY.lock().unwrap_or_else(|e| e.into_inner())
+}
+
+/// Start the tray service, honoring the `systray-icon` GSetting
+/// (`enabled` / `disabled` / `auto`), the GNOME auto-detect skip policy, and the
+/// `KARERE_FORCE_TRAY=1` override. Idempotent: a second call while running is a
+/// no-op.
 pub fn start() {
-    if TRAY.get().is_some() {
+    if tray_lock().is_some() {
         return;
     }
 
-    let force = std::env::var("KARERE_FORCE_TRAY").as_deref() == Ok("1");
+    let mode = gio::Settings::new(APP_ID).string("systray-icon");
+    if mode == "disabled" {
+        log::info!("tray disabled via systray-icon setting");
+        return;
+    }
+    // `enabled` forces the tray on even on GNOME; `auto` applies the skip policy.
+    let force = mode == "enabled" || std::env::var("KARERE_FORCE_TRAY").as_deref() == Ok("1");
     if !force && should_skip_on_gnome() {
         log::info!("tray skipped (GNOME w/o AppIndicator)");
         return;
@@ -236,10 +253,39 @@ pub fn start() {
             .spawn(),
     ) {
         Ok(handle) => {
-            let _ = TRAY.set(TrayHolder { state, handle });
+            *tray_lock() = Some(TrayHolder { state, handle });
             log::info!("tray service started");
         }
         Err(err) => log::warn!("tray service failed to start: {err}"),
+    }
+}
+
+/// Stop the running tray service (live `systray-icon` → `disabled`). Shuts the
+/// SNI item down and clears the holder so a later `start()` can re-create it.
+pub fn stop() {
+    let holder = tray_lock().take();
+    if let Some(holder) = holder {
+        holder.handle.shutdown();
+        log::info!("tray service stopped");
+    }
+}
+
+/// Apply the current `systray-icon` setting live (called on a settings change):
+/// start when `enabled`/`auto`, stop when `disabled`.
+pub fn apply_setting() {
+    let mode = gio::Settings::new(APP_ID).string("systray-icon");
+    let want = match mode.as_str() {
+        "disabled" => false,
+        "enabled" => true,
+        // auto: on for non-GNOME (or when forced).
+        _ => {
+            std::env::var("KARERE_FORCE_TRAY").as_deref() == Ok("1") || !should_skip_on_gnome()
+        }
+    };
+    if want {
+        start();
+    } else {
+        stop();
     }
 }
 
@@ -255,6 +301,9 @@ fn should_skip_on_gnome() -> bool {
     if !is_gnome {
         return false;
     }
+    // On GNOME, `auto` still shows the tray when an AppIndicator-style SNI watcher
+    // is present (the user installed an extension → they want a tray); skip only
+    // when none owns the bus name.
     !watcher_present()
 }
 
@@ -285,12 +334,13 @@ fn watcher_present() -> bool {
 
 /// Whether the tray service is running (drives the start-in-background gate).
 pub fn is_active() -> bool {
-    TRAY.get().is_some()
+    tray_lock().is_some()
 }
 
 /// Current unread count held in tray state (0 when no tray is running).
 pub fn unread_count() -> u32 {
-    TRAY.get()
+    tray_lock()
+        .as_ref()
         .map(|tray| {
             tray.state
                 .lock()
@@ -302,7 +352,8 @@ pub fn unread_count() -> u32 {
 
 /// Write `count` into tray state and request a refresh (`app.set-unread`).
 pub fn set_unread(count: u32) {
-    let Some(tray) = TRAY.get() else { return };
+    let guard = tray_lock();
+    let Some(tray) = guard.as_ref() else { return };
     tray.state
         .lock()
         .unwrap_or_else(|e| e.into_inner())
@@ -313,7 +364,8 @@ pub fn set_unread(count: u32) {
 /// Sync window visibility into tray state so the menu's `Show / Hide` label
 /// stays accurate, refreshing only on an actual change.
 pub fn set_window_visible(visible: bool) {
-    let Some(tray) = TRAY.get() else { return };
+    let guard = tray_lock();
+    let Some(tray) = guard.as_ref() else { return };
     {
         let mut state = tray.state.lock().unwrap_or_else(|e| e.into_inner());
         if state.window_visible == visible {
@@ -328,7 +380,8 @@ pub fn set_window_visible(visible: bool) {
 /// main thread on every `accounts-changed`; the summaries carry pre-decoded
 /// avatar pixmaps so `menu()` (on the tray thread) does no image work.
 pub fn set_accounts(accounts: Vec<AccountSummary>) {
-    let Some(tray) = TRAY.get() else { return };
+    let guard = tray_lock();
+    let Some(tray) = guard.as_ref() else { return };
     tray.state
         .lock()
         .unwrap_or_else(|e| e.into_inner())
@@ -338,7 +391,8 @@ pub fn set_accounts(accounts: Vec<AccountSummary>) {
 
 /// Re-render the menu after an account-list change (`app.refresh-tray-accounts`).
 pub fn refresh_accounts() {
-    let Some(tray) = TRAY.get() else { return };
+    let guard = tray_lock();
+    let Some(tray) = guard.as_ref() else { return };
     refresh(&tray.handle);
 }
 

@@ -180,9 +180,17 @@ const PAGE_PATCH: &str = r#"
       }).catch(function () { return ""; });
     }
 
+    var bodyTags = (window.__karereBodyTags = window.__karereBodyTags || {});
     function construct(title, opts) {
       var stub = new Stub(title, opts);
       liveByTag.set(stub.tag, stub);
+      // WhatsApp (notably Flow/business bots) fires a message notification TWICE
+      // with the same tag: the real preview body, then an empty body. The empty
+      // one would overwrite the real (same tag) leaving the host's "New message"
+      // fallback. Skip an empty body ONLY when a real one already fired for this
+      // tag — a standalone empty (a bare ping) still shows so it isn't silent.
+      if (!stub.body && bodyTags[stub.tag]) return stub;
+      if (stub.body) bodyTags[stub.tag] = true;
       resolveIcon(stub.icon).then(function (icon) {
         try {
           console.log(PREFIX + JSON.stringify({
@@ -267,6 +275,19 @@ fn run_session(ws_url: &str) -> Result<(), String> {
     ))?;
     log::info!("cdp: auto-attach armed for service workers");
 
+    // Browser-level auto-attach only covers workers / service workers, NOT
+    // top-level page targets — but WhatsApp raises its message notifications via
+    // `new Notification()` in the PAGE realm, so we must reach the page too. The
+    // build-time bundle observer can't (Notification is not yet exposed at
+    // document-start in this CEF context). Discover targets explicitly and attach
+    // each WhatsApp page; `Target.targetCreated` also fires for pages spawned
+    // later (account switches, full WhatsApp reloads), so re-patching is covered.
+    ws.send_text(&json_msg(2, "Target.setDiscoverTargets", "{\"discover\":true}"))?;
+    // Also snapshot existing targets now: a page already loaded before we armed
+    // discovery would otherwise be missed (its `targetCreated` already fired).
+    ws.send_text(&json_msg(3, "Target.getTargets", "{}"))?;
+    log::info!("cdp: target discovery armed for page realms");
+
     // Sessions we have set up, mapped to which patch to apply on each
     // `Runtime.executionContextCreated` for that session (globals — the SW
     // registration, or the page's `window.Notification` — are only guaranteed
@@ -276,6 +297,10 @@ fn run_session(ws_url: &str) -> Result<(), String> {
     // `showNotification` path defensively.
     let mut patched: std::collections::HashMap<String, Patch> =
         std::collections::HashMap::new();
+    // Page targetIds we've already issued an attach for (dedup — we re-snapshot
+    // targets on every churn event, so the same page would otherwise re-attach).
+    let mut attached_pages: std::collections::HashSet<String> =
+        std::collections::HashSet::new();
 
     loop {
         let msg = ws.recv_text()?;
@@ -286,6 +311,42 @@ fn run_session(ws_url: &str) -> Result<(), String> {
         let method = v.get("method").and_then(|m| m.as_str()).unwrap_or("");
 
         match method {
+            // A page target appeared (existing one at discovery time, or a new
+            // one from a reload / account switch). Attach so its realm receives
+            // the page Notification patch. SW/workers arrive via auto-attach.
+            // Any target churn (workers/SW/page) — re-snapshot the target list.
+            // Browser-level auto-attach only grabs the page if it already existed
+            // when we armed; a page created later (we start in background, page
+            // appears when the window opens) is NOT auto-attached, and its
+            // `targetCreated` is not reliably typed "page" here. Polling
+            // `getTargets` on churn and attaching unseen pages is robust to all of
+            // it (created-after-arm, account switch, reload with a new id).
+            "Target.targetCreated" => {
+                ws.send_text(&json_msg(3, "Target.getTargets", "{}"))?;
+            }
+            // Snapshot response: attach any not-yet-attached page target. WhatsApp
+            // raises message notifications via `new Notification()` in the PAGE
+            // realm, so the page patch is the one that matters.
+            _ if v.get("id").and_then(|i| i.as_u64()) == Some(3) => {
+                if let Some(infos) = v
+                    .get("result")
+                    .and_then(|r| r.get("targetInfos"))
+                    .and_then(|t| t.as_array())
+                {
+                    for t in infos {
+                        let ttype = t.get("type").and_then(|x| x.as_str()).unwrap_or("");
+                        let tid = t.get("targetId").and_then(|x| x.as_str()).unwrap_or("");
+                        if ttype == "page" && !tid.is_empty() && !attached_pages.contains(tid) {
+                            attached_pages.insert(tid.to_owned());
+                            let params =
+                                format!("{{\"targetId\":{},\"flatten\":true}}", json_string(tid));
+                            log::info!("cdp: attaching page target {}", &tid[..tid.len().min(8)]);
+                            ws.send_text(&json_msg(next_id, "Target.attachToTarget", &params))?;
+                            next_id += 1;
+                        }
+                    }
+                }
+            }
             "Target.attachedToTarget" => {
                 let params = v.get("params");
                 let ttype = params

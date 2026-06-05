@@ -30,6 +30,30 @@ impl KarereWindow {
         self.imp().switch_account(id);
     }
 
+    /// Re-apply notification-sound muting (live `notify-sound-enabled` /
+    /// `notifications-enabled` change).
+    pub fn apply_audio_mute(&self) {
+        if let Some(web) = self.imp().web_view.borrow().as_ref() {
+            web.apply_audio_mute();
+        }
+    }
+
+    /// Reload every account's browser (live `mobile-layout` change), so each
+    /// re-evaluates the layout gate on its next `on_load_end`.
+    pub fn reload_all_accounts(&self) {
+        if let Some(web) = self.imp().web_view.borrow().as_ref() {
+            web.reload_all();
+        }
+    }
+
+    /// Pre-warm all account browsers (background-start), so WhatsApp loads and
+    /// notifications work before the window is ever shown.
+    pub fn prewarm(&self) {
+        if let Some(web) = self.imp().web_view.borrow().as_ref() {
+            web.prewarm();
+        }
+    }
+
     /// Run `script` in the page's main frame (used by notification click
     /// routing to re-enter the page via `__karereActivateNotif`).
     pub fn run_page_js(&self, script: &str) {
@@ -63,6 +87,8 @@ mod imp {
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/github/tobagin/karere/ui/window.ui")]
     pub struct KarereWindow {
+        #[template_child]
+        pub header_bar: TemplateChild<adw::HeaderBar>,
         #[template_child]
         pub view_container: TemplateChild<gtk::Box>,
         #[template_child]
@@ -240,12 +266,22 @@ mod imp {
             self.setup_focus_withdraw();
             self.setup_spellcheck();
             self.setup_account_switcher();
+            self.setup_fullscreen_headerbar();
 
             // M15: keep the tray menu's Show/Hide label in sync with window
             // visibility (fires on every show/hide, incl. close-to-background).
-            window.connect_visible_notify(|win| {
-                crate::tray::set_window_visible(win.is_visible());
-            });
+            // Also drive notification-sound muting: a hidden window mutes the
+            // foreground browser's ding (when sounds are off).
+            window.connect_visible_notify(clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |win| {
+                    crate::tray::set_window_visible(win.is_visible());
+                    if let Some(web) = this.web_view.borrow().as_ref() {
+                        web.set_window_visible(win.is_visible());
+                    }
+                }
+            ));
             crate::tray::set_window_visible(window.is_visible());
         }
     }
@@ -339,7 +375,7 @@ mod imp {
                     return glib::ControlFlow::Break;
                 };
                 let shared = web.shared();
-                let (toast, dialog, flag_offline, find, completed, failed) = {
+                let (toast, dialog, flag_offline, find, completed, failed, fullscreen) = {
                     let mut s = shared.lock();
                     (
                         s.crash_toast.take(),
@@ -348,8 +384,23 @@ mod imp {
                         s.find_result.take(),
                         std::mem::take(&mut s.downloads_completed),
                         std::mem::take(&mut s.downloads_failed),
+                        s.fullscreen_request.take(),
                     )
                 };
+
+                // M21: a JS-initiated fullscreen request (e.g. WhatsApp video
+                // call) recorded by the display handler. Apply the window state
+                // here on the GTK main thread; the headerbar follows the
+                // resulting `notify::fullscreened` signal.
+                if let Some(on) = fullscreen
+                    && let Some(win) = win_weak.upgrade()
+                {
+                    if on {
+                        win.fullscreen();
+                    } else {
+                        win.unfullscreen();
+                    }
+                }
 
                 if let Some(find) = find
                     && let Some(label) = counter_weak.upgrade()
@@ -375,8 +426,20 @@ mod imp {
 
                 if !completed.is_empty() || !failed.is_empty() {
                     if let Some(win) = win_weak.upgrade() {
+                        // Honour the "Notification Type" setting: in-app toast,
+                        // system notification, or both.
+                        let dl_type = gtk::gio::Settings::new(crate::application::APP_ID)
+                            .string("notify-download-type");
                         for dl in completed {
-                            show_download_toast(&toast_overlay, &win, dl);
+                            match dl_type.as_str() {
+                                "notification" => show_download_notification(&dl),
+                                "both" => {
+                                    show_download_toast(&toast_overlay, &win, dl.clone());
+                                    show_download_notification(&dl);
+                                }
+                                // "toast" and any unexpected value
+                                _ => show_download_toast(&toast_overlay, &win, dl),
+                            }
                         }
                         for fail in failed {
                             show_download_failed(&win, fail);
@@ -398,6 +461,19 @@ mod imp {
             });
         }
 
+        /// M21: hide the Adwaita headerbar while the window is fullscreen and
+        /// restore it on exit. Tied to `notify::fullscreened` (not the request)
+        /// so it is correct on every exit path — JS `exitFullscreen()` (via the
+        /// poll-loop `unfullscreen()`), Esc, F11, and window-manager toggles — all
+        /// converge on the resulting window state. `set_visible` is idempotent, so
+        /// this never fights the poll-loop drain (which only sets window state).
+        fn setup_fullscreen_headerbar(&self) {
+            let header_bar = self.header_bar.get();
+            self.obj().connect_fullscreened_notify(move |win| {
+                header_bar.set_visible(!win.is_fullscreen());
+            });
+        }
+
         /// Withdraw live notification banners when the window regains focus
         /// (M14 4.1). A short debounce coalesces rapid focus toggles so we don't
         /// stampede `execute_java_script` on every flicker (4.2).
@@ -412,6 +488,10 @@ mod imp {
                 // M15: focus clears the unread tray indicator.
                 if let Some(app) = gio::Application::default() {
                     app.activate_action("set-unread", Some(&0u32.to_variant()));
+                }
+                // Focus also clears the active account's per-account unread dot.
+                if let Some(a) = crate::accounts::manager().active() {
+                    crate::accounts::set_unread(&a.id, false);
                 }
                 // Restart the debounce timer on each activation edge.
                 if let Some(id) = pending.borrow_mut().take() {
@@ -521,7 +601,7 @@ mod imp {
                 .map(|a| crate::tray::AccountSummary {
                     id: a.id.clone(),
                     name: row_title(a),
-                    has_unread: a.has_unread,
+                    has_unread: crate::accounts::runtime_state(&a.id).has_unread,
                     icon_png: a.avatar_png.clone(),
                 })
                 .collect();
@@ -585,6 +665,17 @@ mod imp {
                     badge.set_tooltip_text(Some(reason));
                 }
                 row.add_suffix(&badge);
+            }
+
+            // Unread dot: a banner fired for this account while it was not the
+            // focused foreground. Cleared on focus/switch (see `switch_account`
+            // and the `is-active` handler).
+            if runtime.has_unread {
+                let dot = gtk::Label::new(Some("●"));
+                dot.add_css_class("accent");
+                dot.set_valign(gtk::Align::Center);
+                dot.set_tooltip_text(Some(&gettextrs::gettext("Unread messages")));
+                row.add_suffix(&dot);
             }
 
             // Edit + remove affordances (no reorder controls — MRU only).
@@ -669,6 +760,8 @@ mod imp {
         pub fn switch_account(&self, id: &str) {
             log::info!("switch_account({id})");
             self.close_switcher();
+            // Viewing an account clears its unread dot.
+            crate::accounts::set_unread(id, false);
             crate::accounts::manager().activate(id);
             if let Some(web) = self.web_view.borrow().as_ref() {
                 web.spawn_account(id, true);
@@ -1483,6 +1576,28 @@ mod imp {
         ));
 
         overlay.add_toast(toast);
+    }
+
+    /// Surface a completed download as a desktop (system) notification with an
+    /// Open action, for the "System Notification" / "Both" download type.
+    fn show_download_notification(dl: &DownloadCompleted) {
+        let Some(app) = gtk::gio::Application::default() else {
+            return;
+        };
+        let name = &dl.name;
+        let file_path = dl.path.to_string_lossy().into_owned();
+
+        let notif = gtk::gio::Notification::new("Download complete");
+        notif.set_body(Some(name));
+        notif.set_icon(&gtk::gio::ThemedIcon::new("folder-download-symbolic"));
+        // Click / Open → reuse the app.open-download action with the file path.
+        notif.set_default_action_and_target_value("app.open-download", Some(&file_path.to_variant()));
+        notif.add_button_with_target_value(
+            "Open",
+            "app.open-download",
+            Some(&file_path.to_variant()),
+        );
+        app.send_notification(Some(&format!("download-{name}")), &notif);
     }
 
     /// Activate `app.open-download <path>` from a widget callback.

@@ -98,6 +98,20 @@ wrap_load_handler! {
                 // M18 4.1: restore this account's persisted zoom (floor-lifted)
                 // on first paint and after each navigation.
                 crate::web_view::apply_zoom_from_account(browser);
+                // M21: inject the verbatim mobile-responsive script when the host
+                // decides the layout is mobile for the current window width. The
+                // logical width is the shared physical size divided by the scale
+                // factor. Mirrors karere v3's inject-on-load.
+                let width_logical = {
+                    let s = self.handler.shared.lock();
+                    let scale = if s.scale_factor > 0.0 { s.scale_factor } else { 1.0 };
+                    (s.size.0 as f32 / scale).round() as i32
+                };
+                crate::web_view::apply_mobile_layout(browser, width_logical);
+                // M14x: push the notification-sound mute flag so the bundle hook
+                // silences WhatsApp's ding when sounds (or the master toggle) are
+                // off — survives navigation since the page `window` reset.
+                crate::web_view::apply_notif_sound_from_settings(browser);
             }
         }
 

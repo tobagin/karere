@@ -40,7 +40,7 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
 
       Adw.ComboRow row_tray {
         title: _("System Tray Icon");
-        subtitle: _("Auto: enabled for non-GNOME environments");
+        subtitle: _("Auto: shown when a system tray is available");
 
         model: Gtk.StringList {
           strings [
@@ -69,8 +69,8 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
       }
 
       Adw.ComboRow row_mobile_layout {
-        title: _("Mobile Layout (Experimental)");
-        subtitle: _("Auto: enabled on mobile shells (Phosh, Plasma Mobile)");
+        title: _("Mobile Layout");
+        subtitle: _("Single-pane layout. Auto: on mobile shells or narrow windows; Enabled/Disabled: force on or off at any size");
 
         model: Gtk.StringList {
           strings [
@@ -89,32 +89,15 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
         title: _("Enable Developer Tools");
         subtitle: _("Allow inspecting and debugging the WebView");
       }
-    }
-
-    Adw.PreferencesGroup {
-      title: _("About");
-
-      Adw.ActionRow row_version {
-        title: _("Version");
-
-        [suffix]
-        Gtk.Label label_version {
-          valign: center;
-
-          styles [
-            "dim-label",
-            "numeric",
-          ]
-        }
-      }
 
       Adw.ActionRow {
-        title: _("License");
-        subtitle: _("GNU General Public License v3.0");
+        title: _("Developer Tools");
+        subtitle: _("Open the developer tools for the current page");
+        activatable-widget: btn_dev_open;
 
         [suffix]
-        Gtk.Button btn_license {
-          label: _("View");
+        Gtk.Button btn_dev_open {
+          label: _("Open");
           valign: center;
         }
       }
@@ -182,22 +165,7 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
 
       Adw.SwitchRow row_sound_enable {
         title: _("Notification Sounds");
-        subtitle: _("Play a sound when a notification arrives");
-      }
-
-      Adw.ComboRow row_sound_file {
-        title: _("Sound");
-        subtitle: _("Choose the notification alert sound");
-
-        model: Gtk.StringList {
-          strings [
-            _("WhatsApp (Default)"),
-            _("Pop"),
-            _("Alert"),
-            _("Soft"),
-            _("Start"),
-          ]
-        };
+        subtitle: _("Play WhatsApp's notification sound for new messages");
       }
     }
   }

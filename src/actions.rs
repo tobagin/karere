@@ -200,10 +200,9 @@ fn register_set_unread(app: &KarereApplication) {
     app.add_action(&action);
 }
 
-/// `app.refresh-tray-accounts`: re-read accounts into the tray state and ask
-/// `ksni` to re-render the menu. A no-op on state until M20 provides an
-/// `AccountManager`; the refresh still fires so the next `menu()` reflects any
-/// future change.
+/// `app.refresh-tray-accounts`: ask `ksni` to re-render the menu after an
+/// account-list change. The window pushes fresh summaries via
+/// `tray::set_accounts` on `accounts-changed`; this just requests the redraw.
 fn register_refresh_tray_accounts(app: &KarereApplication) {
     let action = gio::SimpleAction::new("refresh-tray-accounts", None);
     action.connect_activate(|_, _| {
@@ -243,20 +242,68 @@ fn register_switch_account(app: &KarereApplication) {
 }
 
 fn register_about(app: &KarereApplication) {
+    use gettextrs::gettext;
     let action = gio::SimpleAction::new("about", None);
     action.connect_activate(glib::clone!(
         #[weak]
         app,
         move |_, _| {
+            // Like-for-like with karere v3's About dialog; only the version
+            // differs (4.0.0-Alpha for the GTK4 + CEF rewrite).
+            let developers = [
+                "Thiago Fernandes https://github.com/tobagin",
+                "Aman9Das https://github.com/Aman9das",
+                "Pascal Dietrich https://github.com/",
+                "Sabri Ünal https://github.com/yakushabb",
+                "Enrico https://github.com/account1009",
+                "Leandro Marques https://github.com/leandromqrs",
+                "Muhammed Al-Basha https://github.com/mu7basha",
+                "Jimmy Scionti https://github.com/amivaleo",
+                "AnmiTaliDev https://github.com/AnmiTaliDev",
+            ];
+            let designers = ["Thiago Fernandes https://github.com/tobagin"];
+            let artists = [
+                "Thiago Fernandes https://github.com/tobagin",
+                "Rosabel https://github.com/oiimrosabel",
+            ];
+
             let dialog = adw::AboutDialog::builder()
-                .application_name("Karere")
+                .application_name(gettext("Karere"))
                 .application_icon(APP_ID)
-                .developer_name("Thiago Avila Fernandes")
-                .version(env!("CARGO_PKG_VERSION"))
-                .website("https://github.com/tobagin/karere")
+                .developer_name("The Karere Team")
+                .version("4.0.0-Alpha")
+                .comments(gettext(
+                    "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities",
+                ))
+                .website("https://tobagin.github.io/apps/karere")
                 .issue_url("https://github.com/tobagin/karere/issues")
+                .support_url("https://github.com/tobagin/karere/discussions")
                 .license_type(gtk::License::Gpl30)
+                .copyright("© 2025 The Karere Team")
+                .developers(developers.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
+                .designers(designers.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
+                .artists(artists.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
+                .translator_credits(
+                    "Thiago Fernandes https://github.com/tobagin\n\
+                     Muhammed Al-Basha https://github.com/mu7basha\n\
+                     Jimmy Scionti https://github.com/amivaleo\n\
+                     AnmiTaliDev https://github.com/AnmiTaliDev\n\
+                     Sabri Ünal https://github.com/yakushabb",
+                )
                 .build();
+
+            dialog.add_link(gettext("Source").as_str(), "https://github.com/tobagin/karere");
+
+            dialog.add_acknowledgement_section(
+                Some(gettext("Special Thanks").as_str()),
+                &[
+                    "The GNOME Project",
+                    "The Chromium Embedded Framework",
+                    "WhatsApp Inc.",
+                    "LibAdwaita Contributors",
+                    "The Rust Project",
+                ],
+            );
 
             if let Some(notes) = load_release_notes() {
                 dialog.set_release_notes(&notes);

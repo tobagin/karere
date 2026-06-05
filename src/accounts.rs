@@ -79,9 +79,6 @@ pub struct Account {
     /// Whether a CEF session (cookies/storage) exists on disk.
     #[serde(default)]
     pub has_session: bool,
-    /// Whether the account has unread chats.
-    #[serde(default)]
-    pub has_unread: bool,
     /// Per-account zoom (M18).
     #[serde(default = "default_zoom")]
     pub zoom_level: f64,
@@ -117,7 +114,6 @@ impl Account {
             last_used_at: ts,
             is_active: false,
             has_session: false,
-            has_unread: false,
             zoom_level: default_zoom(),
             permissions: AccountPermissions::default(),
         }
@@ -440,6 +436,11 @@ pub struct AccountRuntime {
     pub degraded: bool,
     /// Human-readable reason captured from the `StoreUnavailable` message.
     pub degraded_reason: Option<String>,
+    /// A notification fired for this account while it was not the focused
+    /// foreground; drives the switcher + tray unread dot. Transient: never
+    /// persisted (the page reflects real server-side unread on reload), cleared
+    /// when the account becomes the focused foreground.
+    pub has_unread: bool,
 }
 
 thread_local! {
@@ -524,6 +525,17 @@ pub fn clear_degraded(account_id: &str) {
         r.degraded = false;
         r.degraded_reason = None;
         true
+    });
+}
+
+/// Set the per-account unread flag. Idempotent: emits `accounts-changed` only on
+/// a real transition, so the notification path (which can fire many times a
+/// second) does not rebuild the switcher on every banner.
+pub fn set_unread(account_id: &str, unread: bool) {
+    mutate_runtime(account_id, |r| {
+        let changed = r.has_unread != unread;
+        r.has_unread = unread;
+        changed
     });
 }
 

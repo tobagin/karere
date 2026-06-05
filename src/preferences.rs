@@ -119,9 +119,7 @@ mod imp {
         #[template_child]
         pub row_dev_enable: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub label_version: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub btn_license: TemplateChild<gtk::Button>,
+        pub btn_dev_open: TemplateChild<gtk::Button>,
 
         // Notifications
         #[template_child]
@@ -138,8 +136,6 @@ mod imp {
         pub row_preview_len: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub row_sound_enable: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub row_sound_file: TemplateChild<adw::ComboRow>,
 
         // Downloads
         #[template_child]
@@ -271,20 +267,16 @@ mod imp {
                 },
             );
 
-            // About footer.
-            self.label_version.set_text(env!("CARGO_PKG_VERSION"));
-            self.btn_license.connect_clicked(|_| {
-                let launcher =
-                    gtk::UriLauncher::new("https://www.gnu.org/licenses/gpl-3.0.html");
-                launcher.launch(
-                    active_window().as_ref(),
-                    gio::Cancellable::NONE,
-                    |res| {
-                        if let Err(err) = res {
-                            log::warn!("failed to open license document: {err}");
-                        }
-                    },
-                );
+            // Developer Tools: open the embedded DevTools for the current page
+            // (mirrors the win.show-devtools action / F12). Present the window
+            // first so the OSR view is realized before DevTools attaches.
+            self.btn_dev_open.connect_clicked(|_| {
+                if let Some(win) = active_window() {
+                    win.present();
+                    if let Err(e) = win.activate_action("win.show-devtools", None) {
+                        log::warn!("show-devtools action failed: {e}");
+                    }
+                }
             });
         }
 
@@ -296,12 +288,23 @@ mod imp {
             bind_switch(settings, "notify-preview-message", &self.row_preview_message);
             bind_combo_enum(settings, "notify-preview-length", &self.row_preview_len);
             bind_switch(settings, "notify-sound-enabled", &self.row_sound_enable);
-            bind_combo_string(
-                settings,
-                "notify-sound-file",
-                &self.row_sound_file,
-                &["whatsapp", "pop", "alert", "soft", "start"],
-            );
+
+            // The master toggle disables every other row on the page: bind each
+            // dependent row's `sensitive` to `notifications-enabled` (read-only).
+            let dependents: [&gtk::Widget; 6] = [
+                self.row_notify_msg.upcast_ref(),
+                self.row_tray_anim.upcast_ref(),
+                self.row_preview_name.upcast_ref(),
+                self.row_preview_message.upcast_ref(),
+                self.row_preview_len.upcast_ref(),
+                self.row_sound_enable.upcast_ref(),
+            ];
+            for w in dependents {
+                settings
+                    .bind("notifications-enabled", w, "sensitive")
+                    .flags(gio::SettingsBindFlags::GET)
+                    .build();
+            }
         }
 
         fn bind_downloads(&self, settings: &gio::Settings) {
@@ -455,7 +458,7 @@ mod imp {
 
             let entries = crate::permissions_store::entries();
             for (origin, bit, state) in entries {
-                let perm = crate::handlers::permission::describe_permissions(bit);
+                let perm = crate::handlers::permission::permission_label(bit);
                 let verdict = match state {
                     crate::permissions_store::State::Allow => "Allowed",
                     crate::permissions_store::State::Deny => "Denied",

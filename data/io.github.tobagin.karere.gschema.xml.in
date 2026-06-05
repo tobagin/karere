@@ -63,7 +63,7 @@
     </key>
     <key name="mobile-layout" type="s">
       <default>'auto'</default>
-      <summary>Mobile Layout (Experimental)</summary>
+      <summary>Mobile Layout</summary>
       <description>Mobile layout mode: auto (detect environment), enabled, or disabled.</description>
     </key>
     <key name="enable-spell-checking" type="b">
@@ -176,17 +176,11 @@
       <summary>Change tray icon on new message</summary>
     </key>
     <key name="notify-sound-enabled" type="b">
-      <!-- Default off: WhatsApp Web plays its own in-page notification ding
-           (page <audio>, independent of the desktop notification), so a Karere
-           sound on top is always a double-ding. The custom-sound machinery
-           remains for users who want it, but it is opt-in. -->
-      <default>false</default>
+      <!-- On by default: this gates WhatsApp Web's own in-page notification ding
+           via the browser audio layer (see web_view::apply_audio_mute). Karere no
+           longer plays a separate custom sound — that caused a double-ding. -->
+      <default>true</default>
       <summary>Enable notification sounds</summary>
-    </key>
-    <key name="notify-sound-file" type="s">
-      <default>'whatsapp'</default>
-      <summary>Notification sound file</summary>
-      <description>Bundled sound name (without extension) played for each notification, e.g. "whatsapp" or "alert". Resolved to &lt;gresource&gt;/sounds/&lt;name&gt;.oga.</description>
     </key>
     <key name="notify-downloads-enabled" type="b">
       <default>true</default>

@@ -52,6 +52,43 @@ JS-initiated fullscreen is a separate concern. WhatsApp video-call UI calls `ele
 - **Why**: WhatsApp Web's video call UI tracks fullscreen via the standard `fullscreenchange` DOM event, which fires only when the document's fullscreen element actually changes. WM-driven exits leave the DOM in its "in-call" state and the user must re-click to leave the call — matching karere v3 behavior. Forcing a JS-side exit would require synthesizing `document.exitFullscreen()` from the host, which is brittle.
 - **Trade-off**: Esc exits the window from fullscreen but the WhatsApp call UI may still believe it is in fullscreen. Acceptable; matches v3.
 
+## Revision during implementation (host-side width gating)
+
+The original design above assumed `mobile_responsive.js` is a passive listener for
+a `karere:viewport-resize` CustomEvent. Implementation disproved this:
+
+- The verbatim v3 script has **no** `karere:viewport-resize` listener and no
+  width/breakpoint/matchMedia logic. It applies single-pane mobile layout
+  **unconditionally** when executed (built for PinePhone/Librem5). It also reads
+  page globals `window.appConfig.enableQuickCopy` and `window.__cmdParams` inside
+  user-interaction handlers.
+- v3 (`window.rs`) made layout responsive entirely **host-side**:
+  `should_use_mobile_layout(settings, width)` (threshold 768 px, `mobile-layout`
+  setting, phosh/plasma-mobile/lomiri detection), injecting the script on load via
+  `evaluate_javascript` **only when mobile**, and calling `webview.reload()` on a
+  width-threshold crossing so the next load re-evaluates.
+
+Building the original always-inject + CustomEvent plan would (a) leave WhatsApp in
+single-pane layout even on a wide desktop window, and (b) produce an inert
+CustomEvent the script never consumes. Chosen approach (user-confirmed): **mirror
+v3 host-side gating**.
+
+- **Decision**: Place the verbatim script in `data/js-deferred/` (conditional
+  injection, like `profile_dom_fallback.js`), NOT the always-run M13 bundle.
+- **Decision**: Reuse the existing `on_load_end` re-apply hook (already used for
+  zoom + autocorrect) to inject the script when `should_use_mobile_layout` is true,
+  guarded by `window.__karereMobileApplied` for idempotency.
+- **Decision**: Reload the foreground browser on a width-threshold crossing
+  (tracked via `mobile_active`/`mobile_init` cells on the webview imp); the reload's
+  `on_load_end` re-evaluates the gate. The verbatim script cannot un-apply its
+  mutations, so reload is the only clean way back to desktop — exactly as v3 did.
+- **Decision**: Drop the `SetViewportSize` → `karere:viewport-resize` CustomEvent
+  path from M21 scope — the verbatim script ignores it, so it would be dead code.
+  The `SetViewportSize` IPC variant + M13 dispatcher stub are left untouched.
+
+The fullscreen half (DisplayHandler + SharedState queue + headerbar) is unaffected
+and proceeds as originally designed.
+
 ## Risks / Trade-offs
 
 - **Risk**: `mobile_responsive.js` references DOM APIs that behave differently in CEF (Chromium) vs WebKitGTK. → Mitigation: script is already vanilla DOM; smoke-test in M21 verification before declaring done.
