@@ -82,6 +82,8 @@ fn main() -> Result<()> {
     app.register(gio::Cancellable::NONE)?;
     let is_primary = !app.is_remote();
     if is_primary {
+        // Hard fork: delete leftover v3 (WebKitGTK) data once, before CEF starts.
+        accounts::purge_legacy_v3_data();
         cef_runtime::initialize_browser_process(&args, &mut cef_app)?;
         // Bridge service-worker notifications over CDP (the only realm-reaching
         // mechanism; CEF exposes no notification API). Uses the same debug port.

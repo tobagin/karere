@@ -24,16 +24,17 @@ The application SHALL ship `data/io.github.tobagin.karere.desktop.in.in` contain
 - **WHEN** the user runs `xdg-open whatsapp://send?text=hello` with Karere installed and selected as the default handler
 - **THEN** the Karere binary is launched with the URL passed as `%U`
 
-### Requirement: Manifest finish-args grant StatusNotifierWatcher and autostart filesystem
-The karere module's `finish-args` SHALL include `--talk-name=org.kde.StatusNotifierWatcher` and `--filesystem=xdg-config/autostart:create` in addition to the existing M6 baseline.
+### Requirement: Manifest finish-args grant StatusNotifierWatcher; autostart via Background portal
+The karere module's `finish-args` SHALL include `--talk-name=org.kde.StatusNotifierWatcher` in addition to the existing M6 baseline. Autostart SHALL be handled by the XDG Background portal (the `ashpd` `background` feature), NOT by direct filesystem access: the manifest SHALL NOT add `--filesystem=xdg-config/autostart:create` or `--talk-name=org.freedesktop.portal.Desktop`, because portal busnames are granted to every sandboxed app automatically and `flatpak-builder-lint` flags both as errors (`finish-args-unnecessary-xdg-config-autostart-create-access`, `finish-args-portal-talk-name`).
 
 #### Scenario: Tray client registers on KDE Plasma
 - **WHEN** Karere runs under KDE Plasma 6 with M15 tray code active
 - **THEN** the `org.kde.StatusNotifierWatcher` DBus name is reachable and the tray icon appears
 
-#### Scenario: Autostart portal can create the autostart entry
-- **WHEN** the autostart portal writes to `~/.var/app/io.github.tobagin.karere/config/autostart/`
-- **THEN** the write succeeds and the directory is created on demand
+#### Scenario: Autostart entry created via the Background portal
+- **WHEN** the user enables "Run on Startup" and the `ashpd` background portal request runs
+- **THEN** the host writes the autostart `.desktop` entry on the app's behalf
+- **AND** no `--filesystem=xdg-config/autostart` grant is present in `finish-args`
 
 ### Requirement: Karere module builds offline and cleans dev artifacts
 The karere module SHALL build without `--share=network`, relying exclusively on `packaging/cargo-sources.json` for crate sources, and the manifest SHALL declare a `cleanup` array removing `*.la`, `*.a`, and `/app/include` while preserving `/app/lib/cef/include`.

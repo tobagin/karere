@@ -182,6 +182,53 @@ pub fn accounts_root() -> PathBuf {
     glib::user_data_dir().join("karere").join("accounts")
 }
 
+/// One-time purge of pre-v4 data left in the shared `io.github.tobagin.karere`
+/// Flatpak dirs. v4 is a hard fork of the WebKitGTK-based v3 under the SAME
+/// app-id, so the upgrade keeps `~/.var/app/io.github.tobagin.karere/` and v3's
+/// WhatsApp sessions linger there as dead weight that v4 can never reuse (no
+/// migration — accounts are re-linked by QR scan). This deletes them on the
+/// first v4 launch, plus the orphaned pre-multi-account (pre-M20) single-profile
+/// CEF dirs.
+///
+/// Targeted, not a blanket wipe: the live v4 data — per-account CEF profiles
+/// under `karere/accounts/` and the active app-id CEF cache — is left intact, as
+/// are shared runtime caches (fontconfig, mesa, gstreamer) and GSettings. Guarded
+/// by a marker so it runs exactly once. Call only from the primary browser
+/// process, before CEF init.
+pub fn purge_legacy_v3_data() {
+    let data = glib::user_data_dir();
+    let marker = data.join("karere").join(".v3-data-purged");
+    if marker.exists() {
+        return;
+    }
+    let cache = glib::user_cache_dir();
+    let config = glib::user_config_dir();
+
+    // v3 WebKitGTK website data + cache, and the orphaned pre-M20 single-profile
+    // CEF dirs. None of these is v4 live data.
+    let legacy = [
+        data.join("webkitgtk-6.0"),
+        cache.join("webkitgtk-6.0"),
+        cache.join("cef_user_data"),
+        config.join("cef_user_data"),
+        cache.join("karere"),
+    ];
+    for dir in &legacy {
+        match std::fs::remove_dir_all(dir) {
+            Ok(()) => log::info!("purged legacy v3 data: {}", dir.display()),
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+            Err(e) => log::warn!("failed to purge legacy dir {}: {e}", dir.display()),
+        }
+    }
+
+    if let Some(parent) = marker.parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    if let Err(e) = std::fs::write(&marker, b"v3 data purged on first v4 launch\n") {
+        log::warn!("failed to write purge marker {}: {e}", marker.display());
+    }
+}
+
 /// Path to the live `accounts.json`.
 pub fn accounts_file() -> PathBuf {
     accounts_root().join("accounts.json")

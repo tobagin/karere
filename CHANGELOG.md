@@ -6,15 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [4.0.0] - 2026-06-05
+
+**Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148.** The rendering backend
+moves from WebKitGTK to the Chromium Embedded Framework (off-screen rendered, composited into a
+GTK `GLArea`). Feature parity with v3 is retained, and several capabilities that were impossible
+on WebKitGTK now work. **There is no migration from v3 — re-link each account by scanning the QR
+code on first launch.**
+
 ### Added
-- **Multi-account (v4)**: Each WhatsApp account now runs in its own CEF `RequestContext` (isolated cookies/storage) under `~/.local/share/karere/accounts/sessions/<id>/`. Account identity (name + avatar) is auto-discovered from WhatsApp Web's internal `Store` via a Webpack hook, with a degraded DOM-scrape fallback. Accounts are ordered most-recently-used; there is no manual reordering.
-- **Per-account zoom (v4)**: Ctrl+plus / Ctrl+minus / Ctrl+0 step the web view zoom by ±10 % (or reset to 100 %), stored per account so each account keeps its own level across switches and restarts. An opt-in headerbar zoom box (`-` / `<int>%` / `+`, click the percentage to reset) is available via the "Header Bar Zoom Controls" preference. An optional **accessibility zoom** floor (the "Accessibility Zoom" toggle + "Minimum Zoom Level" preference) enforces a minimum zoom across every account. **Note:** raising the minimum-zoom floor above an account's stored zoom silently lifts that account to the floor on the next apply. Pre-multi-account builds fall back to a single shared `zoom-level` setting.
+- **CEF/Chromium 148 backend** with a proprietary-codec build (H.264/AAC), enabling **in-app video attachment playback** that WebKitGTK could not provide.
+- **Multi-account**: Each WhatsApp account runs in its own CEF `RequestContext` (isolated cookies/storage) under `~/.local/share/karere/accounts/sessions/<id>/`. Identity (name + avatar) is auto-discovered from WhatsApp Web's internal `Store` (localStorage + IndexedDB), with a degraded DOM-scrape fallback marked by a persistent badge. Accounts are ordered most-recently-used; the switcher uses a popover on desktop and a bottom sheet on mobile.
+- **Per-account zoom**: Ctrl+plus / Ctrl+minus / Ctrl+0 step the web view zoom by ±10 % (or reset to 100 %), stored per account across switches and restarts. An opt-in header-bar zoom box (`-` / `<int>%` / `+`) is available via the "Header Bar Zoom Controls" preference. An optional **accessibility zoom** floor ("Accessibility Zoom" toggle + "Minimum Zoom Level") enforces a minimum across every account. **Note:** raising the floor above an account's stored zoom silently lifts that account to the floor on the next apply.
+- **System tray** (StatusNotifierItem via `ksni`) with a dynamic unread icon and background-run support; app-id-prefixed tray icons so Flatpak exports them to the host theme.
+- **Desktop notifications** reimplemented on CEF: WhatsApp's `new Notification()` is patched via the Chrome DevTools Protocol in the page realm and routed through the XDG notification portal, with click-to-open-chat. The notification sound is WhatsApp Web's own in-page ding (gated by an on/off toggle); v3's bundled custom-sound picker was a WebKitGTK workaround and is not needed on the CEF backend.
+- **Download manager**: portal-backed destination selection with duplicate-name auto-increment (`(1)`, `(2)`, …) and toast notifications.
+- **Image & text paste bridge** (Ctrl+V and middle-click primary selection) into WhatsApp Web's composer.
+- **Mobile-responsive layout** (verbatim upstream Whatslectron-UT dynamic chat-list detection), **JavaScript fullscreen**, and a host-rendered context-menu popover for the off-screen web view.
+- **Accessibility preferences**: reduce-motion, focus-ring visibility, and caret browsing.
+- **Live spell-check language switching** via `RequestContext::set_preference`, including off-screen-rendering support applied on editable focus.
+- **Debug symbol extension** (`io.github.tobagin.karere.Debug`): a separately installable Flatpak extension carrying detached symbols under `/app/lib/debug`, so `coredumpctl debug karere` resolves crash backtraces without user-side `debuginfod`.
 
 ### Changed
-- **⚠️ v4 is a hard-fork (CEF rewrite); existing accounts must be re-linked.** v3 stored sessions under WebKit's data manager; v4 uses CEF `RequestContext` directories and a new `accounts/accounts.json` record format. There is no migration: on first v4 launch, scan the QR code again for each account.
-
-### Fixed
+- **⚠️ Hard fork — existing accounts must be re-linked.** v3 stored sessions under WebKit's data manager; v4 uses CEF `RequestContext` directories and a new `accounts/accounts.json` record format. There is no automatic migration.
+- Architecture, screenshots, and packaging updated for the CEF stack; the `whatsapp://` URL scheme handler (`MimeType=x-scheme-handler/whatsapp;`) is retained from v3.
 
 ## [3.1.1] - 2026-05-12
 

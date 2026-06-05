@@ -5,7 +5,24 @@ sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
 command: karere
-appstream-compose: false
+appstream-compose: true
+
+# Detached debug symbols live in a separate, optional extension so the base
+# bundle stays small. flatpak-builder auto-populates /app/lib/debug/<binary>.debug
+# (the karere binary is built unstripped — see Cargo.toml [profile.release]).
+# `coredumpctl debug karere` picks them up once the user installs the extension.
+add-extensions:
+  io.github.tobagin.karere.Debug:
+    directory: lib/debug
+    autodelete: true
+    no-autodownload: true
+
+# Drop dev-only artifacts Flathub reviewers flag. /lib/cef/include is NOT under
+# /include, so CEF's headers (consumed by the embedded loader) survive this.
+cleanup:
+  - '*.la'
+  - '*.a'
+  - /include
 
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin
@@ -29,8 +46,11 @@ finish-args:
   # document-portal path (/run/user/.../doc/<id>/…) that can't persist.
   - --filesystem=home
   - --talk-name=org.freedesktop.Notifications
-  - --talk-name=org.freedesktop.portal.Desktop
   - --talk-name=org.kde.StatusNotifierWatcher
+  # NOTE: autostart is handled by the XDG Background portal (ashpd `background`
+  # feature), so no --filesystem=xdg-config/autostart and no
+  # --talk-name=org.freedesktop.portal.Desktop are needed — portal busnames are
+  # granted automatically and the Flathub linter flags both as unnecessary.
   - --env=LD_LIBRARY_PATH=/app/lib/cef
 
 modules:

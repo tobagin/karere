@@ -17,38 +17,37 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 3.1.1 - Stability Fixes
+## 🎉 Version 4.0.0 — Switched to CEF/Chromium 148
 
-**Karere 3.1.1** is a patch release fixing stale notifications on GNOME 50 and the blank-window race on autostart.
+**Karere 4.0** is a ground-up rewrite that swaps the rendering backend from WebKitGTK to the
+**Chromium Embedded Framework (CEF/Chromium 148)** while keeping the same native
+GTK4/libadwaita shell. It is a **hard fork** of Karere v3: there is **no automatic migration**
+— existing accounts must be re-linked by scanning the QR code again on first launch.
 
-### 🆕 What's New in 3.1.1
+### Why CEF?
 
-- **Notifications**: Lingering badges/banners now disappear when you focus the Karere window again (GNOME 50 removed the auto-clear behavior that GNOME 49 had).
-- **Autostart**: WebView load failures now retry with exponential backoff, fixing the blank-window race when Karere starts before the network/portal stack is ready.
+WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limitation shared
+by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
+proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-## 🎉 Version 3.1.0 - Quality of Life
+### 🆕 What's New in 4.0.0
 
-**Karere 3.1.0** ships several user-experience improvements and important launch-stability fixes.
+- **CEF/Chromium 148 backend** with proprietary-codec video attachment playback (H.264/AAC).
+- **Multi-account**: each account runs in an isolated CEF `RequestContext` (separate cookies and
+  storage); accounts are listed most-recently-used. Identity (name + avatar) is auto-discovered
+  from WhatsApp Web's internal `Store`, with a degraded DOM-scrape fallback surfaced by a badge.
+- **Per-account zoom** (`Ctrl +/-/0`) with optional header-bar zoom controls and an accessibility
+  minimum-zoom floor.
+- **Desktop integration on CEF**: native system tray (StatusNotifierItem), desktop notifications,
+  download manager, and image/text paste all reimplemented on the new stack.
+- **Mobile-responsive layout**, JavaScript fullscreen, and an off-screen-rendering context menu.
+- **Accessibility preferences**: reduce-motion, focus-ring visibility, caret browsing.
+- **Live spell-check language switching** and a separately installable **Debug symbol extension**
+  (`io.github.tobagin.karere.Debug`) for symbolicated crash reports via `coredumpctl debug karere`.
 
-> **Note:** If upgrading from v2.x, re-linking your WhatsApp account(s) is required. A dialog will explain this on first launch.
-
-### 🆕 What's New in 3.1.0
-
-- **Spell-check**: Pin favorite languages to the top of the dropdown with a star toggle.
-- **Spell-check**: Dropdown shows natural language names ("English (UK)", "Portuguese (Brazil)") instead of locale codes.
-- **Multi-account**: Account switcher opens as a popover on desktop windows (bottom sheet preserved on mobile).
-- **Launch stability**: Fixed the GNOME 50 / glibc 2.42+ launch crash affecting users on Arch, Fedora 43, CachyOS, Bazzite, postmarketOS.
-- **Launch stability**: Fixed the locale-dependent crash that previously required setting `LC_ALL=en_GB.UTF-8` manually.
-- **Mobile layout**: Tracking the latest WhatsApp Web DOM changes again.
-- **Downloads**: Duplicate filenames no longer overwrite — auto-incremented `(1)`, `(2)`, ... like every other file manager.
-- **Under the hood**: Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, plus updated Rust dependencies.
-
-### What was new in 3.0.0
-
-- **Voice & Video Calls**: WebRTC is now fully enabled — make and receive calls directly in Karere.
-- **Better Downloads**: Files now save with their original WhatsApp filename; downloading the same file twice auto-increments (e.g. `photo (1).jpg`).
-- **Window Behaviour**: Window now properly raises from minimized state when activated from the app launcher or tray.
-- **Notification Volume**: Notification sounds now respect GNOME's volume controls.
+> **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
+> `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
+> QR code for each account.
 
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 
@@ -61,7 +60,7 @@ For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md)
 - **Efficient**: Optimized to be lightweight and fast.
 ### User Experience
 - **System Tray Icon**: Dynamic icon showing unread status, with background run support
-- **Custom Notification Sounds**: Select from 'WhatsApp', 'Pop', 'Alert', 'Soft', or 'Start' sounds
+- **Notification Sounds**: Plays WhatsApp Web's own notification sound for new messages, with an on/off toggle
 - **Image & Text Paste**: Seamless Ctrl+V support for both mixed content types
 - **Download Manager**: Custom directory selection (e.g., `~/Downloads`) with toast notifications
 
@@ -78,7 +77,7 @@ For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md)
 - **Auto-Correct Toggle**: Enable or disable automatic text replacement
 
 ### Privacy & Customization
-- **Granular Notification Controls**: Master toggle, plus individual settings for sound, previews, and downloads
+- **Granular Notification Controls**: Master toggle, plus individual settings for sound on/off, previews, and downloads
 - **Privacy Settings**: Control message previews and system tray behavior
 - **Theme Selection**: Light, Dark, or System preference
 - **Permission Management**: Persistent controls for Microphone and Notifications
@@ -158,7 +157,7 @@ Karere is built using modern GNOME technologies:
 - **Rust**: Primary programming language for memory safety and performance
 - **GTK4**: Modern toolkit with excellent Wayland support
 - **LibAdwaita**: Native GNOME design language and components
-- **WebKitGTK 6.0**: Efficient web rendering engine
+- **CEF / Chromium 148**: Chromium Embedded Framework renders WhatsApp Web (off-screen, composited into a GTK `GLArea`)
 - **Blueprint**: Declarative UI definition language
 - **Flatpak**: Secure application distribution
 
@@ -174,34 +173,9 @@ Karere is designed with privacy in mind:
 ## Known Limitations
 
 ### Video Attachments
-Due to compatibility limitations between WebKitGTK and WhatsApp Web, **video attachments are currently not supported**. This is a platform-level limitation that affects all WebKitGTK-based browsers (including GNOME Web/Epiphany).
-
-**What works:**
-- ✅ Text messages
-- ✅ Image attachments
-- ✅ Document attachments
-- ✅ Audio messages
-- ✅ Downloading videos sent by others
-
-This limitation is being tracked and will be resolved if/when WebKitGTK adds better support for WhatsApp Web's video processing APIs.
-
-### MPRIS and WebKit Issue
-There is a known issue with MPRIS and WebKit that causes a bug on Karere! See [WebKit Bug 282000](https://bugs.webkit.org/show_bug.cgi?id=282000).
-
-As a workaround you can disable MPRIS for the application of your interest.
-To do this, create the file `/etc/dbus-1/session.d/block-karere-mpris.conf` with this content:
-
-```xml
-<busconfig>
-  <policy context="mandatory">
-    <deny own_prefix="org.mpris.MediaPlayer2.io.github.tobagin.karere"/>
-  </policy>
-</busconfig>
-```
-
-**Note:** This will block all instances of Karere from registering on MPRIS, because it uses the `own_prefix` prefix which also covers Sandboxed instances. It requires a system reboot or session restart to work.
-
-![MPRIS Workaround](data/screenshots/mpris-bug.png)
+**Video attachments now play in-app.** The v4 CEF/Chromium 148 backend ships with proprietary
+codecs (H.264/AAC), removing the WebKitGTK platform limitation that blocked video playback in
+v3 and earlier.
 
 ## Contributing
 
@@ -227,7 +201,7 @@ Karere is licensed under the GNU General Public License v3.0 or later. See [LICE
 ## Acknowledgments
 
 - **GNOME Project**: For the excellent GTK4 and LibAdwaita frameworks
-- **WebKitGTK Team**: For the efficient web rendering engine
+- **Chromium / CEF Project**: For the Chromium Embedded Framework rendering engine
 - **Rust Community**: For the amazing language and tools
 - **WhatsApp Inc.**: For WhatsApp Web
 

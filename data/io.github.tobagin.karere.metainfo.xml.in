@@ -35,6 +35,12 @@
       <li>Smooth performance with hardware acceleration</li>
       <li>Proper clipboard integration for text and images</li>
     </ul>
+    <p>
+      Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend with the
+      Chromium Embedded Framework, bringing full video attachment playback (H.264/AAC),
+      multi-account support with isolated sessions, per-account zoom, and a faster, more
+      compatible rendering engine while keeping the same native GTK4/libadwaita shell.
+    </p>
   </description>
 
   <screenshots>
@@ -95,6 +101,22 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.0.0" date="2026-06-05">
+      <description>
+        <p>Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. Existing accounts must be re-linked — there is no migration from v3.</p>
+        <p>Major changes:</p>
+        <ul>
+          <li>Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with proprietary-codec builds for H.264/AAC video attachment playback</li>
+          <li>Multi-account support: each account runs in an isolated CEF RequestContext with its own cookies and storage; accounts are ordered most-recently-used</li>
+          <li>Account identity (name + avatar) auto-discovered from WhatsApp Web's internal Store, with a degraded DOM-scrape fallback surfaced by a badge</li>
+          <li>Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an accessibility minimum-zoom floor</li>
+          <li>Native system tray (StatusNotifierItem), desktop notifications, download manager, and image/text paste reimplemented on the CEF stack</li>
+          <li>Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu popover for the off-screen-rendered web view</li>
+          <li>Accessibility preferences: reduce-motion, focus-ring visibility, and caret browsing</li>
+          <li>Live spell-check language switching and a separately installable Debug symbol extension for symbolicated crash reports</li>
+        </ul>
+      </description>
+    </release>
     <release version="3.1.1" date="2026-05-12">
       <description>
         <ul>
