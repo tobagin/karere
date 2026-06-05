@@ -2115,7 +2115,9 @@ void main() {
                     p,
                     log_len,
                     std::ptr::null_mut(),
-                    buf.as_mut_ptr() as *mut i8,
+                    // c_char is i8 on x86_64 but u8 on aarch64 — cast per-arch
+                    // instead of hardcoding i8 (broke the aarch64 Flatpak build).
+                    buf.as_mut_ptr() as *mut std::os::raw::c_char,
                 );
                 log::error!("program link: {}", String::from_utf8_lossy(&buf));
             }
@@ -2137,7 +2139,12 @@ void main() {
                 let mut log_len = 0;
                 gl::GetShaderiv(s, gl::INFO_LOG_LENGTH, &mut log_len);
                 let mut buf = vec![0u8; log_len as usize];
-                gl::GetShaderInfoLog(s, log_len, std::ptr::null_mut(), buf.as_mut_ptr() as *mut i8);
+                gl::GetShaderInfoLog(
+                    s,
+                    log_len,
+                    std::ptr::null_mut(),
+                    buf.as_mut_ptr() as *mut std::os::raw::c_char,
+                );
                 log::error!("shader compile: {}", String::from_utf8_lossy(&buf));
             }
             s
