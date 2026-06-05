@@ -41,10 +41,11 @@ finish-args:
   - --socket=fallback-x11
   - --socket=pulseaudio
   - --device=all
-  # home (not just xdg-download) so the user can pick any download folder under
-  # ~ and the file chooser returns its real path instead of a transient
-  # document-portal path (/run/user/.../doc/<id>/…) that can't persist.
-  - --filesystem=home
+  # Beta channel uses xdg-download to pass the Flathub linter without a
+  # home-filesystem exception (the stable manifest also ships xdg-download).
+  # Downloads land in ~/Downloads; arbitrary download folders outside it are
+  # not available on the beta build.
+  - --filesystem=xdg-download
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
   # NOTE: autostart is handled by the XDG Background portal (ashpd `background`
