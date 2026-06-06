@@ -79,7 +79,7 @@ mod imp {
     use libadwaita as adw;
     use libadwaita::prelude::*;
 
-    use crate::application::APP_ID;
+    use crate::application::{APP_ID, PROFILE};
     use crate::handlers::{CrashDialog, DownloadCompleted, DownloadFailed};
     use crate::web_view::KarereWebView;
 
@@ -154,6 +154,11 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             let window = self.obj();
+
+            // Development builds get the striped Adwaita "devel" headerbar.
+            if PROFILE == "development" {
+                window.add_css_class("devel");
+            }
 
             let settings = gio::Settings::new(APP_ID);
             settings
@@ -1300,7 +1305,10 @@ mod imp {
             let store = spellcheck_ui::build_store(&favorites);
             let sorter = spellcheck_ui::build_sorter();
             let sort_model = gtk::SortListModel::new(Some(store), Some(sorter.clone()));
-            dropdown.set_model(Some(&sort_model));
+
+            // Set both factories BEFORE assigning the model — a DropDown with a
+            // model but no factory yet emits "factory or expression must be set"
+            // once per item.
             dropdown.set_factory(Some(&spellcheck_ui::build_button_factory()));
 
             // Star toggle → persist favorites and re-sort.
@@ -1326,6 +1334,7 @@ mod imp {
                 }
             ));
             dropdown.set_list_factory(Some(&spellcheck_ui::build_list_factory(on_toggle)));
+            dropdown.set_model(Some(&sort_model));
 
             // Resolve the effective startup language: explicit list first, else a
             // single auto-detected code. The command-line switch alone does NOT

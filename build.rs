@@ -22,6 +22,17 @@ fn main() {
         println!("cargo:rustc-link-arg=-Wl,-rpath,{}", p.display());
     }
 
+    // App-id + profile come from meson (KARERE_APP_ID/KARERE_PROFILE); fall back
+    // to the stable id for a bare `cargo build`. Re-export as compile-time env so
+    // application.rs can read them via env!().
+    let app_id =
+        env::var("KARERE_APP_ID").unwrap_or_else(|_| "io.github.tobagin.karere".to_string());
+    let profile = env::var("KARERE_PROFILE").unwrap_or_else(|_| "default".to_string());
+    println!("cargo:rustc-env=KARERE_APP_ID={app_id}");
+    println!("cargo:rustc-env=KARERE_PROFILE={profile}");
+    println!("cargo:rerun-if-env-changed=KARERE_APP_ID");
+    println!("cargo:rerun-if-env-changed=KARERE_PROFILE");
+
     println!("cargo:rerun-if-env-changed=CEF_PATH");
     println!("cargo:rerun-if-changed=data/karere.gresource.xml");
 }

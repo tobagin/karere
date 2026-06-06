@@ -140,7 +140,11 @@ wrap_client! {
                 }
                 Ok(RendererMessage::AwaitingPairing) => {
                     if let Some(id) = account_id.as_deref() {
-                        crate::accounts::set_awaiting_pairing(id, true);
+                        // On the logout transition (paired → QR), drop the cached
+                        // identity so the switcher stops showing a stale avatar.
+                        if crate::accounts::set_awaiting_pairing(id, true) {
+                            crate::accounts::manager().clear_identity(id);
+                        }
                     }
                     1
                 }

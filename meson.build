@@ -37,6 +37,11 @@ else
   cargo_env = [ 'CARGO_HOME=' + meson.project_build_root() / 'cargo-home' ]
 endif
 
+# Thread the profile/app-id into the Rust build so the binary registers the
+# matching app-id (.Devel) + GSettings schema and shows the devel headerbar.
+cargo_env += [ 'KARERE_APP_ID=' + base_id ]
+cargo_env += [ 'KARERE_PROFILE=' + profile ]
+
 custom_target('cargo-build',
   build_by_default: true,
   build_always_stale: true,

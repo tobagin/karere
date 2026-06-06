@@ -6,7 +6,11 @@ use libadwaita as adw;
 
 use crate::window::KarereWindow;
 
-pub const APP_ID: &str = "io.github.tobagin.karere";
+// App-id varies by build profile (io.github.tobagin.karere[.Devel]); set by
+// build.rs from meson's KARERE_APP_ID. RESOURCE_BASE_PATH is the bundled
+// gresource prefix and stays fixed regardless of profile.
+pub const APP_ID: &str = env!("KARERE_APP_ID");
+pub const PROFILE: &str = env!("KARERE_PROFILE");
 pub const RESOURCE_BASE_PATH: &str = "/io/github/tobagin/karere";
 
 glib::wrapper! {

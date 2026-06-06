@@ -366,6 +366,22 @@ impl AccountManager {
         let _ = self.save();
         self.emit_changed();
     }
+
+    /// Drop discovered identity (wid/pushname/avatar) for `id` — called on
+    /// logout so the switcher stops showing a stale name/avatar. `user_label`
+    /// (user-chosen) is left intact.
+    pub fn clear_identity(&self, id: &str) {
+        {
+            let mut list = self.imp().accounts.borrow_mut();
+            if let Some(a) = list.iter_mut().find(|a| a.id == id) {
+                a.wid = None;
+                a.pushname = None;
+                a.avatar_png = None;
+            }
+        }
+        let _ = self.save();
+        self.emit_changed();
+    }
 }
 
 thread_local! {
@@ -437,13 +453,14 @@ fn mutate_runtime(account_id: &str, f: impl FnOnce(&mut AccountRuntime) -> bool)
     changed
 }
 
-/// Mark the account as awaiting pairing.
-pub fn set_awaiting_pairing(account_id: &str, awaiting: bool) {
+/// Mark the account as awaiting pairing. Returns `true` only on a real
+/// transition, so callers can do one-time work (e.g. clear stale identity).
+pub fn set_awaiting_pairing(account_id: &str, awaiting: bool) -> bool {
     mutate_runtime(account_id, |r| {
         let changed = r.awaiting_pairing != awaiting;
         r.awaiting_pairing = awaiting;
         changed
-    });
+    })
 }
 
 /// Mark the account degraded (Store hook failed). Returns `true` only on the first transition, so callers can do one-time work.

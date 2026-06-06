@@ -136,6 +136,10 @@
   function tick() {
     var w = readWid();
     if (!w) {
+      // Logged out: reset de-dup state so a later re-login re-emits identity
+      // and avatar (otherwise the same wid/name would be suppressed).
+      lastIdentity = null;
+      lastEurl = null;
       emitAwaiting();
       return;
     }

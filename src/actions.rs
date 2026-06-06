@@ -258,7 +258,7 @@ fn register_about(app: &KarereApplication) {
                 .application_name(gettext("Karere"))
                 .application_icon(APP_ID)
                 .developer_name("The Karere Team")
-                .version("4.0.0-Alpha")
+                .version(env!("CARGO_PKG_VERSION"))
                 .comments(gettext(
                     "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities",
                 ))
