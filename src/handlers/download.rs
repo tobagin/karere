@@ -183,12 +183,35 @@ fn ensure_writable_dir(dir: &Path) -> bool {
     }
 }
 
-/// Strip path separators and NUL from a renderer-supplied filename. Unicode is
-/// preserved.
+/// Max byte length for a sanitized filename before truncation, kept well under
+/// the common 255-byte filesystem limit to leave room for collision suffixes.
+const MAX_NAME_BYTES: usize = 200;
+
+/// Strip path separators and NUL from a renderer-supplied filename, drop any
+/// leading dots so the result can't be a hidden dotfile, and cap the length to
+/// `MAX_NAME_BYTES` on a UTF-8 char boundary. Unicode is otherwise preserved.
 fn sanitize(name: &str) -> String {
-    name.chars()
+    let stripped: String = name
+        .chars()
         .filter(|c| !matches!(c, '/' | '\\' | '\0'))
-        .collect()
+        .collect();
+    // Trim leading dots so a suggested ".bashrc"-style name can't write a hidden
+    // dotfile into (or clobber one in) the download dir. A name that is only dots
+    // becomes empty here and falls back to "download" in resolve_target_path.
+    let stripped = stripped.trim_start_matches('.');
+    // Truncate to a sane byte budget without splitting a UTF-8 char.
+    if stripped.len() <= MAX_NAME_BYTES {
+        return stripped.to_string();
+    }
+    let mut end = 0;
+    for (idx, ch) in stripped.char_indices() {
+        let next = idx + ch.len_utf8();
+        if next > MAX_NAME_BYTES {
+            break;
+        }
+        end = next;
+    }
+    stripped[..end].to_string()
 }
 
 /// Walk `name.ext` → `name (1).ext` → `name (2).ext` … until a free path is
@@ -277,13 +300,56 @@ mod tests {
 
     #[test]
     fn sanitize_strips_separators() {
-        assert_eq!(sanitize("../etc/passwd"), "..etcpasswd");
+        // Separators/NUL are removed and the residual leading dots are trimmed.
+        assert_eq!(sanitize("../etc/passwd"), "etcpasswd");
         assert_eq!(sanitize("a\\b\0c"), "abc");
     }
 
     #[test]
     fn sanitize_preserves_unicode() {
         assert_eq!(sanitize("相片.jpg"), "相片.jpg");
+    }
+
+    #[test]
+    fn sanitize_strips_leading_dot() {
+        let out = sanitize(".bashrc");
+        assert!(!out.starts_with('.'));
+        assert_eq!(out, "bashrc");
+    }
+
+    #[test]
+    fn sanitize_strips_multiple_leading_dots() {
+        assert_eq!(sanitize("...config"), "config");
+        // Path separators are removed first, so the residual leading dots go too.
+        assert_eq!(sanitize("../.ssh"), "ssh");
+    }
+
+    #[test]
+    fn sanitize_only_dots_becomes_empty() {
+        // resolve_target_path turns this empty result into "download".
+        assert_eq!(sanitize("...."), "");
+        assert_eq!(sanitize("."), "");
+    }
+
+    #[test]
+    fn sanitize_truncates_long_name() {
+        let long = "a".repeat(500);
+        let out = sanitize(&long);
+        assert!(out.len() <= MAX_NAME_BYTES);
+        assert_eq!(out.len(), MAX_NAME_BYTES);
+        assert!(out.is_char_boundary(out.len()));
+    }
+
+    #[test]
+    fn sanitize_truncates_on_char_boundary() {
+        // Each '相' is 3 bytes; 200 of them = 600 bytes, well over the cap.
+        let long = "相".repeat(200);
+        let out = sanitize(&long);
+        assert!(out.len() <= MAX_NAME_BYTES);
+        // 66 chars * 3 bytes = 198 bytes; a 67th would overflow the 200 budget.
+        assert_eq!(out.chars().count(), 66);
+        // Must remain valid UTF-8 (i.e. no split multi-byte char).
+        assert_eq!(out, "相".repeat(66));
     }
 
     #[test]

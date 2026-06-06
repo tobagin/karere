@@ -456,6 +456,9 @@ mod imp {
         pub browsers: Mutex<HashMap<String, Browser>>,
         /// Per-account life-span handlers, kept alive alongside their browsers.
         pub life_spans: Mutex<HashMap<String, ShellLifeSpanHandler>>,
+        /// Per-account in-process CDP notification-bridge registrations. Held
+        /// alive for the browser's lifetime; dropping one detaches the observer.
+        pub cdp_registrations: RefCell<HashMap<String, cef::Registration>>,
         /// RequestContexts kept alive until the browser is created against them
         /// (in their init callback). Keyed by account id.
         pub pending_contexts: Mutex<HashMap<String, RequestContext>>,
@@ -873,11 +876,13 @@ mod imp {
             }
 
             let mgr = crate::accounts::manager();
-            let mut accounts = mgr.get_accounts_sorted();
-            if accounts.is_empty() {
+            if mgr.get_accounts_sorted().is_empty() {
                 mgr.add();
-                accounts = mgr.get_accounts_sorted();
             }
+            // Default account is created label-less; backfill it (and migrate
+            // older installs) to "Account 1" so it matches added accounts.
+            mgr.backfill_labels();
+            let accounts = mgr.get_accounts_sorted();
             let Some(first) = accounts.first().cloned() else {
                 log::error!("spawn_all_accounts: no account after add()");
                 return;
@@ -915,7 +920,15 @@ mod imp {
             // Per-account: build the isolated context now (held in `pending_contexts`),
             // create the browser once it signals initialized.
             let cache = crate::accounts::session_cache_path(&id);
-            let _ = std::fs::create_dir_all(&cache);
+            // 0700: per-account profile holds auth cookies/session — keep it
+            // unreadable by other local users (see cef_runtime root_cache).
+            {
+                use std::os::unix::fs::DirBuilderExt;
+                let _ = std::fs::DirBuilder::new()
+                    .mode(0o700)
+                    .recursive(true)
+                    .create(&cache);
+            }
             let rc_settings = RequestContextSettings {
                 cache_path: CefString::from(cache.to_string_lossy().as_ref()),
                 persist_session_cookies: 1,
@@ -997,7 +1010,12 @@ mod imp {
             if let Some(id) = account_id.clone() {
                 crate::accounts::register_browser(b.identifier(), &id);
                 self.browsers.lock().insert(id.clone(), b.clone());
-                self.life_spans.lock().insert(id, life.clone());
+                self.life_spans.lock().insert(id.clone(), life.clone());
+                // In-process notification bridge (no CDP port). Attributes
+                // notifications to this account via the trusted browser id.
+                if let Some(reg) = crate::cdp::attach(&b, &id) {
+                    self.cdp_registrations.borrow_mut().insert(id, reg);
+                }
             }
 
             #[cfg(debug_assertions)]
@@ -1029,6 +1047,19 @@ mod imp {
             browser: Browser,
             life: ShellLifeSpanHandler,
         ) {
+            // Pause the OUTGOING foreground. Required so a later switch back wakes
+            // it with a real visibility change: `was_hidden(0)` is a no-op on an
+            // already-visible browser and emits no paint, which would leave a
+            // stale frame on screen (the add-account path reaches here without
+            // having paused the previous account — e.g. deleting the foreground
+            // account then left its QR frame stuck).
+            if let Some(prev) = self.browser.lock().as_ref()
+                && prev.identifier() != browser.identifier()
+                && let Some(host) = prev.host()
+            {
+                host.was_hidden(1);
+            }
+
             // Unregister the previous foreground from the context-menu registry.
             let prev_id = self.browser_id.swap(0, Ordering::Relaxed);
             if prev_id != 0 {
@@ -1049,6 +1080,9 @@ mod imp {
                 host.was_hidden(0);
                 host.notify_screen_info_changed();
                 host.was_resized();
+                // Force a fresh paint even if CEF thinks visibility is unchanged,
+                // so the new foreground immediately overwrites any stale texture.
+                host.invalidate(cef::PaintElementType::VIEW);
             }
             self.obj().queue_render();
             self.apply_audio_mute();
@@ -1082,6 +1116,8 @@ mod imp {
         pub fn close_account_browser(&self, account_id: &str) {
             let was_foreground = self.foreground.lock().as_deref() == Some(account_id);
             self.life_spans.lock().remove(account_id);
+            // Detach the notification bridge (drop = remove observer).
+            self.cdp_registrations.borrow_mut().remove(account_id);
             if let Some(browser) = self.browsers.lock().remove(account_id) {
                 crate::accounts::unregister_browser(browser.identifier());
                 if let Some(host) = browser.host() {

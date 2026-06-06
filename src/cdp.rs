@@ -1,14 +1,27 @@
-//! Chrome DevTools Protocol bridge for WhatsApp notifications. CEF exposes no
-//! notification API, so a background thread attaches over `--remote-debugging-port`,
-//! patches `Notification`/`showNotification`, and forwards payloads to branded
-//! `gio::Notification`s. WebSocket client is hand-rolled to avoid a new dependency.
+//! In-process notification bridge. CEF exposes no notification API, so we drive
+//! the Chrome DevTools Protocol over the browser host's *in-process* message
+//! channel (`AddDevToolsMessageObserver` / `SendDevToolsMessage`) — NOT a network
+//! `--remote-debugging-port`. One observer per account browser patches
+//! `Notification`/`showNotification` in the page (and any service-worker)
+//! realm and forwards payloads to branded `gio::Notification`s.
+//!
+//! This needs no TCP port, no `remote-allow-origins`, and no Private/Local
+//! Network Access exception, so nothing outside the process (or the Flatpak
+//! sandbox) can reach the session through it. The F12 inspector still uses a
+//! debug-only port (see `crate::devtools` / `cef_runtime::debug_enabled`).
 
-use std::io::{Read, Write};
-use std::net::{SocketAddr, TcpStream};
-use std::time::Duration;
+use std::cell::RefCell;
+use std::collections::HashSet;
+use std::rc::Rc;
 
-use base64::Engine;
-use base64::engine::general_purpose::STANDARD as B64;
+use cef::{
+    Browser, BrowserHost, DevToolsMessageObserver, ImplBrowser, ImplBrowserHost,
+    ImplDevToolsMessageObserver, Registration, WrapDevToolsMessageObserver,
+    wrap_dev_tools_message_observer,
+};
+// Brings the cef refcount trait's `add_ref`/`release` into scope for the macro,
+// without shadowing `std::rc::Rc` used for the observer's shared state.
+use cef::rc::Rc as _;
 
 // Transport is console.log (not Runtime.addBinding): bindingCalled only reaches the registering session, but consoleAPICalled reaches any session with Runtime.enable.
 const NOTIF_PREFIX: &str = "__KARERE_NOTIF__:";
@@ -28,8 +41,13 @@ const SW_PATCH: &str = r#"
     function emit() {
       try { console.log(PREFIX + JSON.stringify(payload)); } catch (e) {}
     }
+    function iconAllowed(u) {
+      if (/^data:/i.test(u)) return true;
+      try { return /(^|\.)whatsapp\.(net|com)$/i.test(new URL(u, self.location.href).hostname); }
+      catch (e) { return false; }
+    }
     var iconUrl = opts.icon;
-    if (iconUrl) {
+    if (iconUrl && iconAllowed(iconUrl)) {
       fetch(iconUrl)
         .then(function (r) { return r.ok ? r.blob() : null; })
         .then(function (b) {
@@ -109,9 +127,15 @@ const PAGE_PATCH: &str = r#"
     Stub.prototype._fire = function (t) { var e; try { e = new Event(t); } catch (x) { e = { type: t, target: this }; } this.dispatchEvent(e); };
     Stub.prototype.close = function () { liveByTag.delete(this.tag); this._fire("close"); };
 
+    function iconAllowed(url) {
+      if (/^blob:/i.test(url)) return true;
+      try { return /(^|\.)whatsapp\.(net|com)$/i.test(new URL(url, location.href).hostname); }
+      catch (e) { return false; }
+    }
     function resolveIcon(url) {
       if (!url) return Promise.resolve("");
       if (/^data:/i.test(url)) return Promise.resolve(url);
+      if (!iconAllowed(url)) return Promise.resolve("");
       return fetch(url).then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) {
         if (!b) return "";
         return new Promise(function (res) {
@@ -160,189 +184,176 @@ const PAGE_PATCH: &str = r#"
 })();
 "#;
 
-/// Start the CDP bridge on a detached background thread; call once after browser init.
-pub fn start(port: u16) {
-    std::thread::Builder::new()
-        .name("karere-cdp".into())
-        .spawn(move || supervise(port))
-        .expect("spawn cdp thread");
+/// Per-browser CDP state. Lives on the CEF UI thread (single-threaded), so a
+/// plain `RefCell` suffices — no locking.
+struct State {
+    /// Trusted account id for this browser (notifications are attributed to it).
+    account_id: String,
+    next_id: u32,
+    /// Flattened child sessions known to be service workers (patched with SW_PATCH).
+    sw_sessions: HashSet<String>,
 }
 
-// Browser-level + auto-attach (not poll-the-SW-target): an idle SW is stopped and a push wakes it to call showNotification immediately, so polling loses the race; auto-attach hooks every worker the instant it starts.
-fn supervise(port: u16) {
-    loop {
-        match browser_ws(port) {
-            Some(url) => {
-                if let Err(e) = run_session(&url) {
-                    log::debug!("cdp: session ended: {e}");
-                }
-            }
-            None => log::debug!("cdp: browser endpoint not ready"),
+impl State {
+    fn new(account_id: String) -> Self {
+        Self {
+            account_id,
+            next_id: 100,
+            sw_sessions: HashSet::new(),
         }
-        std::thread::sleep(Duration::from_secs(1));
+    }
+
+    fn bump(&mut self) -> u32 {
+        let id = self.next_id;
+        self.next_id += 1;
+        id
     }
 }
 
-/// Browser-level session: arm auto-attach + target discovery, then pump events.
-fn run_session(ws_url: &str) -> Result<(), String> {
-    let mut ws = WsClient::connect(ws_url)?;
-    let mut next_id: u32 = 100;
+wrap_dev_tools_message_observer! {
+    struct NotifObserver {
+        state: Rc<RefCell<State>>,
+    }
 
-    // Do NOT pause the SW at startup: ServiceWorkerRegistration isn't populated yet, so the patch would find nothing to wrap. Patch on each executionContextCreated instead.
-    ws.send_text(&json_msg(
-        1,
-        "Target.setAutoAttach",
-        "{\"autoAttach\":true,\"waitForDebuggerOnStart\":false,\"flatten\":true}",
-    ))?;
-    log::info!("cdp: auto-attach armed for service workers");
+    impl DevToolsMessageObserver {
+        // The agent attaches lazily on the first message. Arm here too so a
+        // re-attach after navigation/crash re-applies the patches.
+        fn on_dev_tools_agent_attached(&self, browser: Option<&mut Browser>) {
+            if let Some(b) = browser
+                && let Some(host) = b.host()
+            {
+                arm(&host, &self.state);
+            }
+        }
 
-    // Auto-attach covers workers but not page targets, so discover/attach pages explicitly (the page realm is where new Notification() fires).
-    ws.send_text(&json_msg(2, "Target.setDiscoverTargets", "{\"discover\":true}"))?;
-    ws.send_text(&json_msg(3, "Target.getTargets", "{}"))?;
-    log::info!("cdp: target discovery armed for page realms");
-
-    let mut patched: std::collections::HashMap<String, Patch> =
-        std::collections::HashMap::new();
-    let mut attached_pages: std::collections::HashSet<String> =
-        std::collections::HashSet::new();
-
-    loop {
-        let msg = ws.recv_text()?;
-        let v: serde_json::Value = match serde_json::from_str(&msg) {
-            Ok(v) => v,
-            Err(_) => continue,
-        };
-        let method = v.get("method").and_then(|m| m.as_str()).unwrap_or("");
-
-        match method {
-            // Re-snapshot on any churn: targetCreated isn't reliably typed "page" and pages created after arm aren't auto-attached.
-            "Target.targetCreated" => {
-                ws.send_text(&json_msg(3, "Target.getTargets", "{}"))?;
+        // Raw CDP frame (retains the flattened-session `sessionId`); mirrors the
+        // former WebSocket recv loop.
+        fn on_dev_tools_message(
+            &self,
+            browser: Option<&mut Browser>,
+            message: Option<&[u8]>,
+        ) -> ::std::os::raw::c_int {
+            let (Some(b), Some(bytes)) = (browser, message) else {
+                return 0;
+            };
+            let Some(host) = b.host() else { return 0 };
+            if let Ok(v) = serde_json::from_slice::<serde_json::Value>(bytes) {
+                handle(&self.state, &host, &v);
             }
-            _ if v.get("id").and_then(|i| i.as_u64()) == Some(3) => {
-                if let Some(infos) = v
-                    .get("result")
-                    .and_then(|r| r.get("targetInfos"))
-                    .and_then(|t| t.as_array())
-                {
-                    for t in infos {
-                        let ttype = t.get("type").and_then(|x| x.as_str()).unwrap_or("");
-                        let tid = t.get("targetId").and_then(|x| x.as_str()).unwrap_or("");
-                        if ttype == "page" && !tid.is_empty() && !attached_pages.contains(tid) {
-                            attached_pages.insert(tid.to_owned());
-                            let params =
-                                format!("{{\"targetId\":{},\"flatten\":true}}", json_string(tid));
-                            log::info!("cdp: attaching page target {}", &tid[..tid.len().min(8)]);
-                            ws.send_text(&json_msg(next_id, "Target.attachToTarget", &params))?;
-                            next_id += 1;
-                        }
-                    }
-                }
-            }
-            "Target.attachedToTarget" => {
-                let params = v.get("params");
-                let ttype = params
-                    .and_then(|p| p.get("targetInfo"))
-                    .and_then(|t| t.get("type"))
-                    .and_then(|t| t.as_str())
-                    .unwrap_or("");
-                let session = params
-                    .and_then(|p| p.get("sessionId"))
-                    .and_then(|s| s.as_str())
-                    .unwrap_or("")
-                    .to_owned();
-                if session.is_empty() {
-                    continue;
-                }
-                let which = match ttype {
-                    "service_worker" => Some(Patch::Sw),
-                    "page" => Some(Patch::Page),
-                    _ => None,
-                };
-                if let Some(which) = which {
-                    log::info!("cdp: {ttype} attached; arming {which:?} patch");
-                    // Record before enabling Runtime: Runtime.enable emits executionContextCreated synchronously, and that handler only patches known sessions.
-                    patched.insert(session.clone(), which);
-                    setup_session(&mut ws, &session, which, &mut next_id)?;
-                }
-            }
-            "Runtime.executionContextCreated" => {
-                let session = v.get("sessionId").and_then(|s| s.as_str()).unwrap_or("");
-                if let Some(&which) = patched.get(session) {
-                    log::info!("cdp: executionContextCreated session={session} patch={which:?}");
-                    evaluate_patch(&mut ws, session, which, &mut next_id)?;
-                }
-            }
-            "Runtime.consoleAPICalled" => {
-                if let Some(payload) = console_payload(&v) {
-                    dispatch(payload);
-                }
-            }
-            _ => {
-                if v.get("id").is_some() {
-                    if let Some(val) = v
-                        .get("result")
-                        .and_then(|r| r.get("result"))
-                        .and_then(|r| r.get("value"))
-                    {
-                        log::info!("cdp: eval result -> {val}");
-                    } else if let Some(exc) =
-                        v.get("result").and_then(|r| r.get("exceptionDetails"))
-                    {
-                        log::warn!("cdp: eval exception -> {exc}");
-                    } else if let Some(err) = v.get("error") {
-                        log::warn!("cdp: cmd error -> {err}");
-                    }
-                }
-            }
+            0
         }
     }
 }
 
-#[derive(Clone, Copy, Debug)]
-enum Patch {
-    Sw,
-    Page,
+/// Attach the in-process notification bridge to `browser` for `account_id`.
+/// The returned [`Registration`] must be held alive for as long as the bridge
+/// should run; dropping it detaches the observer.
+pub fn attach(browser: &Browser, account_id: &str) -> Option<Registration> {
+    let host = browser.host()?;
+    let state = Rc::new(RefCell::new(State::new(account_id.to_owned())));
+    let mut observer = NotifObserver::new(state.clone());
+    let reg = host.add_dev_tools_message_observer(Some(&mut observer));
+    // Sending the first message forces the agent to attach; arm immediately so
+    // an already-loaded page is patched without waiting for a navigation.
+    arm(&host, &state);
+    log::info!("cdp: in-process bridge attached for account {account_id}");
+    reg
 }
 
-impl Patch {
-    fn js(self) -> &'static str {
-        match self {
-            Patch::Sw => SW_PATCH,
-            Patch::Page => PAGE_PATCH,
-        }
-    }
-}
-
-// Enable Runtime, then apply the patch once now (covering an already-running context that emits no later event).
-fn setup_session(
-    ws: &mut WsClient,
-    session: &str,
-    which: Patch,
-    next_id: &mut u32,
-) -> Result<(), String> {
-    ws.send_text(&json_msg_sess(*next_id, "Runtime.enable", "{}", session))?;
-    *next_id += 1;
-    evaluate_patch(ws, session, which, next_id)
-}
-
-// Idempotent: each patch guards against double-wrapping via its own marker.
-fn evaluate_patch(
-    ws: &mut WsClient,
-    session: &str,
-    which: Patch,
-    next_id: &mut u32,
-) -> Result<(), String> {
-    let patch_params = format!(
-        "{{\"expression\":{},\"returnByValue\":true}}",
-        json_string(which.js())
+/// Enable Runtime + patch the page realm, and arm auto-attach so service-worker
+/// child sessions get patched as they appear. Idempotent (patches self-guard).
+///
+/// `send_dev_tools_message` delivers responses/events SYNCHRONOUSLY and can
+/// re-enter the observer (e.g. agent-attached, executionContextCreated), so the
+/// state borrow must be released before each send — never held across one.
+fn arm(host: &BrowserHost, state: &Rc<RefCell<State>>) {
+    let id = state.borrow_mut().bump();
+    send(host, &json_msg(id, "Runtime.enable", "{}"));
+    let id = state.borrow_mut().bump();
+    send(host, &json_msg(id, "Runtime.evaluate", &eval_params(PAGE_PATCH)));
+    let id = state.borrow_mut().bump();
+    send(
+        host,
+        &json_msg(
+            id,
+            "Target.setAutoAttach",
+            "{\"autoAttach\":true,\"waitForDebuggerOnStart\":false,\"flatten\":true}",
+        ),
     );
-    ws.send_text(&json_msg_sess(*next_id, "Runtime.evaluate", &patch_params, session))?;
-    *next_id += 1;
-    Ok(())
 }
 
-fn dispatch(payload_json: String) {
+/// Process one CDP frame. `session` is `None` for the page (root) realm and
+/// `Some` for a flattened child session (e.g. a service worker).
+// NOTE: `send` re-enters this observer synchronously, so the `state` borrow is
+// taken in short scopes and always released before any `send` (see `arm`).
+fn handle(state: &Rc<RefCell<State>>, host: &BrowserHost, v: &serde_json::Value) {
+    let method = v.get("method").and_then(|m| m.as_str()).unwrap_or("");
+    let session = v.get("sessionId").and_then(|s| s.as_str());
+
+    match method {
+        "Target.attachedToTarget" => {
+            let params = v.get("params");
+            let ttype = params
+                .and_then(|p| p.get("targetInfo"))
+                .and_then(|t| t.get("type"))
+                .and_then(|t| t.as_str())
+                .unwrap_or("");
+            let child = params
+                .and_then(|p| p.get("sessionId"))
+                .and_then(|s| s.as_str())
+                .unwrap_or("");
+            if ttype == "service_worker" && !child.is_empty() {
+                let child = child.to_owned();
+                // Record before Runtime.enable: it emits executionContextCreated
+                // synchronously, and that handler only re-patches known sessions.
+                state.borrow_mut().sw_sessions.insert(child.clone());
+                log::info!("cdp: service_worker attached; arming SW patch");
+                let id = state.borrow_mut().bump();
+                send(host, &json_msg_sess(id, "Runtime.enable", "{}", &child));
+                let id = state.borrow_mut().bump();
+                send(
+                    host,
+                    &json_msg_sess(id, "Runtime.evaluate", &eval_params(SW_PATCH), &child),
+                );
+            }
+        }
+        // A fresh execution context (page reload, or SW restart) means the realm
+        // lost our patch; re-apply it.
+        "Runtime.executionContextCreated" => match session {
+            None => {
+                let id = state.borrow_mut().bump();
+                send(host, &json_msg(id, "Runtime.evaluate", &eval_params(PAGE_PATCH)));
+            }
+            Some(s) if state.borrow().sw_sessions.contains(s) => {
+                let s = s.to_owned();
+                let id = state.borrow_mut().bump();
+                send(
+                    host,
+                    &json_msg_sess(id, "Runtime.evaluate", &eval_params(SW_PATCH), &s),
+                );
+            }
+            _ => {}
+        },
+        "Runtime.consoleAPICalled" => {
+            if let Some(payload) = console_payload(v) {
+                let account = state.borrow().account_id.clone();
+                dispatch(payload, account);
+            }
+        }
+        _ => {
+            if let Some(err) = v.get("error") {
+                log::debug!("cdp: cmd error -> {err}");
+            }
+        }
+    }
+}
+
+fn send(host: &BrowserHost, text: &str) {
+    host.send_dev_tools_message(Some(text.as_bytes()));
+}
+
+/// Hand a notification payload to the GTK main thread, attributed to `account_id`.
+fn dispatch(payload_json: String, account_id: String) {
     glib::MainContext::default().invoke(move || {
         let p: NotifPayload = match serde_json::from_str(&payload_json) {
             Ok(p) => p,
@@ -356,8 +367,13 @@ fn dispatch(payload_json: String) {
         } else {
             Some(p.icon.as_str())
         };
-        log::info!("cdp: SW notification tag={:?} title={:?}", p.tag, p.title);
-        crate::notifications::tracker().on_seen(&p.tag, &p.title, &p.body, icon, "");
+        log::info!(
+            "cdp: notification tag={:?} title={:?} account={:?}",
+            p.tag,
+            p.title,
+            account_id
+        );
+        crate::notifications::tracker().on_seen(&p.tag, &p.title, &p.body, icon, &account_id);
     });
 }
 
@@ -373,28 +389,26 @@ struct NotifPayload {
     icon: String,
 }
 
-/// Query `/json/version` for the browser-level `webSocketDebuggerUrl`.
-fn browser_ws(port: u16) -> Option<String> {
-    let body = http_get(port, "/json/version").ok()?;
-    let v: serde_json::Value = serde_json::from_str(&body).ok()?;
-    v.get("webSocketDebuggerUrl")
-        .and_then(|u| u.as_str())
-        .map(|s| s.to_owned())
-}
-
 /// Extract our notification payload (a `NOTIF_PREFIX`-tagged string arg) from a `consoleAPICalled` event.
 fn console_payload(v: &serde_json::Value) -> Option<String> {
     let args = v.get("params")?.get("args")?.as_array()?;
     for a in args {
-        if a.get("type").and_then(|t| t.as_str()) == Some("string") {
-            if let Some(s) = a.get("value").and_then(|s| s.as_str()) {
-                if let Some(rest) = s.strip_prefix(NOTIF_PREFIX) {
-                    return Some(rest.to_owned());
-                }
-            }
+        if a.get("type").and_then(|t| t.as_str()) == Some("string")
+            && let Some(s) = a.get("value").and_then(|s| s.as_str())
+            && let Some(rest) = s.strip_prefix(NOTIF_PREFIX)
+        {
+            return Some(rest.to_owned());
         }
     }
     None
+}
+
+/// Build the `Runtime.evaluate` params for a patch expression.
+fn eval_params(expr: &str) -> String {
+    format!(
+        "{{\"expression\":{},\"returnByValue\":true}}",
+        json_string(expr)
+    )
 }
 
 /// Build a CDP request frame; `params` is a raw JSON object string.
@@ -412,227 +426,4 @@ fn json_msg_sess(id: u32, method: &str, params: &str, session: &str) -> String {
 
 fn json_string(s: &str) -> String {
     serde_json::Value::String(s.to_owned()).to_string()
-}
-
-const TIMEOUT: Duration = Duration::from_secs(2);
-
-fn http_get(port: u16, path: &str) -> Result<String, String> {
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
-    let mut stream =
-        TcpStream::connect_timeout(&addr, TIMEOUT).map_err(|e| format!("connect: {e}"))?;
-    stream.set_read_timeout(Some(TIMEOUT)).ok();
-    let req = format!("GET {path} HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\n\r\n");
-    stream
-        .write_all(req.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    let mut buf = Vec::with_capacity(8192);
-    let mut chunk = [0u8; 4096];
-    let header_end = loop {
-        if let Some(pos) = find_sub(&buf, b"\r\n\r\n") {
-            break pos + 4;
-        }
-        let n = stream.read(&mut chunk).map_err(|e| format!("read: {e}"))?;
-        if n == 0 {
-            return Err("closed before headers".into());
-        }
-        buf.extend_from_slice(&chunk[..n]);
-    };
-    let headers = String::from_utf8_lossy(&buf[..header_end]).to_ascii_lowercase();
-    let len = headers
-        .split("content-length:")
-        .nth(1)
-        .and_then(|s| s.split("\r\n").next())
-        .and_then(|s| s.trim().parse::<usize>().ok())
-        .unwrap_or(0);
-    let total = header_end + len;
-    while buf.len() < total {
-        let n = stream.read(&mut chunk).map_err(|e| format!("read: {e}"))?;
-        if n == 0 {
-            break;
-        }
-        buf.extend_from_slice(&chunk[..n]);
-    }
-    Ok(String::from_utf8_lossy(&buf[header_end..total]).into_owned())
-}
-
-fn find_sub(hay: &[u8], needle: &[u8]) -> Option<usize> {
-    hay.windows(needle.len()).position(|w| w == needle)
-}
-
-struct WsClient {
-    stream: TcpStream,
-}
-
-impl WsClient {
-    /// Connect and perform the opening handshake (`ws://host:port/path`).
-    fn connect(url: &str) -> Result<Self, String> {
-        let rest = url.strip_prefix("ws://").ok_or("not a ws:// url")?;
-        let (hostport, path) = rest.split_once('/').unwrap_or((rest, ""));
-        let (host, port) = hostport.split_once(':').ok_or("no port in ws url")?;
-        let port: u16 = port.parse().map_err(|_| "bad port")?;
-        let addr = SocketAddr::from((
-            host.parse::<std::net::Ipv4Addr>().map_err(|e| e.to_string())?,
-            port,
-        ));
-        let mut stream =
-            TcpStream::connect_timeout(&addr, TIMEOUT).map_err(|e| format!("connect: {e}"))?;
-        stream.set_nodelay(true).ok();
-
-        let key = B64.encode(rand16());
-        let req = format!(
-            "GET /{path} HTTP/1.1\r\nHost: {hostport}\r\nUpgrade: websocket\r\n\
-             Connection: Upgrade\r\nSec-WebSocket-Key: {key}\r\n\
-             Sec-WebSocket-Version: 13\r\n\r\n"
-        );
-        stream
-            .write_all(req.as_bytes())
-            .map_err(|e| format!("handshake write: {e}"))?;
-
-        let mut buf = Vec::with_capacity(1024);
-        let mut one = [0u8; 1];
-        loop {
-            let n = stream.read(&mut one).map_err(|e| format!("handshake read: {e}"))?;
-            if n == 0 {
-                return Err("handshake closed".into());
-            }
-            buf.push(one[0]);
-            if buf.ends_with(b"\r\n\r\n") {
-                break;
-            }
-            if buf.len() > 8192 {
-                return Err("handshake too large".into());
-            }
-        }
-        let resp = String::from_utf8_lossy(&buf);
-        if !resp.starts_with("HTTP/1.1 101") {
-            return Err(format!("handshake not 101: {}", &resp[..resp.len().min(40)]));
-        }
-        Ok(Self { stream })
-    }
-
-    /// Send a masked text frame.
-    fn send_text(&mut self, text: &str) -> Result<(), String> {
-        let payload = text.as_bytes();
-        let mut frame = Vec::with_capacity(payload.len() + 14);
-        frame.push(0x81);
-        let mask = rand4();
-        let n = payload.len();
-        if n < 126 {
-            frame.push(0x80 | n as u8);
-        } else if n < 65536 {
-            frame.push(0x80 | 126);
-            frame.extend_from_slice(&(n as u16).to_be_bytes());
-        } else {
-            frame.push(0x80 | 127);
-            frame.extend_from_slice(&(n as u64).to_be_bytes());
-        }
-        frame.extend_from_slice(&mask);
-        frame.extend(payload.iter().enumerate().map(|(i, b)| b ^ mask[i % 4]));
-        self.stream
-            .write_all(&frame)
-            .map_err(|e| format!("send: {e}"))
-    }
-
-    /// Receive the next text message, reassembling continuation frames and answering control frames inline.
-    fn recv_text(&mut self) -> Result<String, String> {
-        let mut message: Vec<u8> = Vec::new();
-        loop {
-            let (fin, opcode, payload) = self.read_frame()?;
-            match opcode {
-                0x1 | 0x2 | 0x0 => {
-                    message.extend_from_slice(&payload);
-                    if fin {
-                        return String::from_utf8(message).map_err(|e| e.to_string());
-                    }
-                }
-                0x8 => return Err("ws closed by peer".into()),
-                0x9 => self.send_pong(&payload)?,
-                0xA => {}
-                other => return Err(format!("bad opcode {other}")),
-            }
-        }
-    }
-
-    fn read_frame(&mut self) -> Result<(bool, u8, Vec<u8>), String> {
-        let mut h = [0u8; 2];
-        self.read_exact(&mut h)?;
-        let fin = h[0] & 0x80 != 0;
-        let opcode = h[0] & 0x0f;
-        let masked = h[1] & 0x80 != 0;
-        let mut len = (h[1] & 0x7f) as usize;
-        if len == 126 {
-            let mut e = [0u8; 2];
-            self.read_exact(&mut e)?;
-            len = u16::from_be_bytes(e) as usize;
-        } else if len == 127 {
-            let mut e = [0u8; 8];
-            self.read_exact(&mut e)?;
-            len = u64::from_be_bytes(e) as usize;
-        }
-        let mut mask = [0u8; 4];
-        if masked {
-            self.read_exact(&mut mask)?;
-        }
-        let mut payload = vec![0u8; len];
-        self.read_exact(&mut payload)?;
-        if masked {
-            for (i, b) in payload.iter_mut().enumerate() {
-                *b ^= mask[i % 4];
-            }
-        }
-        Ok((fin, opcode, payload))
-    }
-
-    fn send_pong(&mut self, data: &[u8]) -> Result<(), String> {
-        let mut frame = Vec::with_capacity(data.len() + 6);
-        frame.push(0x8A);
-        let mask = rand4();
-        frame.push(0x80 | data.len().min(125) as u8);
-        frame.extend_from_slice(&mask);
-        frame.extend(
-            data.iter()
-                .take(125)
-                .enumerate()
-                .map(|(i, b)| b ^ mask[i % 4]),
-        );
-        self.stream
-            .write_all(&frame)
-            .map_err(|e| format!("pong: {e}"))
-    }
-
-    fn read_exact(&mut self, buf: &mut [u8]) -> Result<(), String> {
-        self.stream.read_exact(buf).map_err(|e| format!("read: {e}"))
-    }
-}
-
-// Cheap per-handshake entropy; need only be unique, not crypto-strong (loopback).
-fn rand16() -> [u8; 16] {
-    let mut out = [0u8; 16];
-    let seed = seed();
-    for (i, b) in out.iter_mut().enumerate() {
-        out_byte(b, seed, i);
-    }
-    out
-}
-
-fn rand4() -> [u8; 4] {
-    let mut out = [0u8; 4];
-    let seed = seed();
-    for (i, b) in out.iter_mut().enumerate() {
-        out_byte(b, seed, i);
-    }
-    out
-}
-
-fn out_byte(b: &mut u8, seed: u64, i: usize) {
-    let x = seed.wrapping_mul(6364136223846793005).wrapping_add(i as u64 + 1);
-    *b = (x >> ((i % 8) * 8)) as u8;
-}
-
-fn seed() -> u64 {
-    use std::sync::atomic::{AtomicU64, Ordering};
-    static CTR: AtomicU64 = AtomicU64::new(0x9e3779b97f4a7c15);
-    let local = 0u8;
-    let addr = std::ptr::addr_of!(local) as u64;
-    CTR.fetch_add(0x2545f4914f6cdd1d, Ordering::Relaxed) ^ addr
 }

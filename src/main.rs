@@ -83,9 +83,10 @@ fn main() -> Result<()> {
         // Delete leftover v3 (WebKitGTK) data once, before CEF starts.
         accounts::purge_legacy_v3_data();
         cef_runtime::initialize_browser_process(&args, &mut cef_app)?;
-        // Bridge service-worker notifications over CDP (CEF has no notification
-        // API; CDP is the only realm-reaching mechanism). Same debug port.
-        cdp::start(devtools::DEVTOOLS_PORT);
+        // Notifications are bridged per-browser via the in-process DevTools
+        // message API (crate::cdp::attach, called at browser creation) — no
+        // network debugging port. The F12 inspector still uses a debug-only
+        // port; see cef_runtime::debug_enabled / crate::devtools.
     } else {
         log::info!("secondary instance — forwarding to primary, skipping CEF init");
     }

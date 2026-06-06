@@ -10,6 +10,17 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 use std::time::Duration;
 
+/// True when launched with `--debug` / `--debuglevel=…`. Gates developer-only
+/// surfaces that widen the attack surface (the F12 DevTools CDP port). Release
+/// builds run without them; notifications use the in-process CDP API instead.
+pub fn debug_enabled() -> bool {
+    use std::sync::OnceLock;
+    static D: OnceLock<bool> = OnceLock::new();
+    *D.get_or_init(|| {
+        std::env::args().any(|a| a == "--debug" || a.starts_with("--debuglevel="))
+    })
+}
+
 #[derive(Clone, Default)]
 pub struct ShellApp;
 
@@ -34,31 +45,40 @@ wrap_app! {
                 append_spellcheck_switches(cmd);
                 append_screen_reader_switches(cmd);
             }
-            // Embedded DevTools (CDP): loopback debugging endpoint. See
-            // `crate::devtools`.
-            cmd.append_switch_with_value(
-                Some(&"remote-debugging-port".into()),
-                Some(&crate::devtools::DEVTOOLS_PORT.to_string().as_str().into()),
-            );
-            // Allow any origin to open the inspector websocket (DevTools frontend
-            // is served from a remote origin); endpoint is loopback-only.
-            cmd.append_switch_with_value(
-                Some(&"remote-allow-origins".into()),
-                Some(&"*".into()),
-            );
-            // Private/Local Network Access blocks the public DevTools frontend
-            // origin from reaching the loopback CDP endpoint, blanking DevTools;
-            // disable the gate (renamed PNA -> LNA in M14x).
+            // DocumentPictureInPictureAPI: WhatsApp's "open call in another
+            // window" can't be hosted by the OSR shell (dropped call + blank
+            // view); disabling keeps the call in the main webview. Always on.
+            // (Same switch name can't be appended twice — CEF's CommandLine map
+            // overwrites — so the debug PNA/LNA disables are merged into this one
+            // value below.)
+            let mut disabled = String::from("DocumentPictureInPictureAPI");
+
+            // Embedded F12 DevTools (CDP frontend) is DEBUG-ONLY. It needs a
+            // loopback debugging PORT, a wildcard inspector origin, and the
+            // Local/Private Network Access gate disabled so the remote frontend
+            // can reach loopback. Each widens the attack surface (a website can
+            // DNS-rebind to the fixed port and drive the authenticated session),
+            // so they ship ONLY with --debug. Release notifications use the
+            // in-process DevTools message API (crate::cdp) — no port, no network.
+            if debug_enabled() {
+                cmd.append_switch_with_value(
+                    Some(&"remote-debugging-port".into()),
+                    Some(&crate::devtools::DEVTOOLS_PORT.to_string().as_str().into()),
+                );
+                cmd.append_switch_with_value(
+                    Some(&"remote-allow-origins".into()),
+                    Some(&"*".into()),
+                );
+                disabled.push_str(
+                    ",BlockInsecurePrivateNetworkRequests\
+                     ,LocalNetworkAccessChecks\
+                     ,PrivateNetworkAccessForNavigations\
+                     ,PrivateNetworkAccessForWorkers",
+                );
+            }
             cmd.append_switch_with_value(
                 Some(&"disable-features".into()),
-                Some(
-                    &"BlockInsecurePrivateNetworkRequests,\
-                      LocalNetworkAccessChecks,\
-                      PrivateNetworkAccessForNavigations,\
-                      PrivateNetworkAccessForWorkers,\
-                      DocumentPictureInPictureAPI"
-                        .into(),
-                ),
+                Some(&disabled.as_str().into()),
             );
             // ^ DocumentPictureInPictureAPI: WhatsApp's "open call in another
             // window" can't be hosted by the OSR shell (dropped call + blank
@@ -228,7 +248,15 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
     // <id>/data, and CEF requires it to be a SUBDIRECTORY of root_cache_path —
     // so root that at accounts/sessions. Shared `.bdic` dicts persist here too.
     let root_cache = crate::accounts::accounts_root().join("sessions");
-    let _ = std::fs::create_dir_all(&root_cache);
+    // 0700: this tree holds the WhatsApp auth (cookies/IndexedDB). World-readable
+    // dirs would expose the session to other local users -> account takeover.
+    {
+        use std::os::unix::fs::DirBuilderExt;
+        let _ = std::fs::DirBuilder::new()
+            .mode(0o700)
+            .recursive(true)
+            .create(&root_cache);
+    }
     let settings = Settings {
         windowless_rendering_enabled: 1,
         external_message_pump: 1,

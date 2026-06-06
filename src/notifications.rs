@@ -188,20 +188,34 @@ fn truncate(s: &str, limit: usize) -> String {
     out
 }
 
-/// Decode a `data:...;base64,<payload>` URL to raw bytes; `None` otherwise.
+/// Max decoded notification-icon size. Icons are attacker-influenceable and fed
+/// to gdk-pixbuf; cap them so a page can't push huge blobs through the decoder.
+const MAX_ICON_BYTES: usize = 4 * 1024 * 1024;
+
+/// Decode a `data:image/...;base64,<payload>` URL to raw bytes; `None` otherwise.
+/// Restricted to `image/*` base64 payloads and capped at [`MAX_ICON_BYTES`].
 fn decode_data_url(url: &str) -> Option<Vec<u8>> {
     use base64::Engine;
     let rest = url.strip_prefix("data:")?;
     let comma = rest.find(',')?;
     let (meta, payload) = rest.split_at(comma);
     let payload = &payload[1..];
-    if meta.contains(";base64") {
-        base64::engine::general_purpose::STANDARD
-            .decode(payload.as_bytes())
-            .ok()
-    } else {
-        None
+    // Only base64 image/* — never hand a non-image or unbounded blob to the decoder.
+    if !meta.starts_with("image/") || !meta.contains(";base64") {
+        return None;
     }
+    // base64 inflates ~4:3; reject oversized payloads before allocating/decoding.
+    if payload.len() > MAX_ICON_BYTES / 3 * 4 + 4 {
+        log::warn!("notif icon: data URL too large ({} b64 bytes), dropping", payload.len());
+        return None;
+    }
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(payload.as_bytes())
+        .ok()?;
+    if bytes.len() > MAX_ICON_BYTES {
+        return None;
+    }
+    Some(bytes)
 }
 
 const AVATAR_SIZE: i32 = 96;
@@ -309,6 +323,20 @@ mod tests {
     fn decode_rejects_non_data_url() {
         assert!(decode_data_url("https://example.com/a.png").is_none());
         assert!(decode_data_url("data:text/plain,hello").is_none());
+    }
+
+    #[test]
+    fn decode_rejects_non_image_base64() {
+        // valid base64 but not an image MIME -> never reaches the decoder
+        assert!(decode_data_url("data:application/octet-stream;base64,AAAA").is_none());
+        assert!(decode_data_url("data:text/html;base64,AAAA").is_none());
+    }
+
+    #[test]
+    fn decode_rejects_oversized_icon() {
+        let huge = "A".repeat(MAX_ICON_BYTES / 3 * 4 + 8);
+        let url = format!("data:image/png;base64,{huge}");
+        assert!(decode_data_url(&url).is_none());
     }
 
     #[test]

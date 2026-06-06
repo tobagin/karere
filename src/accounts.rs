@@ -200,13 +200,28 @@ pub fn load_from(path: &std::path::Path) -> Result<Vec<Account>, AccountsError> 
 
 /// Persist `accounts` to `path` via temp-then-rename (atomic).
 pub fn save_to(path: &std::path::Path, accounts: &[Account]) -> Result<(), AccountsError> {
+    use std::io::Write;
+    use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt};
     if let Some(dir) = path.parent() {
-        std::fs::create_dir_all(dir).map_err(|e| AccountsError::Io(e.to_string()))?;
+        std::fs::DirBuilder::new()
+            .mode(0o700)
+            .recursive(true)
+            .create(dir)
+            .map_err(|e| AccountsError::Io(e.to_string()))?;
     }
     let json = serde_json::to_vec_pretty(accounts)
         .map_err(|e| AccountsError::Io(e.to_string()))?;
     let tmp = path.with_extension("json.tmp");
-    std::fs::write(&tmp, &json).map_err(|e| AccountsError::Io(e.to_string()))?;
+    let _ = std::fs::remove_file(&tmp);
+    let mut f = std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .open(&tmp)
+        .map_err(|e| AccountsError::Io(e.to_string()))?;
+    f.write_all(&json)
+        .map_err(|e| AccountsError::Io(e.to_string()))?;
+    f.flush().map_err(|e| AccountsError::Io(e.to_string()))?;
     std::fs::rename(&tmp, path).map_err(|e| AccountsError::Io(e.to_string()))?;
     Ok(())
 }
@@ -269,6 +284,35 @@ impl AccountManager {
         let _ = self.save();
         self.emit_changed();
         account
+    }
+
+    /// Give every label-less account a default `Account N` label, numbered by
+    /// creation order (oldest → "Account 1"). The bootstrap/default account is
+    /// created without a label; this backfills it (and migrates older installs)
+    /// so it reads "Account 1" alongside added accounts. No-op when all labelled.
+    pub fn backfill_labels(&self) {
+        let mut changed = false;
+        {
+            let mut list = self.imp().accounts.borrow_mut();
+            let mut order: Vec<usize> = (0..list.len()).collect();
+            order.sort_by_key(|&i| list[i].created_at);
+            for (pos, &i) in order.iter().enumerate() {
+                let blank = list[i]
+                    .user_label
+                    .as_deref()
+                    .map(str::trim)
+                    .unwrap_or("")
+                    .is_empty();
+                if blank {
+                    list[i].user_label = Some(format!("Account {}", pos + 1));
+                    changed = true;
+                }
+            }
+        }
+        if changed {
+            let _ = self.save();
+            self.emit_changed();
+        }
     }
 
     /// Remove the account with `id`.

@@ -1191,6 +1191,16 @@ mod imp {
                 log::warn!("open_devtools: no web view");
                 return;
             }
+            // F12 needs the CDP debugging port + relaxed network gates, which ship
+            // only with --debug (a website could otherwise DNS-rebind to the port
+            // and drive the session). Notifications don't use the port.
+            if !crate::cef_runtime::debug_enabled() {
+                log::info!("open_devtools: disabled (relaunch with --debug to enable)");
+                self.toast_overlay
+                    .get()
+                    .add_toast(adw::Toast::new("DevTools available only with --debug"));
+                return;
+            }
 
             let dv = KarereWebView::new_devtools();
             dv.set_hexpand(true);

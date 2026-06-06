@@ -84,18 +84,19 @@ wrap_client! {
                     1
                 }
                 Ok(RendererMessage::NotificationSeen {
-                    account_id,
+                    account_id: _payload_account,
                     title,
                     body,
                     icon,
                     tag,
                 }) => {
+                    let id = account_id.as_deref().unwrap_or("");
                     crate::notifications::tracker().on_seen(
                         &tag,
                         &title,
                         &body,
                         icon.as_deref(),
-                        &account_id,
+                        id,
                     );
                     1
                 }
@@ -105,12 +106,23 @@ wrap_client! {
                 }
                 Ok(RendererMessage::PasteConsumed { tempfile_path }) => {
                     if let Some(path) = tempfile_path {
-                        crate::paste::consume(&path);
+                        if crate::paste::is_within_paste_dir(&path) {
+                            crate::paste::consume(&path);
+                        } else {
+                            log::warn!("PasteConsumed: rejected out-of-dir path {}", path.display());
+                        }
                     }
                     1
                 }
                 Ok(RendererMessage::SetClipboard { text, primary }) => {
-                    write_host_clipboard(&text, primary);
+                    // Page-driven write to the host clipboard (no user gesture);
+                    // cap it so a hostile page can't dump unbounded data.
+                    const MAX_CLIPBOARD_BYTES: usize = 1024 * 1024;
+                    if text.len() > MAX_CLIPBOARD_BYTES {
+                        log::warn!("SetClipboard: oversized text ({} bytes), dropping", text.len());
+                    } else {
+                        write_host_clipboard(&text, primary);
+                    }
                     1
                 }
                 Ok(RendererMessage::ProfileIdentity { wid, pushname, source }) => {
@@ -130,10 +142,20 @@ wrap_client! {
                 }
                 Ok(RendererMessage::ProfileAvatar { base64_png, source: _ }) => {
                     if let Some(id) = account_id.as_deref() {
-                        match base64::engine::general_purpose::STANDARD.decode(base64_png.as_bytes())
-                        {
-                            Ok(bytes) => crate::accounts::manager().update_avatar(id, bytes),
-                            Err(e) => log::warn!("ProfileAvatar: bad base64: {e}"),
+                        // Cap the page-supplied blob before decoding (≈6 MB raw).
+                        const MAX_AVATAR_B64: usize = 8 * 1024 * 1024;
+                        if base64_png.len() > MAX_AVATAR_B64 {
+                            log::warn!(
+                                "ProfileAvatar: oversized base64 ({} bytes), dropping",
+                                base64_png.len()
+                            );
+                        } else {
+                            match base64::engine::general_purpose::STANDARD
+                                .decode(base64_png.as_bytes())
+                            {
+                                Ok(bytes) => crate::accounts::manager().update_avatar(id, bytes),
+                                Err(e) => log::warn!("ProfileAvatar: bad base64: {e}"),
+                            }
                         }
                     }
                     1

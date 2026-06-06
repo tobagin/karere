@@ -95,11 +95,25 @@
       this._fire("close");
     };
 
+    // Only resolve icons we trust: same-origin blobs and WhatsApp avatar hosts.
+    // A notification's `icon` is page/sender-influenceable; fetching an arbitrary
+    // URL here would be a credentialed cross-origin fetch (SSRF/cache-probe) and
+    // would feed attacker bytes to the host image decoder. Reject everything else.
+    function iconAllowed(url) {
+      if (/^blob:/i.test(url)) return true;
+      try {
+        return /(^|\.)whatsapp\.(net|com)$/i.test(new URL(url, location.href).hostname);
+      } catch (e) {
+        return false;
+      }
+    }
+
     // Resolve avatar URL to an inline data URL: the browser can't re-fetch a
     // blob:/authenticated URL. Falls back to null.
     function resolveIcon(url) {
       if (!url) return Promise.resolve(null);
       if (/^data:/i.test(url)) return Promise.resolve(url);
+      if (!iconAllowed(url)) return Promise.resolve(null);
       return fetch(url)
         .then(function (r) {
           return r.ok ? r.blob() : null;
