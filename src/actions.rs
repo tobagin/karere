@@ -14,8 +14,7 @@ pub(crate) fn runtime() -> &'static tokio::runtime::Runtime {
     RUNTIME.get_or_init(|| {
         let rt = tokio::runtime::Runtime::new()
             .expect("failed to create tokio runtime for portal calls");
-        // Deliberately leaked — the runtime needs to outlive `main` for portal
-        // callbacks. One runtime per process; not freed at shutdown.
+        // Leaked: must outlive `main` for portal callbacks. One per process.
         Box::leak(Box::new(rt))
     })
 }
@@ -50,11 +49,8 @@ fn register_quit(app: &KarereApplication) {
     app.add_action(&action);
 }
 
-/// `app.present-window`: toggle the primary chrome window on visibility. Hide it
-/// when it is visible; otherwise show and present it. Gating on visibility alone
-/// (not `is_active`) is required for the tray: clicking the tray menu removes
-/// focus from the window, so an `is_active` check would never hide it. Driven by
-/// tray left-click and the `Show / Hide Window` menu item.
+/// `app.present-window`: toggle the window on visibility (not `is_active` — the
+/// tray steals focus, so `is_active` would never hide it). Driven by tray.
 fn register_present_window(app: &KarereApplication) {
     let action = gio::SimpleAction::new("present-window", None);
     action.connect_activate(glib::clone!(
@@ -99,8 +95,7 @@ fn register_help_overlay(app: &KarereApplication) {
         move |_, _| {
             let builder =
                 gtk::Builder::from_resource("/io/github/tobagin/karere/ui/keyboard-shortcuts.ui");
-            // AdwShortcutsDialog (libadwaita 1.8) has no Rust binding under the
-            // crate's v1_6 feature; load it as its AdwDialog base instead.
+            // AdwShortcutsDialog (1.8) has no binding under v1_6; load as AdwDialog.
             let Some(dialog) = builder.object::<adw::Dialog>("shortcuts_dialog") else {
                 log::warn!("app.show-help-overlay: keyboard-shortcuts.ui has no shortcuts_dialog");
                 return;
@@ -111,9 +106,8 @@ fn register_help_overlay(app: &KarereApplication) {
     app.add_action(&action);
 }
 
-/// `app.open-download <path>`: open a downloaded file (or its parent directory,
-/// for "Show in Folder") in the default application via the OpenURI portal,
-/// falling back to `AppInfo::launch_default_for_uri` when no portal is available.
+/// `app.open-download <path>`: open a downloaded file (or its folder) via the
+/// OpenURI portal, falling back to `AppInfo::launch_default_for_uri`.
 fn register_open_download(app: &KarereApplication) {
     let action = gio::SimpleAction::new("open-download", Some(glib::VariantTy::STRING));
     action.connect_activate(|_, param| {
@@ -128,7 +122,7 @@ fn register_open_download(app: &KarereApplication) {
                     "open-download: portal open_file({path}) failed ({err}); \
                      falling back to AppInfo"
                 );
-                // gio calls must run on the glib main thread.
+                // gio must run on the glib main thread.
                 glib::MainContext::default().invoke(move || {
                     let uri = format!("file://{path}");
                     if let Err(err) = gio::AppInfo::launch_default_for_uri(
@@ -144,8 +138,7 @@ fn register_open_download(app: &KarereApplication) {
     app.add_action(&action);
 }
 
-/// Open `path` through the FreeDesktop OpenURI portal so it works under Flatpak
-/// without filesystem holes. Works for both files and directories.
+/// Open `path` via the OpenURI portal (works under Flatpak without fs holes).
 async fn open_via_portal(path: &str) -> anyhow::Result<()> {
     use ashpd::desktop::open_uri::OpenFileRequest;
     use std::os::fd::AsFd;
@@ -158,9 +151,8 @@ async fn open_via_portal(path: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// `app.notification-clicked <tag>`: the user clicked a Karere-branded banner.
-/// Raise the window and re-enter the page via `__karereActivateNotif('<tag>')`
-/// so WhatsApp opens the originating chat (M14 3.7 / 7.2).
+/// `app.notification-clicked <tag>`: raise the window and call
+/// `__karereActivateNotif('<tag>')` so WhatsApp opens the originating chat.
 fn register_notification_clicked(app: &KarereApplication) {
     let action = gio::SimpleAction::new("notification-clicked", Some(glib::VariantTy::STRING));
     action.connect_activate(glib::clone!(
@@ -188,9 +180,8 @@ fn register_notification_clicked(app: &KarereApplication) {
     app.add_action(&action);
 }
 
-/// `app.set-unread <u32>`: write the new unread count into the shared tray
-/// state and trigger a tray refresh (icon + tooltip). No-op when no tray is
-/// running (GNOME without AppIndicator).
+/// `app.set-unread <u32>`: update the tray unread count (icon + tooltip).
+/// No-op when no tray is running.
 fn register_set_unread(app: &KarereApplication) {
     let action = gio::SimpleAction::new("set-unread", Some(glib::VariantTy::UINT32));
     action.connect_activate(|_, param| {
@@ -200,9 +191,8 @@ fn register_set_unread(app: &KarereApplication) {
     app.add_action(&action);
 }
 
-/// `app.refresh-tray-accounts`: ask `ksni` to re-render the menu after an
-/// account-list change. The window pushes fresh summaries via
-/// `tray::set_accounts` on `accounts-changed`; this just requests the redraw.
+/// `app.refresh-tray-accounts`: request a `ksni` menu redraw. The window pushes
+/// fresh summaries via `tray::set_accounts`; this just triggers the rerender.
 fn register_refresh_tray_accounts(app: &KarereApplication) {
     let action = gio::SimpleAction::new("refresh-tray-accounts", None);
     action.connect_activate(|_, _| {
@@ -211,8 +201,7 @@ fn register_refresh_tray_accounts(app: &KarereApplication) {
     app.add_action(&action);
 }
 
-/// `app.switch-account <id>`: switch the active window to account `id` (target
-/// of the tray's per-account menu entries).
+/// `app.switch-account <id>`: switch the window to account `id` (tray entries).
 fn register_switch_account(app: &KarereApplication) {
     let action = gio::SimpleAction::new("switch-account", Some(glib::VariantTy::STRING));
     action.connect_activate(glib::clone!(
@@ -229,8 +218,7 @@ fn register_switch_account(app: &KarereApplication) {
             else {
                 return;
             };
-            // Always surface the window (never toggle) — the tray entry's job is
-            // "show this account", not "toggle visibility".
+            // Always surface (never toggle): "show this account", not "toggle".
             win.set_visible(true);
             win.present();
             if let Some(win) = win.downcast_ref::<crate::window::KarereWindow>() {
@@ -248,8 +236,7 @@ fn register_about(app: &KarereApplication) {
         #[weak]
         app,
         move |_, _| {
-            // Like-for-like with karere v3's About dialog; only the version
-            // differs (4.0.0-Alpha for the GTK4 + CEF rewrite).
+            // Like-for-like with v3's About; only the version differs.
             let developers = [
                 "Thiago Fernandes https://github.com/tobagin",
                 "Aman9Das https://github.com/Aman9das",
@@ -356,7 +343,7 @@ fn load_release_notes() -> Option<String> {
 }
 
 fn extract_first_release_description(xml: &str) -> Option<String> {
-    // Find the first <release ...>...</release> block, then its <description>...</description>.
+    // First <release> block, then its <description>.
     let release_open = xml.find("<release")?;
     let tail = &xml[release_open..];
     let release_end = tail.find("</release>")?;

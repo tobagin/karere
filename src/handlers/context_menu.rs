@@ -7,9 +7,8 @@ use cef::{
     wrap_context_menu_handler,
 };
 
-/// A plain, owned snapshot of one entry in a CEF `MenuModel`, decoupled from the
-/// non-`Send`/refcounted CEF objects so the GTK layer can render it on the main
-/// thread. Built by [`snapshot_model`].
+/// Owned snapshot of a CEF `MenuModel` entry, decoupled from the non-`Send`
+/// refcounted CEF objects so the GTK layer can render it on the main thread.
 #[derive(Clone)]
 pub enum MenuEntry {
     Separator,
@@ -24,14 +23,13 @@ pub enum MenuEntry {
     },
 }
 
-/// Convert a CEF `CefStringUserfree` (UTF-16, owned) into a Rust `String`.
+/// Convert a CEF `CefStringUserfree` into a Rust `String`.
 fn userfree_to_string(s: cef::CefStringUserfree) -> String {
     CefString::from(&s).to_string()
 }
 
-/// Strip Chromium's Windows-style `&` mnemonic markers from a menu label so the
-/// GTK menu shows "Undo"/"Cut" instead of "&Undo"/"Cu&t". A lone `&` flags the
-/// next character as the accelerator and is dropped; `&&` is a literal `&`.
+/// Strip Chromium's `&` mnemonic markers from a menu label. A lone `&` is a
+/// dropped accelerator marker; `&&` is a literal `&`.
 fn strip_mnemonics(s: &str) -> String {
     let mut out = String::with_capacity(s.len());
     let mut chars = s.chars().peekable();
@@ -41,7 +39,7 @@ fn strip_mnemonics(s: &str) -> String {
                 out.push('&');
                 chars.next();
             }
-            // Otherwise the lone `&` is a mnemonic marker — drop it.
+            // Lone `&` is a mnemonic marker — drop it.
         } else {
             out.push(c);
         }
@@ -49,9 +47,8 @@ fn strip_mnemonics(s: &str) -> String {
     out
 }
 
-/// Walk a CEF `MenuModel` into a plain [`MenuEntry`] tree (labels, command ids,
-/// enabled state, separators, nested submenus). Recurses into submenus — the
-/// spellcheck suggestion list arrives as one.
+/// Walk a CEF `MenuModel` into a [`MenuEntry`] tree. Recurses into submenus
+/// (the spellcheck suggestion list arrives as one).
 fn snapshot_model(model: &MenuModel) -> Vec<MenuEntry> {
     let count = model.count();
     let mut out = Vec::with_capacity(count);
@@ -81,10 +78,8 @@ fn snapshot_model(model: &MenuModel) -> Vec<MenuEntry> {
 }
 
 // Chromium content context-menu command ids (chrome/app/chrome_command_ids.h).
-// cef-rs 148 does not surface these as named `cef_menu_id_t` constants — that
-// enum stops at MENU_ID_VIEW_SOURCE — so the link-open ids are pinned here by
-// value. Re-verify against the live menu (see verification step 6.2) whenever
-// the bundled CEF/Chromium version changes.
+// cef-rs 148's `cef_menu_id_t` stops at MENU_ID_VIEW_SOURCE, so the link-open
+// ids are pinned by value. Re-verify (step 6.2) on CEF/Chromium version bumps.
 const IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: i32 = 50100;
 const IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW: i32 = 50101;
 const IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD: i32 = 50102;
@@ -115,11 +110,10 @@ wrap_context_menu_handler! {
             strip_open_link_entries(model);
         }
 
-        // OSR has no platform window for CEF to draw the menu into, so the host
-        // must render it. Snapshot the (already link-stripped) model, then hand
-        // it plus the cursor position and the non-`Send` callback to the GTK
-        // widget keyed by browser id. Returning 1 takes ownership of display;
-        // the widget guarantees exactly one `cont`/`cancel`.
+        // OSR has no platform window for CEF to draw the menu, so the host
+        // renders it: snapshot the (link-stripped) model and hand it + cursor
+        // pos + non-`Send` callback to the GTK widget keyed by browser id.
+        // Returning 1 takes ownership; the widget guarantees one `cont`/`cancel`.
         fn run_context_menu(
             &self,
             browser: Option<&mut Browser>,
@@ -129,7 +123,7 @@ wrap_context_menu_handler! {
             callback: Option<&mut RunContextMenuCallback>,
         ) -> c_int {
             let (Some(model), Some(callback)) = (model, callback) else {
-                // No model/callback to manage → let CEF keep default ownership.
+                // Nothing to manage → let CEF keep default ownership.
                 return 0;
             };
             let callback = callback.clone();
@@ -140,8 +134,7 @@ wrap_context_menu_handler! {
                 return 1;
             }
 
-            // Cursor in view (device-pixel) coordinates — the GTK layer divides
-            // by the scale factor for placement.
+            // Cursor in view (device-pixel) coords; GTK divides by scale factor.
             let (x, y) = match &params {
                 Some(p) => {
                     if log::log_enabled!(log::Level::Debug) {
@@ -174,7 +167,7 @@ impl ShellContextMenuHandlerBuilder {
 }
 
 /// Remove the "Open Link in New Window/Tab/Incognito" entries and any separator
-/// they leave orphaned (leading, trailing, or doubled).
+/// they orphan (leading, trailing, or doubled).
 fn strip_open_link_entries(model: &MenuModel) {
     let count = model.count();
     if count == 0 {
@@ -189,7 +182,7 @@ fn strip_open_link_entries(model: &MenuModel) {
         }
     }
 
-    // Leave unrelated menus (no link-open entries) completely untouched.
+    // Leave unrelated menus (no link-open entries) untouched.
     if remove.iter().any(|&r| r) {
         normalize_separators(&types, &mut remove);
     }
@@ -205,7 +198,7 @@ fn strip_open_link_entries(model: &MenuModel) {
 /// Mark separators that become leading, trailing, or doubled once the forbidden
 /// entries are gone.
 fn normalize_separators(types: &[MenuItemType], remove: &mut [bool]) {
-    // Treat the menu start as a separator boundary so a leading separator drops.
+    // Treat menu start as a separator boundary so a leading separator drops.
     let mut prev_kept_is_separator = true;
     let mut last_kept: Option<usize> = None;
 

@@ -1,13 +1,9 @@
-//! Headerbar spellcheck-language dropdown: model, sorter, and row factory.
+//! Spellcheck-language dropdown: `SpellLang` item type, model, sorter, and row
+//! factories. The window owns the `Gtk.DropDown` and GSettings/webview wiring.
 //!
-//! The window owns the `Gtk.DropDown` (`dictionary_dropdown`, defined in
-//! `window.blp`) and the GSettings/webview wiring; this module provides the
-//! `SpellLang` item type plus builders so that logic stays out of `window.rs`.
-//!
-//! Sorting: starred (favorite) languages float to the top, then alphabetical by
-//! display name. Toggling a row's star updates the item's `favorite` property
-//! and the caller persists `favorite-spell-check-languages`; the caller then
-//! calls `sorter.changed(...)` to re-sort.
+//! Sorting: starred favorites float to the top, then alphabetical. Toggling a
+//! star updates the item's `favorite`; the caller persists
+//! `favorite-spell-check-languages` and calls `sorter.changed(...)` to re-sort.
 
 use std::rc::Rc;
 
@@ -37,8 +33,7 @@ pub fn build_store(favorites: &[String]) -> gtk::gio::ListStore {
     let store = gtk::gio::ListStore::new::<SpellLang>();
     for (code, _name) in KNOWN_LANGUAGES {
         let fav = favorites.iter().any(|f| f == code);
-        // Render via display_name so the dropdown and any other surface share a
-        // single source of truth for friendly names.
+        // display_name keeps friendly names in one source of truth.
         store.append(&SpellLang::new(code, &display_name(code), fav));
     }
     store

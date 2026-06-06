@@ -33,9 +33,9 @@ wrap_render_handler! {
         fn view_rect(&self, browser: Option<&mut Browser>, rect: Option<&mut Rect>) {
             let Some(rect) = rect else { return };
             // Background browsers (M20 pool) report the cached foreground
-            // viewport: the OSR surface is shared and only ever sized to the
-            // foreground, so handing a hidden browser the same rect keeps its
-            // layout consistent for the moment it is switched in.
+            // viewport: the OSR surface is shared and only sized to the
+            // foreground, so the same rect keeps a hidden browser's layout
+            // consistent for when it switches in.
             let s = self.handler.shared.lock();
             let (w, h) = s.size;
             rect.x = 0;
@@ -78,10 +78,9 @@ wrap_render_handler! {
             if buffer.is_null() || width <= 0 || height <= 0 {
                 return;
             }
-            // M20 paint gating: discard frames from non-foreground browsers so a
-            // background account never overwrites the visible GL texture. A
-            // foreground id of 0 means the pool isn't wired (single-browser
-            // startup) and lets every paint through.
+            // M20 paint gating: discard non-foreground frames so a background
+            // account never overwrites the visible GL texture. Foreground id 0 =
+            // pool not wired (startup) → every paint passes.
             {
                 let fg = self.handler.shared.lock().foreground_browser_id;
                 if fg != 0 {
@@ -106,9 +105,8 @@ wrap_render_handler! {
         }
 
         // Fires when an editable field gains focus (input_mode != NONE) — a
-        // reliable signal the renderer's spellcheck service is live. Apply the
-        // dictionaries once per page load here, instead of guessing renderer
-        // readiness with fixed timers in the load handler.
+        // reliable signal the spellcheck service is live. Apply dictionaries
+        // once per load here, vs. guessing readiness with timers.
         fn on_virtual_keyboard_requested(
             &self,
             browser: Option<&mut Browser>,
@@ -125,8 +123,8 @@ wrap_render_handler! {
                 if s.spellcheck_last.as_ref() == Some(&(enabled, langs.clone())) {
                     return; // already applied this exact config — avoid re-check flash
                 }
-                // First apply of this page load → force the [] transition; a
-                // later change (live switch) sets directly (no [] teardown).
+                // First apply of this load → force the [] transition; a live
+                // switch later sets directly (no [] teardown).
                 force_clear = s.spellcheck_last.is_none();
                 s.spellcheck_last = Some((enabled, langs.clone()));
             }

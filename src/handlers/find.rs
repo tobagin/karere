@@ -30,8 +30,8 @@ wrap_find_handler! {
             active_match_ordinal: ::std::os::raw::c_int,
             _final_update: ::std::os::raw::c_int,
         ) {
-            // Single active browser per window: ignore the identifier and key the
-            // result by the active browser implicitly. Recorded for the poll loop.
+            // One active browser per window: ignore the identifier. Recorded for
+            // the poll loop.
             self.handler.shared.lock().find_result = Some(FindResult {
                 count,
                 active: active_match_ordinal,

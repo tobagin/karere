@@ -4,7 +4,6 @@ using Adw 1;
 template $KarerePreferencesDialog: Adw.PreferencesDialog {
   title: _("Preferences");
 
-  // ----------------------------------------------------------------- General
   Adw.PreferencesPage {
     title: _("General");
     icon-name: "preferences-system-symbolic";
@@ -104,7 +103,6 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
     }
   }
 
-  // ----------------------------------------------------------- Notifications
   Adw.PreferencesPage {
     title: _("Notifications");
     icon-name: "preferences-system-notifications-symbolic";
@@ -170,7 +168,6 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
     }
   }
 
-  // --------------------------------------------------------------- Downloads
   Adw.PreferencesPage {
     title: _("Downloads");
     icon-name: "folder-download-symbolic";
@@ -220,7 +217,6 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
     }
   }
 
-  // --------------------------------------------------------------- Spellcheck
   Adw.PreferencesPage {
     title: _("Spellcheck");
     icon-name: "tools-check-spelling-symbolic";
@@ -251,12 +247,11 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
       Adw.ComboRow row_spell_lang {
         title: _("Language");
         subtitle: _("Star a language to pin it to the top");
-        // Model, sorter and star factory populated in code (mirrors headerbar).
+        // Model/sorter/star factory populated in code.
       }
     }
   }
 
-  // ----------------------------------------------------------------- Privacy
   Adw.PreferencesPage {
     title: _("Privacy");
     icon-name: "security-high-symbolic";
@@ -264,7 +259,7 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
     Adw.PreferencesGroup group_permissions {
       title: _("Site Permissions");
       description: _("Stored allow/deny decisions for websites");
-      // Rows populated in code from the M11 permission registry.
+      // Rows populated in code from the permission registry.
 
       [header-suffix]
       Gtk.Button btn_clear_all {
@@ -278,7 +273,6 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
     }
   }
 
-  // ----------------------------------------------------------- Accessibility
   Adw.PreferencesPage {
     title: _("Accessibility");
     icon-name: "preferences-desktop-accessibility-symbolic";

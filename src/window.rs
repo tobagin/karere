@@ -30,32 +30,31 @@ impl KarereWindow {
         self.imp().switch_account(id);
     }
 
-    /// Re-apply notification-sound muting (live `notify-sound-enabled` /
-    /// `notifications-enabled` change).
+    /// Re-apply notification-sound muting on a live settings change.
     pub fn apply_audio_mute(&self) {
         if let Some(web) = self.imp().web_view.borrow().as_ref() {
             web.apply_audio_mute();
         }
     }
 
-    /// Reload every account's browser (live `mobile-layout` change), so each
-    /// re-evaluates the layout gate on its next `on_load_end`.
+    /// Reload every account's browser so each re-evaluates the layout gate on
+    /// its next `on_load_end` (live `mobile-layout` change).
     pub fn reload_all_accounts(&self) {
         if let Some(web) = self.imp().web_view.borrow().as_ref() {
             web.reload_all();
         }
     }
 
-    /// Pre-warm all account browsers (background-start), so WhatsApp loads and
-    /// notifications work before the window is ever shown.
+    /// Pre-warm all account browsers so WhatsApp loads and notifications work
+    /// before the window is ever shown.
     pub fn prewarm(&self) {
         if let Some(web) = self.imp().web_view.borrow().as_ref() {
             web.prewarm();
         }
     }
 
-    /// Run `script` in the page's main frame (used by notification click
-    /// routing to re-enter the page via `__karereActivateNotif`).
+    /// Run `script` in the page's main frame (notification click routing
+    /// re-enters via `__karereActivateNotif`).
     pub fn run_page_js(&self, script: &str) {
         if let Some(web) = self.imp().web_view.borrow().as_ref() {
             web.run_js(script);
@@ -122,8 +121,8 @@ mod imp {
         #[template_child]
         pub zoom_label: TemplateChild<gtk::Label>,
 
-        /// Wide-variant switcher popover (from `account_switcher.blp`), parented
-        /// to `account_button`; its list mirrors `accounts_list`.
+        /// Wide-variant switcher popover, parented to `account_button`; its list
+        /// mirrors `accounts_list`.
         pub account_popover: RefCell<Option<gtk::Popover>>,
         pub accounts_list_popover: RefCell<Option<gtk::ListBox>>,
         pub web_view: RefCell<Option<KarereWebView>>,
@@ -170,7 +169,7 @@ mod imp {
                 .flags(gio::SettingsBindFlags::DEFAULT)
                 .build();
 
-            // M18 6.3: headerbar zoom-box visibility follows the opt-in setting.
+            // Headerbar zoom-box visibility follows the opt-in setting.
             settings
                 .bind("zoom-controls-headerbar", &*self.zoom_box, "visible")
                 .flags(gio::SettingsBindFlags::GET)
@@ -180,20 +179,17 @@ mod imp {
                 Self::load_zoom_for_active_account().max(Self::zoom_floor()),
             );
 
-            // M19 reduce-motion: drive the process-wide GtkSettings
-            // `gtk-enable-animations` (inverted) from the GSetting, with live
-            // propagation. This skips AdwAnimation transitions and toast
-            // slide-ins for every top-level window, which is the intended
-            // application-global behavior.
+            // Reduce-motion: drive process-wide `gtk-enable-animations`
+            // (inverted) from the GSetting, with live propagation. App-global by
+            // design.
             apply_reduce_motion(&settings);
             settings.connect_changed(Some("reduce-motion"), |s, _key| {
                 apply_reduce_motion(s);
             });
 
-            // M19 enhanced focus indicators: toggle the `enhanced-focus` CSS
-            // class on the root window from the `focus-indicators` GSetting.
-            // The bundled stylesheet (loaded at application startup) scopes all
-            // enhanced-focus rules under this class.
+            // Enhanced focus indicators: toggle the `enhanced-focus` CSS class on
+            // the root window from the GSetting; the stylesheet scopes its rules
+            // under that class.
             apply_focus_indicators(&settings, &window);
             settings.connect_changed(
                 Some("focus-indicators"),
@@ -227,8 +223,8 @@ mod imp {
                         return glib::Propagation::Stop;
                     }
 
-                    // "quit", unknown, or forced quit: fall through to M4 CEF-close gate.
-                    // Tear down embedded DevTools first so its browser closes too.
+                    // "quit"/unknown/forced: fall through to CEF-close gate. Tear
+                    // down embedded DevTools first so its browser closes too.
                     this.close_devtools();
                     let web_opt = this.web_view.borrow().clone();
                     let Some(web) = web_opt else {
@@ -268,10 +264,9 @@ mod imp {
             self.setup_account_switcher();
             self.setup_fullscreen_headerbar();
 
-            // M15: keep the tray menu's Show/Hide label in sync with window
-            // visibility (fires on every show/hide, incl. close-to-background).
-            // Also drive notification-sound muting: a hidden window mutes the
-            // foreground browser's ding (when sounds are off).
+            // Keep the tray Show/Hide label in sync with visibility, and drive
+            // notification-sound muting (a hidden window mutes the foreground
+            // browser's ding when sounds are off).
             window.connect_visible_notify(clone!(
                 #[weak(rename_to = this)]
                 self,
@@ -304,8 +299,7 @@ mod imp {
     }
 
     /// Decode account PNG bytes into a `gdk::Texture` for `Adw.Avatar`'s
-    /// custom-image. Uses a Pixbuf loader so it works regardless of the GTK
-    /// `Texture::from_bytes` availability.
+    /// custom-image. Pixbuf loader avoids relying on `Texture::from_bytes`.
     fn texture_from_png(bytes: &[u8]) -> Option<gtk::gdk::Texture> {
         let loader = gtk::gdk_pixbuf::PixbufLoader::new();
         loader.write(bytes).ok()?;
@@ -322,9 +316,8 @@ mod imp {
             web.set_vexpand(true);
 
             // Overlay an offline status page over the GLArea so a failed load
-            // shows a message instead of the blank GLArea / Chromium error page.
-            // Wrap the status page in a `.background` box so it paints an opaque
-            // window-coloured fill that fully covers the view underneath.
+            // shows a message, not a blank GLArea. The `.background` box paints an
+            // opaque fill that fully covers the view underneath.
             let overlay = gtk::Overlay::new();
             overlay.set_hexpand(true);
             overlay.set_vexpand(true);
@@ -352,12 +345,12 @@ mod imp {
         }
 
         /// Poll the shared handler state at 100 ms and surface it on the GTK
-        /// side: crash toasts, the crash-storm dialog, and the offline overlay.
+        /// side: crash toasts, crash-storm dialog, offline overlay.
         ///
-        /// The overlay is driven by the OS network state (via `GNetworkMonitor`)
-        /// as well as the load-error `offline` flag: WhatsApp Web's service
-        /// worker serves a cached page when offline, so a load error never
-        /// fires and the network monitor is the only reliable offline signal.
+        /// The overlay tracks `GNetworkMonitor` as well as the load-error
+        /// `offline` flag: WhatsApp's service worker serves a cached page when
+        /// offline so a load error never fires — the network monitor is the only
+        /// reliable offline signal.
         fn start_state_poll(&self, web: &KarereWebView, offline: &gtk::Box) {
             use gtk::gio::prelude::NetworkMonitorExt;
 
@@ -388,10 +381,9 @@ mod imp {
                     )
                 };
 
-                // M21: a JS-initiated fullscreen request (e.g. WhatsApp video
-                // call) recorded by the display handler. Apply the window state
-                // here on the GTK main thread; the headerbar follows the
-                // resulting `notify::fullscreened` signal.
+                // JS-initiated fullscreen (e.g. WhatsApp video call) from the
+                // display handler. Apply window state on the GTK main thread; the
+                // headerbar follows the resulting `notify::fullscreened`.
                 if let Some(on) = fullscreen
                     && let Some(win) = win_weak.upgrade()
                 {
@@ -426,8 +418,8 @@ mod imp {
 
                 if !completed.is_empty() || !failed.is_empty() {
                     if let Some(win) = win_weak.upgrade() {
-                        // Honour the "Notification Type" setting: in-app toast,
-                        // system notification, or both.
+                        // Honour the "Notification Type" setting: toast, system
+                        // notification, or both.
                         let dl_type = gtk::gio::Settings::new(crate::application::APP_ID)
                             .string("notify-download-type");
                         for dl in completed {
@@ -461,12 +453,10 @@ mod imp {
             });
         }
 
-        /// M21: hide the Adwaita headerbar while the window is fullscreen and
-        /// restore it on exit. Tied to `notify::fullscreened` (not the request)
-        /// so it is correct on every exit path — JS `exitFullscreen()` (via the
-        /// poll-loop `unfullscreen()`), Esc, F11, and window-manager toggles — all
-        /// converge on the resulting window state. `set_visible` is idempotent, so
-        /// this never fights the poll-loop drain (which only sets window state).
+        /// Hide the headerbar while fullscreen, restore on exit. Tied to
+        /// `notify::fullscreened` (not the request) so every exit path — JS
+        /// `exitFullscreen()`, Esc, F11, WM toggles — converges. `set_visible` is
+        /// idempotent, so it never fights the poll-loop drain.
         fn setup_fullscreen_headerbar(&self) {
             let header_bar = self.header_bar.get();
             self.obj().connect_fullscreened_notify(move |win| {
@@ -474,9 +464,9 @@ mod imp {
             });
         }
 
-        /// Withdraw live notification banners when the window regains focus
-        /// (M14 4.1). A short debounce coalesces rapid focus toggles so we don't
-        /// stampede `execute_java_script` on every flicker (4.2).
+        /// Withdraw live notification banners when the window regains focus.
+        /// A short debounce coalesces rapid focus toggles so we don't stampede
+        /// `execute_java_script` on every flicker.
         fn setup_focus_withdraw(&self) {
             let window = self.obj();
             let pending: Rc<RefCell<Option<glib::SourceId>>> = Rc::new(RefCell::new(None));
@@ -485,7 +475,7 @@ mod imp {
                 if !win.is_active() {
                     return;
                 }
-                // M15: focus clears the unread tray indicator.
+                // Focus clears the unread tray indicator.
                 if let Some(app) = gio::Application::default() {
                     app.activate_action("set-unread", Some(&0u32.to_variant()));
                 }
@@ -517,11 +507,11 @@ mod imp {
             });
         }
 
-        // ---- M20 account switcher ------------------------------------------
+        // ---- account switcher ----------------------------------------------
 
         pub fn setup_account_switcher(&self) {
-            // Instantiate the wide-variant popover from its own resource and
-            // parent it to the header account button.
+            // Instantiate the wide-variant popover and parent it to the header
+            // account button.
             let builder = gtk::Builder::from_resource(
                 "/io/github/tobagin/karere/ui/account_switcher.ui",
             );
@@ -532,8 +522,7 @@ mod imp {
             *self.accounts_list_popover.borrow_mut() =
                 builder.object::<gtk::ListBox>("accounts_list_popover");
 
-            // Header button opens the popover on wide windows, the bottom sheet
-            // on narrow ones.
+            // Wide windows: popover; narrow: bottom sheet.
             self.account_button.connect_clicked(clone!(
                 #[weak(rename_to = this)]
                 self,
@@ -571,7 +560,7 @@ mod imp {
             let mgr = crate::accounts::manager();
             let accounts = mgr.get_accounts_sorted();
 
-            // Disable "Add account" at the hard cap (matches the Alt+1..9 jumps).
+            // Disable "Add account" at the hard cap.
             if let Some(add) = self
                 .obj()
                 .lookup_action("add-account")
@@ -595,7 +584,7 @@ mod imp {
                 }
             }
 
-            // Mirror the account list into the tray (§9): name + avatar pixmap.
+            // Mirror the account list into the tray: name + avatar pixmap.
             let summaries = accounts
                 .iter()
                 .map(|a| crate::tray::AccountSummary {
@@ -632,8 +621,8 @@ mod imp {
                 .title(glib::markup_escape_text(&title))
                 .activatable(true)
                 .build();
-            // Title = account name (pushname); subtitle = the user label. Before
-            // pairing (no pushname yet) show the waiting state instead.
+            // Title = pushname; subtitle = user label. Before pairing (no
+            // pushname yet) show the waiting state instead.
             if runtime.awaiting_pairing && account.pushname.is_none() {
                 row.set_subtitle(&gettextrs::gettext("Waiting for QR scan…"));
             } else if let Some(label) = account.user_label.as_deref() {
@@ -668,8 +657,7 @@ mod imp {
             }
 
             // Unread dot: a banner fired for this account while it was not the
-            // focused foreground. Cleared on focus/switch (see `switch_account`
-            // and the `is-active` handler).
+            // focused foreground. Cleared on focus/switch.
             if runtime.has_unread {
                 let dot = gtk::Label::new(Some("●"));
                 dot.add_css_class("accent");
@@ -695,8 +683,7 @@ mod imp {
             let remove = gtk::Button::from_icon_name("user-trash-symbolic");
             remove.add_css_class("flat");
             remove.set_valign(gtk::Align::Center);
-            // The last remaining account cannot be removed (there must always be
-            // at least one).
+            // The last remaining account cannot be removed.
             remove.set_sensitive(can_remove);
             remove.set_tooltip_text(Some(&if can_remove {
                 gettextrs::gettext("Remove account")
@@ -765,20 +752,18 @@ mod imp {
             crate::accounts::manager().activate(id);
             if let Some(web) = self.web_view.borrow().as_ref() {
                 web.spawn_account(id, true);
-                // M18 4.2: reflect the new account's zoom. An already-loaded
-                // browser retains its CEF zoom level across hide/show; a
-                // freshly-spawned one re-applies on its own first `on_load_end`.
-                // Either way the headerbar label must track the active account.
+                // Reflect the new account's zoom. A loaded browser retains its CEF
+                // zoom across hide/show; a fresh one re-applies on its first
+                // `on_load_end`. Either way the headerbar label must track it.
                 let z = Self::load_zoom_for_active_account().max(Self::zoom_floor());
                 web.set_zoom_linear(z);
                 self.update_zoom_label(z);
             }
         }
 
-        /// `win.add-account`: create an account with a unique default label, give
-        /// it the foreground browser so its QR is visible immediately, and close
-        /// the switcher. No upfront prompt — the real name fills in from the
-        /// Store hook on pairing; the label is editable later via the pencil.
+        /// `win.add-account`: create an account with a default label, give it the
+        /// foreground browser so its QR shows immediately, close the switcher. No
+        /// upfront prompt — the real name fills in from the Store hook on pairing.
         fn add_account(&self) {
             let mgr = crate::accounts::manager();
             let count = mgr.get_accounts_sorted().len();
@@ -821,7 +806,7 @@ mod imp {
                     .title(title)
                     .subtitle(value.unwrap_or("—"))
                     .build();
-                r.set_sensitive(false); // greyed / read-only
+                r.set_sensitive(false); // read-only
                 r.add_css_class("property");
                 r
             };
@@ -943,22 +928,20 @@ mod imp {
                             return;
                         }
                         let mgr = crate::accounts::manager();
-                        // Was the removed account the visible one?
                         let was_active = mgr.active().map(|a| a.id) == Some(id.clone());
                         if let Some(web) = this.web_view.borrow().as_ref() {
                             web.close_account(&id);
                         }
                         mgr.remove(&id);
-                        // Wipe the on-disk session shortly after the browser
-                        // closes (give CEF a moment to release the profile).
+                        // Wipe the on-disk session after a delay (let CEF release
+                        // the profile first).
                         let id_del = id.clone();
                         glib::timeout_add_local_once(
                             std::time::Duration::from_millis(1500),
                             move || crate::accounts::delete_session_dir(&id_del),
                         );
                         // Removing the foreground account leaves no visible
-                        // browser; promote the MRU-first survivor so the view
-                        // doesn't go blank until restart.
+                        // browser; promote the MRU-first survivor.
                         if was_active
                             && let Some(next) = mgr.get_accounts_sorted().first()
                         {
@@ -1070,7 +1053,7 @@ mod imp {
             ));
             window.add_action(&add_account);
 
-            // Account-switch shortcuts: cycle next/prev + jump-to-Nth (MRU order).
+            // Account-switch shortcuts: cycle next/prev + jump-to-Nth (MRU).
             let next_account = gio::SimpleAction::new("next-account", None);
             next_account.connect_activate(clone!(
                 #[weak(rename_to = this)]
@@ -1101,9 +1084,8 @@ mod imp {
             ));
             window.add_action(&switch_index);
 
-            // M18: zoom actions. Each steps the active account's linear zoom,
-            // applies it through the CEF boundary (respecting the accessibility
-            // floor), persists it, and refreshes the headerbar label.
+            // Zoom actions: step the active account's linear zoom, apply through
+            // CEF (respecting the accessibility floor), persist, refresh label.
             for verb in ["zoom-in", "zoom-out", "zoom-reset"] {
                 let action = gio::SimpleAction::new(verb, None);
                 let verb_owned = verb.to_string();
@@ -1118,14 +1100,13 @@ mod imp {
     }
 
     impl KarereWindow {
-        /// Effective accessibility floor (linear). (M18, delegates to the
-        /// shared `web_view::zoom_floor`.)
+        /// Effective accessibility floor (linear); delegates to
+        /// `web_view::zoom_floor`.
         fn zoom_floor() -> f64 {
             crate::web_view::zoom_floor()
         }
 
-        /// Persisted linear zoom for the active account (M20 `Account::zoom_level`),
-        /// defaulting to `1.0`. (M18 2.2)
+        /// Persisted linear zoom for the active account, defaulting to `1.0`.
         fn load_zoom_for_active_account() -> f64 {
             crate::accounts::manager()
                 .active()
@@ -1133,8 +1114,8 @@ mod imp {
                 .unwrap_or(1.0)
         }
 
-        /// Persist `linear` as the active account's zoom (M18 2.3). Does not
-        /// emit `accounts-changed` (see `AccountManager::set_zoom`).
+        /// Persist `linear` as the active account's zoom. Does not emit
+        /// `accounts-changed` (see `AccountManager::set_zoom`).
         fn persist_zoom(linear: f64) {
             if let Some(a) = crate::accounts::manager().active() {
                 crate::accounts::manager().set_zoom(&a.id, linear);
@@ -1142,7 +1123,7 @@ mod imp {
         }
 
         /// Apply `linear` (lifted to the floor) to the live browser, persist the
-        /// effective value, and update the headerbar label. (M18 2.4 / 5.2)
+        /// effective value, and update the headerbar label.
         fn apply_and_persist_zoom(&self, linear: f64) {
             let effective = linear.max(Self::zoom_floor());
             if let Some(web) = self.web_view.borrow().as_ref() {
@@ -1152,20 +1133,20 @@ mod imp {
             self.update_zoom_label(effective);
         }
 
-        /// Handle `win.zoom-in` / `win.zoom-out` / `win.zoom-reset`. (M18 3.x)
+        /// Handle `win.zoom-in` / `win.zoom-out` / `win.zoom-reset`.
         fn zoom_step(&self, verb: &str) {
             let floor = Self::zoom_floor();
             let cur = Self::load_zoom_for_active_account().max(floor);
             let target = match verb {
                 "zoom-in" => cur * 1.1,
-                // Clamp the step-down up to the floor; never cross it. (5.3)
+                // Clamp the step-down at the floor; never cross it.
                 "zoom-out" => (cur / 1.1).max(floor),
                 _ => 1.0_f64.max(floor),
             };
             self.apply_and_persist_zoom(target);
         }
 
-        /// Refresh the headerbar `<int>%` label from a linear factor. (M18 6.4)
+        /// Refresh the headerbar `<int>%` label from a linear factor.
         fn update_zoom_label(&self, linear: f64) {
             self.zoom_label
                 .set_label(&format!("{}%", (linear * 100.0).round() as i32));
@@ -1197,9 +1178,9 @@ mod imp {
         /// Open embedded DevTools: dock a fresh OSR view in the bottom pane and
         /// load the CDP DevTools frontend for the active page into it.
         ///
-        /// CEF 148 cannot render `ShowDevTools` windowless, so DevTools is the
-        /// frontend page served by `--remote-debugging-port`, loaded like any
-        /// other URL. The target URL is resolved off the main thread.
+        /// CEF 148 can't render `ShowDevTools` windowless, so DevTools is the
+        /// frontend page served by `--remote-debugging-port`, loaded as a URL.
+        /// The target URL is resolved off the main thread.
         fn open_devtools(&self) {
             if self.web_view.borrow().is_none() {
                 log::warn!("open_devtools: no web view");
@@ -1265,18 +1246,17 @@ mod imp {
             self.devtools_container.set_visible(false);
 
             // Removing the second GLArea leaves the main view without a fresh
-            // render; force it to repaint so it doesn't stay black.
+            // render; force a repaint so it doesn't stay black.
             if let Some(main) = self.web_view.borrow().as_ref() {
                 let main = main.clone();
                 glib::idle_add_local_once(move || main.queue_render());
             }
         }
 
-        /// Wire the headerbar spellcheck-language dropdown (M16): a sorted view
-        /// of `KNOWN_LANGUAGES` with star-pin favorites. Selecting a language
-        /// persists `spell-checking-languages` and switches the live browser via
-        /// `KarereWebView::set_spellcheck_languages` (no reload). Toggling a row
-        /// star persists `favorite-spell-check-languages` and re-sorts.
+        /// Wire the headerbar spellcheck-language dropdown: a sorted view of
+        /// `KNOWN_LANGUAGES` with star-pin favorites. Selection persists
+        /// `spell-checking-languages` and switches the live browser (no reload);
+        /// toggling a star persists `favorite-spell-check-languages` and re-sorts.
         fn setup_spellcheck(&self) {
             use crate::spellcheck_ui::{self, SpellLang};
             use gtk::gio::prelude::SettingsExtManual;
@@ -1285,8 +1265,8 @@ mod imp {
             let settings = gio::Settings::new(APP_ID);
             let dropdown = self.dictionary_dropdown.get();
 
-            // Visible only when spellcheck is enabled AND the headerbar control
-            // is opted in; keep it in sync with both keys.
+            // Visible only when spellcheck is enabled AND the headerbar control is
+            // opted in; track both keys.
             let spell_dropdown_visible =
                 |s: &gio::Settings| s.boolean("enable-spell-checking") && s.boolean("spellcheck-headerbar");
             dropdown.set_visible(spell_dropdown_visible(&settings));
@@ -1302,7 +1282,7 @@ mod imp {
             }
 
             // Live auto-correct toggle: push the flag into the running page (the
-            // load handler also re-seeds it on every navigation).
+            // load handler re-seeds it on every navigation).
             let win_ac = self.obj().downgrade();
             settings.connect_changed(
                 Some("enable-auto-correct"),
@@ -1347,12 +1327,10 @@ mod imp {
             ));
             dropdown.set_list_factory(Some(&spellcheck_ui::build_list_factory(on_toggle)));
 
-            // Resolve the effective startup language: explicit list first, else
-            // a single auto-detected code (mirrors cef_runtime). The Chromium
-            // command-line switch alone does NOT populate `spellcheck.dictionaries`
-            // — only `set_preference` does — so the active list must be pushed to
-            // the live browser at startup, otherwise nothing is checked until the
-            // user changes the dropdown.
+            // Resolve the effective startup language: explicit list first, else a
+            // single auto-detected code. The command-line switch alone does NOT
+            // populate `spellcheck.dictionaries` (only `set_preference` does), so
+            // the list must be pushed to the live browser at startup.
             let startup_langs = resolve_startup_languages(&settings);
 
             // Initialise the active row from the resolved language BEFORE wiring
@@ -1369,10 +1347,9 @@ mod imp {
                 }
             }
 
-            // NOTE: the startup language is applied to the browser by the load
-            // handler on the first main-frame `on_load_end` (setting the
-            // preference before the page/spellcheck service is ready is ignored).
-            // Here we only seed the dropdown's visible selection.
+            // NOTE: the load handler applies the startup language on the first
+            // main-frame `on_load_end` (setting it before the spellcheck service
+            // is ready is ignored). Here we only seed the dropdown's selection.
 
             let win = self.obj().downgrade();
             dropdown.connect_selected_item_notify(clone!(
@@ -1395,10 +1372,10 @@ mod imp {
 
         /// Wire the find-in-page search bar to Chromium's `BrowserHost::find`.
         fn setup_search(&self) {
-            // Standard reveal/hide + Escape handling provided by GtkSearchBar.
+            // Reveal/hide + Escape handled by GtkSearchBar.
             self.search_bar.connect_entry(&*self.search_entry);
 
-            // Fresh search on every keystroke (find_next=false restarts the match set).
+            // Fresh search per keystroke (find_next=false restarts the match set).
             self.search_entry.connect_search_changed(clone!(
                 #[weak(rename_to = this)]
                 self,
@@ -1417,7 +1394,7 @@ mod imp {
                 }
             ));
 
-            // Next/Prev reuse the last query with find_next=true so Chromium cycles.
+            // Next/Prev reuse the last query (find_next=true) so Chromium cycles.
             self.find_next_button.connect_clicked(clone!(
                 #[weak(rename_to = this)]
                 self,
@@ -1461,9 +1438,8 @@ mod imp {
         }
     }
 
-    /// M19: mirror the `reduce-motion` GSetting onto the process-wide
-    /// `GtkSettings::gtk-enable-animations` property (inverted). Affects all
-    /// top-level windows by design.
+    /// Mirror `reduce-motion` onto process-wide
+    /// `GtkSettings::gtk-enable-animations` (inverted). App-global by design.
     fn apply_reduce_motion(settings: &gio::Settings) {
         use gtk::prelude::SettingsExt;
         let reduce = settings.boolean("reduce-motion");
@@ -1472,9 +1448,8 @@ mod imp {
         }
     }
 
-    /// M19: toggle the `enhanced-focus` CSS class on the root window to match
-    /// the `focus-indicators` GSetting. The bundled stylesheet scopes its
-    /// high-visibility focus rules under that class.
+    /// Toggle the `enhanced-focus` CSS class on the root window to match
+    /// `focus-indicators`; the stylesheet scopes its focus rules under it.
     fn apply_focus_indicators(settings: &gio::Settings, window: &super::KarereWindow) {
         use gtk::prelude::{SettingsExt, WidgetExt};
         if settings.boolean("focus-indicators") {
@@ -1491,8 +1466,7 @@ mod imp {
     }
 
     /// Effective spellcheck languages at startup (explicit selection, else
-    /// closest auto-detected locale). Thin wrapper over
-    /// `spellcheck::resolve_languages` reading the app's GSettings.
+    /// closest auto-detected locale). Wraps `spellcheck::resolve_languages`.
     fn resolve_startup_languages(settings: &gio::Settings) -> Vec<String> {
         use gtk::prelude::SettingsExt;
         let explicit = strv_vec(settings, "spell-checking-languages");
@@ -1519,9 +1493,9 @@ mod imp {
         dialog.present(Some(win));
     }
 
-    /// Raise the completion toast for a finished download: `"<name> downloaded"`
-    /// with "Open" (the file) and "Show in Folder" (its parent) buttons, both
-    /// routed through the `app.open-download` action.
+    /// Completion toast for a finished download: `"<name> downloaded"` with
+    /// "Open" (file) and "Show in Folder" (parent) buttons, both routed through
+    /// the `app.open-download` action.
     fn show_download_toast(
         overlay: &adw::ToastOverlay,
         win: &super::KarereWindow,
@@ -1534,8 +1508,8 @@ mod imp {
             .map(|p| p.to_string_lossy().into_owned())
             .unwrap_or_else(|| file_path.clone());
 
-        // AdwToast carries a single native action button; a custom title widget
-        // lets us offer both "Open" and "Show in Folder".
+        // AdwToast has only one native action button; a custom title widget lets
+        // us offer both "Open" and "Show in Folder".
         let row = gtk::Box::new(gtk::Orientation::Horizontal, 12);
         row.set_valign(gtk::Align::Center);
         let label = gtk::Label::new(Some(&format!("{name} downloaded")));
@@ -1578,8 +1552,8 @@ mod imp {
         overlay.add_toast(toast);
     }
 
-    /// Surface a completed download as a desktop (system) notification with an
-    /// Open action, for the "System Notification" / "Both" download type.
+    /// Completed download as a system notification with an Open action (for the
+    /// "System Notification" / "Both" download type).
     fn show_download_notification(dl: &DownloadCompleted) {
         let Some(app) = gtk::gio::Application::default() else {
             return;
@@ -1590,7 +1564,7 @@ mod imp {
         let notif = gtk::gio::Notification::new("Download complete");
         notif.set_body(Some(name));
         notif.set_icon(&gtk::gio::ThemedIcon::new("folder-download-symbolic"));
-        // Click / Open → reuse the app.open-download action with the file path.
+        // Click / Open → app.open-download with the file path.
         notif.set_default_action_and_target_value("app.open-download", Some(&file_path.to_variant()));
         notif.add_button_with_target_value(
             "Open",
@@ -1624,8 +1598,7 @@ mod imp {
         dialog.present(Some(win));
     }
 
-    /// Best-effort: open the directory where logs are written. A dedicated
-    /// in-app log viewer is future work.
+    /// Best-effort: open the directory where logs are written.
     fn open_logs() {
         let dir = glib::user_data_dir().join(APP_ID);
         let uri = format!("file://{}", dir.display());

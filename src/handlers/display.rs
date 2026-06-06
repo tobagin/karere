@@ -5,10 +5,9 @@ use cef::{
 
 use super::SharedRef;
 
-/// Map a CEF `CursorType` to a GTK/CSS cursor name (the names
-/// `gdk::Cursor::from_name` understands). OSR gives us no platform cursor, so we
-/// translate and let the GLArea set it. Unmapped/custom types fall back to
-/// `"default"`.
+/// Map a CEF `CursorType` to a GTK/CSS cursor name (`gdk::Cursor::from_name`).
+/// OSR gives no platform cursor, so we translate and let the GLArea set it.
+/// Unmapped/custom types fall back to `"default"`.
 fn cursor_css_name(t: CursorType) -> &'static str {
     use cef::sys::cef_cursor_type_t as C;
     match *t.as_ref() {
@@ -77,12 +76,10 @@ wrap_display_handler! {
             log::debug!("title: {t}");
         }
 
-        // M21: WhatsApp video-call UI calls `element.requestFullscreen()`,
-        // surfaced here by CEF. This runs on the CEF UI thread, so it must NOT
-        // touch GTK widgets directly — it only records the request in
-        // `SharedState`. The window poll loop (GTK main thread) drains it and
-        // calls `window.fullscreen()` / `unfullscreen()`; headerbar visibility
-        // then follows the window's `notify::fullscreened` signal.
+        // M21: WhatsApp's `element.requestFullscreen()` surfaces here. On the CEF
+        // UI thread, so it must NOT touch GTK widgets — just record the request in
+        // `SharedState`; the window poll loop drains it and calls
+        // `window.fullscreen()`/`unfullscreen()`.
         fn on_fullscreen_mode_change(
             &self,
             _browser: Option<&mut Browser>,
@@ -91,9 +88,8 @@ wrap_display_handler! {
             self.handler.shared.lock().fullscreen_request = Some(fullscreen != 0);
         }
 
-        // OSR: CEF never sets the platform cursor, so record the requested
-        // cursor (as a CSS name) for the widget tick callback to apply. Returns
-        // 1 to signal we handled the cursor.
+        // OSR: CEF never sets the platform cursor, so record it (as a CSS name)
+        // for the widget tick callback to apply. Returns 1 = handled.
         fn on_cursor_change(
             &self,
             _browser: Option<&mut Browser>,

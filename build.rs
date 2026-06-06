@@ -26,14 +26,13 @@ fn main() {
     println!("cargo:rerun-if-changed=data/karere.gresource.xml");
 }
 
-/// Concatenate every `data/js/*.js` file (lexical filename order) into
-/// `$OUT_DIR/injected_bundle.js`, which the renderer embeds via `include_str!`.
-/// Lexical order makes `00-bootstrap.js` run before any feature script.
+/// Concatenate `data/js/*.js` (lexical order, so `00-bootstrap.js` runs first) into
+/// `$OUT_DIR/injected_bundle.js`, embedded by the renderer via `include_str!`.
 fn bundle_js() {
     let out_dir = env::var("OUT_DIR").expect("OUT_DIR not set by cargo");
     let js_dir = PathBuf::from("data/js");
 
-    // Re-bundle when the directory contents change (additions/removals) ...
+    // Re-bundle on add/remove ...
     println!("cargo:rerun-if-changed=data/js");
 
     let mut files: Vec<PathBuf> = std::fs::read_dir(&js_dir)
@@ -45,7 +44,7 @@ fn bundle_js() {
 
     let mut bundle = String::new();
     for path in &files {
-        // ... and when any individual file's contents change.
+        // ... and on per-file edits.
         println!("cargo:rerun-if-changed={}", path.display());
 
         let name = path
@@ -72,7 +71,7 @@ fn bundle_js() {
         .unwrap_or_else(|e| panic!("failed to write {}: {e}", out_file.display()));
 }
 
-/// True when `stem` starts with the `NN-` convention (two digits + hyphen).
+/// True when `stem` starts with `NN-` (two digits + hyphen).
 fn has_order_prefix(stem: &str) -> bool {
     let b = stem.as_bytes();
     b.len() >= 3 && b[0].is_ascii_digit() && b[1].is_ascii_digit() && b[2] == b'-'

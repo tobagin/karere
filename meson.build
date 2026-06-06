@@ -56,7 +56,7 @@ custom_target('cargo-build',
 )
 
 subdir('data')
-subdir('po')  # po/meson.build calls i18n.gettext('karere', preset: 'glib') verbatim from karere v3
+subdir('po')  # po/meson.build: i18n.gettext('karere', preset: 'glib'), verbatim from v3
 
 gnome.post_install(
   glib_compile_schemas: true,

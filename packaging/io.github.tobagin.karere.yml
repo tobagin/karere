@@ -7,18 +7,16 @@ sdk-extensions:
 command: karere
 appstream-compose: true
 
-# Detached debug symbols live in a separate, optional extension so the base
-# bundle stays small. flatpak-builder auto-populates /app/lib/debug/<binary>.debug
-# (the karere binary is built unstripped — see Cargo.toml [profile.release]).
-# `coredumpctl debug karere` picks them up once the user installs the extension.
+# Detached debug symbols extension; flatpak-builder fills /app/lib/debug from the
+# unstripped binary (see Cargo.toml) to keep the base bundle small.
 add-extensions:
   io.github.tobagin.karere.Debug:
     directory: lib/debug
     autodelete: true
     no-autodownload: true
 
-# Drop dev-only artifacts Flathub reviewers flag. /lib/cef/include is NOT under
-# /include, so CEF's headers (consumed by the embedded loader) survive this.
+# Drop dev-only artifacts Flathub flags. /lib/cef/include is NOT under /include,
+# so CEF's headers (used by the embedded loader) survive the /include cleanup.
 cleanup:
   - '*.la'
   - '*.a'
@@ -30,8 +28,7 @@ build-options:
     CARGO_HOME: /run/build/karere/cargo
     CARGO_NET_OFFLINE: 'true'
     CEF_PATH: /app/lib/cef
-    # Cap parallel rustc jobs so the heavy crate graph (cef, gtk, ...) does not
-    # spike memory and trip the OOM killer (build was SIGKILLed with code 137).
+    # Cap parallel rustc jobs so the heavy crate graph doesn't OOM-kill (137).
     CARGO_BUILD_JOBS: '6'
 
 finish-args:
@@ -41,28 +38,22 @@ finish-args:
   - --socket=fallback-x11
   - --socket=pulseaudio
   - --device=all
-  # xdg-download (not home) to pass flatpak-builder-lint without a
-  # home-filesystem exception. Downloads land in ~/Downloads; arbitrary
-  # folders outside it are not reachable. Revisit if a home exception is
-  # granted for the app-id.
+  # xdg-download (not home) passes the linter without a home-filesystem exception;
+  # downloads land in ~/Downloads.
   - --filesystem=xdg-download
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
-  # NOTE: autostart is handled by the XDG Background portal (ashpd `background`
-  # feature), so no --filesystem=xdg-config/autostart and no
-  # --talk-name=org.freedesktop.portal.Desktop are needed — portal busnames are
-  # granted automatically and the Flathub linter flags both as unnecessary.
+  # Autostart goes through the XDG Background portal (ashpd) — no autostart
+  # filesystem or portal.Desktop talk-name needed (portal busnames auto-granted).
   - --env=LD_LIBRARY_PATH=/app/lib/cef
 
 modules:
   - name: cef-binaries
     buildsystem: simple
     build-commands:
-      # Merge the CEF tarball into one flat layout: cmake prereqs (include/,
-      # libcef_dll/, cmake/, CMakeLists.txt) + Release/ binaries + Resources/
-      # data files. cef-dll-sys build.rs runs cmake against this dir and
-      # copies all root files (plus locales/) next to the compiled binary, so
-      # both build-time and runtime expect the merged layout.
+      # Merge the CEF tarball into one flat layout (cmake prereqs + Release/ +
+      # Resources/): cef-dll-sys build.rs cmakes this dir and copies root files
+      # next to the binary, so build and runtime both need it merged.
       - mkdir -p /app/lib/cef
       - cp -a include libcef_dll cmake CMakeLists.txt /app/lib/cef/
       - cp -a Release/. /app/lib/cef/
@@ -70,11 +61,9 @@ modules:
       - chmod +x /app/lib/cef/chrome-sandbox || true
       - install -Dm644 archive.json /app/lib/cef/archive.json
     sources:
-      # Proprietary-codec CEF (H.264/AAC) built via tools/build-cef-codecs.sh,
-      # hosted on the cef-148.0.10-proprietary-codecs release. chromium-148.0.7778.218.
-      # API-compatible with the cef 148.0.8 bindings (CEF freezes its C API per
-      # branch); the archive.json below keeps the .8 name so the crate's version
-      # check passes.
+      # Proprietary-codec CEF (H.264/AAC) from tools/build-cef-codecs.sh. C-API
+      # compatible with the cef 148.0.8 bindings (CEF freezes its C API per branch);
+      # archive.json keeps the .8 name so the crate's version check passes.
       - type: archive
         only-arches: [x86_64]
         url: https://github.com/tobagin/karere/releases/download/cef-148.0.10-proprietary-codecs/cef_binary_148.0.10%2Bg7ee53f5%2Bchromium-148.0.7778.218_linux64_minimal.zip

@@ -1,25 +1,8 @@
-//! Locale helpers for the Chromium spellchecker.
-//!
-//! Ported from karere v3's `spellcheck.rs`, adapted to gtk-cef-shell: the
-//! Hunspell dictionary-directory scanning is dropped (Chromium auto-downloads
-//! its own `.bdic` files), `parse_locale` returns owned strings, `region_name`
-//! is public, `short_code` yields the lowercase language part, and a
-//! `KNOWN_LANGUAGES` table of Chromium-supported spellcheck locales is added.
-//!
-//! BCP-47 note: Chromium's `--spell-check-languages` switch and the underlying
-//! `.bdic` filenames use hyphenated codes (`en-US`, `pt-BR`). POSIX `LANG`
-//! environment values use underscores and may carry an encoding/modifier
-//! suffix (`en_GB.UTF-8`, `pt_BR@euro`). `parse_locale` normalises both.
+//! Locale helpers for the Chromium spellchecker. Normalises POSIX `LANG`
+//! (`en_GB.UTF-8`) to BCP-47 (`en-GB`); Chromium auto-downloads `.bdic` dicts.
 
-/// Splits a locale code like `en_GB.UTF-8`, `pt-BR`, or `en` into its language
-/// and optional region parts, stripping any `.encoding` / `@modifier` suffix.
-///
-/// Returns `None` for an empty input. The region (when present) is upper-cased
-/// and the language lower-cased so callers get canonical BCP-47 casing.
-///
-/// `parse_locale("en_GB.UTF-8")` → `Some(("en", Some("GB")))`.
+/// `parse_locale("en_GB.UTF-8")` → `Some(("en", Some("GB")))`; `None` if empty.
 pub fn parse_locale(code: &str) -> Option<(String, Option<String>)> {
-    // Drop POSIX encoding (".UTF-8") and modifier ("@euro") suffixes.
     let base = code
         .split(['.', '@'])
         .next()
@@ -46,11 +29,8 @@ pub fn parse_locale(code: &str) -> Option<(String, Option<String>)> {
     }
 }
 
-/// Resolve the effective spellcheck language list: the explicit user selection
-/// if non-empty, else a single auto-detected code from the user's preferred
-/// locales (mapped to the closest Chromium-supported variant) when `auto_detect`
-/// is on, else empty. Shared by the headerbar dropdown init, the CEF
-/// command-line wiring, and the load handler so all agree.
+/// Effective language list: explicit selection if non-empty, else one
+/// auto-detected supported code when `auto_detect`, else empty.
 pub fn resolve_languages(explicit: &[String], auto_detect: bool) -> Vec<String> {
     let explicit: Vec<String> = explicit
         .iter()
@@ -72,13 +52,8 @@ pub fn resolve_languages(explicit: &[String], auto_detect: bool) -> Vec<String> 
         .collect()
 }
 
-/// Map an arbitrary locale code to the closest Chromium-supported spellcheck
-/// code in `KNOWN_LANGUAGES`, or `None` if the language isn't supported at all.
-///
-/// Resolution order: exact `lang-REGION` → bare `lang` → a sensible default
-/// region for languages that only ship regional dictionaries → any variant with
-/// the same language. This lets auto-detect handle locales like `en_IE` or
-/// `en_GH` (no `.bdic`) by falling back to British/US English.
+/// Closest code in `KNOWN_LANGUAGES`, or `None` if unsupported. Order: exact
+/// `lang-REGION` → bare `lang` → default region → any same-language variant.
 pub fn best_supported_code(code: &str) -> Option<String> {
     let (lang, region) = parse_locale(code)?;
     let has = |c: &str| KNOWN_LANGUAGES.iter().any(|(k, _)| *k == c);
@@ -92,10 +67,7 @@ pub fn best_supported_code(code: &str) -> Option<String> {
     if has(&lang) {
         return Some(lang);
     }
-    // Languages whose `.bdic` set is region-only: pick the closest default for
-    // regions Chromium doesn't ship. English defaults to en-GB — Ireland (IE),
-    // Ghana, New Zealand, South Africa, India, etc. all use British-aligned
-    // English; the directly-supported en-AU/CA/US already match exactly.
+    // Default unshipped regions to the closest variant (en_IE → en-GB).
     let default = match lang.as_str() {
         "en" => Some("en-GB"),
         "pt" => Some("pt-PT"),
@@ -114,17 +86,14 @@ pub fn best_supported_code(code: &str) -> Option<String> {
         .map(str::to_string)
 }
 
-/// The lowercase language part of a locale code: `en-GB` → `en`, `pt_BR` → `pt`.
-/// Falls back to the trimmed/lower-cased input when no region is present.
+/// Lower-cased language part: `en-GB` → `en`.
 pub fn short_code(code: &str) -> String {
     parse_locale(code)
         .map(|(lang, _)| lang)
         .unwrap_or_else(|| code.trim().to_lowercase())
 }
 
-/// User-facing display name for a locale code.
-/// `en-GB` → `English (United Kingdom)`, `pt-BR` → `Portuguese (Brazil)`.
-/// Falls back to the raw code when the language is unknown.
+/// `en-GB` → `English (United Kingdom)`; raw code if unknown.
 pub fn display_name(code: &str) -> String {
     let Some((lang, region)) = parse_locale(code) else {
         return code.to_string();
@@ -136,8 +105,7 @@ pub fn display_name(code: &str) -> String {
     }
 }
 
-/// English display name for an ISO 3166-1 region (or the `419` UN M.49 code for
-/// Latin America). Input is case-insensitive. Returns `None` if unknown.
+/// English name for an ISO 3166-1 region (or `419` = Latin America).
 pub fn region_name(code: &str) -> Option<&'static str> {
     Some(match code.to_uppercase().as_str() {
         "419" => "Latin America",
@@ -169,8 +137,7 @@ pub fn region_name(code: &str) -> Option<&'static str> {
     })
 }
 
-/// English display name for an ISO 639 language code. Covers the languages
-/// Chromium ships `.bdic` dictionaries for; returns `None` otherwise.
+/// English name for an ISO 639 language code Chromium ships a `.bdic` for.
 fn lang_name(code: &str) -> Option<&'static str> {
     Some(match code {
         "af" => "Afrikaans",
@@ -218,11 +185,6 @@ fn lang_name(code: &str) -> Option<&'static str> {
 }
 
 /// Chromium-supported spellcheck locales as `(BCP-47 code, friendly name)`.
-///
-/// This mirrors the dictionary set Chromium can download as `.bdic` files. A
-/// code absent here may still work if Chromium adds it; conversely Chromium
-/// silently falls back when a chosen `.bdic` is unavailable. The friendly
-/// names match `display_name(code)`.
 pub static KNOWN_LANGUAGES: &[(&str, &str)] = &[
     ("af", "Afrikaans"),
     ("bg", "Bulgarian"),
@@ -312,15 +274,11 @@ mod tests {
 
     #[test]
     fn best_supported_maps_to_chromium_set() {
-        // Exact matches pass through.
         assert_eq!(best_supported_code("pt_BR"), Some("pt-BR".to_string()));
         assert_eq!(best_supported_code("en_US.UTF-8"), Some("en-US".to_string()));
-        // Unsupported English regions fall back to British English.
         assert_eq!(best_supported_code("en_IE"), Some("en-GB".to_string()));
         assert_eq!(best_supported_code("en_GH"), Some("en-GB".to_string()));
-        // Bare language present in the set.
         assert_eq!(best_supported_code("de"), Some("de".to_string()));
-        // Unknown language → None.
         assert_eq!(best_supported_code("zz"), None);
     }
 

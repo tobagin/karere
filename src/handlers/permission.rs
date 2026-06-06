@@ -29,7 +29,7 @@ wrap_permission_handler! {
             let mask = requested_permissions;
             let Some(cb) = callback else { return 0 };
 
-            // A remembered decision short-circuits the dialog.
+            // Remembered decision short-circuits the dialog.
             match permissions_store::get(&origin, mask) {
                 Decision::Allow => {
                     cb.cont(mask);
@@ -42,10 +42,9 @@ wrap_permission_handler! {
                 Decision::AskAll | Decision::AskMixed => {}
             }
 
-            // Trampoline the prompt onto the glib main loop. The CEF UI thread
-            // is the glib main thread under external_message_pump but we still
-            // want a fresh dispatch so AdwAlertDialog runs after the callback
-            // returns.
+            // Trampoline the prompt onto the glib main loop so AdwAlertDialog
+            // runs after the callback returns (CEF UI thread = glib main thread
+            // under external_message_pump).
             let cb_clone = cb.clone();
             glib::MainContext::default().spawn_local(async move {
                 let allow = prompt_user(&origin, mask).await;
@@ -69,18 +68,16 @@ wrap_permission_handler! {
             let mask = requested_permissions;
             let Some(cb) = callback else { return 0 };
 
-            // M14 kill-switch (6.3): a notification request is denied outright
-            // when notifications are globally off or message notifications are
-            // disabled, regardless of any stored per-origin decision.
+            // M14 kill-switch (6.3): deny a notification request outright when
+            // notifications/messages are globally off, ignoring any stored
+            // per-origin decision.
             if requests_notifications(mask) && !notifications_allowed() {
                 cb.cont(PermissionRequestResult::DENY);
                 return 1;
             }
 
-            // The CEF_PERMISSION_TYPE_NOTIFICATIONS branch reaches here with no
-            // preselected outcome: an unstored origin resolves to AskAll, which
-            // falls through to `prompt_user` (default response = deny). We never
-            // auto-allow notifications on first visit (M14 1.1).
+            // Unstored origin → AskAll → falls through to `prompt_user` (default
+            // = deny). Never auto-allow notifications on first visit (M14 1.1).
             match permissions_store::get(&origin, mask) {
                 Decision::Allow => {
                     cb.cont(PermissionRequestResult::ACCEPT);
@@ -114,8 +111,8 @@ impl ShellPermissionHandlerBuilder {
     }
 }
 
-/// Record the user's choice. Decisions are always remembered (browser-style),
-/// so the prompt never re-fires for that origin + permission.
+/// Record the user's choice. Always remembered (browser-style), so the prompt
+/// never re-fires for that origin + permission.
 fn persist(origin: &str, mask: u32, allow: bool) {
     let decision = if allow { Decision::Allow } else { Decision::Deny };
     permissions_store::set(origin, mask, decision);
@@ -146,10 +143,8 @@ fn requests_notifications(mask: u32) -> bool {
     mask & (P::CEF_PERMISSION_TYPE_NOTIFICATIONS as u32) != 0
 }
 
-/// Whether notification permission may be granted at all, per the M14 gschema
-/// toggles: the global kill-switch (`notifications-enabled`) and the message
-/// notification toggle (`notify-messages`). Either being false denies the
-/// request (6.3).
+/// Whether notification permission may be granted at all: false when either M14
+/// toggle (`notifications-enabled`, `notify-messages`) is off (6.3).
 fn notifications_allowed() -> bool {
     use gtk::prelude::SettingsExt;
     let settings = gio::Settings::new(crate::application::APP_ID);
@@ -162,9 +157,8 @@ fn active_window() -> Option<gtk::Window> {
     app.active_window()
 }
 
-/// True when `mask` requests microphone access. Mic/cam arrive via
-/// `on_request_media_access_permission` (the media-access bitset) — a DIFFERENT
-/// enum from the permission-prompt types — so check both.
+/// True when `mask` requests microphone access. Mic/cam arrive via the
+/// media-access bitset (a DIFFERENT enum from prompt types), so check both.
 fn requests_microphone(mask: u32) -> bool {
     use cef::sys::{cef_media_access_permission_types_t as M, cef_permission_request_types_t as P};
     mask & (M::CEF_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE as u32) != 0

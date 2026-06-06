@@ -1,25 +1,21 @@
 //! Embedded DevTools via the Chrome DevTools Protocol (CDP).
 //!
-//! CEF 148's unified Chrome runtime refuses windowless rendering for the
-//! DevTools window created by `ShowDevTools` (it always opens a native
-//! top-level window). To embed DevTools inside our window we instead load the
-//! DevTools frontend page — served by the process's `--remote-debugging-port`
-//! HTTP endpoint — into an ordinary OSR `KarereWebView`. This is the same
-//! mechanism `chrome://inspect` uses.
+//! `ShowDevTools` always opens a native top-level window under CEF 148's Chrome
+//! runtime, so we instead load the DevTools frontend page (served by
+//! `--remote-debugging-port`) into an OSR `KarereWebView`, like
+//! `chrome://inspect`.
 
 use std::io::{Read, Write};
 use std::net::{SocketAddr, TcpStream};
 use std::time::Duration;
 
-/// Localhost port passed to `--remote-debugging-port`. Fixed (the app is
-/// single-instance) and bound to loopback only by Chromium.
+/// Loopback port passed to `--remote-debugging-port`; fixed (single-instance).
 pub const DEVTOOLS_PORT: u16 = 9333;
 
 const TIMEOUT: Duration = Duration::from_secs(2);
 
-/// Query `http://127.0.0.1:PORT/json/list` and return a fully-qualified URL for
-/// the DevTools frontend inspecting the active page. Blocking — run off the GTK
-/// main thread.
+/// Query `/json/list` and return a fully-qualified DevTools frontend URL for the
+/// active page. Blocking — run off the GTK main thread.
 pub fn fetch_frontend_url(port: u16) -> Result<String, String> {
     let body = http_get(port, "/json/list")?;
     log::debug!("cdp /json/list -> {body}");
@@ -34,9 +30,8 @@ fn http_get(port: u16, path: &str) -> Result<String, String> {
     stream.set_read_timeout(Some(TIMEOUT)).ok();
     stream.set_write_timeout(Some(TIMEOUT)).ok();
 
-    // Chromium's debug HTTP server rejects HTTP/1.0 and keeps HTTP/1.1
-    // connections alive, so we must not wait for EOF — read headers, then
-    // exactly `Content-Length` body bytes.
+    // Chromium's debug server needs HTTP/1.1 and keeps the connection alive, so
+    // don't wait for EOF — read headers, then exactly `Content-Length` bytes.
     let req = format!("GET {path} HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\n\r\n");
     stream
         .write_all(req.as_bytes())
@@ -83,11 +78,9 @@ fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {
         .position(|w| w == needle)
 }
 
-/// Pick the page target to inspect from a `/json/list` response and return its
-/// absolute `devtoolsFrontendUrl`. Prefers the WhatsApp page; never picks the
-/// DevTools frontend's own page, `about:blank`, or our embedded view. The CDP
-/// target objects are flat (no nested objects), so splitting on `},{` groups
-/// them reliably.
+/// Pick a page target from `/json/list` and return its absolute
+/// `devtoolsFrontendUrl`. Prefers the WhatsApp page; skips `about:blank` and any
+/// DevTools frontend page.
 fn pick_frontend_url(body: &str, port: u16) -> Option<String> {
     let mut fallback: Option<String> = None;
     let mut preferred: Option<String> = None;
@@ -101,8 +94,7 @@ fn pick_frontend_url(body: &str, port: u16) -> Option<String> {
         let Some(front) = field(obj, "devtoolsFrontendUrl") else {
             continue;
         };
-        // Skip non-content pages: blank, and any DevTools frontend page (a
-        // previous embedded session lingering in the list).
+        // Skip blank pages and lingering DevTools frontend pages.
         if !url.starts_with("http")
             || url.contains("devtools")
             || url.contains("inspector.html")
@@ -128,8 +120,7 @@ fn pick_frontend_url(body: &str, port: u16) -> Option<String> {
     }
 }
 
-/// Split a JSON array body into its top-level object fragments by tracking
-/// brace depth — robust against pretty-printing and whitespace.
+/// Split a JSON array body into top-level object fragments by brace depth.
 fn split_objects(body: &str) -> Vec<String> {
     let mut out = Vec::new();
     let mut depth = 0i32;
@@ -161,7 +152,7 @@ fn field(obj: &str, key: &str) -> Option<String> {
     let after_colon = &after_key[after_key.find(':')? + 1..];
     let start = after_colon.find('"')? + 1;
     let rest = &after_colon[start..];
-    // Values here never contain escaped quotes, so the next quote ends it.
+    // Values never contain escaped quotes, so the next quote ends it.
     let end = rest.find('"')?;
     Some(rest[..end].to_owned())
 }

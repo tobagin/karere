@@ -1,11 +1,4 @@
-//! `KarerePreferencesDialog`: the `AdwPreferencesDialog` subclass that surfaces
-//! every M7–M21 GSetting (plus the M11 permission registry) built from the
-//! `data/ui/preferences.blp` composite template.
-//!
-//! The Rust side is intentionally thin: each switch/spin/combo row named in the
-//! template is bound to its GSetting (mostly via `gio::Settings::bind`), and the
-//! handful of rows that need imperative wiring — the spellcheck language list,
-//! the download-folder picker, and the permission registry — are set up here.
+//! `KarerePreferencesDialog`: surfaces every GSetting plus the permission registry.
 
 use std::cell::RefCell;
 
@@ -26,8 +19,7 @@ glib::wrapper! {
 }
 
 impl KarerePreferencesDialog {
-    /// Build a preferences dialog bound to the application's GSettings. `app` is
-    /// used to activate `app.sync-autostart` when run-on-startup changes.
+    /// Build a dialog bound to the app's GSettings.
     pub fn new(app: &KarereApplication) -> Self {
         let obj: Self = glib::Object::new();
         obj.imp().setup(app);
@@ -35,8 +27,7 @@ impl KarerePreferencesDialog {
     }
 }
 
-/// Two-way bind an `AdwComboRow` selection to a string/enum GSetting where the
-/// row's model order matches `values` (the GSetting string nicks).
+/// Bind an `AdwComboRow` to a string GSetting; model order matches `values`.
 fn bind_combo_string(settings: &gio::Settings, key: &str, row: &adw::ComboRow, values: &[&str]) {
     let current = settings.string(key);
     if let Some(idx) = values.iter().position(|v| *v == current.as_str()) {
@@ -53,8 +44,7 @@ fn bind_combo_string(settings: &gio::Settings, key: &str, row: &adw::ComboRow, v
     });
 }
 
-/// Two-way bind an `AdwComboRow` to an enum GSetting whose integer values equal
-/// the row's model order (e.g. notify-download-type, notify-preview-length).
+/// Bind an `AdwComboRow` to an enum GSetting; integer values match model order.
 fn bind_combo_enum(settings: &gio::Settings, key: &str, row: &adw::ComboRow) {
     let current = settings.enum_(key);
     if current >= 0 {
@@ -74,7 +64,7 @@ fn bind_switch(settings: &gio::Settings, key: &str, row: &adw::SwitchRow) {
         .build();
 }
 
-/// The active window's live webview, if any (for the live spellcheck switch).
+/// The active window's live webview, if any.
 fn active_web_view() -> Option<crate::web_view::KarereWebView> {
     let app = gio::Application::default()?
         .downcast::<gtk::Application>()
@@ -87,7 +77,6 @@ fn active_web_view() -> Option<crate::web_view::KarereWebView> {
     wv
 }
 
-/// The active top-level window, used to parent the file/URI dialogs.
 fn active_window() -> Option<gtk::Window> {
     let app = gio::Application::default()?
         .downcast::<gtk::Application>()
@@ -103,7 +92,6 @@ mod imp {
     #[derive(gtk::CompositeTemplate, Default)]
     #[template(resource = "/io/github/tobagin/karere/ui/preferences.ui")]
     pub struct KarerePreferencesDialog {
-        // General
         #[template_child]
         pub row_startup: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -121,7 +109,6 @@ mod imp {
         #[template_child]
         pub btn_dev_open: TemplateChild<gtk::Button>,
 
-        // Notifications
         #[template_child]
         pub row_master_toggle: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -137,7 +124,6 @@ mod imp {
         #[template_child]
         pub row_sound_enable: TemplateChild<adw::SwitchRow>,
 
-        // Downloads
         #[template_child]
         pub row_download: TemplateChild<adw::ActionRow>,
         #[template_child]
@@ -149,7 +135,6 @@ mod imp {
         #[template_child]
         pub row_dl_type: TemplateChild<adw::ComboRow>,
 
-        // Spellcheck
         #[template_child]
         pub row_spell_enable: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -161,13 +146,11 @@ mod imp {
         #[template_child]
         pub row_spell_lang: TemplateChild<adw::ComboRow>,
 
-        // Privacy
         #[template_child]
         pub group_permissions: TemplateChild<adw::PreferencesGroup>,
         #[template_child]
         pub btn_clear_all: TemplateChild<gtk::Button>,
 
-        // Accessibility
         #[template_child]
         pub row_motion: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -254,8 +237,6 @@ mod imp {
             );
             bind_switch(settings, "enable-developer-tools", &self.row_dev_enable);
 
-            // run-on-startup: bind the switch, then re-sync the autostart portal
-            // request whenever the key flips (M22 2.4).
             bind_switch(settings, "run-on-startup", &self.row_startup);
             let app_weak = app.downgrade();
             settings.connect_changed(
@@ -267,9 +248,7 @@ mod imp {
                 },
             );
 
-            // Developer Tools: open the embedded DevTools for the current page
-            // (mirrors the win.show-devtools action / F12). Present the window
-            // first so the OSR view is realized before DevTools attaches.
+            // Present first so the OSR view is realized before DevTools attaches.
             self.btn_dev_open.connect_clicked(|_| {
                 if let Some(win) = active_window() {
                     win.present();
@@ -289,8 +268,7 @@ mod imp {
             bind_combo_enum(settings, "notify-preview-length", &self.row_preview_len);
             bind_switch(settings, "notify-sound-enabled", &self.row_sound_enable);
 
-            // The master toggle disables every other row on the page: bind each
-            // dependent row's `sensitive` to `notifications-enabled` (read-only).
+            // Master toggle gates each dependent's `sensitive`.
             let dependents: [&gtk::Widget; 6] = [
                 self.row_notify_msg.upcast_ref(),
                 self.row_tray_anim.upcast_ref(),
@@ -380,7 +358,7 @@ mod imp {
             row.set_model(Some(&sort_model));
             row.set_factory(Some(&spellcheck_ui::build_button_factory()));
 
-            // Star toggle → persist favorites and re-sort (mirrors the headerbar).
+            // Star toggle → persist favorites and re-sort.
             let on_toggle: Rc<dyn Fn(&SpellLang, bool)> = Rc::new({
                 let settings = settings.clone();
                 let sorter = sorter.clone();
@@ -406,7 +384,6 @@ mod imp {
             });
             row.set_list_factory(Some(&spellcheck_ui::build_list_factory(on_toggle)));
 
-            // Select the currently active language (first of spell-checking-languages).
             let explicit: Vec<String> = settings
                 .strv("spell-checking-languages")
                 .iter()
@@ -449,7 +426,7 @@ mod imp {
             });
         }
 
-        /// Render the M11 permission registry as one row per (origin, bit) entry.
+        /// Render the permission registry as one row per (origin, bit) entry.
         fn rebuild_permissions(&self) {
             let group = self.group_permissions.get();
             for row in self.perm_rows.borrow_mut().drain(..) {

@@ -20,9 +20,8 @@ const MAX_SUFFIX: u32 = 9999;
 #[derive(Clone)]
 pub struct ShellDownloadHandler {
     shared: SharedRef,
-    /// Download item IDs already reported complete/failed, so the completion
-    /// toast / failure dialog fires exactly once even though `on_download_updated`
-    /// keeps firing after the terminal state.
+    /// Download ids already reported complete/failed, so the toast/dialog fires
+    /// once even though `on_download_updated` keeps firing after terminal state.
     seen: Arc<Mutex<HashSet<u32>>>,
 }
 
@@ -47,8 +46,8 @@ wrap_download_handler! {
             _url: Option<&CefString>,
             _request_method: Option<&CefString>,
         ) -> ::std::os::raw::c_int {
-            // Default impl returns 0 (cancel). Allow every download to proceed;
-            // on_before_download picks the target path.
+            // Default impl returns 0 (cancel). Allow all; on_before_download
+            // picks the target path.
             1
         }
 
@@ -70,7 +69,7 @@ wrap_download_handler! {
                 })
                 .unwrap_or_default();
             let target = resolve_target_path(&suggested);
-            // show_dialog = 0: pick the path silently, no native chooser.
+            // show_dialog = 0: silent, no native chooser.
             callback.cont(Some(&CefString::from(target.to_string_lossy().as_ref())), 0);
             0
         }
@@ -99,8 +98,8 @@ wrap_download_handler! {
             }
 
             if complete {
-                // Honour the master download-notification toggle; the file is
-                // already on disk regardless.
+                // Honour the master download-notification toggle; the file is on
+                // disk regardless.
                 let settings = gio::Settings::new(APP_ID);
                 if !settings.boolean("notify-downloads-enabled") {
                     return;
@@ -150,8 +149,8 @@ fn resolve_target_path(suggested: &str) -> PathBuf {
     dedupe(&dir, &name)
 }
 
-/// Pick the download directory: the `download-directory` GSetting when set and
-/// usable, otherwise the XDG `DOWNLOAD` directory (falling back to `$HOME`).
+/// Pick the download directory: `download-directory` GSetting when set and
+/// usable, else XDG `DOWNLOAD` (falling back to `$HOME`).
 fn resolve_dir() -> PathBuf {
     let settings = gio::Settings::new(APP_ID);
     let configured = settings.string("download-directory").to_string();
@@ -168,8 +167,8 @@ fn resolve_dir() -> PathBuf {
     xdg
 }
 
-/// Create `dir` if needed and confirm it is writable by round-tripping a
-/// sentinel file. Returns false when the directory cannot be used.
+/// Create `dir` if needed and confirm writable via a sentinel file. False when
+/// the directory cannot be used.
 fn ensure_writable_dir(dir: &Path) -> bool {
     if std::fs::create_dir_all(dir).is_err() {
         return false;
@@ -185,7 +184,7 @@ fn ensure_writable_dir(dir: &Path) -> bool {
 }
 
 /// Strip path separators and NUL from a renderer-supplied filename. Unicode is
-/// preserved unchanged.
+/// preserved.
 fn sanitize(name: &str) -> String {
     name.chars()
         .filter(|c| !matches!(c, '/' | '\\' | '\0'))
@@ -206,7 +205,7 @@ fn dedupe(dir: &Path, name: &str) -> PathBuf {
             return candidate;
         }
     }
-    // Pathological collision count: append a process-unique suffix and proceed.
+    // Pathological collision count: append a unique suffix.
     let unique = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_nanos())
@@ -222,8 +221,8 @@ fn path_with_suffix(dir: &Path, stem: &str, ext: Option<&str>) -> PathBuf {
     }
 }
 
-/// Split a filename into a stem and an optional (last) extension. Extension-less
-/// and dotfile names yield `None` for the extension.
+/// Split a filename into stem + optional (last) extension. Extension-less and
+/// dotfile names yield `None`.
 fn split_name(name: &str) -> (String, Option<String>) {
     let path = Path::new(name);
     match (path.file_stem(), path.extension()) {

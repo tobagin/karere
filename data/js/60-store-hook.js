@@ -1,22 +1,20 @@
 // 60-store-hook.js — first-class identity source (M20).
 //
-// WhatsApp Web's `Store`/webpack internals are no longer reachable: the app
-// restores the native `Array.push` on its Webpack chunk array after load, so the
-// @wppconnect/wa-js "parasite chunk" technique can't capture `__webpack_require__`
-// (verified empirically — `chunkArray.push` is native post-load).
+// WhatsApp's Store/webpack internals are unreachable: the app restores native
+// Array.push on its webpack chunk array post-load, so the @wppconnect/wa-js
+// "parasite chunk" technique can't capture __webpack_require__ (verified).
 //
-// Instead we read the account's own identity from the data the app already
-// persists, which is stable and present once paired:
+// Instead read the account's own identity from data the app persists (stable
+// and present once paired):
 //   • wid     — localStorage['last-wid-md']            (e.g. "353830357840:19@c.us")
 //   • name    — IndexedDB model-storage → contact[self].name
 //   • avatar  — localStorage['WACachedProfilePicEURL'] → fetch → base64 (CORS-OK,
 //               served by pps.whatsapp.net with image/jpeg)
 //
-// Emits ProfileIdentity { wid, pushname, source:"store" } and
-// ProfileAvatar { base64_png, source:"store" }. A store-sourced identity clears
-// any prior degraded badge. While not yet paired (no wid) it emits
-// AwaitingPairing (debounced) and keeps polling — it does NOT report
-// StoreUnavailable, so accounts never get stuck in degraded mode.
+// Emits ProfileIdentity/ProfileAvatar (source:"store"); a store-sourced identity
+// clears any prior degraded badge. While unpaired (no wid) emits AwaitingPairing
+// (debounced) and keeps polling — never StoreUnavailable, so accounts never get
+// stuck in degraded mode.
 (function () {
   "use strict";
 
@@ -62,8 +60,8 @@
     });
   }
 
-  // localStorage['last-wid-md'] is JSON like "353830357840:19@c.us". Return the
-  // bare user part ("353830357840") and the canonical wid ("…@c.us").
+  // last-wid-md is JSON like "353830357840:19@c.us". Return the bare user part
+  // ("353830357840") and canonical wid ("…@c.us").
   function readWid() {
     var raw = localStorage.getItem("last-wid-md");
     if (!raw) return null;
@@ -78,7 +76,7 @@
     return e ? e.replace(/"/g, "") : null;
   }
 
-  // Find the signed-in user's own display name in the model-storage contact table.
+  // Own display name from the model-storage contact table.
   function readOwnName(user) {
     return openDB("model-storage").then(function (db) {
       if (!db) return null;
@@ -172,7 +170,7 @@
     }
   }
 
-  // Poll: fast until paired+resolved, then slow to catch name/avatar changes.
+  // Poll to catch pairing and later name/avatar changes.
   tick();
   setInterval(tick, 3000);
 })();

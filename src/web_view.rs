@@ -18,8 +18,7 @@ impl KarereWebView {
         Self::default()
     }
 
-    /// A view for the embedded DevTools frontend: uses a permissive client that
-    /// keeps every navigation in-view instead of routing it to the browser.
+    /// Embedded DevTools frontend: permissive client keeps every navigation in-view.
     pub fn new_devtools() -> Self {
         let obj: Self = glib::Object::new();
         obj.imp().devtools.store(true, std::sync::atomic::Ordering::Relaxed);
@@ -68,14 +67,12 @@ impl KarereWebView {
     }
 
     /// Set the active browser's zoom to `linear` (1.0 = 100 %), clamped to
-    /// `[0.5, 3.0]` and converted to CEF's logarithmic level. No-op if no live
-    /// browser. (M18)
+    /// `[0.5, 3.0]` and converted to CEF's log level. No-op if no live browser. (M18)
     pub fn set_zoom_linear(&self, linear: f64) {
         self.imp().set_zoom_linear(linear);
     }
 
-    /// The active browser's current zoom as a linear factor (1.0 = 100 %), or
-    /// `1.0` if no live browser. (M18)
+    /// The active browser's zoom as a linear factor (1.0 = 100 %), or 1.0 if none. (M18)
     pub fn get_zoom_linear(&self) -> f64 {
         self.imp().get_zoom_linear()
     }
@@ -90,19 +87,16 @@ impl KarereWebView {
         self.imp().shared.lock().as_ref().unwrap().clone()
     }
 
-    /// Run `script` in the page's main frame, if a browser is live. Used by the
-    /// notification tracker to drive `__karereCloseNotif` / `__karereActivateNotif`.
+    /// Run `script` in the page's main frame if a browser is live. Drives the
+    /// notification tracker's `__karereCloseNotif` / `__karereActivateNotif`.
     pub fn run_js(&self, script: &str) {
         self.imp().run_js(script);
     }
 
-    /// Switch the active spellcheck language list on the live browser, without
-    /// recreating it. Writes the Chromium `spellcheck.dictionaries` and
-    /// `browser.enable_spellchecking` preferences on the browser's request
-    /// context; Chromium downloads any missing `.bdic` dictionaries on demand.
-    ///
-    /// `langs` are BCP-47 codes (e.g. `["pt-BR"]`). An empty list with
-    /// `enabled = true` lets Chromium keep its current/auto behaviour.
+    /// Switch the live browser's spellcheck languages without recreating it, via the
+    /// `spellcheck.dictionaries` / `browser.enable_spellchecking` request-context prefs;
+    /// Chromium downloads missing `.bdic` dictionaries on demand. `langs` are BCP-47
+    /// codes (e.g. `["pt-BR"]`); empty + `enabled` keeps Chromium's auto behaviour.
     pub fn set_spellcheck_languages(&self, langs: &[String], enabled: bool) {
         self.imp().set_spellcheck_languages(langs, enabled);
     }
@@ -113,10 +107,9 @@ impl KarereWebView {
         self.imp().spawn_browser(Some(account_id.to_owned()), foreground);
     }
 
-    /// Pre-warm every account's browser without making any of them the visible
-    /// foreground. Used when the app launches into the background (tray) so
-    /// WhatsApp loads and notifications work before the window is ever shown.
-    /// Idempotent — safe to call again on realize.
+    /// Pre-warm every account's browser without showing any foreground, so
+    /// background (tray) launch loads WhatsApp and notifications before the window
+    /// shows. Idempotent — safe to call again on realize.
     pub fn prewarm(&self) {
         self.imp().spawn_all_accounts(false);
     }
@@ -134,20 +127,18 @@ impl KarereWebView {
     pub fn is_browser_closed(&self) -> bool {
         match self.imp().life_span.lock().as_ref() {
             Some(life) => life.state.lock().closed,
-            // No life-span handler yet → no browser to wait on.
-            None => true,
+            None => true, // no life-span handler yet → no browser to wait on
         }
     }
 }
 
-/// Minimum / maximum linear zoom factor the CEF boundary will apply. Clamping
-/// here keeps callers from pushing CEF into pathological levels. (M18)
+/// Min/max linear zoom factor the CEF boundary will apply (clamp guards against
+/// pathological levels). (M18)
 pub(crate) const ZOOM_MIN: f64 = 0.5;
 pub(crate) const ZOOM_MAX: f64 = 3.0;
 
-/// Convert a linear zoom factor (1.0 = 100 %) to CEF's logarithmic
-/// `BrowserHost` level, where each unit is a factor of `1.2` and `0` is 100 %.
-/// Input is clamped to `[ZOOM_MIN, ZOOM_MAX]` first. (M18)
+/// Linear zoom factor (1.0 = 100 %) → CEF's logarithmic `BrowserHost` level
+/// (each unit = factor 1.2, 0 = 100 %). Clamped to `[ZOOM_MIN, ZOOM_MAX]`. (M18)
 pub(crate) fn linear_to_cef(linear: f64) -> f64 {
     linear.clamp(ZOOM_MIN, ZOOM_MAX).ln() / 1.2_f64.ln()
 }
@@ -157,10 +148,9 @@ pub(crate) fn cef_to_linear(cef: f64) -> f64 {
     (cef * 1.2_f64.ln()).exp()
 }
 
-/// The effective accessibility floor (linear). When the `webview-zoom` toggle
-/// is enabled, the `zoom-level` setting is the minimum; otherwise the floor is
-/// the hard CEF minimum. Shared by the window's zoom actions and the load
-/// handler's first-paint apply. (M18 5.x)
+/// Effective accessibility zoom floor (linear): `zoom-level` setting when the
+/// `webview-zoom` toggle is on, else the hard CEF minimum. Shared by the window's
+/// zoom actions and the load handler's first-paint apply. (M18 5.x)
 pub(crate) fn zoom_floor() -> f64 {
     use gtk::gio;
     use gtk::prelude::SettingsExt;
@@ -176,18 +166,15 @@ pub(crate) fn zoom_floor() -> f64 {
 /// single-pane mobile layout. Matches karere v3's `MOBILE_WIDTH_THRESHOLD`. (M21)
 pub(crate) const MOBILE_WIDTH_THRESHOLD: i32 = 768;
 
-/// The verbatim karere v3 `mobile_responsive.js`, embedded for on-demand
-/// injection (NOT part of the always-run M13 bundle). Source of truth:
-/// karere v3 `src/mobile_responsive.js` (git `890148c`). It applies the
-/// single-pane mobile layout unconditionally when run, so the host gates *when*
-/// it runs (see [`should_use_mobile_layout`] / [`apply_mobile_layout`]). (M21)
+/// Verbatim karere v3 `mobile_responsive.js` (git `890148c`), embedded for
+/// on-demand injection (NOT in the always-run M13 bundle). Applies the single-pane
+/// layout unconditionally when run, so the host gates *when* it runs (see
+/// [`should_use_mobile_layout`] / [`apply_mobile_layout`]). (M21)
 const EMBED_MOBILE: &str = include_str!("../data/js-deferred/mobile_responsive.js");
 
-/// Decide whether WhatsApp Web should use the single-pane mobile layout, mirroring
-/// karere v3's `should_use_mobile_layout`: the `mobile-layout` GSetting forces
-/// `enabled`/`disabled`; `auto` is true on a mobile desktop environment
-/// (phosh / plasma-mobile / lomiri) or when the logical window width is in the open
-/// interval `(0, MOBILE_WIDTH_THRESHOLD)`. (M21)
+/// Whether WhatsApp Web should use the single-pane mobile layout (mirrors v3):
+/// `mobile-layout` GSetting forces `enabled`/`disabled`; `auto` is true on a mobile
+/// desktop (phosh/plasma-mobile/lomiri) or width in `(0, MOBILE_WIDTH_THRESHOLD)`. (M21)
 pub(crate) fn should_use_mobile_layout(width_logical_px: i32) -> bool {
     use gtk::gio;
     use gtk::prelude::SettingsExt;
@@ -210,11 +197,10 @@ pub(crate) fn should_use_mobile_layout(width_logical_px: i32) -> bool {
     }
 }
 
-/// Inject the verbatim mobile-responsive script into `browser`'s main frame when
-/// the host decides the layout is mobile for `width_logical_px`. Idempotent within
-/// a page lifetime via a `window.__karereMobileApplied` guard. Called from
-/// `on_load_end`, mirroring karere v3's inject-on-load. The script only un-applies
-/// via a full page reload (handled by the resize gate in `size_allocate`). (M21)
+/// Inject the mobile-responsive script into `browser`'s main frame when the layout
+/// is mobile for `width_logical_px`. Idempotent per page via `window.__karereMobileApplied`.
+/// Called from `on_load_end`; the script only un-applies via a full reload (driven
+/// by the resize gate in `size_allocate`). (M21)
 pub(crate) fn apply_mobile_layout(browser: &cef::Browser, width_logical_px: i32) {
     use cef::{CefString, ImplBrowser, ImplFrame};
     if !should_use_mobile_layout(width_logical_px) {
@@ -223,8 +209,7 @@ pub(crate) fn apply_mobile_layout(browser: &cef::Browser, width_logical_px: i32)
     let Some(frame) = browser.main_frame() else {
         return;
     };
-    // Guard so a re-entrant load_end (or any double call) never runs the script
-    // twice in the same page; the flag resets naturally on navigation.
+    // Guard against double-run within a page; flag resets on navigation.
     let guarded = format!(
         "(function(){{if(window.__karereMobileApplied)return;\
 window.__karereMobileApplied=true;{EMBED_MOBILE}\n}})();"
@@ -236,10 +221,10 @@ window.__karereMobileApplied=true;{EMBED_MOBILE}\n}})();"
     );
 }
 
-/// Push `window.__karereMuteNotifSound` into `browser`'s page so the bundle hook
-/// (70-notification-sound.js) blocks WhatsApp's notification/UI tones when the
-/// master toggle or notification-sound setting is off. Called from `on_load_end`
-/// (so the flag survives navigation) and on a live settings change. (M14x)
+/// Push `window.__karereMuteNotifSound` so the bundle hook (70-notification-sound.js)
+/// blocks WhatsApp's notification/UI tones when the master or notification-sound
+/// toggle is off. Called from `on_load_end` (survives navigation) and on live
+/// settings change. (M14x)
 pub(crate) fn apply_notif_sound_from_settings(browser: &cef::Browser) {
     use cef::{CefString, ImplBrowser, ImplFrame};
     use gtk::prelude::SettingsExt;
@@ -257,9 +242,9 @@ pub(crate) fn apply_notif_sound_from_settings(browser: &cef::Browser) {
 }
 
 /// Apply the per-account persisted zoom (lifted to the accessibility floor) to
-/// `browser`, and rewrite the persisted value if the floor lifted it. Called
-/// from `on_load_end` so each account's browser restores its own zoom on first
-/// paint and after every navigation. (M18 4.1 / 5.2)
+/// `browser`, rewriting the persisted value if the floor lifted it. Called from
+/// `on_load_end` so each account restores its zoom on first paint and after
+/// navigation. (M18 4.1 / 5.2)
 pub(crate) fn apply_zoom_from_account(browser: &cef::Browser) {
     use cef::{ImplBrowser, ImplBrowserHost};
     let Some(id) = crate::accounts::account_for_browser(browser.identifier()) else {
@@ -278,20 +263,9 @@ pub(crate) fn apply_zoom_from_account(browser: &cef::Browser) {
     }
 }
 
-/// Apply the spellcheck language list to a live CEF browser by writing the
-/// `browser.enable_spellchecking` and `spellcheck.dictionaries` preferences on
-/// its request context. Shared by the headerbar dropdown (via
-/// `KarereWebView::set_spellcheck_languages`) and the load handler (which
-/// re-applies on every main-frame `on_load_end`, since the command-line switch
-/// alone does not populate the dictionaries and the preference must be set after
-/// the page — and its spellcheck service — is up).
-///
-/// Must run on the CEF UI thread (the glib main thread here).
-/// Force Chromium to re-spellcheck the currently-focused editable. Changing
-/// `spellcheck.dictionaries` only affects text typed AFTER the change — existing
-/// text keeps its old-language markers — so toggling the focused element's
-/// `spellcheck` property off→on makes Chromium drop and recompute the markers
-/// with the new dictionary. Must run on the CEF UI thread.
+/// Force Chromium to re-spellcheck the focused editable. A `spellcheck.dictionaries`
+/// change only affects text typed AFTER it, so toggling the element's `spellcheck`
+/// off→on makes Chromium recompute markers with the new dictionary. CEF UI thread only.
 fn force_spellcheck_recheck(browser: &cef::Browser) {
     use cef::{CefString, ImplBrowser, ImplFrame};
     let Some(frame) = browser.main_frame() else { return };
@@ -305,8 +279,8 @@ n.spellcheck=false;void n.offsetHeight;n.spellcheck=true;}catch(_){}})();";
     );
 }
 
-/// Write the `spellcheck.dictionaries` list preference on the browser's request
-/// context. Returns false on failure. Must run on the CEF UI thread.
+/// Write the `spellcheck.dictionaries` list pref on the browser's request context.
+/// Returns false on failure. CEF UI thread only.
 fn write_spellcheck_dictionaries(browser: &cef::Browser, langs: &[String]) -> bool {
     use cef::{
         CefString, ImplBrowser, ImplBrowserHost, ImplListValue, ImplPreferenceManager, ImplValue,
@@ -334,15 +308,13 @@ fn write_spellcheck_dictionaries(browser: &cef::Browser, langs: &[String]) -> bo
 
 /// Apply the spellcheck enable flag + dictionary list to a live browser.
 ///
-/// `force_clear` selects how the dictionary list is written:
-/// - `true` (first apply of a page load): Chromium ignores a `Set` whose value
-///   equals the persisted pref, so to make the initial language actually take
-///   effect we force a real `[]`→`[lang]` transition (decoupled across a loop
-///   tick so the renderer sees two distinct updates).
-/// - `false` (a live language switch): the value genuinely differs, so set
-///   `[lang]` DIRECTLY. The `[]` clear must NOT be used here — clearing to empty
-///   after spellcheck is already running tears the service down in OSR and the
-///   re-set does not revive it (spellcheck dies until restart).
+/// `force_clear` selects how the list is written:
+/// - `true` (first apply of a page load): Chromium ignores a `Set` equal to the
+///   persisted pref, so force a real `[]`→`[lang]` transition across a loop tick
+///   so the renderer sees two distinct updates.
+/// - `false` (live switch): value differs, so set `[lang]` DIRECTLY. The `[]` clear
+///   must NOT be used — clearing after spellcheck is running tears the OSR service
+///   down and the re-set doesn't revive it (dead until restart).
 pub(crate) fn apply_spellcheck_to_browser(
     browser: &cef::Browser,
     langs: &[String],
@@ -358,7 +330,6 @@ pub(crate) fn apply_spellcheck_to_browser(
         return;
     };
 
-    // browser.enable_spellchecking (boolean)
     if let Some(mut v) = value_create() {
         v.set_bool(enabled as i32);
         let name = CefString::from("browser.enable_spellchecking");
@@ -391,9 +362,8 @@ pub(crate) fn apply_spellcheck_to_browser(
         log::warn!("set spellcheck.dictionaries failed");
     }
     if !langs.is_empty() {
-        // Best-effort: nudge Chromium to re-scan existing text in the new
-        // language (a pref change alone only affects newly-typed text). Deferred
-        // so the new dictionary has propagated to the renderer first.
+        // Re-scan existing text in the new language (pref change only affects
+        // newly-typed); deferred so the dictionary reaches the renderer first.
         let browser = browser.clone();
         glib::timeout_add_local_once(std::time::Duration::from_millis(200), move || {
             force_spellcheck_recheck(&browser);
@@ -403,11 +373,10 @@ pub(crate) fn apply_spellcheck_to_browser(
 
 // ---- context-menu widget registry (main-thread only) ----------------------
 //
-// `ContextMenuHandler::run_context_menu` runs on the CEF UI thread, which under
-// the external message pump IS the glib main thread, so this registry and the
-// `RunContextMenuCallback` it carries never cross threads (deliberately NOT
-// routed through the `Arc<Mutex>` `SharedRef`, since the callback is not `Send`).
-// The map links a CEF browser id to the widget rendering it.
+// `run_context_menu` runs on the CEF UI thread = the glib main thread (external
+// pump), so this registry and its non-`Send` `RunContextMenuCallback` never cross
+// threads (deliberately NOT routed through the `Arc<Mutex>` `SharedRef`). Maps a
+// CEF browser id to the widget rendering it.
 thread_local! {
     static CTX_MENU_WIDGETS: std::cell::RefCell<
         std::collections::HashMap<i32, glib::WeakRef<KarereWebView>>,
@@ -427,9 +396,9 @@ pub(crate) fn unregister_context_menu_widget(id: i32) {
     });
 }
 
-/// Route a snapshotted context menu (from `ContextMenuHandler::run_context_menu`)
-/// to the widget that owns `browser_id`. If the widget is gone, the callback is
-/// cancelled so CEF never leaks the pending-menu state. Main-thread only.
+/// Route a snapshotted context menu to the widget owning `browser_id`. If the
+/// widget is gone, cancel the callback so CEF doesn't leak pending-menu state.
+/// Main-thread only.
 pub fn dispatch_context_menu(
     browser_id: i32,
     items: Vec<crate::handlers::context_menu::MenuEntry>,
@@ -478,9 +447,8 @@ mod imp {
     #[derive(Default)]
     pub struct KarereWebView {
         pub shared: Mutex<Option<SharedRef>>,
-        /// The foreground browser (a clone of the `browsers` entry for
-        /// `foreground`). All existing input/render/spellcheck paths resolve
-        /// through this, so they always target the visible account.
+        /// The foreground browser (clone of the `browsers` entry for `foreground`).
+        /// Input/render/spellcheck paths resolve through this → the visible account.
         pub browser: Mutex<Option<Browser>>,
         /// M20 browser pool: every account's CEF browser, keyed by account id.
         /// Background browsers stay alive (paused via `was_hidden(true)`) so a
@@ -488,8 +456,8 @@ mod imp {
         pub browsers: Mutex<HashMap<String, Browser>>,
         /// Per-account life-span handlers, kept alive alongside their browsers.
         pub life_spans: Mutex<HashMap<String, ShellLifeSpanHandler>>,
-        /// RequestContexts awaiting their init callback (kept alive until the
-        /// browser is created against them). Keyed by account id.
+        /// RequestContexts kept alive until the browser is created against them
+        /// (in their init callback). Keyed by account id.
         pub pending_contexts: Mutex<HashMap<String, RequestContext>>,
         /// The account id whose browser is currently foreground.
         pub foreground: Mutex<Option<String>>,
@@ -497,8 +465,7 @@ mod imp {
         pub pending_url: Mutex<Option<String>>,
         /// Set for the embedded DevTools view; selects the permissive client.
         pub devtools: AtomicBool,
-        /// Last known chrome-window visibility (recorded for potential future use;
-        /// notification-sound gating no longer depends on it).
+        /// Last chrome-window visibility (recorded; sound gating no longer uses it).
         #[allow(dead_code)]
         pub window_visible: AtomicBool,
         program: AtomicU32,
@@ -508,28 +475,25 @@ mod imp {
         tex_w: AtomicI32,
         tex_h: AtomicI32,
         /// Last pointer position (logical px) so wheel events hit the element
-        /// under the cursor instead of the top-left corner.
+        /// under the cursor, not the top-left corner.
         last_mouse_x: AtomicI32,
         last_mouse_y: AtomicI32,
-        /// CEF browser id, used to (de)register this widget in the context-menu
-        /// registry. Set once the browser spawns; `0` before then.
+        /// CEF browser id for context-menu registry (de)registration; `0` until spawn.
         browser_id: AtomicI32,
-        /// Pending OSR context-menu callback (non-`Send`, main-thread only). Held
-        /// for the lifetime of the open menu and resolved exactly once in the
-        /// popover `closed` handler: `cont(command)` if an item was activated,
-        /// else `cancel()`. Dispatching from `closed` (after popdown) means the
-        /// webview is re-focused before the command runs — required for
-        /// spellcheck-replace and the edit commands to actually apply.
+        /// Pending OSR context-menu callback (non-`Send`, main-thread only). Resolved
+        /// exactly once in the popover `closed` handler: `cont(command)` or `cancel()`.
+        /// Dispatching from `closed` (after popdown) re-focuses the webview first —
+        /// required for spellcheck-replace and edit commands to apply.
         pub pending_menu_callback: RefCell<Option<RunContextMenuCallback>>,
-        /// Command id selected by item activation, consumed by the `closed`
-        /// handler. `None` → the menu was dismissed without a selection.
+        /// Command id selected by item activation, consumed by `closed`. `None` →
+        /// dismissed without a selection.
         pub pending_menu_command: std::cell::Cell<Option<i32>>,
         /// The currently-displayed context popover, kept alive while open.
         pub context_popover: RefCell<Option<gtk::Popover>>,
-        /// M21 mobile-layout resize gate. `mobile_active` is the last-known
-        /// mobile/desktop decision; `mobile_init` guards the first allocation so
-        /// it seeds state without a spurious reload. A later width-threshold
-        /// crossing reloads the page so `on_load_end` re-evaluates the gate.
+        /// M21 mobile-layout resize gate. `mobile_active` = last mobile/desktop
+        /// decision; `mobile_init` guards the first allocation so it seeds state
+        /// without a spurious reload. A width-threshold crossing reloads so
+        /// `on_load_end` re-evaluates the gate.
         pub mobile_active: std::cell::Cell<bool>,
         pub mobile_init: std::cell::Cell<bool>,
     }
@@ -550,15 +514,13 @@ mod imp {
             widget.set_auto_render(false);
 
             let scale = widget.scale_factor() as f32;
-            // Seed a sane default viewport so browsers created before the widget
-            // is ever sized (background-start prewarm) still lay WhatsApp out at a
-            // usable size; the real allocation replaces this on first show.
+            // Default viewport so prewarm browsers (created before sizing) lay out
+            // usably; the real allocation replaces it on first show.
             let shared = new_shared((1280, 800), scale);
             *self.shared.lock() = Some(shared.clone());
 
-            // CEF on_paint runs on glib main thread (external_message_pump
-            // shoehorns CEF UI work onto our thread). Drive redraws via a
-            // GtkWidget tick callback that polls the dirty flag.
+            // CEF on_paint runs on the glib main thread (external_message_pump);
+            // drive redraws via a tick callback that polls the dirty flag.
             widget.add_tick_callback(move |w, _clock| {
                 let imp = w.imp();
                 let Some(shared) = imp.shared.lock().clone() else {
@@ -569,7 +531,6 @@ mod imp {
                     if s.frame.dirty {
                         w.queue_render();
                     }
-                    // Apply a pending CEF cursor change on the main thread.
                     if s.cursor_dirty {
                         s.cursor_dirty = false;
                         Some(s.cursor_name)
@@ -640,14 +601,13 @@ mod imp {
                 host.was_resized();
             }
 
-            // M21: gate the mobile single-pane layout on logical width. The
-            // verbatim v3 script can't un-apply its DOM/CSS, so a threshold
-            // crossing reloads the page and `on_load_end` re-injects (or not).
+            // M21: gate the mobile single-pane layout on logical width. The v3
+            // script can't un-apply its DOM/CSS, so a threshold crossing reloads
+            // and `on_load_end` re-injects (or not).
             if width > 0 {
                 let is_mobile = super::should_use_mobile_layout(width);
                 if !self.mobile_init.get() {
-                    // First real allocation: seed state; the first on_load_end
-                    // performs the initial injection if mobile.
+                    // First real allocation: seed state; first on_load_end injects if mobile.
                     self.mobile_init.set(true);
                     self.mobile_active.set(is_mobile);
                 } else if is_mobile != self.mobile_active.get() {
@@ -684,9 +644,8 @@ mod imp {
         }
 
         pub fn close_browser(&self) {
-            // Cancel any in-flight OSR context menu so CEF never leaks the
-            // pending-menu state when the widget goes away mid-menu, and drop the
-            // popover.
+            // Cancel any in-flight OSR menu so CEF doesn't leak pending-menu state
+            // on mid-menu teardown, and drop the popover.
             if let Some(cb) = self.pending_menu_callback.borrow_mut().take() {
                 cb.cancel();
             }
@@ -699,7 +658,7 @@ mod imp {
             }
 
             // Close every pooled account browser, then the legacy/DevTools single
-            // browser if it lives outside the pool.
+            // browser if it's outside the pool.
             let pooled: Vec<Browser> = self.browsers.lock().drain().map(|(_, b)| b).collect();
             self.life_spans.lock().clear();
             *self.foreground.lock() = None;
@@ -717,13 +676,11 @@ mod imp {
             *self.browser.lock() = None;
         }
 
-        /// Present the snapshotted CEF context menu as a GTK `Popover` of buttons
-        /// anchored at the cursor over the `GLArea`. Main-thread only. Stores the
-        /// callback in `pending_menu_callback`; a button click records the command
-        /// and pops down, and the `closed` handler dispatches `cont`/`cancel` —
-        /// exactly one fires. (A manual button popover is used instead of
-        /// `PopoverMenu`+`gio::Menu`: the model menu's actions did not activate
-        /// when parented to the OSR `GLArea`.)
+        /// Present the snapshotted CEF context menu as a GTK `Popover` of buttons at
+        /// the cursor over the `GLArea`. Main-thread only. Button click records the
+        /// command + pops down; `closed` dispatches `cont`/`cancel` (exactly one).
+        /// Manual button popover, not `PopoverMenu`+`gio::Menu`: the model menu's
+        /// actions didn't activate when parented to the OSR `GLArea`.
         pub fn show_context_menu(
             &self,
             items: Vec<crate::handlers::context_menu::MenuEntry>,
@@ -731,7 +688,7 @@ mod imp {
             y_dev: i32,
             callback: RunContextMenuCallback,
         ) {
-            // Replace any stale menu cleanly (shouldn't normally overlap).
+            // Replace any stale menu (shouldn't normally overlap).
             if let Some(old) = self.context_popover.borrow_mut().take() {
                 old.unparent();
             }
@@ -753,25 +710,22 @@ mod imp {
             build_menu_box(&items, &container, &obj, &popover);
             popover.set_child(Some(&container));
 
-            // `run_context_menu` reports the cursor in view (device-pixel)
-            // coordinates; GTK widget coordinates are logical, so divide by the
-            // scale factor (inverse of the input-forwarding multiply).
+            // `run_context_menu` cursor is device-pixel; GTK widget coords are
+            // logical, so divide by scale (inverse of the input-forwarding multiply).
             let s = scale(&obj);
             let rect = gtk::gdk::Rectangle::new(x_dev / s, y_dev / s, 1, 1);
             popover.set_pointing_to(Some(&rect));
 
-            // Resolve the callback once, here, AFTER the popover is down so the
-            // webview is focused again: dispatch the activated command, or cancel
-            // if dismissed without a selection.
+            // Resolve the callback AFTER popdown (webview re-focused): dispatch the
+            // activated command, or cancel if dismissed without a selection.
             popover.connect_closed(glib::clone!(
                 #[weak] obj,
                 move |pop| {
                     let imp = obj.imp();
                     let cmd = imp.pending_menu_command.take();
                     if let Some(cb) = imp.pending_menu_callback.borrow_mut().take() {
-                        // Re-assert CEF focus on the view before running the
-                        // command (spellcheck-replace / cut / paste act on the
-                        // focused frame's selection).
+                        // Re-assert CEF focus before the command (replace/cut/paste
+                        // act on the focused frame's selection).
                         set_focus(&obj, true);
                         match cmd {
                             Some(id) => {
@@ -800,9 +754,8 @@ mod imp {
             }
         }
 
-        /// Set the foreground browser's zoom from a linear factor (clamped +
-        /// converted to CEF's logarithmic level). Must run on the CEF UI thread
-        /// (the glib main thread under the external pump). (M18)
+        /// Set the foreground browser's zoom from a linear factor (clamped + → CEF
+        /// log level). CEF UI thread only. (M18)
         pub fn set_zoom_linear(&self, linear: f64) {
             if let Some(browser) = self.browser.lock().as_ref().cloned()
                 && let Some(host) = browser.host()
@@ -811,8 +764,7 @@ mod imp {
             }
         }
 
-        /// Read the foreground browser's zoom as a linear factor, or `1.0` if no
-        /// live browser. (M18)
+        /// Foreground browser's zoom as a linear factor, or 1.0 if none. (M18)
         pub fn get_zoom_linear(&self) -> f64 {
             if let Some(browser) = self.browser.lock().as_ref().cloned()
                 && let Some(host) = browser.host()
@@ -823,17 +775,14 @@ mod imp {
             }
         }
 
-        /// Live spellcheck-language switch via request-context preferences.
-        /// Must run on the CEF UI thread — the GTK callbacks that drive this are
-        /// already on the glib main thread, which is where the external message
-        /// pump runs CEF UI work, so direct calls are safe.
+        /// Live spellcheck-language switch via request-context prefs. CEF UI thread
+        /// only — the driving GTK callbacks are already on the glib main thread.
         pub fn set_spellcheck_languages(&self, langs: &[String], enabled: bool) {
             let Some(browser) = self.browser.lock().as_ref().cloned() else {
                 log::warn!("set_spellcheck_languages: no live browser");
                 return;
             };
-            // Dropdown-driven live switch: never use the [] force-clear (it
-            // tears down spellcheck in OSR); set the new language directly.
+            // Live switch: never use the [] force-clear (tears down OSR spellcheck).
             super::apply_spellcheck_to_browser(&browser, langs, enabled, false);
         }
 
@@ -843,9 +792,8 @@ mod imp {
             }
         }
 
-        /// Reload every account's browser (foreground + background). Used when a
-        /// global setting that the page gate reads on load changes — e.g.
-        /// `mobile-layout` — so each account re-evaluates it via `on_load_end`.
+        /// Reload every account's browser (foreground + background) so each
+        /// re-evaluates a changed load-time setting (e.g. `mobile-layout`) via `on_load_end`.
         pub fn reload_all(&self) {
             let browsers = self.browsers.lock();
             if browsers.is_empty() {
@@ -859,17 +807,15 @@ mod imp {
             }
         }
 
-        /// Record window visibility (kept for callers; sound gating no longer
-        /// depends on it — the JS hook blocks the ding precisely).
+        /// Record window visibility (kept for callers; sound gating uses the JS hook now).
         pub fn set_window_visible(&self, visible: bool) {
             self.window_visible.store(visible, Ordering::Relaxed);
         }
 
-        /// Push the notification-sound mute flag (`window.__karereMuteNotifSound`)
-        /// to every account's page. The bundle hook (70-notification-sound.js)
-        /// blocks WhatsApp's static notification/UI tones when set — precisely,
-        /// without touching WebRTC call audio or voice-note playback. Muted when
-        /// the master toggle is off OR notification sounds are off.
+        /// Push the mute flag (`window.__karereMuteNotifSound`) to every account.
+        /// The bundle hook (70-notification-sound.js) blocks WhatsApp's notification/UI
+        /// tones (not WebRTC call audio or voice notes). Muted when master OR
+        /// notification-sound toggle is off.
         pub fn apply_audio_mute(&self) {
             use gtk::prelude::SettingsExt;
             let s = gtk::gio::Settings::new(crate::application::APP_ID);
@@ -908,29 +854,20 @@ mod imp {
         /// WhatsApp Web entry point; every account browser starts here.
         const WHATSAPP_URL: &'static str = "https://web.whatsapp.com/";
 
-        /// Bring up the account pool on first realize. Ensures at least one
-        /// account exists (the DevTools view is account-less and uses the legacy
-        /// single-browser path), then spawns the MRU-first account's browser as
-        /// foreground. Background accounts are spawned lazily on first switch.
+        /// Bring up the account pool on first realize: spawn every account and adopt
+        /// the active one as the visible foreground.
         fn bootstrap_pool(&self) {
-            // Window is being realized/shown: spawn every account and adopt the
-            // active one as the visible foreground.
             self.spawn_all_accounts(true);
         }
 
-        /// Spawn a CEF browser for EVERY account so each one loads WhatsApp Web
-        /// and delivers notifications, not just the visible account. When
-        /// `adopt_active` the active account becomes the visible foreground;
-        /// otherwise all accounts stay paused/hidden (`was_hidden`) — used for
-        /// background-start prewarm, where there is no window yet so every account
-        /// runs hidden and notifications arrive via the service-worker path.
-        ///
-        /// Idempotent: [`spawn_browser`] skips accounts whose browser already
-        /// exists, so realize-after-prewarm only adopts the foreground.
+        /// Spawn a CEF browser for EVERY account so each loads WhatsApp and delivers
+        /// notifications, not just the visible one. `adopt_active` makes the active
+        /// account the foreground; otherwise all stay paused (`was_hidden`) — the
+        /// background-start prewarm path (no window yet). Idempotent: [`spawn_browser`]
+        /// skips already-spawned accounts, so realize-after-prewarm only adopts the foreground.
         pub fn spawn_all_accounts(&self, adopt_active: bool) {
             if self.devtools.load(Ordering::Relaxed) {
-                // The embedded DevTools view is not an account; keep it as a
-                // single legacy browser with the default request context.
+                // DevTools view is not an account: single legacy browser, default context.
                 self.spawn_browser(None, true);
                 return;
             }
@@ -952,15 +889,13 @@ mod imp {
             }
         }
 
-        /// Spawn a CEF browser for `account_id` (or the legacy default context
-        /// when `None`, used only by the DevTools view). When `make_foreground`
-        /// it becomes the visible browser; otherwise it starts paused.
+        /// Spawn a CEF browser for `account_id` (or the legacy default context when
+        /// `None`, DevTools only). `make_foreground` shows it; else it starts paused.
         ///
-        /// For a per-account browser the isolated `RequestContext` must finish
-        /// initializing before `CreateBrowserSync` will succeed (CEF Chrome
-        /// runtime), so creation is deferred to the context's init callback
-        /// ([`on_account_context_ready`]). The DevTools/legacy path uses the
-        /// global context and is created synchronously.
+        /// A per-account isolated `RequestContext` must finish init before
+        /// `CreateBrowserSync` succeeds (CEF Chrome runtime), so creation is deferred
+        /// to its init callback ([`on_account_context_ready`]). The legacy/DevTools
+        /// path uses the global context and is created synchronously.
         pub fn spawn_browser(&self, account_id: Option<String>, make_foreground: bool) {
             if let Some(id) = account_id.as_ref()
                 && self.browsers.lock().contains_key(id)
@@ -977,9 +912,8 @@ mod imp {
                 return;
             };
 
-            // Per-account: build the isolated context now, create the browser
-            // once it signals initialized. The context is held in
-            // `pending_contexts` so it stays alive until then.
+            // Per-account: build the isolated context now (held in `pending_contexts`),
+            // create the browser once it signals initialized.
             let cache = crate::accounts::session_cache_path(&id);
             let _ = std::fs::create_dir_all(&cache);
             let rc_settings = RequestContextSettings {
@@ -997,8 +931,8 @@ mod imp {
             }
         }
 
-        /// Continuation invoked from the per-account `RequestContext` init
-        /// callback: the context is now ready, so create the browser against it.
+        /// Continuation from the per-account `RequestContext` init callback: context
+        /// ready, so create the browser against it.
         pub fn on_account_context_ready(
             &self,
             request_context: Option<&mut RequestContext>,
@@ -1010,13 +944,12 @@ mod imp {
                 Some(account_id.to_owned()),
                 make_foreground,
             );
-            // The browser now holds its own ref to the context; release the
-            // pending hold that kept it alive until this callback.
+            // Browser now holds its own ref; release the pending hold.
             self.pending_contexts.lock().remove(account_id);
         }
 
-        /// Actually create the browser (sync) against `request_context` (or the
-        /// global context when `None`) and wire it into the pool.
+        /// Create the browser (sync) against `request_context` (or global if `None`)
+        /// and wire it into the pool.
         fn create_browser_now(
             &self,
             request_context: Option<&mut RequestContext>,
@@ -1083,16 +1016,13 @@ mod imp {
             if make_foreground {
                 self.adopt_foreground(account_id, b, life);
             } else if let Some(host) = b.host() {
-                // Background browser: pause it until switched in.
-                host.was_hidden(1);
+                host.was_hidden(1); // background: pause until switched in
             }
-            // Apply notification-sound muting to the newly-spawned browser.
             self.apply_audio_mute();
         }
 
-        /// Make `browser` the foreground: cache it for the input/render paths,
-        /// publish its CEF id for paint gating, register it in the context-menu
-        /// registry, and show it.
+        /// Make `browser` the foreground: cache it for input/render, publish its CEF
+        /// id for paint gating, register it in the context-menu registry, and show it.
         fn adopt_foreground(
             &self,
             account_id: Option<String>,
@@ -1121,7 +1051,6 @@ mod imp {
                 host.was_resized();
             }
             self.obj().queue_render();
-            // Foreground changed → re-evaluate which browsers stay audible.
             self.apply_audio_mute();
         }
 
@@ -1132,7 +1061,6 @@ mod imp {
             if self.foreground.lock().as_deref() == Some(new_id) {
                 return;
             }
-            // Pause the outgoing foreground.
             if let Some(prev) = self.browser.lock().as_ref()
                 && let Some(host) = prev.host()
             {
@@ -1195,8 +1123,7 @@ mod imp {
             let program = unsafe { compile_program(&vsrc, &fsrc) };
             self.program.store(program, Ordering::Relaxed);
 
-            // fullscreen quad (pos.xy, uv.xy) — y-flipped so BGRA top-left
-            // origin from CEF appears correctly.
+            // fullscreen quad (pos.xy, uv.xy), y-flipped for CEF's BGRA top-left origin.
             let verts: [f32; 16] = [
                 -1.0, -1.0, 0.0, 1.0, //
                 1.0, -1.0, 1.0, 1.0, //
@@ -1372,18 +1299,14 @@ mod imp {
                 #[weak] widget,
                 move |gesture, n_press, x, y| {
                     widget.grab_focus();
-                    // Tell CEF it is focused on every click, not only via the
-                    // EventControllerFocus enter signal. On launch the GLArea may
-                    // already hold GTK focus, so `grab_focus` is a no-op and the
-                    // enter signal never fires — leaving CEF unfocused, so the
-                    // input caret/indicator never shows until the window is
-                    // de-focused and re-focused.
+                    // Focus CEF on every click: at launch the GLArea may already hold
+                    // GTK focus, so `grab_focus` is a no-op and the enter signal never
+                    // fires, leaving CEF unfocused (no caret until refocus).
                     set_focus(&widget, true);
                     let modifiers = modifiers_from_state(gesture.current_event_state());
                     send_click(&widget, x, y, button, true, n_press, modifiers);
-                    // M17: middle-click also pastes the primary selection. The
-                    // click is NOT claimed, so CEF still receives the middle
-                    // button (preserving middle-click-to-open-link).
+                    // M17: middle-click also pastes primary. Not claimed, so CEF still
+                    // gets the middle button (preserves middle-click-to-open-link).
                     if button == 2 {
                         read_primary_clipboard_paste(&widget, x, y);
                     }
@@ -1421,10 +1344,9 @@ mod imp {
             #[upgrade_or] glib::Propagation::Proceed,
             move |_ctrl, keyval, keycode, state| {
                 use gtk::gdk::{Key, ModifierType};
-                // M17: intercept Ctrl+V before CEF. If the GDK clipboard holds an
-                // image or files, synthesize the paste ourselves and swallow the
-                // key so CEF's GDK-blind native paste does not also fire. A
-                // text-only / empty clipboard falls through to CEF's handler.
+                // M17: intercept Ctrl+V before CEF. If GDK clipboard holds an image
+                // or files, synthesize the paste and swallow the key so CEF's
+                // GDK-blind native paste doesn't also fire. Text-only/empty falls through.
                 if state.contains(ModifierType::CONTROL_MASK)
                     && !state.intersects(ModifierType::ALT_MASK | ModifierType::SUPER_MASK)
                     && matches!(keyval, Key::v | Key::V)
@@ -1432,11 +1354,10 @@ mod imp {
                 {
                     return glib::Propagation::Stop;
                 }
-                // M17 outbound: CEF's offscreen copy never reaches the system
-                // clipboard and the DOM `copy` event doesn't fire in OSR. The
-                // page selection is already mirrored to PRIMARY (50-copy-bridge),
-                // so on Ctrl+C promote PRIMARY → CLIPBOARD at the GTK layer. The
-                // key still forwards to CEF below (in-page copy/UX unaffected).
+                // M17 outbound: CEF's offscreen copy never reaches the system clipboard
+                // (DOM `copy` doesn't fire in OSR). Page selection is mirrored to PRIMARY
+                // (50-copy-bridge), so on Ctrl+C promote PRIMARY → CLIPBOARD at the GTK
+                // layer. Key still forwards to CEF below.
                 if state.contains(ModifierType::CONTROL_MASK)
                     && !state.intersects(ModifierType::ALT_MASK | ModifierType::SUPER_MASK)
                     && matches!(keyval, Key::c | Key::C)
@@ -1444,9 +1365,8 @@ mod imp {
                     promote_primary_to_clipboard();
                 }
                 send_key(&widget, keyval, keycode, state, true);
-                // Let accelerator-style combos bubble to window/app shortcuts
-                // (Ctrl/Alt/Super + key, or F5/F11); consume everything else so
-                // plain typing/navigation stays inside the webview.
+                // Let accelerator combos (Ctrl/Alt/Super+key, F5/F11) bubble to
+                // window/app shortcuts; consume the rest so typing stays in the webview.
                 if is_accelerator_key(keyval, state) {
                     glib::Propagation::Proceed
                 } else {
@@ -1475,16 +1395,14 @@ mod imp {
         widget.add_controller(focus);
 
         // Drag-drop ----------------------------------------------------------
-        // M17: accept file drops and surface each as a synthetic `drop` event on
-        // the element under the cursor (paste_bridge.js targets it via the drop
-        // coordinates carried in the envelope).
+        // M17: accept file drops; surface each as a synthetic `drop` on the element
+        // under the cursor (paste_bridge.js targets it via the envelope's coords).
         let drop_target = gtk::DropTarget::new(
             gdk::FileList::static_type(),
             gdk::DragAction::COPY,
         );
-        // Forward hover (enter/motion/leave) to the page in real time so its
-        // dropzone overlay mounts DURING the physical hover — CEF only delivers
-        // the actual drop on release, far too late to mount it first.
+        // Forward hover (enter/motion/leave) so the page's dropzone overlay mounts
+        // DURING the hover — CEF only delivers the drop on release, too late to mount.
         drop_target.connect_enter(glib::clone!(
             #[weak] widget,
             #[upgrade_or] gdk::DragAction::COPY,
@@ -1498,8 +1416,7 @@ mod imp {
             #[weak] widget,
             #[upgrade_or] gdk::DragAction::COPY,
             move |_t, x, y| {
-                // Throttle to ~10/s: enough to keep the page dropzone alive
-                // without flooding the IPC with execute_java_script calls.
+                // Throttle to ~10/s: keeps the dropzone alive without flooding IPC.
                 let now = std::time::Instant::now();
                 if now.duration_since(last_motion.get()) >= std::time::Duration::from_millis(100) {
                     last_motion.set(now);
@@ -1529,7 +1446,7 @@ mod imp {
         ));
         widget.add_controller(drop_target);
 
-        let _ = gdk::ModifierType::SHIFT_MASK;  // suppress unused import warning shape
+        let _ = gdk::ModifierType::SHIFT_MASK;  // suppress unused-import warning
     }
 
     fn is_accelerator_key(keyval: gtk::gdk::Key, state: gtk::gdk::ModifierType) -> bool {
@@ -1556,11 +1473,9 @@ mod imp {
         m
     }
 
-    /// Populate `container` with one widget per [`MenuEntry`] snapshot entry:
-    /// flat `gtk::Button`s for commands (click → record command id + popdown),
-    /// `gtk::Separator`s between sections, and dim heading labels for submenus
-    /// (flattened inline — the real menus are flat). Disabled items are
-    /// insensitive.
+    /// Populate `container` per [`MenuEntry`]: flat `Button`s for commands (click →
+    /// record id + popdown), `Separator`s, dim heading labels for (flattened)
+    /// submenus. Disabled items are insensitive.
     fn build_menu_box(
         entries: &[crate::handlers::context_menu::MenuEntry],
         container: &gtk::Box,
@@ -1600,8 +1515,7 @@ mod imp {
                         #[weak] popover,
                         move |_| {
                             log::debug!("context menu: item activated id={cmd}");
-                            // Record the choice; the popover `closed` handler runs
-                            // `cont` once it is down and the view is re-focused.
+                            // Record the choice; `closed` runs `cont` after popdown + refocus.
                             obj.imp().pending_menu_command.set(Some(cmd));
                             popover.popdown();
                         }
@@ -1612,8 +1526,8 @@ mod imp {
         }
     }
 
-    // Bridges a per-account `RequestContext`'s init callback back to the widget
-    // so the browser is created only once the context is ready.
+    // Bridges a per-account `RequestContext`'s init callback to the widget so the
+    // browser is created only once the context is ready.
     wrap_request_context_handler! {
         pub struct ContextReadyHandler {
             widget: glib::object::WeakRef<super::KarereWebView>,
@@ -1662,7 +1576,7 @@ mod imp {
     fn send_move(widget: &super::KarereWebView, x: f64, y: f64, modifiers: u32, leave: bool) {
         let s = scale(widget);
         if !leave {
-            // Remember the cursor so wheel events scroll the element under it.
+            // Remember cursor so wheel events scroll the element under it.
             widget.imp().last_mouse_x.store(x as i32, Ordering::Relaxed);
             widget.imp().last_mouse_y.store(y as i32, Ordering::Relaxed);
         }
@@ -1704,11 +1618,9 @@ mod imp {
 
     fn send_wheel(widget: &super::KarereWebView, dx: f64, dy: f64, modifiers: u32) {
         let s = scale(widget);
-        // GTK scroll deltas are in "wheel ticks" (1.0 = one notch). CEF expects
-        // pixel deltas; multiply by a standard step.
+        // GTK deltas are wheel ticks (1.0 = one notch); CEF wants pixel deltas.
         const STEP: f64 = 40.0;
-        // CEF needs the cursor position to hit-test which element scrolls;
-        // (0,0) targets the top-left corner and usually scrolls nothing.
+        // CEF hit-tests the cursor to pick the scroll target; (0,0) scrolls nothing.
         let imp = widget.imp();
         let event = MouseEvent {
             x: imp.last_mouse_x.load(Ordering::Relaxed) * s,
@@ -1763,8 +1675,7 @@ mod imp {
         with_host(widget, |host| host.set_focus(focused as i32));
     }
 
-    /// Synthesize Ctrl+Shift+C into this view's browser. Used to drive the
-    /// embedded DevTools frontend's native "inspect element" toggle.
+    /// Synthesize Ctrl+Shift+C to toggle the embedded DevTools "inspect element" picker.
     pub fn send_inspect_shortcut(widget: &super::KarereWebView) {
         use sys::cef_event_flags_t as F;
         let modifiers = F::EVENTFLAG_CONTROL_DOWN.0 | F::EVENTFLAG_SHIFT_DOWN.0;
@@ -1802,9 +1713,9 @@ mod imp {
         }
     }
 
-    /// Marshal a binary clipboard/drop payload into a `DispatchPasteEvent`
-    /// (`kind` is `"paste"` or `"drop"`). Large payloads round-trip via a
-    /// scoped tempfile (see [`crate::paste::make_blob`]).
+    /// Marshal a binary clipboard/drop payload into a `DispatchPasteEvent` (`kind` =
+    /// `"paste"` or `"drop"`). Large payloads round-trip via a tempfile (see
+    /// [`crate::paste::make_blob`]).
     fn send_blob_paste(
         widget: &super::KarereWebView,
         mime: String,
@@ -1844,9 +1755,8 @@ mod imp {
         );
     }
 
-    /// Marshal primary-clipboard text (middle-click) as a `text/plain` paste,
-    /// carrying the click coordinates so the page can target the element under
-    /// the cursor (only an editable target receives the paste).
+    /// Marshal primary-clipboard text (middle-click) as a `text/plain` paste with
+    /// click coords so the page targets the element under the cursor (editable only).
     fn send_text_paste(widget: &super::KarereWebView, text: &str, coords: Option<(f64, f64)>) {
         let (x, y) = match coords {
             Some((x, y)) => (Some(x), Some(y)),
@@ -1865,10 +1775,9 @@ mod imp {
         );
     }
 
-    /// On Ctrl+V, inspect the GDK clipboard. If it holds an image or files, kick
-    /// off an async read that dispatches a synthetic paste and return `true` so
-    /// the caller swallows the keystroke (CEF's GDK-blind native paste must not
-    /// also fire). Text-only / empty clipboards return `false` to fall through.
+    /// On Ctrl+V, inspect the GDK clipboard. If it holds an image or files, async-read
+    /// + dispatch a synthetic paste and return `true` so the caller swallows the key
+    /// (CEF's GDK-blind native paste must not also fire). Text-only/empty → `false`.
     fn try_intercept_paste(widget: &super::KarereWebView) -> bool {
         let Some(display) = gtk::gdk::Display::default() else {
             return false;
@@ -1893,9 +1802,8 @@ mod imp {
             return true;
         }
 
-        // CEF's offscreen (windowless) clipboard does not consult GDK, so its
-        // native Ctrl+V pastes nothing. Read GDK clipboard text ourselves and
-        // synthesize the paste, same as the image/file paths.
+        // CEF's windowless clipboard doesn't consult GDK, so native Ctrl+V pastes
+        // nothing. Read GDK text ourselves and synthesize, like the image/file paths.
         let has_text = formats.contains_type(glib::Type::STRING)
             || formats.contain_mime_type("text/plain")
             || formats.contain_mime_type("text/plain;charset=utf-8")
@@ -2001,9 +1909,8 @@ mod imp {
             .unwrap_or_else(|| "application/octet-stream".to_string())
     }
 
-    /// Ctrl+C: copy the PRIMARY selection (kept in sync with the page selection
-    /// by `50-copy-bridge.js`) into the regular CLIPBOARD, since CEF's offscreen
-    /// copy never reaches the system clipboard.
+    /// Ctrl+C: copy PRIMARY (synced to the page selection by `50-copy-bridge.js`)
+    /// into CLIPBOARD, since CEF's offscreen copy never reaches the system clipboard.
     fn promote_primary_to_clipboard() {
         let Some(display) = gtk::gdk::Display::default() else {
             return;
@@ -2021,9 +1928,8 @@ mod imp {
         );
     }
 
-    /// Middle-click: paste primary-clipboard text into the element at `(x, y)`,
-    /// but only if it is editable (the page enforces this). Empty selection
-    /// sends nothing.
+    /// Middle-click: paste primary-clipboard text into the element at `(x, y)` if
+    /// editable (page-enforced). Empty selection sends nothing.
     fn read_primary_clipboard_paste(widget: &super::KarereWebView, x: f64, y: f64) {
         let Some(display) = gtk::gdk::Display::default() else {
             return;
@@ -2045,8 +1951,7 @@ mod imp {
 
     fn gdk_key_to_vk(keyval: gtk::gdk::Key) -> i32 {
         use gtk::gdk::Key;
-        // Just the common keys. Anything else falls back to the unicode value
-        // CEF receives via CHAR events.
+        // Common keys only; everything else falls back to the unicode CHAR event.
         match keyval {
             Key::BackSpace => 0x08,
             Key::Tab => 0x09,
@@ -2062,12 +1967,10 @@ mod imp {
             Key::Down => 0x28,
             Key::Insert => 0x2D,
             Key::Delete => 0x2E,
-            // Only letters/digits map cleanly to a Windows VK via their ASCII
-            // code (A–Z = 0x41–0x5A, 0–9 = 0x30–0x39). For punctuation the ASCII
-            // value collides with named VKs — e.g. '.' = 0x2E = VK_DELETE,
-            // '-' = 0x2D = VK_INSERT — which made Chromium treat the keydown as a
-            // command and drop the character. Use 0 for those; the CHAR event in
-            // `send_key` still carries the character so it is inserted as text.
+            // Only letters/digits map cleanly to a Windows VK via ASCII (A–Z, 0–9).
+            // Punctuation collides with named VKs (e.g. '.'=0x2E=VK_DELETE), making
+            // Chromium treat the keydown as a command and drop the char. Use 0; the
+            // CHAR event in `send_key` still inserts the character as text.
             _ => keyval
                 .to_unicode()
                 .filter(|c| c.is_ascii_alphanumeric())
@@ -2115,8 +2018,8 @@ void main() {
                     p,
                     log_len,
                     std::ptr::null_mut(),
-                    // c_char is i8 on x86_64 but u8 on aarch64 — cast per-arch
-                    // instead of hardcoding i8 (broke the aarch64 Flatpak build).
+                    // c_char differs per arch (i8 x86_64 / u8 aarch64); cast per-arch
+                    // (hardcoding i8 broke the aarch64 Flatpak build).
                     buf.as_mut_ptr() as *mut std::os::raw::c_char,
                 );
                 log::error!("program link: {}", String::from_utf8_lossy(&buf));
@@ -2156,7 +2059,7 @@ void main() {
 mod zoom_tests {
     use super::{cef_to_linear, linear_to_cef, ZOOM_MAX};
 
-    /// 1.3: linear → CEF → linear round-trips within 1e-9 across the range.
+    /// linear → CEF → linear round-trips within 1e-9 across the range.
     #[test]
     fn round_trip_linear() {
         for x in [0.5_f64, 1.0, 1.1, 1.331, 3.0] {
@@ -2165,7 +2068,7 @@ mod zoom_tests {
         }
     }
 
-    /// 1.4: out-of-range input clamps to the max linear factor (3.0).
+    /// out-of-range input clamps to the max linear factor (3.0).
     #[test]
     fn clamp_above_max() {
         let back = cef_to_linear(linear_to_cef(5.0));

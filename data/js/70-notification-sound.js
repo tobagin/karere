@@ -1,17 +1,13 @@
 // 70-notification-sound.js — gate WhatsApp Web's notification / UI "ding".
 //
-// WhatsApp plays its incoming-message tone (and other UI tones / call ringtone)
-// by `play()`-ing an <audio> whose `src` is a static asset, e.g.
-// `https://static.whatsapp.net/rsrc.php/…​.mp3`. The "Notification Sounds" toggle
-// (and the master notification toggle) are surfaced here as
-// `window.__karereMuteNotifSound` (set by the host on load and on change).
+// WhatsApp plays tones by play()-ing an <audio> whose src is a static asset
+// (static.whatsapp.net/…​.mp3). The mute toggle is window.__karereMuteNotifSound
+// (set by the host on load and on change).
 //
-// When muted we block exactly those static-asset tones. We deliberately do NOT
-// touch:
-//   - WebRTC call audio  → played via `srcObject` (a MediaStream), not `src`.
-//   - voice notes / media → `blob:` / media URLs, user-initiated playback.
-// so disabling notification sounds never silences a call you answer or a voice
-// message you tap.
+// When muted we block only those static-asset tones, NOT:
+//   - WebRTC call audio  → srcObject (MediaStream), not src.
+//   - voice notes / media → blob:/media URLs, user-initiated.
+// so muting never silences a call you answer or a voice message you tap.
 (function () {
   "use strict";
   try {
@@ -25,8 +21,7 @@
         if (window.__karereMuteNotifSound && !this.srcObject) {
           var s = this.currentSrc || this.src || "";
           if (s.indexOf("static.whatsapp.net") !== -1) {
-            // Swallow the tone: return a resolved promise so callers awaiting
-            // play() don't throw.
+            // Swallow the tone; resolved promise so awaiters don't throw.
             return Promise.resolve();
           }
         }

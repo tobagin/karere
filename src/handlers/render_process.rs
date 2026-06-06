@@ -1,15 +1,12 @@
-//! Render-process handler — runs **only in the renderer subprocess**.
+//! Render-process handler — runs only in the renderer subprocess (via
+//! `App::render_process_handler`; never in the browser process). Jobs:
 //!
-//! CEF invokes this via `App::render_process_handler` (see
-//! [`crate::cef_runtime`]); it never fires in the browser process. Its jobs:
-//!
-//! - On `on_context_created` (main frame only), bind the native
-//!   `karere_send(name, json)` function onto the context global and inject the
-//!   build-time JS bundle. Binding happens *after* the context exists (not via
-//!   `register_extension`, which runs before context creation and can break the
-//!   page's own JS), so page rendering is never affected.
-//! - On `on_process_message_received`, decode inbound [`BrowserMessage`]s and
-//!   dispatch them (most variants are M13 stubs; debug `Ping` replies `Pong`).
+//! - `on_context_created` (main frame): bind native `karere_send(name, json)`
+//!   onto the global and inject the build-time JS bundle. Binding happens AFTER
+//!   the context exists (not `register_extension`, which runs before context
+//!   creation and breaks the page's JS), so rendering is unaffected.
+//! - `on_process_message_received`: decode + dispatch [`BrowserMessage`]s
+//!   (mostly M13 stubs; debug `Ping` replies `Pong`).
 
 use std::os::raw::c_int;
 
@@ -23,8 +20,8 @@ use cef::{
 
 use crate::ipc::{self, BrowserMessage, PasteBlob, RendererMessage};
 
-/// The concatenated `data/js/*.js` bundle, embedded at build time so the shipped
-/// binary needs no runtime `data/js/` lookup (works under flatpak/relocation).
+/// The concatenated `data/js/*.js` bundle, embedded at build time so the binary
+/// needs no runtime lookup (works under flatpak/relocation).
 const EMBED_BUNDLE: &str = include_str!(concat!(env!("OUT_DIR"), "/injected_bundle.js"));
 
 #[derive(Clone, Default)]
@@ -47,8 +44,8 @@ wrap_render_process_handler! {
                 return;
             }
 
-            // Bind the native send function onto the context global so the
-            // injected bundle can reach the host (`window.karere_send`).
+            // Bind native send onto the global so the bundle can reach the host
+            // (`window.karere_send`).
             if let Some(context) = context
                 && let Some(global) = context.global()
             {
@@ -108,8 +105,7 @@ impl ShellRenderProcessHandlerBuilder {
 }
 
 /// Route a decoded [`BrowserMessage`] to its handler. Most variants are M13
-/// stubs that log; the real handling lands in M14/M17/M20. Debug `Ping` replies
-/// with `Pong` on the originating frame's channel.
+/// stubs that log; debug `Ping` replies `Pong` on the originating frame.
 fn dispatch(msg: BrowserMessage, frame: Option<&mut Frame>) {
     match msg {
         BrowserMessage::DispatchPasteEvent {
@@ -121,9 +117,8 @@ fn dispatch(msg: BrowserMessage, frame: Option<&mut Frame>) {
             y,
         } => {
             let Some(frame) = frame else { return };
-            // Re-shape the payload into a JS-friendly discriminated object so
-            // `paste_bridge.js` can branch on `payload.kind` without knowing
-            // serde's externally-tagged encoding.
+            // Re-shape into a discriminated object so `paste_bridge.js` can
+            // branch on `payload.kind` without serde's externally-tagged form.
             let payload_json = match payload {
                 PasteBlob::Base64(data) => serde_json::json!({ "kind": "Base64", "data": data }),
                 PasteBlob::FilePath(path) => {
@@ -138,8 +133,7 @@ fn dispatch(msg: BrowserMessage, frame: Option<&mut Frame>) {
                 "y": y,
                 "payload": payload_json,
             });
-            // JSON is a syntactic subset of a JS object literal, so inlining the
-            // serialized detail is safe.
+            // JSON is a JS object-literal subset, so inlining is safe.
             let script = format!(
                 "window.dispatchEvent(new CustomEvent('karere:dispatch-paste',{{detail:{detail}}}))"
             );
@@ -209,9 +203,8 @@ wrap_v8_handler! {
             let variant = read(0);
             let inner_json = read(1);
 
-            // Wrap the page-supplied inner fields into the externally-tagged
-            // envelope serde expects: unit variant -> `"Tag"`, otherwise
-            // `{"Tag": <inner>}`.
+            // Wrap inner fields into serde's externally-tagged envelope: unit
+            // variant -> `"Tag"`, else `{"Tag": <inner>}`.
             let envelope = if inner_json.trim().is_empty() || inner_json == "null" {
                 format!("\"{variant}\"")
             } else {

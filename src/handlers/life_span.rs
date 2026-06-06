@@ -55,12 +55,11 @@ wrap_life_span_handler! {
                 "on_before_popup url={url:?} disposition={target_disposition:?} gesture={user_gesture}"
             );
 
-            // Deliberate popups (the call "pop-out"/expand → NEW_POPUP to
-            // `web.whatsapp.com/call/popout`, plus blank/blob `window.open()` call
-            // surfaces) must be SUPPRESSED, not hosted: under OSR a native popup
-            // renders blank and freezes the UI, and navigating the main frame
-            // drops the session. The call keeps running in WhatsApp's in-page
-            // floating window, so cancel the popup and leave the main frame alone.
+            // Deliberate popups (call pop-out → NEW_POPUP, plus blank/blob
+            // `window.open()` surfaces) must be SUPPRESSED, not hosted: under OSR
+            // a native popup renders blank and freezes the UI, and navigating the
+            // main frame drops the session. The call keeps running in WhatsApp's
+            // in-page floating window, so cancel and leave the main frame alone.
             let _ = window_info;
             let scheme = url.split_once(':').map(|(s, _)| s.to_ascii_lowercase());
             let suppress = url.is_empty()
@@ -70,9 +69,8 @@ wrap_life_span_handler! {
                 return 1;
             }
 
-            // Everything else stays single-window: WhatsApp links load in the
-            // main frame, external links open in the system browser. Cancel the
-            // CEF popup.
+            // Everything else stays single-window (WhatsApp links → main frame,
+            // external → system browser). Cancel the CEF popup.
             route_target(browser, &url);
             1
         }
@@ -84,7 +82,7 @@ wrap_life_span_handler! {
         }
 
         fn do_close(&self, _browser: Option<&mut Browser>) -> i32 {
-            // Allow the close; CEF will follow up with on_before_close.
+            // Allow the close; CEF follows up with on_before_close.
             0
         }
 

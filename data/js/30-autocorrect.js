@@ -1,17 +1,12 @@
 // 30-autocorrect.js — optional auto-correct of common misspellings in editable
-// fields, gated on the `window.__karereAutoCorrect` flag.
+// fields, gated on window.__karereAutoCorrect.
 //
-// Chromium exposes no JS spellcheck API and no desktop autocorrect preference,
-// so the suggestion source here is a small, conservative built-in common-typos
-// map (see the change's design — "Auto-correct suggestion source"). When the
-// user finishes a word (types a space/punctuation), the just-typed word is
-// looked up; an unambiguous, high-confidence match is replaced in place. Words
-// with no map entry are left untouched (still underlined by Chromium), so a poor
-// guess is never substituted.
+// Chromium exposes no JS spellcheck/autocorrect API, so we use a small built-in
+// typos map. On a word boundary the just-typed word is looked up; unambiguous
+// matches are replaced in place, unknown words left untouched.
 //
-// The flag defaults to false and is (re)seeded from the `enable-auto-correct`
-// GSettings key by the host on every page load and whenever the preference
-// changes (see `handlers/load.rs::apply_autocorrect_from_settings`).
+// Flag defaults false, (re)seeded from the `enable-auto-correct` GSettings key
+// by handlers/load.rs::apply_autocorrect_from_settings on load + on change.
 (function () {
   "use strict";
 
@@ -104,9 +99,8 @@
     el.dispatchEvent(new Event("input", { bubbles: true }));
   }
 
-  // contenteditable (e.g. the WhatsApp composer): select the misspelled word and
-  // replace it via the editor's own input path (execCommand fires beforeinput/
-  // input so React stays in sync and the caret is restored automatically).
+  // contenteditable (WhatsApp composer): replace via execCommand so beforeinput/
+  // input fire — keeps React in sync and restores the caret automatically.
   function handleContentEditable() {
     var sel = window.getSelection();
     if (!sel || sel.rangeCount === 0 || !sel.isCollapsed) {

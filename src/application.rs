@@ -40,9 +40,8 @@ impl KarereApplication {
             log::info!(
                 "start-in-background=true and tray configured — window built but not presented"
             );
-            // The OSR webview only realizes (and spawns its browsers) when the
-            // window is shown. Pre-warm every account's browser now so WhatsApp
-            // loads and delivers notifications while we stay in the background.
+            // OSR browsers only spawn when the window is shown; pre-warm so
+            // WhatsApp loads and notifies while we stay in the background.
             window.prewarm();
         } else {
             if settings.boolean("start-in-background") && !crate::tray::is_active() {
@@ -146,12 +145,10 @@ mod imp {
             crate::actions::register_app_actions(&app);
             register_accels(&app);
 
-            // M19 enhanced focus indicators: load the bundled stylesheet once,
-            // for the whole process, at APPLICATION priority (so user theme
-            // overrides still win). The rules are scoped under `.enhanced-focus`;
-            // the window toggles that class from the `focus-indicators` GSetting,
-            // so this provider is inert until a window opts in. No per-window
-            // CssProvider allocation occurs.
+            // Load the focus-indicator stylesheet once at APPLICATION priority
+            // (user themes still win). Scoped under `.enhanced-focus`, which the
+            // window toggles from the `focus-indicators` GSetting — inert until
+            // a window opts in.
             if let Some(display) = gtk::gdk::Display::default() {
                 let provider = gtk::CssProvider::new();
                 provider.load_from_resource(&format!("{RESOURCE_BASE_PATH}/style.css"));
@@ -162,8 +159,8 @@ mod imp {
                 );
             }
 
-            // Start the SNI tray (M15). Honors the GNOME skip policy and the
-            // KARERE_FORCE_TRAY override internally; safe to call unconditionally.
+            // Start the SNI tray; honors GNOME skip policy + KARERE_FORCE_TRAY
+            // internally, so it's safe to call unconditionally.
             crate::tray::start();
 
             let settings = gio::Settings::new(APP_ID);
@@ -172,12 +169,11 @@ mod imp {
                 Some("theme"),
                 |s, _| apply_theme(s),
             );
-            // Live tray enable/disable/auto: re-apply the `systray-icon` setting.
+            // Live tray enable/disable/auto.
             settings.connect_changed(Some("systray-icon"), |_, _| {
                 crate::tray::apply_setting();
             });
-            // Live mobile-layout: reload every account so the page gate
-            // (should_use_mobile_layout) re-evaluates on the next on_load_end.
+            // Live mobile-layout: reload accounts so the page gate re-evaluates.
             settings.connect_changed(
                 Some("mobile-layout"),
                 glib::clone!(
@@ -192,8 +188,7 @@ mod imp {
                     }
                 ),
             );
-            // Live notification-sound / master-toggle: re-apply audio muting so
-            // WhatsApp's ding is silenced/restored without a restart.
+            // Live notification-sound / master-toggle: re-apply audio muting.
             settings.connect_changed(
                 None,
                 glib::clone!(
@@ -210,7 +205,7 @@ mod imp {
                     }
                 ),
             );
-            // Keep the Settings instance alive so the change handler keeps firing.
+            // Keep Settings alive so the change handlers keep firing.
             let _ = self.settings.set(settings);
         }
     }

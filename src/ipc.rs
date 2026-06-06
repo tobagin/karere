@@ -1,33 +1,5 @@
-//! Typed IPC envelope between the CEF browser process and the renderer
-//! subprocess.
-//!
-//! # Envelope contract
-//!
-//! CEF carries host↔page messages as [`cef::ProcessMessage`] values over the
-//! bidirectional browser↔renderer channel. We layer a typed envelope on top:
-//!
-//! - [`BrowserMessage`] — browser process → renderer subprocess.
-//! - [`RendererMessage`] — renderer subprocess → browser process.
-//!
-//! ## Encoding
-//!
-//! Each message maps to a `ProcessMessage` whose **name** is the enum variant
-//! tag (e.g. `"SetViewportSize"`) and whose single string **argument** is
-//! `base64(json(value))`, where `json(value)` is serde's externally-tagged
-//! encoding of the whole enum value (so `{"SetViewportSize":{"w":..,"h":..}}`,
-//! or a bare `"AwaitingPairing"` for a unit variant). Base64 sidesteps any
-//! UTF-8 / null-byte issues with binary payloads such as [`PasteBlob::Base64`].
-//!
-//! Decoding rejects an unknown name and any payload that fails base64 decode or
-//! JSON deserialization, returning [`IpcError`] rather than panicking.
-//!
-//! # Adding a new variant
-//!
-//! 1. Add the variant to [`BrowserMessage`] or [`RendererMessage`].
-//! 2. Add its tag to that enum's `variant_tag` match and to `KNOWN_TAGS`.
-//! 3. That's it — encoding/decoding is derived from serde + the tag tables.
-//!    JS senders pass the variant's inner fields to `window.karere.send(tag,
-//!    fieldsJson)`; the native handler wraps them into the envelope.
+//! Typed IPC envelope over the CEF ProcessMessage channel.
+//! Payload is base64'd to avoid UTF-8/null-byte issues with binary blobs.
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as B64;
@@ -35,22 +7,17 @@ use cef::{CefString, ImplListValue, ImplProcessMessage, ProcessMessage, process_
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-/// Clipboard payload carried by [`BrowserMessage::DispatchPasteEvent`].
+/// Clipboard payload carried by a paste/drop event.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum PasteBlob {
-    /// Base64-encoded raw bytes (e.g. a pasted image).
     Base64(String),
-    /// Path to a file on disk.
     FilePath(PathBuf),
 }
 
-/// Messages sent from the browser process to the renderer subprocess.
+/// Messages from the browser process to the renderer subprocess.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum BrowserMessage {
-    /// Synthesize a paste (`kind == "paste"`) or drop (`kind == "drop"`) of
-    /// `payload` (MIME `mime`) into the page. For drops, `x`/`y` are the widget
-    /// coordinates of the release so the renderer can target the element under
-    /// the cursor; `name` carries the original filename for file/drop payloads.
+    /// Synthesize a paste/drop; for drops x/y are release widget coords.
     DispatchPasteEvent {
         mime: String,
         kind: String,
@@ -59,26 +26,17 @@ pub enum BrowserMessage {
         x: Option<f64>,
         y: Option<f64>,
     },
-    /// A file drag is hovering over the embedding widget (no payload yet) so the
-    /// page can mount its dropzone before the drop commits. `phase` is
-    /// `"enter"` / `"over"` / `"leave"`; `x`/`y` are widget coordinates.
     DragHover { phase: String, x: f64, y: f64 },
-    /// Inform the page of the host viewport size (drives responsive layout).
     SetViewportSize { w: i32, h: i32 },
-    /// Ask the page to dismiss the notification tagged `tag`.
     CloseNotifByTag { tag: String },
-    /// Debug-only channel probe; the renderer replies with [`RendererMessage::Pong`].
     #[cfg(debug_assertions)]
     Ping,
 }
 
-/// Messages sent from the renderer subprocess to the browser process.
+/// Messages from the renderer subprocess to the browser process.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum RendererMessage {
-    /// The signed-in account identity. `wid` is `None` when reported by the DOM
-    /// fallback (which cannot read the internal id). `source` is `Some("store")`
-    /// for the first-class Store hook and `Some("dom-fallback")` for the degraded
-    /// path, distinguishing the two so the UI can keep its degraded badge.
+    /// `wid` is `None` from the DOM fallback.
     ProfileIdentity {
         #[serde(default)]
         wid: Option<String>,
@@ -86,20 +44,14 @@ pub enum RendererMessage {
         #[serde(default)]
         source: Option<String>,
     },
-    /// The account avatar as a base64-encoded PNG. `source` distinguishes the
-    /// Store hook (`Some("store")`) from the DOM fallback (`Some("dom-fallback")`).
     ProfileAvatar {
         base64_png: String,
         #[serde(default)]
         source: Option<String>,
     },
-    /// The page is showing the pairing / QR screen (not logged in).
     AwaitingPairing,
-    /// The page store could not be reached; `reason` is a human-readable note.
     StoreUnavailable { reason: String },
-    /// A notification became visible in the page. `icon`, when present, is a
-    /// renderer-resolved avatar as a `data:`/base64 string (the browser process
-    /// cannot re-fetch a blob/authed URL, so the renderer inlines the bytes).
+    /// `icon` is a renderer-inlined data URL.
     NotificationSeen {
         account_id: String,
         title: String,
@@ -107,33 +59,21 @@ pub enum RendererMessage {
         icon: Option<String>,
         tag: String,
     },
-    /// A notification was dismissed in the page.
     NotificationClosed { tag: String },
-    /// Forwarded `console.log/warn/error` output.
     ConsoleLog { level: String, msg: String },
-    /// The renderer finished synthesizing a paste/drop; the host may unlink the
-    /// backing tempfile (when the payload was a [`PasteBlob::FilePath`]).
     PasteConsumed { tempfile_path: Option<PathBuf> },
-    /// Mirror a page text selection / copy to the GDK clipboard (outbound): CEF
-    /// windowless mode never owns the system clipboard, so the page reports its
-    /// selection and the host writes it. `primary` targets the PRIMARY selection
-    /// (Linux middle-click) instead of the regular clipboard.
+    /// `primary` targets the PRIMARY selection (middle-click) not the clipboard.
     SetClipboard { text: String, primary: bool },
-    /// Debug-only reply to [`BrowserMessage::Ping`].
     #[cfg(debug_assertions)]
     Pong,
 }
 
-/// Failure decoding a [`ProcessMessage`] into a typed envelope value.
+/// Failure decoding a `ProcessMessage` into a typed value.
 #[derive(Debug, Clone, PartialEq)]
 pub enum IpcError {
-    /// The message name matched no variant tag of the target enum.
     UnknownVariant(String),
-    /// The message had no string argument carrying the payload.
     MissingPayload,
-    /// The base64 layer failed to decode.
     Base64(String),
-    /// The decoded bytes were not valid UTF-8 / JSON.
     Json(String),
 }
 
@@ -150,9 +90,7 @@ impl std::fmt::Display for IpcError {
 
 impl std::error::Error for IpcError {}
 
-/// Build a `ProcessMessage` named `name` carrying `base64(args_json)` as its
-/// single string argument. `args_json` is the full externally-tagged JSON of
-/// the envelope value. Returns `None` if CEF declines to allocate the message.
+/// Build a `ProcessMessage` named `name` carrying `base64(args_json)`.
 pub fn to_cef_message(name: &str, args_json: String) -> Option<ProcessMessage> {
     let msg = process_message_create(Some(&CefString::from(name)))?;
     let payload = B64.encode(args_json.as_bytes());
@@ -163,7 +101,6 @@ pub fn to_cef_message(name: &str, args_json: String) -> Option<ProcessMessage> {
     Some(msg)
 }
 
-/// Read `(name, base64_payload)` out of a `ProcessMessage`.
 fn read_envelope(msg: &ProcessMessage) -> Result<(String, String), IpcError> {
     let name = CefString::from(&msg.name()).to_string();
     let args = msg.argument_list().ok_or(IpcError::MissingPayload)?;
@@ -174,8 +111,6 @@ fn read_envelope(msg: &ProcessMessage) -> Result<(String, String), IpcError> {
     Ok((name, payload))
 }
 
-/// Decode the base64-JSON `payload` into `T`, after verifying `name` is one of
-/// `known_tags`. Pure (no CEF dependency) so it is unit-testable.
 fn decode_payload<T: for<'de> Deserialize<'de>>(
     name: &str,
     payload: &str,
@@ -192,7 +127,6 @@ fn decode_payload<T: for<'de> Deserialize<'de>>(
 }
 
 impl BrowserMessage {
-    /// Variant tags carried in the `ProcessMessage` name field.
     const KNOWN_TAGS: &'static [&'static str] = &[
         "DispatchPasteEvent",
         "DragHover",
@@ -202,7 +136,6 @@ impl BrowserMessage {
         "Ping",
     ];
 
-    /// The variant tag for `self`.
     pub fn variant_tag(&self) -> &'static str {
         match self {
             BrowserMessage::DispatchPasteEvent { .. } => "DispatchPasteEvent",
@@ -214,13 +147,11 @@ impl BrowserMessage {
         }
     }
 
-    /// Encode into a `ProcessMessage` (tag + base64-JSON payload).
     pub fn to_cef_message(&self) -> Option<ProcessMessage> {
         let json = serde_json::to_string(self).ok()?;
         to_cef_message(self.variant_tag(), json)
     }
 
-    /// Decode a received `ProcessMessage` into a `BrowserMessage`.
     pub fn try_from_cef_message(msg: &ProcessMessage) -> Result<Self, IpcError> {
         let (name, payload) = read_envelope(msg)?;
         decode_payload(&name, &payload, Self::KNOWN_TAGS)
@@ -228,7 +159,6 @@ impl BrowserMessage {
 }
 
 impl RendererMessage {
-    /// Variant tags carried in the `ProcessMessage` name field.
     const KNOWN_TAGS: &'static [&'static str] = &[
         "ProfileIdentity",
         "ProfileAvatar",
@@ -243,7 +173,6 @@ impl RendererMessage {
         "Pong",
     ];
 
-    /// The variant tag for `self`.
     pub fn variant_tag(&self) -> &'static str {
         match self {
             RendererMessage::ProfileIdentity { .. } => "ProfileIdentity",
@@ -260,13 +189,11 @@ impl RendererMessage {
         }
     }
 
-    /// Encode into a `ProcessMessage` (tag + base64-JSON payload).
     pub fn to_cef_message(&self) -> Option<ProcessMessage> {
         let json = serde_json::to_string(self).ok()?;
         to_cef_message(self.variant_tag(), json)
     }
 
-    /// Decode a received `ProcessMessage` into a `RendererMessage`.
     pub fn try_from_cef_message(msg: &ProcessMessage) -> Result<Self, IpcError> {
         let (name, payload) = read_envelope(msg)?;
         decode_payload(&name, &payload, Self::KNOWN_TAGS)
@@ -277,8 +204,6 @@ impl RendererMessage {
 mod tests {
     use super::*;
 
-    /// Encode a value the same way `to_cef_message` does, but without touching
-    /// CEF: `base64(externally-tagged json)`.
     fn encode<T: Serialize>(value: &T) -> String {
         B64.encode(serde_json::to_string(value).unwrap().as_bytes())
     }
@@ -393,7 +318,6 @@ mod tests {
 
     #[test]
     fn rejects_bad_json() {
-        // Valid base64, but the decoded bytes are not valid envelope JSON.
         let payload = B64.encode(b"{not json");
         let err = decode_payload::<RendererMessage>("ConsoleLog", &payload, RendererMessage::KNOWN_TAGS)
             .unwrap_err();

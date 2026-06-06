@@ -1,21 +1,11 @@
-// 00-bootstrap.js — always-on renderer-side bridge.
-//
-// Runs first (lexical `00-` prefix) in every main-frame V8 context. It wires
-// the host IPC channel exposed by the native `register_extension` handler
-// (`window.karere.send(name, payloadJson)`), forwards console output to the
-// browser process, and registers the browser->page DOM event listeners that
-// later milestones (M17 paste bridge, M20 notification observer) build on.
-//
-// The whole body is wrapped in try/catch: a throw here must never take down
-// the renderer or block the rest of the bundle.
+// 00-bootstrap.js — always-on renderer bridge, runs first (lexical `00-`).
+// Wires host IPC, forwards console, registers browser->page DOM listeners.
+// Whole body try/catch'd so a throw never takes down the renderer.
 (function () {
   "use strict";
 
-  // `window.karere_send(name, json)` is the native function bound by the
-  // render-process handler in on_context_created. Forward a typed message to
-  // the browser process: `name` is the RendererMessage variant tag, `payload`
-  // its inner fields (the native side wraps it into the envelope). Never routes
-  // through console — that would recurse into the shim below.
+  // Send a typed RendererMessage via native window.karere_send (bound in
+  // on_context_created). Must not route through console (would recurse).
   function send(name, payload) {
     try {
       if (typeof window.karere_send === "function") {
@@ -33,10 +23,7 @@
       window.cefQuery = window.karere_send;
     }
 
-    // --- Console forwarding -------------------------------------------------
-    // Replace console.log/warn/error with shims that mirror each call to the
-    // browser process as RendererMessage::ConsoleLog while still invoking the
-    // native console.
+    // Mirror log/warn/error to the browser (ConsoleLog) and still call native.
     ["log", "warn", "error"].forEach(function (level) {
       var original =
         typeof console[level] === "function"
@@ -60,19 +47,12 @@
       };
     });
 
-    // --- Browser -> page DOM events ----------------------------------------
-    // The renderer dispatcher converts inbound BrowserMessage variants into
-    // these DOM events. Bodies are no-op stubs in M13; real handling lands in
-    // M17 (paste) and M20 (notifications).
+    // Browser -> page DOM events (handled by later scripts in the bundle).
     document.addEventListener("karere:dispatch-paste", function (_ev) {
-      // M17: consume _ev.detail = { mime, payload }
     });
     document.addEventListener("karere:close-notif", function (_ev) {
-      // M20: consume _ev.detail = { tag }
     });
   } catch (err) {
-    // Bootstrap failed — report via the channel and the native console, then
-    // let the remainder of the bundle continue.
     var msg = "karere bootstrap failed: " + (err && err.stack ? err.stack : err);
     try {
       send("ConsoleLog", { level: "error", msg: msg });

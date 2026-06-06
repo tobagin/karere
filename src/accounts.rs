@@ -1,28 +1,4 @@
-//! Persistent multi-account store (M20).
-//!
-//! # JSON layout
-//! All accounts live in a single file at
-//! `$XDG_DATA_HOME/karere/accounts/accounts.json` (fallback
-//! `~/.local/share/karere/accounts/accounts.json`). The file is a JSON array of
-//! [`Account`] records. Avatar bytes are stored inline as base64 strings (see
-//! [`avatar_b64`]); per-account CEF session data lives separately under
-//! `accounts/sessions/<id>/data` and is owned by the browser pool, not this
-//! module.
-//!
-//! # Atomic-write guarantee
-//! [`save_to`] writes the serialized array to `accounts.json.tmp` in the same
-//! directory and then `fs::rename`s it over `accounts.json`. `rename` is atomic
-//! on a single filesystem, so a crash mid-write either leaves the prior
-//! `accounts.json` fully intact or completes the swap — never a half-written
-//! live file. The temp file is a sibling of the target so the rename never
-//! crosses a filesystem boundary.
-//!
-//! # MRU contract
-//! Accounts have no user-controllable `order` field. The UI always renders the
-//! list returned by [`AccountManager::get_accounts_sorted`], which sorts by
-//! `last_used_at` descending (most-recently-used first). [`AccountManager::activate`]
-//! stamps `last_used_at = now` and re-persists, so the just-used account floats
-//! to the top on the next read.
+//! Persistent multi-account store at `$XDG_DATA_HOME/karere/accounts/accounts.json`.
 
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -38,51 +14,35 @@ use serde::{Deserialize, Serialize};
 
 use crate::permissions_store::State;
 
-/// Per-account permission decisions, keyed exactly like M11's global store:
-/// `origin → (permission-mask bit → State)`. Reuses [`State`] from
-/// `permissions_store` so a per-account decision and a global one are the same
-/// type. Empty map means "defer to the global store".
+/// Per-account permission overrides; empty defers to global.
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 pub struct AccountPermissions {
-    /// origin → (permission-mask bit → decision).
     #[serde(default)]
     pub overrides: HashMap<String, HashMap<u32, State>>,
 }
 
-/// One WhatsApp Web account: identity, session state, and per-account prefs.
+/// One WhatsApp Web account.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Account {
-    /// Stable UUID (v4). Names the session dir and keys the browser pool.
     pub id: String,
-    /// WhatsApp internal id (`Store.Conn.wid`), once discovered.
     #[serde(default)]
     pub wid: Option<String>,
-    /// Display name from `Store.Conn.pushname`, once discovered.
     #[serde(default)]
     pub pushname: Option<String>,
-    /// User-chosen label; the only user-editable identity field.
     #[serde(default)]
     pub user_label: Option<String>,
-    /// Decoded avatar PNG bytes (base64 on disk — see [`avatar_b64`]).
     #[serde(default, with = "avatar_b64")]
     pub avatar_png: Option<Vec<u8>>,
-    /// Source URL the avatar was fetched from (`descriptor.eurl`).
     #[serde(default)]
     pub avatar_url: Option<String>,
-    /// Unix seconds at creation.
     pub created_at: i64,
-    /// Unix seconds of the last `activate`; drives MRU ordering.
     pub last_used_at: i64,
-    /// Whether this account is the current foreground.
     #[serde(default)]
     pub is_active: bool,
-    /// Whether a CEF session (cookies/storage) exists on disk.
     #[serde(default)]
     pub has_session: bool,
-    /// Per-account zoom (M18).
     #[serde(default = "default_zoom")]
     pub zoom_level: f64,
-    /// Per-account permission overrides (M11 stub).
     #[serde(default)]
     pub permissions: AccountPermissions,
 }
@@ -91,7 +51,6 @@ fn default_zoom() -> f64 {
     1.0
 }
 
-/// Unix seconds, monotonic-ish wall clock. Saturates on pre-epoch clocks.
 fn now() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -100,7 +59,7 @@ fn now() -> i64 {
 }
 
 impl Account {
-    /// A fresh account with a new UUID and `created_at == last_used_at == now`.
+    /// A fresh account with a new UUID.
     pub fn new() -> Self {
         let ts = now();
         Account {
@@ -126,8 +85,7 @@ impl Default for Account {
     }
 }
 
-/// serde adapter: `Option<Vec<u8>>` ⇆ base64 string on disk (vs. serde's
-/// default int-array encoding, which would bloat the file ~4×).
+/// serde adapter: `Option<Vec<u8>>` ⇆ base64 string on disk.
 mod avatar_b64 {
     use base64::Engine;
     use base64::engine::general_purpose::STANDARD as B64;
@@ -157,12 +115,9 @@ mod avatar_b64 {
     }
 }
 
-/// Errors from loading the account store.
 #[derive(Debug)]
 pub enum AccountsError {
-    /// `accounts.json` exists but could not be read or parsed.
     Parse(String),
-    /// A persistence (write/rename) operation failed.
     Io(String),
 }
 
@@ -177,24 +132,11 @@ impl std::fmt::Display for AccountsError {
 
 impl std::error::Error for AccountsError {}
 
-/// `$XDG_DATA_HOME/karere/accounts/` (fallback `~/.local/share/karere/accounts/`).
 pub fn accounts_root() -> PathBuf {
     glib::user_data_dir().join("karere").join("accounts")
 }
 
-/// One-time purge of pre-v4 data left in the shared `io.github.tobagin.karere`
-/// Flatpak dirs. v4 is a hard fork of the WebKitGTK-based v3 under the SAME
-/// app-id, so the upgrade keeps `~/.var/app/io.github.tobagin.karere/` and v3's
-/// WhatsApp sessions linger there as dead weight that v4 can never reuse (no
-/// migration — accounts are re-linked by QR scan). This deletes them on the
-/// first v4 launch, plus the orphaned pre-multi-account (pre-M20) single-profile
-/// CEF dirs.
-///
-/// Targeted, not a blanket wipe: the live v4 data — per-account CEF profiles
-/// under `karere/accounts/` and the active app-id CEF cache — is left intact, as
-/// are shared runtime caches (fontconfig, mesa, gstreamer) and GSettings. Guarded
-/// by a marker so it runs exactly once. Call only from the primary browser
-/// process, before CEF init.
+/// One-time, marker-guarded purge of pre-v4 data; call before CEF init.
 pub fn purge_legacy_v3_data() {
     let data = glib::user_data_dir();
     let marker = data.join("karere").join(".v3-data-purged");
@@ -204,8 +146,6 @@ pub fn purge_legacy_v3_data() {
     let cache = glib::user_cache_dir();
     let config = glib::user_config_dir();
 
-    // v3 WebKitGTK website data + cache, and the orphaned pre-M20 single-profile
-    // CEF dirs. None of these is v4 live data.
     let legacy = [
         data.join("webkitgtk-6.0"),
         cache.join("webkitgtk-6.0"),
@@ -229,16 +169,11 @@ pub fn purge_legacy_v3_data() {
     }
 }
 
-/// Path to the live `accounts.json`.
 pub fn accounts_file() -> PathBuf {
     accounts_root().join("accounts.json")
 }
 
-/// Delete an account's on-disk CEF session dir (`accounts/sessions/<id>`) so a
-/// removed account leaves no orphaned cookies/storage. Best-effort: logs on
-/// failure (e.g. if files are still briefly held by a closing browser). Only
-/// the local session is wiped — the device stays linked on the user's phone
-/// until removed there (no reliable remote unlink).
+/// Best-effort delete of an account's CEF session dir (device stays linked on the phone).
 pub fn delete_session_dir(id: &str) {
     let dir = session_cache_path(id);
     if let Err(e) = std::fs::remove_dir_all(&dir)
@@ -248,19 +183,12 @@ pub fn delete_session_dir(id: &str) {
     }
 }
 
-/// Per-account CEF session cache dir: `accounts/sessions/<id>`.
-///
-/// Must be a DIRECT child of the global `root_cache_path` (`accounts/sessions`):
-/// CEF's Chrome runtime treats each immediate subdirectory of the user-data dir
-/// as a profile and rejects deeper nesting (`.../<id>/data` fails with "Cannot
-/// create profile at path"), silently falling back to the shared global profile
-/// — which destroys per-account isolation.
+/// Per-account CEF session cache dir. Must be a DIRECT child of `root_cache_path`: CEF treats each immediate subdir as a profile and rejects deeper nesting, silently falling back to the shared global profile.
 pub fn session_cache_path(id: &str) -> PathBuf {
     accounts_root().join("sessions").join(id)
 }
 
-/// Load accounts from `path`. Missing file → empty list; present-but-malformed
-/// → `Err` (the file is never silently overwritten on a parse failure).
+/// Load accounts from `path`. Missing file → empty list; malformed → `Err` (never silently overwritten).
 pub fn load_from(path: &std::path::Path) -> Result<Vec<Account>, AccountsError> {
     match std::fs::read(path) {
         Ok(bytes) => serde_json::from_slice::<Vec<Account>>(&bytes)
@@ -270,7 +198,7 @@ pub fn load_from(path: &std::path::Path) -> Result<Vec<Account>, AccountsError> 
     }
 }
 
-/// Persist `accounts` to `path` via temp-then-rename (atomic on one filesystem).
+/// Persist `accounts` to `path` via temp-then-rename (atomic).
 pub fn save_to(path: &std::path::Path, accounts: &[Account]) -> Result<(), AccountsError> {
     if let Some(dir) = path.parent() {
         std::fs::create_dir_all(dir).map_err(|e| AccountsError::Io(e.to_string()))?;
@@ -283,7 +211,7 @@ pub fn save_to(path: &std::path::Path, accounts: &[Account]) -> Result<(), Accou
     Ok(())
 }
 
-/// Sort in place by `last_used_at` descending (most-recently-used first).
+/// Sort in place by `last_used_at` descending.
 pub fn sort_mru(accounts: &mut [Account]) {
     accounts.sort_by(|a, b| b.last_used_at.cmp(&a.last_used_at));
 }
@@ -312,14 +240,12 @@ mod imp {
 }
 
 glib::wrapper! {
-    /// Owns the in-memory account list and persists it. Emits `accounts-changed`
-    /// after every mutation so the switcher and tray can re-render.
+    /// Owns and persists the account list; emits `accounts-changed` after every mutation.
     pub struct AccountManager(ObjectSubclass<imp::AccountManager>);
 }
 
 impl AccountManager {
-    /// Build a manager and load `accounts.json` from the default location.
-    /// Missing file → empty list; malformed file → `Err`.
+    /// Build a manager and load `accounts.json`.
     pub fn load() -> Result<Self, AccountsError> {
         let obj: Self = glib::Object::new();
         let accts = load_from(&accounts_file())?;
@@ -327,7 +253,7 @@ impl AccountManager {
         Ok(obj)
     }
 
-    /// Persist the current list to `accounts.json` (atomic).
+    /// Persist the current list to `accounts.json`.
     pub fn save(&self) -> Result<(), AccountsError> {
         save_to(&accounts_file(), &self.imp().accounts.borrow())
     }
@@ -336,7 +262,7 @@ impl AccountManager {
         self.emit_by_name::<()>("accounts-changed", &[]);
     }
 
-    /// Create, persist, and return a new account (appended to the list).
+    /// Create, persist, and return a new account.
     pub fn add(&self) -> Account {
         let account = Account::new();
         self.imp().accounts.borrow_mut().push(account.clone());
@@ -345,14 +271,14 @@ impl AccountManager {
         account
     }
 
-    /// Remove the account with `id`, persist, and emit `accounts-changed`.
+    /// Remove the account with `id`.
     pub fn remove(&self, id: &str) {
         self.imp().accounts.borrow_mut().retain(|a| a.id != id);
         let _ = self.save();
         self.emit_changed();
     }
 
-    /// Stamp `last_used_at = now` for `id`, persist, emit `accounts-changed`.
+    /// Make `id` the active account and stamp `last_used_at = now`.
     pub fn activate(&self, id: &str) {
         {
             let mut list = self.imp().accounts.borrow_mut();
@@ -367,14 +293,14 @@ impl AccountManager {
         self.emit_changed();
     }
 
-    /// MRU-ordered clone of the account list (most-recently-used first).
+    /// MRU-ordered clone of the account list.
     pub fn get_accounts_sorted(&self) -> Vec<Account> {
         let mut out = self.imp().accounts.borrow().clone();
         sort_mru(&mut out);
         out
     }
 
-    /// Store discovered `wid`/`pushname` for `id` and persist.
+    /// Store discovered `wid`/`pushname` for `id`.
     pub fn update_identity(&self, id: &str, wid: Option<String>, pushname: Option<String>) {
         {
             let mut list = self.imp().accounts.borrow_mut();
@@ -391,8 +317,7 @@ impl AccountManager {
         self.emit_changed();
     }
 
-    /// Store the user-chosen `user_label` for `id` (the only editable identity
-    /// field) and persist. `None`/empty clears it.
+    /// Store the user-chosen `user_label` for `id`; `None`/empty clears it.
     pub fn update_user_label(&self, id: &str, label: Option<String>) {
         {
             let mut list = self.imp().accounts.borrow_mut();
@@ -404,10 +329,7 @@ impl AccountManager {
         self.emit_changed();
     }
 
-    /// Persist `id`'s per-account zoom (linear factor). Saves to disk but does
-    /// NOT emit `accounts-changed`: zoom does not affect the switcher UI, and
-    /// emitting on every Ctrl+plus step would trigger a switcher rebuild-storm.
-    /// (M18)
+    /// Persist `id`'s per-account zoom. Deliberately does NOT emit `accounts-changed` (every Ctrl+plus step would rebuild-storm the switcher).
     pub fn set_zoom(&self, id: &str, zoom: f64) {
         {
             let mut list = self.imp().accounts.borrow_mut();
@@ -423,17 +345,17 @@ impl AccountManager {
         let _ = self.save();
     }
 
-    /// Look up a single account by id.
+    /// Look up an account by id.
     pub fn get(&self, id: &str) -> Option<Account> {
         self.imp().accounts.borrow().iter().find(|a| a.id == id).cloned()
     }
 
-    /// The currently-active account (`is_active`), if any.
+    /// The currently-active account, if any.
     pub fn active(&self) -> Option<Account> {
         self.imp().accounts.borrow().iter().find(|a| a.is_active).cloned()
     }
 
-    /// Store decoded avatar PNG bytes for `id` and persist.
+    /// Store decoded avatar PNG bytes for `id`.
     pub fn update_avatar(&self, id: &str, png: Vec<u8>) {
         {
             let mut list = self.imp().accounts.borrow_mut();
@@ -447,18 +369,11 @@ impl AccountManager {
 }
 
 thread_local! {
-    /// App-wide manager handle. Both the GTK widgets and the CEF handlers run on
-    /// the glib main thread (external message pump), so a `thread_local` is a
-    /// sound home for this non-`Send` GObject — every reachable caller is on that
-    /// one thread. Populated lazily by [`manager`].
+    // Sound: all GTK/CEF handlers run on the glib main thread, so this non-Send GObject never crosses threads.
     static MANAGER: RefCell<Option<AccountManager>> = const { RefCell::new(None) };
 }
 
-/// The process-wide [`AccountManager`], loading `accounts.json` on first use.
-///
-/// A malformed file is reported (never silently discarded on disk) and an empty
-/// in-memory manager is returned so the app still launches; the bad file remains
-/// until the user resolves it or a mutation rewrites it.
+/// The process-wide [`AccountManager`], loading `accounts.json` on first use. A malformed file is reported (never discarded) and an empty manager returned so the app still launches.
 pub fn manager() -> AccountManager {
     MANAGER.with(|cell| {
         if cell.borrow().is_none() {
@@ -475,26 +390,14 @@ pub fn manager() -> AccountManager {
 /// Transient, non-persisted per-account runtime flags surfaced in the switcher.
 #[derive(Default, Clone, Debug)]
 pub struct AccountRuntime {
-    /// `Store.AppState` (or the page) has not reached `CONNECTED` yet.
     pub awaiting_pairing: bool,
-    /// The Store hook failed for this account; the DOM fallback is active and
-    /// the switcher shows a persistent "degraded mode" badge. Cleared only by a
-    /// fresh successful Store attachment (a page reload that re-runs the hook).
     pub degraded: bool,
-    /// Human-readable reason captured from the `StoreUnavailable` message.
     pub degraded_reason: Option<String>,
-    /// A notification fired for this account while it was not the focused
-    /// foreground; drives the switcher + tray unread dot. Transient: never
-    /// persisted (the page reflects real server-side unread on reload), cleared
-    /// when the account becomes the focused foreground.
     pub has_unread: bool,
 }
 
 thread_local! {
-    /// CEF `Browser::identifier()` → account id, so a renderer message arriving
-    /// on the CEF UI thread can be attributed to its account.
     static BROWSER_IDS: RefCell<HashMap<i32, String>> = RefCell::new(HashMap::new());
-    /// account id → transient [`AccountRuntime`] flags.
     static RUNTIME: RefCell<HashMap<String, AccountRuntime>> = RefCell::new(HashMap::new());
 }
 
@@ -505,7 +408,7 @@ pub fn register_browser(cef_id: i32, account_id: &str) {
     });
 }
 
-/// Drop a browser id mapping when its browser is closed.
+/// Drop a browser id mapping when its browser closes.
 pub fn unregister_browser(cef_id: i32) {
     BROWSER_IDS.with(|m| {
         m.borrow_mut().remove(&cef_id);
@@ -522,10 +425,7 @@ pub fn runtime_state(account_id: &str) -> AccountRuntime {
     RUNTIME.with(|m| m.borrow().get(account_id).cloned().unwrap_or_default())
 }
 
-/// Apply `f` to the account's runtime entry; emit `accounts-changed` only when
-/// `f` reports an actual change. Idempotent setters are essential: the Store
-/// hook can fire `StoreUnavailable` / `AwaitingPairing` many times a second, and
-/// emitting on every one would rebuild the switcher continuously and eat clicks.
+// Emits accounts-changed only on a real change: the Store hook fires many times/sec and emitting each time would rebuild-storm the switcher and eat clicks.
 fn mutate_runtime(account_id: &str, f: impl FnOnce(&mut AccountRuntime) -> bool) -> bool {
     let changed = RUNTIME.with(|m| {
         let mut map = m.borrow_mut();
@@ -537,7 +437,7 @@ fn mutate_runtime(account_id: &str, f: impl FnOnce(&mut AccountRuntime) -> bool)
     changed
 }
 
-/// Mark the account as awaiting pairing (QR not yet scanned / not CONNECTED).
+/// Mark the account as awaiting pairing.
 pub fn set_awaiting_pairing(account_id: &str, awaiting: bool) {
     mutate_runtime(account_id, |r| {
         let changed = r.awaiting_pairing != awaiting;
@@ -546,10 +446,7 @@ pub fn set_awaiting_pairing(account_id: &str, awaiting: bool) {
     });
 }
 
-/// Mark the account degraded (Store hook failed); persists until a later
-/// successful Store attachment, never cleared by the DOM fallback succeeding.
-/// Returns `true` only on the first transition into degraded, so callers can
-/// do one-time work (inject the DOM fallback, log) without repeating it.
+/// Mark the account degraded (Store hook failed). Returns `true` only on the first transition, so callers can do one-time work.
 pub fn set_degraded(account_id: &str, reason: String) -> bool {
     mutate_runtime(account_id, |r| {
         if r.degraded {
@@ -561,9 +458,7 @@ pub fn set_degraded(account_id: &str, reason: String) -> bool {
     })
 }
 
-/// Clear the degraded badge — called only on a fresh successful Store hook
-/// attachment (a `ProfileIdentity` with `source: "store"`). No-op (and no
-/// signal) when the account was not degraded.
+/// Clear the degraded badge; call only on a fresh successful Store hook attachment.
 pub fn clear_degraded(account_id: &str) {
     mutate_runtime(account_id, |r| {
         if !r.degraded {
@@ -575,9 +470,7 @@ pub fn clear_degraded(account_id: &str) {
     });
 }
 
-/// Set the per-account unread flag. Idempotent: emits `accounts-changed` only on
-/// a real transition, so the notification path (which can fire many times a
-/// second) does not rebuild the switcher on every banner.
+/// Set the per-account unread flag.
 pub fn set_unread(account_id: &str, unread: bool) {
     mutate_runtime(account_id, |r| {
         let changed = r.has_unread != unread;
@@ -598,7 +491,6 @@ mod tests {
 
     #[test]
     fn mru_sort_orders_by_last_used_desc() {
-        // Three accounts with shuffled timestamps → newest first.
         let b = acct_with(200);
         let a = acct_with(300);
         let c = acct_with(100);
@@ -636,7 +528,6 @@ mod tests {
         a.avatar_png = Some(vec![0xDE, 0xAD, 0xBE, 0xEF]);
         a.pushname = Some("Alice".into());
         save_to(&path, &[a.clone()]).unwrap();
-        // Avatar must be a base64 string on disk, not a numeric array.
         let text = std::fs::read_to_string(&path).unwrap();
         assert!(text.contains(&base64::Engine::encode(
             &base64::engine::general_purpose::STANDARD,
@@ -649,19 +540,15 @@ mod tests {
 
     #[test]
     fn atomic_save_leaves_prior_file_intact_on_mid_write_crash() {
-        // Simulate: a good accounts.json exists; a save crashes after writing the
-        // .tmp sibling but before the rename. The live file must be untouched.
         let dir = std::env::temp_dir().join(format!("karere-acct-{}", uuid::Uuid::new_v4()));
         let path = dir.join("accounts.json");
         let good = acct_with(42);
         save_to(&path, &[good.clone()]).unwrap();
         let before = std::fs::read(&path).unwrap();
 
-        // Crash-before-rename: write only the temp sibling with new contents.
         let tmp = path.with_extension("json.tmp");
         std::fs::write(&tmp, b"<partial write, never renamed>").unwrap();
 
-        // The live file still parses to the prior account.
         assert_eq!(std::fs::read(&path).unwrap(), before);
         assert_eq!(load_from(&path).unwrap(), vec![good]);
         std::fs::remove_dir_all(&dir).ok();

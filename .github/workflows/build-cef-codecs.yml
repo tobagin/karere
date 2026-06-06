@@ -1,20 +1,7 @@
 name: Build CEF (proprietary codecs)
 
-# Compile a CEF binary distribution WITH proprietary codecs (H.264 / AAC) so
-# WhatsApp MP4 videos play in Karere. The Spotify CEF builds Karere normally
-# ships are ffmpeg_branding=Chromium (no H.264/AAC); this rebuilds Chromium+CEF
-# with the proprietary-codec GN args and uploads the resulting
-# cef_binary_*_minimal.tar.bz2 (+ sha256) as a run artifact. Point
-# packaging/io.github.tobagin.karere.yml at that tarball afterwards.
-#
-# ── Reality check ───────────────────────────────────────────────────────────
-# This is a FULL Chromium build: ~100 GB disk and many hours. GitHub's FREE
-# ubuntu runners (14 GB disk, 6 h job cap) almost certainly cannot finish it.
-# Use one of:
-#   * a GitHub larger runner (more cores + disk),  or
-#   * a self-hosted runner with >=120 GB free and no 6 h limit.
-# Set the runner via the `runner` input. The disk-maximizing step below frees
-# ~70 GB on stock runners as a best effort.
+# Rebuild Chromium+CEF with proprietary codecs (H.264/AAC) for WhatsApp MP4; uploads
+# tarball+sha256 to point the manifest at. ~100 GB build: needs a >=120 GB runner.
 
 on:
   workflow_dispatch:
@@ -33,16 +20,13 @@ jobs:
   build:
     name: Build CEF (x64, proprietary codecs)
     runs-on: ${{ inputs.runner }}
-    timeout-minutes: 4320   # honored by self-hosted; free runners still hard-cap at 6 h
+    timeout-minutes: 4320   # only honored by self-hosted; free runners hard-cap at 6 h
     steps:
       - name: Maximize build disk
-        # Reclaim ~30 GB of preinstalled toolchains and span root+/mnt into one
-        # large LVM mounted at the build dir. Best effort on stock runners.
+        # Reclaim preinstalled toolchains into one LVM at the build dir.
         uses: easimon/maximize-build-space@master
         with:
-          # Leave enough on the root fs for the runner's own logs + apt + git
-          # checkout (4 GB filled instantly and the job died before building);
-          # 6 GB is a safe floor that hands the rest to the build LVM.
+          # 6 GB root floor for logs+apt+checkout (4 GB OOMs); rest to LVM.
           root-reserve-mb: 6144
           swap-size-mb: 1024
           remove-dotnet: "true"
@@ -75,21 +59,15 @@ jobs:
 
       - name: Build CEF with proprietary codecs
         env:
-          # THE switches: proprietary_codecs + ffmpeg_branding=Chrome = H.264/AAC.
-          # use_thin_lto=false + chrome_pgo_phase=false cut the heaviest link/PGO
-          # stages (the usual OOM/timeout killers on CI); symbol_level=0 shrinks
-          # disk/time further. (Flags per scalibq's "build CEF with MP4" guide.)
+          # proprietary_codecs+ffmpeg_branding=Chrome = H.264/AAC; thin_lto/pgo off +
+          # symbol_level=0 avoid the OOM/timeout-prone link/PGO stages.
           GN_DEFINES: "is_official_build=true is_component_build=false proprietary_codecs=true ffmpeg_branding=Chrome use_thin_lto=false chrome_pgo_phase=false symbol_level=0 blink_symbol_level=0"
           CEF_USE_GN: "1"
         run: |
           set -eux
           export PATH="/cef-build/depot_tools:$PATH"
           cd /cef-build
-          # `--no-chromium-history` syncs Chromium WITHOUT full git history
-          # (gclient `--no-history` instead of `--with_branch_heads`). The
-          # previous runs died with `No space left on device` during the
-          # checkout: the full-history tree overran the ~70 GB build LVM. This is
-          # the documented CEF disk-saver and trims tens of GB off the checkout.
+          # --no-chromium-history trims tens of GB off checkout; full history overran the LVM.
           python3 automate-git.py \
             --download-dir=/cef-build/cef \
             --branch="${{ inputs.cef_branch }}" \

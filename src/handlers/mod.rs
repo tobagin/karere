@@ -20,16 +20,16 @@ pub use context_menu::ShellContextMenuHandlerBuilder;
 pub use render::FrameBuffer;
 pub use request::{ShellRequestHandler, ShellRequestHandlerBuilder};
 
-/// Request to surface the "web view keeps crashing" dialog, drained by the
-/// window's crash poll loop.
+/// Request to surface the "web view keeps crashing" dialog; drained by the
+/// crash poll loop.
 #[derive(Clone)]
 pub struct CrashDialog {
     pub title: String,
     pub body: String,
 }
 
-/// Latest `FindHandler::on_find_result` payload, drained by the GTK poll loop to
-/// render the "active of count" search counter.
+/// Latest `FindHandler::on_find_result` payload; drained by the poll loop for
+/// the "active of count" search counter.
 #[derive(Clone, Copy, Default)]
 pub struct FindResult {
     pub count: i32,
@@ -43,8 +43,8 @@ pub struct DownloadCompleted {
     pub name: String,
 }
 
-/// A failed (canceled / errored) download, drained by the poll loop to raise a
-/// failure dialog.
+/// A failed (canceled/errored) download; drained by the poll loop for a failure
+/// dialog.
 #[derive(Clone)]
 pub struct DownloadFailed {
     pub name: String,
@@ -78,26 +78,21 @@ pub struct SharedState {
     pub downloads_completed: Vec<DownloadCompleted>,
     /// Failed downloads awaiting a failure dialog; drained by the poll loop.
     pub downloads_failed: Vec<DownloadFailed>,
-    /// Last (enabled, languages) applied to the browser via the editable-focus
-    /// trigger. `None` until the first apply of the current page load (reset on
-    /// each main-frame load start). The focus trigger re-applies only when the
-    /// resolved settings differ from this, so returning focus to the composer
-    /// after a live language switch re-checks in the new language.
+    /// Last (enabled, languages) applied via the editable-focus trigger. `None`
+    /// until the first apply of the current load (reset on each main-frame load
+    /// start). Focus re-applies only when resolved settings differ, so a live
+    /// language switch re-checks on returning focus to the composer.
     pub spellcheck_last: Option<(bool, Vec<String>)>,
-    /// Latest CEF cursor as a GTK/CSS cursor name, plus a dirty flag. CEF
-    /// reports cursor changes via `DisplayHandler::on_cursor_change` (OSR never
-    /// touches the GTK cursor itself); the widget tick callback applies this.
+    /// Latest CEF cursor as a GTK/CSS name, plus dirty flag. OSR never touches
+    /// the GTK cursor; the widget tick callback applies this.
     pub cursor_name: &'static str,
     pub cursor_dirty: bool,
-    /// Pending JS-initiated fullscreen request from `DisplayHandler::
-    /// on_fullscreen_mode_change` (M21): `Some(true)` = enter, `Some(false)` =
-    /// exit. Drained by the window poll loop on the GTK main thread, which owns
-    /// the `ApplicationWindow` (the CEF callback must not touch GTK widgets).
+    /// Pending JS fullscreen request (M21): `Some(true)` = enter, `Some(false)`
+    /// = exit. Drained by the window poll loop (CEF callback must not touch GTK).
     pub fullscreen_request: Option<bool>,
-    /// CEF `identifier()` of the foreground browser (M20 browser pool). All
-    /// account browsers share this `SharedState`/widget; only the foreground's
-    /// paint output is uploaded to the GL texture. `0` means "no pool wired yet"
-    /// (single-browser startup) and lets every paint through.
+    /// CEF `identifier()` of the foreground browser (M20 pool). Account browsers
+    /// share this `SharedState`/widget; only the foreground's paint is uploaded
+    /// to the GL texture. `0` = no pool wired yet (startup) → all paints pass.
     pub foreground_browser_id: i32,
 }
 

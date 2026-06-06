@@ -1,15 +1,6 @@
-//! System-tray `StatusNotifierItem` via the `ksni` crate (M15).
-//!
-//! Ported from Karere v3 `src/tray.rs`, swapping the app-id strings/icons for
-//! the v4 surface. A single [`KarereTray`] implements [`ksni::Tray`] and holds a
-//! shared [`Arc<Mutex<TrayState>>`]: the tokio tray task reads it on every
-//! `icon_name`/`tool_tip`/`menu` pull (`ksni` calls these on its own schedule),
-//! while the main-thread GAction handlers write it and then call
-//! [`ksni::Handle::update`] to push a refresh.
-//!
-//! GNOME does not implement SNI natively. [`start`] reads `XDG_CURRENT_DESKTOP`
-//! and, on GNOME without an AppIndicator-style `org.kde.StatusNotifierWatcher`
-//! owner, skips the service unless `KARERE_FORCE_TRAY=1` is set.
+//! System-tray `StatusNotifierItem` via the `ksni` crate. State lives in a shared
+//! `Arc<Mutex<TrayState>>`: the tokio tray task reads it, main-thread GAction
+//! handlers write it then refresh.
 
 use std::sync::{Arc, Mutex};
 
@@ -21,9 +12,7 @@ use ksni::TrayMethods;
 
 use crate::application::APP_ID;
 
-/// One account row rendered in the tray's right-click menu (M20 §9). `icon_png`
-/// is the account's avatar PNG bytes (the same bytes the switcher uses); `ksni`
-/// renders `StandardItem::icon_data` directly from PNG.
+/// One account row in the tray's right-click menu.
 #[derive(Clone)]
 pub struct AccountSummary {
     pub id: String,
@@ -32,19 +21,15 @@ pub struct AccountSummary {
     pub icon_png: Option<Vec<u8>>,
 }
 
-/// Cross-thread tray state shared between the tokio tray task (reads) and the
-/// main-thread GAction handlers (writes).
+/// Cross-thread tray state (tokio reads, main thread writes).
 #[derive(Default)]
 pub struct TrayState {
     pub unread_count: u32,
-    /// Per-account rows rendered in the tray menu (switch + unread marker).
     pub accounts: Vec<AccountSummary>,
-    /// Drives the dynamic `Show / Hide` menu label. Synced from the window's
-    /// `notify::visible` (M15).
+    /// Drives the `Show / Hide` menu label.
     pub window_visible: bool,
 }
 
-/// The SNI item. Reads from the shared [`TrayState`] on every `ksni` pull.
 pub struct KarereTray {
     state: Arc<Mutex<TrayState>>,
 }
@@ -64,11 +49,8 @@ impl ksni::Tray for KarereTray {
 
     fn icon_name(&self) -> String {
         let state = self.state.lock().unwrap_or_else(|e| e.into_inner());
-        // App-id-prefixed: Flatpak only exports `$FLATPAK_ID*` icons to the host
-        // icon theme, and the SNI host (panel) resolves the name there. A bare
-        // `karere-tray-symbolic` would be dropped on export. `FLATPAK_ID` picks
-        // up the actual installed id (Devel or not); fall back to APP_ID outside
-        // the sandbox.
+        // Must be app-id-prefixed: Flatpak only exports `$FLATPAK_ID*` icons, so a
+        // bare name is dropped and the panel can't resolve it.
         let base = std::env::var("FLATPAK_ID").unwrap_or_else(|_| APP_ID.to_owned());
         if state.unread_count > 0 {
             format!("{base}-tray-unread-symbolic")
@@ -82,8 +64,7 @@ impl ksni::Tray for KarereTray {
         if state.unread_count > 0 {
             ksni::ToolTip {
                 title: gettext("Karere"),
-                // Translators: tray tooltip body; the leading number is the
-                // unread message count.
+                // Translators: tray tooltip body; leading number is the unread count.
                 description: format!("{} {}", state.unread_count, gettext("unread")),
                 ..Default::default()
             }
@@ -96,14 +77,10 @@ impl ksni::Tray for KarereTray {
     }
 
     fn activate(&mut self, _x: i32, _y: i32) {
-        // Left-click toggles the window via the action surface (keeps the tray
-        // module ignorant of GTK window internals).
         activate_app_action("present-window", None);
     }
 
     fn secondary_activate(&mut self, _x: i32, _y: i32) {
-        // Middle-click: same toggle. SNI has no distinct double-click event, so
-        // this is the second gesture (the host maps left-click to `activate`).
         activate_app_action("present-window", None);
     }
 
@@ -119,9 +96,6 @@ impl ksni::Tray for KarereTray {
             }
         };
 
-        // Per-account entries (M20 §9): each shows the account's avatar and
-        // switches to it (presenting the window first). Empty until the main
-        // thread pushes summaries via `set_accounts`.
         let account_items: Vec<ksni::MenuItem<Self>> = {
             let state = self.state.lock().unwrap_or_else(|e| e.into_inner());
             state
@@ -129,8 +103,6 @@ impl ksni::Tray for KarereTray {
                 .iter()
                 .map(|a| {
                     let id = a.id.clone();
-                    // Prefix a bullet on accounts with an unread banner (ksni
-                    // menu labels carry no rich badge slot).
                     let label = if a.has_unread {
                         format!("● {}", a.name)
                     } else {
@@ -140,7 +112,6 @@ impl ksni::Tray for KarereTray {
                         label,
                         icon_data: a.icon_png.clone().unwrap_or_default(),
                         activate: Box::new(move |_| {
-                            // switch-account surfaces the window itself (no toggle).
                             activate_app_action("switch-account", Some(id.to_variant()));
                         }),
                         ..Default::default()
@@ -150,8 +121,6 @@ impl ksni::Tray for KarereTray {
                 .collect()
         };
 
-        // Menu: Show/Hide Window, separator, accounts, separator, app-menu
-        // actions, separator, Quit.
         let mut items: Vec<ksni::MenuItem<Self>> = vec![
             StandardItem {
                 label: toggle_label,
@@ -196,8 +165,7 @@ impl ksni::Tray for KarereTray {
     }
 }
 
-/// Activate an application GAction from a tray callback. `ksni` invokes these on
-/// the tokio runtime; hop to the glib main context where GActions dispatch.
+/// Activate an app GAction from a tray callback; hops to the glib main context.
 fn activate_app_action(name: &str, target: Option<glib::Variant>) {
     let name = name.to_owned();
     glib::MainContext::default().invoke(move || {
@@ -207,7 +175,6 @@ fn activate_app_action(name: &str, target: Option<glib::Variant>) {
     });
 }
 
-/// Global tray holder: the shared state plus the running service handle.
 struct TrayHolder {
     state: Arc<Mutex<TrayState>>,
     handle: ksni::Handle<KarereTray>,
@@ -219,10 +186,8 @@ fn tray_lock() -> std::sync::MutexGuard<'static, Option<TrayHolder>> {
     TRAY.lock().unwrap_or_else(|e| e.into_inner())
 }
 
-/// Start the tray service, honoring the `systray-icon` GSetting
-/// (`enabled` / `disabled` / `auto`), the GNOME auto-detect skip policy, and the
-/// `KARERE_FORCE_TRAY=1` override. Idempotent: a second call while running is a
-/// no-op.
+/// Start the tray service per `systray-icon`, the GNOME skip policy, and
+/// `KARERE_FORCE_TRAY=1`. Idempotent.
 pub fn start() {
     if tray_lock().is_some() {
         return;
@@ -233,7 +198,6 @@ pub fn start() {
         log::info!("tray disabled via systray-icon setting");
         return;
     }
-    // `enabled` forces the tray on even on GNOME; `auto` applies the skip policy.
     let force = mode == "enabled" || std::env::var("KARERE_FORCE_TRAY").as_deref() == Ok("1");
     if !force && should_skip_on_gnome() {
         log::info!("tray skipped (GNOME w/o AppIndicator)");
@@ -244,9 +208,8 @@ pub fn start() {
     let tray = KarereTray {
         state: state.clone(),
     };
-    // `ksni::Service::run` is async; host it on the shared tokio runtime. Disable
-    // the D-Bus well-known name and assume SNI is available so the item still
-    // registers under Flatpak / when the watcher appears slightly after us.
+    // disable_dbus_name + assume_sni_available so the item registers under Flatpak
+    // and when the watcher appears slightly after us.
     match crate::actions::runtime().block_on(
         tray.disable_dbus_name(true)
             .assume_sni_available(true)
@@ -260,8 +223,7 @@ pub fn start() {
     }
 }
 
-/// Stop the running tray service (live `systray-icon` → `disabled`). Shuts the
-/// SNI item down and clears the holder so a later `start()` can re-create it.
+/// Stop the running tray service; a later `start()` can re-create it.
 pub fn stop() {
     let holder = tray_lock().take();
     if let Some(holder) = holder {
@@ -270,14 +232,12 @@ pub fn stop() {
     }
 }
 
-/// Apply the current `systray-icon` setting live (called on a settings change):
-/// start when `enabled`/`auto`, stop when `disabled`.
+/// Apply the current `systray-icon` setting live.
 pub fn apply_setting() {
     let mode = gio::Settings::new(APP_ID).string("systray-icon");
     let want = match mode.as_str() {
         "disabled" => false,
         "enabled" => true,
-        // auto: on for non-GNOME (or when forced).
         _ => {
             std::env::var("KARERE_FORCE_TRAY").as_deref() == Ok("1") || !should_skip_on_gnome()
         }
@@ -289,21 +249,16 @@ pub fn apply_setting() {
     }
 }
 
-/// GNOME without an AppIndicator extension does not host SNI; detect that so we
-/// can skip silently. Reads `XDG_CURRENT_DESKTOP` (cheap), and only on GNOME
-/// pays for the D-Bus probe for an `org.kde.StatusNotifierWatcher` owner.
+/// Skip the tray on GNOME unless an SNI watcher (AppIndicator extension) is present.
 fn should_skip_on_gnome() -> bool {
     let desktop = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default();
-    // The value may be colon-separated (e.g. "ubuntu:GNOME").
+    // May be colon-separated (e.g. "ubuntu:GNOME").
     let is_gnome = desktop
         .split(':')
         .any(|entry| entry.eq_ignore_ascii_case("GNOME"));
     if !is_gnome {
         return false;
     }
-    // On GNOME, `auto` still shows the tray when an AppIndicator-style SNI watcher
-    // is present (the user installed an extension → they want a tray); skip only
-    // when none owns the bus name.
     !watcher_present()
 }
 
@@ -361,8 +316,7 @@ pub fn set_unread(count: u32) {
     refresh(&tray.handle);
 }
 
-/// Sync window visibility into tray state so the menu's `Show / Hide` label
-/// stays accurate, refreshing only on an actual change.
+/// Sync window visibility into tray state, refreshing only on a real change.
 pub fn set_window_visible(visible: bool) {
     let guard = tray_lock();
     let Some(tray) = guard.as_ref() else { return };
@@ -376,9 +330,7 @@ pub fn set_window_visible(visible: bool) {
     refresh(&tray.handle);
 }
 
-/// Replace the per-account menu entries (M20 §9) and re-render. Called from the
-/// main thread on every `accounts-changed`; the summaries carry pre-decoded
-/// avatar pixmaps so `menu()` (on the tray thread) does no image work.
+/// Replace the per-account menu entries and re-render.
 pub fn set_accounts(accounts: Vec<AccountSummary>) {
     let guard = tray_lock();
     let Some(tray) = guard.as_ref() else { return };
@@ -396,9 +348,7 @@ pub fn refresh_accounts() {
     refresh(&tray.handle);
 }
 
-/// Poke `ksni` to re-pull `icon_name`/`tool_tip`/`menu`. `Handle::update` is
-/// async, so dispatch it onto the runtime; the closure is empty because state
-/// already lives in the shared `Arc<Mutex<_>>`.
+/// Poke `ksni` to re-pull `icon_name`/`tool_tip`/`menu`.
 fn refresh(handle: &ksni::Handle<KarereTray>) {
     let handle = handle.clone();
     crate::actions::runtime().spawn(async move {

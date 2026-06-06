@@ -1,31 +1,15 @@
 #!/usr/bin/env bash
 #
-# build-cef-codecs.sh — build a CEF binary distribution WITH proprietary codecs
-# (H.264 / AAC) so WhatsApp MP4 videos play in Karere.
+# build-cef-codecs.sh — build CEF WITH proprietary codecs (H.264/AAC) so WhatsApp
+# MP4 videos play (default CDN builds strip these). Emits cef_binary_*_minimal.tar.bz2
+# + sha256 for the packaging manifest archive source.
 #
-# Karere normally ships the Spotify CEF builds
-# (cef-builds.spotifycdn.com), which are compiled with
-# ffmpeg_branding=Chromium / proprietary_codecs=false — H.264 + AAC stripped.
-# This script runs CEF's official automated build with the proprietary-codec
-# GN args enabled and emits a `cef_binary_*_linux64_minimal.tar.bz2` plus its
-# sha256, ready to drop into packaging/io.github.tobagin.karere.yml (lines
-# 51-52, and the archive.json inline name on line 60 if the filename changes).
+# Needs ~100-150 GB disk, 16 GB+ RAM, several hours. Distributing H.264/AAC binaries
+# carries patent-licensing obligations, falling on whoever hosts the tarball.
 #
-# ── Heads up ───────────────────────────────────────────────────────────────
-#   * ~100-150 GB free disk, 16 GB+ RAM, several HOURS on a fast machine.
-#   * Pulls a full Chromium checkout via depot_tools (huge).
-#   * Distributing H.264/AAC binaries carries patent-licensing obligations —
-#     that responsibility moves to whoever hosts the resulting tarball.
-#
-# ── Usage ──────────────────────────────────────────────────────────────────
-#   CEF_BRANCH=<n> tools/build-cef-codecs.sh [download-dir]
-#
-#   CEF_BRANCH MUST match the Chromium 148 line that Karere targets
-#   (chromium-148.0.7778.96). Find the branch number here:
-#     https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding
-#   (look up the row whose Chromium version is 148.x; the "CEF Branch" column
-#   is the number to pass). Passing the wrong branch wastes the whole build,
-#   so this script refuses to start without it.
+# Usage: CEF_BRANCH=<n> tools/build-cef-codecs.sh [download-dir]
+#   CEF_BRANCH MUST match Karere's Chromium 148 line (chromium-148.0.7778.96); wrong
+#   branch wastes the whole build, so the script refuses to start without it.
 #
 set -euo pipefail
 
@@ -45,14 +29,14 @@ fi
 
 DOWNLOAD_DIR="${1:-$HOME/cef-build}"
 DEPOT_TOOLS_DIR="$DOWNLOAD_DIR/depot_tools"
-ARCH_BUILD="--x64-build"   # change to --arm64-build for aarch64 hosts/cross
+ARCH_BUILD="--x64-build"   # --arm64-build for aarch64
 
 echo ">> CEF_BRANCH      = $CEF_BRANCH"
 echo ">> DOWNLOAD_DIR    = $DOWNLOAD_DIR"
 echo ">> arch            = $ARCH_BUILD"
 echo
 
-# 1. depot_tools ------------------------------------------------------------
+# 1. depot_tools
 mkdir -p "$DOWNLOAD_DIR"
 if [[ ! -d "$DEPOT_TOOLS_DIR" ]]; then
   echo ">> cloning depot_tools"
@@ -61,7 +45,7 @@ if [[ ! -d "$DEPOT_TOOLS_DIR" ]]; then
 fi
 export PATH="$DEPOT_TOOLS_DIR:$PATH"
 
-# 2. automate-git.py --------------------------------------------------------
+# 2. automate-git.py
 AUTOMATE="$DOWNLOAD_DIR/automate-git.py"
 if [[ ! -f "$AUTOMATE" ]]; then
   echo ">> fetching automate-git.py"
@@ -70,20 +54,15 @@ if [[ ! -f "$AUTOMATE" ]]; then
     -o "$AUTOMATE"
 fi
 
-# 3. GN args — THE proprietary-codec switches -------------------------------
-#    proprietary_codecs + ffmpeg_branding=Chrome = H.264/AAC compiled in.
+# 3. GN args: proprietary_codecs + ffmpeg_branding=Chrome compile in H.264/AAC;
 #    is_official_build = release-grade optimized build matching upstream.
 export GN_DEFINES="is_official_build=true proprietary_codecs=true ffmpeg_branding=Chrome"
-# CEF's own build flag mirror (kept in sync with GN_DEFINES for older trees).
-export CEF_USE_GN=1
+export CEF_USE_GN=1  # CEF flag mirror, kept in sync for older trees
 
 echo ">> GN_DEFINES = $GN_DEFINES"
 echo
 
-# 4. Build + package a minimal distribution ---------------------------------
-#    --minimal-distrib       → emit cef_binary_*_minimal.tar.bz2
-#    --no-debug-build        → Release only (smaller, faster)
-#    --build-target=cefsimple→ skip the heavy cefclient sample
+# 4. Build + package a minimal distribution (Release only, skip cefclient sample).
 python3 "$AUTOMATE" \
   --download-dir="$DOWNLOAD_DIR" \
   --branch="$CEF_BRANCH" \
@@ -93,7 +72,7 @@ python3 "$AUTOMATE" \
   $ARCH_BUILD \
   --force-clean
 
-# 5. Locate the tarball + print sha256 --------------------------------------
+# 5. Locate the tarball + print sha256.
 DISTRIB_DIR="$DOWNLOAD_DIR/chromium/src/cef/binary_distrib"
 TARBALL="$(ls -t "$DISTRIB_DIR"/cef_binary_*_linux*_minimal.tar.bz2 2>/dev/null | head -1 || true)"
 

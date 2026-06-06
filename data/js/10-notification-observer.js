@@ -1,32 +1,15 @@
-// notification_observer.js — intercept Web Notifications for Karere branding.
+// notification_observer.js — re-brand Web Notifications as Karere.
 //
-// WhatsApp Web calls `new Notification(title, opts)` to raise a banner. Left to
-// Chromium, that banner is attributed to "Chromium", not Karere. To re-brand it
-// we replace `window.Notification` with a Proxy whose `construct` trap:
+// `new Notification()` would be attributed to "Chromium". Replace
+// window.Notification with a Proxy whose `construct` trap suppresses the native
+// banner, forwards NotificationSeen (browser re-emits a branded
+// gio::Notification), and returns a Notification-shaped stub so page
+// onclick/close()/addEventListener keep working. Host drives the stub via
+// __karereCloseNotif(tag) (withdraw) and __karereActivateNotif(tag) (open chat).
 //
-//   - suppresses Chromium's native banner (it never constructs the real
-//     `Notification`),
-//   - forwards the full payload to the browser process as
-//     `RendererMessage::NotificationSeen { account_id, title, body, icon, tag }`
-//     (the browser re-emits a Karere-branded `gio::Notification`), and
-//   - returns a `Notification`-shaped stub so page code that wires `onclick` /
-//     `close()` / `addEventListener` keeps working.
-//
-// Two host entry points let the browser drive page state:
-//   - `window.__karereCloseNotif(tag)`    — withdraw: close the matching stub.
-//   - `window.__karereActivateNotif(tag)` — click: fire the stub's click so the
-//     page opens the originating chat.
-//
-// SCOPE: this only covers the `new Notification()` constructor path. WhatsApp
-// Web actually raises notifications from its SERVICE WORKER
-// (`self.registration.showNotification`), a realm this page script cannot reach
-// and for which CEF 148 exposes no interception hook — see
-// openspec/changes/m14-notifications-sounds/tasks.md. Those banners are rendered
-// natively by Chromium and are not branded/handled here.
-//
-// Runs inside the always-injected bundle (after 00-bootstrap.js), before any
-// page script constructs a Notification, because the whole bundle is injected
-// at V8 context creation.
+// SCOPE: only the `new Notification()` path. Service-worker banners
+// (self.registration.showNotification) live in an unreachable realm and CEF 148
+// exposes no hook — they render natively, unbranded.
 (function () {
   "use strict";
 
@@ -46,17 +29,16 @@
   try {
     var OrigNotification = window.Notification;
     if (typeof OrigNotification !== "function") {
-      // No Notification API in this context — nothing to wrap.
+      // no Notification API here
       return;
     }
 
-    // Live stubs keyed by tag, so the host can close/activate by tag and the
-    // page's repeat-by-tag notifications collapse onto one entry.
+    // Live stubs keyed by tag (host closes/activates by tag; repeat tags
+    // collapse onto one entry).
     var liveByTag = new Map();
     var tagSeq = 0;
 
-    // A minimal Notification-shaped object. We never construct the real
-    // Notification, so this stand-in carries the event surface the page uses.
+    // Notification-shaped stand-in (we never construct the real Notification).
     function NotifStub(title, opts) {
       opts = opts || {};
       this.title = title == null ? "" : String(title);
@@ -113,8 +95,8 @@
       this._fire("close");
     };
 
-    // Resolve an avatar URL to an inline data URL renderer-side: the browser
-    // process can't re-fetch a blob:/authenticated URL. Falls back to null.
+    // Resolve avatar URL to an inline data URL: the browser can't re-fetch a
+    // blob:/authenticated URL. Falls back to null.
     function resolveIcon(url) {
       if (!url) return Promise.resolve(null);
       if (/^data:/i.test(url)) return Promise.resolve(url);
@@ -140,8 +122,7 @@
         });
     }
 
-    // The page-supplied account identity (set by a future M20 hook); empty for
-    // the single-account case so the browser falls back to the default account.
+    // Page-supplied account identity; empty => browser uses default account.
     function accountId() {
       return typeof window.__karereAccountId === "string" ? window.__karereAccountId : "";
     }
@@ -163,9 +144,8 @@
       return stub;
     }
 
-    // Proxy the constructor: `construct` re-brands; `get`/`set`/`has` forward to
-    // the real Notification so `Notification.permission` and
-    // `Notification.requestPermission()` keep their native behaviour.
+    // Proxy: `construct` re-brands; get/set/has forward so .permission and
+    // requestPermission() keep native behaviour.
     var ProxyNotification = new Proxy(OrigNotification, {
       construct: function (_target, args) {
         return construct(args[0], args[1]);
@@ -191,16 +171,13 @@
       window.Notification = ProxyNotification;
     }
 
-    // Host -> page: withdraw the banner for `tag` by closing its stub. Closing
-    // posts NotificationClosed and drops the entry, keeping page state in sync
-    // after the host already withdrew the platform notification.
+    // Host -> page: withdraw banner for `tag` (closes its stub).
     window.__karereCloseNotif = function (tag) {
       var stub = liveByTag.get(String(tag));
       if (stub) stub.close();
     };
 
-    // Host -> page: the user clicked the Karere banner. Fire the stub's click so
-    // the page's own handler navigates to the originating chat.
+    // Host -> page: banner clicked — fire the stub's click to open the chat.
     window.__karereActivateNotif = function (tag) {
       var stub = liveByTag.get(String(tag));
       if (stub) stub._fire("click");

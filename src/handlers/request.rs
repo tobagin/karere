@@ -16,8 +16,8 @@ const RELOAD_DELAY: Duration = Duration::from_millis(1500);
 #[derive(Clone)]
 pub struct ShellRequestHandler {
     shared: SharedRef,
-    /// When set, never route navigations to the external browser — used by the
-    /// embedded DevTools view, whose frontend is trusted Chromium chrome.
+    /// When set, never route navigations out — used by the embedded DevTools
+    /// view (trusted Chromium chrome).
     permissive: bool,
 }
 
@@ -52,7 +52,7 @@ wrap_request_handler! {
             _user_gesture: ::std::os::raw::c_int,
             _is_redirect: ::std::os::raw::c_int,
         ) -> ::std::os::raw::c_int {
-            // DevTools view: load everything in-view, never route out.
+            // DevTools view: load in-view, never route out.
             if self.handler.permissive {
                 return 0;
             }
@@ -71,10 +71,9 @@ wrap_request_handler! {
         }
 
         // Scope renderer file:// access (enabled by --allow-file-access-from-files
-        // for the M17 paste tempfile path) to the paste directory only. We return
-        // a resource handler exclusively for file:// loads so non-file requests
-        // keep CEF's default handling; that handler cancels any file:// URL not
-        // inside `$XDG_RUNTIME_DIR/karere/`.
+        // for the M17 paste tempfile) to the paste dir only. Return a handler
+        // for file:// loads only (non-file keep CEF defaults); it cancels any
+        // file:// URL outside `$XDG_RUNTIME_DIR/karere/`.
         fn resource_request_handler(
             &self,
             _browser: Option<&mut Browser>,
@@ -85,7 +84,7 @@ wrap_request_handler! {
             _request_initiator: Option<&CefString>,
             _disable_default_handling: Option<&mut ::std::os::raw::c_int>,
         ) -> Option<ResourceRequestHandler> {
-            // DevTools (permissive) view: trusted Chromium chrome, do not scope.
+            // DevTools (permissive) view: trusted chrome, do not scope.
             if self.handler.permissive {
                 return None;
             }
@@ -157,9 +156,8 @@ impl ShellRequestHandlerBuilder {
     }
 }
 
-// Per-`file://`-request guard: cancels any load whose path is not inside the M17
-// paste tempfile directory. Returned by `resource_request_handler` only for
-// `file://` URLs, so it never sees other schemes.
+// Per-`file://`-request guard: cancels any load outside the M17 paste tempfile
+// dir. Returned only for `file://` URLs, so it never sees other schemes.
 wrap_resource_request_handler! {
     pub struct PasteFileGuard;
 
@@ -184,10 +182,9 @@ wrap_resource_request_handler! {
     }
 }
 
-/// Route a popup / new-tab target: WhatsApp + inert URLs navigate the opener's
-/// main frame (keeping everything in the single window), everything else opens
-/// in the host's default browser. Used by both the popup and open-from-tab
-/// paths, which never reach `on_before_browse`.
+/// Route a popup/new-tab target: WhatsApp + inert URLs navigate the opener's
+/// main frame (single window), everything else opens in the default browser.
+/// Used by the popup and open-from-tab paths (never reach `on_before_browse`).
 pub(crate) fn route_target(browser: Option<&mut Browser>, url: &str) {
     if url.is_empty() {
         return;
@@ -205,11 +202,11 @@ pub(crate) fn route_target(browser: Option<&mut Browser>, url: &str) {
     }
 }
 
-/// Whether `url` should navigate inside the embedded view rather than the host
-/// browser: inert schemes plus the WhatsApp host tree.
+/// Whether `url` navigates inside the embedded view: inert schemes plus the
+/// WhatsApp host tree.
 fn is_in_shell(url: &str) -> bool {
     let Some((scheme, rest)) = url.split_once(':') else {
-        // Relative / fragment-only target — let CEF resolve it in-shell.
+        // Relative/fragment-only target — let CEF resolve it in-shell.
         return true;
     };
     let scheme = scheme.to_ascii_lowercase();

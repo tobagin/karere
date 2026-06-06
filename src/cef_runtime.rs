@@ -25,10 +25,8 @@ wrap_app! {
             command_line: Option<&mut CommandLine>,
         ) {
             let Some(cmd) = command_line else { return };
-            // Chromium spellcheck switches belong on the browser process command
-            // line only. `process_type` is empty/None for the browser process and
-            // a value ("renderer", "gpu", "utility", …) for children; skip the
-            // GSettings read in those subprocesses.
+            // Spellcheck/screen-reader switches belong on the browser process
+            // only: process_type is empty/None for it, set for children.
             let is_browser_process = process_type
                 .map(|p| p.to_string().is_empty())
                 .unwrap_or(true);
@@ -36,25 +34,21 @@ wrap_app! {
                 append_spellcheck_switches(cmd);
                 append_screen_reader_switches(cmd);
             }
-            // Embedded DevTools (CDP): expose a loopback debugging endpoint and
-            // allow the bundled frontend page (served from the same port) to
-            // open the inspector websocket. See `crate::devtools`.
+            // Embedded DevTools (CDP): loopback debugging endpoint. See
+            // `crate::devtools`.
             cmd.append_switch_with_value(
                 Some(&"remote-debugging-port".into()),
                 Some(&crate::devtools::DEVTOOLS_PORT.to_string().as_str().into()),
             );
-            // The DevTools frontend may be served from a remote origin
-            // (chrome-devtools-frontend.appspot.com); allow any origin to open
-            // the inspector websocket. The endpoint is loopback-only.
+            // Allow any origin to open the inspector websocket (DevTools frontend
+            // is served from a remote origin); endpoint is loopback-only.
             cmd.append_switch_with_value(
                 Some(&"remote-allow-origins".into()),
                 Some(&"*".into()),
             );
-            // The DevTools frontend is served from a public origin
-            // (chrome-devtools-frontend.appspot.com) but must open a websocket
-            // to the loopback CDP endpoint. Private/Local Network Access blocks
-            // that public->private connection, leaving DevTools blank. Disable
-            // the relevant features (the gate was renamed PNA -> LNA in M14x).
+            // Private/Local Network Access blocks the public DevTools frontend
+            // origin from reaching the loopback CDP endpoint, blanking DevTools;
+            // disable the gate (renamed PNA -> LNA in M14x).
             cmd.append_switch_with_value(
                 Some(&"disable-features".into()),
                 Some(
@@ -67,41 +61,30 @@ wrap_app! {
                 ),
             );
             // ^ DocumentPictureInPictureAPI: WhatsApp's "open call in another
-            // window" uses Document Picture-in-Picture, which can't be hosted by
-            // the OSR shell — invoking it dropped the call and blanked the view.
-            // Disabling the API makes WhatsApp keep the call in the main webview.
-            // NOTE: do NOT disable SystemNotifications/NativeNotifications —
-            // that makes Chromium fall back to its own in-window message-center
-            // popup instead of suppressing. Suppression is done in the SW shim
-            // (it never calls the real showNotification), so Chromium renders
-            // nothing and Karere emits its own gio::Notification.
-            // M14 5.5 — Chromium notification-sound suppression: NOT needed.
-            // The M14 observer replaces `window.Notification` with a Proxy whose
-            // construct trap never builds the real Notification, so Chromium
-            // renders no native banner and therefore plays no notification
-            // sound. Karere's own `paplay` path is the only audio. If a future
-            // code path lets a native banner through, append the verified
-            // `--disable-notification-sound` switch here.
+            // window" can't be hosted by the OSR shell (dropped call + blank
+            // view); disabling keeps the call in the main webview.
+            // Do NOT disable SystemNotifications/NativeNotifications: that makes
+            // Chromium show its own in-window popup instead of suppressing.
+            // Notifications are suppressed in the SW/Notification shim (it never
+            // calls the real showNotification), so no native banner and no
+            // notification sound; Karere emits its own gio::Notification + paplay.
+            // If a native banner ever leaks through, add --disable-notification-sound.
             cmd.append_switch(Some(&"enable-features=UseOzonePlatform".into()));
             cmd.append_switch_with_value(
                 Some(&"ozone-platform-hint".into()),
                 Some(&"auto".into()),
             );
             cmd.append_switch(Some(&"enable-webrtc-vea-vda".into()));
-            // M17 paste bridge: large clipboard/drop payloads round-trip through
-            // a tempfile the renderer fetches over file://. Chromium blocks
-            // file:// fetches from non-file origins by default; this re-enables
-            // them. The reach is scoped to `$XDG_RUNTIME_DIR/karere/` by the
-            // resource request handler (`handlers::request`).
+            // M17 paste bridge: lets the renderer fetch tempfile payloads over
+            // file:// (blocked from non-file origins by default). Reach is scoped
+            // to $XDG_RUNTIME_DIR/karere/ by the resource request handler.
             cmd.append_switch(Some(&"allow-file-access-from-files".into()));
             cmd.append_switch(Some(&"no-startup-window".into()));
             cmd.append_switch(Some(&"noerrdialogs".into()));
             cmd.append_switch(Some(&"hide-crash-restore-bubble".into()));
-            // Single-webview app → at most one renderer, so the zygote's
-            // fork-sharing wins are negligible. Disabling it keeps a flat,
-            // debuggable process tree where each renderer is a real
-            // `--type=renderer` process (the zygote otherwise leaves forked
-            // renderers mislabeled `--type=zygote`).
+            // Single-webview app: zygote fork-sharing wins are negligible.
+            // Disabling keeps a flat, debuggable process tree (forked renderers
+            // are otherwise mislabeled --type=zygote).
             cmd.append_switch(Some(&"no-zygote".into()));
             if std::env::var_os("FLATPAK_ID").is_some() {
                 // Flatpak namespace sandbox conflicts with Chromium suid sandbox.
@@ -115,10 +98,8 @@ wrap_app! {
             ))
         }
 
-        // Invoked only in the renderer subprocess. Returns the handler that
-        // injects the JS bundle and bridges page <-> host IPC. The same
-        // `ShellApp` is constructed in both processes (see `build_app`); CEF
-        // calls this getter only where it matters.
+        // Renderer-subprocess handler: injects the JS bundle and bridges
+        // page <-> host IPC. CEF calls this getter only in the renderer.
         fn render_process_handler(&self) -> Option<RenderProcessHandler> {
             Some(ShellRenderProcessHandlerBuilder::build())
         }
@@ -129,27 +110,9 @@ pub fn build_app() -> App {
     ShellAppBuilder::new(ShellApp)
 }
 
-/// Resolve the active spellcheck language list from GSettings and append the
-/// matching Chromium switches to the browser process command line.
-///
-/// Sourced from the existing app gschema keys (M16):
-/// - `enable-spell-checking` (b): when false, append `--disable-spell-checking`
-///   and add no language switch.
-/// - `spell-checking-languages` (as): explicit BCP-47 list; joined into
-///   `--spell-check-languages=<csv>` when non-empty.
-/// - `auto-detect-language` (b): when true and the explicit list is empty,
-///   derive a single BCP-47 code from `glib::language_names()[0]`.
-///
-/// Chromium reads these at process startup and auto-downloads the matching
-/// `.bdic` dictionaries into the cache on first need; no Hunspell module is
-/// bundled. A live language change goes through
-/// `KarereWebView::recreate_active_browser()` (see web_view.rs).
-/// M19 screen-reader optimizations: append `--enable-caret-browsing` when the
-/// `screen-reader-opts` GSetting is on. RESTART-REQUIRED: Chromium reads
-/// command-line switches once at subprocess launch, so toggling this GSetting
-/// has no effect until the app is restarted (surfaced in the M22 preferences
-/// page with a restart-required subtitle). Browser-process only, matching the
-/// spellcheck-switch gate.
+/// Append `--enable-caret-browsing` when the `screen-reader-opts` GSetting is on
+/// (M19). RESTART-REQUIRED: Chromium reads switches once at subprocess launch
+/// (surfaced with a restart-required subtitle in prefs).
 fn append_screen_reader_switches(cmd: &mut CommandLine) {
     use gtk::gio;
     use gtk::prelude::SettingsExt;
@@ -161,6 +124,12 @@ fn append_screen_reader_switches(cmd: &mut CommandLine) {
     }
 }
 
+/// Resolve the spellcheck language list from GSettings (M16) and append the
+/// Chromium switches. Keys: `enable-spell-checking` (off → --disable-spell-checking),
+/// `spell-checking-languages` (explicit BCP-47 csv), `auto-detect-language`
+/// (derive one code from the locale when the list is empty). Chromium
+/// auto-downloads the `.bdic` dicts on first need; live changes go through
+/// `KarereWebView::recreate_active_browser()`.
 fn append_spellcheck_switches(cmd: &mut CommandLine) {
     use gtk::gio;
     use gtk::prelude::{SettingsExt, SettingsExtManual};
@@ -183,8 +152,8 @@ fn append_spellcheck_switches(cmd: &mut CommandLine) {
     let languages = if !explicit.is_empty() {
         explicit
     } else if settings.boolean("auto-detect-language") {
-        // glib returns the user's preferred locales most-specific first, ending
-        // with the "C" fallback; the first entry is the best auto-detect guess.
+        // glib lists preferred locales most-specific first (ending in "C");
+        // first non-C match is the best auto-detect guess.
         gtk::glib::language_names()
             .into_iter()
             .map(|s| s.to_string())
@@ -210,9 +179,7 @@ fn append_spellcheck_switches(cmd: &mut CommandLine) {
 }
 
 /// Browser process handler — drives the external CEF message pump from the
-/// glib main loop. CEF schedules work via `on_schedule_message_pump_work`;
-/// we translate that into a one-shot glib timeout that calls
-/// `cef::do_message_loop_work` on the main thread.
+/// glib main loop (see `initialize_browser_process`).
 #[derive(Clone)]
 pub struct ShellBrowserProcessHandler {
     state: Arc<Mutex<PumpState>>,
@@ -241,10 +208,8 @@ wrap_browser_process_handler! {
             log::info!("CEF context initialized");
         }
 
-        // on_schedule_message_pump_work fires from any CEF thread, so we
-        // cannot do main-loop scheduling from here directly. We drive the
-        // pump unconditionally from a glib timer instead (see
-        // initialize_browser_process), so this callback is a no-op.
+        // on_schedule_message_pump_work fires from any CEF thread, so we can't
+        // schedule the main loop here; a glib timer drives the pump instead.
     }
 }
 
@@ -259,13 +224,9 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
     // Reclaim any paste tempfiles leaked by a prior crash before CEF starts.
     crate::paste::sweep_old();
 
-    // M20 multi-account: each account's RequestContext gets its own cache_path
-    // under accounts/sessions/<id>/data. CEF requires a request-context
-    // cache_path to be a SUBDIRECTORY of the global root_cache_path, so root it
-    // at accounts/sessions here. (v4 is a hard-fork; the old single
-    // cef_user_data profile is intentionally orphaned and accounts re-linked —
-    // see CHANGELOG.) The shared `.bdic` spellcheck dictionaries live under this
-    // root too and still persist across launches.
+    // M20: per-account RequestContext cache_path lives under accounts/sessions/
+    // <id>/data, and CEF requires it to be a SUBDIRECTORY of root_cache_path —
+    // so root that at accounts/sessions. Shared `.bdic` dicts persist here too.
     let root_cache = crate::accounts::accounts_root().join("sessions");
     let _ = std::fs::create_dir_all(&root_cache);
     let settings = Settings {
@@ -288,9 +249,8 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
     }
     log::info!("CEF initialized");
 
-    // Safety net: external_message_pump schedules work via the browser
-    // process handler, but during early init or rapid bursts we sometimes
-    // miss a tick. Pump at 8ms steady so the browser never stalls.
+    // Safety net: pump at 8ms steady since external_message_pump scheduling can
+    // miss a tick during early init or rapid bursts.
     glib::timeout_add_local(Duration::from_millis(8), || {
         cef::do_message_loop_work();
         glib::ControlFlow::Continue

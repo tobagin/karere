@@ -33,13 +33,12 @@ wrap_load_handler! {
             _transition_type: TransitionType,
         ) {
             // Main-frame navigation invalidates every cached notification tag:
-            // the page (and its observer stub map) is being rebuilt, so any
-            // pending withdrawal would target a dead frame (M14 3.5).
+            // the page is rebuilt, so a pending withdrawal would hit a dead
+            // frame (M14 3.5).
             let is_main = frame.is_none_or(|f| f.is_main() == 1);
             if is_main {
                 crate::notifications::tracker().on_load_start();
-                // New page → spellcheck must be re-applied once the renderer is
-                // live again (signalled by the first editable-field focus).
+                // New page → re-apply spellcheck on first editable-field focus.
                 self.handler.shared.lock().spellcheck_last = None;
             }
         }
@@ -72,9 +71,8 @@ wrap_load_handler! {
             );
 
             // A failed load still fires on_load_end on the main frame for the
-            // Chromium error page. That is not a success: ignore it so the
-            // scheduled retry and the backoff counter survive, and the offline
-            // overlay stays up.
+            // Chromium error page. Not a success: ignore so the retry/backoff
+            // survive and the offline overlay stays up.
             if is_error_page || !is_main {
                 return;
             }
@@ -89,28 +87,25 @@ wrap_load_handler! {
             }
 
             // Spellcheck is applied by the first editable-field focus (see
-            // `render.rs::on_virtual_keyboard_requested`), which proves the
-            // renderer is live — `on_load_end` is too early for it to stick.
-            // The auto-correct flag IS pushed here since the page's `window`
-            // reset on navigation.
+            // `render.rs::on_virtual_keyboard_requested`); `on_load_end` is too
+            // early to stick. Auto-correct IS pushed here (page `window` reset on
+            // navigation).
             if let Some(browser) = browser {
                 apply_autocorrect_from_settings(browser);
-                // M18 4.1: restore this account's persisted zoom (floor-lifted)
-                // on first paint and after each navigation.
+                // M18 4.1: restore this account's persisted zoom (floor-lifted).
                 crate::web_view::apply_zoom_from_account(browser);
-                // M21: inject the verbatim mobile-responsive script when the host
-                // decides the layout is mobile for the current window width. The
-                // logical width is the shared physical size divided by the scale
-                // factor. Mirrors karere v3's inject-on-load.
+                // M21: inject the mobile-responsive script when the layout is
+                // mobile for the current window width (logical = physical /
+                // scale). Mirrors v3's inject-on-load.
                 let width_logical = {
                     let s = self.handler.shared.lock();
                     let scale = if s.scale_factor > 0.0 { s.scale_factor } else { 1.0 };
                     (s.size.0 as f32 / scale).round() as i32
                 };
                 crate::web_view::apply_mobile_layout(browser, width_logical);
-                // M14x: push the notification-sound mute flag so the bundle hook
-                // silences WhatsApp's ding when sounds (or the master toggle) are
-                // off — survives navigation since the page `window` reset.
+                // M14x: push the notif-sound mute flag so the bundle hook
+                // silences WhatsApp's ding when sounds are off (page `window`
+                // reset on navigation).
                 crate::web_view::apply_notif_sound_from_settings(browser);
             }
         }
@@ -130,13 +125,12 @@ wrap_load_handler! {
             if error_code == Errorcode::ABORTED {
                 return;
             }
-            // Only the main-frame load drives retries + the offline overlay;
-            // a failing subframe (ad, analytics) must not reload the page.
+            // Only the main-frame load drives retries + offline overlay; a
+            // failing subframe must not reload the page.
             if !is_main {
                 return;
             }
-            // Backoff uses the 0-based retry index so the first failure waits
-            // 500 ms, then 1000 ms, 2000 ms, … capped at 60 s.
+            // Backoff: 500 ms, 1000 ms, 2000 ms, … capped at 60 s.
             let delay_ms = {
                 let mut s = self.handler.shared.lock();
                 s.offline = true;
@@ -167,8 +161,8 @@ impl ShellLoadHandlerBuilder {
     }
 }
 
-/// Resolve the effective spellcheck `(enabled, languages)` from GSettings —
-/// explicit list, else auto-detected locale; empty when spellcheck is disabled.
+/// Resolve effective spellcheck `(enabled, languages)` from GSettings: explicit
+/// list, else auto-detected locale; empty when disabled.
 pub(crate) fn resolve_spellcheck_settings() -> (bool, Vec<String>) {
     use gtk::gio;
     use gtk::prelude::{SettingsExt, SettingsExtManual};
@@ -188,9 +182,9 @@ pub(crate) fn resolve_spellcheck_settings() -> (bool, Vec<String>) {
     (enabled, langs)
 }
 
-/// Seed the injected auto-correct bundle's runtime flag (`enable-auto-correct`)
-/// in the page's main frame. Called on every successful main-frame load and
-/// whenever the preference changes, so the JS knows whether to replace words.
+/// Seed the auto-correct bundle's runtime flag (`enable-auto-correct`) in the
+/// main frame. Called on each successful main-frame load and on preference
+/// change.
 pub(crate) fn apply_autocorrect_from_settings(browser: &Browser) {
     use gtk::gio;
     use gtk::prelude::SettingsExt;

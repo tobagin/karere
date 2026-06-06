@@ -25,9 +25,8 @@ mod window;
 use application::KarereApplication;
 
 fn main() -> Result<()> {
-    // `--debuglevel=LEVEL` (debug/info/warn/error/trace/off) sets the app's log
-    // level; `--debug` is the debug-level alias; default INFO. `--debuglevel`
-    // wins if both are passed. RUST_LOG still overrides.
+    // `--debuglevel=LEVEL` sets the log level (`--debug` = debug alias; default
+    // INFO; --debuglevel wins). RUST_LOG still overrides.
     env_logger::Builder::from_env(
         env_logger::Env::default().default_filter_or(log_filter_from_args()),
     )
@@ -75,18 +74,17 @@ fn main() -> Result<()> {
         glib::ExitCode::SUCCESS
     });
 
-    // Arbitrate single-instance BEFORE initializing the CEF browser context.
-    // A second launch becomes the remote instance, forwards its command line to
-    // the primary (which re-presents the window), and exits without touching CEF
-    // — otherwise CEF's user-data-dir singleton lock makes the 2nd init fail.
+    // Arbitrate single-instance BEFORE CEF init: a second launch forwards its
+    // command line to the primary and exits without touching CEF, else CEF's
+    // user-data-dir singleton lock makes the 2nd init fail.
     app.register(gio::Cancellable::NONE)?;
     let is_primary = !app.is_remote();
     if is_primary {
-        // Hard fork: delete leftover v3 (WebKitGTK) data once, before CEF starts.
+        // Delete leftover v3 (WebKitGTK) data once, before CEF starts.
         accounts::purge_legacy_v3_data();
         cef_runtime::initialize_browser_process(&args, &mut cef_app)?;
-        // Bridge service-worker notifications over CDP (the only realm-reaching
-        // mechanism; CEF exposes no notification API). Uses the same debug port.
+        // Bridge service-worker notifications over CDP (CEF has no notification
+        // API; CDP is the only realm-reaching mechanism). Same debug port.
         cdp::start(devtools::DEVTOOLS_PORT);
     } else {
         log::info!("secondary instance — forwarding to primary, skipping CEF init");
@@ -125,9 +123,8 @@ fn init_gettext() {
     }
 }
 
-/// Build the env_logger filter from CLI flags: `--debuglevel=LEVEL` (wins) or
-/// the `--debug` alias, defaulting to INFO. Deps stay at `warn` to keep the
-/// `karere` lines readable; use RUST_LOG for dependency logs.
+/// Build the env_logger filter from CLI flags (default INFO). Deps stay at
+/// `warn` to keep `karere` lines readable; use RUST_LOG for dep logs.
 fn log_filter_from_args() -> String {
     let mut level: Option<String> = None;
     let mut debug_flag = false;

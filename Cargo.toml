@@ -52,10 +52,9 @@ glib-build-tools = "0.22"
 [profile.release]
 lto = "thin"
 codegen-units = 1
-# Keep debug info in the release binary (NOT stripped here): flatpak-builder
-# strips the installed binary itself and splits the symbols into the
-# io.github.tobagin.karere.Debug extension under /app/lib/debug, so
-# `coredumpctl debug karere` resolves frame names. debug=1 = line tables +
+# Keep debug info unstripped here: flatpak-builder strips the installed binary and
+# splits symbols into the io.github.tobagin.karere.Debug extension (/app/lib/debug),
+# so `coredumpctl debug karere` resolves frame names. debug=1 = line tables +
 # function symbols (no var/type info) to cap memory on the heavy CEF graph.
 debug = 1
 strip = false

@@ -1,37 +1,7 @@
-//! Chrome DevTools Protocol bridge for service-worker notifications (M14).
-//!
-//! WhatsApp Web raises notifications from its **service worker**
-//! (`self.registration.showNotification`). That realm is unreachable from the
-//! page-injected observer, and CEF 148 exposes no notification API and no
-//! service-worker context hook. The one mechanism that *does* reach it is CDP:
-//! the process already runs `--remote-debugging-port` (see [`crate::devtools`]),
-//! and CDP can attach to the service-worker target and evaluate code **inside
-//! the SW global**.
-//!
-//! This module runs a background thread that:
-//!
-//!  1. fast-polls `http://127.0.0.1:PORT/json/list` for the running
-//!     `service_worker` target (WhatsApp's SW is ephemeral — Chromium stops it
-//!     when idle and restarts it to handle a push),
-//!  2. attaches directly to its `webSocketDebuggerUrl`, registers a
-//!     `Runtime.addBinding("__karereNotify")` and evaluates a patch overriding
-//!     `showNotification` (forwards the payload through the binding, suppresses
-//!     the native banner by never calling the real method), and
-//!  3. **stays attached** — an attached DevTools session keeps the worker alive,
-//!     so once patched the SW never goes cold again and every subsequent
-//!     notification is branded, and
-//!  4. on each `Runtime.bindingCalled`, hops to the glib main thread and emits a
-//!     Karere-branded `gio::Notification` via [`crate::notifications`].
-//!
-//! NOTE: CEF 148's browser-level CDP endpoint does not implement the `Target`
-//! domain (it accepts the WS handshake but answers no commands), so the
-//! race-free `Target.setAutoAttach` + `waitForDebuggerOnStart` approach is not
-//! available — hence the poll-and-attach design above. A notification that
-//! arrives on a fully cold SW, before the first attach, can still surface
-//! natively once; after that the persistent attachment keeps the patch live.
-//!
-//! The WebSocket client is hand-rolled (RFC 6455, text frames, client-masked)
-//! to avoid pulling a new dependency into the vendored flatpak build.
+//! Chrome DevTools Protocol bridge for WhatsApp notifications. CEF exposes no
+//! notification API, so a background thread attaches over `--remote-debugging-port`,
+//! patches `Notification`/`showNotification`, and forwards payloads to branded
+//! `gio::Notification`s. WebSocket client is hand-rolled to avoid a new dependency.
 
 use std::io::{Read, Write};
 use std::net::{SocketAddr, TcpStream};
@@ -40,27 +10,13 @@ use std::time::Duration;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as B64;
 
-/// JS evaluated inside the service-worker global. Overrides `showNotification`
-/// to (a) resolve the avatar to a data URL using the SW's credentialed `fetch`,
-/// (b) forward the payload through the `__karereNotify` CDP binding, and (c)
-/// suppress the native banner by never calling the real method. Idempotent.
-/// Marker line printed by the override via `console.log`. The host parses
-/// `Runtime.consoleAPICalled` for this prefix. Using console as the transport
-/// (instead of `Runtime.addBinding`) sidesteps the binding's per-session
-/// lifecycle: a binding only delivers `bindingCalled` to the exact session that
-/// registered it, and an override installed by one (possibly transient) session
-/// keeps a dead reference after that session closes. `console.log` is delivered
-/// as `consoleAPICalled` to whatever session has `Runtime.enable`d the realm.
+// Transport is console.log (not Runtime.addBinding): bindingCalled only reaches the registering session, but consoleAPICalled reaches any session with Runtime.enable.
 const NOTIF_PREFIX: &str = "__KARERE_NOTIF__:";
 
 const SW_PATCH: &str = r#"
 (function () {
   var PREFIX = "__KARERE_NOTIF__:";
 
-  // Suppress the native banner (never call the real method) and forward the
-  // payload to the host via console.log, which CDP surfaces as
-  // Runtime.consoleAPICalled. Re-resolving everything per call so the function
-  // has no captured cross-session state.
   function override(title, opts) {
     opts = opts || {};
     var payload = {
@@ -94,14 +50,11 @@ const SW_PATCH: &str = r#"
     }
     return Promise.resolve();
   }
-  // Tag the override so we can detect (and replace) a stale one from a prior
-  // eval rather than skipping via a boolean flag that could lock in a dead fn.
   override.__karere = true;
 
   var did = [];
 
-  // Patch the PROTOTYPE — WhatsApp's handler calls `registration.showNotification`
-  // resolved via the prototype, so an own-property patch alone is bypassed.
+  // Patch the prototype: showNotification resolves via it, so an own-property patch alone is bypassed.
   try {
     var P = (self.ServiceWorkerRegistration && self.ServiceWorkerRegistration.prototype) || null;
     if (P && typeof P.showNotification === "function" && !P.showNotification.__karere) {
@@ -110,7 +63,6 @@ const SW_PATCH: &str = r#"
     }
   } catch (e) {}
 
-  // Belt-and-suspenders: the live instance's own property too.
   try {
     var reg = self.registration;
     if (reg && typeof reg.showNotification === "function" && !reg.showNotification.__karere) {
@@ -123,16 +75,7 @@ const SW_PATCH: &str = r#"
 })();
 "#;
 
-/// Patch evaluated in the **page** realm. WhatsApp Web raises message
-/// notifications with the `new Notification(title, opts)` constructor in the
-/// page (confirmed via CDP tracing — not the service worker, not `push`). The
-/// build-time bundle observer is meant to do this but does not reliably win the
-/// race against the page's own capture of `window.Notification`; evaluating this
-/// via CDP after load is deterministic. Replaces `window.Notification` with a
-/// Proxy whose `construct` trap suppresses Chromium's native banner (never
-/// constructs the real one), forwards the payload via `console.log` (surfaced as
-/// `Runtime.consoleAPICalled`, same transport as the SW patch), and returns a
-/// `Notification`-shaped stub so page code wiring `onclick`/`close` still works.
+/// Page-realm patch: WhatsApp raises message notifications via `new Notification()` in the page (not the SW). Replaces `window.Notification` with a Proxy whose `construct` trap suppresses the banner, forwards via `console.log`, and returns a Notification-shaped stub.
 const PAGE_PATCH: &str = r#"
 (function () {
   var PREFIX = "__KARERE_NOTIF__:";
@@ -184,11 +127,7 @@ const PAGE_PATCH: &str = r#"
     function construct(title, opts) {
       var stub = new Stub(title, opts);
       liveByTag.set(stub.tag, stub);
-      // WhatsApp (notably Flow/business bots) fires a message notification TWICE
-      // with the same tag: the real preview body, then an empty body. The empty
-      // one would overwrite the real (same tag) leaving the host's "New message"
-      // fallback. Skip an empty body ONLY when a real one already fired for this
-      // tag — a standalone empty (a bare ping) still shows so it isn't silent.
+      // WhatsApp fires twice per tag (real body, then empty); skip an empty body only if a real one already fired.
       if (!stub.body && bodyTags[stub.tag]) return stub;
       if (stub.body) bodyTags[stub.tag] = true;
       resolveIcon(stub.icon).then(function (icon) {
@@ -211,7 +150,6 @@ const PAGE_PATCH: &str = r#"
       Object.defineProperty(window, "Notification", { configurable: true, writable: true, value: P });
     } catch (e) { window.Notification = P; }
 
-    // Host -> page hooks for withdraw / click routing by tag.
     window.__karereCloseNotif = function (tag) { var s = liveByTag.get(String(tag)); if (s) s.close(); };
     window.__karereActivateNotif = function (tag) { var s = liveByTag.get(String(tag)); if (s) s._fire("click"); };
 
@@ -222,8 +160,7 @@ const PAGE_PATCH: &str = r#"
 })();
 "#;
 
-/// Start the CDP service-worker bridge on a detached background thread. Safe to
-/// call once after the browser process is initialized; returns immediately.
+/// Start the CDP bridge on a detached background thread; call once after browser init.
 pub fn start(port: u16) {
     std::thread::Builder::new()
         .name("karere-cdp".into())
@@ -231,16 +168,7 @@ pub fn start(port: u16) {
         .expect("spawn cdp thread");
 }
 
-/// Supervise loop: connect to the **browser-level** CDP endpoint and run the
-/// auto-attach session; reconnect on any drop.
-///
-/// Why browser-level + auto-attach (not poll-the-SW-target): WhatsApp's SW is
-/// stopped when idle. A push wakes it and its handler calls `showNotification`
-/// *immediately on startup* — so any approach that polls for a running target
-/// and then injects loses the race (the native banner fires first). With
-/// `Target.setAutoAttach { waitForDebuggerOnStart }` Chromium pauses every SW
-/// (and every restart) the instant it starts, before its code runs; we inject,
-/// then release it. No race.
+// Browser-level + auto-attach (not poll-the-SW-target): an idle SW is stopped and a push wakes it to call showNotification immediately, so polling loses the race; auto-attach hooks every worker the instant it starts.
 fn supervise(port: u16) {
     loop {
         match browser_ws(port) {
@@ -255,19 +183,12 @@ fn supervise(port: u16) {
     }
 }
 
-/// Browser-level session: arm auto-attach, then pump events. Each
-/// service-worker `attachedToTarget` triggers an inject (paused at startup);
-/// each `bindingCalled` dispatches a notification.
+/// Browser-level session: arm auto-attach + target discovery, then pump events.
 fn run_session(ws_url: &str) -> Result<(), String> {
     let mut ws = WsClient::connect(ws_url)?;
     let mut next_id: u32 = 100;
 
-    // Do NOT pause the SW at startup (waitForDebuggerOnStart) — at that point
-    // `self.ServiceWorkerRegistration` isn't populated yet, so the patch finds
-    // nothing to wrap. Instead let it run and patch the moment each execution
-    // context appears (and re-patch defensively). The patch suppresses the
-    // banner inside showNotification, so even if WhatsApp calls it slightly
-    // before we wrap, only that single first banner can leak.
+    // Do NOT pause the SW at startup: ServiceWorkerRegistration isn't populated yet, so the patch would find nothing to wrap. Patch on each executionContextCreated instead.
     ws.send_text(&json_msg(
         1,
         "Target.setAutoAttach",
@@ -275,30 +196,13 @@ fn run_session(ws_url: &str) -> Result<(), String> {
     ))?;
     log::info!("cdp: auto-attach armed for service workers");
 
-    // Browser-level auto-attach only covers workers / service workers, NOT
-    // top-level page targets — but WhatsApp raises its message notifications via
-    // `new Notification()` in the PAGE realm, so we must reach the page too. The
-    // build-time bundle observer can't (Notification is not yet exposed at
-    // document-start in this CEF context). Discover targets explicitly and attach
-    // each WhatsApp page; `Target.targetCreated` also fires for pages spawned
-    // later (account switches, full WhatsApp reloads), so re-patching is covered.
+    // Auto-attach covers workers but not page targets, so discover/attach pages explicitly (the page realm is where new Notification() fires).
     ws.send_text(&json_msg(2, "Target.setDiscoverTargets", "{\"discover\":true}"))?;
-    // Also snapshot existing targets now: a page already loaded before we armed
-    // discovery would otherwise be missed (its `targetCreated` already fired).
     ws.send_text(&json_msg(3, "Target.getTargets", "{}"))?;
     log::info!("cdp: target discovery armed for page realms");
 
-    // Sessions we have set up, mapped to which patch to apply on each
-    // `Runtime.executionContextCreated` for that session (globals — the SW
-    // registration, or the page's `window.Notification` — are only guaranteed
-    // ready by then). WhatsApp raises message notifications via
-    // `new Notification()` in the PAGE realm (confirmed by CDP tracing), so the
-    // page patch is the one that matters; the SW patch covers the
-    // `showNotification` path defensively.
     let mut patched: std::collections::HashMap<String, Patch> =
         std::collections::HashMap::new();
-    // Page targetIds we've already issued an attach for (dedup — we re-snapshot
-    // targets on every churn event, so the same page would otherwise re-attach).
     let mut attached_pages: std::collections::HashSet<String> =
         std::collections::HashSet::new();
 
@@ -311,22 +215,10 @@ fn run_session(ws_url: &str) -> Result<(), String> {
         let method = v.get("method").and_then(|m| m.as_str()).unwrap_or("");
 
         match method {
-            // A page target appeared (existing one at discovery time, or a new
-            // one from a reload / account switch). Attach so its realm receives
-            // the page Notification patch. SW/workers arrive via auto-attach.
-            // Any target churn (workers/SW/page) — re-snapshot the target list.
-            // Browser-level auto-attach only grabs the page if it already existed
-            // when we armed; a page created later (we start in background, page
-            // appears when the window opens) is NOT auto-attached, and its
-            // `targetCreated` is not reliably typed "page" here. Polling
-            // `getTargets` on churn and attaching unseen pages is robust to all of
-            // it (created-after-arm, account switch, reload with a new id).
+            // Re-snapshot on any churn: targetCreated isn't reliably typed "page" and pages created after arm aren't auto-attached.
             "Target.targetCreated" => {
                 ws.send_text(&json_msg(3, "Target.getTargets", "{}"))?;
             }
-            // Snapshot response: attach any not-yet-attached page target. WhatsApp
-            // raises message notifications via `new Notification()` in the PAGE
-            // realm, so the page patch is the one that matters.
             _ if v.get("id").and_then(|i| i.as_u64()) == Some(3) => {
                 if let Some(infos) = v
                     .get("result")
@@ -369,14 +261,11 @@ fn run_session(ws_url: &str) -> Result<(), String> {
                 };
                 if let Some(which) = which {
                     log::info!("cdp: {ttype} attached; arming {which:?} patch");
-                    // Record BEFORE enabling Runtime: `Runtime.enable` emits
-                    // `executionContextCreated` synchronously for the existing
-                    // context, and that handler only patches known sessions.
+                    // Record before enabling Runtime: Runtime.enable emits executionContextCreated synchronously, and that handler only patches known sessions.
                     patched.insert(session.clone(), which);
                     setup_session(&mut ws, &session, which, &mut next_id)?;
                 }
             }
-            // The realm is fully initialised — (re)apply its patch.
             "Runtime.executionContextCreated" => {
                 let session = v.get("sessionId").and_then(|s| s.as_str()).unwrap_or("");
                 if let Some(&which) = patched.get(session) {
@@ -390,8 +279,6 @@ fn run_session(ws_url: &str) -> Result<(), String> {
                 }
             }
             _ => {
-                // Diagnostic: surface eval results/exceptions/cmd errors so we
-                // can confirm the patch evaluated inside the SW realm.
                 if v.get("id").is_some() {
                     if let Some(val) = v
                         .get("result")
@@ -412,12 +299,9 @@ fn run_session(ws_url: &str) -> Result<(), String> {
     }
 }
 
-/// Which notification patch a session should receive.
 #[derive(Clone, Copy, Debug)]
 enum Patch {
-    /// Service-worker realm: override `registration.showNotification`.
     Sw,
-    /// Page realm: override `window.Notification` (WhatsApp's actual path).
     Page,
 }
 
@@ -430,11 +314,7 @@ impl Patch {
     }
 }
 
-/// Per-session setup: enable the Runtime domain so we receive
-/// `executionContextCreated` and `consoleAPICalled` for this realm, then apply
-/// the patch (covering an already-running context that emits no later event).
-/// Both patches forward via `console.log` → `consoleAPICalled`, which has no
-/// per-session binding lifecycle.
+// Enable Runtime, then apply the patch once now (covering an already-running context that emits no later event).
 fn setup_session(
     ws: &mut WsClient,
     session: &str,
@@ -446,8 +326,7 @@ fn setup_session(
     evaluate_patch(ws, session, which, next_id)
 }
 
-/// Evaluate the (re-runnable) patch in the session's realm. Idempotent: each
-/// patch guards against double-wrapping via its own marker.
+// Idempotent: each patch guards against double-wrapping via its own marker.
 fn evaluate_patch(
     ws: &mut WsClient,
     session: &str,
@@ -463,7 +342,6 @@ fn evaluate_patch(
     Ok(())
 }
 
-/// Schedule a branded notification emit on the glib main thread.
 fn dispatch(payload_json: String) {
     glib::MainContext::default().invoke(move || {
         let p: NotifPayload = match serde_json::from_str(&payload_json) {
@@ -495,8 +373,7 @@ struct NotifPayload {
     icon: String,
 }
 
-/// Query `/json/version` and return the browser-level `webSocketDebuggerUrl`
-/// (the endpoint that speaks the `Target` domain for auto-attach).
+/// Query `/json/version` for the browser-level `webSocketDebuggerUrl`.
 fn browser_ws(port: u16) -> Option<String> {
     let body = http_get(port, "/json/version").ok()?;
     let v: serde_json::Value = serde_json::from_str(&body).ok()?;
@@ -505,9 +382,7 @@ fn browser_ws(port: u16) -> Option<String> {
         .map(|s| s.to_owned())
 }
 
-/// Extract our notification payload from a `Runtime.consoleAPICalled` event.
-/// The SW override forwards via `console.log(NOTIF_PREFIX + json)`; here we find
-/// a string argument starting with that prefix and return the trailing JSON.
+/// Extract our notification payload (a `NOTIF_PREFIX`-tagged string arg) from a `consoleAPICalled` event.
 fn console_payload(v: &serde_json::Value) -> Option<String> {
     let args = v.get("params")?.get("args")?.as_array()?;
     for a in args {
@@ -522,13 +397,12 @@ fn console_payload(v: &serde_json::Value) -> Option<String> {
     None
 }
 
-/// Build a CDP request frame `{"id":N,"method":M,"params":P}` where `params` is
-/// a raw JSON object string.
+/// Build a CDP request frame; `params` is a raw JSON object string.
 fn json_msg(id: u32, method: &str, params: &str) -> String {
     format!("{{\"id\":{id},\"method\":\"{method}\",\"params\":{params}}}")
 }
 
-/// Like [`json_msg`] but addressed to a flattened child session via `sessionId`.
+/// Like [`json_msg`] but addressed to a flattened child session.
 fn json_msg_sess(id: u32, method: &str, params: &str, session: &str) -> String {
     format!(
         "{{\"id\":{id},\"method\":\"{method}\",\"params\":{params},\"sessionId\":{}}}",
@@ -536,12 +410,9 @@ fn json_msg_sess(id: u32, method: &str, params: &str, session: &str) -> String {
     )
 }
 
-/// JSON-encode `s` as a double-quoted string literal.
 fn json_string(s: &str) -> String {
     serde_json::Value::String(s.to_owned()).to_string()
 }
-
-// ---- minimal HTTP GET (CDP discovery) -------------------------------------
 
 const TIMEOUT: Duration = Duration::from_secs(2);
 
@@ -588,14 +459,12 @@ fn find_sub(hay: &[u8], needle: &[u8]) -> Option<usize> {
     hay.windows(needle.len()).position(|w| w == needle)
 }
 
-// ---- minimal WebSocket client (RFC 6455) ----------------------------------
-
 struct WsClient {
     stream: TcpStream,
 }
 
 impl WsClient {
-    /// Connect + perform the opening handshake. `url` is `ws://host:port/path`.
+    /// Connect and perform the opening handshake (`ws://host:port/path`).
     fn connect(url: &str) -> Result<Self, String> {
         let rest = url.strip_prefix("ws://").ok_or("not a ws:// url")?;
         let (hostport, path) = rest.split_once('/').unwrap_or((rest, ""));
@@ -607,7 +476,6 @@ impl WsClient {
         ));
         let mut stream =
             TcpStream::connect_timeout(&addr, TIMEOUT).map_err(|e| format!("connect: {e}"))?;
-        // Long-lived: no read timeout (we block on events).
         stream.set_nodelay(true).ok();
 
         let key = B64.encode(rand16());
@@ -620,7 +488,6 @@ impl WsClient {
             .write_all(req.as_bytes())
             .map_err(|e| format!("handshake write: {e}"))?;
 
-        // Read response headers (until CRLFCRLF).
         let mut buf = Vec::with_capacity(1024);
         let mut one = [0u8; 1];
         loop {
@@ -647,7 +514,7 @@ impl WsClient {
     fn send_text(&mut self, text: &str) -> Result<(), String> {
         let payload = text.as_bytes();
         let mut frame = Vec::with_capacity(payload.len() + 14);
-        frame.push(0x81); // FIN + text opcode
+        frame.push(0x81);
         let mask = rand4();
         let n = payload.len();
         if n < 126 {
@@ -666,8 +533,7 @@ impl WsClient {
             .map_err(|e| format!("send: {e}"))
     }
 
-    /// Receive the next text message, reassembling continuation frames and
-    /// answering control frames (ping/close) inline.
+    /// Receive the next text message, reassembling continuation frames and answering control frames inline.
     fn recv_text(&mut self) -> Result<String, String> {
         let mut message: Vec<u8> = Vec::new();
         loop {
@@ -680,8 +546,8 @@ impl WsClient {
                     }
                 }
                 0x8 => return Err("ws closed by peer".into()),
-                0x9 => self.send_pong(&payload)?, // ping → pong
-                0xA => {}                          // pong → ignore
+                0x9 => self.send_pong(&payload)?,
+                0xA => {}
                 other => return Err(format!("bad opcode {other}")),
             }
         }
@@ -719,7 +585,7 @@ impl WsClient {
 
     fn send_pong(&mut self, data: &[u8]) -> Result<(), String> {
         let mut frame = Vec::with_capacity(data.len() + 6);
-        frame.push(0x8A); // FIN + pong
+        frame.push(0x8A);
         let mask = rand4();
         frame.push(0x80 | data.len().min(125) as u8);
         frame.extend_from_slice(&mask);
@@ -739,9 +605,7 @@ impl WsClient {
     }
 }
 
-/// 16 random bytes for the WS key. Uses the address of a stack local + a process
-/// counter as a cheap entropy source (the key only needs to be unique per
-/// handshake, not cryptographically strong — this is loopback).
+// Cheap per-handshake entropy; need only be unique, not crypto-strong (loopback).
 fn rand16() -> [u8; 16] {
     let mut out = [0u8; 16];
     let seed = seed();

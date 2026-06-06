@@ -1,9 +1,8 @@
 // 50-copy-bridge.js — outbound clipboard mirror (renderer side).
 //
-// CEF's offscreen (windowless) mode owns no real system clipboard, so copying
-// or selecting text in the page never reaches the GDK clipboard / PRIMARY
-// selection. This script reports page selections to the host, which writes them
-// out (see RendererMessage::SetClipboard):
+// CEF offscreen mode owns no real system clipboard, so page copy/selection
+// never reaches the GDK clipboard / PRIMARY. Report selections to the host
+// (SetClipboard), which writes them out:
 //   * `copy` event   → regular clipboard (Ctrl+C / context-menu copy)
 //   * `selectionchange` (debounced) → PRIMARY selection (Linux middle-click)
 //
@@ -22,9 +21,8 @@
   }
 
   try {
-    // Ctrl+C / context-menu copy → regular clipboard. Our listener runs in the
-    // bubble phase (after the page sets clipboardData), so prefer the data the
-    // page actually put on the clipboard, then fall back to the selection.
+    // Ctrl+C / context-menu copy → regular clipboard. Bubble-phase listener
+    // (after the page sets clipboardData): prefer that data, else the selection.
     document.addEventListener(
       "copy",
       function (e) {
@@ -42,8 +40,8 @@
           } catch (_) {}
           if (text) {
             send("SetClipboard", { text: text, primary: false });
-            // Stop Chromium's OSR-native copy from clobbering our GDK clipboard
-            // write (its windowless clipboard doesn't reach the system clipboard).
+            // Stop Chromium's OSR-native copy (windowless, never reaches the
+            // system clipboard) from clobbering our GDK write.
             e.preventDefault();
           }
         } catch (_) {}
@@ -51,9 +49,8 @@
       false
     );
 
-    // Selection → PRIMARY (debounced; selectionchange fires rapidly). An empty
-    // selection sends nothing, leaving any existing PRIMARY intact (matches X11
-    // behavior where the primary selection persists).
+    // Selection → PRIMARY (debounced; selectionchange fires rapidly). Empty
+    // selection sends nothing, so existing PRIMARY persists (X11 behavior).
     var timer = 0;
     document.addEventListener(
       "selectionchange",

@@ -1,10 +1,8 @@
 using Gtk 4.0;
 using Adw 1;
 
-// Wide/desktop account-switcher variant (M20 §7.1). The narrow/mobile variant
-// is the Adw.BottomSheet embedded in window.blp; both surfaces share the same
-// row list, rebuilt in Rust on every `accounts-changed`. This popover is
-// instantiated from the resource and parented to the header `account_button`.
+// Desktop account-switcher popover (mobile variant = BottomSheet in window.blp);
+// both share a row list rebuilt in Rust on `accounts-changed`. Parented to `account_button`.
 Popover account_switcher_popover {
   has-arrow: true;
   position: bottom;

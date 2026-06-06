@@ -1,17 +1,15 @@
 // 40-paste-bridge.js — M17 GDK→page paste/drop bridge (renderer side).
 //
-// The browser process intercepts Ctrl+V (image/file), file drag-drop, and
-// middle-click primary-clipboard text, then sends a `DispatchPasteEvent` over
-// IPC. `render_process.rs` turns that into a `window` CustomEvent named
-// `karere:dispatch-paste` whose `detail` is:
+// Browser intercepts Ctrl+V (image/file), drag-drop, and middle-click PRIMARY
+// text, sends DispatchPasteEvent over IPC; render_process.rs re-emits it as a
+// window CustomEvent `karere:dispatch-paste` with detail:
 //
 //   { mime, kind: "paste"|"drop", name?, x?, y?,
 //     payload: { kind: "Base64", data } | { kind: "FilePath", path } }
 //
-// This script reconstructs a `DataTransfer` (a `File` for binary payloads, or a
-// `text/plain` string for middle-click text) and dispatches a synthetic `paste`
-// (on `document.activeElement`) or `drop` (on the element under the cursor),
-// then acks via `PasteConsumed` so the host can unlink any tempfile.
+// We rebuild a DataTransfer (File for binary, text/plain for middle-click) and
+// dispatch a synthetic paste (on activeElement) or drop (on element under
+// cursor), then ack via PasteConsumed so the host can unlink any tempfile.
 //
 // Wrapped in try/catch so a throw never takes down the renderer.
 (function () {
@@ -36,9 +34,8 @@
     } catch (e) {}
   }
 
-  // An element that can receive a text paste: a form field or anything inside a
-  // contenteditable (the WhatsApp composer). `isContentEditable` is inherited,
-  // so it's true for descendants of the composer too.
+  // Can receive a text paste: a form field or contenteditable descendant (the
+  // WhatsApp composer). isContentEditable is inherited, so descendants match.
   function isEditable(el) {
     if (!el) return false;
     if (el.isContentEditable) return true;
@@ -78,10 +75,10 @@
   }
 
   // ---- Hover-driven dropzone priming ----------------------------------
-  // CEF only delivers the actual drop on release, but GTK reports the drag hover
-  // (enter/motion/leave) in real time. We replay those as synthetic
-  // dragenter/dragover carrying a Files-typed DataTransfer so WhatsApp mounts its
-  // dropzone overlay DURING the physical hover — then the real drop lands on it.
+  // CEF delivers the drop only on release, but GTK reports drag hover
+  // (enter/motion/leave) live. Replay those as synthetic dragenter/dragover with
+  // a Files-typed DataTransfer so WhatsApp mounts its dropzone overlay DURING the
+  // hover — then the real drop lands on it.
   var hoverDT = null;
   function getHoverDT() {
     if (!hoverDT) {
@@ -93,8 +90,8 @@
     return hoverDT;
   }
 
-  // A "leave" fired on release would dismiss the overlay just before the drop;
-  // delay it so a drop arriving within the window can cancel it.
+  // A release-time "leave" would dismiss the overlay just before the drop; delay
+  // it so a drop arriving within the window can cancel it.
   var pendingLeave = 0;
   function cancelPendingLeave() {
     if (pendingLeave) {
@@ -140,11 +137,11 @@
   async function handle(detail) {
     var kind = detail.kind === "drop" ? "drop" : "paste";
 
-    // Target element: focused element for paste, element-under-cursor for drop.
+    // Target: focused element for paste, element-under-cursor for drop.
     var target;
     if (kind === "drop") {
-      // Drop listeners commonly sit on a container/document; if the exact point
-      // misses, fall back to body so the (bubbling) sequence still reaches them.
+      // Drop listeners often sit on a container/document; if the point misses,
+      // fall back to body so the bubbling sequence still reaches them.
       target =
         document.elementFromPoint(detail.x, detail.y) || document.body || document.documentElement;
       try {
@@ -155,10 +152,9 @@
         );
       } catch (e) {}
     } else {
-      // Middle-click (text/plain with coords) targets the element UNDER the
-      // cursor; Ctrl+V (image/file/text) targets the focused element. Either
-      // way the target must be editable — a middle-click on a link or message
-      // text pastes nothing (the click just opens the link).
+      // Middle-click (text/plain with coords) targets element-under-cursor;
+      // Ctrl+V targets the focused element. Target must be editable — a
+      // middle-click on a link/message text pastes nothing.
       if (detail.mime === "text/plain" && typeof detail.x === "number") {
         target = document.elementFromPoint(detail.x, detail.y);
       } else {
@@ -205,8 +201,8 @@
     dt.items.add(file);
 
     if (kind === "drop") {
-      // Dispatch the full DnD sequence — React/WhatsApp dropzones gate the drop
-      // on prior dragenter/dragover (and expect preventDefault on dragover).
+      // Full DnD sequence — WhatsApp dropzones gate the drop on prior
+      // dragenter/dragover (and expect preventDefault on dragover).
       var dndOpts = {
         dataTransfer: dt,
         clientX: detail.x,
@@ -214,9 +210,9 @@
         bubbles: true,
         cancelable: true,
       };
-      // The overlay was mounted during the hover; keep a release-time leave from
-      // dismissing it, re-assert the drag, then drop on the topmost element
-      // (the overlay, which elementFromPoint now returns since it's on top).
+      // Overlay was mounted during hover; cancel any release-time leave,
+      // re-assert the drag, then drop on the topmost element (the overlay,
+      // which elementFromPoint now returns).
       cancelPendingLeave();
       target.dispatchEvent(new DragEvent("dragenter", dndOpts));
       target.dispatchEvent(new DragEvent("dragover", dndOpts));

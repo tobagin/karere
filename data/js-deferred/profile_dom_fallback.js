@@ -1,15 +1,13 @@
 // profile_dom_fallback.js — degraded identity source (M20).
 //
-// NOT part of the default injected bundle. The browser process executes this
-// script in an account's main frame only after the Store hook (60-store-hook.js)
-// reports StoreUnavailable. It scrapes identity and avatar from the documented
-// DOM landmarks — the v3 source of breakage — which is why the switcher keeps a
-// persistent yellow "degraded mode" badge for any account running this path.
+// NOT in the default bundle. Run in a frame only after the Store hook
+// (60-store-hook.js) reports StoreUnavailable. Scrapes identity/avatar from DOM
+// landmarks (the v3 breakage source) — hence the switcher's persistent yellow
+// "degraded mode" badge for any account on this path.
 //
-// It deliberately emits NO "store restored" signal: the degraded flag is
-// cleared only when a later page load lets the Store hook attach successfully.
-// Every IPC message it sends carries source: "dom-fallback" so the host can
-// tell scraped data from Store data.
+// Emits NO "store restored" signal: the degraded flag clears only when a later
+// page load lets the Store hook attach. Every message carries
+// source:"dom-fallback" so the host can tell scraped data from Store data.
 (function () {
   "use strict";
 
@@ -23,7 +21,7 @@
     }
   }
 
-  // Guard against double-injection (a second StoreUnavailable on the same frame).
+  // Guard against double-injection (a second StoreUnavailable per frame).
   if (window.__karereDomFallback) return;
   window.__karereDomFallback = true;
 
@@ -82,8 +80,7 @@
       });
   }
 
-  // Poll at 1 Hz (max), per the spec. Stops once both name and avatar are known,
-  // but keeps watching the name in case the header mounts late.
+  // Poll at 1 Hz. Stops once both name and avatar are known.
   var ticks = 0;
   var MAX_TICKS = 120; // give up after ~2 min of no header
   var timer = setInterval(function () {

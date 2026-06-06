@@ -15,8 +15,8 @@ use super::{ShellContextMenuHandlerBuilder, ShellRequestHandler, ShellRequestHan
 use super::SharedRef;
 use base64::Engine;
 
-/// Degraded-mode DOM scraper (M20 §6). NOT part of the injected bundle — it is
-/// executed in an account's main frame only on `StoreUnavailable`.
+/// Degraded-mode DOM scraper (M20 §6). Not in the injected bundle; run in an
+/// account's main frame only on `StoreUnavailable`.
 const DOM_FALLBACK_JS: &str = include_str!("../../data/js-deferred/profile_dom_fallback.js");
 
 wrap_client! {
@@ -61,9 +61,7 @@ wrap_client! {
             Some(self.download_handler.clone())
         }
 
-        // Browser-process receiver for renderer -> browser messages. Routes
-        // forwarded console output into the host log facade; logs the debug
-        // Pong probe; logs unknown / malformed messages without crashing.
+        // Browser-process receiver for renderer -> browser messages.
         fn on_process_message_received(
             &self,
             browser: Option<&mut cef::Browser>,
@@ -73,7 +71,7 @@ wrap_client! {
         ) -> ::std::os::raw::c_int {
             use crate::ipc::{IpcError, RendererMessage};
             let Some(message) = message else { return 0 };
-            // Attribute the message to its account via the sending browser's id.
+            // Attribute message to its account via the sending browser's id.
             let cef_id = browser.as_ref().map(|b| b.identifier()).unwrap_or(0);
             let account_id = crate::accounts::account_for_browser(cef_id);
             match RendererMessage::try_from_cef_message(message) {
@@ -117,10 +115,9 @@ wrap_client! {
                 }
                 Ok(RendererMessage::ProfileIdentity { wid, pushname, source }) => {
                     if let Some(id) = account_id.as_deref() {
-                        // Identity availability means the page is connected — clear
-                        // the awaiting-pairing state. A Store-sourced identity is a
-                        // successful hook attachment, so it also clears the degraded
-                        // badge (the only thing that ever does).
+                        // Identity = page connected → clear awaiting-pairing. A
+                        // Store-sourced identity means the hook attached, so it
+                        // also clears the degraded badge (the only thing that does).
                         crate::accounts::set_awaiting_pairing(id, false);
                         if source.as_deref() == Some("store") {
                             crate::accounts::clear_degraded(id);
@@ -149,12 +146,12 @@ wrap_client! {
                 }
                 Ok(RendererMessage::StoreUnavailable { reason }) => {
                     if let Some(id) = account_id.as_deref() {
-                        // Only act on the first transition into degraded — the
+                        // Act only on the first transition into degraded; the
                         // hook may report this many times per second.
                         let newly_degraded = crate::accounts::set_degraded(id, reason.clone());
                         if newly_degraded {
                             log::warn!("account {id}: Store hook unavailable: {reason}");
-                            // §6.1: inject the degraded DOM fallback into this frame.
+                            // §6.1: inject the degraded DOM fallback here.
                             if let Some(frame) = frame.as_ref() {
                                 let code = CefString::from(DOM_FALLBACK_JS);
                                 let url = CefString::from("karere://profile-dom-fallback");
@@ -182,9 +179,9 @@ wrap_client! {
     }
 }
 
-/// Mirror page-reported selection/copy text onto the host GDK clipboard.
-/// Runs on the CEF UI thread, which is the glib main thread under the external
-/// message pump, so GDK clipboard access is safe here.
+/// Mirror page-reported selection/copy text onto the host GDK clipboard. Runs on
+/// the CEF UI thread (= glib main thread under the external pump), so GDK access
+/// is safe here.
 fn write_host_clipboard(text: &str, primary: bool) {
     use gtk::prelude::*;
     let Some(display) = gtk::gdk::Display::default() else {
@@ -204,8 +201,7 @@ impl ClientBuilder {
     }
 
     /// Client for the embedded DevTools view: identical, except the request
-    /// handler keeps every navigation in-view instead of routing the DevTools
-    /// frontend to the external browser.
+    /// handler keeps every navigation in-view (DevTools frontend, not routed out).
     pub fn build_devtools_for(shared: SharedRef) -> (Client, ShellLifeSpanHandler) {
         Self::build_inner(shared, true)
     }
