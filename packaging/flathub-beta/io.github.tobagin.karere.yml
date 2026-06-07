@@ -94,7 +94,7 @@ modules:
       - type: git
         url: https://github.com/tobagin/karere
         tag: v4.0.0-beta3
-        commit: UPDATE_TO_BETA3_TAG_COMMIT
+        commit: e284f8f2ea1c6f68f71f09bb236bcd942f8e03ac
       - cargo-sources.json
     # Move our gettext catalogs out of share/locale so flatpak's automatic
     # per-language .Locale extension (which only deploys the host's languages)
