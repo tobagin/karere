@@ -56,7 +56,18 @@ wrap_app! {
             // (Same switch name can't be appended twice — CEF's CommandLine map
             // overwrites — so the debug PNA/LNA disables are merged into this one
             // value below.)
-            let mut disabled = String::from("DocumentPictureInPictureAPI");
+            // Memory: WhatsApp is a single trusted site, so Chromium's per-frame
+            // site isolation just forks the cross-origin WA/CDN iframes into
+            // extra renderer processes (~hundreds of MB) for no security gain we
+            // need. Fold them back into one renderer and drop the warm spare.
+            // (Account isolation is preserved at the RequestContext level, not by
+            // process splitting.) Pairs with --disable-site-isolation-trials below.
+            let mut disabled = String::from(
+                "DocumentPictureInPictureAPI\
+                 ,IsolateOrigins\
+                 ,site-per-process\
+                 ,SpareRendererForSitePerProcess",
+            );
 
             // Embedded F12 DevTools (CDP frontend) is DEBUG-ONLY. It needs a
             // loopback debugging PORT, a wildcard inspector origin, and the
@@ -111,6 +122,10 @@ wrap_app! {
             // Disabling keeps a flat, debuggable process tree (forked renderers
             // are otherwise mislabeled --type=zygote).
             cmd.append_switch(Some(&"no-zygote".into()));
+            // Memory: turn off the site-isolation field trials too (the
+            // disable-features list above only covers the static features), so
+            // WhatsApp's cross-origin frames don't each fork their own renderer.
+            cmd.append_switch(Some(&"disable-site-isolation-trials".into()));
             if std::env::var_os("FLATPAK_ID").is_some() {
                 // Flatpak namespace sandbox conflicts with Chromium suid sandbox.
                 cmd.append_switch(Some(&"no-sandbox".into()));
