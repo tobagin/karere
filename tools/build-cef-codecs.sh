@@ -29,7 +29,12 @@ fi
 
 DOWNLOAD_DIR="${1:-$HOME/cef-build}"
 DEPOT_TOOLS_DIR="$DOWNLOAD_DIR/depot_tools"
-ARCH_BUILD="--x64-build"   # --arm64-build for aarch64
+# CEF_ARCH=x64 (default) or arm64. Karere ships both; build each separately.
+case "${CEF_ARCH:-x64}" in
+  x64)   ARCH_BUILD="--x64-build" ;;
+  arm64) ARCH_BUILD="--arm64-build" ;;
+  *) echo "error: CEF_ARCH must be x64 or arm64 (got '${CEF_ARCH}')" >&2; exit 2 ;;
+esac
 
 echo ">> CEF_BRANCH      = $CEF_BRANCH"
 echo ">> DOWNLOAD_DIR    = $DOWNLOAD_DIR"
@@ -62,7 +67,9 @@ export CEF_USE_GN=1  # CEF flag mirror, kept in sync for older trees
 echo ">> GN_DEFINES = $GN_DEFINES"
 echo
 
-# 4. Build + package a minimal distribution (Release only, skip cefclient sample).
+# 4a. Checkout/sync only (no build yet) so we can patch the tree before building.
+#     --force-clean wipes the tree first, so it MUST run on this phase only —
+#     running it on the build phase (4c) would revert the patch below.
 python3 "$AUTOMATE" \
   --download-dir="$DOWNLOAD_DIR" \
   --branch="$CEF_BRANCH" \
@@ -70,7 +77,41 @@ python3 "$AUTOMATE" \
   --no-debug-build \
   --build-target=cefsimple \
   $ARCH_BUILD \
-  --force-clean
+  --force-clean \
+  --no-build
+
+# 4b. Apply Karere CEF source patches (idle-CPU fix #151, etc.). Patches live in
+#     tools/cef-patches/ and apply from the Chromium src root (paths cover both
+#     base/ and cef/). Idempotent: skip a patch already present in the tree.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PATCH_DIR="$SCRIPT_DIR/cef-patches"
+CHROMIUM_SRC="$DOWNLOAD_DIR/chromium/src"
+if compgen -G "$PATCH_DIR/*.patch" >/dev/null; then
+  for patch in "$PATCH_DIR"/*.patch; do
+    name="$(basename "$patch")"
+    if patch -p1 -d "$CHROMIUM_SRC" --dry-run --reverse --force <"$patch" >/dev/null 2>&1; then
+      echo ">> patch already applied, skipping: $name"
+      continue
+    fi
+    echo ">> applying patch: $name"
+    patch -p1 -d "$CHROMIUM_SRC" --forward <"$patch"
+  done
+else
+  echo ">> no patches found in $PATCH_DIR"
+fi
+
+# 4c. Build + package a minimal distribution (Release only, skip cefclient sample).
+#     --no-update keeps the patched tree as-is (no re-sync, no clean).
+python3 "$AUTOMATE" \
+  --download-dir="$DOWNLOAD_DIR" \
+  --branch="$CEF_BRANCH" \
+  --minimal-distrib \
+  --no-debug-build \
+  --build-target=cefsimple \
+  $ARCH_BUILD \
+  --no-update \
+  --force-build \
+  --force-distrib
 
 # 5. Locate the tarball + print sha256.
 DISTRIB_DIR="$DOWNLOAD_DIR/chromium/src/cef/binary_distrib"

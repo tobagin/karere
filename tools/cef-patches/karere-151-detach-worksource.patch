@@ -1,0 +1,66 @@
+Karere #151 — detach the unused glib WorkSource under CEF's external message pump.
+
+CEF's external_message_pump installs MessagePumpExternal, which inherits
+base::MessagePumpForUI (== MessagePumpGlib on Linux). MessagePumpGlib's
+constructor attaches a WorkSource to GTK's shared default GMainContext. With
+an external pump, Chromium work is drained by the host's do_message_loop_work
+(DirectRunWork), so that WorkSource is never dispatched — WorkSourcePrepare
+keeps returning a 0 timeout and GTK's g_application_run busy-loops ppoll(0),
+pinning one CPU core at 100% whenever Karere is idle/backgrounded.
+
+This patch adds MessagePumpGlib::DetachWorkSource() and calls it from the
+MessagePumpExternal constructor so the unused source is destroyed.
+
+Apply from the Chromium src root: patch -p1 < karere-151-detach-worksource.patch
+
+diff --git a/base/message_loop/message_pump_glib.cc b/base/message_loop/message_pump_glib.cc
+index b7ff50ec9e..c00ee73223 100644
+--- a/base/message_loop/message_pump_glib.cc
++++ b/base/message_loop/message_pump_glib.cc
+@@ -510,6 +510,13 @@ MessagePumpGlib::~MessagePumpGlib() {
+   owned_context_.reset();
+ }
+
++void MessagePumpGlib::DetachWorkSource() {
++  if (work_source_) {
++    g_source_destroy(work_source_.get());
++    work_source_.reset();
++  }
++}
++
+ MessagePumpGlib::FdWatchController::FdWatchController(const Location& location)
+     : FdWatchControllerInterface(location) {}
+
+diff --git a/base/message_loop/message_pump_glib.h b/base/message_loop/message_pump_glib.h
+index b94250db77..0ae1602f6c 100644
+--- a/base/message_loop/message_pump_glib.h
++++ b/base/message_loop/message_pump_glib.h
+@@ -118,6 +118,11 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
+   bool HandleFdWatchCheck(FdWatchController* controller);
+   bool HandleFdWatchDispatch(FdWatchController* controller);
+
++  // KARERE #151: detach the internal work GSource. An external message pump
++  // (CEF) drives DoWork via the host, so this glib source is unused and would
++  // otherwise spin g_main_context at a 0 timeout on the shared default context.
++  void DetachWorkSource();
++
+  private:
+   struct GMainContextDeleter {
+     inline void operator()(GMainContext* context) const {
+diff --git a/cef/libcef/browser/browser_message_loop.cc b/cef/libcef/browser/browser_message_loop.cc
+index 072a176cc..544cdc31c 100644
+--- a/cef/libcef/browser/browser_message_loop.cc
++++ b/cef/libcef/browser/browser_message_loop.cc
+@@ -24,7 +24,11 @@ class MessagePumpExternal : public base::MessagePumpForUI {
+  public:
+   MessagePumpExternal(float max_time_slice,
+                       CefRefPtr<CefBrowserProcessHandler> handler)
+-      : max_time_slice_(max_time_slice), handler_(handler) {}
++      : max_time_slice_(max_time_slice), handler_(handler) {
++    // KARERE #151: the external pump drives work via DirectRunWork, not the
++    // inherited glib work source — detach it so it doesn't spin the host loop.
++    DetachWorkSource();
++  }
+
+   void Run(Delegate* delegate) override {
+     base::TimeTicks start = base::TimeTicks::Now();
