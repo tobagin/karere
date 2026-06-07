@@ -43,8 +43,6 @@ finish-args:
   - --filesystem=xdg-download
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
-  # Relaunch on language change (single-instance app restarts via host).
-  - --talk-name=org.freedesktop.Flatpak
   # Autostart goes through the XDG Background portal (ashpd) — no autostart
   # filesystem or portal.Desktop talk-name needed (portal busnames auto-granted).
   - --env=LD_LIBRARY_PATH=/app/lib/cef

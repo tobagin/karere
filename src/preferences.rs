@@ -109,17 +109,11 @@ fn prompt_restart(parent: gtk::Widget) {
 
 /// Relaunch Karere. The app is single-instance, so a fresh launch would just
 /// activate the existing one — spawn a detached relauncher that waits for this
-/// instance to quit (releasing the D-Bus name) before starting a new one. Under
-/// Flatpak this must go through the host (`flatpak-spawn --host`).
+/// instance to quit (releasing the D-Bus name) before re-exec'ing the same
+/// binary. Stays inside the sandbox (no host access / extra permission needed):
+/// `current_exe()` is `/app/bin/karere` under Flatpak.
 fn restart_app() {
-    if let Ok(id) = std::env::var("FLATPAK_ID") {
-        let _ = std::process::Command::new("flatpak-spawn")
-            .arg("--host")
-            .arg("sh")
-            .arg("-c")
-            .arg(format!("sleep 1; exec flatpak run {id}"))
-            .spawn();
-    } else if let Ok(exe) = std::env::current_exe() {
+    if let Ok(exe) = std::env::current_exe() {
         let _ = std::process::Command::new("sh")
             .arg("-c")
             .arg(format!("sleep 1; exec {exe:?}"))
