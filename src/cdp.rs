@@ -285,21 +285,13 @@ fn arm(host: &BrowserHost, state: &Rc<RefCell<State>>) {
     send(host, &json_msg(id, "Runtime.evaluate", &eval_params(PAGE_PATCH)));
     // Read the current WhatsApp locale; `handle` reconciles it against the
     // override and reloads once if needed. Skip when no reload is pending.
-    if !state.borrow().lang_reloaded {
-        let id = state.borrow_mut().bump();
-        state.borrow_mut().lang_query_id = Some(id);
-        send(
-            host,
-            &json_msg(
-                id,
-                "Runtime.evaluate",
-                &eval_params(
-                    "JSON.stringify({h:document.documentElement.lang,\
-                     p:localStorage.getItem('WALangUserPref')})",
-                ),
-            ),
-        );
-    }
+    // Page.enable so we get loadEventFired — the reliable point to read the
+    // rendered language (document.documentElement.lang is unset this early).
+    let id = state.borrow_mut().bump();
+    send(host, &json_msg(id, "Page.enable", "{}"));
+    // Also probe now in case the page is already loaded (re-attach); the empty
+    // `html_lang` guard in reconcile_lang makes a too-early probe a no-op.
+    send_lang_probe(host, state);
     let id = state.borrow_mut().bump();
     send(
         host,
@@ -307,6 +299,27 @@ fn arm(host: &BrowserHost, state: &Rc<RefCell<State>>) {
             id,
             "Target.setAutoAttach",
             "{\"autoAttach\":true,\"waitForDebuggerOnStart\":false,\"flatten\":true}",
+        ),
+    );
+}
+
+/// Ask the page realm for its rendered language + stored pref (handled in
+/// `handle` → `reconcile_lang`). No-op once a reload has already been issued.
+fn send_lang_probe(host: &BrowserHost, state: &Rc<RefCell<State>>) {
+    if state.borrow().lang_reloaded {
+        return;
+    }
+    let id = state.borrow_mut().bump();
+    state.borrow_mut().lang_query_id = Some(id);
+    send(
+        host,
+        &json_msg(
+            id,
+            "Runtime.evaluate",
+            &eval_params(
+                "JSON.stringify({h:document.documentElement.lang,\
+                 p:localStorage.getItem('WALangUserPref')})",
+            ),
         ),
     );
 }
@@ -333,6 +346,13 @@ fn handle(state: &Rc<RefCell<State>>, host: &BrowserHost, v: &serde_json::Value)
 
     let method = v.get("method").and_then(|m| m.as_str()).unwrap_or("");
     let session = v.get("sessionId").and_then(|s| s.as_str());
+
+    // Page finished loading (page realm only) — now the rendered language is
+    // set, so re-probe and reconcile against the override.
+    if method == "Page.loadEventFired" && session.is_none() {
+        send_lang_probe(host, state);
+        return;
+    }
 
     match method {
         "Target.attachedToTarget" => {
@@ -477,9 +497,11 @@ fn reconcile_lang(state: &Rc<RefCell<State>>, host: &BrowserHost, probe: Option<
     };
     let needs_reload = match &desired {
         // Reload when the rendered language's base differs from the wanted base
-        // (`pt_BR` → `pt`); covers WhatsApp's cookie/SW-cached bundle, not just
-        // an unset pref.
-        Some(code) => base(&html_lang) != base(code),
+        // (`pt_BR` → `pt`). Skip when `html_lang` is empty: the page hasn't set
+        // it yet (probed too early), and treating "" as a mismatch caused a
+        // spurious reload on every launch that disrupted the service-worker
+        // notification patch (native "Chromium" notifications leaked).
+        Some(code) => !html_lang.is_empty() && base(&html_lang) != base(code),
         // Clear only a previously-forced real value (not absent / WhatsApp's "null").
         None => matches!(pref.as_deref(), Some(c) if c != "null"),
     };
