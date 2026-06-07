@@ -91,8 +91,8 @@ modules:
       # Flathub pulls the tagged GitHub source. Update tag + commit per beta.
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v4.0.0-beta3
-        commit: e284f8f2ea1c6f68f71f09bb236bcd942f8e03ac
+        tag: v4.0.0-beta4
+        commit: 924abbe3aa8b3824e260949fadf2563de7db5925
       - cargo-sources.json
     # Move our gettext catalogs out of share/locale so flatpak's automatic
     # per-language .Locale extension (which only deploys the host's languages)
