@@ -351,5 +351,42 @@ fn extract_first_release_description(xml: &str) -> Option<String> {
     let desc_open_tag = block.find("<description>")?;
     let after_open = &block[desc_open_tag + "<description>".len()..];
     let desc_close = after_open.find("</description>")?;
-    Some(after_open[..desc_close].trim().to_owned())
+    Some(strip_localized(after_open[..desc_close].trim()))
+}
+
+/// Drop translated `<p xml:lang="…">…</p>` / `<li xml:lang=…>` variants that
+/// `i18n.merge_file` injects into the installed metainfo. The What's-New dialog
+/// renders the already-localized default markup and rejects `xml:lang`
+/// attributes ("attribute 'xml:lang' invalid for element 'p'").
+fn strip_localized(desc: &str) -> String {
+    let mut out = String::with_capacity(desc.len());
+    let mut rest = desc;
+    while let Some(attr) = rest.find("xml:lang=") {
+        let tag_start = rest[..attr].rfind('<').unwrap_or(0);
+        let name_start = tag_start + 1;
+        let name_end = rest[name_start..]
+            .find([' ', '>', '/', '\t', '\n'])
+            .map(|i| name_start + i)
+            .unwrap_or(rest.len());
+        let tag = &rest[name_start..name_end];
+        out.push_str(&rest[..tag_start]);
+        let close = format!("</{tag}>");
+        rest = match rest[tag_start..].find(&close) {
+            Some(c) => &rest[tag_start + c + close.len()..],
+            None => {
+                // No close tag found — skip past this opening tag only.
+                let gt = rest[tag_start..]
+                    .find('>')
+                    .map(|i| tag_start + i + 1)
+                    .unwrap_or(rest.len());
+                &rest[gt..]
+            }
+        };
+    }
+    out.push_str(rest);
+    // Collapse the blank lines left where variants were removed.
+    out.lines()
+        .filter(|l| !l.trim().is_empty())
+        .collect::<Vec<_>>()
+        .join("\n")
 }
