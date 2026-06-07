@@ -54,6 +54,11 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
     Adw.PreferencesGroup {
       title: _("Appearance");
 
+      Adw.ComboRow row_language {
+        title: _("Language");
+        subtitle: _("Application language. Requires restart.");
+      }
+
       Adw.ComboRow row_theme {
         title: _("Theme");
         subtitle: _("Choose the application color scheme");
@@ -278,7 +283,7 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
     icon-name: "preferences-desktop-accessibility-symbolic";
 
     Adw.PreferencesGroup {
-      title: _("Motion & Focus");
+      title: _("Motion and Focus");
 
       Adw.SwitchRow row_motion {
         title: _("Reduce Motion");

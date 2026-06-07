@@ -192,6 +192,13 @@ struct State {
     next_id: u32,
     /// Flattened child sessions known to be service workers (patched with SW_PATCH).
     sw_sessions: HashSet<String>,
+    /// WhatsApp Web locale (`WALangUserPref`) to enforce, from the UI-language
+    /// override; `None` follows the linked phone. WhatsApp reads this only at
+    /// boot, so a mismatch needs a cache-bypassing reload (the SW pins the
+    /// language otherwise) — done at most once per browser via `lang_reloaded`.
+    desired_lang: Option<String>,
+    lang_query_id: Option<u32>,
+    lang_reloaded: bool,
 }
 
 impl State {
@@ -200,6 +207,11 @@ impl State {
             account_id,
             next_id: 100,
             sw_sessions: HashSet::new(),
+            // Raw gettext override code (e.g. `pt_BR`); reconcile derives the
+            // cookie (`pt_BR`) and `WALangUserPref` (`pt-BR`) forms from it.
+            desired_lang: crate::i18n::override_locale(),
+            lang_query_id: None,
+            lang_reloaded: false,
         }
     }
 
@@ -271,6 +283,23 @@ fn arm(host: &BrowserHost, state: &Rc<RefCell<State>>) {
     send(host, &json_msg(id, "Runtime.enable", "{}"));
     let id = state.borrow_mut().bump();
     send(host, &json_msg(id, "Runtime.evaluate", &eval_params(PAGE_PATCH)));
+    // Read the current WhatsApp locale; `handle` reconciles it against the
+    // override and reloads once if needed. Skip when no reload is pending.
+    if !state.borrow().lang_reloaded {
+        let id = state.borrow_mut().bump();
+        state.borrow_mut().lang_query_id = Some(id);
+        send(
+            host,
+            &json_msg(
+                id,
+                "Runtime.evaluate",
+                &eval_params(
+                    "JSON.stringify({h:document.documentElement.lang,\
+                     p:localStorage.getItem('WALangUserPref')})",
+                ),
+            ),
+        );
+    }
     let id = state.borrow_mut().bump();
     send(
         host,
@@ -287,6 +316,21 @@ fn arm(host: &BrowserHost, state: &Rc<RefCell<State>>) {
 // NOTE: `send` re-enters this observer synchronously, so the `state` borrow is
 // taken in short scopes and always released before any `send` (see `arm`).
 fn handle(state: &Rc<RefCell<State>>, host: &BrowserHost, v: &serde_json::Value) {
+    // Response to the WhatsApp-locale probe (see `arm`): reconcile + maybe reload.
+    if let Some(id) = v.get("id").and_then(serde_json::Value::as_u64)
+        && state.borrow().lang_query_id == Some(id as u32)
+    {
+        state.borrow_mut().lang_query_id = None;
+        let current = v
+            .get("result")
+            .and_then(|r| r.get("result"))
+            .and_then(|r| r.get("value"))
+            .and_then(|x| x.as_str())
+            .map(str::to_owned);
+        reconcile_lang(state, host, current.as_deref());
+        return;
+    }
+
     let method = v.get("method").and_then(|m| m.as_str()).unwrap_or("");
     let session = v.get("sessionId").and_then(|s| s.as_str());
 
@@ -401,6 +445,77 @@ fn console_payload(v: &serde_json::Value) -> Option<String> {
         }
     }
     None
+}
+
+/// Reconcile the *rendered* WhatsApp Web language against the override. The
+/// probe reports the document language (`h`, e.g. `pt`) and stored pref (`p`).
+/// We compare the rendered language — not just the stored pref — because
+/// WhatsApp's service worker can keep serving a cached bundle even after the
+/// pref is set. On a mismatch, set the pref and trigger ONE cache-bypassing
+/// reload (a plain reload keeps the cached bundle). At most one reload per
+/// browser (`lang_reloaded`).
+fn reconcile_lang(state: &Rc<RefCell<State>>, host: &BrowserHost, probe: Option<&str>) {
+    let desired = {
+        let st = state.borrow();
+        if st.lang_reloaded {
+            return;
+        }
+        st.desired_lang.clone()
+    };
+    let (html_lang, pref) = match probe.and_then(|s| serde_json::from_str::<serde_json::Value>(s).ok()) {
+        Some(v) => (
+            v.get("h").and_then(|x| x.as_str()).unwrap_or("").to_lowercase(),
+            v.get("p").and_then(|x| x.as_str()).map(str::to_owned),
+        ),
+        None => (String::new(), None),
+    };
+    let base = |s: &str| {
+        s.split(['-', '_'])
+            .next()
+            .unwrap_or(s)
+            .to_lowercase()
+    };
+    let needs_reload = match &desired {
+        // Reload when the rendered language's base differs from the wanted base
+        // (`pt_BR` → `pt`); covers WhatsApp's cookie/SW-cached bundle, not just
+        // an unset pref.
+        Some(code) => base(&html_lang) != base(code),
+        // Clear only a previously-forced real value (not absent / WhatsApp's "null").
+        None => matches!(pref.as_deref(), Some(c) if c != "null"),
+    };
+    if !needs_reload {
+        return;
+    }
+    state.borrow_mut().lang_reloaded = true;
+
+    // Switching WhatsApp Web's language needs THREE things together, then a
+    // reload — any one alone is overridden on boot:
+    //   1. purge the `wa_web_*pref*`/lang CacheStorage (it pins the old locale),
+    //   2. set the `wa_web_lang_pref` cookie (underscore form, e.g. `pt_BR`),
+    //   3. set `WALangUserPref` (hyphen form). For System Default, clear cookie +
+    //      pref so WhatsApp falls back to the linked phone's language.
+    // location.reload() runs after the async cache purge resolves; with the
+    // pref-cache gone WhatsApp re-derives the locale from the cookie/phone.
+    let purge = "var ks=await caches.keys();\
+                 await Promise.all(ks.filter(k=>/pref|lang/i.test(k)).map(k=>caches.delete(k)));";
+    let set_js = match &desired {
+        Some(code) => format!(
+            "(async()=>{{try{{{purge}}}catch(e){{}}\
+             try{{document.cookie='wa_web_lang_pref={code};domain=.web.whatsapp.com;path=/;max-age=31536000';\
+             localStorage.setItem('WALangUserPref',JSON.stringify({}));}}catch(e){{}}\
+             location.reload();}})()",
+            json_string(&crate::i18n::whatsapp_locale_for(code)),
+        ),
+        None => format!(
+            "(async()=>{{try{{{purge}}}catch(e){{}}\
+             try{{document.cookie='wa_web_lang_pref=;domain=.web.whatsapp.com;path=/;max-age=0';\
+             localStorage.removeItem('WALangUserPref');}}catch(e){{}}\
+             location.reload();}})()"
+        ),
+    };
+    let id = state.borrow_mut().bump();
+    send(host, &json_msg(id, "Runtime.evaluate", &eval_params(&set_js)));
+    log::info!("cdp: switching WhatsApp Web locale -> {desired:?}");
 }
 
 /// Build the `Runtime.evaluate` params for a patch expression.

@@ -29,8 +29,13 @@ pub fn parse_locale(code: &str) -> Option<(String, Option<String>)> {
     }
 }
 
+/// Default dictionary when nothing else resolves. Avoids falling through to the
+/// alphabetically-first `KNOWN_LANGUAGES` entry (Afrikaans) on a bare/`C` locale.
+pub const DEFAULT_DICT: &str = "en-GB";
+
 /// Effective language list: explicit selection if non-empty, else one
-/// auto-detected supported code when `auto_detect`, else empty.
+/// auto-detected supported code when `auto_detect`, else [`DEFAULT_DICT`].
+/// Never empty, so the dropdown never defaults to index 0 (Afrikaans).
 pub fn resolve_languages(explicit: &[String], auto_detect: bool) -> Vec<String> {
     let explicit: Vec<String> = explicit
         .iter()
@@ -40,16 +45,16 @@ pub fn resolve_languages(explicit: &[String], auto_detect: bool) -> Vec<String> 
     if !explicit.is_empty() {
         return explicit;
     }
-    if !auto_detect {
-        return Vec::new();
-    }
-    glib::language_names()
-        .into_iter()
-        .map(|s| s.to_string())
-        .filter(|s| s != "C" && !s.is_empty())
-        .find_map(|lang| best_supported_code(&lang))
-        .into_iter()
-        .collect()
+    let detected = if auto_detect {
+        glib::language_names()
+            .into_iter()
+            .map(|s| s.to_string())
+            .filter(|s| s != "C" && !s.is_empty())
+            .find_map(|lang| best_supported_code(&lang))
+    } else {
+        None
+    };
+    vec![detected.unwrap_or_else(|| DEFAULT_DICT.to_string())]
 }
 
 /// Closest code in `KNOWN_LANGUAGES`, or `None` if unsupported. Order: exact
@@ -154,10 +159,12 @@ fn lang_name(code: &str) -> Option<&'static str> {
         "fa" => "Persian",
         "fo" => "Faroese",
         "fr" => "French",
+        "gl" => "Galician",
         "he" => "Hebrew",
         "hi" => "Hindi",
         "hr" => "Croatian",
         "hu" => "Hungarian",
+        "hy" => "Armenian",
         "id" => "Indonesian",
         "it" => "Italian",
         "ko" => "Korean",
@@ -209,10 +216,12 @@ pub static KNOWN_LANGUAGES: &[(&str, &str)] = &[
     ("fa", "Persian"),
     ("fo", "Faroese"),
     ("fr", "French"),
+    ("gl", "Galician"),
     ("he", "Hebrew"),
     ("hi", "Hindi"),
     ("hr", "Croatian"),
     ("hu", "Hungarian"),
+    ("hy", "Armenian"),
     ("id", "Indonesian"),
     ("it", "Italian"),
     ("ko", "Korean"),
@@ -280,6 +289,18 @@ mod tests {
         assert_eq!(best_supported_code("en_GH"), Some("en-GB".to_string()));
         assert_eq!(best_supported_code("de"), Some("de".to_string()));
         assert_eq!(best_supported_code("zz"), None);
+    }
+
+    #[test]
+    fn resolve_languages_falls_back_to_default_dict() {
+        // No explicit list, auto-detect off → en-GB, never empty (which would
+        // leave the dropdown on index 0 = Afrikaans).
+        assert_eq!(resolve_languages(&[], false), vec![DEFAULT_DICT.to_string()]);
+        // Explicit selection always wins.
+        assert_eq!(
+            resolve_languages(&["de".to_string()], true),
+            vec!["de".to_string()]
+        );
     }
 
     #[test]

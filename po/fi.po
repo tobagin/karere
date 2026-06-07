@@ -1,0 +1,2256 @@
+# Finnish translations for karere package.
+# Copyright (C) 2026 THE karere'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the karere package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: karere\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-07 11:42+0100\n"
+"PO-Revision-Date: 2026-06-06 21:03+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/main.rs:37
+msgid "Karere starting"
+msgstr "Karere käynnistyy"
+
+#: src/window.rs:912
+msgid "This removes the local session for"
+msgstr "Tämä poistaa paikallisen istunnon kohteelle"
+
+#: src/window.rs:915
+msgid "The device stays linked on your phone until you remove it there."
+msgstr "Laite pysyy linkitettynä puhelimeesi, kunnes poistat sen sieltä."
+
+#: src/tray.rs:43 src/tray.rs:66 src/tray.rs:73 data/ui/window.ui:12
+#: data/ui/window.ui:23 src/actions.rs:258
+msgid "Karere"
+msgstr "Karere"
+
+#. Translators: tray tooltip body; leading number is the unread count.
+#: src/tray.rs:68
+msgid "unread"
+msgstr "lukematonta"
+
+#: src/tray.rs:93
+msgid "Hide Window"
+msgstr "Piilota ikkuna"
+
+#: src/tray.rs:95
+msgid "Show Window"
+msgstr "Näytä ikkuna"
+
+#: src/tray.rs:139 data/ui/window.ui:255 data/ui/preferences.ui:10
+#: data/ui/keyboard-shortcuts.ui:145
+msgid "Preferences"
+msgstr "Asetukset"
+
+#: src/tray.rs:145 data/ui/window.ui:261 data/ui/preferences.ui:405
+#: data/ui/keyboard-shortcuts.ui:152
+msgid "Keyboard Shortcuts"
+msgstr "Pikanäppäimet"
+
+#: src/tray.rs:151
+msgid "About Karere"
+msgstr "Tietoja – Karere"
+
+#: src/tray.rs:158 data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159
+msgid "Quit"
+msgstr "Lopeta"
+
+#: src/preferences.rs:92
+msgid "Restart Karere?"
+msgstr "Käynnistetäänkö Karere uudelleen?"
+
+#: src/preferences.rs:94
+msgid "The language change takes effect after Karere restarts."
+msgstr "Kielen vaihto tulee voimaan, kun Karere käynnistetään uudelleen."
+
+#: src/preferences.rs:97
+msgid "Later"
+msgstr "Myöhemmin"
+
+#: src/preferences.rs:98
+msgid "Restart Now"
+msgstr "Käynnistä uudelleen nyt"
+
+#: src/preferences.rs:316
+msgid "System Default"
+msgstr "Järjestelmän oletus"
+
+#: data/ui/window.ui:24
+msgid "GTK4 WhatsApp Web Client"
+msgstr "GTK4-pohjainen WhatsApp Web -asiakas"
+
+#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
+msgid "Zoom Out"
+msgstr "Loitonna"
+
+#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
+msgid "Reset Zoom"
+msgstr "Palauta zoomaus"
+
+#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
+msgid "Zoom In"
+msgstr "Lähennä"
+
+#: data/ui/window.ui:70
+msgid "Spell Checking Language"
+msgstr "Oikoluvun kieli"
+
+#: data/ui/window.ui:77
+msgid "Menu"
+msgstr "Valikko"
+
+#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
+msgid "Switch Account"
+msgstr "Vaihda tiliä"
+
+#: data/ui/window.ui:111
+msgid "Find in page"
+msgstr "Etsi sivulta"
+
+#: data/ui/window.ui:131
+msgid "Previous match"
+msgstr "Edellinen osuma"
+
+#: data/ui/window.ui:137
+msgid "Next match"
+msgstr "Seuraava osuma"
+
+#: data/ui/window.ui:173 data/ui/preferences.ui:109 data/ui/preferences.ui:118
+#: data/ui/keyboard-shortcuts.ui:126
+msgid "Developer Tools"
+msgstr "Kehittäjätyökalut"
+
+#: data/ui/window.ui:184
+msgid "Close Developer Tools"
+msgstr "Sulje kehittäjätyökalut"
+
+#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
+msgid "Add new account"
+msgstr "Lisää uusi tili"
+
+#: data/ui/window.ui:251
+msgid "Refresh WhatsApp Web"
+msgstr "Päivitä WhatsApp Web"
+
+#: data/ui/window.ui:265
+msgid "About"
+msgstr "Tietoja"
+
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:139
+msgid "General"
+msgstr "Yleiset"
+
+#: data/ui/preferences.ui:17
+msgid "Startup"
+msgstr "Käynnistys"
+
+#: data/ui/preferences.ui:20
+msgid "Run on Startup"
+msgstr "Suorita käynnistyksessä"
+
+#: data/ui/preferences.ui:21
+msgid "Launch Karere automatically when you log in"
+msgstr "Käynnistä Karere automaattisesti sisäänkirjautuessasi"
+
+#: data/ui/preferences.ui:26
+msgid "Start in Background"
+msgstr "Käynnistä taustalla"
+
+#: data/ui/preferences.ui:27
+msgid "Start minimized without showing the window"
+msgstr "Käynnistä pienennettynä näyttämättä ikkunaa"
+
+#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
+msgid "Window"
+msgstr "Ikkuna"
+
+#: data/ui/preferences.ui:37
+msgid "Window Close Behavior"
+msgstr "Ikkunan sulkemistoiminto"
+
+#: data/ui/preferences.ui:38
+msgid "What happens when you close the window"
+msgstr "Mitä tapahtuu, kun suljet ikkunan"
+
+#: data/ui/preferences.ui:42
+msgid "Run in Background"
+msgstr "Suorita taustalla"
+
+#: data/ui/preferences.ui:43
+msgid "Quit Application"
+msgstr "Lopeta sovellus"
+
+#: data/ui/preferences.ui:51
+msgid "System Tray Icon"
+msgstr "Ilmoitusalueen kuvake"
+
+#: data/ui/preferences.ui:52
+msgid "Auto: shown when a system tray is available"
+msgstr "Automaattinen: näytetään, kun ilmoitusalue on käytettävissä"
+
+#: data/ui/preferences.ui:56 data/ui/preferences.ui:97
+msgid "Auto"
+msgstr "Automaattinen"
+
+#: data/ui/preferences.ui:57 data/ui/preferences.ui:98
+msgid "Enabled"
+msgstr "Käytössä"
+
+#: data/ui/preferences.ui:58 data/ui/preferences.ui:99
+msgid "Disabled"
+msgstr "Pois käytöstä"
+
+#: data/ui/preferences.ui:68
+msgid "Appearance"
+msgstr "Ulkoasu"
+
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:300
+msgid "Language"
+msgstr "Kieli"
+
+#: data/ui/preferences.ui:72
+msgid "Application language. Requires restart."
+msgstr "Sovelluksen kieli. Vaatii uudelleenkäynnistyksen."
+
+#: data/ui/preferences.ui:77
+msgid "Theme"
+msgstr "Teema"
+
+#: data/ui/preferences.ui:78
+msgid "Choose the application color scheme"
+msgstr "Valitse sovelluksen värimaailma"
+
+#: data/ui/preferences.ui:82
+msgid "Follow System"
+msgstr "Seuraa järjestelmää"
+
+#: data/ui/preferences.ui:83
+msgid "Light"
+msgstr "Vaalea"
+
+#: data/ui/preferences.ui:84
+msgid "Dark"
+msgstr "Tumma"
+
+#: data/ui/preferences.ui:92
+msgid "Mobile Layout"
+msgstr "Mobiiliasettelu"
+
+#: data/ui/preferences.ui:93
+msgid ""
+"Single-pane layout. Auto: on mobile shells or narrow windows; "
+"Enabled/Disabled: force on or off at any size"
+msgstr ""
+"Yksipaneelinen asettelu. Automaattinen: mobiilikuorissa tai kapeissa "
+"ikkunoissa; Käytössä/Pois käytöstä: pakota päälle tai pois missä tahansa "
+"koossa"
+
+#: data/ui/preferences.ui:112
+msgid "Enable Developer Tools"
+msgstr "Ota kehittäjätyökalut käyttöön"
+
+#: data/ui/preferences.ui:113
+msgid "Allow inspecting and debugging the WebView"
+msgstr "Salli WebView'n tarkastelu ja virheenkorjaus"
+
+#: data/ui/preferences.ui:119
+msgid "Open the developer tools for the current page"
+msgstr "Avaa nykyisen sivun kehittäjätyökalut"
+
+#: data/ui/preferences.ui:123
+msgid "Open"
+msgstr "Avaa"
+
+#: data/ui/preferences.ui:135 data/ui/preferences.ui:241
+msgid "Notifications"
+msgstr "Ilmoitukset"
+
+#: data/ui/preferences.ui:142
+msgid "Enable Notifications"
+msgstr "Ota ilmoitukset käyttöön"
+
+#: data/ui/preferences.ui:143
+msgid "Master toggle for all notifications"
+msgstr "Pääkytkin kaikille ilmoituksille"
+
+#: data/ui/preferences.ui:150
+msgid "Messages"
+msgstr "Viestit"
+
+#: data/ui/preferences.ui:153
+msgid "Message Notifications"
+msgstr "Viesti-ilmoitukset"
+
+#: data/ui/preferences.ui:154
+msgid "Show notifications for incoming messages"
+msgstr "Näytä ilmoitukset saapuvista viesteistä"
+
+#: data/ui/preferences.ui:159
+msgid "Change Tray Icon on Message"
+msgstr "Vaihda ilmoitusalueen kuvaketta viestistä"
+
+#: data/ui/preferences.ui:160
+msgid "Animate the tray icon when a new message arrives"
+msgstr "Animoi ilmoitusalueen kuvake uuden viestin saapuessa"
+
+#: data/ui/preferences.ui:167
+msgid "Message Preview"
+msgstr "Viestin esikatselu"
+
+#: data/ui/preferences.ui:168
+msgid "Some settings only apply when Karere controls the popup"
+msgstr "Jotkin asetukset koskevat vain, kun Karere hallinnoi ponnahdusikkunaa"
+
+#: data/ui/preferences.ui:171
+msgid "Show Sender Name"
+msgstr "Näytä lähettäjän nimi"
+
+#: data/ui/preferences.ui:172
+msgid "Display the contact name in notifications"
+msgstr "Näytä yhteystiedon nimi ilmoituksissa"
+
+#: data/ui/preferences.ui:177
+msgid "Show Message Text"
+msgstr "Näytä viestin teksti"
+
+#: data/ui/preferences.ui:178
+msgid "Display message content in notifications"
+msgstr "Näytä viestin sisältö ilmoituksissa"
+
+#: data/ui/preferences.ui:183
+msgid "Preview Length"
+msgstr "Esikatselun pituus"
+
+#: data/ui/preferences.ui:184
+msgid "How much of the message to show"
+msgstr "Kuinka suuri osa viestistä näytetään"
+
+#: data/ui/preferences.ui:188
+msgid "Short"
+msgstr "Lyhyt"
+
+#: data/ui/preferences.ui:189
+msgid "Medium"
+msgstr "Keskipitkä"
+
+#: data/ui/preferences.ui:190
+msgid "Long"
+msgstr "Pitkä"
+
+#: data/ui/preferences.ui:200
+msgid "Sounds"
+msgstr "Äänet"
+
+#: data/ui/preferences.ui:203
+msgid "Notification Sounds"
+msgstr "Ilmoitusäänet"
+
+#: data/ui/preferences.ui:204
+msgid "Play WhatsApp's notification sound for new messages"
+msgstr "Toista WhatsAppin ilmoitusääni uusille viesteille"
+
+#: data/ui/preferences.ui:213
+msgid "Downloads"
+msgstr "Lataukset"
+
+#: data/ui/preferences.ui:217
+msgid "Location"
+msgstr "Sijainti"
+
+#: data/ui/preferences.ui:220
+msgid "Download Directory"
+msgstr "Latauskansio"
+
+#: data/ui/preferences.ui:221
+msgid "Default (Downloads)"
+msgstr "Oletus (Lataukset)"
+
+#: data/ui/preferences.ui:224
+msgid "Choose…"
+msgstr "Valitse…"
+
+#: data/ui/preferences.ui:232
+msgid "Reset to default"
+msgstr "Palauta oletukseksi"
+
+#: data/ui/preferences.ui:244
+msgid "Download Notifications"
+msgstr "Latausilmoitukset"
+
+#: data/ui/preferences.ui:245
+msgid "Notify when a file download completes"
+msgstr "Ilmoita, kun tiedoston lataus valmistuu"
+
+#: data/ui/preferences.ui:250
+msgid "Notification Type"
+msgstr "Ilmoitustyyppi"
+
+#: data/ui/preferences.ui:251
+msgid "How download notifications are displayed"
+msgstr "Kuinka latausilmoitukset näytetään"
+
+#: data/ui/preferences.ui:255
+msgid "In-app Toast"
+msgstr "Sovelluksen sisäinen ilmoitus"
+
+#: data/ui/preferences.ui:256
+msgid "System Notification"
+msgstr "Järjestelmäilmoitus"
+
+#: data/ui/preferences.ui:257
+msgid "Both"
+msgstr "Molemmat"
+
+#: data/ui/preferences.ui:269
+msgid "Spellcheck"
+msgstr "Oikoluku"
+
+#: data/ui/preferences.ui:273
+msgid "Spell Checking"
+msgstr "Oikoluku"
+
+#: data/ui/preferences.ui:276
+msgid "Enable Spell Checking"
+msgstr "Ota oikoluku käyttöön"
+
+#: data/ui/preferences.ui:277
+msgid "Check spelling as you type"
+msgstr "Tarkista oikeinkirjoitus kirjoittaessasi"
+
+#: data/ui/preferences.ui:282
+msgid "Auto-Detect Language"
+msgstr "Tunnista kieli automaattisesti"
+
+#: data/ui/preferences.ui:283
+msgid "Detect the writing language automatically"
+msgstr "Tunnista kirjoituskieli automaattisesti"
+
+#: data/ui/preferences.ui:288
+msgid "Enable Auto-Correct"
+msgstr "Ota automaattikorjaus käyttöön"
+
+#: data/ui/preferences.ui:289
+msgid "Automatically fix common spelling mistakes"
+msgstr "Korjaa yleiset kirjoitusvirheet automaattisesti"
+
+#: data/ui/preferences.ui:294
+msgid "Header Bar Language Control"
+msgstr "Otsikkopalkin kielivalinta"
+
+#: data/ui/preferences.ui:295
+msgid "Show the spell-check language dropdown in the header bar"
+msgstr "Näytä oikoluvun kielen pudotusvalikko otsikkopalkissa"
+
+#: data/ui/preferences.ui:301
+msgid "Star a language to pin it to the top"
+msgstr "Tähditä kieli kiinnittääksesi sen ylimmäksi"
+
+#: data/ui/preferences.ui:310
+msgid "Privacy"
+msgstr "Yksityisyys"
+
+#: data/ui/preferences.ui:314
+msgid "Site Permissions"
+msgstr "Sivustojen käyttöoikeudet"
+
+#: data/ui/preferences.ui:315
+msgid "Stored allow/deny decisions for websites"
+msgstr "Tallennetut salli/estä-päätökset verkkosivustoille"
+
+#: data/ui/preferences.ui:318
+msgid "Clear All"
+msgstr "Tyhjennä kaikki"
+
+#: data/ui/preferences.ui:331
+msgid "Accessibility"
+msgstr "Saavutettavuus"
+
+#: data/ui/preferences.ui:335
+msgid "Motion and Focus"
+msgstr "Liike ja kohdistus"
+
+#: data/ui/preferences.ui:338
+msgid "Reduce Motion"
+msgstr "Vähennä liikettä"
+
+#: data/ui/preferences.ui:339
+msgid "Minimize animations and transitions"
+msgstr "Minimoi animaatiot ja siirtymät"
+
+#: data/ui/preferences.ui:344
+msgid "Focus Indicators"
+msgstr "Kohdistuksen osoittimet"
+
+#: data/ui/preferences.ui:345
+msgid "Show visible outlines around focused elements"
+msgstr "Näytä näkyvät ääriviivat kohdistettujen elementtien ympärillä"
+
+#: data/ui/preferences.ui:350
+msgid "High Contrast Mode"
+msgstr "Suurikontrastinen tila"
+
+#: data/ui/preferences.ui:351
+msgid "Increase contrast for better readability"
+msgstr "Lisää kontrastia paremman luettavuuden vuoksi"
+
+#: data/ui/preferences.ui:358 data/ui/keyboard-shortcuts.ui:90
+msgid "Zoom"
+msgstr "Zoomaus"
+
+#: data/ui/preferences.ui:361
+msgid "Accessibility Zoom"
+msgstr "Saavutettavuuszoomaus"
+
+#: data/ui/preferences.ui:362
+msgid "Set a minimum zoom level for all accounts"
+msgstr "Aseta vähimmäiszoomaustaso kaikille tileille"
+
+#: data/ui/preferences.ui:367
+msgid "Minimum Zoom Level"
+msgstr "Vähimmäiszoomaustaso"
+
+#: data/ui/preferences.ui:368
+msgid "Applied to all webviews"
+msgstr "Sovelletaan kaikkiin verkkonäkymiin"
+
+#: data/ui/preferences.ui:383
+msgid "Header Bar Zoom Controls"
+msgstr "Otsikkopalkin zoomaussäätimet"
+
+#: data/ui/preferences.ui:384
+msgid "Show zoom buttons in the header bar"
+msgstr "Näytä zoomauspainikkeet otsikkopalkissa"
+
+#: data/ui/preferences.ui:391
+msgid "Screen Reader Support"
+msgstr "Näytönlukijan tuki"
+
+#: data/ui/preferences.ui:394
+msgid "Screen Reader Optimizations"
+msgstr "Näytönlukijaoptimoinnit"
+
+#: data/ui/preferences.ui:395
+msgid "Improve compatibility with assistive technologies — restart required"
+msgstr ""
+"Paranna yhteensopivuutta avustavien teknologioiden kanssa – vaatii "
+"uudelleenkäynnistyksen"
+
+#: data/ui/preferences.ui:402
+msgid "Shortcuts"
+msgstr "Pikanäppäimet"
+
+#: data/ui/preferences.ui:406
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "Ota käyttöön pikanäppäimet yleisiä toimintoja varten"
+
+#: data/ui/preferences.ui:411
+msgid "Accessibility Shortcuts"
+msgstr "Saavutettavuuden pikanäppäimet"
+
+#: data/ui/preferences.ui:412
+msgid "Enable shortcuts for accessibility features"
+msgstr "Ota käyttöön pikanäppäimet saavutettavuusominaisuuksille"
+
+#: data/ui/preferences.ui:417
+msgid "Developer Shortcuts"
+msgstr "Kehittäjän pikanäppäimet"
+
+#: data/ui/preferences.ui:418
+msgid "Enable shortcuts for developer tools"
+msgstr "Ota käyttöön pikanäppäimet kehittäjätyökaluille"
+
+#: data/ui/preferences.ui:423
+msgid "Notification Shortcuts"
+msgstr "Ilmoitusten pikanäppäimet"
+
+#: data/ui/preferences.ui:424
+msgid "Enable shortcuts for notification actions"
+msgstr "Ota käyttöön pikanäppäimet ilmoitustoiminnoille"
+
+#: data/ui/keyboard-shortcuts.ui:12
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: data/ui/keyboard-shortcuts.ui:15
+msgid "Reload WhatsApp Web"
+msgstr "Lataa WhatsApp Web uudelleen"
+
+#: data/ui/keyboard-shortcuts.ui:16
+msgid "Reload the current page"
+msgstr "Lataa nykyinen sivu uudelleen"
+
+#: data/ui/keyboard-shortcuts.ui:22
+msgid "Force Reload"
+msgstr "Pakota uudelleenlataus"
+
+#: data/ui/keyboard-shortcuts.ui:23
+msgid "Reload, bypassing the cache"
+msgstr "Lataa uudelleen ohittaen välimuisti"
+
+#: data/ui/keyboard-shortcuts.ui:29
+msgid "Find in Page"
+msgstr "Etsi sivulta"
+
+#: data/ui/keyboard-shortcuts.ui:30
+msgid "Search the current page"
+msgstr "Etsi nykyiseltä sivulta"
+
+#: data/ui/keyboard-shortcuts.ui:38
+msgid "Accounts"
+msgstr "Tilit"
+
+#: data/ui/keyboard-shortcuts.ui:41
+msgid "Next Account"
+msgstr "Seuraava tili"
+
+#: data/ui/keyboard-shortcuts.ui:42
+msgid "Switch to the next account"
+msgstr "Vaihda seuraavaan tiliin"
+
+#: data/ui/keyboard-shortcuts.ui:48
+msgid "Previous Account"
+msgstr "Edellinen tili"
+
+#: data/ui/keyboard-shortcuts.ui:49
+msgid "Switch to the previous account"
+msgstr "Vaihda edelliseen tiliin"
+
+#: data/ui/keyboard-shortcuts.ui:56
+msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
+msgstr "Siirry tiliin 1–9 (Alt+1 … Alt+9)"
+
+#: data/ui/keyboard-shortcuts.ui:67
+msgid "Fullscreen"
+msgstr "Koko näyttö"
+
+#: data/ui/keyboard-shortcuts.ui:68
+msgid "Toggle fullscreen mode"
+msgstr "Vaihda koko näytön tila"
+
+#: data/ui/keyboard-shortcuts.ui:74
+msgid "Minimize Window"
+msgstr "Pienennä ikkuna"
+
+#: data/ui/keyboard-shortcuts.ui:75
+msgid "Minimize the window"
+msgstr "Pienennä ikkuna"
+
+#: data/ui/keyboard-shortcuts.ui:81
+msgid "Close Window"
+msgstr "Sulje ikkuna"
+
+#: data/ui/keyboard-shortcuts.ui:82
+msgid "Close the window"
+msgstr "Sulje ikkuna"
+
+#: data/ui/keyboard-shortcuts.ui:94
+msgid "Increase the zoom level"
+msgstr "Suurenna zoomaustasoa"
+
+#: data/ui/keyboard-shortcuts.ui:101
+msgid "Decrease the zoom level"
+msgstr "Pienennä zoomaustasoa"
+
+#: data/ui/keyboard-shortcuts.ui:108
+msgid "Reset zoom to 100%"
+msgstr "Palauta zoomaus tasolle 100 %"
+
+#: data/ui/keyboard-shortcuts.ui:114
+msgid "Toggle Header Bar Zoom Controls"
+msgstr "Vaihda otsikkopalkin zoomaussäätimet"
+
+#: data/ui/keyboard-shortcuts.ui:115
+msgid "Show or hide the zoom buttons"
+msgstr "Näytä tai piilota zoomauspainikkeet"
+
+#: data/ui/keyboard-shortcuts.ui:123
+msgid "Developer"
+msgstr "Kehittäjä"
+
+#: data/ui/keyboard-shortcuts.ui:127
+msgid "Open the developer tools"
+msgstr "Avaa kehittäjätyökalut"
+
+#: data/ui/keyboard-shortcuts.ui:133
+msgid "Inspect Element"
+msgstr "Tarkasta elementti"
+
+#: data/ui/keyboard-shortcuts.ui:134
+msgid "Pick an element to inspect"
+msgstr "Valitse tarkastettava elementti"
+
+#: data/ui/keyboard-shortcuts.ui:142
+msgid "Application"
+msgstr "Sovellus"
+
+#: data/ui/keyboard-shortcuts.ui:146
+msgid "Open preferences"
+msgstr "Avaa asetukset"
+
+#: data/ui/keyboard-shortcuts.ui:153
+msgid "Show this shortcuts dialog"
+msgstr "Näytä tämä pikanäppäinikkuna"
+
+#: data/ui/keyboard-shortcuts.ui:160
+msgid "Quit Karere"
+msgstr "Lopeta Karere"
+
+#: data/io.github.tobagin.karere.desktop.in:3
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "WhatsApp-asiakas"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Natiivi WhatsApp Web -asiakas Linux-työpöydälle"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;keskustelu;viestintä;web;kommunikaatio;"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
+msgid "Chat on WhatsApp"
+msgstr "Keskustele WhatsAppissa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:24
+msgid ""
+"Karere brings WhatsApp to your Linux desktop with a native look and feel. It"
+" integrates seamlessly with your environment, offering a clean, modern "
+"interface that respects your system's theme and workflow. By wrapping "
+"WhatsApp Web, it ensures you have access to all the latest features while "
+"adding powerful desktop-specific capabilities."
+msgstr ""
+"Karere tuo WhatsAppin Linux-työpöydällesi natiivilla ulkoasulla ja "
+"tuntumalla. Se integroituu saumattomasti ympäristöösi tarjoten selkeän, "
+"modernin käyttöliittymän, joka kunnioittaa järjestelmäsi teemaa ja "
+"työnkulkua. Käärimällä WhatsApp Webin se varmistaa, että pääset käyttämään "
+"kaikkia uusimpia ominaisuuksia ja lisää samalla tehokkaita työpöytäkohtaisia"
+" toimintoja."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:30
+msgid "Key features include:"
+msgstr "Keskeisiä ominaisuuksia ovat:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:32
+msgid "Native system notifications and tray icon support"
+msgstr "Natiivit järjestelmäilmoitukset ja ilmoitusalueen kuvakkeen tuki"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:33
+msgid ""
+"Persistent login sessions so you don't need to scan the QR code every time"
+msgstr ""
+"Pysyvät kirjautumisistunnot, joten sinun ei tarvitse skannata QR-koodia joka"
+" kerta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:34
+msgid "Privacy controls and comprehensive spell-checking settings"
+msgstr "Yksityisyysasetukset ja kattavat oikolukuasetukset"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:35
+msgid "Smooth performance with hardware acceleration"
+msgstr "Sulava suorituskyky laitteistokiihdytyksellä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:36
+msgid "Proper clipboard integration for text and images"
+msgstr "Asianmukainen leikepöytäintegraatio tekstille ja kuville"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+msgid ""
+"Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend "
+"with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
+msgstr ""
+"Nyt rakennettu CEF/Chromium 148:n päälle. Karere 4.0 korvaa WebKitGTK-"
+"taustajärjestelmän Chromium Embedded Frameworkilla tuoden täyden "
+"videoliitteiden toiston (H.264/AAC), usean tilin tuen eristetyillä "
+"istunnoilla, tilikohtaisen zoomauksen sekä nopeamman ja yhteensopivamman "
+"renderöintimoottorin säilyttäen samalla saman natiivin GTK4/libadwaita-"
+"kuoren."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:49
+msgid "Main application window with WhatsApp Web integration"
+msgstr "Sovelluksen pääikkuna WhatsApp Web -integraatiolla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:53
+msgid "About dialog showing application information"
+msgstr "Tietoja-ikkuna, jossa näkyvät sovelluksen tiedot"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:57
+msgid "Application preferences and settings dialog"
+msgstr "Sovelluksen asetukset ja asetusikkuna"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:61
+#: data/io.github.tobagin.karere.metainfo.xml.in:703
+msgid "Keyboard shortcuts and productivity features"
+msgstr "Pikanäppäimet ja tuottavuusominaisuudet"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:74
+msgid "Thiago Fernandes"
+msgstr "Thiago Fernandes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:94
+msgid "whatsapp"
+msgstr "whatsapp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:95
+msgid "chat"
+msgstr "keskustelu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:96
+msgid "messaging"
+msgstr "viestintä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:97
+msgid "web"
+msgstr "web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:98
+msgid "communication"
+msgstr "kommunikaatio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:106
+msgid ""
+"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+"Existing accounts must be re-linked — there is no migration from v3."
+msgstr ""
+"Karere 4.0 on kova haarautuma, joka rakentaa sovelluksen uudelleen "
+"CEF/Chromium 148:n päälle. Olemassa olevat tilit on linkitettävä uudelleen –"
+" migraatiota versiosta 3 ei ole."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:107
+msgid "Major changes:"
+msgstr "Suuret muutokset:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:109
+msgid ""
+"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+"proprietary-codec builds for H.264/AAC video attachment playback"
+msgstr ""
+"Vaihdettiin renderöintitaustajärjestelmä WebKitGTK:sta CEF/Chromium 148:aan,"
+" omisteisilla koodekkikoonneilla H.264/AAC-videoliitteiden toistoa varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:110
+msgid ""
+"Multi-account support: each account runs in an isolated CEF RequestContext "
+"with its own cookies and storage; accounts are ordered most-recently-used"
+msgstr ""
+"Usean tilin tuki: kukin tili toimii eristetyssä CEF-RequestContextissa omine"
+" evästeineen ja tallennustiloineen; tilit järjestetään viimeksi käytetyn "
+"mukaan"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:111
+msgid ""
+"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+msgstr ""
+"Tilin henkilöllisyys (nimi + avatar) tunnistetaan automaattisesti WhatsApp "
+"Webin sisäisestä Storesta, ja merkin osoittama heikennetty DOM-haku toimii "
+"varajärjestelmänä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:112
+msgid ""
+"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
+"accessibility minimum-zoom floor"
+msgstr ""
+"Tilikohtainen zoomaus (Ctrl +/-/0), valinnaisilla otsikkopalkin "
+"zoomaussäätimillä ja saavutettavuuden vähimmäiszoomausrajalla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:113
+msgid ""
+"Native system tray (StatusNotifierItem), desktop notifications, download "
+"manager, and image/text paste reimplemented on the CEF stack"
+msgstr ""
+"Natiivi järjestelmän ilmoitusalue (StatusNotifierItem), työpöytäilmoitukset,"
+" latausten hallinta sekä kuvan/tekstin liittäminen toteutettu uudelleen CEF-"
+"pinon päälle"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:114
+msgid ""
+"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+"popover for the off-screen-rendered web view"
+msgstr ""
+"Mobiiliresponsiivinen asettelu, JavaScript-kokonäyttö ja OSR-"
+"pikavalikkoponnahdus näytön ulkopuolella renderöitävälle verkkonäkymälle"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:115
+msgid ""
+"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
+"browsing"
+msgstr ""
+"Saavutettavuusasetukset: liikkeen vähentäminen, kohdistusrenkaan näkyvyys ja"
+" kohdistinselailu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:116
+msgid ""
+"Live spell-check language switching and a separately installable Debug "
+"symbol extension for symbolicated crash reports"
+msgstr ""
+"Oikoluvun kielen vaihtaminen lennossa sekä erikseen asennettava Debug-"
+"symbolilaajennus symboloituja kaatumisraportteja varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:123
+msgid ""
+"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
+"clear behavior removed upstream — Karere now dismisses notifications "
+"explicitly)"
+msgstr ""
+"Korjattu: viipyilevät ilmoitusmerkit/-bannerit kohdistuksen jälkeen GNOME "
+"50:ssä (automaattinen poisto poistettu ylävirrassa – Karere hylkää "
+"ilmoitukset nyt nimenomaisesti)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:124
+msgid ""
+"Fixed: blank-window race when autostarted before the network/portal stack is"
+" ready (auto-retry with exponential backoff)"
+msgstr ""
+"Korjattu: tyhjän ikkunan kilpailutilanne käynnistettäessä automaattisesti "
+"ennen kuin verkko-/portaalipino on valmis (automaattinen uudelleenyritys "
+"eksponentiaalisella viiveellä)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:131
+msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+msgstr "Lisätty: kiinnitä suosikkioikolukukielet pudotusvalikon ylimmäksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:132
+msgid ""
+"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
+"instead of locale codes"
+msgstr ""
+"Lisätty: oikoluvun pudotusvalikko näyttää luonnolliset kielinimet "
+"(\"Englanti (UK)\") aluekoodien sijaan"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:133
+msgid ""
+"Added: account switcher uses a popover on desktop windows (bottom sheet "
+"preserved on mobile)"
+msgstr ""
+"Lisätty: tilinvaihtaja käyttää ponnahdusikkunaa työpöytäikkunoissa "
+"(alapaneeli säilytetty mobiilissa)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:134
+msgid ""
+"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
+"43, CachyOS, Bazzite, postmarketOS)"
+msgstr ""
+"Korjattu: sovelluksen kaatuminen käynnistyksessä GNOME 50 / glibc 2.42+ "
+"-järjestelmissä (Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:135
+msgid ""
+"Fixed: locale-dependent crash that required manually setting "
+"LC_ALL=en_GB.UTF-8"
+msgstr ""
+"Korjattu: alueasetuksesta riippuva kaatuminen, joka vaati "
+"LC_ALL=en_GB.UTF-8:n manuaalista asettamista"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:136
+msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+msgstr ""
+"Korjattu: mobiiliasettelun rikkoutuminen viimeaikaisten WhatsApp Webin DOM-"
+"muutosten vuoksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:137
+msgid ""
+"Fixed: downloaded files with duplicate names silently overwriting each other"
+" (now appends (1), (2), ...)"
+msgstr ""
+"Korjattu: ladatut tiedostot, joilla on päällekkäiset nimet, kirjoittivat "
+"hiljaisesti toistensa päälle (lisää nyt (1), (2), ...)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:138
+msgid ""
+"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+"dependencies to latest compatible versions"
+msgstr ""
+"Päivitetty WebKitGTK versioon 2.52.3, LibreOffice-sanakirjat versioon "
+"26.2.3.2 ja Rust-riippuvuudet uusimpiin yhteensopiviin versioihin"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:145
+msgid ""
+"Fixed voice and video calls in production Flatpak (Flathub linter-compatible"
+" pre-built plugin)"
+msgstr ""
+"Korjattu ääni- ja videopuhelut tuotannon Flatpakissa (Flathub-linterin "
+"kanssa yhteensopiva esirakennettu liitännäinen)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:152
+msgid ""
+"Fixed voice and video calls not working in the production build (missing "
+"noise suppression plugin)"
+msgstr ""
+"Korjattu ääni- ja videopuhelut, jotka eivät toimineet tuotantokoonnoksessa "
+"(puuttuva kohinanvaimennusliitännäinen)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:159
+msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+msgstr ""
+"Lisätty ääni- ja videopuhelujen tuki WebRTC-yhteensopivan WebKitGTK 2.50.5:n"
+" kautta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:160
+msgid "Fixed download filenames now use WhatsApp's original filename"
+msgstr ""
+"Korjattu latausten tiedostonimet käyttävät nyt WhatsAppin alkuperäistä "
+"tiedostonimeä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:161
+msgid "Fixed duplicate downloads auto-increment instead of failing"
+msgstr ""
+"Korjattu päällekkäiset lataukset kasvattavat numeroa automaattisesti "
+"epäonnistumisen sijaan"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:162
+msgid ""
+"Fixed window now properly unminimizes when activated from launcher or tray"
+msgstr ""
+"Korjattu ikkuna palautuu nyt asianmukaisesti pienennyksestä, kun se "
+"aktivoidaan käynnistimestä tai ilmoitusalueelta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:163
+msgid "Fixed notification sounds now respect GNOME volume controls"
+msgstr "Korjattu ilmoitusäänet noudattavat nyt GNOMEn äänenvoimakkuussäätimiä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:164
+msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+msgstr ""
+"Huomaa: WhatsApp-tilit on linkitettävä uudelleen tämän päivityksen jälkeen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:171
+msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+msgstr ""
+"Korjattu Flatpak-koonnoksen epäonnistuminen, jonka aiheuttivat ashpd 0.13:n "
+"API-muutokset"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:178
+msgid ""
+"Fixed voice and video calls showing \"Your browser doesn't support calling\""
+msgstr ""
+"Korjattu ääni- ja videopuhelut, jotka näyttivät \"Selaimesi ei tue "
+"soittamista\""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:179
+msgid ""
+"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+"Linux environments"
+msgstr ""
+"Korjattu näyttönäppäimistö, joka ei ilmestynyt luotettavasti Phoshissa ja "
+"kosketuspohjaisissa Linux-ympäristöissä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:180
+msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+msgstr "Korjattu blob-URL-lataukset (esim. Tallenna kuva mediakatselimesta)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:181
+msgid "Redesigned application icons for stable and development variants"
+msgstr ""
+"Suunniteltu uudelleen sovelluskuvakkeet vakaalle ja kehitysvariantille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:182
+msgid "Updated all Rust dependencies to latest versions"
+msgstr "Päivitetty kaikki Rust-riippuvuudet uusimpiin versioihin"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:183
+msgid "Upgraded to GNOME Platform 50"
+msgstr "Päivitetty GNOME Platform versioon 50"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:184
+msgid "Removed ffmpeg-full extension (no longer required)"
+msgstr "Poistettu ffmpeg-full-laajennus (ei enää tarvita)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:191
+msgid "Fixed freezes when viewing media galleries"
+msgstr "Korjattu jäätymiset mediagallerioita katseltaessa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:192
+msgid "Fixed crash on launch due to memory pressure threshold ordering"
+msgstr ""
+"Korjattu kaatuminen käynnistyksessä muistipaineen kynnyksen järjestyksen "
+"vuoksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:193
+msgid "Fixed download destination and context menu issues"
+msgstr "Korjattu latauskohteen ja pikavalikon ongelmat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:194
+msgid "Fixed dead key composition for first character in input fields"
+msgstr ""
+"Korjattu kuolleen näppäimen muodostus syöttökenttien ensimmäiselle merkille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:195
+msgid ""
+"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
+"handling"
+msgstr ""
+"Lisätty GStreamer/PipeWire-ympäristömuuttujat tuotannon Flatpakiin tehokasta"
+" median käsittelyä varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:202
+msgid "Fixed download destination handling"
+msgstr "Korjattu latauskohteen käsittely"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:203
+msgid "Resolved WebKit crashes on media-heavy pages"
+msgstr "Ratkaistu WebKit-kaatumiset mediarunsailla sivuilla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:210
+msgid "Fixed: Download destination path handling regression"
+msgstr "Korjattu: latauskohteen polun käsittelyn regressio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:217
+msgid ""
+"Fixed: JS injection and path traversal vulnerabilities in download handling"
+msgstr "Korjattu: JS-injektio ja polkuhaavoittuvuudet latausten käsittelyssä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:224
+msgid ""
+"Fixed: Handle WebKit web process crashes with auto-reload and user "
+"notification"
+msgstr ""
+"Korjattu: käsittele WebKit-verkkoprosessin kaatumiset automaattisella "
+"uudelleenlatauksella ja käyttäjäilmoituksella"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:225
+msgid "Fixed: JS injection and path traversal vulnerabilities"
+msgstr "Korjattu: JS-injektio ja polkuhaavoittuvuudet"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:226
+msgid "Fixed: Panic in notification handling"
+msgstr "Korjattu: paniikki ilmoitusten käsittelyssä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:233
+msgid "Added complete multi-account support with sidebar and tray integration"
+msgstr ""
+"Lisätty täysi usean tilin tuki sivupalkilla ja ilmoitusalueen integraatiolla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:234
+msgid "Added per-account zoom settings and improved accessibility"
+msgstr "Lisätty tilikohtaiset zoomausasetukset ja parannettu saavutettavuutta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:235
+msgid "Fixed startup race conditions and resource usage issues"
+msgstr ""
+"Korjattu käynnistyksen kilpailutilanteet ja resurssien käytön ongelmat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:242
+msgid ""
+"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+msgstr "Lisätty zoomaustuki (Ctrl +/-/0) pysyvyydellä ja asetussäätimillä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:243
+msgid "Fixed window size increasing on every restart"
+msgstr "Korjattu ikkunan koon kasvaminen jokaisella uudelleenkäynnistyksellä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:250
+msgid ""
+"Fixed: Resolved webview reload loop on startup due to incorrect window size "
+"detection"
+msgstr ""
+"Korjattu: ratkaistu verkkonäkymän uudelleenlataussilmukka käynnistyksessä "
+"virheellisen ikkunakoon tunnistuksen vuoksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:257
+msgid ""
+"Added WebRTC permission handling in preparation for WhatsApp Web voice/video"
+" calls"
+msgstr ""
+"Lisätty WebRTC-käyttöoikeuksien käsittely WhatsApp Webin ääni-/videopuheluja"
+" varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:258
+msgid "Improved mobile UI resizing consistency"
+msgstr "Parannettu mobiilikäyttöliittymän koonmuutoksen johdonmukaisuutta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:265
+msgid ""
+"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+"(silences sounds)"
+msgstr ""
+"Korjattu: sovellus noudattaa nyt järjestelmän \"Älä häiritse\" -asetuksia "
+"GNOMEssa (vaimentaa äänet)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:266
+msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+msgstr ""
+"Korjattu: ilmoitukset ohittavat DND-visuaalit (prioriteetti laskettu tasolle"
+" Normaali)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:273
+msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+msgstr ""
+"Korjattu ilmoitusalueen kuvakkeet KDE:ssä/GNOMEssa (näkyvät sekä vaaleilla "
+"että tummilla teemoilla)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:274
+msgid "Restored correct app icons and transparent backgrounds"
+msgstr "Palautettu oikeat sovelluskuvakkeet ja läpinäkyvät taustat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:275
+msgid "Improved icon compatibility across desktop environments"
+msgstr "Parannettu kuvakkeiden yhteensopivuutta työpöytäympäristöjen välillä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:282
+msgid ""
+"Fixed application freezing on resume by reverting aggressive cache "
+"optimization"
+msgstr ""
+"Korjattu sovelluksen jäätyminen palatessa peruuttamalla aggressiivinen "
+"välimuistioptimointi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:283
+msgid "Fixed background validation to ensure app starts correctly"
+msgstr ""
+"Korjattu taustavalidointi varmistamaan, että sovellus käynnistyy oikein"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:284
+msgid "Optimized memory usage in mobile responsive scripts"
+msgstr "Optimoitu muistin käyttö mobiiliresponsiivisissa skripteissä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:285
+msgid "Improved icon rendering (symbolic icons now use currentColor)"
+msgstr ""
+"Parannettu kuvakkeiden renderöintiä (symboliset kuvakkeet käyttävät nyt "
+"currentColor-arvoa)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:292
+msgid "Fixed window resize behavior to prevent excessive reloading"
+msgstr ""
+"Korjattu ikkunan koonmuutoskäyttäytyminen estämään liiallisen "
+"uudelleenlatauksen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:293
+msgid "Fixed background notifications reliability"
+msgstr "Korjattu taustailmoitusten luotettavuus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:300
+msgid "Fixed Flatpak build failure by correcting config"
+msgstr "Korjattu Flatpak-koonnoksen epäonnistuminen korjaamalla määritys"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:307
+msgid "Fixed \"Too many open files\" crash by reusing notification resources"
+msgstr ""
+"Korjattu \"Liian monta avointa tiedostoa\" -kaatuminen käyttämällä "
+"ilmoitusresursseja uudelleen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:308
+msgid "Fixed zombie process accumulation"
+msgstr "Korjattu zombiprosessien kertyminen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:309
+msgid "Improved overall stability"
+msgstr "Parannettu yleistä vakautta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:316
+msgid "Ctrl+N keyboard shortcut for opening a new chat"
+msgstr "Ctrl+N-pikanäppäin uuden keskustelun avaamiseen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:317
+msgid ""
+"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+"Lomiri"
+msgstr ""
+"Mobiiliasettelun tuki automaattisella tunnistuksella Phoshille, Plasma "
+"Mobilelle ja Lomirille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:318
+msgid "Tray icon click now toggles window visibility"
+msgstr "Ilmoitusalueen kuvakkeen napsautus vaihtaa nyt ikkunan näkyvyyden"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:319
+msgid "Window size is saved and restored when hiding/showing"
+msgstr "Ikkunan koko tallennetaan ja palautetaan piilotettaessa/näytettäessä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:320
+msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+msgstr ""
+"Mobiiliasettelun asetus muutettu pudotusvalikoksi "
+"(automaattinen/käytössä/pois käytöstä)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:327
+msgid ""
+"Updated application summary and description for better AppStream compliance"
+msgstr ""
+"Päivitetty sovelluksen yhteenveto ja kuvaus paremman AppStream-"
+"yhteensopivuuden vuoksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:334
+msgid ""
+"Notification Chat Linking: Clicking a notification now opens the specific "
+"chat in Karere."
+msgstr ""
+"Ilmoituksen keskusteluunlinkitys: ilmoituksen napsauttaminen avaa nyt tietyn"
+" keskustelun Kararessa."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:335
+msgid ""
+"Webcam Support: Added support for using the webcam (Status updates, Video "
+"calls) with a new permission dialog."
+msgstr ""
+"Verkkokameran tuki: lisätty tuki verkkokameran käytölle (Tilapäivitykset, "
+"videopuhelut) uudella käyttöoikeusikkunalla."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:342
+msgid ""
+"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+"compatibility"
+msgstr ""
+"Parannettu kuvan liittämistä Base64-koodauksella luotettavaa WhatsApp Web "
+"-yhteensopivuutta varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:343
+msgid "Added middle-click paste from primary selection (selected text)"
+msgstr ""
+"Lisätty keskimmäisen napsautuksen liittäminen ensisijaisesta valinnasta "
+"(valittu teksti)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:344
+msgid "Fixed double-paste issue with middle-click"
+msgstr "Korjattu kaksoisliittämisongelma keskimmäisellä napsautuksella"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:351
+msgid "Fixed missing GSettings schema in Flatpak builds"
+msgstr "Korjattu puuttuva GSettings-skeema Flatpak-koonnoksissa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:352
+msgid "Added new application icons"
+msgstr "Lisätty uudet sovelluskuvakkeet"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:353
+msgid "Corrected metadata description references"
+msgstr "Korjattu metatietojen kuvausviittaukset"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:360
+msgid ""
+"Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+msgstr ""
+"Vaihdettu XDG Notification Portaliin (ashpd) paremman hiekkalaatikkotuen "
+"vuoksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:361
+msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+msgstr ""
+"Poistettu suorat D-Bus-ilmoituskäyttöoikeudet selkeämpää manifestia varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:362
+msgid "Fixed Open action for downloaded files"
+msgstr "Korjattu Avaa-toiminto ladatuille tiedostoille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:363
+msgid "Fixed Dead Key/composition input issues"
+msgstr "Korjattu kuolleen näppäimen / muodostuksen syöttöongelmat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:364
+msgid "Migrated Flatpak build logic to meson.build"
+msgstr "Siirretty Flatpak-koonnoslogiikka meson.build-tiedostoon"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:371
+msgid ""
+"Switch to XDG Background Portal for autostart (improves security and "
+"compatibility)"
+msgstr ""
+"Vaihdettu XDG Background Portaliin automaattikäynnistystä varten (parantaa "
+"turvallisuutta ja yhteensopivuutta)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:378
+msgid "Add new contributor Sabri Ünal to the About dialog"
+msgstr "Lisätty uusi osallistuja Sabri Ünal Tietoja-ikkunaan"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:379
+msgid "General improvements and versioning updates"
+msgstr "Yleisiä parannuksia ja versiopäivityksiä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:386
+msgid "Restore autostart permission for improved compatibility"
+msgstr ""
+"Palautettu automaattikäynnistyksen käyttöoikeus paremman yhteensopivuuden "
+"vuoksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:393
+msgid "Remove unnecessary autostart permission to satisfy linter"
+msgstr ""
+"Poistettu tarpeeton automaattikäynnistyksen käyttöoikeus linterin "
+"täyttämiseksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:400
+msgid "Add xdg-config/autostart permission for autostart support"
+msgstr ""
+"Lisätty xdg-config/autostart-käyttöoikeus automaattikäynnistyksen tukea "
+"varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:406
+msgid "Bug Fix Release"
+msgstr "Virheenkorjausjulkaisu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:407
+#: data/io.github.tobagin.karere.metainfo.xml.in:416
+msgid "Changes:"
+msgstr "Muutokset:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:409
+msgid ""
+"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
+msgstr ""
+"Korjattu puuttuva ilmoitusalueen kuvake GNOMEssa lisäämällä "
+"StatusNotifierWatcher-käyttöoikeus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:415
+msgid "Update and Bug Fix Release"
+msgstr "Päivitys- ja virheenkorjausjulkaisu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:418
+msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+msgstr "Lisätty \"Suorita käynnistyksessä\" -kytkin asetuksiin (oletus: pois)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:419
+msgid "Fixed autostart toggle pathing for Flatpak environments"
+msgstr "Korjattu automaattikäynnistyskytkimen polutus Flatpak-ympäristöille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:420
+msgid "Fixed tray icon quit behavior"
+msgstr "Korjattu ilmoitusalueen kuvakkeen lopetuskäyttäytyminen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:421
+msgid "Added striped symbolic icons for development version"
+msgstr "Lisätty raidalliset symboliset kuvakkeet kehitysversiolle"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:427
+msgid "🎉 Major Release 2.0.0"
+msgstr "🎉 Suuri julkaisu 2.0.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:428
+#: data/io.github.tobagin.karere.metainfo.xml.in:452
+#: data/io.github.tobagin.karere.metainfo.xml.in:507
+#: data/io.github.tobagin.karere.metainfo.xml.in:577
+#: data/io.github.tobagin.karere.metainfo.xml.in:695
+msgid "New Features:"
+msgstr "Uudet ominaisuudet:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:430
+msgid "Full rewrite in Rust! 🦀"
+msgstr "Täydellinen uudelleenkirjoitus Rustilla! 🦀"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:431
+msgid "New System Tray Icon support"
+msgstr "Uusi järjestelmän ilmoitusalueen kuvakkeen tuki"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:432
+msgid "Notifications fully working with persistence fixes"
+msgstr "Ilmoitukset toimivat täysin pysyvyyskorjauksilla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:433
+msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+msgstr "Siirretty Valasta natiiviin Rust/GTK4/Libadwaita-ympäristöön"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:434
+msgid "Redesigned/streamlined preferences dialog"
+msgstr "Suunniteltu uudelleen / virtaviivaistettu asetusikkuna"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:435
+msgid "Enhanced performance and stability"
+msgstr "Parannettu suorituskykyä ja vakautta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:441
+msgid "🐛 Bug Fix Release"
+msgstr "🐛 Virheenkorjausjulkaisu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:442
+msgid "Fixed:"
+msgstr "Korjattu:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:444
+msgid ""
+"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+"activation"
+msgstr ""
+"Korjattu kriittinen käynnistyksen jäätyminen (latausanimaatio) toteuttamalla"
+" D-Bus-aktivointi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:445
+msgid "Ensure application starts properly in the background without delay"
+msgstr ""
+"Varmista, että sovellus käynnistyy asianmukaisesti taustalla ilman viivettä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:451
+msgid "🎉 Feature Release"
+msgstr "🎉 Ominaisuusjulkaisu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:454
+msgid "🎤 Microphone permission support for voice notes"
+msgstr "🎤 Mikrofonin käyttöoikeustuki ääniviesteille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:455
+msgid "🚀 Start in background option for autostart"
+msgstr "🚀 Taustalla käynnistyksen vaihtoehto automaattikäynnistystä varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:456
+msgid "🔄 Manual reload and auto-reload on network reconnection"
+msgstr ""
+"🔄 Manuaalinen uudelleenlataus ja automaattinen uudelleenlataus "
+"verkkoyhteyden palauduttua"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:458
+#: data/io.github.tobagin.karere.metainfo.xml.in:474
+#: data/io.github.tobagin.karere.metainfo.xml.in:485
+#: data/io.github.tobagin.karere.metainfo.xml.in:496
+#: data/io.github.tobagin.karere.metainfo.xml.in:559
+#: data/io.github.tobagin.karere.metainfo.xml.in:596
+#: data/io.github.tobagin.karere.metainfo.xml.in:623
+#: data/io.github.tobagin.karere.metainfo.xml.in:648
+#: data/io.github.tobagin.karere.metainfo.xml.in:665
+#: data/io.github.tobagin.karere.metainfo.xml.in:682
+msgid "Improvements:"
+msgstr "Parannukset:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:460
+msgid "⚡ Performance optimizations for startup and shutdown"
+msgstr "⚡ Suorituskykyoptimoinnit käynnistykselle ja sammutukselle"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:461
+msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+msgstr ""
+"📝 Asynkroninen sanakirjojen lataus sulavampaa oikoluvun alustusta varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:462
+msgid "📖 Added MPRIS workaround documentation"
+msgstr "📖 Lisätty MPRIS-kiertotien dokumentaatio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:464
+#: data/io.github.tobagin.karere.metainfo.xml.in:518
+#: data/io.github.tobagin.karere.metainfo.xml.in:566
+#: data/io.github.tobagin.karere.metainfo.xml.in:586
+#: data/io.github.tobagin.karere.metainfo.xml.in:642
+#: data/io.github.tobagin.karere.metainfo.xml.in:659
+#: data/io.github.tobagin.karere.metainfo.xml.in:676
+msgid "Bug Fixes:"
+msgstr "Virheenkorjaukset:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:466
+msgid "Fixed missing dictionaries on startup"
+msgstr "Korjattu puuttuvat sanakirjat käynnistyksessä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:467
+msgid "Fixed application freeze during lifecycle events"
+msgstr "Korjattu sovelluksen jäätyminen elinkaaritapahtumien aikana"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:473
+msgid "🔧 Maintenance Release"
+msgstr "🔧 Ylläpitojulkaisu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:476
+msgid "Updated build configuration and dependencies"
+msgstr "Päivitetty koonnosmääritys ja riippuvuudet"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:477
+msgid "Enhanced packaging for better compatibility"
+msgstr "Parannettu paketointia paremman yhteensopivuuden vuoksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:478
+msgid "Minor bug fixes and stability improvements"
+msgstr "Pieniä virheenkorjauksia ja vakausparannuksia"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:484
+msgid "📝 Documentation and Metadata Update"
+msgstr "📝 Dokumentaation ja metatietojen päivitys"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:487
+msgid "Updated about dialog screenshot"
+msgstr "Päivitetty Tietoja-ikkunan kuvakaappaus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:488
+msgid "Updated application screenshots"
+msgstr "Päivitetty sovelluksen kuvakaappaukset"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:489
+msgid "Minor README corrections"
+msgstr "Pieniä README-korjauksia"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:495
+msgid "📸 Screenshots and Documentation Update"
+msgstr "📸 Kuvakaappausten ja dokumentaation päivitys"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:498
+msgid "Updated application screenshots with current UI appearance"
+msgstr ""
+"Päivitetty sovelluksen kuvakaappaukset nykyisellä käyttöliittymän ulkoasulla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:499
+msgid "Refreshed About dialog screenshot"
+msgstr "Päivitetty Tietoja-ikkunan kuvakaappaus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:500
+msgid "Enhanced visual documentation for users"
+msgstr "Parannettu visuaalista dokumentaatiota käyttäjille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:506
+msgid "🎉 Version 1.0.0 - Major Milestone Release"
+msgstr "🎉 Versio 1.0.0 – Suuri merkkipaalujulkaisu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:509
+msgid "✅ Fixed WhatsApp Web notification banner persistence"
+msgstr "✅ Korjattu WhatsApp Web -ilmoitusbannerin pysyvyys"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:510
+msgid "✅ Fixed notifications not working properly"
+msgstr "✅ Korjattu ilmoitukset, jotka eivät toimineet asianmukaisesti"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:511
+msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+msgstr "🖼️ Lisätty kuvan liittämistuki leikepöydän kautta (Ctrl+V)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:512
+msgid ""
+"📥 Implemented download manager with custom directory and toast notifications"
+msgstr ""
+"📥 Toteutettu latausten hallinta mukautetulla kansiolla ja "
+"ponnahdusilmoituksilla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:513
+msgid ""
+"♿ Enhanced accessibility with screen reader optimization and keyboard "
+"navigation"
+msgstr ""
+"♿ Parannettu saavutettavuutta näytönlukijaoptimoinnilla ja "
+"näppäimistönavigoinnilla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:514
+msgid "📝 Added comprehensive spell checking system with auto-detection"
+msgstr "📝 Lisätty kattava oikolukujärjestelmä automaattisella tunnistuksella"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:515
+msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+msgstr "🔤 Integroitu yli 80 kielen sanakirjat LibreOfficesta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:516
+msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+msgstr "⌨️ Lisätty pikanäppäinikkuna käyttäen AdwShortcutsDialogia"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:520
+msgid ""
+"Fixed Ctrl+V paste for text content - now works for both text and images"
+msgstr ""
+"Korjattu Ctrl+V-liittäminen tekstisisällölle – toimii nyt sekä tekstille "
+"että kuville"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:521
+msgid "Fixed WhatsApp notification permission not persisting across sessions"
+msgstr ""
+"Korjattu WhatsApp-ilmoituskäyttöoikeus, joka ei säilynyt istuntojen välillä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:522
+msgid "Fixed notifications banner appearing on every app launch"
+msgstr ""
+"Korjattu ilmoitusbanneri, joka ilmestyi jokaisella sovelluksen "
+"käynnistyksellä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:523
+msgid "Fixed WebView zoom being enabled by default (now disabled)"
+msgstr ""
+"Korjattu WebView'n zoomaus, joka oli oletuksena käytössä (nyt pois käytöstä)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:524
+msgid "Fixed clipboard manager intercepting all paste events"
+msgstr ""
+"Korjattu leikepöydän hallinta, joka sieppasi kaikki liittämistapahtumat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:525
+msgid ""
+"Removed hardcoded blueprint compiler paths for cross-architecture support"
+msgstr ""
+"Poistettu kovakoodatut blueprint-kääntäjän polut arkkitehtuurien välistä "
+"tukea varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:527
+msgid "Code Quality Improvements:"
+msgstr "Koodin laadun parannukset:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:529
+msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+msgstr ""
+"♻️ Suuri uudelleenmuotoilu: järjestetty koodikanta uudelleen PascalCase-"
+"tiedostonimillä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:530
+msgid "♻️ Refactored Window.vala into specialized manager components"
+msgstr ""
+"♻️ Muotoiltu Window.vala uudelleen erikoistuneiksi hallintakomponenteiksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:531
+msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+msgstr ""
+"♻️ Poistettu mukautettu lokitus ja kaatumisraportointi (käytä järjestelmän "
+"journalctl:tä)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:532
+msgid ""
+"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+msgstr ""
+"🗑️ Poistettu Älä häiritse -ominaisuus (hoidetaan järjestelmän "
+"ilmoitusdemonilla)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:533
+msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+msgstr ""
+"🗑️ Siivottu vanhentuneet testitiedostot ja käyttämättömät riippuvuudet"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:534
+msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+msgstr "🗑️ Poistettu json-glib-, gee- ja libsoup-riippuvuudet"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:535
+msgid "🧹 Centralized settings management with SettingsManager singleton"
+msgstr "🧹 Keskitetty asetusten hallinta SettingsManager-singletonilla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:536
+msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+msgstr "🧹 Poistettu DependencyContainer.vala (käyttämätön riippuvuusinjektio)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:537
+msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+msgstr "📸 Järjestetty kuvakaappaukset uudelleen data/screenshots/-kansioon"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:539
+#: data/io.github.tobagin.karere.metainfo.xml.in:609
+#: data/io.github.tobagin.karere.metainfo.xml.in:631
+msgid "Technical Changes:"
+msgstr "Tekniset muutokset:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:541
+msgid "Implemented UserScript injection for Notification.permission state"
+msgstr "Toteutettu UserScript-injektio Notification.permission-tilalle"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:542
+msgid "Connected show_notification signal handler for WebKit notifications"
+msgstr ""
+"Yhdistetty show_notification-signaalin käsittelijä WebKit-ilmoituksille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:543
+msgid "WebKitGTK 6.0 storage persistence verified and documented"
+msgstr "WebKitGTK 6.0 -tallennustilan pysyvyys vahvistettu ja dokumentoitu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:544
+msgid "Updated SettingsManager to be the default for all settings access"
+msgstr "Päivitetty SettingsManager oletukseksi kaikelle asetusten käytölle"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:545
+msgid "Improved build system with cleaner dependency management"
+msgstr ""
+"Parannettu koonnosjärjestelmää selkeämmällä riippuvuuksien hallinnalla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:547
+msgid "Documentation:"
+msgstr "Dokumentaatio:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:549
+msgid "📚 Enhanced README with accessibility features documentation"
+msgstr "📚 Parannettu README:tä saavutettavuusominaisuuksien dokumentaatiolla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:550
+msgid "📚 Documented all keyboard shortcuts by category"
+msgstr "📚 Dokumentoitu kaikki pikanäppäimet kategorioittain"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:551
+msgid "📚 Added spell checking configuration guide"
+msgstr "📚 Lisätty oikoluvun määritysopas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:552
+msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+msgstr "📚 Korjattu GitHub-repositorion URL:t (karere-vala → karere)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:558
+msgid "🐛 Runtime Update and Bug Fixes"
+msgstr "🐛 Ajonaikaisen ympäristön päivitys ja virheenkorjaukset"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:561
+msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+msgstr ""
+"Päivitetty GNOME-ajonaikainen ympäristö versioon 49 paremman "
+"yhteensopivuuden vuoksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:562
+msgid "Improved system integration with latest platform libraries"
+msgstr "Parannettu järjestelmäintegraatiota uusimmilla alustakirjastoilla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:563
+msgid "Better support for modern desktop environments"
+msgstr "Parempi tuki moderneille työpöytäympäristöille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:564
+msgid "Enhanced stability and performance optimizations"
+msgstr "Parannettu vakautta ja suorituskykyoptimointeja"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:568
+msgid "Resolved compatibility issues with newer GNOME environments"
+msgstr "Ratkaistu yhteensopivuusongelmat uudempien GNOME-ympäristöjen kanssa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:569
+msgid "Fixed potential rendering inconsistencies"
+msgstr "Korjattu mahdolliset renderöinnin epäjohdonmukaisuudet"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:570
+msgid "Improved error handling and recovery mechanisms"
+msgstr "Parannettu virheenkäsittelyä ja palautumismekanismeja"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:576
+msgid ""
+"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+msgstr ""
+"✨ Parannettu emoji-tuki, ulkoisten linkkien käsittely ja koonnosparannukset"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:579
+msgid ""
+"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+msgstr ""
+"Lisätty korkealaatuiset Noto Color Emoji -fontit (v2.047, Unicode 16.0 "
+"-tuki)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:580
+msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+msgstr ""
+"Parannettu WebKit-renderöintiä maksimaalisella laitteistokiihdytyksellä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:581
+msgid "Improved emoji consistency with bundled font system"
+msgstr ""
+"Parannettu emojien johdonmukaisuutta mukana toimitetulla "
+"fonttijärjestelmällä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:582
+msgid "Optimized font loading to eliminate display conflicts"
+msgstr "Optimoitu fonttien lataus näyttöristiriitojen poistamiseksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:583
+msgid "Added WebKit cache control setting for improved rendering consistency"
+msgstr ""
+"Lisätty WebKit-välimuistin hallinta-asetus parantamaan renderöinnin "
+"johdonmukaisuutta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:584
+msgid "Cache disabled by default to prevent emoji rendering issues"
+msgstr ""
+"Välimuisti pois käytöstä oletuksena emojien renderöintiongelmien estämiseksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:588
+msgid ""
+"Fixed external links not opening in default browser when running in Flatpak"
+msgstr ""
+"Korjattu ulkoiset linkit, jotka eivät avautuneet oletusselaimessa "
+"Flatpakissa suoritettaessa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:589
+msgid "Improved external link handling with proper Flatpak portal support"
+msgstr ""
+"Parannettu ulkoisten linkkien käsittelyä asianmukaisella Flatpak-"
+"portaalituella"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:590
+msgid "Fixed random emoji display issues and blank emoji problems"
+msgstr "Korjattu satunnaiset emojien näyttöongelmat ja tyhjät emojit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:591
+msgid "Fixed invalid meson version requirement preventing builds"
+msgstr "Korjattu virheellinen meson-versiovaatimus, joka esti koonnokset"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:592
+msgid "Corrected dependency version specifications in meson.build"
+msgstr "Korjattu riippuvuuksien versiomäärittelyt meson.build-tiedostossa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:593
+msgid "Resolved flatpak-builder compatibility issues"
+msgstr "Ratkaistu flatpak-builder-yhteensopivuusongelmat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:594
+msgid "Enhanced URL validation for external link detection"
+msgstr "Parannettu URL-validointia ulkoisten linkkien tunnistukselle"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:598
+msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+msgstr ""
+"Poistettu WebKit-välimuistin korruptio, joka vaikutti emojien renderöintiin"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:599
+msgid "Streamlined font stack for consistent emoji appearance"
+msgstr "Virtaviivaistettu fonttipino johdonmukaista emojien ulkoasua varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:600
+msgid "Enhanced 2D canvas acceleration for better graphics performance"
+msgstr ""
+"Parannettu 2D-kankaan kiihdytystä paremman grafiikan suorituskyvyn vuoksi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:601
+msgid "Improved font loading stability and reduced race conditions"
+msgstr ""
+"Parannettu fonttien latauksen vakautta ja vähennetty kilpailutilanteita"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:602
+msgid "Better sandboxed environment compatibility"
+msgstr "Parempi hiekkalaatikkoympäristön yhteensopivuus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:603
+msgid "More reliable link opening mechanism"
+msgstr "Luotettavampi linkkien avausmekanismi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:604
+msgid "Enhanced logging for external link operations"
+msgstr "Parannettu lokitusta ulkoisten linkkien toiminnoille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:605
+msgid "Better build system compatibility with different environments"
+msgstr "Parempi koonnosjärjestelmän yhteensopivuus eri ympäristöjen kanssa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:606
+msgid "Enhanced CI/CD pipeline stability"
+msgstr "Parannettu CI/CD-putken vakautta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:607
+msgid "More robust dependency handling"
+msgstr "Vankempi riippuvuuksien käsittely"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:611
+msgid ""
+"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+"only)"
+msgstr ""
+"Poistettu tarpeeton mobiilikäyttäjäagentin vaihtaminen (WhatsApp Web on vain"
+" työpöydälle)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:612
+msgid "Disabled problematic WebKit caches causing font corruption"
+msgstr ""
+"Poistettu käytöstä ongelmalliset WebKit-välimuistit, jotka aiheuttivat "
+"fonttien korruptiota"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:613
+msgid "Simplified emoji font configuration to single high-quality source"
+msgstr ""
+"Yksinkertaistettu emoji-fontin määritys yhteen korkealaatuiseen lähteeseen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:614
+msgid "Restored Safari Linux user agent for native WebKit experience"
+msgstr ""
+"Palautettu Safari Linux -käyttäjäagentti natiivia WebKit-kokemusta varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:615
+msgid "Added subpixel font scaling and advanced rendering optimizations"
+msgstr "Lisätty alipikselifonttiskaalaus ja edistyneet renderöintioptimoinnit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:616
+msgid "Implemented Flatpak portal system for external link handling"
+msgstr "Toteutettu Flatpak-portaalijärjestelmä ulkoisten linkkien käsittelyyn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:622
+msgid "🔧 Code Refactoring and Architecture Improvements"
+msgstr "🔧 Koodin uudelleenmuotoilu ja arkkitehtuuriparannukset"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:625
+msgid "Converted template files to preprocessor directives for cleaner code"
+msgstr ""
+"Muunnettu mallitiedostot esikääntäjädirektiiveiksi selkeämpää koodia varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:626
+msgid "Eliminated .vala.in template substitution system"
+msgstr "Poistettu .vala.in-mallikorvausjärjestelmä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:627
+msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+msgstr ""
+"Lisätty käännösaikainen ehdollinen kääntäminen käyttäen DEVELOPMENT-lippua"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:628
+msgid "Improved build system maintainability and type safety"
+msgstr ""
+"Parannettu koonnosjärjestelmän ylläpidettävyyttä ja tyyppiturvallisuutta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:629
+msgid "Added contributors Aman Das and Cameo to about dialog"
+msgstr "Lisätty osallistujat Aman Das ja Cameo Tietoja-ikkunaan"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:633
+msgid ""
+"Replaced window.vala.in and preferences.vala.in with direct .vala files"
+msgstr ""
+"Korvattu window.vala.in ja preferences.vala.in suorilla .vala-tiedostoilla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:634
+msgid "Updated meson.build to use Vala preprocessor directives"
+msgstr "Päivitetty meson.build käyttämään Vala-esikääntäjädirektiivejä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:635
+msgid "Simplified source file management in build system"
+msgstr "Yksinkertaistettu lähdetiedostojen hallintaa koonnosjärjestelmässä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:641
+#: data/io.github.tobagin.karere.metainfo.xml.in:675
+msgid "🐛 Bug Fixes and Improvements"
+msgstr "🐛 Virheenkorjaukset ja parannukset"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:644
+msgid "Fixed crash when handling invalid user input data"
+msgstr "Korjattu kaatuminen virheellisen käyttäjäsyötteen käsittelyssä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:645
+msgid "Resolved memory leak in notification cleanup"
+msgstr "Ratkaistu muistivuoto ilmoitusten siivouksessa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:646
+msgid "Corrected accessibility focus handling"
+msgstr "Korjattu saavutettavuuden kohdistuksen käsittely"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:650
+msgid "Better error handling for network timeouts"
+msgstr "Parempi virheenkäsittely verkon aikakatkaisuille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:651
+msgid "Enhanced stability for extended usage"
+msgstr "Parannettu vakautta pitkäkestoisessa käytössä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:652
+msgid "Performance optimizations for scrolling"
+msgstr "Suorituskykyoptimoinnit vieritykselle"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:658
+msgid "🔧 Metadata and Standards Compliance"
+msgstr "🔧 Metatiedot ja standardien noudattaminen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:661
+msgid "Fixed duplicate provides tags in metainfo validation"
+msgstr "Korjattu päällekkäiset provides-tunnisteet metainfo-validoinnissa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:662
+msgid "Corrected AppStream metainfo format compliance"
+msgstr "Korjattu AppStream-metainfon muodon noudattaminen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:663
+msgid "Resolved invalid markup in release descriptions"
+msgstr "Ratkaistu virheellinen merkintä julkaisukuvauksissa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:667
+msgid "Updated all references from appdata to metainfo format"
+msgstr "Päivitetty kaikki viittaukset appdata-muodosta metainfo-muotoon"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:668
+msgid "Enhanced Flathub compliance and validation"
+msgstr "Parannettu Flathub-yhteensopivuutta ja validointia"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:669
+msgid "Improved translation file consistency"
+msgstr "Parannettu käännöstiedostojen johdonmukaisuutta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:678
+msgid "Fixed crash when handling invalid notification data"
+msgstr "Korjattu kaatuminen virheellisen ilmoitusdatan käsittelyssä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:679
+msgid "Resolved memory leak in WebKit manager cleanup"
+msgstr "Ratkaistu muistivuoto WebKit-hallinnan siivouksessa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:680
+msgid "Corrected window state persistence on shutdown"
+msgstr "Korjattu ikkunan tilan pysyvyys sammutuksessa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:684
+msgid "Better error handling for network disconnections"
+msgstr "Parempi virheenkäsittely verkkokatkoksille"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:685
+msgid "Enhanced stability during long sessions"
+msgstr "Parannettu vakautta pitkien istuntojen aikana"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:686
+msgid "Performance optimizations for faster startup"
+msgstr "Suorituskykyoptimoinnit nopeampaa käynnistystä varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:692
+msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+msgstr "🚀 Suuri arkkitehtuurimigraatio: Pythonista Vala/GTK4:ään"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:693
+msgid ""
+"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+"performance and integration."
+msgstr ""
+"RIKKOVA MUUTOS: täydellinen uudelleenkirjoitus Pythonista natiiviin Valaan "
+"paremman suorituskyvyn ja integraation vuoksi."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:694
+msgid ""
+"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+"with WhatsApp Web as this is a completely new application implementation."
+msgstr ""
+"⚠️ Tärkeää: päivityksen jälkeen sinun on synkronoitava mobiililaitteesi "
+"uudelleen WhatsApp Webin kanssa, koska tämä on täysin uusi sovellustoteutus."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:697
+msgid "Native Vala/GTK4 implementation for optimal performance"
+msgstr "Natiivi Vala/GTK4-toteutus optimaalista suorituskykyä varten"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:698
+msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+msgstr ""
+"Moderni LibAdwaita-käyttöliittymä Blueprint-deklaratiivisella "
+"käyttöliittymällä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:699
+msgid "Enhanced WebKitGTK 6.0 integration"
+msgstr "Parannettu WebKitGTK 6.0 -integraatio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:700
+msgid "Advanced notification system with native desktop integration"
+msgstr "Edistynyt ilmoitusjärjestelmä natiivilla työpöytäintegraatiolla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:701
+msgid "Comprehensive accessibility support"
+msgstr "Kattava saavutettavuustuki"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:702
+msgid "Professional logging and crash reporting system"
+msgstr "Ammattimainen lokitus- ja kaatumisraportointijärjestelmä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:704
+msgid "Multi-language spell checking support"
+msgstr "Monikielinen oikolukutuki"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:705
+msgid "Granular privacy and notification controls"
+msgstr "Hienojakoiset yksityisyys- ja ilmoitussäätimet"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:706
+msgid "Hardware-accelerated rendering"
+msgstr "Laitteistokiihdytetty renderöinti"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:707
+msgid "Improved memory efficiency and startup performance"
+msgstr "Parannettu muistitehokkuus ja käynnistyksen suorituskyky"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:709
+msgid "Technical Improvements:"
+msgstr "Tekniset parannukset:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:711
+msgid "Migrated from Python 3 to native Vala compilation"
+msgstr "Siirretty Python 3:sta natiiviin Vala-kääntämiseen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:712
+msgid "Modern Meson build system with Blueprint UI compilation"
+msgstr ""
+"Moderni Meson-koonnosjärjestelmä Blueprint-käyttöliittymän kääntämisellä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:713
+msgid "Comprehensive test suite with unit and integration tests"
+msgstr "Kattava testipaketti yksikkö- ja integraatiotesteillä"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:714
+msgid "Production-ready error handling and crash recovery"
+msgstr "Tuotantovalmis virheenkäsittely ja kaatumisesta palautuminen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:715
+msgid "Enhanced security with proper sandboxing"
+msgstr "Parannettu turvallisuus asianmukaisella hiekkalaatikoinnilla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:716
+msgid "Complete internationalization support"
+msgstr "Täydellinen kansainvälistämistuki"
+
+#: src/window.rs:303
+msgid "Account"
+msgstr "Tili"
+
+#: src/window.rs:632
+msgid "Waiting for QR scan…"
+msgstr "Odotetaan QR-koodin skannausta…"
+
+#: src/window.rs:654
+msgid "degraded"
+msgstr "heikennetty"
+
+#: src/window.rs:670
+msgid "Unread messages"
+msgstr "Lukemattomat viestit"
+
+#: src/window.rs:678
+msgid "Edit account"
+msgstr "Muokkaa tiliä"
+
+#: src/window.rs:694
+msgid "Remove account"
+msgstr "Poista tili"
+
+#: src/window.rs:696
+msgid "Can't remove the only account"
+msgstr "Ainoaa tiliä ei voi poistaa"
+
+#: src/window.rs:778
+msgid "Maximum of 9 accounts reached"
+msgstr "Enimmäismäärä 9 tiliä saavutettu"
+
+#: src/window.rs:804
+msgid "Label"
+msgstr "Nimike"
+
+#: src/window.rs:818
+msgid "Name"
+msgstr "Nimi"
+
+#: src/window.rs:819
+msgid "WhatsApp ID"
+msgstr "WhatsApp-tunnus"
+
+#: src/window.rs:821
+msgid "Avatar URL"
+msgstr "Avatarin URL"
+
+#: src/window.rs:830 src/window.rs:919
+msgid "Cancel"
+msgstr "Peruuta"
+
+#: src/window.rs:831
+msgid "Save"
+msgstr "Tallenna"
+
+#: src/window.rs:840
+msgid "Add Account"
+msgstr "Lisää tili"
+
+#: src/window.rs:842
+msgid "Edit Account"
+msgstr "Muokkaa tiliä"
+
+#: src/window.rs:909
+msgid "Remove account?"
+msgstr "Poistetaanko tili?"
+
+#: src/window.rs:920
+msgid "Remove"
+msgstr "Poista"
+
+#: src/actions.rs:263
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+"Moderni, natiivi GTK4/LibAdwaita-kuori WhatsApp Webille, joka tarjoaa "
+"saumattoman työpöytäintegraation kattavilla lokitus- ja "
+"kaatumisraportointiominaisuuksilla"
+
+#: src/actions.rs:282
+msgid "Source"
+msgstr "Lähde"
+
+#: src/actions.rs:285
+msgid "Special Thanks"
+msgstr "Erityiskiitokset"

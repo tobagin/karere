@@ -47,7 +47,7 @@ configure_file(
 # source tree so the meson POT target (which reads POTFILES.in entries like
 # data/ui/window.ui) can extract translatable strings via xgettext.
 blueprint_compiler = find_program('blueprint-compiler', required: true)
-blueprint_files = ['window', 'preferences', 'keyboard-shortcuts']
+blueprint_files = ['window', 'preferences', 'keyboard-shortcuts', 'account_switcher']
 foreach name : blueprint_files
   run_command(
     blueprint_compiler,

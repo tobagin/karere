@@ -228,8 +228,22 @@ wrap_browser_process_handler! {
             log::info!("CEF context initialized");
         }
 
-        // on_schedule_message_pump_work fires from any CEF thread, so we can't
-        // schedule the main loop here; a glib timer drives the pump instead.
+        // On-demand pump driver (external_message_pump): CEF calls this from any
+        // thread when it next needs do_message_loop_work() in delay_ms. Schedule
+        // one pump on the GLOBAL default GLib main context (glib::timeout_add_once
+        // targets it regardless of calling thread), so the closure runs on the
+        // main thread. Idle => CEF schedules far out => near-zero idle CPU,
+        // replacing the old fixed 125 Hz busy-poll.
+        fn on_schedule_message_pump_work(&self, delay_ms: i64) {
+            // Floor at 8ms: under continuous work CEF reschedules with delay 0,
+            // and a 0ms timeout would fire every main-loop iteration → 100% spin.
+            // 8ms caps the busy rate at ~125 Hz (the old steady rate) while still
+            // letting CEF's larger idle delays through for low idle CPU.
+            let delay = u64::try_from(delay_ms).unwrap_or(0).max(8);
+            glib::timeout_add_once(Duration::from_millis(delay), || {
+                cef::do_message_loop_work();
+            });
+        }
     }
 }
 
@@ -257,11 +271,28 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
             .recursive(true)
             .create(&root_cache);
     }
+    // Match Chromium's own UI (context menus, error pages) to the UI-language
+    // override by mapping it onto the nearest shipped `.pak` locale. Empty =
+    // Chromium default (system).
+    let override_lang = crate::i18n::override_locale();
+    let cef_locale = override_lang
+        .as_deref()
+        .and_then(crate::i18n::cef_locale_for)
+        .unwrap_or_default();
+    // Drives Accept-Language + navigator.languages so the web content
+    // (WhatsApp Web) localizes to the chosen UI language, not just Chromium.
+    let accept_lang = override_lang
+        .as_deref()
+        .map(crate::i18n::accept_language_for)
+        .unwrap_or_default();
+
     let settings = Settings {
         windowless_rendering_enabled: 1,
         external_message_pump: 1,
         no_sandbox: 1,
         root_cache_path: cef::CefString::from(root_cache.to_string_lossy().as_ref()),
+        locale: cef::CefString::from(cef_locale.as_str()),
+        accept_language_list: cef::CefString::from(accept_lang.as_str()),
         log_severity: cef::LogSeverity::WARNING,
         ..Default::default()
     };
@@ -277,9 +308,10 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
     }
     log::info!("CEF initialized");
 
-    // Safety net: pump at 8ms steady since external_message_pump scheduling can
-    // miss a tick during early init or rapid bursts.
-    glib::timeout_add_local(Duration::from_millis(8), || {
+    // Backstop only: on_schedule_message_pump_work drives normal pumping. This
+    // slow tick guards against a missed schedule (e.g. early init) without the
+    // old 8ms (125 Hz) busy-poll that pinned idle CPU.
+    glib::timeout_add_local(Duration::from_millis(100), || {
         cef::do_message_loop_work();
         glib::ControlFlow::Continue
     });

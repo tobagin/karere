@@ -1442,7 +1442,7 @@ dependencies = [
 
 [[package]]
 name = "karere"
-version = "4.0.0-beta2"
+version = "4.0.0-beta3"
 dependencies = [
  "anyhow",
  "ashpd",

@@ -1,0 +1,2297 @@
+# Romanian translations for karere package.
+# Copyright (C) 2026 THE karere'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the karere package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: karere\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-07 11:42+0100\n"
+"PO-Revision-Date: 2026-06-06 20:03+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;\n"
+
+#: src/main.rs:37
+msgid "Karere starting"
+msgstr "Karere pornește"
+
+#: src/window.rs:912
+msgid "This removes the local session for"
+msgstr "Aceasta elimină sesiunea locală pentru"
+
+#: src/window.rs:915
+msgid "The device stays linked on your phone until you remove it there."
+msgstr ""
+"Dispozitivul rămâne conectat pe telefon până când îl elimini de acolo."
+
+#: src/tray.rs:43 src/tray.rs:66 src/tray.rs:73 data/ui/window.ui:12
+#: data/ui/window.ui:23 src/actions.rs:258
+msgid "Karere"
+msgstr "Karere"
+
+#. Translators: tray tooltip body; leading number is the unread count.
+#: src/tray.rs:68
+msgid "unread"
+msgstr "necitite"
+
+#: src/tray.rs:93
+msgid "Hide Window"
+msgstr "Ascunde fereastra"
+
+#: src/tray.rs:95
+msgid "Show Window"
+msgstr "Arată fereastra"
+
+#: src/tray.rs:139 data/ui/window.ui:255 data/ui/preferences.ui:10
+#: data/ui/keyboard-shortcuts.ui:145
+msgid "Preferences"
+msgstr "Preferințe"
+
+#: src/tray.rs:145 data/ui/window.ui:261 data/ui/preferences.ui:405
+#: data/ui/keyboard-shortcuts.ui:152
+msgid "Keyboard Shortcuts"
+msgstr "Scurtături de tastatură"
+
+#: src/tray.rs:151
+msgid "About Karere"
+msgstr "Despre Karere"
+
+#: src/tray.rs:158 data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159
+msgid "Quit"
+msgstr "Ieșire"
+
+#: src/preferences.rs:92
+msgid "Restart Karere?"
+msgstr "Reporniți Karere?"
+
+#: src/preferences.rs:94
+msgid "The language change takes effect after Karere restarts."
+msgstr "Schimbarea limbii are efect după repornirea Karere."
+
+#: src/preferences.rs:97
+msgid "Later"
+msgstr "Mai târziu"
+
+#: src/preferences.rs:98
+msgid "Restart Now"
+msgstr "Repornește acum"
+
+#: src/preferences.rs:316
+msgid "System Default"
+msgstr "Implicit de sistem"
+
+#: data/ui/window.ui:24
+msgid "GTK4 WhatsApp Web Client"
+msgstr "Client GTK4 pentru WhatsApp Web"
+
+#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
+msgid "Zoom Out"
+msgstr "Micșorează"
+
+#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
+msgid "Reset Zoom"
+msgstr "Resetează zoom-ul"
+
+#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
+msgid "Zoom In"
+msgstr "Mărește"
+
+#: data/ui/window.ui:70
+msgid "Spell Checking Language"
+msgstr "Limbă pentru verificarea ortografiei"
+
+#: data/ui/window.ui:77
+msgid "Menu"
+msgstr "Meniu"
+
+#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
+msgid "Switch Account"
+msgstr "Schimbă contul"
+
+#: data/ui/window.ui:111
+msgid "Find in page"
+msgstr "Caută în pagină"
+
+#: data/ui/window.ui:131
+msgid "Previous match"
+msgstr "Potrivirea anterioară"
+
+#: data/ui/window.ui:137
+msgid "Next match"
+msgstr "Potrivirea următoare"
+
+#: data/ui/window.ui:173 data/ui/preferences.ui:109 data/ui/preferences.ui:118
+#: data/ui/keyboard-shortcuts.ui:126
+msgid "Developer Tools"
+msgstr "Instrumente pentru dezvoltatori"
+
+#: data/ui/window.ui:184
+msgid "Close Developer Tools"
+msgstr "Închide instrumentele pentru dezvoltatori"
+
+#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
+msgid "Add new account"
+msgstr "Adaugă cont nou"
+
+#: data/ui/window.ui:251
+msgid "Refresh WhatsApp Web"
+msgstr "Reîmprospătează WhatsApp Web"
+
+#: data/ui/window.ui:265
+msgid "About"
+msgstr "Despre"
+
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:139
+msgid "General"
+msgstr "Generale"
+
+#: data/ui/preferences.ui:17
+msgid "Startup"
+msgstr "Pornire"
+
+#: data/ui/preferences.ui:20
+msgid "Run on Startup"
+msgstr "Pornește la deschiderea sesiunii"
+
+#: data/ui/preferences.ui:21
+msgid "Launch Karere automatically when you log in"
+msgstr "Lansează Karere automat la autentificare"
+
+#: data/ui/preferences.ui:26
+msgid "Start in Background"
+msgstr "Pornește în fundal"
+
+#: data/ui/preferences.ui:27
+msgid "Start minimized without showing the window"
+msgstr "Pornește minimizat, fără a afișa fereastra"
+
+#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
+msgid "Window"
+msgstr "Fereastră"
+
+#: data/ui/preferences.ui:37
+msgid "Window Close Behavior"
+msgstr "Comportament la închiderea ferestrei"
+
+#: data/ui/preferences.ui:38
+msgid "What happens when you close the window"
+msgstr "Ce se întâmplă când închizi fereastra"
+
+#: data/ui/preferences.ui:42
+msgid "Run in Background"
+msgstr "Rulează în fundal"
+
+#: data/ui/preferences.ui:43
+msgid "Quit Application"
+msgstr "Închide aplicația"
+
+#: data/ui/preferences.ui:51
+msgid "System Tray Icon"
+msgstr "Pictogramă în zona de notificare"
+
+#: data/ui/preferences.ui:52
+msgid "Auto: shown when a system tray is available"
+msgstr "Auto: afișată când o zonă de notificare este disponibilă"
+
+#: data/ui/preferences.ui:56 data/ui/preferences.ui:97
+msgid "Auto"
+msgstr "Auto"
+
+#: data/ui/preferences.ui:57 data/ui/preferences.ui:98
+msgid "Enabled"
+msgstr "Activat"
+
+#: data/ui/preferences.ui:58 data/ui/preferences.ui:99
+msgid "Disabled"
+msgstr "Dezactivat"
+
+#: data/ui/preferences.ui:68
+msgid "Appearance"
+msgstr "Aspect"
+
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:300
+msgid "Language"
+msgstr "Limbă"
+
+#: data/ui/preferences.ui:72
+msgid "Application language. Requires restart."
+msgstr "Limba aplicației. Necesită repornire."
+
+#: data/ui/preferences.ui:77
+msgid "Theme"
+msgstr "Temă"
+
+#: data/ui/preferences.ui:78
+msgid "Choose the application color scheme"
+msgstr "Alege schema de culori a aplicației"
+
+#: data/ui/preferences.ui:82
+msgid "Follow System"
+msgstr "Urmează sistemul"
+
+#: data/ui/preferences.ui:83
+msgid "Light"
+msgstr "Luminoasă"
+
+#: data/ui/preferences.ui:84
+msgid "Dark"
+msgstr "Întunecată"
+
+#: data/ui/preferences.ui:92
+msgid "Mobile Layout"
+msgstr "Aspect mobil"
+
+#: data/ui/preferences.ui:93
+msgid ""
+"Single-pane layout. Auto: on mobile shells or narrow windows; "
+"Enabled/Disabled: force on or off at any size"
+msgstr ""
+"Aspect cu un singur panou. Auto: pe shell-uri mobile sau ferestre înguste; "
+"Activat/Dezactivat: forțează pornit sau oprit la orice dimensiune"
+
+#: data/ui/preferences.ui:112
+msgid "Enable Developer Tools"
+msgstr "Activează instrumentele pentru dezvoltatori"
+
+#: data/ui/preferences.ui:113
+msgid "Allow inspecting and debugging the WebView"
+msgstr "Permite inspectarea și depanarea WebView-ului"
+
+#: data/ui/preferences.ui:119
+msgid "Open the developer tools for the current page"
+msgstr "Deschide instrumentele pentru dezvoltatori pentru pagina curentă"
+
+#: data/ui/preferences.ui:123
+msgid "Open"
+msgstr "Deschide"
+
+#: data/ui/preferences.ui:135 data/ui/preferences.ui:241
+msgid "Notifications"
+msgstr "Notificări"
+
+#: data/ui/preferences.ui:142
+msgid "Enable Notifications"
+msgstr "Activează notificările"
+
+#: data/ui/preferences.ui:143
+msgid "Master toggle for all notifications"
+msgstr "Comutator principal pentru toate notificările"
+
+#: data/ui/preferences.ui:150
+msgid "Messages"
+msgstr "Mesaje"
+
+#: data/ui/preferences.ui:153
+msgid "Message Notifications"
+msgstr "Notificări de mesaje"
+
+#: data/ui/preferences.ui:154
+msgid "Show notifications for incoming messages"
+msgstr "Arată notificări pentru mesajele primite"
+
+#: data/ui/preferences.ui:159
+msgid "Change Tray Icon on Message"
+msgstr "Schimbă pictograma din zona de notificare la mesaj"
+
+#: data/ui/preferences.ui:160
+msgid "Animate the tray icon when a new message arrives"
+msgstr "Animă pictograma din zona de notificare când sosește un mesaj nou"
+
+#: data/ui/preferences.ui:167
+msgid "Message Preview"
+msgstr "Previzualizare mesaj"
+
+#: data/ui/preferences.ui:168
+msgid "Some settings only apply when Karere controls the popup"
+msgstr "Unele setări se aplică doar când Karere controlează fereastra pop-up"
+
+#: data/ui/preferences.ui:171
+msgid "Show Sender Name"
+msgstr "Arată numele expeditorului"
+
+#: data/ui/preferences.ui:172
+msgid "Display the contact name in notifications"
+msgstr "Afișează numele contactului în notificări"
+
+#: data/ui/preferences.ui:177
+msgid "Show Message Text"
+msgstr "Arată textul mesajului"
+
+#: data/ui/preferences.ui:178
+msgid "Display message content in notifications"
+msgstr "Afișează conținutul mesajului în notificări"
+
+#: data/ui/preferences.ui:183
+msgid "Preview Length"
+msgstr "Lungimea previzualizării"
+
+#: data/ui/preferences.ui:184
+msgid "How much of the message to show"
+msgstr "Cât de mult din mesaj să fie afișat"
+
+#: data/ui/preferences.ui:188
+msgid "Short"
+msgstr "Scurtă"
+
+#: data/ui/preferences.ui:189
+msgid "Medium"
+msgstr "Medie"
+
+#: data/ui/preferences.ui:190
+msgid "Long"
+msgstr "Lungă"
+
+#: data/ui/preferences.ui:200
+msgid "Sounds"
+msgstr "Sunete"
+
+#: data/ui/preferences.ui:203
+msgid "Notification Sounds"
+msgstr "Sunete de notificare"
+
+#: data/ui/preferences.ui:204
+msgid "Play WhatsApp's notification sound for new messages"
+msgstr "Redă sunetul de notificare al WhatsApp pentru mesaje noi"
+
+#: data/ui/preferences.ui:213
+msgid "Downloads"
+msgstr "Descărcări"
+
+#: data/ui/preferences.ui:217
+msgid "Location"
+msgstr "Locație"
+
+#: data/ui/preferences.ui:220
+msgid "Download Directory"
+msgstr "Director de descărcări"
+
+#: data/ui/preferences.ui:221
+msgid "Default (Downloads)"
+msgstr "Implicit (Descărcări)"
+
+#: data/ui/preferences.ui:224
+msgid "Choose…"
+msgstr "Alege…"
+
+#: data/ui/preferences.ui:232
+msgid "Reset to default"
+msgstr "Resetează la implicit"
+
+#: data/ui/preferences.ui:244
+msgid "Download Notifications"
+msgstr "Notificări de descărcare"
+
+#: data/ui/preferences.ui:245
+msgid "Notify when a file download completes"
+msgstr "Notifică la finalizarea descărcării unui fișier"
+
+#: data/ui/preferences.ui:250
+msgid "Notification Type"
+msgstr "Tip de notificare"
+
+#: data/ui/preferences.ui:251
+msgid "How download notifications are displayed"
+msgstr "Cum sunt afișate notificările de descărcare"
+
+#: data/ui/preferences.ui:255
+msgid "In-app Toast"
+msgstr "Notificare în aplicație"
+
+#: data/ui/preferences.ui:256
+msgid "System Notification"
+msgstr "Notificare de sistem"
+
+#: data/ui/preferences.ui:257
+msgid "Both"
+msgstr "Ambele"
+
+#: data/ui/preferences.ui:269
+msgid "Spellcheck"
+msgstr "Verificare ortografică"
+
+#: data/ui/preferences.ui:273
+msgid "Spell Checking"
+msgstr "Verificare ortografică"
+
+#: data/ui/preferences.ui:276
+msgid "Enable Spell Checking"
+msgstr "Activează verificarea ortografică"
+
+#: data/ui/preferences.ui:277
+msgid "Check spelling as you type"
+msgstr "Verifică ortografia pe măsură ce scrii"
+
+#: data/ui/preferences.ui:282
+msgid "Auto-Detect Language"
+msgstr "Detectează limba automat"
+
+#: data/ui/preferences.ui:283
+msgid "Detect the writing language automatically"
+msgstr "Detectează automat limba în care scrii"
+
+#: data/ui/preferences.ui:288
+msgid "Enable Auto-Correct"
+msgstr "Activează corectarea automată"
+
+#: data/ui/preferences.ui:289
+msgid "Automatically fix common spelling mistakes"
+msgstr "Corectează automat greșelile de scriere frecvente"
+
+#: data/ui/preferences.ui:294
+msgid "Header Bar Language Control"
+msgstr "Control al limbii în bara de titlu"
+
+#: data/ui/preferences.ui:295
+msgid "Show the spell-check language dropdown in the header bar"
+msgstr "Arată lista de limbi pentru verificarea ortografică în bara de titlu"
+
+#: data/ui/preferences.ui:301
+msgid "Star a language to pin it to the top"
+msgstr "Marchează cu o stea o limbă pentru a o fixa în partea de sus"
+
+#: data/ui/preferences.ui:310
+msgid "Privacy"
+msgstr "Confidențialitate"
+
+#: data/ui/preferences.ui:314
+msgid "Site Permissions"
+msgstr "Permisiuni pentru site-uri"
+
+#: data/ui/preferences.ui:315
+msgid "Stored allow/deny decisions for websites"
+msgstr "Decizii salvate de permitere/refuzare pentru site-uri web"
+
+#: data/ui/preferences.ui:318
+msgid "Clear All"
+msgstr "Șterge tot"
+
+#: data/ui/preferences.ui:331
+msgid "Accessibility"
+msgstr "Accesibilitate"
+
+#: data/ui/preferences.ui:335
+msgid "Motion and Focus"
+msgstr "Mișcare și focalizare"
+
+#: data/ui/preferences.ui:338
+msgid "Reduce Motion"
+msgstr "Reduce mișcarea"
+
+#: data/ui/preferences.ui:339
+msgid "Minimize animations and transitions"
+msgstr "Minimizează animațiile și tranzițiile"
+
+#: data/ui/preferences.ui:344
+msgid "Focus Indicators"
+msgstr "Indicatori de focalizare"
+
+#: data/ui/preferences.ui:345
+msgid "Show visible outlines around focused elements"
+msgstr "Arată contururi vizibile în jurul elementelor focalizate"
+
+#: data/ui/preferences.ui:350
+msgid "High Contrast Mode"
+msgstr "Mod cu contrast ridicat"
+
+#: data/ui/preferences.ui:351
+msgid "Increase contrast for better readability"
+msgstr "Mărește contrastul pentru o lizibilitate mai bună"
+
+#: data/ui/preferences.ui:358 data/ui/keyboard-shortcuts.ui:90
+msgid "Zoom"
+msgstr "Zoom"
+
+#: data/ui/preferences.ui:361
+msgid "Accessibility Zoom"
+msgstr "Zoom pentru accesibilitate"
+
+#: data/ui/preferences.ui:362
+msgid "Set a minimum zoom level for all accounts"
+msgstr "Stabilește un nivel minim de zoom pentru toate conturile"
+
+#: data/ui/preferences.ui:367
+msgid "Minimum Zoom Level"
+msgstr "Nivel minim de zoom"
+
+#: data/ui/preferences.ui:368
+msgid "Applied to all webviews"
+msgstr "Aplicat la toate WebView-urile"
+
+#: data/ui/preferences.ui:383
+msgid "Header Bar Zoom Controls"
+msgstr "Controale de zoom în bara de titlu"
+
+#: data/ui/preferences.ui:384
+msgid "Show zoom buttons in the header bar"
+msgstr "Arată butoanele de zoom în bara de titlu"
+
+#: data/ui/preferences.ui:391
+msgid "Screen Reader Support"
+msgstr "Suport pentru cititor de ecran"
+
+#: data/ui/preferences.ui:394
+msgid "Screen Reader Optimizations"
+msgstr "Optimizări pentru cititorul de ecran"
+
+#: data/ui/preferences.ui:395
+msgid "Improve compatibility with assistive technologies — restart required"
+msgstr ""
+"Îmbunătățește compatibilitatea cu tehnologiile de asistare — necesită "
+"repornire"
+
+#: data/ui/preferences.ui:402
+msgid "Shortcuts"
+msgstr "Scurtături"
+
+#: data/ui/preferences.ui:406
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "Activează scurtăturile de tastatură pentru acțiuni frecvente"
+
+#: data/ui/preferences.ui:411
+msgid "Accessibility Shortcuts"
+msgstr "Scurtături de accesibilitate"
+
+#: data/ui/preferences.ui:412
+msgid "Enable shortcuts for accessibility features"
+msgstr "Activează scurtăturile pentru funcțiile de accesibilitate"
+
+#: data/ui/preferences.ui:417
+msgid "Developer Shortcuts"
+msgstr "Scurtături pentru dezvoltatori"
+
+#: data/ui/preferences.ui:418
+msgid "Enable shortcuts for developer tools"
+msgstr "Activează scurtăturile pentru instrumentele pentru dezvoltatori"
+
+#: data/ui/preferences.ui:423
+msgid "Notification Shortcuts"
+msgstr "Scurtături pentru notificări"
+
+#: data/ui/preferences.ui:424
+msgid "Enable shortcuts for notification actions"
+msgstr "Activează scurtăturile pentru acțiunile de notificare"
+
+#: data/ui/keyboard-shortcuts.ui:12
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: data/ui/keyboard-shortcuts.ui:15
+msgid "Reload WhatsApp Web"
+msgstr "Reîncarcă WhatsApp Web"
+
+#: data/ui/keyboard-shortcuts.ui:16
+msgid "Reload the current page"
+msgstr "Reîncarcă pagina curentă"
+
+#: data/ui/keyboard-shortcuts.ui:22
+msgid "Force Reload"
+msgstr "Forțează reîncărcarea"
+
+#: data/ui/keyboard-shortcuts.ui:23
+msgid "Reload, bypassing the cache"
+msgstr "Reîncarcă, ocolind memoria cache"
+
+#: data/ui/keyboard-shortcuts.ui:29
+msgid "Find in Page"
+msgstr "Caută în pagină"
+
+#: data/ui/keyboard-shortcuts.ui:30
+msgid "Search the current page"
+msgstr "Caută în pagina curentă"
+
+#: data/ui/keyboard-shortcuts.ui:38
+msgid "Accounts"
+msgstr "Conturi"
+
+#: data/ui/keyboard-shortcuts.ui:41
+msgid "Next Account"
+msgstr "Contul următor"
+
+#: data/ui/keyboard-shortcuts.ui:42
+msgid "Switch to the next account"
+msgstr "Comută la contul următor"
+
+#: data/ui/keyboard-shortcuts.ui:48
+msgid "Previous Account"
+msgstr "Contul anterior"
+
+#: data/ui/keyboard-shortcuts.ui:49
+msgid "Switch to the previous account"
+msgstr "Comută la contul anterior"
+
+#: data/ui/keyboard-shortcuts.ui:56
+msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
+msgstr "Sari la contul 1–9 (Alt+1 … Alt+9)"
+
+#: data/ui/keyboard-shortcuts.ui:67
+msgid "Fullscreen"
+msgstr "Ecran complet"
+
+#: data/ui/keyboard-shortcuts.ui:68
+msgid "Toggle fullscreen mode"
+msgstr "Comută modul pe ecran complet"
+
+#: data/ui/keyboard-shortcuts.ui:74
+msgid "Minimize Window"
+msgstr "Minimizează fereastra"
+
+#: data/ui/keyboard-shortcuts.ui:75
+msgid "Minimize the window"
+msgstr "Minimizează fereastra"
+
+#: data/ui/keyboard-shortcuts.ui:81
+msgid "Close Window"
+msgstr "Închide fereastra"
+
+#: data/ui/keyboard-shortcuts.ui:82
+msgid "Close the window"
+msgstr "Închide fereastra"
+
+#: data/ui/keyboard-shortcuts.ui:94
+msgid "Increase the zoom level"
+msgstr "Mărește nivelul de zoom"
+
+#: data/ui/keyboard-shortcuts.ui:101
+msgid "Decrease the zoom level"
+msgstr "Micșorează nivelul de zoom"
+
+#: data/ui/keyboard-shortcuts.ui:108
+msgid "Reset zoom to 100%"
+msgstr "Resetează zoom-ul la 100%"
+
+#: data/ui/keyboard-shortcuts.ui:114
+msgid "Toggle Header Bar Zoom Controls"
+msgstr "Comută controalele de zoom din bara de titlu"
+
+#: data/ui/keyboard-shortcuts.ui:115
+msgid "Show or hide the zoom buttons"
+msgstr "Arată sau ascunde butoanele de zoom"
+
+#: data/ui/keyboard-shortcuts.ui:123
+msgid "Developer"
+msgstr "Dezvoltator"
+
+#: data/ui/keyboard-shortcuts.ui:127
+msgid "Open the developer tools"
+msgstr "Deschide instrumentele pentru dezvoltatori"
+
+#: data/ui/keyboard-shortcuts.ui:133
+msgid "Inspect Element"
+msgstr "Inspectează elementul"
+
+#: data/ui/keyboard-shortcuts.ui:134
+msgid "Pick an element to inspect"
+msgstr "Alege un element de inspectat"
+
+#: data/ui/keyboard-shortcuts.ui:142
+msgid "Application"
+msgstr "Aplicație"
+
+#: data/ui/keyboard-shortcuts.ui:146
+msgid "Open preferences"
+msgstr "Deschide preferințele"
+
+#: data/ui/keyboard-shortcuts.ui:153
+msgid "Show this shortcuts dialog"
+msgstr "Arată acest dialog de scurtături"
+
+#: data/ui/keyboard-shortcuts.ui:160
+msgid "Quit Karere"
+msgstr "Ieși din Karere"
+
+#: data/io.github.tobagin.karere.desktop.in:3
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "Client WhatsApp"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Client nativ WhatsApp Web pentru desktopul Linux"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;chat;mesagerie;web;comunicare;"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
+msgid "Chat on WhatsApp"
+msgstr "Discută pe WhatsApp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:24
+msgid ""
+"Karere brings WhatsApp to your Linux desktop with a native look and feel. It"
+" integrates seamlessly with your environment, offering a clean, modern "
+"interface that respects your system's theme and workflow. By wrapping "
+"WhatsApp Web, it ensures you have access to all the latest features while "
+"adding powerful desktop-specific capabilities."
+msgstr ""
+"Karere aduce WhatsApp pe desktopul tău Linux cu un aspect și o senzație "
+"native. Se integrează perfect cu mediul tău, oferind o interfață curată și "
+"modernă care respectă tema și fluxul de lucru al sistemului tău. Prin "
+"încapsularea WhatsApp Web, îți asigură accesul la toate funcțiile recente, "
+"adăugând în același timp capacități puternice specifice desktopului."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:30
+msgid "Key features include:"
+msgstr "Funcțiile cheie includ:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:32
+msgid "Native system notifications and tray icon support"
+msgstr ""
+"Notificări native de sistem și suport pentru pictograma din zona de "
+"notificare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:33
+msgid ""
+"Persistent login sessions so you don't need to scan the QR code every time"
+msgstr ""
+"Sesiuni de autentificare persistente, astfel încât nu trebuie să scanezi "
+"codul QR de fiecare dată"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:34
+msgid "Privacy controls and comprehensive spell-checking settings"
+msgstr ""
+"Controale de confidențialitate și setări complete pentru verificarea "
+"ortografică"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:35
+msgid "Smooth performance with hardware acceleration"
+msgstr "Performanță fluidă cu accelerare hardware"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:36
+msgid "Proper clipboard integration for text and images"
+msgstr "Integrare corectă a clipboardului pentru text și imagini"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+msgid ""
+"Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend "
+"with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
+msgstr ""
+"Acum construit pe CEF/Chromium 148. Karere 4.0 înlocuiește backendul "
+"WebKitGTK cu Chromium Embedded Framework, aducând redarea completă a "
+"atașamentelor video (H.264/AAC), suport pentru mai multe conturi cu sesiuni "
+"izolate, zoom per cont și un motor de randare mai rapid și mai compatibil, "
+"păstrând în același timp aceeași interfață nativă GTK4/libadwaita."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:49
+msgid "Main application window with WhatsApp Web integration"
+msgstr "Fereastra principală a aplicației cu integrare WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:53
+msgid "About dialog showing application information"
+msgstr "Dialogul Despre care afișează informații despre aplicație"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:57
+msgid "Application preferences and settings dialog"
+msgstr "Dialogul de preferințe și setări ale aplicației"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:61
+#: data/io.github.tobagin.karere.metainfo.xml.in:703
+msgid "Keyboard shortcuts and productivity features"
+msgstr "Scurtături de tastatură și funcții de productivitate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:74
+msgid "Thiago Fernandes"
+msgstr "Thiago Fernandes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:94
+msgid "whatsapp"
+msgstr "whatsapp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:95
+msgid "chat"
+msgstr "chat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:96
+msgid "messaging"
+msgstr "mesagerie"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:97
+msgid "web"
+msgstr "web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:98
+msgid "communication"
+msgstr "comunicare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:106
+msgid ""
+"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+"Existing accounts must be re-linked — there is no migration from v3."
+msgstr ""
+"Karere 4.0 este un fork radical care reconstruiește aplicația pe "
+"CEF/Chromium 148. Conturile existente trebuie reconectate — nu există "
+"migrare de la v3."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:107
+msgid "Major changes:"
+msgstr "Schimbări majore:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:109
+msgid ""
+"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+"proprietary-codec builds for H.264/AAC video attachment playback"
+msgstr ""
+"S-a schimbat backendul de randare de la WebKitGTK la CEF/Chromium 148, cu "
+"versiuni cu codec proprietar pentru redarea atașamentelor video H.264/AAC"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:110
+msgid ""
+"Multi-account support: each account runs in an isolated CEF RequestContext "
+"with its own cookies and storage; accounts are ordered most-recently-used"
+msgstr ""
+"Suport pentru mai multe conturi: fiecare cont rulează într-un RequestContext"
+" CEF izolat, cu propriile cookie-uri și stocare; conturile sunt ordonate "
+"după cea mai recentă utilizare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:111
+msgid ""
+"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+msgstr ""
+"Identitatea contului (nume + avatar) descoperită automat din Store-ul intern"
+" al WhatsApp Web, cu o metodă de rezervă degradată prin extragere DOM, "
+"semnalată printr-o insignă"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:112
+msgid ""
+"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
+"accessibility minimum-zoom floor"
+msgstr ""
+"Zoom per cont (Ctrl +/-/0) cu controale opționale de zoom în bara de titlu "
+"și un prag minim de zoom pentru accesibilitate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:113
+msgid ""
+"Native system tray (StatusNotifierItem), desktop notifications, download "
+"manager, and image/text paste reimplemented on the CEF stack"
+msgstr ""
+"Zona de notificare nativă de sistem (StatusNotifierItem), notificări de "
+"desktop, manager de descărcări și lipire de imagini/text reimplementate pe "
+"stiva CEF"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:114
+msgid ""
+"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+"popover for the off-screen-rendered web view"
+msgstr ""
+"Aspect adaptiv pentru mobil, ecran complet JavaScript și un meniu contextual"
+" de tip popover OSR pentru vizualizarea web randată în afara ecranului"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:115
+msgid ""
+"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
+"browsing"
+msgstr ""
+"Preferințe de accesibilitate: reducerea mișcării, vizibilitatea inelului de "
+"focalizare și navigarea cu cursorul"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:116
+msgid ""
+"Live spell-check language switching and a separately installable Debug "
+"symbol extension for symbolicated crash reports"
+msgstr ""
+"Schimbarea în timp real a limbii de verificare ortografică și o extensie de "
+"simboluri de depanare instalabilă separat pentru rapoarte de eroare "
+"simbolizate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:123
+msgid ""
+"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
+"clear behavior removed upstream — Karere now dismisses notifications "
+"explicitly)"
+msgstr ""
+"Reparat: insigne/bannere de notificare persistente după focalizare pe GNOME "
+"50 (comportamentul de ștergere automată a fost eliminat din amonte — Karere "
+"respinge acum notificările explicit)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:124
+msgid ""
+"Fixed: blank-window race when autostarted before the network/portal stack is"
+" ready (auto-retry with exponential backoff)"
+msgstr ""
+"Reparat: cursa cu fereastră goală când e pornit automat înainte ca stiva de "
+"rețea/portal să fie pregătită (reîncercare automată cu retragere "
+"exponențială)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:131
+msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+msgstr ""
+"Adăugat: fixarea limbilor de verificare ortografică preferate în partea de "
+"sus a listei"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:132
+msgid ""
+"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
+"instead of locale codes"
+msgstr ""
+"Adăugat: lista de verificare ortografică afișează numele limbii naturale "
+"(\"Engleză (UK)\") în locul codurilor de localizare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:133
+msgid ""
+"Added: account switcher uses a popover on desktop windows (bottom sheet "
+"preserved on mobile)"
+msgstr ""
+"Adăugat: comutatorul de conturi folosește un popover pe ferestrele desktop "
+"(foaia de jos păstrată pe mobil)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:134
+msgid ""
+"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
+"43, CachyOS, Bazzite, postmarketOS)"
+msgstr ""
+"Reparat: blocarea aplicației la lansare pe sistemele GNOME 50 / glibc 2.42+ "
+"(Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:135
+msgid ""
+"Fixed: locale-dependent crash that required manually setting "
+"LC_ALL=en_GB.UTF-8"
+msgstr ""
+"Reparat: blocarea dependentă de localizare care necesita setarea manuală a "
+"LC_ALL=en_GB.UTF-8"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:136
+msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+msgstr ""
+"Reparat: aspectul mobil stricat de schimbările recente ale DOM-ului WhatsApp"
+" Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:137
+msgid ""
+"Fixed: downloaded files with duplicate names silently overwriting each other"
+" (now appends (1), (2), ...)"
+msgstr ""
+"Reparat: fișierele descărcate cu nume duplicate care se suprascriau în "
+"tăcere unele pe altele (acum adaugă (1), (2), ...)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:138
+msgid ""
+"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+"dependencies to latest compatible versions"
+msgstr ""
+"Actualizat WebKitGTK la 2.52.3, dicționarele LibreOffice la 26.2.3.2, "
+"dependențele Rust la cele mai recente versiuni compatibile"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:145
+msgid ""
+"Fixed voice and video calls in production Flatpak (Flathub linter-compatible"
+" pre-built plugin)"
+msgstr ""
+"Reparat apelurile vocale și video în Flatpak de producție (plugin pre-"
+"compilat compatibil cu linterul Flathub)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:152
+msgid ""
+"Fixed voice and video calls not working in the production build (missing "
+"noise suppression plugin)"
+msgstr ""
+"Reparat apelurile vocale și video care nu funcționau în versiunea de "
+"producție (plugin lipsă pentru suprimarea zgomotului)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:159
+msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+msgstr ""
+"Adăugat suport pentru apeluri vocale și video prin WebKitGTK 2.50.5 cu "
+"WebRTC activat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:160
+msgid "Fixed download filenames now use WhatsApp's original filename"
+msgstr ""
+"Reparat: numele fișierelor descărcate folosesc acum numele original de la "
+"WhatsApp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:161
+msgid "Fixed duplicate downloads auto-increment instead of failing"
+msgstr ""
+"Reparat: descărcările duplicate se auto-incrementează în loc să eșueze"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:162
+msgid ""
+"Fixed window now properly unminimizes when activated from launcher or tray"
+msgstr ""
+"Reparat: fereastra se de-minimizează acum corect când este activată din "
+"lansator sau zona de notificare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:163
+msgid "Fixed notification sounds now respect GNOME volume controls"
+msgstr ""
+"Reparat: sunetele de notificare respectă acum controalele de volum GNOME"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:164
+msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+msgstr ""
+"Notă: reconectarea conturilor WhatsApp este necesară după această "
+"actualizare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:171
+msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+msgstr ""
+"Reparat eșecul construirii Flatpak cauzat de schimbările API ale ashpd 0.13"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:178
+msgid ""
+"Fixed voice and video calls showing \"Your browser doesn't support calling\""
+msgstr ""
+"Reparat apelurile vocale și video care afișau \"Browserul tău nu acceptă "
+"apelurile\""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:179
+msgid ""
+"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+"Linux environments"
+msgstr ""
+"Reparat tastatura virtuală care nu apărea fiabil pe Phosh și mediile Linux "
+"bazate pe atingere"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:180
+msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+msgstr ""
+"Reparat descărcările de URL-uri blob (de ex. Salvează imaginea din "
+"vizualizatorul media)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:181
+msgid "Redesigned application icons for stable and development variants"
+msgstr ""
+"Reproiectate pictogramele aplicației pentru variantele stabilă și de "
+"dezvoltare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:182
+msgid "Updated all Rust dependencies to latest versions"
+msgstr "Actualizate toate dependențele Rust la cele mai recente versiuni"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:183
+msgid "Upgraded to GNOME Platform 50"
+msgstr "Actualizat la GNOME Platform 50"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:184
+msgid "Removed ffmpeg-full extension (no longer required)"
+msgstr "Eliminată extensia ffmpeg-full (nu mai este necesară)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:191
+msgid "Fixed freezes when viewing media galleries"
+msgstr "Reparate blocările la vizualizarea galeriilor media"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:192
+msgid "Fixed crash on launch due to memory pressure threshold ordering"
+msgstr ""
+"Reparată blocarea la lansare din cauza ordinii pragului de presiune a "
+"memoriei"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:193
+msgid "Fixed download destination and context menu issues"
+msgstr "Reparate problemele cu destinația descărcărilor și meniul contextual"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:194
+msgid "Fixed dead key composition for first character in input fields"
+msgstr ""
+"Reparată compunerea tastelor moarte pentru primul caracter în câmpurile de "
+"intrare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:195
+msgid ""
+"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
+"handling"
+msgstr ""
+"Adăugate variabilele de mediu GStreamer/PipeWire în Flatpak de producție "
+"pentru o gestionare eficientă a media"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:202
+msgid "Fixed download destination handling"
+msgstr "Reparată gestionarea destinației descărcărilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:203
+msgid "Resolved WebKit crashes on media-heavy pages"
+msgstr "Rezolvate blocările WebKit pe paginile cu mult conținut media"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:210
+msgid "Fixed: Download destination path handling regression"
+msgstr "Reparat: regresia gestionării căii de destinație a descărcărilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:217
+msgid ""
+"Fixed: JS injection and path traversal vulnerabilities in download handling"
+msgstr ""
+"Reparat: vulnerabilitățile de injectare JS și de traversare a căii în "
+"gestionarea descărcărilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:224
+msgid ""
+"Fixed: Handle WebKit web process crashes with auto-reload and user "
+"notification"
+msgstr ""
+"Reparat: gestionarea blocărilor procesului web WebKit cu reîncărcare "
+"automată și notificarea utilizatorului"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:225
+msgid "Fixed: JS injection and path traversal vulnerabilities"
+msgstr "Reparat: vulnerabilitățile de injectare JS și de traversare a căii"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:226
+msgid "Fixed: Panic in notification handling"
+msgstr "Reparat: panică în gestionarea notificărilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:233
+msgid "Added complete multi-account support with sidebar and tray integration"
+msgstr ""
+"Adăugat suport complet pentru mai multe conturi cu bară laterală și "
+"integrare în zona de notificare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:234
+msgid "Added per-account zoom settings and improved accessibility"
+msgstr "Adăugate setări de zoom per cont și accesibilitate îmbunătățită"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:235
+msgid "Fixed startup race conditions and resource usage issues"
+msgstr ""
+"Reparate condițiile de cursă la pornire și problemele de utilizare a "
+"resurselor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:242
+msgid ""
+"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+msgstr ""
+"Adăugat suport pentru zoom (Ctrl +/-/0) cu persistență și controale în "
+"preferințe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:243
+msgid "Fixed window size increasing on every restart"
+msgstr "Reparată mărirea dimensiunii ferestrei la fiecare repornire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:250
+msgid ""
+"Fixed: Resolved webview reload loop on startup due to incorrect window size "
+"detection"
+msgstr ""
+"Reparat: rezolvată bucla de reîncărcare a WebView-ului la pornire din cauza "
+"detectării incorecte a dimensiunii ferestrei"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:257
+msgid ""
+"Added WebRTC permission handling in preparation for WhatsApp Web voice/video"
+" calls"
+msgstr ""
+"Adăugată gestionarea permisiunilor WebRTC în pregătirea apelurilor "
+"vocale/video WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:258
+msgid "Improved mobile UI resizing consistency"
+msgstr "Îmbunătățită consecvența redimensionării interfeței mobile"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:265
+msgid ""
+"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+"(silences sounds)"
+msgstr ""
+"Reparat: aplicația respectă acum setările sistemului \"Nu deranja\" pe GNOME"
+" (dezactivează sunetele)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:266
+msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+msgstr ""
+"Reparat: notificările ocolesc elementele vizuale DND (prioritatea coborâtă "
+"la Normal)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:273
+msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+msgstr ""
+"Reparate pictogramele din zona de notificare pe KDE/GNOME (vizibile pe teme "
+"luminoase/întunecate)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:274
+msgid "Restored correct app icons and transparent backgrounds"
+msgstr ""
+"Restaurate pictogramele corecte ale aplicației și fundalurile transparente"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:275
+msgid "Improved icon compatibility across desktop environments"
+msgstr "Îmbunătățită compatibilitatea pictogramelor între mediile desktop"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:282
+msgid ""
+"Fixed application freezing on resume by reverting aggressive cache "
+"optimization"
+msgstr ""
+"Reparată blocarea aplicației la reluare prin revenirea la optimizarea "
+"agresivă a memoriei cache"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:283
+msgid "Fixed background validation to ensure app starts correctly"
+msgstr ""
+"Reparată validarea în fundal pentru a asigura pornirea corectă a aplicației"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:284
+msgid "Optimized memory usage in mobile responsive scripts"
+msgstr "Optimizată utilizarea memoriei în scripturile adaptive pentru mobil"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:285
+msgid "Improved icon rendering (symbolic icons now use currentColor)"
+msgstr ""
+"Îmbunătățită redarea pictogramelor (pictogramele simbolice folosesc acum "
+"currentColor)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:292
+msgid "Fixed window resize behavior to prevent excessive reloading"
+msgstr ""
+"Reparat comportamentul de redimensionare a ferestrei pentru a preveni "
+"reîncărcarea excesivă"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:293
+msgid "Fixed background notifications reliability"
+msgstr "Reparată fiabilitatea notificărilor în fundal"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:300
+msgid "Fixed Flatpak build failure by correcting config"
+msgstr "Reparat eșecul construirii Flatpak prin corectarea configurației"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:307
+msgid "Fixed \"Too many open files\" crash by reusing notification resources"
+msgstr ""
+"Reparată blocarea \"Prea multe fișiere deschise\" prin reutilizarea "
+"resurselor de notificare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:308
+msgid "Fixed zombie process accumulation"
+msgstr "Reparată acumularea de procese zombi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:309
+msgid "Improved overall stability"
+msgstr "Îmbunătățită stabilitatea generală"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:316
+msgid "Ctrl+N keyboard shortcut for opening a new chat"
+msgstr "Scurtătură de tastatură Ctrl+N pentru deschiderea unei discuții noi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:317
+msgid ""
+"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+"Lomiri"
+msgstr ""
+"Suport pentru aspect mobil cu detectare automată pentru Phosh, Plasma Mobile"
+" și Lomiri"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:318
+msgid "Tray icon click now toggles window visibility"
+msgstr ""
+"Clicul pe pictograma din zona de notificare comută acum vizibilitatea "
+"ferestrei"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:319
+msgid "Window size is saved and restored when hiding/showing"
+msgstr "Dimensiunea ferestrei este salvată și restaurată la ascundere/afișare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:320
+msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+msgstr ""
+"Setarea aspectului mobil schimbată în listă derulantă "
+"(auto/activat/dezactivat)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:327
+msgid ""
+"Updated application summary and description for better AppStream compliance"
+msgstr ""
+"Actualizate rezumatul și descrierea aplicației pentru o conformitate "
+"AppStream mai bună"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:334
+msgid ""
+"Notification Chat Linking: Clicking a notification now opens the specific "
+"chat in Karere."
+msgstr ""
+"Conectarea discuției la notificare: clicul pe o notificare deschide acum "
+"discuția specifică în Karere."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:335
+msgid ""
+"Webcam Support: Added support for using the webcam (Status updates, Video "
+"calls) with a new permission dialog."
+msgstr ""
+"Suport pentru cameră web: adăugat suport pentru utilizarea camerei web "
+"(actualizări de stare, apeluri video) cu un nou dialog de permisiuni."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:342
+msgid ""
+"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+"compatibility"
+msgstr ""
+"Lipire de imagini îmbunătățită cu codificare Base64 pentru o compatibilitate"
+" fiabilă cu WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:343
+msgid "Added middle-click paste from primary selection (selected text)"
+msgstr "Adăugată lipirea cu clic central din selecția primară (text selectat)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:344
+msgid "Fixed double-paste issue with middle-click"
+msgstr "Reparată problema cu lipirea dublă la clicul central"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:351
+msgid "Fixed missing GSettings schema in Flatpak builds"
+msgstr "Reparată schema GSettings lipsă în versiunile Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:352
+msgid "Added new application icons"
+msgstr "Adăugate pictograme noi pentru aplicație"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:353
+msgid "Corrected metadata description references"
+msgstr "Corectate referințele descrierii metadatelor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:360
+msgid ""
+"Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+msgstr ""
+"Comutare la portalul de notificări XDG (ashpd) pentru un suport mai bun de "
+"izolare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:361
+msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+msgstr ""
+"Eliminate permisiunile directe de notificare D-Bus pentru un manifest mai "
+"curat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:362
+msgid "Fixed Open action for downloaded files"
+msgstr "Reparată acțiunea Deschide pentru fișierele descărcate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:363
+msgid "Fixed Dead Key/composition input issues"
+msgstr "Reparate problemele de intrare cu taste moarte/compunere"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:364
+msgid "Migrated Flatpak build logic to meson.build"
+msgstr "Migrată logica de construire Flatpak în meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:371
+msgid ""
+"Switch to XDG Background Portal for autostart (improves security and "
+"compatibility)"
+msgstr ""
+"Comutare la portalul de fundal XDG pentru pornire automată (îmbunătățește "
+"securitatea și compatibilitatea)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:378
+msgid "Add new contributor Sabri Ünal to the About dialog"
+msgstr "Adăugat noul contribuitor Sabri Ünal în dialogul Despre"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:379
+msgid "General improvements and versioning updates"
+msgstr "Îmbunătățiri generale și actualizări de versiune"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:386
+msgid "Restore autostart permission for improved compatibility"
+msgstr ""
+"Restaurată permisiunea de pornire automată pentru o compatibilitate "
+"îmbunătățită"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:393
+msgid "Remove unnecessary autostart permission to satisfy linter"
+msgstr ""
+"Eliminată permisiunea de pornire automată inutilă pentru a satisface "
+"linterul"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:400
+msgid "Add xdg-config/autostart permission for autostart support"
+msgstr ""
+"Adăugată permisiunea xdg-config/autostart pentru suportul de pornire "
+"automată"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:406
+msgid "Bug Fix Release"
+msgstr "Versiune de remediere a erorilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:407
+#: data/io.github.tobagin.karere.metainfo.xml.in:416
+msgid "Changes:"
+msgstr "Schimbări:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:409
+msgid ""
+"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
+msgstr ""
+"Reparată pictograma lipsă din zona de notificare pe GNOME prin adăugarea "
+"permisiunii StatusNotifierWatcher"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:415
+msgid "Update and Bug Fix Release"
+msgstr "Versiune de actualizare și remediere a erorilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:418
+msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+msgstr ""
+"Adăugat comutatorul \"Pornește la deschiderea sesiunii\" în preferințe "
+"(implicit: dezactivat)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:419
+msgid "Fixed autostart toggle pathing for Flatpak environments"
+msgstr ""
+"Reparată calea comutatorului de pornire automată pentru mediile Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:420
+msgid "Fixed tray icon quit behavior"
+msgstr ""
+"Reparat comportamentul de ieșire al pictogramei din zona de notificare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:421
+msgid "Added striped symbolic icons for development version"
+msgstr "Adăugate pictograme simbolice cu dungi pentru versiunea de dezvoltare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:427
+msgid "🎉 Major Release 2.0.0"
+msgstr "🎉 Versiune majoră 2.0.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:428
+#: data/io.github.tobagin.karere.metainfo.xml.in:452
+#: data/io.github.tobagin.karere.metainfo.xml.in:507
+#: data/io.github.tobagin.karere.metainfo.xml.in:577
+#: data/io.github.tobagin.karere.metainfo.xml.in:695
+msgid "New Features:"
+msgstr "Funcții noi:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:430
+msgid "Full rewrite in Rust! 🦀"
+msgstr "Rescriere completă în Rust! 🦀"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:431
+msgid "New System Tray Icon support"
+msgstr "Suport nou pentru pictograma din zona de notificare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:432
+msgid "Notifications fully working with persistence fixes"
+msgstr "Notificări care funcționează pe deplin, cu remedieri de persistență"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:433
+msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+msgstr "Portat de la Vala la Rust/GTK4/Libadwaita nativ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:434
+msgid "Redesigned/streamlined preferences dialog"
+msgstr "Dialog de preferințe reproiectat/simplificat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:435
+msgid "Enhanced performance and stability"
+msgstr "Performanță și stabilitate îmbunătățite"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:441
+msgid "🐛 Bug Fix Release"
+msgstr "🐛 Versiune de remediere a erorilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:442
+msgid "Fixed:"
+msgstr "Reparat:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:444
+msgid ""
+"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+"activation"
+msgstr ""
+"Reparată blocarea critică la pornire (cu indicatorul de încărcare) prin "
+"implementarea activării D-Bus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:445
+msgid "Ensure application starts properly in the background without delay"
+msgstr "Asigurarea pornirii corecte a aplicației în fundal, fără întârziere"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:451
+msgid "🎉 Feature Release"
+msgstr "🎉 Versiune cu funcții noi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:454
+msgid "🎤 Microphone permission support for voice notes"
+msgstr "🎤 Suport pentru permisiunea de microfon pentru notele vocale"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:455
+msgid "🚀 Start in background option for autostart"
+msgstr "🚀 Opțiune de pornire în fundal pentru pornirea automată"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:456
+msgid "🔄 Manual reload and auto-reload on network reconnection"
+msgstr ""
+"🔄 Reîncărcare manuală și reîncărcare automată la reconectarea la rețea"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:458
+#: data/io.github.tobagin.karere.metainfo.xml.in:474
+#: data/io.github.tobagin.karere.metainfo.xml.in:485
+#: data/io.github.tobagin.karere.metainfo.xml.in:496
+#: data/io.github.tobagin.karere.metainfo.xml.in:559
+#: data/io.github.tobagin.karere.metainfo.xml.in:596
+#: data/io.github.tobagin.karere.metainfo.xml.in:623
+#: data/io.github.tobagin.karere.metainfo.xml.in:648
+#: data/io.github.tobagin.karere.metainfo.xml.in:665
+#: data/io.github.tobagin.karere.metainfo.xml.in:682
+msgid "Improvements:"
+msgstr "Îmbunătățiri:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:460
+msgid "⚡ Performance optimizations for startup and shutdown"
+msgstr "⚡ Optimizări de performanță pentru pornire și oprire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:461
+msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+msgstr ""
+"📝 Încărcare asincronă a dicționarelor pentru o inițializare mai fluidă a "
+"verificării ortografice"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:462
+msgid "📖 Added MPRIS workaround documentation"
+msgstr "📖 Adăugată documentația pentru soluția de rezervă MPRIS"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:464
+#: data/io.github.tobagin.karere.metainfo.xml.in:518
+#: data/io.github.tobagin.karere.metainfo.xml.in:566
+#: data/io.github.tobagin.karere.metainfo.xml.in:586
+#: data/io.github.tobagin.karere.metainfo.xml.in:642
+#: data/io.github.tobagin.karere.metainfo.xml.in:659
+#: data/io.github.tobagin.karere.metainfo.xml.in:676
+msgid "Bug Fixes:"
+msgstr "Remedieri de erori:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:466
+msgid "Fixed missing dictionaries on startup"
+msgstr "Reparate dicționarele lipsă la pornire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:467
+msgid "Fixed application freeze during lifecycle events"
+msgstr ""
+"Reparată blocarea aplicației în timpul evenimentelor de ciclu de viață"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:473
+msgid "🔧 Maintenance Release"
+msgstr "🔧 Versiune de întreținere"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:476
+msgid "Updated build configuration and dependencies"
+msgstr "Actualizate configurația de construire și dependențele"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:477
+msgid "Enhanced packaging for better compatibility"
+msgstr "Îmbunătățit pachetul pentru o compatibilitate mai bună"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:478
+msgid "Minor bug fixes and stability improvements"
+msgstr "Remedieri minore de erori și îmbunătățiri de stabilitate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:484
+msgid "📝 Documentation and Metadata Update"
+msgstr "📝 Actualizare a documentației și metadatelor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:487
+msgid "Updated about dialog screenshot"
+msgstr "Actualizată captura de ecran din dialogul Despre"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:488
+msgid "Updated application screenshots"
+msgstr "Actualizate capturile de ecran ale aplicației"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:489
+msgid "Minor README corrections"
+msgstr "Corecții minore în README"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:495
+msgid "📸 Screenshots and Documentation Update"
+msgstr "📸 Actualizare a capturilor de ecran și documentației"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:498
+msgid "Updated application screenshots with current UI appearance"
+msgstr ""
+"Actualizate capturile de ecran ale aplicației cu aspectul actual al "
+"interfeței"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:499
+msgid "Refreshed About dialog screenshot"
+msgstr "Reîmprospătată captura de ecran din dialogul Despre"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:500
+msgid "Enhanced visual documentation for users"
+msgstr "Îmbunătățită documentația vizuală pentru utilizatori"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:506
+msgid "🎉 Version 1.0.0 - Major Milestone Release"
+msgstr "🎉 Versiunea 1.0.0 - Versiune cu reper major"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:509
+msgid "✅ Fixed WhatsApp Web notification banner persistence"
+msgstr "✅ Reparată persistența bannerului de notificare al WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:510
+msgid "✅ Fixed notifications not working properly"
+msgstr "✅ Reparate notificările care nu funcționau corect"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:511
+msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+msgstr "🖼️ Adăugat suport pentru lipirea imaginilor prin clipboard (Ctrl+V)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:512
+msgid ""
+"📥 Implemented download manager with custom directory and toast notifications"
+msgstr ""
+"📥 Implementat managerul de descărcări cu director personalizat și notificări"
+" de tip toast"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:513
+msgid ""
+"♿ Enhanced accessibility with screen reader optimization and keyboard "
+"navigation"
+msgstr ""
+"♿ Îmbunătățită accesibilitatea cu optimizare pentru cititorul de ecran și "
+"navigare cu tastatura"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:514
+msgid "📝 Added comprehensive spell checking system with auto-detection"
+msgstr ""
+"📝 Adăugat un sistem complet de verificare ortografică cu detectare automată"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:515
+msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+msgstr "🔤 Integrate peste 80 de dicționare de limbi de la LibreOffice"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:516
+msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+msgstr ""
+"⌨️ Adăugat dialogul de scurtături de tastatură folosind AdwShortcutsDialog"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:520
+msgid ""
+"Fixed Ctrl+V paste for text content - now works for both text and images"
+msgstr ""
+"Reparată lipirea Ctrl+V pentru conținut text - funcționează acum atât pentru"
+" text, cât și pentru imagini"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:521
+msgid "Fixed WhatsApp notification permission not persisting across sessions"
+msgstr ""
+"Reparată permisiunea de notificare WhatsApp care nu persista între sesiuni"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:522
+msgid "Fixed notifications banner appearing on every app launch"
+msgstr ""
+"Reparat bannerul de notificare care apărea la fiecare lansare a aplicației"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:523
+msgid "Fixed WebView zoom being enabled by default (now disabled)"
+msgstr "Reparat zoom-ul WebView activat implicit (acum dezactivat)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:524
+msgid "Fixed clipboard manager intercepting all paste events"
+msgstr ""
+"Reparat managerul de clipboard care intercepta toate evenimentele de lipire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:525
+msgid ""
+"Removed hardcoded blueprint compiler paths for cross-architecture support"
+msgstr ""
+"Eliminate căile codate fix ale compilatorului blueprint pentru suport între "
+"arhitecturi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:527
+msgid "Code Quality Improvements:"
+msgstr "Îmbunătățiri ale calității codului:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:529
+msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+msgstr ""
+"♻️ Refactorizare majoră: reorganizat codul cu nume de fișiere în PascalCase"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:530
+msgid "♻️ Refactored Window.vala into specialized manager components"
+msgstr "♻️ Refactorizat Window.vala în componente de management specializate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:531
+msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+msgstr ""
+"♻️ Eliminate jurnalizarea personalizată și raportarea erorilor (folosește "
+"journalctl al sistemului)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:532
+msgid ""
+"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+msgstr ""
+"🗑️ Eliminată funcția Nu deranja (gestionată de daemonul de notificări al "
+"sistemului)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:533
+msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+msgstr ""
+"🗑️ Curățate fișierele de testare învechite și dependențele neutilizate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:534
+msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+msgstr "🗑️ Eliminate dependențele json-glib, gee și libsoup"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:535
+msgid "🧹 Centralized settings management with SettingsManager singleton"
+msgstr "🧹 Centralizat managementul setărilor cu singletonul SettingsManager"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:536
+msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+msgstr ""
+"🧹 Eliminat DependencyContainer.vala (injectare de dependențe neutilizată)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:537
+msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+msgstr "📸 Reorganizate capturile de ecran în directorul data/screenshots/"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:539
+#: data/io.github.tobagin.karere.metainfo.xml.in:609
+#: data/io.github.tobagin.karere.metainfo.xml.in:631
+msgid "Technical Changes:"
+msgstr "Schimbări tehnice:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:541
+msgid "Implemented UserScript injection for Notification.permission state"
+msgstr ""
+"Implementată injectarea UserScript pentru starea Notification.permission"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:542
+msgid "Connected show_notification signal handler for WebKit notifications"
+msgstr ""
+"Conectat gestionarul de semnal show_notification pentru notificările WebKit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:543
+msgid "WebKitGTK 6.0 storage persistence verified and documented"
+msgstr "Persistența stocării WebKitGTK 6.0 verificată și documentată"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:544
+msgid "Updated SettingsManager to be the default for all settings access"
+msgstr ""
+"Actualizat SettingsManager pentru a fi implicit pentru tot accesul la setări"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:545
+msgid "Improved build system with cleaner dependency management"
+msgstr ""
+"Îmbunătățit sistemul de construire cu un management al dependențelor mai "
+"curat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:547
+msgid "Documentation:"
+msgstr "Documentație:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:549
+msgid "📚 Enhanced README with accessibility features documentation"
+msgstr "📚 Îmbunătățit README cu documentația funcțiilor de accesibilitate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:550
+msgid "📚 Documented all keyboard shortcuts by category"
+msgstr "📚 Documentate toate scurtăturile de tastatură pe categorii"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:551
+msgid "📚 Added spell checking configuration guide"
+msgstr "📚 Adăugat ghidul de configurare a verificării ortografice"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:552
+msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+msgstr "📚 Reparate URL-urile depozitului GitHub (karere-vala → karere)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:558
+msgid "🐛 Runtime Update and Bug Fixes"
+msgstr "🐛 Actualizare a mediului de rulare și remedieri de erori"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:561
+msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+msgstr ""
+"Actualizat mediul de rulare GNOME la versiunea 49 pentru o compatibilitate "
+"îmbunătățită"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:562
+msgid "Improved system integration with latest platform libraries"
+msgstr ""
+"Îmbunătățită integrarea cu sistemul folosind cele mai recente biblioteci de "
+"platformă"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:563
+msgid "Better support for modern desktop environments"
+msgstr "Suport mai bun pentru mediile desktop moderne"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:564
+msgid "Enhanced stability and performance optimizations"
+msgstr "Stabilitate îmbunătățită și optimizări de performanță"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:568
+msgid "Resolved compatibility issues with newer GNOME environments"
+msgstr "Rezolvate problemele de compatibilitate cu mediile GNOME mai noi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:569
+msgid "Fixed potential rendering inconsistencies"
+msgstr "Reparate posibilele inconsecvențe de randare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:570
+msgid "Improved error handling and recovery mechanisms"
+msgstr "Îmbunătățite mecanismele de gestionare și recuperare a erorilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:576
+msgid ""
+"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+msgstr ""
+"✨ Suport îmbunătățit pentru emoji, gestionarea linkurilor externe și "
+"îmbunătățiri de construire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:579
+msgid ""
+"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+msgstr ""
+"Adăugate fonturile Noto Color Emoji de înaltă calitate (v2.047, suport "
+"Unicode 16.0)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:580
+msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+msgstr "Îmbunătățită randarea WebKit cu accelerare hardware maximă"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:581
+msgid "Improved emoji consistency with bundled font system"
+msgstr "Îmbunătățită consecvența emoji-urilor cu sistemul de fonturi inclus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:582
+msgid "Optimized font loading to eliminate display conflicts"
+msgstr ""
+"Optimizată încărcarea fonturilor pentru a elimina conflictele de afișare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:583
+msgid "Added WebKit cache control setting for improved rendering consistency"
+msgstr ""
+"Adăugată setarea de control al memoriei cache WebKit pentru o consecvență "
+"îmbunătățită a randării"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:584
+msgid "Cache disabled by default to prevent emoji rendering issues"
+msgstr ""
+"Memoria cache dezactivată implicit pentru a preveni problemele de randare a "
+"emoji-urilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:588
+msgid ""
+"Fixed external links not opening in default browser when running in Flatpak"
+msgstr ""
+"Reparate linkurile externe care nu se deschideau în browserul implicit la "
+"rularea în Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:589
+msgid "Improved external link handling with proper Flatpak portal support"
+msgstr ""
+"Îmbunătățită gestionarea linkurilor externe cu suport corespunzător pentru "
+"portalul Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:590
+msgid "Fixed random emoji display issues and blank emoji problems"
+msgstr ""
+"Reparate problemele aleatorii de afișare a emoji-urilor și problemele cu "
+"emoji-uri goale"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:591
+msgid "Fixed invalid meson version requirement preventing builds"
+msgstr ""
+"Reparată cerința de versiune meson invalidă care împiedica construirea"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:592
+msgid "Corrected dependency version specifications in meson.build"
+msgstr "Corectate specificațiile versiunii dependențelor în meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:593
+msgid "Resolved flatpak-builder compatibility issues"
+msgstr "Rezolvate problemele de compatibilitate cu flatpak-builder"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:594
+msgid "Enhanced URL validation for external link detection"
+msgstr ""
+"Îmbunătățită validarea URL-urilor pentru detectarea linkurilor externe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:598
+msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+msgstr ""
+"Eliminată coruperea memoriei cache WebKit care afecta randarea emoji-urilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:599
+msgid "Streamlined font stack for consistent emoji appearance"
+msgstr ""
+"Simplificată stiva de fonturi pentru un aspect consecvent al emoji-urilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:600
+msgid "Enhanced 2D canvas acceleration for better graphics performance"
+msgstr ""
+"Îmbunătățită accelerarea canvas 2D pentru o performanță grafică mai bună"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:601
+msgid "Improved font loading stability and reduced race conditions"
+msgstr ""
+"Îmbunătățită stabilitatea încărcării fonturilor și reduse condițiile de "
+"cursă"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:602
+msgid "Better sandboxed environment compatibility"
+msgstr "Compatibilitate mai bună cu mediul izolat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:603
+msgid "More reliable link opening mechanism"
+msgstr "Mecanism mai fiabil de deschidere a linkurilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:604
+msgid "Enhanced logging for external link operations"
+msgstr "Îmbunătățită jurnalizarea pentru operațiunile cu linkuri externe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:605
+msgid "Better build system compatibility with different environments"
+msgstr "Compatibilitate mai bună a sistemului de construire cu medii diferite"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:606
+msgid "Enhanced CI/CD pipeline stability"
+msgstr "Îmbunătățită stabilitatea conductei CI/CD"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:607
+msgid "More robust dependency handling"
+msgstr "Gestionare mai robustă a dependențelor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:611
+msgid ""
+"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+"only)"
+msgstr ""
+"Eliminată comutarea inutilă a agentului utilizator mobil (WhatsApp Web este "
+"doar pentru desktop)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:612
+msgid "Disabled problematic WebKit caches causing font corruption"
+msgstr ""
+"Dezactivate memoriile cache WebKit problematice care cauzau coruperea "
+"fonturilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:613
+msgid "Simplified emoji font configuration to single high-quality source"
+msgstr ""
+"Simplificată configurația fontului emoji la o singură sursă de înaltă "
+"calitate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:614
+msgid "Restored Safari Linux user agent for native WebKit experience"
+msgstr ""
+"Restaurat agentul utilizator Safari Linux pentru o experiență WebKit nativă"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:615
+msgid "Added subpixel font scaling and advanced rendering optimizations"
+msgstr ""
+"Adăugate scalarea subpixel a fonturilor și optimizări avansate de randare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:616
+msgid "Implemented Flatpak portal system for external link handling"
+msgstr ""
+"Implementat sistemul de portaluri Flatpak pentru gestionarea linkurilor "
+"externe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:622
+msgid "🔧 Code Refactoring and Architecture Improvements"
+msgstr "🔧 Refactorizarea codului și îmbunătățiri de arhitectură"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:625
+msgid "Converted template files to preprocessor directives for cleaner code"
+msgstr ""
+"Convertite fișierele șablon în directive de preprocesor pentru un cod mai "
+"curat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:626
+msgid "Eliminated .vala.in template substitution system"
+msgstr "Eliminat sistemul de substituție a șabloanelor .vala.in"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:627
+msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+msgstr ""
+"Adăugată compilarea condiționată la compilare folosind indicatorul "
+"DEVELOPMENT"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:628
+msgid "Improved build system maintainability and type safety"
+msgstr ""
+"Îmbunătățite mentenabilitatea sistemului de construire și siguranța "
+"tipurilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:629
+msgid "Added contributors Aman Das and Cameo to about dialog"
+msgstr "Adăugați contribuitorii Aman Das și Cameo în dialogul Despre"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:633
+msgid ""
+"Replaced window.vala.in and preferences.vala.in with direct .vala files"
+msgstr ""
+"Înlocuite window.vala.in și preferences.vala.in cu fișiere .vala directe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:634
+msgid "Updated meson.build to use Vala preprocessor directives"
+msgstr ""
+"Actualizat meson.build pentru a folosi directivele de preprocesor Vala"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:635
+msgid "Simplified source file management in build system"
+msgstr "Simplificat managementul fișierelor sursă în sistemul de construire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:641
+#: data/io.github.tobagin.karere.metainfo.xml.in:675
+msgid "🐛 Bug Fixes and Improvements"
+msgstr "🐛 Remedieri de erori și îmbunătățiri"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:644
+msgid "Fixed crash when handling invalid user input data"
+msgstr ""
+"Reparată blocarea la gestionarea datelor de intrare invalide ale "
+"utilizatorului"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:645
+msgid "Resolved memory leak in notification cleanup"
+msgstr "Rezolvată scurgerea de memorie în curățarea notificărilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:646
+msgid "Corrected accessibility focus handling"
+msgstr "Corectată gestionarea focalizării de accesibilitate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:650
+msgid "Better error handling for network timeouts"
+msgstr "Gestionare mai bună a erorilor pentru expirările de rețea"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:651
+msgid "Enhanced stability for extended usage"
+msgstr "Stabilitate îmbunătățită pentru utilizare prelungită"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:652
+msgid "Performance optimizations for scrolling"
+msgstr "Optimizări de performanță pentru derulare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:658
+msgid "🔧 Metadata and Standards Compliance"
+msgstr "🔧 Conformitate cu metadatele și standardele"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:661
+msgid "Fixed duplicate provides tags in metainfo validation"
+msgstr "Reparate etichetele provides duplicate în validarea metainfo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:662
+msgid "Corrected AppStream metainfo format compliance"
+msgstr "Corectată conformitatea formatului metainfo AppStream"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:663
+msgid "Resolved invalid markup in release descriptions"
+msgstr "Rezolvat marcajul invalid în descrierile versiunilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:667
+msgid "Updated all references from appdata to metainfo format"
+msgstr "Actualizate toate referințele de la formatul appdata la metainfo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:668
+msgid "Enhanced Flathub compliance and validation"
+msgstr "Îmbunătățite conformitatea Flathub și validarea"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:669
+msgid "Improved translation file consistency"
+msgstr "Îmbunătățită consecvența fișierelor de traducere"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:678
+msgid "Fixed crash when handling invalid notification data"
+msgstr "Reparată blocarea la gestionarea datelor de notificare invalide"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:679
+msgid "Resolved memory leak in WebKit manager cleanup"
+msgstr "Rezolvată scurgerea de memorie în curățarea managerului WebKit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:680
+msgid "Corrected window state persistence on shutdown"
+msgstr "Corectată persistența stării ferestrei la oprire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:684
+msgid "Better error handling for network disconnections"
+msgstr "Gestionare mai bună a erorilor pentru deconectările de rețea"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:685
+msgid "Enhanced stability during long sessions"
+msgstr "Stabilitate îmbunătățită în timpul sesiunilor lungi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:686
+msgid "Performance optimizations for faster startup"
+msgstr "Optimizări de performanță pentru o pornire mai rapidă"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:692
+msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+msgstr "🚀 Migrare majoră de arhitectură: de la Python la Vala/GTK4"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:693
+msgid ""
+"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+"performance and integration."
+msgstr ""
+"SCHIMBARE INCOMPATIBILĂ: rescriere completă de la Python la Vala nativ "
+"pentru o performanță și o integrare mai bune."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:694
+msgid ""
+"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+"with WhatsApp Web as this is a completely new application implementation."
+msgstr ""
+"⚠️ Important: după actualizare, va trebui să resincronizezi dispozitivul "
+"mobil cu WhatsApp Web, deoarece aceasta este o implementare complet nouă a "
+"aplicației."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:697
+msgid "Native Vala/GTK4 implementation for optimal performance"
+msgstr "Implementare nativă Vala/GTK4 pentru o performanță optimă"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:698
+msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+msgstr "Interfață modernă LibAdwaita cu interfață declarativă Blueprint"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:699
+msgid "Enhanced WebKitGTK 6.0 integration"
+msgstr "Integrare îmbunătățită WebKitGTK 6.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:700
+msgid "Advanced notification system with native desktop integration"
+msgstr "Sistem avansat de notificări cu integrare nativă în desktop"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:701
+msgid "Comprehensive accessibility support"
+msgstr "Suport complet pentru accesibilitate"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:702
+msgid "Professional logging and crash reporting system"
+msgstr "Sistem profesional de jurnalizare și raportare a erorilor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:704
+msgid "Multi-language spell checking support"
+msgstr "Suport pentru verificarea ortografică în mai multe limbi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:705
+msgid "Granular privacy and notification controls"
+msgstr "Controale granulare de confidențialitate și notificări"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:706
+msgid "Hardware-accelerated rendering"
+msgstr "Randare accelerată hardware"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:707
+msgid "Improved memory efficiency and startup performance"
+msgstr "Eficiență îmbunătățită a memoriei și performanță la pornire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:709
+msgid "Technical Improvements:"
+msgstr "Îmbunătățiri tehnice:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:711
+msgid "Migrated from Python 3 to native Vala compilation"
+msgstr "Migrat de la Python 3 la compilarea nativă Vala"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:712
+msgid "Modern Meson build system with Blueprint UI compilation"
+msgstr "Sistem de construire Meson modern cu compilare a interfeței Blueprint"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:713
+msgid "Comprehensive test suite with unit and integration tests"
+msgstr "Suită de teste cuprinzătoare cu teste unitare și de integrare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:714
+msgid "Production-ready error handling and crash recovery"
+msgstr ""
+"Gestionare a erorilor pregătită pentru producție și recuperare după blocări"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:715
+msgid "Enhanced security with proper sandboxing"
+msgstr "Securitate îmbunătățită cu izolare corespunzătoare"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:716
+msgid "Complete internationalization support"
+msgstr "Suport complet pentru internaționalizare"
+
+#: src/window.rs:303
+msgid "Account"
+msgstr "Cont"
+
+#: src/window.rs:632
+msgid "Waiting for QR scan…"
+msgstr "Se așteaptă scanarea codului QR…"
+
+#: src/window.rs:654
+msgid "degraded"
+msgstr "degradat"
+
+#: src/window.rs:670
+msgid "Unread messages"
+msgstr "Mesaje necitite"
+
+#: src/window.rs:678
+msgid "Edit account"
+msgstr "Editează contul"
+
+#: src/window.rs:694
+msgid "Remove account"
+msgstr "Elimină contul"
+
+#: src/window.rs:696
+msgid "Can't remove the only account"
+msgstr "Nu se poate elimina singurul cont"
+
+#: src/window.rs:778
+msgid "Maximum of 9 accounts reached"
+msgstr "S-a atins maximul de 9 conturi"
+
+#: src/window.rs:804
+msgid "Label"
+msgstr "Etichetă"
+
+#: src/window.rs:818
+msgid "Name"
+msgstr "Nume"
+
+#: src/window.rs:819
+msgid "WhatsApp ID"
+msgstr "ID WhatsApp"
+
+#: src/window.rs:821
+msgid "Avatar URL"
+msgstr "URL avatar"
+
+#: src/window.rs:830 src/window.rs:919
+msgid "Cancel"
+msgstr "Anulează"
+
+#: src/window.rs:831
+msgid "Save"
+msgstr "Salvează"
+
+#: src/window.rs:840
+msgid "Add Account"
+msgstr "Adaugă cont"
+
+#: src/window.rs:842
+msgid "Edit Account"
+msgstr "Editează contul"
+
+#: src/window.rs:909
+msgid "Remove account?"
+msgstr "Elimini contul?"
+
+#: src/window.rs:920
+msgid "Remove"
+msgstr "Elimină"
+
+#: src/actions.rs:263
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+"Un învelitor modern, nativ GTK4/LibAdwaita pentru WhatsApp Web care oferă o "
+"integrare fluidă în desktop, cu capacități cuprinzătoare de jurnalizare și "
+"raportare a erorilor"
+
+#: src/actions.rs:282
+msgid "Source"
+msgstr "Sursă"
+
+#: src/actions.rs:285
+msgid "Special Thanks"
+msgstr "Mulțumiri speciale"

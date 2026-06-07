@@ -61,6 +61,11 @@
       <summary>Theme</summary>
       <description>Application theme (system, light, dark).</description>
     </key>
+    <key name="app-language" type="s">
+      <default>''</default>
+      <summary>Application language override</summary>
+      <description>gettext locale name (e.g. 'pt_BR') used to force the UI language regardless of the system locale. Empty string follows the system locale. Applied at startup; changing it requires a restart.</description>
+    </key>
     <key name="mobile-layout" type="s">
       <default>'auto'</default>
       <summary>Mobile Layout</summary>

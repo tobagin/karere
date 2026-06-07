@@ -929,9 +929,16 @@ mod imp {
                     .recursive(true)
                     .create(&cache);
             }
+            // Inherit the UI-language override so WhatsApp Web localizes too;
+            // empty (no override) leaves the global CefSettings default.
+            let accept_lang = crate::i18n::override_locale()
+                .as_deref()
+                .map(crate::i18n::accept_language_for)
+                .unwrap_or_default();
             let rc_settings = RequestContextSettings {
                 cache_path: CefString::from(cache.to_string_lossy().as_ref()),
                 persist_session_cookies: 1,
+                accept_language_list: CefString::from(accept_lang.as_str()),
                 ..Default::default()
             };
             let mut handler =
@@ -981,7 +988,9 @@ mod imp {
                 ..Default::default()
             };
             let settings = BrowserSettings {
-                windowless_frame_rate: 60,
+                // 30fps OSR: ample for a chat UI and halves the idle compositor/
+                // paint load vs 60 (WhatsApp's idle animations keep invalidating).
+                windowless_frame_rate: 30,
                 ..Default::default()
             };
 

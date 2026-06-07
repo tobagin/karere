@@ -1,0 +1,2078 @@
+# Japanese translations for karere package.
+# Copyright (C) 2026 THE karere'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the karere package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: karere\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-07 11:42+0100\n"
+"PO-Revision-Date: 2026-06-06 21:03+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: src/main.rs:37
+msgid "Karere starting"
+msgstr "Karereを起動しています"
+
+#: src/window.rs:912
+msgid "This removes the local session for"
+msgstr "次のローカルセッションを削除します"
+
+#: src/window.rs:915
+msgid "The device stays linked on your phone until you remove it there."
+msgstr "ご自身のスマートフォンでリンクを解除するまで、デバイスはリンクされたままです。"
+
+#: src/tray.rs:43 src/tray.rs:66 src/tray.rs:73 data/ui/window.ui:12
+#: data/ui/window.ui:23 src/actions.rs:258
+msgid "Karere"
+msgstr "Karere"
+
+#. Translators: tray tooltip body; leading number is the unread count.
+#: src/tray.rs:68
+msgid "unread"
+msgstr "未読"
+
+#: src/tray.rs:93
+msgid "Hide Window"
+msgstr "ウィンドウを隠す"
+
+#: src/tray.rs:95
+msgid "Show Window"
+msgstr "ウィンドウを表示"
+
+#: src/tray.rs:139 data/ui/window.ui:255 data/ui/preferences.ui:10
+#: data/ui/keyboard-shortcuts.ui:145
+msgid "Preferences"
+msgstr "設定"
+
+#: src/tray.rs:145 data/ui/window.ui:261 data/ui/preferences.ui:405
+#: data/ui/keyboard-shortcuts.ui:152
+msgid "Keyboard Shortcuts"
+msgstr "キーボードショートカット"
+
+#: src/tray.rs:151
+msgid "About Karere"
+msgstr "Karereについて"
+
+#: src/tray.rs:158 data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159
+msgid "Quit"
+msgstr "終了"
+
+#: src/preferences.rs:92
+msgid "Restart Karere?"
+msgstr "Karereを再起動しますか？"
+
+#: src/preferences.rs:94
+msgid "The language change takes effect after Karere restarts."
+msgstr "言語の変更はKarereの再起動後に反映されます。"
+
+#: src/preferences.rs:97
+msgid "Later"
+msgstr "後で"
+
+#: src/preferences.rs:98
+msgid "Restart Now"
+msgstr "今すぐ再起動"
+
+#: src/preferences.rs:316
+msgid "System Default"
+msgstr "システムのデフォルト"
+
+#: data/ui/window.ui:24
+msgid "GTK4 WhatsApp Web Client"
+msgstr "GTK4 WhatsApp Web クライアント"
+
+#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
+msgid "Zoom Out"
+msgstr "縮小"
+
+#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
+msgid "Reset Zoom"
+msgstr "ズームをリセット"
+
+#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
+msgid "Zoom In"
+msgstr "拡大"
+
+#: data/ui/window.ui:70
+msgid "Spell Checking Language"
+msgstr "スペルチェックの言語"
+
+#: data/ui/window.ui:77
+msgid "Menu"
+msgstr "メニュー"
+
+#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
+msgid "Switch Account"
+msgstr "アカウントを切り替え"
+
+#: data/ui/window.ui:111
+msgid "Find in page"
+msgstr "ページ内を検索"
+
+#: data/ui/window.ui:131
+msgid "Previous match"
+msgstr "前を検索"
+
+#: data/ui/window.ui:137
+msgid "Next match"
+msgstr "次を検索"
+
+#: data/ui/window.ui:173 data/ui/preferences.ui:109 data/ui/preferences.ui:118
+#: data/ui/keyboard-shortcuts.ui:126
+msgid "Developer Tools"
+msgstr "開発者ツール"
+
+#: data/ui/window.ui:184
+msgid "Close Developer Tools"
+msgstr "開発者ツールを閉じる"
+
+#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
+msgid "Add new account"
+msgstr "新しいアカウントを追加"
+
+#: data/ui/window.ui:251
+msgid "Refresh WhatsApp Web"
+msgstr "WhatsApp Web を再読み込み"
+
+#: data/ui/window.ui:265
+msgid "About"
+msgstr "情報"
+
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:139
+msgid "General"
+msgstr "全般"
+
+#: data/ui/preferences.ui:17
+msgid "Startup"
+msgstr "起動"
+
+#: data/ui/preferences.ui:20
+msgid "Run on Startup"
+msgstr "ログイン時に起動"
+
+#: data/ui/preferences.ui:21
+msgid "Launch Karere automatically when you log in"
+msgstr "ログイン時にKarereを自動的に起動します"
+
+#: data/ui/preferences.ui:26
+msgid "Start in Background"
+msgstr "バックグラウンドで起動"
+
+#: data/ui/preferences.ui:27
+msgid "Start minimized without showing the window"
+msgstr "ウィンドウを表示せず最小化して起動します"
+
+#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
+msgid "Window"
+msgstr "ウィンドウ"
+
+#: data/ui/preferences.ui:37
+msgid "Window Close Behavior"
+msgstr "ウィンドウを閉じたときの動作"
+
+#: data/ui/preferences.ui:38
+msgid "What happens when you close the window"
+msgstr "ウィンドウを閉じたときの挙動"
+
+#: data/ui/preferences.ui:42
+msgid "Run in Background"
+msgstr "バックグラウンドで実行"
+
+#: data/ui/preferences.ui:43
+msgid "Quit Application"
+msgstr "アプリケーションを終了"
+
+#: data/ui/preferences.ui:51
+msgid "System Tray Icon"
+msgstr "システムトレイアイコン"
+
+#: data/ui/preferences.ui:52
+msgid "Auto: shown when a system tray is available"
+msgstr "自動: システムトレイが利用可能なときに表示"
+
+#: data/ui/preferences.ui:56 data/ui/preferences.ui:97
+msgid "Auto"
+msgstr "自動"
+
+#: data/ui/preferences.ui:57 data/ui/preferences.ui:98
+msgid "Enabled"
+msgstr "有効"
+
+#: data/ui/preferences.ui:58 data/ui/preferences.ui:99
+msgid "Disabled"
+msgstr "無効"
+
+#: data/ui/preferences.ui:68
+msgid "Appearance"
+msgstr "外観"
+
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:300
+msgid "Language"
+msgstr "言語"
+
+#: data/ui/preferences.ui:72
+msgid "Application language. Requires restart."
+msgstr "アプリケーションの言語。再起動が必要です。"
+
+#: data/ui/preferences.ui:77
+msgid "Theme"
+msgstr "テーマ"
+
+#: data/ui/preferences.ui:78
+msgid "Choose the application color scheme"
+msgstr "アプリケーションの配色を選択します"
+
+#: data/ui/preferences.ui:82
+msgid "Follow System"
+msgstr "システムに従う"
+
+#: data/ui/preferences.ui:83
+msgid "Light"
+msgstr "ライト"
+
+#: data/ui/preferences.ui:84
+msgid "Dark"
+msgstr "ダーク"
+
+#: data/ui/preferences.ui:92
+msgid "Mobile Layout"
+msgstr "モバイルレイアウト"
+
+#: data/ui/preferences.ui:93
+msgid ""
+"Single-pane layout. Auto: on mobile shells or narrow windows; "
+"Enabled/Disabled: force on or off at any size"
+msgstr "単一ペインのレイアウト。自動: モバイルシェルまたは狭いウィンドウで有効。有効/無効: サイズに関係なく強制的にオン/オフにします"
+
+#: data/ui/preferences.ui:112
+msgid "Enable Developer Tools"
+msgstr "開発者ツールを有効化"
+
+#: data/ui/preferences.ui:113
+msgid "Allow inspecting and debugging the WebView"
+msgstr "WebView の検査とデバッグを許可します"
+
+#: data/ui/preferences.ui:119
+msgid "Open the developer tools for the current page"
+msgstr "現在のページの開発者ツールを開きます"
+
+#: data/ui/preferences.ui:123
+msgid "Open"
+msgstr "開く"
+
+#: data/ui/preferences.ui:135 data/ui/preferences.ui:241
+msgid "Notifications"
+msgstr "通知"
+
+#: data/ui/preferences.ui:142
+msgid "Enable Notifications"
+msgstr "通知を有効化"
+
+#: data/ui/preferences.ui:143
+msgid "Master toggle for all notifications"
+msgstr "すべての通知のマスタースイッチ"
+
+#: data/ui/preferences.ui:150
+msgid "Messages"
+msgstr "メッセージ"
+
+#: data/ui/preferences.ui:153
+msgid "Message Notifications"
+msgstr "メッセージ通知"
+
+#: data/ui/preferences.ui:154
+msgid "Show notifications for incoming messages"
+msgstr "受信メッセージの通知を表示します"
+
+#: data/ui/preferences.ui:159
+msgid "Change Tray Icon on Message"
+msgstr "メッセージ受信時にトレイアイコンを変更"
+
+#: data/ui/preferences.ui:160
+msgid "Animate the tray icon when a new message arrives"
+msgstr "新しいメッセージが届いたときにトレイアイコンをアニメーション表示します"
+
+#: data/ui/preferences.ui:167
+msgid "Message Preview"
+msgstr "メッセージのプレビュー"
+
+#: data/ui/preferences.ui:168
+msgid "Some settings only apply when Karere controls the popup"
+msgstr "一部の設定はKarereがポップアップを制御している場合のみ適用されます"
+
+#: data/ui/preferences.ui:171
+msgid "Show Sender Name"
+msgstr "送信者名を表示"
+
+#: data/ui/preferences.ui:172
+msgid "Display the contact name in notifications"
+msgstr "通知に連絡先の名前を表示します"
+
+#: data/ui/preferences.ui:177
+msgid "Show Message Text"
+msgstr "メッセージ本文を表示"
+
+#: data/ui/preferences.ui:178
+msgid "Display message content in notifications"
+msgstr "通知にメッセージの内容を表示します"
+
+#: data/ui/preferences.ui:183
+msgid "Preview Length"
+msgstr "プレビューの長さ"
+
+#: data/ui/preferences.ui:184
+msgid "How much of the message to show"
+msgstr "メッセージをどの程度表示するか"
+
+#: data/ui/preferences.ui:188
+msgid "Short"
+msgstr "短い"
+
+#: data/ui/preferences.ui:189
+msgid "Medium"
+msgstr "中"
+
+#: data/ui/preferences.ui:190
+msgid "Long"
+msgstr "長い"
+
+#: data/ui/preferences.ui:200
+msgid "Sounds"
+msgstr "サウンド"
+
+#: data/ui/preferences.ui:203
+msgid "Notification Sounds"
+msgstr "通知音"
+
+#: data/ui/preferences.ui:204
+msgid "Play WhatsApp's notification sound for new messages"
+msgstr "新しいメッセージにWhatsAppの通知音を再生します"
+
+#: data/ui/preferences.ui:213
+msgid "Downloads"
+msgstr "ダウンロード"
+
+#: data/ui/preferences.ui:217
+msgid "Location"
+msgstr "保存場所"
+
+#: data/ui/preferences.ui:220
+msgid "Download Directory"
+msgstr "ダウンロードディレクトリ"
+
+#: data/ui/preferences.ui:221
+msgid "Default (Downloads)"
+msgstr "デフォルト (ダウンロード)"
+
+#: data/ui/preferences.ui:224
+msgid "Choose…"
+msgstr "選択…"
+
+#: data/ui/preferences.ui:232
+msgid "Reset to default"
+msgstr "デフォルトに戻す"
+
+#: data/ui/preferences.ui:244
+msgid "Download Notifications"
+msgstr "ダウンロード通知"
+
+#: data/ui/preferences.ui:245
+msgid "Notify when a file download completes"
+msgstr "ファイルのダウンロード完了時に通知します"
+
+#: data/ui/preferences.ui:250
+msgid "Notification Type"
+msgstr "通知の種類"
+
+#: data/ui/preferences.ui:251
+msgid "How download notifications are displayed"
+msgstr "ダウンロード通知の表示方法"
+
+#: data/ui/preferences.ui:255
+msgid "In-app Toast"
+msgstr "アプリ内トースト"
+
+#: data/ui/preferences.ui:256
+msgid "System Notification"
+msgstr "システム通知"
+
+#: data/ui/preferences.ui:257
+msgid "Both"
+msgstr "両方"
+
+#: data/ui/preferences.ui:269
+msgid "Spellcheck"
+msgstr "スペルチェック"
+
+#: data/ui/preferences.ui:273
+msgid "Spell Checking"
+msgstr "スペルチェック"
+
+#: data/ui/preferences.ui:276
+msgid "Enable Spell Checking"
+msgstr "スペルチェックを有効化"
+
+#: data/ui/preferences.ui:277
+msgid "Check spelling as you type"
+msgstr "入力中にスペルをチェックします"
+
+#: data/ui/preferences.ui:282
+msgid "Auto-Detect Language"
+msgstr "言語を自動検出"
+
+#: data/ui/preferences.ui:283
+msgid "Detect the writing language automatically"
+msgstr "入力中の言語を自動的に検出します"
+
+#: data/ui/preferences.ui:288
+msgid "Enable Auto-Correct"
+msgstr "オートコレクトを有効化"
+
+#: data/ui/preferences.ui:289
+msgid "Automatically fix common spelling mistakes"
+msgstr "よくあるスペルミスを自動的に修正します"
+
+#: data/ui/preferences.ui:294
+msgid "Header Bar Language Control"
+msgstr "ヘッダーバーの言語コントロール"
+
+#: data/ui/preferences.ui:295
+msgid "Show the spell-check language dropdown in the header bar"
+msgstr "ヘッダーバーにスペルチェック言語のドロップダウンを表示します"
+
+#: data/ui/preferences.ui:301
+msgid "Star a language to pin it to the top"
+msgstr "言語にスターを付けると上部に固定されます"
+
+#: data/ui/preferences.ui:310
+msgid "Privacy"
+msgstr "プライバシー"
+
+#: data/ui/preferences.ui:314
+msgid "Site Permissions"
+msgstr "サイトの権限"
+
+#: data/ui/preferences.ui:315
+msgid "Stored allow/deny decisions for websites"
+msgstr "ウェブサイトに対する許可/拒否の保存済み設定"
+
+#: data/ui/preferences.ui:318
+msgid "Clear All"
+msgstr "すべて消去"
+
+#: data/ui/preferences.ui:331
+msgid "Accessibility"
+msgstr "アクセシビリティ"
+
+#: data/ui/preferences.ui:335
+msgid "Motion and Focus"
+msgstr "モーションとフォーカス"
+
+#: data/ui/preferences.ui:338
+msgid "Reduce Motion"
+msgstr "視覚効果を減らす"
+
+#: data/ui/preferences.ui:339
+msgid "Minimize animations and transitions"
+msgstr "アニメーションとトランジションを最小化します"
+
+#: data/ui/preferences.ui:344
+msgid "Focus Indicators"
+msgstr "フォーカスインジケーター"
+
+#: data/ui/preferences.ui:345
+msgid "Show visible outlines around focused elements"
+msgstr "フォーカスされた要素の周囲に枠線を表示します"
+
+#: data/ui/preferences.ui:350
+msgid "High Contrast Mode"
+msgstr "ハイコントラストモード"
+
+#: data/ui/preferences.ui:351
+msgid "Increase contrast for better readability"
+msgstr "読みやすさを向上させるためコントラストを高めます"
+
+#: data/ui/preferences.ui:358 data/ui/keyboard-shortcuts.ui:90
+msgid "Zoom"
+msgstr "ズーム"
+
+#: data/ui/preferences.ui:361
+msgid "Accessibility Zoom"
+msgstr "アクセシビリティのズーム"
+
+#: data/ui/preferences.ui:362
+msgid "Set a minimum zoom level for all accounts"
+msgstr "すべてのアカウントに最小ズームレベルを設定します"
+
+#: data/ui/preferences.ui:367
+msgid "Minimum Zoom Level"
+msgstr "最小ズームレベル"
+
+#: data/ui/preferences.ui:368
+msgid "Applied to all webviews"
+msgstr "すべての WebView に適用されます"
+
+#: data/ui/preferences.ui:383
+msgid "Header Bar Zoom Controls"
+msgstr "ヘッダーバーのズームコントロール"
+
+#: data/ui/preferences.ui:384
+msgid "Show zoom buttons in the header bar"
+msgstr "ヘッダーバーにズームボタンを表示します"
+
+#: data/ui/preferences.ui:391
+msgid "Screen Reader Support"
+msgstr "スクリーンリーダー対応"
+
+#: data/ui/preferences.ui:394
+msgid "Screen Reader Optimizations"
+msgstr "スクリーンリーダーの最適化"
+
+#: data/ui/preferences.ui:395
+msgid "Improve compatibility with assistive technologies — restart required"
+msgstr "支援技術との互換性を向上させます — 再起動が必要です"
+
+#: data/ui/preferences.ui:402
+msgid "Shortcuts"
+msgstr "ショートカット"
+
+#: data/ui/preferences.ui:406
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "一般的な操作のキーボードショートカットを有効化します"
+
+#: data/ui/preferences.ui:411
+msgid "Accessibility Shortcuts"
+msgstr "アクセシビリティのショートカット"
+
+#: data/ui/preferences.ui:412
+msgid "Enable shortcuts for accessibility features"
+msgstr "アクセシビリティ機能のショートカットを有効化します"
+
+#: data/ui/preferences.ui:417
+msgid "Developer Shortcuts"
+msgstr "開発者ショートカット"
+
+#: data/ui/preferences.ui:418
+msgid "Enable shortcuts for developer tools"
+msgstr "開発者ツールのショートカットを有効化します"
+
+#: data/ui/preferences.ui:423
+msgid "Notification Shortcuts"
+msgstr "通知ショートカット"
+
+#: data/ui/preferences.ui:424
+msgid "Enable shortcuts for notification actions"
+msgstr "通知操作のショートカットを有効化します"
+
+#: data/ui/keyboard-shortcuts.ui:12
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: data/ui/keyboard-shortcuts.ui:15
+msgid "Reload WhatsApp Web"
+msgstr "WhatsApp Web を再読み込み"
+
+#: data/ui/keyboard-shortcuts.ui:16
+msgid "Reload the current page"
+msgstr "現在のページを再読み込みします"
+
+#: data/ui/keyboard-shortcuts.ui:22
+msgid "Force Reload"
+msgstr "強制再読み込み"
+
+#: data/ui/keyboard-shortcuts.ui:23
+msgid "Reload, bypassing the cache"
+msgstr "キャッシュを無視して再読み込みします"
+
+#: data/ui/keyboard-shortcuts.ui:29
+msgid "Find in Page"
+msgstr "ページ内を検索"
+
+#: data/ui/keyboard-shortcuts.ui:30
+msgid "Search the current page"
+msgstr "現在のページを検索します"
+
+#: data/ui/keyboard-shortcuts.ui:38
+msgid "Accounts"
+msgstr "アカウント"
+
+#: data/ui/keyboard-shortcuts.ui:41
+msgid "Next Account"
+msgstr "次のアカウント"
+
+#: data/ui/keyboard-shortcuts.ui:42
+msgid "Switch to the next account"
+msgstr "次のアカウントに切り替えます"
+
+#: data/ui/keyboard-shortcuts.ui:48
+msgid "Previous Account"
+msgstr "前のアカウント"
+
+#: data/ui/keyboard-shortcuts.ui:49
+msgid "Switch to the previous account"
+msgstr "前のアカウントに切り替えます"
+
+#: data/ui/keyboard-shortcuts.ui:56
+msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
+msgstr "アカウント1〜9に移動 (Alt+1 … Alt+9)"
+
+#: data/ui/keyboard-shortcuts.ui:67
+msgid "Fullscreen"
+msgstr "全画面表示"
+
+#: data/ui/keyboard-shortcuts.ui:68
+msgid "Toggle fullscreen mode"
+msgstr "全画面表示を切り替えます"
+
+#: data/ui/keyboard-shortcuts.ui:74
+msgid "Minimize Window"
+msgstr "ウィンドウを最小化"
+
+#: data/ui/keyboard-shortcuts.ui:75
+msgid "Minimize the window"
+msgstr "ウィンドウを最小化します"
+
+#: data/ui/keyboard-shortcuts.ui:81
+msgid "Close Window"
+msgstr "ウィンドウを閉じる"
+
+#: data/ui/keyboard-shortcuts.ui:82
+msgid "Close the window"
+msgstr "ウィンドウを閉じます"
+
+#: data/ui/keyboard-shortcuts.ui:94
+msgid "Increase the zoom level"
+msgstr "ズームレベルを上げます"
+
+#: data/ui/keyboard-shortcuts.ui:101
+msgid "Decrease the zoom level"
+msgstr "ズームレベルを下げます"
+
+#: data/ui/keyboard-shortcuts.ui:108
+msgid "Reset zoom to 100%"
+msgstr "ズームを100%にリセットします"
+
+#: data/ui/keyboard-shortcuts.ui:114
+msgid "Toggle Header Bar Zoom Controls"
+msgstr "ヘッダーバーのズームコントロールを切り替え"
+
+#: data/ui/keyboard-shortcuts.ui:115
+msgid "Show or hide the zoom buttons"
+msgstr "ズームボタンの表示/非表示を切り替えます"
+
+#: data/ui/keyboard-shortcuts.ui:123
+msgid "Developer"
+msgstr "開発者"
+
+#: data/ui/keyboard-shortcuts.ui:127
+msgid "Open the developer tools"
+msgstr "開発者ツールを開きます"
+
+#: data/ui/keyboard-shortcuts.ui:133
+msgid "Inspect Element"
+msgstr "要素を検査"
+
+#: data/ui/keyboard-shortcuts.ui:134
+msgid "Pick an element to inspect"
+msgstr "検査する要素を選択します"
+
+#: data/ui/keyboard-shortcuts.ui:142
+msgid "Application"
+msgstr "アプリケーション"
+
+#: data/ui/keyboard-shortcuts.ui:146
+msgid "Open preferences"
+msgstr "設定を開きます"
+
+#: data/ui/keyboard-shortcuts.ui:153
+msgid "Show this shortcuts dialog"
+msgstr "このショートカットダイアログを表示します"
+
+#: data/ui/keyboard-shortcuts.ui:160
+msgid "Quit Karere"
+msgstr "Karereを終了"
+
+#: data/io.github.tobagin.karere.desktop.in:3
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "WhatsApp クライアント"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Linux デスクトップ向けのネイティブ WhatsApp Web クライアント"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;chat;messaging;web;communication;チャット;メッセージ;ウェブ;通信;"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
+msgid "Chat on WhatsApp"
+msgstr "WhatsApp でチャット"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:24
+msgid ""
+"Karere brings WhatsApp to your Linux desktop with a native look and feel. It"
+" integrates seamlessly with your environment, offering a clean, modern "
+"interface that respects your system's theme and workflow. By wrapping "
+"WhatsApp Web, it ensures you have access to all the latest features while "
+"adding powerful desktop-specific capabilities."
+msgstr ""
+"KarereはWhatsAppをネイティブな外観と操作感でLinuxデスクトップにもたらします。お使いの環境とシームレスに統合し、システムのテーマやワークフローを尊重した、すっきりとしたモダンなインターフェースを提供します。WhatsApp"
+" Web をラップすることで、最新の機能すべてにアクセスできるようにしつつ、強力なデスクトップ専用機能を追加します。"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:30
+msgid "Key features include:"
+msgstr "主な機能:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:32
+msgid "Native system notifications and tray icon support"
+msgstr "ネイティブのシステム通知とトレイアイコンのサポート"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:33
+msgid ""
+"Persistent login sessions so you don't need to scan the QR code every time"
+msgstr "永続的なログインセッションにより、毎回QRコードをスキャンする必要がありません"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:34
+msgid "Privacy controls and comprehensive spell-checking settings"
+msgstr "プライバシー設定と包括的なスペルチェック設定"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:35
+msgid "Smooth performance with hardware acceleration"
+msgstr "ハードウェアアクセラレーションによる滑らかなパフォーマンス"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:36
+msgid "Proper clipboard integration for text and images"
+msgstr "テキストと画像の適切なクリップボード統合"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+msgid ""
+"Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend "
+"with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
+msgstr ""
+"CEF/Chromium 148 をベースに構築されました。Karere 4.0 は WebKitGTK バックエンドを Chromium "
+"Embedded Framework に置き換え、動画添付ファイルの完全な再生 "
+"(H.264/AAC)、分離されたセッションによるマルチアカウント対応、アカウントごとのズーム、より高速で互換性の高いレンダリングエンジンを実現しつつ、同じネイティブな"
+" GTK4/libadwaita シェルを維持しています。"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:49
+msgid "Main application window with WhatsApp Web integration"
+msgstr "WhatsApp Web 統合のメインアプリケーションウィンドウ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:53
+msgid "About dialog showing application information"
+msgstr "アプリケーション情報を表示する「情報」ダイアログ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:57
+msgid "Application preferences and settings dialog"
+msgstr "アプリケーションの設定ダイアログ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:61
+#: data/io.github.tobagin.karere.metainfo.xml.in:703
+msgid "Keyboard shortcuts and productivity features"
+msgstr "キーボードショートカットと生産性向上機能"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:74
+msgid "Thiago Fernandes"
+msgstr "Thiago Fernandes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:94
+msgid "whatsapp"
+msgstr "whatsapp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:95
+msgid "chat"
+msgstr "チャット"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:96
+msgid "messaging"
+msgstr "メッセージング"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:97
+msgid "web"
+msgstr "ウェブ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:98
+msgid "communication"
+msgstr "通信"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:106
+msgid ""
+"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+"Existing accounts must be re-linked — there is no migration from v3."
+msgstr ""
+"Karere 4.0 はアプリを CEF/Chromium 148 で再構築したハードフォークです。既存のアカウントは再リンクが必要です — v3 "
+"からの移行はできません。"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:107
+msgid "Major changes:"
+msgstr "主な変更点:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:109
+msgid ""
+"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+"proprietary-codec builds for H.264/AAC video attachment playback"
+msgstr ""
+"レンダリングバックエンドを WebKitGTK から CEF/Chromium 148 に切り替え、H.264/AAC "
+"動画添付ファイルの再生のためプロプライエタリコーデック対応ビルドを提供"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:110
+msgid ""
+"Multi-account support: each account runs in an isolated CEF RequestContext "
+"with its own cookies and storage; accounts are ordered most-recently-used"
+msgstr ""
+"マルチアカウント対応: 各アカウントは独自のCookieとストレージを持つ分離された CEF RequestContext "
+"で実行され、最近使用した順に並びます"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:111
+msgid ""
+"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+msgstr ""
+"アカウント情報 (名前 + アバター) を WhatsApp Web の内部ストアから自動検出し、バッジで示される縮退版 DOM "
+"スクレイプのフォールバックを備えています"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:112
+msgid ""
+"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
+"accessibility minimum-zoom floor"
+msgstr "アカウントごとのズーム (Ctrl +/-/0)、オプションのヘッダーバーズームコントロール、アクセシビリティ用の最小ズーム下限"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:113
+msgid ""
+"Native system tray (StatusNotifierItem), desktop notifications, download "
+"manager, and image/text paste reimplemented on the CEF stack"
+msgstr ""
+"ネイティブのシステムトレイ (StatusNotifierItem)、デスクトップ通知、ダウンロードマネージャー、画像/テキストの貼り付けを CEF "
+"スタック上に再実装"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:114
+msgid ""
+"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+"popover for the off-screen-rendered web view"
+msgstr ""
+"モバイル対応レイアウト、JavaScript の全画面表示、オフスクリーンレンダリングされた WebView 用の OSR "
+"コンテキストメニューポップオーバー"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:115
+msgid ""
+"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
+"browsing"
+msgstr "アクセシビリティ設定: 視覚効果を減らす、フォーカスリングの表示、キャレットブラウジング"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:116
+msgid ""
+"Live spell-check language switching and a separately installable Debug "
+"symbol extension for symbolicated crash reports"
+msgstr "スペルチェック言語のライブ切り替えと、シンボル化されたクラッシュレポート用の個別インストール可能なデバッグシンボル拡張"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:123
+msgid ""
+"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
+"clear behavior removed upstream — Karere now dismisses notifications "
+"explicitly)"
+msgstr ""
+"修正: GNOME 50 でフォーカス後に通知バッジ/バナーが残る問題 (上流で自動消去の挙動が削除されたため、Karere "
+"は通知を明示的に消去するようになりました)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:124
+msgid ""
+"Fixed: blank-window race when autostarted before the network/portal stack is"
+" ready (auto-retry with exponential backoff)"
+msgstr "修正: ネットワーク/ポータルスタックの準備が整う前に自動起動したときの空白ウィンドウ競合 (指数バックオフによる自動再試行)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:131
+msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+msgstr "追加: お気に入りのスペルチェック言語をドロップダウンの上部に固定"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:132
+msgid ""
+"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
+"instead of locale codes"
+msgstr "追加: スペルチェックのドロップダウンがロケールコードではなく自然な言語名 (「英語 (UK)」) を表示"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:133
+msgid ""
+"Added: account switcher uses a popover on desktop windows (bottom sheet "
+"preserved on mobile)"
+msgstr "追加: アカウント切り替えがデスクトップウィンドウではポップオーバーを使用 (モバイルではボトムシートを維持)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:134
+msgid ""
+"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
+"43, CachyOS, Bazzite, postmarketOS)"
+msgstr ""
+"修正: GNOME 50 / glibc 2.42 以降のシステム (Arch、Fedora "
+"43、CachyOS、Bazzite、postmarketOS) で起動時にアプリがクラッシュする問題"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:135
+msgid ""
+"Fixed: locale-dependent crash that required manually setting "
+"LC_ALL=en_GB.UTF-8"
+msgstr "修正: LC_ALL=en_GB.UTF-8 を手動で設定する必要があったロケール依存のクラッシュ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:136
+msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+msgstr "修正: 最近の WhatsApp Web の DOM 変更によってモバイルレイアウトが崩れる問題"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:137
+msgid ""
+"Fixed: downloaded files with duplicate names silently overwriting each other"
+" (now appends (1), (2), ...)"
+msgstr "修正: 名前が重複するダウンロードファイルが互いに静かに上書きされる問題 ((1)、(2)、... を付加するようになりました)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:138
+msgid ""
+"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+"dependencies to latest compatible versions"
+msgstr "WebKitGTK を 2.52.3、LibreOffice 辞書を 26.2.3.2、Rust 依存関係を最新の互換バージョンに更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:145
+msgid ""
+"Fixed voice and video calls in production Flatpak (Flathub linter-compatible"
+" pre-built plugin)"
+msgstr "本番 Flatpak での音声・ビデオ通話を修正 (Flathub リンター互換の事前ビルド済みプラグイン)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:152
+msgid ""
+"Fixed voice and video calls not working in the production build (missing "
+"noise suppression plugin)"
+msgstr "本番ビルドで音声・ビデオ通話が動作しない問題を修正 (ノイズ抑制プラグインの欠落)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:159
+msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+msgstr "WebRTC 対応 WebKitGTK 2.50.5 による音声・ビデオ通話のサポートを追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:160
+msgid "Fixed download filenames now use WhatsApp's original filename"
+msgstr "ダウンロードファイル名が WhatsApp の元のファイル名を使用するように修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:161
+msgid "Fixed duplicate downloads auto-increment instead of failing"
+msgstr "重複するダウンロードが失敗せず自動的に連番を付けるように修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:162
+msgid ""
+"Fixed window now properly unminimizes when activated from launcher or tray"
+msgstr "ランチャーまたはトレイから起動したときにウィンドウが正しく最小化解除されるように修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:163
+msgid "Fixed notification sounds now respect GNOME volume controls"
+msgstr "通知音が GNOME の音量コントロールを尊重するように修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:164
+msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+msgstr "注意: このアップグレード後は WhatsApp アカウントの再リンクが必要です"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:171
+msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+msgstr "ashpd 0.13 の API 変更によって生じた Flatpak ビルド失敗を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:178
+msgid ""
+"Fixed voice and video calls showing \"Your browser doesn't support calling\""
+msgstr "音声・ビデオ通話で「お使いのブラウザは通話に対応していません」と表示される問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:179
+msgid ""
+"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+"Linux environments"
+msgstr "Phosh やタッチベースの Linux 環境でオンスクリーンキーボードが確実に表示されない問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:180
+msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+msgstr "blob URL のダウンロード (メディアビューアからの画像の保存など) を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:181
+msgid "Redesigned application icons for stable and development variants"
+msgstr "安定版と開発版のアプリケーションアイコンを再デザイン"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:182
+msgid "Updated all Rust dependencies to latest versions"
+msgstr "すべての Rust 依存関係を最新バージョンに更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:183
+msgid "Upgraded to GNOME Platform 50"
+msgstr "GNOME プラットフォーム 50 にアップグレード"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:184
+msgid "Removed ffmpeg-full extension (no longer required)"
+msgstr "ffmpeg-full 拡張を削除 (不要になりました)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:191
+msgid "Fixed freezes when viewing media galleries"
+msgstr "メディアギャラリー閲覧時のフリーズを修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:192
+msgid "Fixed crash on launch due to memory pressure threshold ordering"
+msgstr "メモリ圧迫しきい値の順序が原因の起動時クラッシュを修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:193
+msgid "Fixed download destination and context menu issues"
+msgstr "ダウンロード先とコンテキストメニューの問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:194
+msgid "Fixed dead key composition for first character in input fields"
+msgstr "入力フィールドの最初の文字でのデッドキー合成を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:195
+msgid ""
+"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
+"handling"
+msgstr "効率的なメディア処理のため本番 Flatpak に GStreamer/PipeWire の環境変数を追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:202
+msgid "Fixed download destination handling"
+msgstr "ダウンロード先の処理を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:203
+msgid "Resolved WebKit crashes on media-heavy pages"
+msgstr "メディアの多いページでの WebKit クラッシュを解決"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:210
+msgid "Fixed: Download destination path handling regression"
+msgstr "修正: ダウンロード先パスの処理のリグレッション"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:217
+msgid ""
+"Fixed: JS injection and path traversal vulnerabilities in download handling"
+msgstr "修正: ダウンロード処理における JS インジェクションとパストラバーサルの脆弱性"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:224
+msgid ""
+"Fixed: Handle WebKit web process crashes with auto-reload and user "
+"notification"
+msgstr "修正: WebKit のウェブプロセスクラッシュを自動再読み込みとユーザー通知で処理"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:225
+msgid "Fixed: JS injection and path traversal vulnerabilities"
+msgstr "修正: JS インジェクションとパストラバーサルの脆弱性"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:226
+msgid "Fixed: Panic in notification handling"
+msgstr "修正: 通知処理におけるパニック"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:233
+msgid "Added complete multi-account support with sidebar and tray integration"
+msgstr "サイドバーとトレイ統合を備えた完全なマルチアカウント対応を追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:234
+msgid "Added per-account zoom settings and improved accessibility"
+msgstr "アカウントごとのズーム設定を追加し、アクセシビリティを改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:235
+msgid "Fixed startup race conditions and resource usage issues"
+msgstr "起動時の競合状態とリソース使用の問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:242
+msgid ""
+"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+msgstr "永続化と設定コントロールを備えたズーム対応 (Ctrl +/-/0) を追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:243
+msgid "Fixed window size increasing on every restart"
+msgstr "再起動のたびにウィンドウサイズが大きくなる問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:250
+msgid ""
+"Fixed: Resolved webview reload loop on startup due to incorrect window size "
+"detection"
+msgstr "修正: ウィンドウサイズ検出の誤りによる起動時の WebView 再読み込みループを解決"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:257
+msgid ""
+"Added WebRTC permission handling in preparation for WhatsApp Web voice/video"
+" calls"
+msgstr "WhatsApp Web の音声/ビデオ通話に備えて WebRTC 権限処理を追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:258
+msgid "Improved mobile UI resizing consistency"
+msgstr "モバイル UI のリサイズの一貫性を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:265
+msgid ""
+"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+"(silences sounds)"
+msgstr "修正: GNOME のシステム「サイレントモード」設定をアプリが尊重するようになりました (サウンドを消音)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:266
+msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+msgstr "修正: 通知が DND の表示を回避する (優先度を「通常」に下げました)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:273
+msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+msgstr "KDE/GNOME のトレイアイコンを修正 (ライト/ダークの両方のテーマで表示)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:274
+msgid "Restored correct app icons and transparent backgrounds"
+msgstr "正しいアプリアイコンと透明な背景を復元"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:275
+msgid "Improved icon compatibility across desktop environments"
+msgstr "デスクトップ環境間でのアイコン互換性を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:282
+msgid ""
+"Fixed application freezing on resume by reverting aggressive cache "
+"optimization"
+msgstr "アグレッシブなキャッシュ最適化を元に戻すことで、再開時のアプリのフリーズを修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:283
+msgid "Fixed background validation to ensure app starts correctly"
+msgstr "アプリが正しく起動するようバックグラウンド検証を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:284
+msgid "Optimized memory usage in mobile responsive scripts"
+msgstr "モバイル対応スクリプトのメモリ使用量を最適化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:285
+msgid "Improved icon rendering (symbolic icons now use currentColor)"
+msgstr "アイコンのレンダリングを改善 (シンボリックアイコンが currentColor を使用するようになりました)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:292
+msgid "Fixed window resize behavior to prevent excessive reloading"
+msgstr "過剰な再読み込みを防ぐためウィンドウのリサイズ動作を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:293
+msgid "Fixed background notifications reliability"
+msgstr "バックグラウンド通知の信頼性を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:300
+msgid "Fixed Flatpak build failure by correcting config"
+msgstr "設定の修正により Flatpak ビルド失敗を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:307
+msgid "Fixed \"Too many open files\" crash by reusing notification resources"
+msgstr "通知リソースを再利用することで「開いているファイルが多すぎます」クラッシュを修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:308
+msgid "Fixed zombie process accumulation"
+msgstr "ゾンビプロセスの蓄積を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:309
+msgid "Improved overall stability"
+msgstr "全体的な安定性を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:316
+msgid "Ctrl+N keyboard shortcut for opening a new chat"
+msgstr "新しいチャットを開くための Ctrl+N キーボードショートカット"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:317
+msgid ""
+"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+"Lomiri"
+msgstr "Phosh、Plasma Mobile、Lomiri の自動検出を備えたモバイルレイアウト対応"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:318
+msgid "Tray icon click now toggles window visibility"
+msgstr "トレイアイコンのクリックでウィンドウの表示が切り替わるようになりました"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:319
+msgid "Window size is saved and restored when hiding/showing"
+msgstr "ウィンドウサイズが非表示/表示時に保存・復元されるようになりました"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:320
+msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+msgstr "モバイルレイアウト設定をドロップダウン (自動/有効/無効) に変更"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:327
+msgid ""
+"Updated application summary and description for better AppStream compliance"
+msgstr "より良い AppStream 準拠のためアプリケーションの概要と説明を更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:334
+msgid ""
+"Notification Chat Linking: Clicking a notification now opens the specific "
+"chat in Karere."
+msgstr "通知のチャットリンク: 通知をクリックすると Karere で該当のチャットが開くようになりました。"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:335
+msgid ""
+"Webcam Support: Added support for using the webcam (Status updates, Video "
+"calls) with a new permission dialog."
+msgstr "ウェブカメラ対応: 新しい権限ダイアログで、ウェブカメラの使用 (ステータス更新、ビデオ通話) に対応しました。"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:342
+msgid ""
+"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+"compatibility"
+msgstr "信頼性の高い WhatsApp Web 互換性のため、Base64 エンコードによる画像貼り付けを強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:343
+msgid "Added middle-click paste from primary selection (selected text)"
+msgstr "プライマリ選択 (選択したテキスト) からの中クリック貼り付けを追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:344
+msgid "Fixed double-paste issue with middle-click"
+msgstr "中クリックでの二重貼り付けの問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:351
+msgid "Fixed missing GSettings schema in Flatpak builds"
+msgstr "Flatpak ビルドで GSettings スキーマが欠落する問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:352
+msgid "Added new application icons"
+msgstr "新しいアプリケーションアイコンを追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:353
+msgid "Corrected metadata description references"
+msgstr "メタデータの説明の参照を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:360
+msgid ""
+"Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+msgstr "より良いサンドボックス対応のため XDG 通知ポータル (ashpd) に切り替え"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:361
+msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+msgstr "よりクリーンなマニフェストのため直接の D-Bus 通知権限を削除"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:362
+msgid "Fixed Open action for downloaded files"
+msgstr "ダウンロードしたファイルの「開く」操作を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:363
+msgid "Fixed Dead Key/composition input issues"
+msgstr "デッドキー/合成入力の問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:364
+msgid "Migrated Flatpak build logic to meson.build"
+msgstr "Flatpak ビルドロジックを meson.build に移行"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:371
+msgid ""
+"Switch to XDG Background Portal for autostart (improves security and "
+"compatibility)"
+msgstr "自動起動を XDG バックグラウンドポータルに切り替え (セキュリティと互換性を向上)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:378
+msgid "Add new contributor Sabri Ünal to the About dialog"
+msgstr "新しいコントリビューター Sabri Ünal を「情報」ダイアログに追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:379
+msgid "General improvements and versioning updates"
+msgstr "全般的な改善とバージョン更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:386
+msgid "Restore autostart permission for improved compatibility"
+msgstr "互換性向上のため自動起動権限を復元"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:393
+msgid "Remove unnecessary autostart permission to satisfy linter"
+msgstr "リンターを満たすため不要な自動起動権限を削除"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:400
+msgid "Add xdg-config/autostart permission for autostart support"
+msgstr "自動起動対応のため xdg-config/autostart 権限を追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:406
+msgid "Bug Fix Release"
+msgstr "バグ修正リリース"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:407
+#: data/io.github.tobagin.karere.metainfo.xml.in:416
+msgid "Changes:"
+msgstr "変更点:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:409
+msgid ""
+"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
+msgstr "StatusNotifierWatcher 権限を追加して GNOME でトレイアイコンが表示されない問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:415
+msgid "Update and Bug Fix Release"
+msgstr "更新とバグ修正リリース"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:418
+msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+msgstr "設定に「ログイン時に起動」のトグルを追加 (デフォルト: オフ)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:419
+msgid "Fixed autostart toggle pathing for Flatpak environments"
+msgstr "Flatpak 環境向けの自動起動トグルのパス指定を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:420
+msgid "Fixed tray icon quit behavior"
+msgstr "トレイアイコンの終了動作を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:421
+msgid "Added striped symbolic icons for development version"
+msgstr "開発版用のストライプ入りシンボリックアイコンを追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:427
+msgid "🎉 Major Release 2.0.0"
+msgstr "🎉 メジャーリリース 2.0.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:428
+#: data/io.github.tobagin.karere.metainfo.xml.in:452
+#: data/io.github.tobagin.karere.metainfo.xml.in:507
+#: data/io.github.tobagin.karere.metainfo.xml.in:577
+#: data/io.github.tobagin.karere.metainfo.xml.in:695
+msgid "New Features:"
+msgstr "新機能:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:430
+msgid "Full rewrite in Rust! 🦀"
+msgstr "Rust への完全な書き直し! 🦀"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:431
+msgid "New System Tray Icon support"
+msgstr "新しいシステムトレイアイコン対応"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:432
+msgid "Notifications fully working with persistence fixes"
+msgstr "永続化の修正により通知が完全に動作"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:433
+msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+msgstr "Vala からネイティブな Rust/GTK4/Libadwaita に移植"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:434
+msgid "Redesigned/streamlined preferences dialog"
+msgstr "設定ダイアログを再デザイン・効率化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:435
+msgid "Enhanced performance and stability"
+msgstr "パフォーマンスと安定性を強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:441
+msgid "🐛 Bug Fix Release"
+msgstr "🐛 バグ修正リリース"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:442
+msgid "Fixed:"
+msgstr "修正点:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:444
+msgid ""
+"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+"activation"
+msgstr "D-Bus アクティベーションの実装により重大な起動時フリーズ (スピナー) 問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:445
+msgid "Ensure application starts properly in the background without delay"
+msgstr "アプリがバックグラウンドで遅延なく正しく起動するようにしました"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:451
+msgid "🎉 Feature Release"
+msgstr "🎉 機能リリース"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:454
+msgid "🎤 Microphone permission support for voice notes"
+msgstr "🎤 ボイスメモ用のマイク権限対応"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:455
+msgid "🚀 Start in background option for autostart"
+msgstr "🚀 自動起動向けのバックグラウンド起動オプション"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:456
+msgid "🔄 Manual reload and auto-reload on network reconnection"
+msgstr "🔄 ネットワーク再接続時の手動再読み込みと自動再読み込み"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:458
+#: data/io.github.tobagin.karere.metainfo.xml.in:474
+#: data/io.github.tobagin.karere.metainfo.xml.in:485
+#: data/io.github.tobagin.karere.metainfo.xml.in:496
+#: data/io.github.tobagin.karere.metainfo.xml.in:559
+#: data/io.github.tobagin.karere.metainfo.xml.in:596
+#: data/io.github.tobagin.karere.metainfo.xml.in:623
+#: data/io.github.tobagin.karere.metainfo.xml.in:648
+#: data/io.github.tobagin.karere.metainfo.xml.in:665
+#: data/io.github.tobagin.karere.metainfo.xml.in:682
+msgid "Improvements:"
+msgstr "改善点:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:460
+msgid "⚡ Performance optimizations for startup and shutdown"
+msgstr "⚡ 起動とシャットダウンのパフォーマンス最適化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:461
+msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+msgstr "📝 スペルチェック初期化を滑らかにする非同期の辞書読み込み"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:462
+msgid "📖 Added MPRIS workaround documentation"
+msgstr "📖 MPRIS 回避策のドキュメントを追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:464
+#: data/io.github.tobagin.karere.metainfo.xml.in:518
+#: data/io.github.tobagin.karere.metainfo.xml.in:566
+#: data/io.github.tobagin.karere.metainfo.xml.in:586
+#: data/io.github.tobagin.karere.metainfo.xml.in:642
+#: data/io.github.tobagin.karere.metainfo.xml.in:659
+#: data/io.github.tobagin.karere.metainfo.xml.in:676
+msgid "Bug Fixes:"
+msgstr "バグ修正:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:466
+msgid "Fixed missing dictionaries on startup"
+msgstr "起動時に辞書が欠落する問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:467
+msgid "Fixed application freeze during lifecycle events"
+msgstr "ライフサイクルイベント中のアプリのフリーズを修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:473
+msgid "🔧 Maintenance Release"
+msgstr "🔧 メンテナンスリリース"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:476
+msgid "Updated build configuration and dependencies"
+msgstr "ビルド構成と依存関係を更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:477
+msgid "Enhanced packaging for better compatibility"
+msgstr "互換性向上のためパッケージングを強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:478
+msgid "Minor bug fixes and stability improvements"
+msgstr "細かなバグ修正と安定性の改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:484
+msgid "📝 Documentation and Metadata Update"
+msgstr "📝 ドキュメントとメタデータの更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:487
+msgid "Updated about dialog screenshot"
+msgstr "「情報」ダイアログのスクリーンショットを更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:488
+msgid "Updated application screenshots"
+msgstr "アプリケーションのスクリーンショットを更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:489
+msgid "Minor README corrections"
+msgstr "README の細かな修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:495
+msgid "📸 Screenshots and Documentation Update"
+msgstr "📸 スクリーンショットとドキュメントの更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:498
+msgid "Updated application screenshots with current UI appearance"
+msgstr "現在の UI 外観でアプリケーションのスクリーンショットを更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:499
+msgid "Refreshed About dialog screenshot"
+msgstr "「情報」ダイアログのスクリーンショットを更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:500
+msgid "Enhanced visual documentation for users"
+msgstr "ユーザー向けの視覚的ドキュメントを強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:506
+msgid "🎉 Version 1.0.0 - Major Milestone Release"
+msgstr "🎉 バージョン 1.0.0 - メジャーマイルストーンリリース"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:509
+msgid "✅ Fixed WhatsApp Web notification banner persistence"
+msgstr "✅ WhatsApp Web の通知バナーが残る問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:510
+msgid "✅ Fixed notifications not working properly"
+msgstr "✅ 通知が正しく動作しない問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:511
+msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+msgstr "🖼️ クリップボード経由 (Ctrl+V) の画像貼り付け対応を追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:512
+msgid ""
+"📥 Implemented download manager with custom directory and toast notifications"
+msgstr "📥 カスタムディレクトリとトースト通知を備えたダウンロードマネージャーを実装"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:513
+msgid ""
+"♿ Enhanced accessibility with screen reader optimization and keyboard "
+"navigation"
+msgstr "♿ スクリーンリーダーの最適化とキーボードナビゲーションでアクセシビリティを強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:514
+msgid "📝 Added comprehensive spell checking system with auto-detection"
+msgstr "📝 自動検出機能付きの包括的なスペルチェックシステムを追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:515
+msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+msgstr "🔤 LibreOffice の 80 以上の言語辞書を統合"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:516
+msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+msgstr "⌨️ AdwShortcutsDialog を使用したキーボードショートカットダイアログを追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:520
+msgid ""
+"Fixed Ctrl+V paste for text content - now works for both text and images"
+msgstr "テキストコンテンツの Ctrl+V 貼り付けを修正 - テキストと画像の両方で動作するようになりました"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:521
+msgid "Fixed WhatsApp notification permission not persisting across sessions"
+msgstr "WhatsApp の通知権限がセッション間で保持されない問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:522
+msgid "Fixed notifications banner appearing on every app launch"
+msgstr "アプリ起動のたびに通知バナーが表示される問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:523
+msgid "Fixed WebView zoom being enabled by default (now disabled)"
+msgstr "WebView のズームがデフォルトで有効になっていた問題を修正 (デフォルトで無効に)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:524
+msgid "Fixed clipboard manager intercepting all paste events"
+msgstr "クリップボードマネージャーがすべての貼り付けイベントを横取りする問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:525
+msgid ""
+"Removed hardcoded blueprint compiler paths for cross-architecture support"
+msgstr "クロスアーキテクチャ対応のためハードコードされた blueprint コンパイラのパスを削除"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:527
+msgid "Code Quality Improvements:"
+msgstr "コード品質の改善:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:529
+msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+msgstr "♻️ 大規模リファクタリング: PascalCase のファイル名でコードベースを再編成"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:530
+msgid "♻️ Refactored Window.vala into specialized manager components"
+msgstr "♻️ Window.vala を専用のマネージャーコンポーネントにリファクタリング"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:531
+msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+msgstr "♻️ カスタムロギングとクラッシュレポートを削除 (システムの journalctl を使用)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:532
+msgid ""
+"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+msgstr "🗑️ サイレントモード機能を削除 (システムの通知デーモンが処理)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:533
+msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+msgstr "🗑️ 古いテストファイルと未使用の依存関係を整理"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:534
+msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+msgstr "🗑️ json-glib、gee、libsoup の依存関係を削除"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:535
+msgid "🧹 Centralized settings management with SettingsManager singleton"
+msgstr "🧹 SettingsManager シングルトンで設定管理を一元化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:536
+msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+msgstr "🧹 DependencyContainer.vala を削除 (未使用の依存性注入)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:537
+msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+msgstr "📸 スクリーンショットを data/screenshots/ ディレクトリに再編成"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:539
+#: data/io.github.tobagin.karere.metainfo.xml.in:609
+#: data/io.github.tobagin.karere.metainfo.xml.in:631
+msgid "Technical Changes:"
+msgstr "技術的な変更点:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:541
+msgid "Implemented UserScript injection for Notification.permission state"
+msgstr "Notification.permission の状態用に UserScript インジェクションを実装"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:542
+msgid "Connected show_notification signal handler for WebKit notifications"
+msgstr "WebKit 通知用に show_notification シグナルハンドラーを接続"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:543
+msgid "WebKitGTK 6.0 storage persistence verified and documented"
+msgstr "WebKitGTK 6.0 のストレージ永続化を検証・文書化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:544
+msgid "Updated SettingsManager to be the default for all settings access"
+msgstr "すべての設定アクセスで SettingsManager をデフォルトにするよう更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:545
+msgid "Improved build system with cleaner dependency management"
+msgstr "よりクリーンな依存関係管理でビルドシステムを改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:547
+msgid "Documentation:"
+msgstr "ドキュメント:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:549
+msgid "📚 Enhanced README with accessibility features documentation"
+msgstr "📚 アクセシビリティ機能のドキュメントで README を強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:550
+msgid "📚 Documented all keyboard shortcuts by category"
+msgstr "📚 すべてのキーボードショートカットをカテゴリ別に文書化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:551
+msgid "📚 Added spell checking configuration guide"
+msgstr "📚 スペルチェック設定ガイドを追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:552
+msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+msgstr "📚 GitHub リポジトリの URL を修正 (karere-vala → karere)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:558
+msgid "🐛 Runtime Update and Bug Fixes"
+msgstr "🐛 ランタイム更新とバグ修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:561
+msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+msgstr "互換性向上のため GNOME ランタイムをバージョン 49 に更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:562
+msgid "Improved system integration with latest platform libraries"
+msgstr "最新のプラットフォームライブラリでシステム統合を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:563
+msgid "Better support for modern desktop environments"
+msgstr "モダンなデスクトップ環境のサポートを向上"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:564
+msgid "Enhanced stability and performance optimizations"
+msgstr "安定性とパフォーマンスの最適化を強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:568
+msgid "Resolved compatibility issues with newer GNOME environments"
+msgstr "新しい GNOME 環境との互換性の問題を解決"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:569
+msgid "Fixed potential rendering inconsistencies"
+msgstr "潜在的なレンダリングの不整合を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:570
+msgid "Improved error handling and recovery mechanisms"
+msgstr "エラー処理と復旧メカニズムを改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:576
+msgid ""
+"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+msgstr "✨ 絵文字対応、外部リンク処理、ビルドの改善を強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:579
+msgid ""
+"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+msgstr "高品質な Noto Color Emoji フォント (v2.047、Unicode 16.0 対応) を追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:580
+msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+msgstr "最大限のハードウェアアクセラレーションで WebKit レンダリングを強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:581
+msgid "Improved emoji consistency with bundled font system"
+msgstr "バンドルされたフォントシステムで絵文字の一貫性を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:582
+msgid "Optimized font loading to eliminate display conflicts"
+msgstr "表示の競合を解消するためフォント読み込みを最適化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:583
+msgid "Added WebKit cache control setting for improved rendering consistency"
+msgstr "レンダリングの一貫性向上のため WebKit キャッシュ制御設定を追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:584
+msgid "Cache disabled by default to prevent emoji rendering issues"
+msgstr "絵文字のレンダリング問題を防ぐためキャッシュをデフォルトで無効化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:588
+msgid ""
+"Fixed external links not opening in default browser when running in Flatpak"
+msgstr "Flatpak で実行時に外部リンクがデフォルトのブラウザで開かない問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:589
+msgid "Improved external link handling with proper Flatpak portal support"
+msgstr "適切な Flatpak ポータル対応で外部リンク処理を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:590
+msgid "Fixed random emoji display issues and blank emoji problems"
+msgstr "ランダムな絵文字の表示問題と空白の絵文字の問題を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:591
+msgid "Fixed invalid meson version requirement preventing builds"
+msgstr "ビルドを妨げていた無効な meson バージョン要件を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:592
+msgid "Corrected dependency version specifications in meson.build"
+msgstr "meson.build の依存関係バージョン指定を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:593
+msgid "Resolved flatpak-builder compatibility issues"
+msgstr "flatpak-builder の互換性の問題を解決"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:594
+msgid "Enhanced URL validation for external link detection"
+msgstr "外部リンク検出のための URL 検証を強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:598
+msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+msgstr "絵文字のレンダリングに影響する WebKit キャッシュの破損を解消"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:599
+msgid "Streamlined font stack for consistent emoji appearance"
+msgstr "一貫した絵文字の外観のためフォントスタックを整理"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:600
+msgid "Enhanced 2D canvas acceleration for better graphics performance"
+msgstr "より良いグラフィックパフォーマンスのため 2D キャンバスアクセラレーションを強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:601
+msgid "Improved font loading stability and reduced race conditions"
+msgstr "フォント読み込みの安定性を改善し競合状態を低減"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:602
+msgid "Better sandboxed environment compatibility"
+msgstr "サンドボックス環境との互換性を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:603
+msgid "More reliable link opening mechanism"
+msgstr "より信頼性の高いリンクオープン機構"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:604
+msgid "Enhanced logging for external link operations"
+msgstr "外部リンク操作のロギングを強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:605
+msgid "Better build system compatibility with different environments"
+msgstr "さまざまな環境とのビルドシステムの互換性を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:606
+msgid "Enhanced CI/CD pipeline stability"
+msgstr "CI/CD パイプラインの安定性を強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:607
+msgid "More robust dependency handling"
+msgstr "より堅牢な依存関係処理"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:611
+msgid ""
+"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+"only)"
+msgstr "不要なモバイルユーザーエージェントの切り替えを削除 (WhatsApp Web はデスクトップ専用)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:612
+msgid "Disabled problematic WebKit caches causing font corruption"
+msgstr "フォント破損の原因となる問題のある WebKit キャッシュを無効化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:613
+msgid "Simplified emoji font configuration to single high-quality source"
+msgstr "絵文字フォント設定を単一の高品質ソースに簡素化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:614
+msgid "Restored Safari Linux user agent for native WebKit experience"
+msgstr "ネイティブな WebKit 体験のため Safari Linux ユーザーエージェントを復元"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:615
+msgid "Added subpixel font scaling and advanced rendering optimizations"
+msgstr "サブピクセルフォントスケーリングと高度なレンダリング最適化を追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:616
+msgid "Implemented Flatpak portal system for external link handling"
+msgstr "外部リンク処理のため Flatpak ポータルシステムを実装"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:622
+msgid "🔧 Code Refactoring and Architecture Improvements"
+msgstr "🔧 コードのリファクタリングとアーキテクチャの改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:625
+msgid "Converted template files to preprocessor directives for cleaner code"
+msgstr "よりクリーンなコードのためテンプレートファイルをプリプロセッサディレクティブに変換"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:626
+msgid "Eliminated .vala.in template substitution system"
+msgstr ".vala.in テンプレート置換システムを廃止"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:627
+msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+msgstr "DEVELOPMENT フラグを使用したコンパイル時の条件コンパイルを追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:628
+msgid "Improved build system maintainability and type safety"
+msgstr "ビルドシステムの保守性と型安全性を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:629
+msgid "Added contributors Aman Das and Cameo to about dialog"
+msgstr "コントリビューター Aman Das と Cameo を「情報」ダイアログに追加"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:633
+msgid ""
+"Replaced window.vala.in and preferences.vala.in with direct .vala files"
+msgstr "window.vala.in と preferences.vala.in を直接の .vala ファイルに置き換え"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:634
+msgid "Updated meson.build to use Vala preprocessor directives"
+msgstr "Vala プリプロセッサディレクティブを使用するよう meson.build を更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:635
+msgid "Simplified source file management in build system"
+msgstr "ビルドシステムでのソースファイル管理を簡素化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:641
+#: data/io.github.tobagin.karere.metainfo.xml.in:675
+msgid "🐛 Bug Fixes and Improvements"
+msgstr "🐛 バグ修正と改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:644
+msgid "Fixed crash when handling invalid user input data"
+msgstr "無効なユーザー入力データの処理時のクラッシュを修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:645
+msgid "Resolved memory leak in notification cleanup"
+msgstr "通知のクリーンアップにおけるメモリリークを解決"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:646
+msgid "Corrected accessibility focus handling"
+msgstr "アクセシビリティのフォーカス処理を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:650
+msgid "Better error handling for network timeouts"
+msgstr "ネットワークタイムアウトのエラー処理を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:651
+msgid "Enhanced stability for extended usage"
+msgstr "長時間の使用での安定性を強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:652
+msgid "Performance optimizations for scrolling"
+msgstr "スクロールのパフォーマンス最適化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:658
+msgid "🔧 Metadata and Standards Compliance"
+msgstr "🔧 メタデータと標準準拠"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:661
+msgid "Fixed duplicate provides tags in metainfo validation"
+msgstr "metainfo 検証での provides タグの重複を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:662
+msgid "Corrected AppStream metainfo format compliance"
+msgstr "AppStream metainfo 形式の準拠を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:663
+msgid "Resolved invalid markup in release descriptions"
+msgstr "リリースの説明の無効なマークアップを解決"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:667
+msgid "Updated all references from appdata to metainfo format"
+msgstr "appdata から metainfo 形式へのすべての参照を更新"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:668
+msgid "Enhanced Flathub compliance and validation"
+msgstr "Flathub の準拠と検証を強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:669
+msgid "Improved translation file consistency"
+msgstr "翻訳ファイルの一貫性を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:678
+msgid "Fixed crash when handling invalid notification data"
+msgstr "無効な通知データの処理時のクラッシュを修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:679
+msgid "Resolved memory leak in WebKit manager cleanup"
+msgstr "WebKit マネージャーのクリーンアップにおけるメモリリークを解決"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:680
+msgid "Corrected window state persistence on shutdown"
+msgstr "シャットダウン時のウィンドウ状態の永続化を修正"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:684
+msgid "Better error handling for network disconnections"
+msgstr "ネットワーク切断のエラー処理を改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:685
+msgid "Enhanced stability during long sessions"
+msgstr "長時間のセッション中の安定性を強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:686
+msgid "Performance optimizations for faster startup"
+msgstr "より高速な起動のためのパフォーマンス最適化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:692
+msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+msgstr "🚀 大規模アーキテクチャ移行: Python から Vala/GTK4 へ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:693
+msgid ""
+"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+"performance and integration."
+msgstr "破壊的変更: パフォーマンスと統合の向上のため Python からネイティブな Vala への完全な書き直し。"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:694
+msgid ""
+"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+"with WhatsApp Web as this is a completely new application implementation."
+msgstr ""
+"⚠️ 重要: これは完全に新しいアプリケーションの実装のため、アップグレード後はモバイルデバイスを WhatsApp Web "
+"と再同期する必要があります。"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:697
+msgid "Native Vala/GTK4 implementation for optimal performance"
+msgstr "最適なパフォーマンスのためのネイティブな Vala/GTK4 実装"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:698
+msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+msgstr "Blueprint 宣言型インターフェースを備えたモダンな LibAdwaita UI"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:699
+msgid "Enhanced WebKitGTK 6.0 integration"
+msgstr "強化された WebKitGTK 6.0 統合"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:700
+msgid "Advanced notification system with native desktop integration"
+msgstr "ネイティブなデスクトップ統合を備えた高度な通知システム"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:701
+msgid "Comprehensive accessibility support"
+msgstr "包括的なアクセシビリティ対応"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:702
+msgid "Professional logging and crash reporting system"
+msgstr "プロフェッショナルなロギングとクラッシュレポートシステム"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:704
+msgid "Multi-language spell checking support"
+msgstr "多言語スペルチェック対応"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:705
+msgid "Granular privacy and notification controls"
+msgstr "きめ細かいプライバシーと通知の制御"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:706
+msgid "Hardware-accelerated rendering"
+msgstr "ハードウェアアクセラレーションによるレンダリング"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:707
+msgid "Improved memory efficiency and startup performance"
+msgstr "メモリ効率と起動パフォーマンスの改善"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:709
+msgid "Technical Improvements:"
+msgstr "技術的な改善:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:711
+msgid "Migrated from Python 3 to native Vala compilation"
+msgstr "Python 3 からネイティブな Vala コンパイルに移行"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:712
+msgid "Modern Meson build system with Blueprint UI compilation"
+msgstr "Blueprint UI コンパイルを備えたモダンな Meson ビルドシステム"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:713
+msgid "Comprehensive test suite with unit and integration tests"
+msgstr "ユニットテストと統合テストを備えた包括的なテストスイート"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:714
+msgid "Production-ready error handling and crash recovery"
+msgstr "本番対応のエラー処理とクラッシュ復旧"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:715
+msgid "Enhanced security with proper sandboxing"
+msgstr "適切なサンドボックスによるセキュリティの強化"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:716
+msgid "Complete internationalization support"
+msgstr "完全な国際化対応"
+
+#: src/window.rs:303
+msgid "Account"
+msgstr "アカウント"
+
+#: src/window.rs:632
+msgid "Waiting for QR scan…"
+msgstr "QR スキャンを待機中…"
+
+#: src/window.rs:654
+msgid "degraded"
+msgstr "縮退"
+
+#: src/window.rs:670
+msgid "Unread messages"
+msgstr "未読メッセージ"
+
+#: src/window.rs:678
+msgid "Edit account"
+msgstr "アカウントを編集"
+
+#: src/window.rs:694
+msgid "Remove account"
+msgstr "アカウントを削除"
+
+#: src/window.rs:696
+msgid "Can't remove the only account"
+msgstr "唯一のアカウントは削除できません"
+
+#: src/window.rs:778
+msgid "Maximum of 9 accounts reached"
+msgstr "アカウントの上限である9件に達しました"
+
+#: src/window.rs:804
+msgid "Label"
+msgstr "ラベル"
+
+#: src/window.rs:818
+msgid "Name"
+msgstr "名前"
+
+#: src/window.rs:819
+msgid "WhatsApp ID"
+msgstr "WhatsApp ID"
+
+#: src/window.rs:821
+msgid "Avatar URL"
+msgstr "アバター URL"
+
+#: src/window.rs:830 src/window.rs:919
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: src/window.rs:831
+msgid "Save"
+msgstr "保存"
+
+#: src/window.rs:840
+msgid "Add Account"
+msgstr "アカウントを追加"
+
+#: src/window.rs:842
+msgid "Edit Account"
+msgstr "アカウントを編集"
+
+#: src/window.rs:909
+msgid "Remove account?"
+msgstr "アカウントを削除しますか?"
+
+#: src/window.rs:920
+msgid "Remove"
+msgstr "削除"
+
+#: src/actions.rs:263
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+"包括的なロギングとクラッシュレポート機能を備え、シームレスなデスクトップ統合を提供する、モダンでネイティブな WhatsApp Web 用 "
+"GTK4/LibAdwaita ラッパー"
+
+#: src/actions.rs:282
+msgid "Source"
+msgstr "ソース"
+
+#: src/actions.rs:285
+msgid "Special Thanks"
+msgstr "謝辞"

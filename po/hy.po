@@ -1,0 +1,2270 @@
+# Armenian translations for karere package.
+# Copyright (C) 2026 THE karere'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the karere package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: karere\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-07 11:42+0100\n"
+"PO-Revision-Date: 2026-06-06 21:03+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: hy\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/main.rs:37
+msgid "Karere starting"
+msgstr "Karere-ն գործարկվում է"
+
+#: src/window.rs:912
+msgid "This removes the local session for"
+msgstr "Սա հեռացնում է տեղային աշխատաշրջանը հետևյալի համար՝"
+
+#: src/window.rs:915
+msgid "The device stays linked on your phone until you remove it there."
+msgstr "Սարքը մնում է կապված ձեր հեռախոսում, մինչև այն այնտեղից չհեռացնեք։"
+
+#: src/tray.rs:43 src/tray.rs:66 src/tray.rs:73 data/ui/window.ui:12
+#: data/ui/window.ui:23 src/actions.rs:258
+msgid "Karere"
+msgstr "Karere"
+
+#. Translators: tray tooltip body; leading number is the unread count.
+#: src/tray.rs:68
+msgid "unread"
+msgstr "չկարդացված"
+
+#: src/tray.rs:93
+msgid "Hide Window"
+msgstr "Թաքցնել պատուհանը"
+
+#: src/tray.rs:95
+msgid "Show Window"
+msgstr "Ցուցադրել պատուհանը"
+
+#: src/tray.rs:139 data/ui/window.ui:255 data/ui/preferences.ui:10
+#: data/ui/keyboard-shortcuts.ui:145
+msgid "Preferences"
+msgstr "Նախընտրություններ"
+
+#: src/tray.rs:145 data/ui/window.ui:261 data/ui/preferences.ui:405
+#: data/ui/keyboard-shortcuts.ui:152
+msgid "Keyboard Shortcuts"
+msgstr "Ստեղնաշարի դյուրանցումներ"
+
+#: src/tray.rs:151
+msgid "About Karere"
+msgstr "Karere-ի մասին"
+
+#: src/tray.rs:158 data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159
+msgid "Quit"
+msgstr "Դուրս գալ"
+
+#: src/preferences.rs:92
+msgid "Restart Karere?"
+msgstr "Վերագործարկե՞լ Karere-ը"
+
+#: src/preferences.rs:94
+msgid "The language change takes effect after Karere restarts."
+msgstr "Լեզվի փոփոխությունն ուժի մեջ կմտնի Karere-ի վերագործարկումից հետո։"
+
+#: src/preferences.rs:97
+msgid "Later"
+msgstr "Ավելի ուշ"
+
+#: src/preferences.rs:98
+msgid "Restart Now"
+msgstr "Վերագործարկել հիմա"
+
+#: src/preferences.rs:316
+msgid "System Default"
+msgstr "Համակարգի լռելյայն"
+
+#: data/ui/window.ui:24
+msgid "GTK4 WhatsApp Web Client"
+msgstr "GTK4 WhatsApp Web հաճախորդ"
+
+#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
+msgid "Zoom Out"
+msgstr "Փոքրացնել"
+
+#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
+msgid "Reset Zoom"
+msgstr "Վերականգնել մասշտաբը"
+
+#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
+msgid "Zoom In"
+msgstr "Մեծացնել"
+
+#: data/ui/window.ui:70
+msgid "Spell Checking Language"
+msgstr "Ուղղագրության ստուգման լեզու"
+
+#: data/ui/window.ui:77
+msgid "Menu"
+msgstr "Ընտրացանկ"
+
+#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
+msgid "Switch Account"
+msgstr "Փոխել հաշիվը"
+
+#: data/ui/window.ui:111
+msgid "Find in page"
+msgstr "Գտնել էջում"
+
+#: data/ui/window.ui:131
+msgid "Previous match"
+msgstr "Նախորդ համընկնումը"
+
+#: data/ui/window.ui:137
+msgid "Next match"
+msgstr "Հաջորդ համընկնումը"
+
+#: data/ui/window.ui:173 data/ui/preferences.ui:109 data/ui/preferences.ui:118
+#: data/ui/keyboard-shortcuts.ui:126
+msgid "Developer Tools"
+msgstr "Մշակողի գործիքներ"
+
+#: data/ui/window.ui:184
+msgid "Close Developer Tools"
+msgstr "Փակել մշակողի գործիքները"
+
+#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
+msgid "Add new account"
+msgstr "Ավելացնել նոր հաշիվ"
+
+#: data/ui/window.ui:251
+msgid "Refresh WhatsApp Web"
+msgstr "Թարմացնել WhatsApp Web-ը"
+
+#: data/ui/window.ui:265
+msgid "About"
+msgstr "Մասին"
+
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:139
+msgid "General"
+msgstr "Ընդհանուր"
+
+#: data/ui/preferences.ui:17
+msgid "Startup"
+msgstr "Գործարկում"
+
+#: data/ui/preferences.ui:20
+msgid "Run on Startup"
+msgstr "Գործարկել մուտքագործելիս"
+
+#: data/ui/preferences.ui:21
+msgid "Launch Karere automatically when you log in"
+msgstr "Ինքնաշխատ գործարկել Karere-ն, երբ մուտք եք գործում"
+
+#: data/ui/preferences.ui:26
+msgid "Start in Background"
+msgstr "Գործարկել ֆոնում"
+
+#: data/ui/preferences.ui:27
+msgid "Start minimized without showing the window"
+msgstr "Գործարկել ծալված՝ պատուհանը չցուցադրելով"
+
+#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
+msgid "Window"
+msgstr "Պատուհան"
+
+#: data/ui/preferences.ui:37
+msgid "Window Close Behavior"
+msgstr "Պատուհանի փակման վարքագիծ"
+
+#: data/ui/preferences.ui:38
+msgid "What happens when you close the window"
+msgstr "Ինչ է տեղի ունենում, երբ փակում եք պատուհանը"
+
+#: data/ui/preferences.ui:42
+msgid "Run in Background"
+msgstr "Գործարկել ֆոնում"
+
+#: data/ui/preferences.ui:43
+msgid "Quit Application"
+msgstr "Փակել հավելվածը"
+
+#: data/ui/preferences.ui:51
+msgid "System Tray Icon"
+msgstr "Համակարգային սկուտեղի պատկերակ"
+
+#: data/ui/preferences.ui:52
+msgid "Auto: shown when a system tray is available"
+msgstr "Ինքնաշխատ՝ ցուցադրվում է, երբ համակարգային սկուտեղ առկա է"
+
+#: data/ui/preferences.ui:56 data/ui/preferences.ui:97
+msgid "Auto"
+msgstr "Ինքնաշխատ"
+
+#: data/ui/preferences.ui:57 data/ui/preferences.ui:98
+msgid "Enabled"
+msgstr "Միացված"
+
+#: data/ui/preferences.ui:58 data/ui/preferences.ui:99
+msgid "Disabled"
+msgstr "Անջատված"
+
+#: data/ui/preferences.ui:68
+msgid "Appearance"
+msgstr "Տեսք"
+
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:300
+msgid "Language"
+msgstr "Լեզու"
+
+#: data/ui/preferences.ui:72
+msgid "Application language. Requires restart."
+msgstr "Հավելվածի լեզուն։ Պահանջում է վերագործարկում։"
+
+#: data/ui/preferences.ui:77
+msgid "Theme"
+msgstr "Թեմա"
+
+#: data/ui/preferences.ui:78
+msgid "Choose the application color scheme"
+msgstr "Ընտրեք հավելվածի գունային սխեման"
+
+#: data/ui/preferences.ui:82
+msgid "Follow System"
+msgstr "Հետևել համակարգին"
+
+#: data/ui/preferences.ui:83
+msgid "Light"
+msgstr "Բաց"
+
+#: data/ui/preferences.ui:84
+msgid "Dark"
+msgstr "Մուգ"
+
+#: data/ui/preferences.ui:92
+msgid "Mobile Layout"
+msgstr "Բջջային դասավորություն"
+
+#: data/ui/preferences.ui:93
+msgid ""
+"Single-pane layout. Auto: on mobile shells or narrow windows; "
+"Enabled/Disabled: force on or off at any size"
+msgstr ""
+"Միափեղկ դասավորություն։ Ինքնաշխատ՝ բջջային միջավայրերում կամ նեղ "
+"պատուհաններում; Միացված/Անջատված՝ ստիպել միացնել կամ անջատել ցանկացած չափի "
+"դեպքում"
+
+#: data/ui/preferences.ui:112
+msgid "Enable Developer Tools"
+msgstr "Միացնել մշակողի գործիքները"
+
+#: data/ui/preferences.ui:113
+msgid "Allow inspecting and debugging the WebView"
+msgstr "Թույլատրել WebView-ի ստուգումն ու վրիպազերծումը"
+
+#: data/ui/preferences.ui:119
+msgid "Open the developer tools for the current page"
+msgstr "Բացել մշակողի գործիքները ընթացիկ էջի համար"
+
+#: data/ui/preferences.ui:123
+msgid "Open"
+msgstr "Բացել"
+
+#: data/ui/preferences.ui:135 data/ui/preferences.ui:241
+msgid "Notifications"
+msgstr "Ծանուցումներ"
+
+#: data/ui/preferences.ui:142
+msgid "Enable Notifications"
+msgstr "Միացնել ծանուցումները"
+
+#: data/ui/preferences.ui:143
+msgid "Master toggle for all notifications"
+msgstr "Բոլոր ծանուցումների գլխավոր անջատիչ"
+
+#: data/ui/preferences.ui:150
+msgid "Messages"
+msgstr "Հաղորդագրություններ"
+
+#: data/ui/preferences.ui:153
+msgid "Message Notifications"
+msgstr "Հաղորդագրությունների ծանուցումներ"
+
+#: data/ui/preferences.ui:154
+msgid "Show notifications for incoming messages"
+msgstr "Ցուցադրել ծանուցումներ մուտքային հաղորդագրությունների համար"
+
+#: data/ui/preferences.ui:159
+msgid "Change Tray Icon on Message"
+msgstr "Փոխել սկուտեղի պատկերակը հաղորդագրության դեպքում"
+
+#: data/ui/preferences.ui:160
+msgid "Animate the tray icon when a new message arrives"
+msgstr "Աշխուժացնել սկուտեղի պատկերակը, երբ նոր հաղորդագրություն է գալիս"
+
+#: data/ui/preferences.ui:167
+msgid "Message Preview"
+msgstr "Հաղորդագրության նախադիտում"
+
+#: data/ui/preferences.ui:168
+msgid "Some settings only apply when Karere controls the popup"
+msgstr ""
+"Որոշ կարգավորումներ կիրառվում են միայն, երբ Karere-ն կառավարում է թռուցիկը"
+
+#: data/ui/preferences.ui:171
+msgid "Show Sender Name"
+msgstr "Ցուցադրել ուղարկողի անունը"
+
+#: data/ui/preferences.ui:172
+msgid "Display the contact name in notifications"
+msgstr "Ցուցադրել կոնտակտի անունը ծանուցումներում"
+
+#: data/ui/preferences.ui:177
+msgid "Show Message Text"
+msgstr "Ցուցադրել հաղորդագրության տեքստը"
+
+#: data/ui/preferences.ui:178
+msgid "Display message content in notifications"
+msgstr "Ցուցադրել հաղորդագրության բովանդակությունը ծանուցումներում"
+
+#: data/ui/preferences.ui:183
+msgid "Preview Length"
+msgstr "Նախադիտման երկարություն"
+
+#: data/ui/preferences.ui:184
+msgid "How much of the message to show"
+msgstr "Որքա՞ն հաղորդագրությունից ցուցադրել"
+
+#: data/ui/preferences.ui:188
+msgid "Short"
+msgstr "Կարճ"
+
+#: data/ui/preferences.ui:189
+msgid "Medium"
+msgstr "Միջին"
+
+#: data/ui/preferences.ui:190
+msgid "Long"
+msgstr "Երկար"
+
+#: data/ui/preferences.ui:200
+msgid "Sounds"
+msgstr "Ձայներ"
+
+#: data/ui/preferences.ui:203
+msgid "Notification Sounds"
+msgstr "Ծանուցումների ձայներ"
+
+#: data/ui/preferences.ui:204
+msgid "Play WhatsApp's notification sound for new messages"
+msgstr "Նվագարկել WhatsApp-ի ծանուցման ձայնը նոր հաղորդագրությունների համար"
+
+#: data/ui/preferences.ui:213
+msgid "Downloads"
+msgstr "Ներբեռնումներ"
+
+#: data/ui/preferences.ui:217
+msgid "Location"
+msgstr "Տեղակայում"
+
+#: data/ui/preferences.ui:220
+msgid "Download Directory"
+msgstr "Ներբեռնման թղթապանակ"
+
+#: data/ui/preferences.ui:221
+msgid "Default (Downloads)"
+msgstr "Լռելյայն (Ներբեռնումներ)"
+
+#: data/ui/preferences.ui:224
+msgid "Choose…"
+msgstr "Ընտրել…"
+
+#: data/ui/preferences.ui:232
+msgid "Reset to default"
+msgstr "Վերականգնել լռելյայնը"
+
+#: data/ui/preferences.ui:244
+msgid "Download Notifications"
+msgstr "Ներբեռնման ծանուցումներ"
+
+#: data/ui/preferences.ui:245
+msgid "Notify when a file download completes"
+msgstr "Ծանուցել, երբ ֆայլի ներբեռնումն ավարտվում է"
+
+#: data/ui/preferences.ui:250
+msgid "Notification Type"
+msgstr "Ծանուցման տեսակ"
+
+#: data/ui/preferences.ui:251
+msgid "How download notifications are displayed"
+msgstr "Ինչպես են ցուցադրվում ներբեռնման ծանուցումները"
+
+#: data/ui/preferences.ui:255
+msgid "In-app Toast"
+msgstr "Հավելվածում թռուցիկ"
+
+#: data/ui/preferences.ui:256
+msgid "System Notification"
+msgstr "Համակարգային ծանուցում"
+
+#: data/ui/preferences.ui:257
+msgid "Both"
+msgstr "Երկուսն էլ"
+
+#: data/ui/preferences.ui:269
+msgid "Spellcheck"
+msgstr "Ուղղագրության ստուգում"
+
+#: data/ui/preferences.ui:273
+msgid "Spell Checking"
+msgstr "Ուղղագրության ստուգում"
+
+#: data/ui/preferences.ui:276
+msgid "Enable Spell Checking"
+msgstr "Միացնել ուղղագրության ստուգումը"
+
+#: data/ui/preferences.ui:277
+msgid "Check spelling as you type"
+msgstr "Ստուգել ուղղագրությունը մուտքագրման ընթացքում"
+
+#: data/ui/preferences.ui:282
+msgid "Auto-Detect Language"
+msgstr "Ինքնահայտնաբերել լեզուն"
+
+#: data/ui/preferences.ui:283
+msgid "Detect the writing language automatically"
+msgstr "Ինքնաշխատ հայտնաբերել գրման լեզուն"
+
+#: data/ui/preferences.ui:288
+msgid "Enable Auto-Correct"
+msgstr "Միացնել ինքնաուղղումը"
+
+#: data/ui/preferences.ui:289
+msgid "Automatically fix common spelling mistakes"
+msgstr "Ինքնաշխատ ուղղել տարածված ուղղագրական սխալները"
+
+#: data/ui/preferences.ui:294
+msgid "Header Bar Language Control"
+msgstr "Վերնագրի տողի լեզվի կառավարում"
+
+#: data/ui/preferences.ui:295
+msgid "Show the spell-check language dropdown in the header bar"
+msgstr "Ցուցադրել ուղղագրության ստուգման լեզվի բացվող ցանկը վերնագրի տողում"
+
+#: data/ui/preferences.ui:301
+msgid "Star a language to pin it to the top"
+msgstr "Աստղ դրեք լեզվի վրա՝ այն վերև ամրացնելու համար"
+
+#: data/ui/preferences.ui:310
+msgid "Privacy"
+msgstr "Գաղտնիություն"
+
+#: data/ui/preferences.ui:314
+msgid "Site Permissions"
+msgstr "Կայքի թույլտվություններ"
+
+#: data/ui/preferences.ui:315
+msgid "Stored allow/deny decisions for websites"
+msgstr "Կայքերի համար պահված թույլատրման/մերժման որոշումներ"
+
+#: data/ui/preferences.ui:318
+msgid "Clear All"
+msgstr "Մաքրել բոլորը"
+
+#: data/ui/preferences.ui:331
+msgid "Accessibility"
+msgstr "Մատչելիություն"
+
+#: data/ui/preferences.ui:335
+msgid "Motion and Focus"
+msgstr "Շարժում և կիզակետ"
+
+#: data/ui/preferences.ui:338
+msgid "Reduce Motion"
+msgstr "Նվազեցնել շարժումը"
+
+#: data/ui/preferences.ui:339
+msgid "Minimize animations and transitions"
+msgstr "Նվազագույնի հասցնել անիմացիաներն ու անցումները"
+
+#: data/ui/preferences.ui:344
+msgid "Focus Indicators"
+msgstr "Կենտրոնացման ցուցիչներ"
+
+#: data/ui/preferences.ui:345
+msgid "Show visible outlines around focused elements"
+msgstr "Ցուցադրել տեսանելի ուրվագծեր կենտրոնացված տարրերի շուրջ"
+
+#: data/ui/preferences.ui:350
+msgid "High Contrast Mode"
+msgstr "Բարձր հակադրության ռեժիմ"
+
+#: data/ui/preferences.ui:351
+msgid "Increase contrast for better readability"
+msgstr "Բարձրացնել հակադրությունը՝ ավելի լավ ընթեռնելիության համար"
+
+#: data/ui/preferences.ui:358 data/ui/keyboard-shortcuts.ui:90
+msgid "Zoom"
+msgstr "Մասշտաբավորում"
+
+#: data/ui/preferences.ui:361
+msgid "Accessibility Zoom"
+msgstr "Մատչելիության մասշտաբավորում"
+
+#: data/ui/preferences.ui:362
+msgid "Set a minimum zoom level for all accounts"
+msgstr "Սահմանել նվազագույն մասշտաբի մակարդակ բոլոր հաշիվների համար"
+
+#: data/ui/preferences.ui:367
+msgid "Minimum Zoom Level"
+msgstr "Նվազագույն մասշտաբի մակարդակ"
+
+#: data/ui/preferences.ui:368
+msgid "Applied to all webviews"
+msgstr "Կիրառվում է բոլոր web-դիտակների վրա"
+
+#: data/ui/preferences.ui:383
+msgid "Header Bar Zoom Controls"
+msgstr "Վերնագրի տողի մասշտաբավորման կառավարներ"
+
+#: data/ui/preferences.ui:384
+msgid "Show zoom buttons in the header bar"
+msgstr "Ցուցադրել մասշտաբավորման կոճակները վերնագրի տողում"
+
+#: data/ui/preferences.ui:391
+msgid "Screen Reader Support"
+msgstr "Էկրանի ընթերցողի աջակցություն"
+
+#: data/ui/preferences.ui:394
+msgid "Screen Reader Optimizations"
+msgstr "Էկրանի ընթերցողի օպտիմիզացիաներ"
+
+#: data/ui/preferences.ui:395
+msgid "Improve compatibility with assistive technologies — restart required"
+msgstr ""
+"Բարելավել համատեղելիությունը օժանդակ տեխնոլոգիաների հետ — պահանջում է "
+"վերագործարկում"
+
+#: data/ui/preferences.ui:402
+msgid "Shortcuts"
+msgstr "Դյուրանցումներ"
+
+#: data/ui/preferences.ui:406
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "Միացնել ստեղնաշարի դյուրանցումները տարածված գործողությունների համար"
+
+#: data/ui/preferences.ui:411
+msgid "Accessibility Shortcuts"
+msgstr "Մատչելիության դյուրանցումներ"
+
+#: data/ui/preferences.ui:412
+msgid "Enable shortcuts for accessibility features"
+msgstr "Միացնել դյուրանցումները մատչելիության գործառույթների համար"
+
+#: data/ui/preferences.ui:417
+msgid "Developer Shortcuts"
+msgstr "Մշակողի դյուրանցումներ"
+
+#: data/ui/preferences.ui:418
+msgid "Enable shortcuts for developer tools"
+msgstr "Միացնել դյուրանցումները մշակողի գործիքների համար"
+
+#: data/ui/preferences.ui:423
+msgid "Notification Shortcuts"
+msgstr "Ծանուցումների դյուրանցումներ"
+
+#: data/ui/preferences.ui:424
+msgid "Enable shortcuts for notification actions"
+msgstr "Միացնել դյուրանցումները ծանուցումների գործողությունների համար"
+
+#: data/ui/keyboard-shortcuts.ui:12
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: data/ui/keyboard-shortcuts.ui:15
+msgid "Reload WhatsApp Web"
+msgstr "Վերաբեռնել WhatsApp Web-ը"
+
+#: data/ui/keyboard-shortcuts.ui:16
+msgid "Reload the current page"
+msgstr "Վերաբեռնել ընթացիկ էջը"
+
+#: data/ui/keyboard-shortcuts.ui:22
+msgid "Force Reload"
+msgstr "Ստիպել վերաբեռնել"
+
+#: data/ui/keyboard-shortcuts.ui:23
+msgid "Reload, bypassing the cache"
+msgstr "Վերաբեռնել՝ շրջանցելով քեշը"
+
+#: data/ui/keyboard-shortcuts.ui:29
+msgid "Find in Page"
+msgstr "Գտնել էջում"
+
+#: data/ui/keyboard-shortcuts.ui:30
+msgid "Search the current page"
+msgstr "Որոնել ընթացիկ էջում"
+
+#: data/ui/keyboard-shortcuts.ui:38
+msgid "Accounts"
+msgstr "Հաշիվներ"
+
+#: data/ui/keyboard-shortcuts.ui:41
+msgid "Next Account"
+msgstr "Հաջորդ հաշիվ"
+
+#: data/ui/keyboard-shortcuts.ui:42
+msgid "Switch to the next account"
+msgstr "Անցնել հաջորդ հաշվին"
+
+#: data/ui/keyboard-shortcuts.ui:48
+msgid "Previous Account"
+msgstr "Նախորդ հաշիվ"
+
+#: data/ui/keyboard-shortcuts.ui:49
+msgid "Switch to the previous account"
+msgstr "Անցնել նախորդ հաշվին"
+
+#: data/ui/keyboard-shortcuts.ui:56
+msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
+msgstr "Անցնել 1–9 հաշվին (Alt+1 … Alt+9)"
+
+#: data/ui/keyboard-shortcuts.ui:67
+msgid "Fullscreen"
+msgstr "Լիաէկրան"
+
+#: data/ui/keyboard-shortcuts.ui:68
+msgid "Toggle fullscreen mode"
+msgstr "Փոխարկել լիաէկրան ռեժիմը"
+
+#: data/ui/keyboard-shortcuts.ui:74
+msgid "Minimize Window"
+msgstr "Ծալել պատուհանը"
+
+#: data/ui/keyboard-shortcuts.ui:75
+msgid "Minimize the window"
+msgstr "Ծալել պատուհանը"
+
+#: data/ui/keyboard-shortcuts.ui:81
+msgid "Close Window"
+msgstr "Փակել պատուհանը"
+
+#: data/ui/keyboard-shortcuts.ui:82
+msgid "Close the window"
+msgstr "Փակել պատուհանը"
+
+#: data/ui/keyboard-shortcuts.ui:94
+msgid "Increase the zoom level"
+msgstr "Մեծացնել մասշտաբի մակարդակը"
+
+#: data/ui/keyboard-shortcuts.ui:101
+msgid "Decrease the zoom level"
+msgstr "Փոքրացնել մասշտաբի մակարդակը"
+
+#: data/ui/keyboard-shortcuts.ui:108
+msgid "Reset zoom to 100%"
+msgstr "Վերականգնել մասշտաբը 100%"
+
+#: data/ui/keyboard-shortcuts.ui:114
+msgid "Toggle Header Bar Zoom Controls"
+msgstr "Փոխարկել վերնագրի տողի մասշտաբավորման կառավարները"
+
+#: data/ui/keyboard-shortcuts.ui:115
+msgid "Show or hide the zoom buttons"
+msgstr "Ցուցադրել կամ թաքցնել մասշտաբավորման կոճակները"
+
+#: data/ui/keyboard-shortcuts.ui:123
+msgid "Developer"
+msgstr "Մշակող"
+
+#: data/ui/keyboard-shortcuts.ui:127
+msgid "Open the developer tools"
+msgstr "Բացել մշակողի գործիքները"
+
+#: data/ui/keyboard-shortcuts.ui:133
+msgid "Inspect Element"
+msgstr "Ստուգել տարրը"
+
+#: data/ui/keyboard-shortcuts.ui:134
+msgid "Pick an element to inspect"
+msgstr "Ընտրել ստուգելու տարր"
+
+#: data/ui/keyboard-shortcuts.ui:142
+msgid "Application"
+msgstr "Հավելված"
+
+#: data/ui/keyboard-shortcuts.ui:146
+msgid "Open preferences"
+msgstr "Բացել նախընտրությունները"
+
+#: data/ui/keyboard-shortcuts.ui:153
+msgid "Show this shortcuts dialog"
+msgstr "Ցուցադրել այս դյուրանցումների երկխոսությունը"
+
+#: data/ui/keyboard-shortcuts.ui:160
+msgid "Quit Karere"
+msgstr "Դուրս գալ Karere-ից"
+
+#: data/io.github.tobagin.karere.desktop.in:3
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "WhatsApp հաճախորդ"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "WhatsApp Web-ի բնիկ հաճախորդ Linux աշխատասեղանի համար"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;chat;messaging;web;communication;"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
+msgid "Chat on WhatsApp"
+msgstr "Զրուցել WhatsApp-ով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:24
+msgid ""
+"Karere brings WhatsApp to your Linux desktop with a native look and feel. It"
+" integrates seamlessly with your environment, offering a clean, modern "
+"interface that respects your system's theme and workflow. By wrapping "
+"WhatsApp Web, it ensures you have access to all the latest features while "
+"adding powerful desktop-specific capabilities."
+msgstr ""
+"Karere-ն բերում է WhatsApp-ը ձեր Linux աշխատասեղանին բնիկ տեսքով և "
+"զգացողությամբ։ Այն անխափան ինտեգրվում է ձեր միջավայրի հետ՝ առաջարկելով "
+"մաքուր, ժամանակակից միջերես, որը հարգում է ձեր համակարգի թեման և "
+"աշխատանքային հոսքը։ Փաթաթելով WhatsApp Web-ը՝ այն ապահովում է բոլոր "
+"նորագույն գործառույթների հասանելիությունը՝ ավելացնելով հզոր աշխատասեղանին "
+"հատուկ հնարավորություններ։"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:30
+msgid "Key features include:"
+msgstr "Հիմնական գործառույթներն են՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:32
+msgid "Native system notifications and tray icon support"
+msgstr "Բնիկ համակարգային ծանուցումներ և սկուտեղի պատկերակի աջակցություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:33
+msgid ""
+"Persistent login sessions so you don't need to scan the QR code every time"
+msgstr ""
+"Մշտական մուտքի աշխատաշրջաններ, որպեսզի ձեզ պետք չլինի ամեն անգամ սկանավորել "
+"QR կոդը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:34
+msgid "Privacy controls and comprehensive spell-checking settings"
+msgstr ""
+"Գաղտնիության կառավարներ և ուղղագրության ստուգման համապարփակ կարգավորումներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:35
+msgid "Smooth performance with hardware acceleration"
+msgstr "Սահուն աշխատանք ապարատային արագացմամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:36
+msgid "Proper clipboard integration for text and images"
+msgstr "Տեքստի և պատկերների համար փոխանակման բուֆերի պատշաճ ինտեգրում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+msgid ""
+"Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend "
+"with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
+msgstr ""
+"Այժմ կառուցված է CEF/Chromium 148-ի վրա։ Karere 4.0-ն փոխարինում է WebKitGTK"
+" հետնամասը Chromium Embedded Framework-ով՝ բերելով տեսանյութի կցորդների "
+"լիարժեք նվագարկում (H.264/AAC), բազմահաշվային աջակցություն մեկուսացված "
+"աշխատաշրջաններով, ըստ հաշվի մասշտաբավորում և ավելի արագ, ավելի համատեղելի "
+"ցուցադրման շարժիչ՝ պահպանելով նույն բնիկ GTK4/libadwaita պատյանը։"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:49
+msgid "Main application window with WhatsApp Web integration"
+msgstr "Հիմնական հավելվածի պատուհանը WhatsApp Web-ի ինտեգրմամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:53
+msgid "About dialog showing application information"
+msgstr "Մասին երկխոսությունը, որը ցույց է տալիս հավելվածի տեղեկությունները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:57
+msgid "Application preferences and settings dialog"
+msgstr "Հավելվածի նախընտրությունների և կարգավորումների երկխոսություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:61
+#: data/io.github.tobagin.karere.metainfo.xml.in:703
+msgid "Keyboard shortcuts and productivity features"
+msgstr "Ստեղնաշարի դյուրանցումներ և արտադրողականության գործառույթներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:74
+msgid "Thiago Fernandes"
+msgstr "Thiago Fernandes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:94
+msgid "whatsapp"
+msgstr "whatsapp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:95
+msgid "chat"
+msgstr "chat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:96
+msgid "messaging"
+msgstr "messaging"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:97
+msgid "web"
+msgstr "web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:98
+msgid "communication"
+msgstr "communication"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:106
+msgid ""
+"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+"Existing accounts must be re-linked — there is no migration from v3."
+msgstr ""
+"Karere 4.0-ն կոշտ պատառ է, որը վերակառուցում է հավելվածը CEF/Chromium 148-ի "
+"վրա։ Առկա հաշիվները պետք է վերակապվեն — v3-ից տեղափոխում չկա։"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:107
+msgid "Major changes:"
+msgstr "Հիմնական փոփոխություններ՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:109
+msgid ""
+"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+"proprietary-codec builds for H.264/AAC video attachment playback"
+msgstr ""
+"Ցուցադրման հետնամասը WebKitGTK-ից փոխարկվեց CEF/Chromium 148-ի՝ "
+"սեփականատիրական կոդեկների կառուցումներով H.264/AAC տեսանյութի կցորդների "
+"նվագարկման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:110
+msgid ""
+"Multi-account support: each account runs in an isolated CEF RequestContext "
+"with its own cookies and storage; accounts are ordered most-recently-used"
+msgstr ""
+"Բազմահաշվային աջակցություն՝ յուրաքանչյուր հաշիվ աշխատում է մեկուսացված CEF "
+"RequestContext-ում՝ սեփական cookie-ներով և պահեստով; հաշիվները դասավորվում "
+"են ըստ վերջին օգտագործման"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:111
+msgid ""
+"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+msgstr ""
+"Հաշվի ինքնությունը (անուն + ավատար) ինքնաշխատ հայտնաբերվում է WhatsApp Web-ի"
+" ներքին Store-ից՝ վատթարացած DOM-քերծման պահեստային տարբերակով, որը "
+"ցուցադրվում է կրծքանշանով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:112
+msgid ""
+"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
+"accessibility minimum-zoom floor"
+msgstr ""
+"Ըստ հաշվի մասշտաբավորում (Ctrl +/-/0)՝ վերնագրի տողի ընտրովի մասշտաբավորման "
+"կառավարներով և մատչելիության նվազագույն մասշտաբի սահմանով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:113
+msgid ""
+"Native system tray (StatusNotifierItem), desktop notifications, download "
+"manager, and image/text paste reimplemented on the CEF stack"
+msgstr ""
+"Բնիկ համակարգային սկուտեղ (StatusNotifierItem), աշխատասեղանի ծանուցումներ, "
+"ներբեռնման կառավարիչ և պատկեր/տեքստ կպցնելը՝ վերակառուցված CEF փաթեթի վրա"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:114
+msgid ""
+"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+"popover for the off-screen-rendered web view"
+msgstr ""
+"Բջջային հարմարվող դասավորություն, JavaScript լիաէկրան և OSR համատեքստի "
+"ընտրացանկի թռուցիկ արտաէկրան ցուցադրվող web-դիտակի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:115
+msgid ""
+"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
+"browsing"
+msgstr ""
+"Մատչելիության նախընտրություններ՝ նվազեցնել շարժումը, կենտրոնացման օղակի "
+"տեսանելիություն և շարժագնա դիտում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:116
+msgid ""
+"Live spell-check language switching and a separately installable Debug "
+"symbol extension for symbolicated crash reports"
+msgstr ""
+"Ուղղագրության ստուգման լեզվի փոխարկում իրական ժամանակում և առանձին տեղադրվող"
+" Debug խորհրդանիշների ընդլայնում սիմվոլիկ վթարի հաշվետվությունների համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:123
+msgid ""
+"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
+"clear behavior removed upstream — Karere now dismisses notifications "
+"explicitly)"
+msgstr ""
+"Շտկվեց՝ GNOME 50-ում կենտրոնացումից հետո կախված ծանուցումների "
+"կրծքանշաններ/պաստառներ (ինքնամաքրման վարքագիծը հեռացվեց վերին հոսքում — "
+"Karere-ն այժմ բացահայտորեն չեղարկում է ծանուցումները)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:124
+msgid ""
+"Fixed: blank-window race when autostarted before the network/portal stack is"
+" ready (auto-retry with exponential backoff)"
+msgstr ""
+"Շտկվեց՝ դատարկ պատուհանի մրցավազք, երբ ինքնաշխատ գործարկվում է մինչև "
+"ցանցային/պորտալ փաթեթի պատրաստ լինելը (ինքնակրկնում՝ էքսպոնենցիալ "
+"հետընթացով)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:131
+msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+msgstr ""
+"Ավելացվեց՝ ամրացնել նախընտրած ուղղագրության ստուգման լեզուները բացվող ցանկի "
+"վերևում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:132
+msgid ""
+"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
+"instead of locale codes"
+msgstr ""
+"Ավելացվեց՝ ուղղագրության ստուգման բացվող ցանկը ցույց է տալիս բնական լեզվի "
+"անունները (\"English (UK)\")՝ տեղայնացման կոդերի փոխարեն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:133
+msgid ""
+"Added: account switcher uses a popover on desktop windows (bottom sheet "
+"preserved on mobile)"
+msgstr ""
+"Ավելացվեց՝ հաշիվների փոխարկիչը օգտագործում է թռուցիկ աշխատասեղանի "
+"պատուհաններում (ստորին թերթիկը պահպանված է բջջայինում)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:134
+msgid ""
+"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
+"43, CachyOS, Bazzite, postmarketOS)"
+msgstr ""
+"Շտկվեց՝ հավելվածի վթար գործարկման ժամանակ GNOME 50 / glibc 2.42+ "
+"համակարգերում (Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:135
+msgid ""
+"Fixed: locale-dependent crash that required manually setting "
+"LC_ALL=en_GB.UTF-8"
+msgstr ""
+"Շտկվեց՝ տեղայնացումից կախված վթար, որը պահանջում էր ձեռքով սահմանել "
+"LC_ALL=en_GB.UTF-8"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:136
+msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+msgstr ""
+"Շտկվեց՝ բջջային դասավորությունը խախտված WhatsApp Web-ի վերջին DOM "
+"փոփոխություններով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:137
+msgid ""
+"Fixed: downloaded files with duplicate names silently overwriting each other"
+" (now appends (1), (2), ...)"
+msgstr ""
+"Շտկվեց՝ կրկնվող անուններով ներբեռնված ֆայլերը լուռ վերագրում էին միմյանց "
+"(այժմ ավելացնում է (1), (2), ...)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:138
+msgid ""
+"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+"dependencies to latest compatible versions"
+msgstr ""
+"WebKitGTK-ն բարձրացվեց մինչև 2.52.3, LibreOffice բառարանները՝ մինչև "
+"26.2.3.2, Rust կախվածությունները՝ մինչև վերջին համատեղելի տարբերակները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:145
+msgid ""
+"Fixed voice and video calls in production Flatpak (Flathub linter-compatible"
+" pre-built plugin)"
+msgstr ""
+"Շտկվեցին ձայնային և տեսազանգերը արտադրական Flatpak-ում (Flathub linter-ի հետ"
+" համատեղելի նախապես կառուցված ներդիր)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:152
+msgid ""
+"Fixed voice and video calls not working in the production build (missing "
+"noise suppression plugin)"
+msgstr ""
+"Շտկվեց ձայնային և տեսազանգերի չաշխատելը արտադրական կառուցումում (բացակայող "
+"աղմուկի ճնշման ներդիր)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:159
+msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+msgstr ""
+"Ավելացվեց ձայնային և տեսազանգերի աջակցություն WebRTC-ով միացված WebKitGTK "
+"2.50.5-ի միջոցով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:160
+msgid "Fixed download filenames now use WhatsApp's original filename"
+msgstr ""
+"Շտկվեց՝ ներբեռնման ֆայլերի անունները այժմ օգտագործում են WhatsApp-ի "
+"սկզբնական ֆայլի անունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:161
+msgid "Fixed duplicate downloads auto-increment instead of failing"
+msgstr "Շտկվեց՝ կրկնվող ներբեռնումներն ինքնաավելանում են ձախողվելու փոխարեն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:162
+msgid ""
+"Fixed window now properly unminimizes when activated from launcher or tray"
+msgstr ""
+"Շտկվեց՝ պատուհանն այժմ պատշաճ կերպով ապածալվում է, երբ ակտիվացվում է "
+"գործարկիչից կամ սկուտեղից"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:163
+msgid "Fixed notification sounds now respect GNOME volume controls"
+msgstr ""
+"Շտկվեց՝ ծանուցումների ձայներն այժմ հարգում են GNOME-ի ձայնի կառավարները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:164
+msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+msgstr ""
+"Նշում՝ WhatsApp հաշիվների վերակապումը պահանջվում է այս թարմացումից հետո"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:171
+msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+msgstr ""
+"Շտկվեց Flatpak կառուցման ձախողումը, որն առաջացել էր ashpd 0.13 API "
+"փոփոխություններից"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:178
+msgid ""
+"Fixed voice and video calls showing \"Your browser doesn't support calling\""
+msgstr ""
+"Շտկվեցին ձայնային և տեսազանգերը, որոնք ցույց էին տալիս \"Ձեր դիտարկիչը չի "
+"աջակցում զանգերին\""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:179
+msgid ""
+"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+"Linux environments"
+msgstr ""
+"Շտկվեց՝ էկրանի ստեղնաշարը հուսալիորեն չհայտնվելը Phosh-ում և հպման վրա "
+"հիմնված Linux միջավայրերում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:180
+msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+msgstr ""
+"Շտկվեցին blob URL ներբեռնումները (օր.՝ Պահպանել պատկերը մեդիա դիտակից)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:181
+msgid "Redesigned application icons for stable and development variants"
+msgstr ""
+"Վերանախագծվեցին հավելվածի պատկերակները կայուն և մշակման տարբերակների համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:182
+msgid "Updated all Rust dependencies to latest versions"
+msgstr "Թարմացվեցին բոլոր Rust կախվածությունները մինչև վերջին տարբերակները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:183
+msgid "Upgraded to GNOME Platform 50"
+msgstr "Թարմացվեց մինչև GNOME Platform 50"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:184
+msgid "Removed ffmpeg-full extension (no longer required)"
+msgstr "Հեռացվեց ffmpeg-full ընդլայնումը (այլևս անհրաժեշտ չէ)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:191
+msgid "Fixed freezes when viewing media galleries"
+msgstr "Շտկվեցին սառեցումները մեդիա պատկերասրահները դիտելիս"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:192
+msgid "Fixed crash on launch due to memory pressure threshold ordering"
+msgstr ""
+"Շտկվեց գործարկման ժամանակ վթարը՝ հիշողության ճնշման շեմի դասավորության "
+"պատճառով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:193
+msgid "Fixed download destination and context menu issues"
+msgstr "Շտկվեցին ներբեռնման նպատակակետի և համատեքստի ընտրացանկի խնդիրները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:194
+msgid "Fixed dead key composition for first character in input fields"
+msgstr ""
+"Շտկվեց մեռած ստեղնի կազմությունը մուտքագրման դաշտերի առաջին նիշի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:195
+msgid ""
+"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
+"handling"
+msgstr ""
+"Ավելացվեցին GStreamer/PipeWire միջավայրի փոփոխականներ արտադրական Flatpak-ին՝"
+" արդյունավետ մեդիա մշակման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:202
+msgid "Fixed download destination handling"
+msgstr "Շտկվեց ներբեռնման նպատակակետի մշակումը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:203
+msgid "Resolved WebKit crashes on media-heavy pages"
+msgstr "Լուծվեցին WebKit-ի վթարները մեդիայով հագեցած էջերում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:210
+msgid "Fixed: Download destination path handling regression"
+msgstr "Շտկվեց՝ ներբեռնման նպատակակետի ուղու մշակման հետընթացը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:217
+msgid ""
+"Fixed: JS injection and path traversal vulnerabilities in download handling"
+msgstr ""
+"Շտկվեցին՝ JS ներարկման և ուղու անցման խոցելիությունները ներբեռնման մշակման "
+"մեջ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:224
+msgid ""
+"Fixed: Handle WebKit web process crashes with auto-reload and user "
+"notification"
+msgstr ""
+"Շտկվեց՝ WebKit web-գործընթացի վթարների մշակումը ինքնավերաբեռնմամբ և "
+"օգտատիրոջ ծանուցմամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:225
+msgid "Fixed: JS injection and path traversal vulnerabilities"
+msgstr "Շտկվեցին՝ JS ներարկման և ուղու անցման խոցելիությունները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:226
+msgid "Fixed: Panic in notification handling"
+msgstr "Շտկվեց՝ խուճապ ծանուցումների մշակման մեջ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:233
+msgid "Added complete multi-account support with sidebar and tray integration"
+msgstr ""
+"Ավելացվեց բազմահաշվային լիարժեք աջակցություն կողագոտու և սկուտեղի ինտեգրմամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:234
+msgid "Added per-account zoom settings and improved accessibility"
+msgstr ""
+"Ավելացվեցին ըստ հաշվի մասշտաբավորման կարգավորումներ և բարելավված "
+"մատչելիություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:235
+msgid "Fixed startup race conditions and resource usage issues"
+msgstr ""
+"Շտկվեցին գործարկման մրցավազքի պայմանները և ռեսուրսների օգտագործման խնդիրները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:242
+msgid ""
+"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+msgstr ""
+"Ավելացվեց մասշտաբավորման աջակցություն (Ctrl +/-/0)՝ պահպանմամբ և "
+"նախընտրությունների կառավարներով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:243
+msgid "Fixed window size increasing on every restart"
+msgstr "Շտկվեց պատուհանի չափի մեծացումը ամեն վերագործարկման ժամանակ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:250
+msgid ""
+"Fixed: Resolved webview reload loop on startup due to incorrect window size "
+"detection"
+msgstr ""
+"Շտկվեց՝ լուծվեց web-դիտակի վերաբեռնման ցիկլը գործարկման ժամանակ՝ պատուհանի "
+"չափի սխալ հայտնաբերման պատճառով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:257
+msgid ""
+"Added WebRTC permission handling in preparation for WhatsApp Web voice/video"
+" calls"
+msgstr ""
+"Ավելացվեց WebRTC թույլտվության մշակումը WhatsApp Web ձայնային/տեսազանգերի "
+"նախապատրաստման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:258
+msgid "Improved mobile UI resizing consistency"
+msgstr "Բարելավվեց բջջային UI-ի չափափոխման հետևողականությունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:265
+msgid ""
+"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+"(silences sounds)"
+msgstr ""
+"Շտկվեց՝ հավելվածն այժմ հարգում է համակարգի \"Չանհանգստացնել\" "
+"կարգավորումները GNOME-ում (լռեցնում է ձայները)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:266
+msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+msgstr ""
+"Շտկվեց՝ ծանուցումները շրջանցում են DND տեսողական ազդեցությունները "
+"(առաջնահերթությունն իջեցվել է մինչև Նորմալ)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:273
+msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+msgstr ""
+"Շտկվեցին սկուտեղի պատկերակները KDE/GNOME-ում (տեսանելի են ինչպես բաց, այնպես"
+" էլ մուգ թեմաներում)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:274
+msgid "Restored correct app icons and transparent backgrounds"
+msgstr "Վերականգնվեցին հավելվածի ճիշտ պատկերակները և թափանցիկ ֆոները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:275
+msgid "Improved icon compatibility across desktop environments"
+msgstr "Բարելավվեց պատկերակների համատեղելիությունը աշխատասեղանի միջավայրերում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:282
+msgid ""
+"Fixed application freezing on resume by reverting aggressive cache "
+"optimization"
+msgstr ""
+"Շտկվեց հավելվածի սառեցումը վերսկսման ժամանակ՝ հետ բերելով ագրեսիվ քեշի "
+"օպտիմիզացիան"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:283
+msgid "Fixed background validation to ensure app starts correctly"
+msgstr ""
+"Շտկվեց ֆոնային վավերացումը՝ ապահովելու համար, որ հավելվածը ճիշտ գործարկվի"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:284
+msgid "Optimized memory usage in mobile responsive scripts"
+msgstr "Օպտիմիզացվեց հիշողության օգտագործումը բջջային հարմարվող սկրիպտներում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:285
+msgid "Improved icon rendering (symbolic icons now use currentColor)"
+msgstr ""
+"Բարելավվեց պատկերակների ցուցադրումը (խորհրդանշական պատկերակներն այժմ "
+"օգտագործում են currentColor)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:292
+msgid "Fixed window resize behavior to prevent excessive reloading"
+msgstr ""
+"Շտկվեց պատուհանի չափափոխման վարքագիծը՝ ավելորդ վերաբեռնումը կանխելու համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:293
+msgid "Fixed background notifications reliability"
+msgstr "Շտկվեց ֆոնային ծանուցումների հուսալիությունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:300
+msgid "Fixed Flatpak build failure by correcting config"
+msgstr "Շտկվեց Flatpak կառուցման ձախողումը՝ ուղղելով կարգավորումը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:307
+msgid "Fixed \"Too many open files\" crash by reusing notification resources"
+msgstr ""
+"Շտկվեց \"Չափից շատ բացված ֆայլեր\" վթարը՝ վերաօգտագործելով ծանուցման "
+"ռեսուրսները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:308
+msgid "Fixed zombie process accumulation"
+msgstr "Շտկվեց զոմբի գործընթացների կուտակումը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:309
+msgid "Improved overall stability"
+msgstr "Բարելավվեց ընդհանուր կայունությունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:316
+msgid "Ctrl+N keyboard shortcut for opening a new chat"
+msgstr "Ctrl+N ստեղնաշարի դյուրանցում նոր զրույց բացելու համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:317
+msgid ""
+"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+"Lomiri"
+msgstr ""
+"Բջջային դասավորության աջակցություն ինքնահայտնաբերմամբ Phosh-ի, Plasma "
+"Mobile-ի և Lomiri-ի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:318
+msgid "Tray icon click now toggles window visibility"
+msgstr ""
+"Սկուտեղի պատկերակի սեղմումն այժմ փոխարկում է պատուհանի տեսանելիությունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:319
+msgid "Window size is saved and restored when hiding/showing"
+msgstr "Պատուհանի չափը պահվում և վերականգնվում է թաքցնելիս/ցուցադրելիս"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:320
+msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+msgstr ""
+"Բջջային դասավորության կարգավորումը փոխվեց բացվող ցանկի "
+"(ինքնաշխատ/միացված/անջատված)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:327
+msgid ""
+"Updated application summary and description for better AppStream compliance"
+msgstr ""
+"Թարմացվեց հավելվածի ամփոփումն ու նկարագրությունը AppStream-ի ավելի լավ "
+"համապատասխանության համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:334
+msgid ""
+"Notification Chat Linking: Clicking a notification now opens the specific "
+"chat in Karere."
+msgstr ""
+"Ծանուցման զրույցի կապում՝ ծանուցման սեղմումն այժմ բացում է կոնկրետ զրույցը "
+"Karere-ում։"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:335
+msgid ""
+"Webcam Support: Added support for using the webcam (Status updates, Video "
+"calls) with a new permission dialog."
+msgstr ""
+"Վեբխցիկի աջակցություն՝ ավելացվեց վեբխցիկի օգտագործման աջակցություն "
+"(Կարգավիճակի թարմացումներ, Տեսազանգեր) նոր թույլտվության երկխոսությամբ։"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:342
+msgid ""
+"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+"compatibility"
+msgstr ""
+"Բարելավվեց պատկերի կպցնելը Base64 կոդավորմամբ՝ WhatsApp Web-ի հուսալի "
+"համատեղելիության համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:343
+msgid "Added middle-click paste from primary selection (selected text)"
+msgstr ""
+"Ավելացվեց միջին սեղմումով կպցնելը առաջնային ընտրությունից (ընտրված տեքստ)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:344
+msgid "Fixed double-paste issue with middle-click"
+msgstr "Շտկվեց կրկնակի կպցնելու խնդիրը միջին սեղմումով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:351
+msgid "Fixed missing GSettings schema in Flatpak builds"
+msgstr "Շտկվեց բացակայող GSettings սխեման Flatpak կառուցումներում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:352
+msgid "Added new application icons"
+msgstr "Ավելացվեցին հավելվածի նոր պատկերակներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:353
+msgid "Corrected metadata description references"
+msgstr "Ուղղվեցին մետատվյալների նկարագրության հղումները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:360
+msgid ""
+"Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+msgstr ""
+"Անցում XDG ծանուցումների պորտալին (ashpd)՝ ավելի լավ ավազարկղի աջակցության "
+"համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:361
+msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+msgstr ""
+"Հեռացվեցին D-Bus ծանուցումների ուղիղ թույլտվությունները՝ ավելի մաքուր "
+"մանիֆեստի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:362
+msgid "Fixed Open action for downloaded files"
+msgstr "Շտկվեց Բացել գործողությունը ներբեռնված ֆայլերի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:363
+msgid "Fixed Dead Key/composition input issues"
+msgstr "Շտկվեցին Մեռած ստեղնի/կազմության մուտքագրման խնդիրները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:364
+msgid "Migrated Flatpak build logic to meson.build"
+msgstr "Տեղափոխվեց Flatpak կառուցման տրամաբանությունը meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:371
+msgid ""
+"Switch to XDG Background Portal for autostart (improves security and "
+"compatibility)"
+msgstr ""
+"Անցում XDG ֆոնային պորտալին ինքնագործարկման համար (բարելավում է "
+"անվտանգությունն ու համատեղելիությունը)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:378
+msgid "Add new contributor Sabri Ünal to the About dialog"
+msgstr "Ավելացվեց նոր ներդրող Sabri Ünal-ը Մասին երկխոսությանը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:379
+msgid "General improvements and versioning updates"
+msgstr "Ընդհանուր բարելավումներ և տարբերակների թարմացումներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:386
+msgid "Restore autostart permission for improved compatibility"
+msgstr ""
+"Վերականգնվեց ինքնագործարկման թույլտվությունը՝ բարելավված համատեղելիության "
+"համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:393
+msgid "Remove unnecessary autostart permission to satisfy linter"
+msgstr ""
+"Հեռացվեց ավելորդ ինքնագործարկման թույլտվությունը՝ linter-ին բավարարելու "
+"համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:400
+msgid "Add xdg-config/autostart permission for autostart support"
+msgstr ""
+"Ավելացվեց xdg-config/autostart թույլտվությունը ինքնագործարկման աջակցության "
+"համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:406
+msgid "Bug Fix Release"
+msgstr "Սխալի շտկման թողարկում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:407
+#: data/io.github.tobagin.karere.metainfo.xml.in:416
+msgid "Changes:"
+msgstr "Փոփոխություններ՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:409
+msgid ""
+"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
+msgstr ""
+"Շտկվեց բացակայող սկուտեղի պատկերակը GNOME-ում՝ ավելացնելով "
+"StatusNotifierWatcher թույլտվությունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:415
+msgid "Update and Bug Fix Release"
+msgstr "Թարմացման և սխալի շտկման թողարկում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:418
+msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+msgstr ""
+"Ավելացվեց \"Գործարկել մուտքագործելիս\" անջատիչը նախընտրություններում "
+"(լռելյայն՝ false)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:419
+msgid "Fixed autostart toggle pathing for Flatpak environments"
+msgstr "Շտկվեց ինքնագործարկման անջատիչի ուղին Flatpak միջավայրերի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:420
+msgid "Fixed tray icon quit behavior"
+msgstr "Շտկվեց սկուտեղի պատկերակի դուրս գալու վարքագիծը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:421
+msgid "Added striped symbolic icons for development version"
+msgstr "Ավելացվեցին գծավոր խորհրդանշական պատկերակներ մշակման տարբերակի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:427
+msgid "🎉 Major Release 2.0.0"
+msgstr "🎉 Հիմնական թողարկում 2.0.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:428
+#: data/io.github.tobagin.karere.metainfo.xml.in:452
+#: data/io.github.tobagin.karere.metainfo.xml.in:507
+#: data/io.github.tobagin.karere.metainfo.xml.in:577
+#: data/io.github.tobagin.karere.metainfo.xml.in:695
+msgid "New Features:"
+msgstr "Նոր գործառույթներ՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:430
+msgid "Full rewrite in Rust! 🦀"
+msgstr "Ամբողջական վերագրում Rust-ով! 🦀"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:431
+msgid "New System Tray Icon support"
+msgstr "Նոր համակարգային սկուտեղի պատկերակի աջակցություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:432
+msgid "Notifications fully working with persistence fixes"
+msgstr "Ծանուցումներն ամբողջությամբ աշխատում են մշտականության շտկումներով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:433
+msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+msgstr "Տեղափոխվեց Vala-ից բնիկ Rust/GTK4/Libadwaita"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:434
+msgid "Redesigned/streamlined preferences dialog"
+msgstr "Վերանախագծվեց/պարզեցվեց նախընտրությունների երկխոսությունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:435
+msgid "Enhanced performance and stability"
+msgstr "Բարելավված արտադրողականություն և կայունություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:441
+msgid "🐛 Bug Fix Release"
+msgstr "🐛 Սխալի շտկման թողարկում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:442
+msgid "Fixed:"
+msgstr "Շտկվեց՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:444
+msgid ""
+"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+"activation"
+msgstr ""
+"Շտկվեց գործարկման կրիտիկական սառեցման (spinner) խնդիրը՝ իրականացնելով D-Bus "
+"ակտիվացում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:445
+msgid "Ensure application starts properly in the background without delay"
+msgstr "Ապահովվեց հավելվածի ճիշտ գործարկումը ֆոնում առանց հապաղման"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:451
+msgid "🎉 Feature Release"
+msgstr "🎉 Գործառույթների թողարկում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:454
+msgid "🎤 Microphone permission support for voice notes"
+msgstr "🎤 Միկրոֆոնի թույլտվության աջակցություն ձայնային գրառումների համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:455
+msgid "🚀 Start in background option for autostart"
+msgstr "🚀 Ֆոնում գործարկելու տարբերակ ինքնագործարկման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:456
+msgid "🔄 Manual reload and auto-reload on network reconnection"
+msgstr "🔄 Ձեռքով վերաբեռնում և ինքնավերաբեռնում ցանցին վերակապվելիս"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:458
+#: data/io.github.tobagin.karere.metainfo.xml.in:474
+#: data/io.github.tobagin.karere.metainfo.xml.in:485
+#: data/io.github.tobagin.karere.metainfo.xml.in:496
+#: data/io.github.tobagin.karere.metainfo.xml.in:559
+#: data/io.github.tobagin.karere.metainfo.xml.in:596
+#: data/io.github.tobagin.karere.metainfo.xml.in:623
+#: data/io.github.tobagin.karere.metainfo.xml.in:648
+#: data/io.github.tobagin.karere.metainfo.xml.in:665
+#: data/io.github.tobagin.karere.metainfo.xml.in:682
+msgid "Improvements:"
+msgstr "Բարելավումներ՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:460
+msgid "⚡ Performance optimizations for startup and shutdown"
+msgstr "⚡ Արտադրողականության օպտիմիզացիաներ գործարկման և անջատման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:461
+msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+msgstr ""
+"📝 Անհամաժամ բառարանի բեռնում ուղղագրության ստուգման ավելի սահուն մեկնարկի "
+"համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:462
+msgid "📖 Added MPRIS workaround documentation"
+msgstr "📖 Ավելացվեց MPRIS-ի շրջանցման փաստաթղթավորում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:464
+#: data/io.github.tobagin.karere.metainfo.xml.in:518
+#: data/io.github.tobagin.karere.metainfo.xml.in:566
+#: data/io.github.tobagin.karere.metainfo.xml.in:586
+#: data/io.github.tobagin.karere.metainfo.xml.in:642
+#: data/io.github.tobagin.karere.metainfo.xml.in:659
+#: data/io.github.tobagin.karere.metainfo.xml.in:676
+msgid "Bug Fixes:"
+msgstr "Սխալների շտկումներ՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:466
+msgid "Fixed missing dictionaries on startup"
+msgstr "Շտկվեցին բացակայող բառարանները գործարկման ժամանակ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:467
+msgid "Fixed application freeze during lifecycle events"
+msgstr "Շտկվեց հավելվածի սառեցումը կենսացիկլի իրադարձությունների ընթացքում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:473
+msgid "🔧 Maintenance Release"
+msgstr "🔧 Սպասարկման թողարկում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:476
+msgid "Updated build configuration and dependencies"
+msgstr "Թարմացվեց կառուցման կազմաձևումը և կախվածությունները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:477
+msgid "Enhanced packaging for better compatibility"
+msgstr "Բարելավվեց փաթեթավորումը ավելի լավ համատեղելիության համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:478
+msgid "Minor bug fixes and stability improvements"
+msgstr "Փոքր սխալների շտկումներ և կայունության բարելավումներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:484
+msgid "📝 Documentation and Metadata Update"
+msgstr "📝 Փաստաթղթավորման և մետատվյալների թարմացում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:487
+msgid "Updated about dialog screenshot"
+msgstr "Թարմացվեց Մասին երկխոսության սքրինշոթը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:488
+msgid "Updated application screenshots"
+msgstr "Թարմացվեցին հավելվածի սքրինշոթները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:489
+msgid "Minor README corrections"
+msgstr "Փոքր README ուղղումներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:495
+msgid "📸 Screenshots and Documentation Update"
+msgstr "📸 Սքրինշոթների և փաստաթղթավորման թարմացում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:498
+msgid "Updated application screenshots with current UI appearance"
+msgstr "Թարմացվեցին հավելվածի սքրինշոթները ընթացիկ UI-ի տեսքով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:499
+msgid "Refreshed About dialog screenshot"
+msgstr "Թարմացվեց Մասին երկխոսության սքրինշոթը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:500
+msgid "Enhanced visual documentation for users"
+msgstr "Բարելավվեց տեսողական փաստաթղթավորումը օգտատերերի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:506
+msgid "🎉 Version 1.0.0 - Major Milestone Release"
+msgstr "🎉 Տարբերակ 1.0.0 - Հիմնական հանգրվանի թողարկում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:509
+msgid "✅ Fixed WhatsApp Web notification banner persistence"
+msgstr "✅ Շտկվեց WhatsApp Web-ի ծանուցման պաստառի մշտականությունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:510
+msgid "✅ Fixed notifications not working properly"
+msgstr "✅ Շտկվեց ծանուցումների պատշաճ չաշխատելը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:511
+msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+msgstr ""
+"🖼️ Ավելացվեց պատկերի կպցնելու աջակցություն փոխանակման բուֆերի միջոցով "
+"(Ctrl+V)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:512
+msgid ""
+"📥 Implemented download manager with custom directory and toast notifications"
+msgstr ""
+"📥 Իրականացվեց ներբեռնման կառավարիչ հատուկ թղթապանակով և թռուցիկ "
+"ծանուցումներով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:513
+msgid ""
+"♿ Enhanced accessibility with screen reader optimization and keyboard "
+"navigation"
+msgstr ""
+"♿ Բարելավվեց մատչելիությունը էկրանի ընթերցողի օպտիմիզացմամբ և ստեղնաշարի "
+"նավարկմամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:514
+msgid "📝 Added comprehensive spell checking system with auto-detection"
+msgstr ""
+"📝 Ավելացվեց ուղղագրության ստուգման համապարփակ համակարգ ինքնահայտնաբերմամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:515
+msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+msgstr "🔤 Ինտեգրվեցին 80+ լեզվի բառարաններ LibreOffice-ից"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:516
+msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+msgstr ""
+"⌨️ Ավելացվեց ստեղնաշարի դյուրանցումների երկխոսություն AdwShortcutsDialog-ի "
+"միջոցով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:520
+msgid ""
+"Fixed Ctrl+V paste for text content - now works for both text and images"
+msgstr ""
+"Շտկվեց Ctrl+V կպցնելը տեքստի բովանդակության համար - այժմ աշխատում է ինչպես "
+"տեքստի, այնպես էլ պատկերների համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:521
+msgid "Fixed WhatsApp notification permission not persisting across sessions"
+msgstr ""
+"Շտկվեց WhatsApp ծանուցման թույլտվության չպահպանվելը աշխատաշրջանների միջև"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:522
+msgid "Fixed notifications banner appearing on every app launch"
+msgstr ""
+"Շտկվեց ծանուցումների պաստառի հայտնվելը հավելվածի ամեն գործարկման ժամանակ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:523
+msgid "Fixed WebView zoom being enabled by default (now disabled)"
+msgstr ""
+"Շտկվեց WebView-ի մասշտաբավորման լռելյայն միացված լինելը (այժմ անջատված է)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:524
+msgid "Fixed clipboard manager intercepting all paste events"
+msgstr ""
+"Շտկվեց փոխանակման բուֆերի կառավարչի կողմից բոլոր կպցնելու իրադարձությունների"
+" ընդհատումը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:525
+msgid ""
+"Removed hardcoded blueprint compiler paths for cross-architecture support"
+msgstr ""
+"Հեռացվեցին blueprint կոմպիլյատորի կոշտ կոդավորված ուղիները խաչ-"
+"ճարտարապետական աջակցության համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:527
+msgid "Code Quality Improvements:"
+msgstr "Կոդի որակի բարելավումներ՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:529
+msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+msgstr ""
+"♻️ Հիմնական վերակառուցում՝ վերակազմակերպվեց կոդը PascalCase ֆայլերի "
+"անուններով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:530
+msgid "♻️ Refactored Window.vala into specialized manager components"
+msgstr "♻️ Վերակառուցվեց Window.vala-ն մասնագիտացված կառավարիչ բաղադրիչների"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:531
+msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+msgstr ""
+"♻️ Հեռացվեց հատուկ գրանցումը և վթարի հաշվետվությունը (օգտագործեք "
+"համակարգային journalctl)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:532
+msgid ""
+"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+msgstr ""
+"🗑️ Հեռացվեց Չանհանգստացնել գործառույթը (մշակվում է համակարգային "
+"ծանուցումների դեմոնի կողմից)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:533
+msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+msgstr "🗑️ Մաքրվեցին հնացած թեստային ֆայլերը և չօգտագործվող կախվածությունները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:534
+msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+msgstr "🗑️ Հեռացվեցին json-glib, gee և libsoup կախվածությունները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:535
+msgid "🧹 Centralized settings management with SettingsManager singleton"
+msgstr ""
+"🧹 Կենտրոնացվեց կարգավորումների կառավարումը SettingsManager singleton-ով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:536
+msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+msgstr ""
+"🧹 Հեռացվեց DependencyContainer.vala-ն (չօգտագործվող կախվածության ներարկում)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:537
+msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+msgstr "📸 Վերակազմակերպվեցին սքրինշոթները data/screenshots/ թղթապանակում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:539
+#: data/io.github.tobagin.karere.metainfo.xml.in:609
+#: data/io.github.tobagin.karere.metainfo.xml.in:631
+msgid "Technical Changes:"
+msgstr "Տեխնիկական փոփոխություններ՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:541
+msgid "Implemented UserScript injection for Notification.permission state"
+msgstr "Իրականացվեց UserScript ներարկում Notification.permission վիճակի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:542
+msgid "Connected show_notification signal handler for WebKit notifications"
+msgstr ""
+"Միացվեց show_notification ազդանշանի մշակիչը WebKit ծանուցումների համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:543
+msgid "WebKitGTK 6.0 storage persistence verified and documented"
+msgstr "WebKitGTK 6.0 պահեստի մշտականությունը ստուգվեց և փաստաթղթավորվեց"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:544
+msgid "Updated SettingsManager to be the default for all settings access"
+msgstr ""
+"Թարմացվեց SettingsManager-ը՝ դառնալով լռելյայն կարգավորումների բոլոր "
+"հասանելիության համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:545
+msgid "Improved build system with cleaner dependency management"
+msgstr ""
+"Բարելավվեց կառուցման համակարգը կախվածությունների ավելի մաքուր կառավարմամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:547
+msgid "Documentation:"
+msgstr "Փաստաթղթավորում՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:549
+msgid "📚 Enhanced README with accessibility features documentation"
+msgstr "📚 Բարելավվեց README-ն մատչելիության գործառույթների փաստաթղթավորմամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:550
+msgid "📚 Documented all keyboard shortcuts by category"
+msgstr "📚 Փաստաթղթավորվեցին բոլոր ստեղնաշարի դյուրանցումներն ըստ կատեգորիայի"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:551
+msgid "📚 Added spell checking configuration guide"
+msgstr "📚 Ավելացվեց ուղղագրության ստուգման կազմաձևման ուղեցույց"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:552
+msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+msgstr "📚 Շտկվեցին GitHub պահոցի URL-երը (karere-vala → karere)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:558
+msgid "🐛 Runtime Update and Bug Fixes"
+msgstr "🐛 Միջավայրի թարմացում և սխալների շտկումներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:561
+msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+msgstr ""
+"Թարմացվեց GNOME միջավայրը մինչև տարբերակ 49՝ բարելավված համատեղելիության "
+"համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:562
+msgid "Improved system integration with latest platform libraries"
+msgstr "Բարելավվեց համակարգային ինտեգրումը նորագույն հարթակի գրադարանների հետ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:563
+msgid "Better support for modern desktop environments"
+msgstr "Ավելի լավ աջակցություն ժամանակակից աշխատասեղանի միջավայրերի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:564
+msgid "Enhanced stability and performance optimizations"
+msgstr "Բարելավված կայունություն և արտադրողականության օպտիմիզացիաներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:568
+msgid "Resolved compatibility issues with newer GNOME environments"
+msgstr "Լուծվեցին համատեղելիության խնդիրները նորագույն GNOME միջավայրերի հետ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:569
+msgid "Fixed potential rendering inconsistencies"
+msgstr "Շտկվեցին հնարավոր ցուցադրման անհամապատասխանությունները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:570
+msgid "Improved error handling and recovery mechanisms"
+msgstr "Բարելավվեցին սխալների մշակման և վերականգնման մեխանիզմները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:576
+msgid ""
+"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+msgstr ""
+"✨ Բարելավված էմոջիի աջակցություն, արտաքին հղումների մշակում և կառուցման "
+"բարելավումներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:579
+msgid ""
+"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+msgstr ""
+"Ավելացվեցին բարձրորակ Noto Color Emoji տառատեսակներ (v2.047, Unicode 16.0 "
+"աջակցություն)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:580
+msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+msgstr "Բարելավվեց WebKit ցուցադրումը առավելագույն ապարատային արագացմամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:581
+msgid "Improved emoji consistency with bundled font system"
+msgstr "Բարելավվեց էմոջիի հետևողականությունը ներդրված տառատեսակի համակարգով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:582
+msgid "Optimized font loading to eliminate display conflicts"
+msgstr ""
+"Օպտիմիզացվեց տառատեսակի բեռնումը ցուցադրման հակասությունները վերացնելու "
+"համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:583
+msgid "Added WebKit cache control setting for improved rendering consistency"
+msgstr ""
+"Ավելացվեց WebKit քեշի կառավարման կարգավորում ցուցադրման բարելավված "
+"հետևողականության համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:584
+msgid "Cache disabled by default to prevent emoji rendering issues"
+msgstr "Քեշը անջատված է լռելյայն՝ էմոջիի ցուցադրման խնդիրները կանխելու համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:588
+msgid ""
+"Fixed external links not opening in default browser when running in Flatpak"
+msgstr ""
+"Շտկվեց արտաքին հղումների չբացվելը լռելյայն դիտարկիչում Flatpak-ում աշխատելիս"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:589
+msgid "Improved external link handling with proper Flatpak portal support"
+msgstr ""
+"Բարելավվեց արտաքին հղումների մշակումը պատշաճ Flatpak պորտալի աջակցությամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:590
+msgid "Fixed random emoji display issues and blank emoji problems"
+msgstr ""
+"Շտկվեցին պատահական էմոջիի ցուցադրման խնդիրները և դատարկ էմոջիի խնդիրները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:591
+msgid "Fixed invalid meson version requirement preventing builds"
+msgstr "Շտկվեց անվավեր meson տարբերակի պահանջը, որը կանխում էր կառուցումները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:592
+msgid "Corrected dependency version specifications in meson.build"
+msgstr "Ուղղվեցին կախվածությունների տարբերակների բնութագրերը meson.build-ում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:593
+msgid "Resolved flatpak-builder compatibility issues"
+msgstr "Լուծվեցին flatpak-builder-ի համատեղելիության խնդիրները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:594
+msgid "Enhanced URL validation for external link detection"
+msgstr "Բարելավվեց URL-ի վավերացումը արտաքին հղումների հայտնաբերման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:598
+msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+msgstr "Վերացվեց WebKit քեշի կոռուպցիան, որն ազդում էր էմոջիի ցուցադրման վրա"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:599
+msgid "Streamlined font stack for consistent emoji appearance"
+msgstr "Պարզեցվեց տառատեսակների փաթեթը էմոջիի հետևողական տեսքի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:600
+msgid "Enhanced 2D canvas acceleration for better graphics performance"
+msgstr ""
+"Բարելավվեց 2D կտավի արագացումը ավելի լավ գրաֆիկական արտադրողականության համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:601
+msgid "Improved font loading stability and reduced race conditions"
+msgstr ""
+"Բարելավվեց տառատեսակի բեռնման կայունությունը և նվազեցվեցին մրցավազքի "
+"պայմանները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:602
+msgid "Better sandboxed environment compatibility"
+msgstr "Ավելի լավ ավազարկղային միջավայրի համատեղելիություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:603
+msgid "More reliable link opening mechanism"
+msgstr "Ավելի հուսալի հղումների բացման մեխանիզմ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:604
+msgid "Enhanced logging for external link operations"
+msgstr "Բարելավված գրանցումը արտաքին հղումների գործողությունների համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:605
+msgid "Better build system compatibility with different environments"
+msgstr ""
+"Ավելի լավ կառուցման համակարգի համատեղելիություն տարբեր միջավայրերի հետ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:606
+msgid "Enhanced CI/CD pipeline stability"
+msgstr "Բարելավված CI/CD խողովակաշարի կայունություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:607
+msgid "More robust dependency handling"
+msgstr "Ավելի կայուն կախվածությունների մշակում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:611
+msgid ""
+"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+"only)"
+msgstr ""
+"Հեռացվեց ավելորդ բջջային օգտատիրոջ գործակալի փոխարկումը (WhatsApp Web-ը "
+"միայն աշխատասեղանի համար է)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:612
+msgid "Disabled problematic WebKit caches causing font corruption"
+msgstr ""
+"Անջատվեցին խնդրահարույց WebKit քեշերը, որոնք առաջացնում էին տառատեսակի "
+"կոռուպցիա"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:613
+msgid "Simplified emoji font configuration to single high-quality source"
+msgstr "Պարզեցվեց էմոջիի տառատեսակի կազմաձևումը մինչև մեկ բարձրորակ աղբյուր"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:614
+msgid "Restored Safari Linux user agent for native WebKit experience"
+msgstr ""
+"Վերականգնվեց Safari Linux օգտատիրոջ գործակալը բնիկ WebKit փորձառության համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:615
+msgid "Added subpixel font scaling and advanced rendering optimizations"
+msgstr ""
+"Ավելացվեց ենթապիքսելային տառատեսակի մասշտաբավորում և ընդլայնված ցուցադրման "
+"օպտիմիզացիաներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:616
+msgid "Implemented Flatpak portal system for external link handling"
+msgstr "Իրականացվեց Flatpak պորտալի համակարգ արտաքին հղումների մշակման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:622
+msgid "🔧 Code Refactoring and Architecture Improvements"
+msgstr "🔧 Կոդի վերակառուցում և ճարտարապետության բարելավումներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:625
+msgid "Converted template files to preprocessor directives for cleaner code"
+msgstr ""
+"Ձևանմուշային ֆայլերը փոխարկվեցին նախապրոցեսորի հրահանգների՝ ավելի մաքուր "
+"կոդի համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:626
+msgid "Eliminated .vala.in template substitution system"
+msgstr "Վերացվեց .vala.in ձևանմուշի փոխարինման համակարգը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:627
+msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+msgstr ""
+"Ավելացվեց կոմպիլյացիայի ժամանակ պայմանական կոմպիլյացիա՝ օգտագործելով "
+"DEVELOPMENT դրոշը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:628
+msgid "Improved build system maintainability and type safety"
+msgstr ""
+"Բարելավվեց կառուցման համակարգի սպասարկելիությունն ու տիպերի անվտանգությունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:629
+msgid "Added contributors Aman Das and Cameo to about dialog"
+msgstr "Ավելացվեցին ներդրողներ Aman Das-ը և Cameo-ն Մասին երկխոսությանը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:633
+msgid ""
+"Replaced window.vala.in and preferences.vala.in with direct .vala files"
+msgstr ""
+"Փոխարինվեցին window.vala.in-ը և preferences.vala.in-ը ուղիղ .vala ֆայլերով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:634
+msgid "Updated meson.build to use Vala preprocessor directives"
+msgstr "Թարմացվեց meson.build-ը՝ օգտագործելու Vala նախապրոցեսորի հրահանգները"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:635
+msgid "Simplified source file management in build system"
+msgstr "Պարզեցվեց սկզբնական ֆայլերի կառավարումը կառուցման համակարգում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:641
+#: data/io.github.tobagin.karere.metainfo.xml.in:675
+msgid "🐛 Bug Fixes and Improvements"
+msgstr "🐛 Սխալների շտկումներ և բարելավումներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:644
+msgid "Fixed crash when handling invalid user input data"
+msgstr "Շտկվեց վթարը անվավեր օգտատիրոջ մուտքային տվյալների մշակման ժամանակ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:645
+msgid "Resolved memory leak in notification cleanup"
+msgstr "Լուծվեց հիշողության արտահոսքը ծանուցումների մաքրման ժամանակ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:646
+msgid "Corrected accessibility focus handling"
+msgstr "Ուղղվեց մատչելիության կենտրոնացման մշակումը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:650
+msgid "Better error handling for network timeouts"
+msgstr "Ավելի լավ սխալների մշակում ցանցային ժամանակի սպառման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:651
+msgid "Enhanced stability for extended usage"
+msgstr "Բարելավված կայունություն երկարատև օգտագործման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:652
+msgid "Performance optimizations for scrolling"
+msgstr "Արտադրողականության օպտիմիզացիաներ ոլորման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:658
+msgid "🔧 Metadata and Standards Compliance"
+msgstr "🔧 Մետատվյալներ և չափանիշների համապատասխանություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:661
+msgid "Fixed duplicate provides tags in metainfo validation"
+msgstr "Շտկվեցին կրկնվող provides պիտակները metainfo վավերացման մեջ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:662
+msgid "Corrected AppStream metainfo format compliance"
+msgstr "Ուղղվեց AppStream metainfo ձևաչափի համապատասխանությունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:663
+msgid "Resolved invalid markup in release descriptions"
+msgstr "Լուծվեց անվավեր նշագրումը թողարկման նկարագրություններում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:667
+msgid "Updated all references from appdata to metainfo format"
+msgstr "Թարմացվեցին բոլոր հղումները appdata-ից metainfo ձևաչափի"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:668
+msgid "Enhanced Flathub compliance and validation"
+msgstr "Բարելավվեց Flathub-ի համապատասխանությունն ու վավերացումը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:669
+msgid "Improved translation file consistency"
+msgstr "Բարելավվեց թարգմանության ֆայլերի հետևողականությունը"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:678
+msgid "Fixed crash when handling invalid notification data"
+msgstr "Շտկվեց վթարը անվավեր ծանուցման տվյալների մշակման ժամանակ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:679
+msgid "Resolved memory leak in WebKit manager cleanup"
+msgstr "Լուծվեց հիշողության արտահոսքը WebKit կառավարչի մաքրման ժամանակ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:680
+msgid "Corrected window state persistence on shutdown"
+msgstr "Ուղղվեց պատուհանի վիճակի մշտականությունը անջատման ժամանակ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:684
+msgid "Better error handling for network disconnections"
+msgstr "Ավելի լավ սխալների մշակում ցանցային անջատումների համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:685
+msgid "Enhanced stability during long sessions"
+msgstr "Բարելավված կայունություն երկար աշխատաշրջանների ընթացքում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:686
+msgid "Performance optimizations for faster startup"
+msgstr "Արտադրողականության օպտիմիզացիաներ ավելի արագ գործարկման համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:692
+msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+msgstr "🚀 Հիմնական ճարտարապետության տեղափոխում՝ Python-ից Vala/GTK4"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:693
+msgid ""
+"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+"performance and integration."
+msgstr ""
+"ԽԱԽՏՈՂ ՓՈՓՈԽՈՒԹՅՈՒՆ՝ ամբողջական վերագրում Python-ից բնիկ Vala-ի՝ ավելի լավ "
+"արտադրողականության և ինտեգրման համար։"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:694
+msgid ""
+"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+"with WhatsApp Web as this is a completely new application implementation."
+msgstr ""
+"⚠️ Կարևոր՝ թարմացումից հետո ձեզ պետք կլինի վերահամաժամեցնել ձեր բջջային "
+"սարքը WhatsApp Web-ի հետ, քանի որ սա հավելվածի լիովին նոր իրականացում է։"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:697
+msgid "Native Vala/GTK4 implementation for optimal performance"
+msgstr "Բնիկ Vala/GTK4 իրականացում օպտիմալ արտադրողականության համար"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:698
+msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+msgstr "Ժամանակակից LibAdwaita UI Blueprint հայտարարական միջերեսով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:699
+msgid "Enhanced WebKitGTK 6.0 integration"
+msgstr "Բարելավված WebKitGTK 6.0 ինտեգրում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:700
+msgid "Advanced notification system with native desktop integration"
+msgstr "Առաջադեմ ծանուցումների համակարգ բնիկ աշխատասեղանի ինտեգրմամբ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:701
+msgid "Comprehensive accessibility support"
+msgstr "Համապարփակ մատչելիության աջակցություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:702
+msgid "Professional logging and crash reporting system"
+msgstr "Պրոֆեսիոնալ գրանցման և վթարի հաշվետվության համակարգ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:704
+msgid "Multi-language spell checking support"
+msgstr "Բազմալեզու ուղղագրության ստուգման աջակցություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:705
+msgid "Granular privacy and notification controls"
+msgstr "Մանրամասն գաղտնիության և ծանուցումների կառավարներ"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:706
+msgid "Hardware-accelerated rendering"
+msgstr "Ապարատային արագացմամբ ցուցադրում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:707
+msgid "Improved memory efficiency and startup performance"
+msgstr ""
+"Բարելավված հիշողության արդյունավետություն և գործարկման արտադրողականություն"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:709
+msgid "Technical Improvements:"
+msgstr "Տեխնիկական բարելավումներ՝"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:711
+msgid "Migrated from Python 3 to native Vala compilation"
+msgstr "Տեղափոխվեց Python 3-ից բնիկ Vala կոմպիլյացիա"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:712
+msgid "Modern Meson build system with Blueprint UI compilation"
+msgstr "Ժամանակակից Meson կառուցման համակարգ Blueprint UI կոմպիլյացիայով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:713
+msgid "Comprehensive test suite with unit and integration tests"
+msgstr "Համապարփակ թեստային փաթեթ միավորային և ինտեգրման թեստերով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:714
+msgid "Production-ready error handling and crash recovery"
+msgstr "Արտադրությանը պատրաստ սխալների մշակում և վթարից վերականգնում"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:715
+msgid "Enhanced security with proper sandboxing"
+msgstr "Բարելավված անվտանգություն պատշաճ ավազարկղով"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:716
+msgid "Complete internationalization support"
+msgstr "Ամբողջական միջազգայնացման աջակցություն"
+
+#: src/window.rs:303
+msgid "Account"
+msgstr "Հաշիվ"
+
+#: src/window.rs:632
+msgid "Waiting for QR scan…"
+msgstr "Սպասում է QR սկանավորման…"
+
+#: src/window.rs:654
+msgid "degraded"
+msgstr "վատթարացած"
+
+#: src/window.rs:670
+msgid "Unread messages"
+msgstr "Չկարդացված հաղորդագրություններ"
+
+#: src/window.rs:678
+msgid "Edit account"
+msgstr "Խմբագրել հաշիվը"
+
+#: src/window.rs:694
+msgid "Remove account"
+msgstr "Հեռացնել հաշիվը"
+
+#: src/window.rs:696
+msgid "Can't remove the only account"
+msgstr "Հնարավոր չէ հեռացնել միակ հաշիվը"
+
+#: src/window.rs:778
+msgid "Maximum of 9 accounts reached"
+msgstr "Հասել է առավելագույնը 9 հաշվի սահմանին"
+
+#: src/window.rs:804
+msgid "Label"
+msgstr "Պիտակ"
+
+#: src/window.rs:818
+msgid "Name"
+msgstr "Անուն"
+
+#: src/window.rs:819
+msgid "WhatsApp ID"
+msgstr "WhatsApp ID"
+
+#: src/window.rs:821
+msgid "Avatar URL"
+msgstr "Ավատարի URL"
+
+#: src/window.rs:830 src/window.rs:919
+msgid "Cancel"
+msgstr "Չեղարկել"
+
+#: src/window.rs:831
+msgid "Save"
+msgstr "Պահպանել"
+
+#: src/window.rs:840
+msgid "Add Account"
+msgstr "Ավելացնել հաշիվ"
+
+#: src/window.rs:842
+msgid "Edit Account"
+msgstr "Խմբագրել հաշիվը"
+
+#: src/window.rs:909
+msgid "Remove account?"
+msgstr "Հեռացնե՞լ հաշիվը"
+
+#: src/window.rs:920
+msgid "Remove"
+msgstr "Հեռացնել"
+
+#: src/actions.rs:263
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+"Ժամանակակից, բնիկ GTK4/LibAdwaita փաթաթիչ WhatsApp Web-ի համար, որն "
+"ապահովում է անխափան աշխատասեղանի ինտեգրում գրանցման և վթարի հաշվետվության "
+"համապարփակ հնարավորություններով"
+
+#: src/actions.rs:282
+msgid "Source"
+msgstr "Աղբյուր"
+
+#: src/actions.rs:285
+msgid "Special Thanks"
+msgstr "Հատուկ շնորհակալություն"

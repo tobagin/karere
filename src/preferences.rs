@@ -2,6 +2,7 @@
 
 use std::cell::RefCell;
 
+use gettextrs::gettext;
 use gtk::gio;
 use gtk::gio::prelude::{SettingsExt, SettingsExtManual};
 use gtk::glib;
@@ -84,6 +85,51 @@ fn active_window() -> Option<gtk::Window> {
     app.active_window()
 }
 
+/// Ask whether to restart now to apply the UI-language change (it only takes
+/// effect at startup). Shown instead of a toast so the choice is explicit.
+fn prompt_restart(parent: gtk::Widget) {
+    let dialog = adw::AlertDialog::new(
+        Some(&gettext("Restart Karere?")),
+        Some(&gettext(
+            "The language change takes effect after Karere restarts.",
+        )),
+    );
+    dialog.add_response("later", &gettext("Later"));
+    dialog.add_response("restart", &gettext("Restart Now"));
+    dialog.set_response_appearance("restart", adw::ResponseAppearance::Suggested);
+    dialog.set_default_response(Some("restart"));
+    dialog.set_close_response("later");
+    dialog.connect_response(None, move |_, response| {
+        if response == "restart" {
+            restart_app();
+        }
+    });
+    dialog.present(Some(&parent));
+}
+
+/// Relaunch Karere. The app is single-instance, so a fresh launch would just
+/// activate the existing one — spawn a detached relauncher that waits for this
+/// instance to quit (releasing the D-Bus name) before starting a new one. Under
+/// Flatpak this must go through the host (`flatpak-spawn --host`).
+fn restart_app() {
+    if let Ok(id) = std::env::var("FLATPAK_ID") {
+        let _ = std::process::Command::new("flatpak-spawn")
+            .arg("--host")
+            .arg("sh")
+            .arg("-c")
+            .arg(format!("sleep 1; exec flatpak run {id}"))
+            .spawn();
+    } else if let Ok(exe) = std::env::current_exe() {
+        let _ = std::process::Command::new("sh")
+            .arg("-c")
+            .arg(format!("sleep 1; exec {exe:?}"))
+            .spawn();
+    }
+    if let Some(app) = gio::Application::default() {
+        app.quit();
+    }
+}
+
 mod imp {
     use super::*;
     use gtk::subclass::prelude::*;
@@ -100,6 +146,8 @@ mod imp {
         pub row_close_action: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub row_tray: TemplateChild<adw::ComboRow>,
+        #[template_child]
+        pub row_language: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub row_theme: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -210,6 +258,7 @@ mod imp {
         }
 
         fn bind_general(&self, settings: &gio::Settings, app: &KarereApplication) {
+            self.bind_language(settings);
             bind_switch(settings, "start-in-background", &self.row_background);
             bind_combo_string(
                 settings,
@@ -255,6 +304,41 @@ mod imp {
                     if let Err(e) = win.activate_action("win.show-devtools", None) {
                         log::warn!("show-devtools action failed: {e}");
                     }
+                }
+            });
+        }
+
+        /// UI-language override. Labels are language names; values are gettext
+        /// locale codes (`""` = follow system). Applied at startup, so a change
+        /// raises a "restart to apply" toast.
+        fn bind_language(&self, settings: &gio::Settings) {
+            let mut codes: Vec<String> = vec![String::new()];
+            let mut labels: Vec<String> = vec![gettext("System Default")];
+            for (code, name) in crate::i18n::ui_locales() {
+                codes.push(code);
+                labels.push(name);
+            }
+            let label_refs: Vec<&str> = labels.iter().map(String::as_str).collect();
+            self.row_language
+                .set_model(Some(&gtk::StringList::new(&label_refs)));
+
+            let current = settings.string("app-language");
+            if let Some(idx) = codes.iter().position(|c| c == current.as_str()) {
+                self.row_language.set_selected(idx as u32);
+            }
+
+            let settings = settings.clone();
+            let dialog = self.obj().downgrade();
+            self.row_language.connect_selected_notify(move |row| {
+                let Some(code) = codes.get(row.selected() as usize) else {
+                    return;
+                };
+                if settings.string("app-language").as_str() == code {
+                    return;
+                }
+                let _ = settings.set_string("app-language", code);
+                if let Some(dialog) = dialog.upgrade() {
+                    prompt_restart(dialog.upcast());
                 }
             });
         }

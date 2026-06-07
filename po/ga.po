@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: https://github.com/tobagin/karere/issues\n"
-"POT-Creation-Date: 2026-03-31 00:00+0000\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-07 11:42+0100\n"
 "PO-Revision-Date: 2026-02-09 22:04+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,650 +17,2223 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n==2 ? 1 : 2;\n"
 
-#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui
-msgid "General"
-msgstr "Ginearálta"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Show this help"
-msgstr "Taispeáin an chabhair seo"
-
-#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui temp_ui/window.ui
-msgid "Preferences"
-msgstr "Sainroghanna"
-
-#: temp_ui/keyboard-shortcuts.ui temp_ui/window.ui
-msgid "About"
-msgstr "Maidir le"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Quit application"
-msgstr "Scoir den fheidhmchlár"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Window"
-msgstr "Fuinneog"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Minimize window"
-msgstr "Íoslaghdaigh an fhuinneog"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Fullscreen"
-msgstr "Scáileán iomlán"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "WhatsApp Web"
-msgstr "WhatsApp Web"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Find in chat"
-msgstr "Aimsigh sa chomhrá"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Search chats"
-msgstr "Cuardaigh comhráite"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "New chat"
-msgstr "Comhrá nua"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Archive current chat"
-msgstr "Cuir an comhrá reatha i dtaisce"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Open profile"
-msgstr "Oscail próifíl"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Reload WhatsApp Web"
-msgstr "Athlódáil WhatsApp Web"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "WebView Zoom"
-msgstr "Súmáil an Amharcán Gréasáin"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Zoom in"
-msgstr "Súmáil isteach"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Zoom out"
-msgstr "Súmáil amach"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Reset zoom"
-msgstr "Athshocraigh an tsúmáil"
-
-#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui
-msgid "Accessibility"
-msgstr "Inrochtaineacht"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Toggle high contrast"
-msgstr "Scoránaigh ardchodarsnacht"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Toggle focus indicators"
-msgstr "Scoránaigh táscairí fócais"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Developer"
-msgstr "Forbróir"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Developer tools"
-msgstr "Uirlisí forbróra"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Reload page"
-msgstr "Athlódáil an leathanach"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Force reload"
-msgstr "Éigean-athlódáil"
-
-#: temp_ui/keyboard-shortcuts.ui temp_ui/preferences.ui
-msgid "Notifications"
-msgstr "Fógraí"
-
-#: temp_ui/keyboard-shortcuts.ui
-msgid "Toggle notifications"
-msgstr "Scoránaigh fógraí"
-
-#: temp_ui/preferences.ui
-msgid "Startup"
-msgstr "Tosú"
-
-#: temp_ui/preferences.ui
-msgid "Run on Startup"
-msgstr "Rith ag an Tosú"
-
-#: temp_ui/preferences.ui
-msgid "Launch Karere automatically when you log in"
-msgstr "Seol Karere go huathoibríoch nuair a logálann tú isteach"
-
-#: temp_ui/preferences.ui
-msgid "Start in background"
-msgstr "Tosaigh sa chúlra"
-
-#: temp_ui/preferences.ui
-msgid "Start minimized without showing the window"
-msgstr "Tosaigh íoslaghdaithe gan an fhuinneog a thaispeáint"
-
-#: temp_ui/preferences.ui
-msgid "Window Close Behavior"
-msgstr "Iompar Dúnadh na Fuinneoige"
-
-#: temp_ui/preferences.ui
-msgid "What happens when you close the window"
-msgstr "Cad a tharlaíonn nuair a dhúnann tú an fhuinneog"
-
-#: temp_ui/preferences.ui
-msgid "Run in Background"
-msgstr "Rith sa Chúlra"
-
-#: temp_ui/preferences.ui
-msgid "Quit Application"
-msgstr "Scoir den Fheidhmchlár"
-
-#: temp_ui/preferences.ui
-msgid "System Tray Icon"
-msgstr "Deilbhín Tráidire an Chórais"
-
-#: temp_ui/preferences.ui
-msgid "Show an icon in the system tray"
-msgstr "Taispeáin deilbhín i dtráidire an chórais"
-
-#: temp_ui/preferences.ui
-msgid "Auto"
-msgstr "Uathoibríoch"
-
-#: temp_ui/preferences.ui
-msgid "Enabled"
-msgstr "Cumasaithe"
-
-#: temp_ui/preferences.ui
-msgid "Disabled"
-msgstr "Díchumasaithe"
-
-#: temp_ui/preferences.ui
-msgid "Auto: Enabled for non-GNOME environments"
-msgstr "Uathoibríoch: Cumasaithe do thimpeallachtaí nach GNOME iad"
-
-#: temp_ui/preferences.ui
-msgid "Appearance"
-msgstr "Dealramh"
-
-#: temp_ui/preferences.ui
-msgid "Theme"
-msgstr "Téama"
-
-#: temp_ui/preferences.ui
-msgid "Choose the application color scheme"
-msgstr "Roghnaigh scéim dathanna an fheidhmchláir"
-
-#: temp_ui/preferences.ui
-msgid "Follow System"
-msgstr "Lean an Córas"
-
-#: temp_ui/preferences.ui
-msgid "Light"
-msgstr "Solas"
-
-#: temp_ui/preferences.ui
-msgid "Dark"
-msgstr "Dorcha"
-
-#: temp_ui/preferences.ui
-msgid "Mobile Layout (Experimental)"
-msgstr "Leagan Amach Móibíleach (Turgnamhach)"
-
-#: temp_ui/preferences.ui
-msgid "Optimize the interface for small screens"
-msgstr "Optamaigh an comhéadan le haghaidh scáileáin bheaga"
-
-#: temp_ui/preferences.ui
-msgid "Auto: Enabled for mobile environments (Phosh, Plasma Mobile, etc.)"
-msgstr ""
-"Uathoibríoch: Cumasaithe do thimpeallachtaí móibíleacha (Phosh, Plasma "
-"Mobile, etc.)"
-
-#: temp_ui/preferences.ui
-msgid "Spell Checking"
-msgstr "Seiceáil Litrithe"
-
-#: temp_ui/preferences.ui
-msgid "Enable Spell Checking"
-msgstr "Cumasaigh Seiceáil Litrithe"
-
-#: temp_ui/preferences.ui
-msgid "Check spelling as you type"
-msgstr "Seiceáil litriú agus tú ag clóscríobh"
-
-#: temp_ui/preferences.ui
-msgid "Dictionary Status"
-msgstr "Stádas an Fhoclóra"
-
-#: temp_ui/preferences.ui
-msgid "Number of installed dictionaries"
-msgstr "Líon na bhfoclóirí suiteáilte"
-
-#: temp_ui/preferences.ui
-msgid "Unknown"
-msgstr "Anaithnid"
-
-#: temp_ui/preferences.ui
-msgid "Active Language"
-msgstr "Teanga Ghníomhach"
-
-#: temp_ui/preferences.ui
-msgid "Automatically detected language"
-msgstr "Teanga braite go huathoibríoch"
-
-#: temp_ui/preferences.ui
-msgid "Select the language for spell checking"
-msgstr "Roghnaigh an teanga don seiceáil litrithe"
-
-#: temp_ui/preferences.ui
-msgid "Override Dictionary"
-msgstr "Anulaigh an Foclóir"
-
-#: temp_ui/preferences.ui
-msgid "Manually select the spell checking language"
-msgstr "Roghnaigh teanga an tseiceáil litrithe de láimh"
-
-#: temp_ui/preferences.ui
-msgid "Enable Auto-Correct"
-msgstr "Cumasaigh uathcheartú"
-
-#: temp_ui/preferences.ui
-msgid "Automatically fix common spelling mistakes"
-msgstr "Deisigh botúin choitianta litrithe go huathoibríoch"
-
-#: temp_ui/preferences.ui
-msgid "Downloads"
-msgstr "Íoslódálacha"
-
-#: temp_ui/preferences.ui src/preferences.rs
-msgid "Default (Downloads)"
-msgstr "Réamhshocrú (Íoslódálacha)"
-
-#: temp_ui/preferences.ui
-msgid "Download Directory"
-msgstr "Comhadlann Íoslódála"
-
-#: temp_ui/preferences.ui
-msgid "Choose..."
-msgstr "Roghnaigh..."
-
-#: temp_ui/preferences.ui
-msgid "Reset to default"
-msgstr "Athshocraigh go réamhshocrú"
-
-#: temp_ui/preferences.ui
-msgid "Accounts"
-msgstr "Cuntais"
-
-#: temp_ui/preferences.ui
-msgid "Multi-Account Support"
-msgstr "Tacaíocht Ilchuntas"
-
-#: temp_ui/preferences.ui
-msgid "Show account switcher in the header bar"
-msgstr "Taispeáin malartóir cuntas sa bharrbharra"
-
-#: temp_ui/preferences.ui
-msgid "Limit Number of Accounts"
-msgstr "Teorainn ar Líon na gCuntas"
-
-#: temp_ui/preferences.ui
-msgid "Restrict how many accounts can be created"
-msgstr "Cuir teorainn ar cé mhéad cuntas is féidir a chruthú"
-
-#: temp_ui/preferences.ui
-#, fuzzy
-msgid "Maximum Accounts"
-msgstr "Cuntais"
-
-#: temp_ui/preferences.ui
-#, fuzzy
-msgid "Maximum number of accounts allowed"
-msgstr "Uasmhéid carachtar a thaispeántar i réamhamhairc"
-
-#: temp_ui/preferences.ui
-msgid "Developer Tools"
-msgstr "Uirlisí Forbróra"
-
-#: temp_ui/preferences.ui
-msgid "Enable Developer Tools"
-msgstr "Cumasaigh Uirlisí Forbróra"
-
-#: temp_ui/preferences.ui
-msgid "Allow inspecting and debugging the WebView"
-msgstr "Ceadaigh iniúchadh agus dífhabhtú an Amharcán Gréasáin"
-
-#: temp_ui/preferences.ui
-msgid "Open the WebKit inspector"
-msgstr "Oscail an t-iniúchóir WebKit"
-
-#: temp_ui/preferences.ui
-msgid "Open"
-msgstr "Oscail"
-
-#: temp_ui/preferences.ui
-msgid "Keyboard Navigation"
-msgstr "Nascleanúint Méarchláir"
-
-#: temp_ui/preferences.ui temp_ui/window.ui
-msgid "Keyboard Shortcuts"
-msgstr "Aicearraí Méarchláir"
-
-#: temp_ui/preferences.ui
-msgid "Enable keyboard shortcuts for common actions"
-msgstr "Cumasaigh aicearraí méarchláir le haghaidh gníomhartha coitianta"
-
-#: temp_ui/preferences.ui
-msgid "Focus Indicators"
-msgstr "Táscairí Fócais"
-
-#: temp_ui/preferences.ui
-msgid "Show visible outlines around focused elements"
-msgstr "Taispeáin imlínte infheicthe thart ar ghnéithe dírithe"
-
-#: temp_ui/preferences.ui
-msgid "View Keyboard Shortcuts"
-msgstr "Féach ar Aicearraí Méarchláir"
-
-#: temp_ui/preferences.ui
-msgid "See all available keyboard shortcuts"
-msgstr "Féach ar na haicearraí méarchláir go léir atá ar fáil"
-
-#: temp_ui/preferences.ui
-msgid "View"
-msgstr "Féach"
-
-#: temp_ui/preferences.ui
-msgid "Visual Accessibility"
-msgstr "Inrochtaineacht Amhairc"
-
-#: temp_ui/preferences.ui
-msgid "High Contrast Mode"
-msgstr "Mód Ardchodarsnachta"
-
-#: temp_ui/preferences.ui
-msgid "Increase contrast for better readability"
-msgstr "Méadaigh codarsnacht le haghaidh inléiteacht níos fearr"
-
-#: temp_ui/preferences.ui
-msgid "Reduce Motion"
-msgstr "Laghdaigh Gluaisne"
-
-#: temp_ui/preferences.ui
-msgid "Minimize animations and transitions"
-msgstr "Íoslaghdaigh beochan agus trasnaíocht"
-
-#: temp_ui/preferences.ui
-#, fuzzy
-msgid "Accessibility Zoom"
-msgstr "Inrochtaineacht"
-
-#: temp_ui/preferences.ui
-#, fuzzy
-msgid "Minimum Zoom Level"
-msgstr "Leibhéal Súmála"
-
-#: temp_ui/preferences.ui
-msgid "Set a minimum zoom level for all accounts"
-msgstr "Socraigh íosleibhéal zúmála do gach cuntas"
-
-#: temp_ui/preferences.ui
-msgid "Applied to all webviews — changing this resets all accounts"
-msgstr "Curtha i bhfeidhm ar gach WebView — malairt seo athshocraíonn gach cuntas"
-
-#: temp_ui/preferences.ui
-#, fuzzy
-msgid "Reset Zoom Level"
-msgstr "Leibhéal Súmála"
-
-#: temp_ui/preferences.ui
-msgid "Reset minimum zoom to 1.0 for all accounts"
-msgstr "Athshocraigh an t-íoszúm go 1.0 do gach cuntas"
-
-#: temp_ui/preferences.ui
-msgid "Header Bar Zoom Controls"
-msgstr "Rialtáin Zúmála an Bharra Ceanntásca"
-
-#: temp_ui/preferences.ui
-msgid "Show zoom buttons in the header bar (affects current account only)"
-msgstr "Taispeáin cnaipí zúmála sa bharra ceanntásca (ní dhéanann sé difear ach don chuntas reatha)"
-
-#: temp_ui/preferences.ui temp_ui/window.ui
-msgid "Reset Zoom"
-msgstr "Athshocraigh an tSúmáil"
-
-#: temp_ui/preferences.ui
-msgid "Reset"
-msgstr "Athshocraigh"
-
-#: temp_ui/preferences.ui
-msgid "Screen Reader Support"
-msgstr "Tacaíocht Léitheora Scáileáin"
-
-#: temp_ui/preferences.ui
-msgid "Screen Reader Optimizations"
-msgstr "Optamuithe Léitheora Scáileáin"
-
-#: temp_ui/preferences.ui
-msgid "Improve compatibility with assistive technologies"
-msgstr "Feabhsaigh comhoiriúnacht le teicneolaíochtaí cúnta"
-
-#: temp_ui/preferences.ui
-msgid "Accessibility Shortcuts"
-msgstr "Aicearraí Inrochtaineachta"
-
-#: temp_ui/preferences.ui
-msgid "Enable keyboard shortcuts for accessibility features"
-msgstr "Cumasaigh aicearraí méarchláir le haghaidh gnéithe inrochtaineachta"
-
-#: temp_ui/preferences.ui
-msgid "Developer Shortcuts"
-msgstr "Aicearraí Forbróra"
-
-#: temp_ui/preferences.ui
-msgid "Enable keyboard shortcuts for developer tools"
-msgstr "Cumasaigh aicearraí méarchláir le haghaidh uirlisí forbróra"
-
-#: temp_ui/preferences.ui
-msgid "Notification Shortcuts"
-msgstr "Aicearraí Fógra"
-
-#: temp_ui/preferences.ui
-msgid "Enable keyboard shortcuts for notification actions"
-msgstr "Cumasaigh aicearraí méarchláir le haghaidh gníomhartha fógra"
-
-#: temp_ui/preferences.ui
-msgid "Enable Notifications"
-msgstr "Cumasaigh Fógraí"
-
-#: temp_ui/preferences.ui
-msgid "Master toggle for all notifications"
-msgstr "Máistir-scoránaigh do gach fógra"
-
-#: temp_ui/preferences.ui
-msgid "Messages"
-msgstr "Teachtaireachtaí"
-
-#: temp_ui/preferences.ui
-msgid "Message Notifications"
-msgstr "Fógraí Teachtaireachta"
-
-#: temp_ui/preferences.ui
-msgid "Show notifications for incoming messages"
-msgstr "Taispeáin fógraí le haghaidh teachtaireachtaí isteach"
-
-#: temp_ui/preferences.ui
-msgid "Change Tray Icon on Message"
-msgstr "Athraigh Deilbhín an Tráidire ar Theachtaireacht"
-
-#: temp_ui/preferences.ui
-msgid "Animate the tray icon when a new message arrives"
-msgstr "Beoigh deilbhín an tráidire nuair a thagann teachtaireacht nua"
-
-#: temp_ui/preferences.ui
-msgid "Message Preview"
-msgstr "Réamhamharc Teachtaireachta"
-
-#: temp_ui/preferences.ui
-msgid "Show Message Preview"
-msgstr "Taispeáin Réamhamharc Teachtaireachta"
-
-#: temp_ui/preferences.ui
-msgid "Display message content in notifications"
-msgstr "Taispeáin inneachar na dteachtaireachtaí i bhfógraí"
-
-#: temp_ui/preferences.ui
-msgid "Limit Message Preview Size"
-msgstr "Teorainn le Méid Réamhamhairc Teachtaireachta"
-
-#: temp_ui/preferences.ui
-msgid "Truncate long messages in notifications"
-msgstr "Giorraigh teachtaireachtaí fada i bhfógraí"
-
-#: temp_ui/preferences.ui
-msgid "Preview Length (characters)"
-msgstr "Fad an Réamhamhairc (carachtair)"
-
-#: temp_ui/preferences.ui
-msgid "Maximum number of characters shown in previews"
-msgstr "Uasmhéid carachtar a thaispeántar i réamhamhairc"
-
-#: temp_ui/preferences.ui
-msgid "Sounds"
-msgstr "Fuaimeanna"
-
-#: temp_ui/preferences.ui
-msgid "Notification Sounds"
-msgstr "Fuaimeanna Fógra"
-
-#: temp_ui/preferences.ui
-msgid "Play a sound when a notification arrives"
-msgstr "Seinn fuaim nuair a thagann fógra"
-
-#: temp_ui/preferences.ui
-msgid "Sound"
-msgstr "Fuaim"
-
-#: temp_ui/preferences.ui
-msgid "Choose the notification alert sound"
-msgstr "Roghnaigh fuaim airdeall an fhógra"
-
-#: temp_ui/preferences.ui
-msgid "WhatsApp (Default)"
-msgstr "WhatsApp (Réamhshocrú)"
-
-#: temp_ui/preferences.ui
-msgid "Pop"
-msgstr "Pop"
-
-#: temp_ui/preferences.ui
-msgid "Alert"
-msgstr "Airdeall"
-
-#: temp_ui/preferences.ui
-msgid "Soft"
-msgstr "Bog"
-
-#: temp_ui/preferences.ui
-msgid "Start"
-msgstr "Tosaigh"
-
-#: temp_ui/preferences.ui
-msgid "Download Notifications"
-msgstr "Fógraí Íoslódála"
-
-#: temp_ui/preferences.ui
-msgid "Notify when a file download completes"
-msgstr "Cuir in iúl nuair a chríochnaíonn íoslódáil comhaid"
-
-#: temp_ui/preferences.ui
-msgid "Notification Type"
-msgstr "Cineál Fógra"
-
-#: temp_ui/preferences.ui
-msgid "How download notifications are displayed"
-msgstr "Conas a thaispeántar fógraí íoslódála"
-
-#: temp_ui/preferences.ui
-msgid "In-app Toast"
-msgstr "Tósta in-aipe"
-
-#: temp_ui/preferences.ui
-msgid "System Notification"
-msgstr "Fógra Córais"
-
-#: temp_ui/window.ui src/main.rs src/tray.rs
+#: src/main.rs:37
+msgid "Karere starting"
+msgstr "Karere á thosú"
+
+#: src/window.rs:912
+msgid "This removes the local session for"
+msgstr "Baineann seo an seisiún áitiúil le haghaidh"
+
+#: src/window.rs:915
+msgid "The device stays linked on your phone until you remove it there."
+msgstr "Fanann an gléas nasctha ar do ghuthán go dtí go mbaineann tú ann é."
+
+#: src/tray.rs:43 src/tray.rs:66 src/tray.rs:73 data/ui/window.ui:12
+#: data/ui/window.ui:23 src/actions.rs:258
 msgid "Karere"
 msgstr "Karere"
 
-#: temp_ui/window.ui
-#, fuzzy
-msgid "GTK4 WhatsApp Web Client"
-msgstr "Cliant WhatsApp Web GTK4"
+#. Translators: tray tooltip body; leading number is the unread count.
+#: src/tray.rs:68
+msgid "unread"
+msgstr "neamhléite"
 
-#: temp_ui/window.ui
-#, fuzzy
-msgid "Zoom"
-msgstr "Súmáil isteach"
+#: src/tray.rs:93
+msgid "Hide Window"
+msgstr "Folaigh an Fhuinneog"
 
-#: temp_ui/window.ui
-msgid "Zoom Out"
-msgstr "Súmáil Amach"
+#: src/tray.rs:95
+msgid "Show Window"
+msgstr "Taispeáin an Fhuinneog"
 
-#: temp_ui/window.ui
-msgid "Zoom In"
-msgstr "Súmáil Isteach"
+#: src/tray.rs:139 data/ui/window.ui:255 data/ui/preferences.ui:10
+#: data/ui/keyboard-shortcuts.ui:145
+msgid "Preferences"
+msgstr "Sainroghanna"
 
-#: temp_ui/window.ui
-msgid "Spell Checking Language"
-msgstr "Teanga Seiceála Litrithe"
+#: src/tray.rs:145 data/ui/window.ui:261 data/ui/preferences.ui:405
+#: data/ui/keyboard-shortcuts.ui:152
+msgid "Keyboard Shortcuts"
+msgstr "Aicearraí Méarchláir"
 
-#: temp_ui/window.ui
-msgid "Menu"
-msgstr "Roghchlár"
+#: src/tray.rs:151
+msgid "About Karere"
+msgstr "Maidir le Karere"
 
-#: temp_ui/window.ui
-msgid "Switch Account"
-msgstr "Athraigh Cuntas"
-
-#: temp_ui/window.ui
-msgid "Add new account"
-msgstr "Cuir cuntas nua leis"
-
-#: temp_ui/window.ui
-msgid "Refresh WhatsApp Web"
-msgstr "Athnuaigh WhatsApp Web"
-
-#: temp_ui/window.ui src/tray.rs
+#: src/tray.rs:158 data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159
 msgid "Quit"
 msgstr "Scoir"
 
-#: src/main.rs
-msgid "Karere (Dev)"
-msgstr "Karere (Forbairt)"
+#: src/preferences.rs:92
+msgid "Restart Karere?"
+msgstr "Atosaigh Karere?"
 
-#: src/main.rs
+#: src/preferences.rs:94
+msgid "The language change takes effect after Karere restarts."
+msgstr "Tiocfaidh an t-athrú teanga i bhfeidhm tar éis do Karere atosú."
+
+#: src/preferences.rs:97
+msgid "Later"
+msgstr "Níos déanaí"
+
+#: src/preferences.rs:98
+msgid "Restart Now"
+msgstr "Atosaigh Anois"
+
+#: src/preferences.rs:316
+msgid "System Default"
+msgstr "Réamhshocrú an Chórais"
+
+#: data/ui/window.ui:24
+msgid "GTK4 WhatsApp Web Client"
+msgstr "Cliant WhatsApp Web GTK4"
+
+#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
+msgid "Zoom Out"
+msgstr "Súmáil Amach"
+
+#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
+msgid "Reset Zoom"
+msgstr "Athshocraigh an tSúmáil"
+
+#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
+msgid "Zoom In"
+msgstr "Súmáil Isteach"
+
+#: data/ui/window.ui:70
+msgid "Spell Checking Language"
+msgstr "Teanga Seiceála Litrithe"
+
+#: data/ui/window.ui:77
+msgid "Menu"
+msgstr "Roghchlár"
+
+#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
+msgid "Switch Account"
+msgstr "Athraigh Cuntas"
+
+#: data/ui/window.ui:111
+msgid "Find in page"
+msgstr "Aimsigh sa leathanach"
+
+#: data/ui/window.ui:131
+msgid "Previous match"
+msgstr "An mheaitseáil roimhe seo"
+
+#: data/ui/window.ui:137
+msgid "Next match"
+msgstr "An chéad mheaitseáil eile"
+
+#: data/ui/window.ui:173 data/ui/preferences.ui:109 data/ui/preferences.ui:118
+#: data/ui/keyboard-shortcuts.ui:126
+msgid "Developer Tools"
+msgstr "Uirlisí Forbróra"
+
+#: data/ui/window.ui:184
+msgid "Close Developer Tools"
+msgstr "Dún Uirlisí Forbróra"
+
+#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
+msgid "Add new account"
+msgstr "Cuir cuntas nua leis"
+
+#: data/ui/window.ui:251
+msgid "Refresh WhatsApp Web"
+msgstr "Athnuaigh WhatsApp Web"
+
+#: data/ui/window.ui:265
+msgid "About"
+msgstr "Maidir le"
+
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:139
+msgid "General"
+msgstr "Ginearálta"
+
+#: data/ui/preferences.ui:17
+msgid "Startup"
+msgstr "Tosú"
+
+#: data/ui/preferences.ui:20
+msgid "Run on Startup"
+msgstr "Rith ag an Tosú"
+
+#: data/ui/preferences.ui:21
+msgid "Launch Karere automatically when you log in"
+msgstr "Seol Karere go huathoibríoch nuair a logálann tú isteach"
+
+#: data/ui/preferences.ui:26
+msgid "Start in Background"
+msgstr "Tosaigh sa Chúlra"
+
+#: data/ui/preferences.ui:27
+msgid "Start minimized without showing the window"
+msgstr "Tosaigh íoslaghdaithe gan an fhuinneog a thaispeáint"
+
+#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
+msgid "Window"
+msgstr "Fuinneog"
+
+#: data/ui/preferences.ui:37
+msgid "Window Close Behavior"
+msgstr "Iompar Dúnadh na Fuinneoige"
+
+#: data/ui/preferences.ui:38
+msgid "What happens when you close the window"
+msgstr "Cad a tharlaíonn nuair a dhúnann tú an fhuinneog"
+
+#: data/ui/preferences.ui:42
+msgid "Run in Background"
+msgstr "Rith sa Chúlra"
+
+#: data/ui/preferences.ui:43
+msgid "Quit Application"
+msgstr "Scoir den Fheidhmchlár"
+
+#: data/ui/preferences.ui:51
+msgid "System Tray Icon"
+msgstr "Deilbhín Tráidire an Chórais"
+
+#: data/ui/preferences.ui:52
+msgid "Auto: shown when a system tray is available"
+msgstr "Uathoibríoch: taispeánta nuair atá tráidire córais ar fáil"
+
+#: data/ui/preferences.ui:56 data/ui/preferences.ui:97
+msgid "Auto"
+msgstr "Uathoibríoch"
+
+#: data/ui/preferences.ui:57 data/ui/preferences.ui:98
+msgid "Enabled"
+msgstr "Cumasaithe"
+
+#: data/ui/preferences.ui:58 data/ui/preferences.ui:99
+msgid "Disabled"
+msgstr "Díchumasaithe"
+
+#: data/ui/preferences.ui:68
+msgid "Appearance"
+msgstr "Dealramh"
+
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:300
+msgid "Language"
+msgstr "Teanga"
+
+#: data/ui/preferences.ui:72
+msgid "Application language. Requires restart."
+msgstr "Teanga an fheidhmchláir. Teastaíonn atosú."
+
+#: data/ui/preferences.ui:77
+msgid "Theme"
+msgstr "Téama"
+
+#: data/ui/preferences.ui:78
+msgid "Choose the application color scheme"
+msgstr "Roghnaigh scéim dathanna an fheidhmchláir"
+
+#: data/ui/preferences.ui:82
+msgid "Follow System"
+msgstr "Lean an Córas"
+
+#: data/ui/preferences.ui:83
+msgid "Light"
+msgstr "Solas"
+
+#: data/ui/preferences.ui:84
+msgid "Dark"
+msgstr "Dorcha"
+
+#: data/ui/preferences.ui:92
+msgid "Mobile Layout"
+msgstr "Leagan Amach Soghluaiste"
+
+#: data/ui/preferences.ui:93
 msgid ""
-"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
-"seamless desktop integration with comprehensive logging and crash reporting "
-"capabilities (Development Version)"
+"Single-pane layout. Auto: on mobile shells or narrow windows; "
+"Enabled/Disabled: force on or off at any size"
 msgstr ""
-"Fillteán nua-aimseartha dúchasach GTK4/LibAdwaita do WhatsApp Web a "
-"sholáthraíonn comhtháthú deisce gan uaim le cumais chuimsitheacha logála "
-"agus tuairiscithe tuairteála (Leagan Forbartha)"
+"Leagan amach aon-phána. Uathoibríoch: ar bhlaoscanna soghluaiste nó "
+"fuinneoga caola; Cumasaithe/Díchumasaithe: forsáil air nó as ag aon mhéid"
 
-#: src/main.rs
+#: data/ui/preferences.ui:112
+msgid "Enable Developer Tools"
+msgstr "Cumasaigh Uirlisí Forbróra"
+
+#: data/ui/preferences.ui:113
+msgid "Allow inspecting and debugging the WebView"
+msgstr "Ceadaigh iniúchadh agus dífhabhtú an Amharcán Gréasáin"
+
+#: data/ui/preferences.ui:119
+msgid "Open the developer tools for the current page"
+msgstr "Oscail na huirlisí forbróra don leathanach reatha"
+
+#: data/ui/preferences.ui:123
+msgid "Open"
+msgstr "Oscail"
+
+#: data/ui/preferences.ui:135 data/ui/preferences.ui:241
+msgid "Notifications"
+msgstr "Fógraí"
+
+#: data/ui/preferences.ui:142
+msgid "Enable Notifications"
+msgstr "Cumasaigh Fógraí"
+
+#: data/ui/preferences.ui:143
+msgid "Master toggle for all notifications"
+msgstr "Máistir-scoránaigh do gach fógra"
+
+#: data/ui/preferences.ui:150
+msgid "Messages"
+msgstr "Teachtaireachtaí"
+
+#: data/ui/preferences.ui:153
+msgid "Message Notifications"
+msgstr "Fógraí Teachtaireachta"
+
+#: data/ui/preferences.ui:154
+msgid "Show notifications for incoming messages"
+msgstr "Taispeáin fógraí le haghaidh teachtaireachtaí isteach"
+
+#: data/ui/preferences.ui:159
+msgid "Change Tray Icon on Message"
+msgstr "Athraigh Deilbhín an Tráidire ar Theachtaireacht"
+
+#: data/ui/preferences.ui:160
+msgid "Animate the tray icon when a new message arrives"
+msgstr "Beoigh deilbhín an tráidire nuair a thagann teachtaireacht nua"
+
+#: data/ui/preferences.ui:167
+msgid "Message Preview"
+msgstr "Réamhamharc Teachtaireachta"
+
+#: data/ui/preferences.ui:168
+msgid "Some settings only apply when Karere controls the popup"
+msgstr ""
+"Ní bhaineann roinnt socruithe ach amháin nuair a rialaíonn Karere an "
+"phreabfhuinneog"
+
+#: data/ui/preferences.ui:171
+msgid "Show Sender Name"
+msgstr "Taispeáin Ainm an tSeoltóra"
+
+#: data/ui/preferences.ui:172
+msgid "Display the contact name in notifications"
+msgstr "Taispeáin ainm an teagmhálaí sna fógraí"
+
+#: data/ui/preferences.ui:177
+msgid "Show Message Text"
+msgstr "Taispeáin Téacs na Teachtaireachta"
+
+#: data/ui/preferences.ui:178
+msgid "Display message content in notifications"
+msgstr "Taispeáin inneachar na dteachtaireachtaí i bhfógraí"
+
+#: data/ui/preferences.ui:183
+msgid "Preview Length"
+msgstr "Fad an Réamhamhairc"
+
+#: data/ui/preferences.ui:184
+msgid "How much of the message to show"
+msgstr "Cé mhéad den teachtaireacht le taispeáint"
+
+#: data/ui/preferences.ui:188
+msgid "Short"
+msgstr "Gairid"
+
+#: data/ui/preferences.ui:189
+msgid "Medium"
+msgstr "Meánach"
+
+#: data/ui/preferences.ui:190
+msgid "Long"
+msgstr "Fada"
+
+#: data/ui/preferences.ui:200
+msgid "Sounds"
+msgstr "Fuaimeanna"
+
+#: data/ui/preferences.ui:203
+msgid "Notification Sounds"
+msgstr "Fuaimeanna Fógra"
+
+#: data/ui/preferences.ui:204
+msgid "Play WhatsApp's notification sound for new messages"
+msgstr "Seinn fuaim fógra WhatsApp do theachtaireachtaí nua"
+
+#: data/ui/preferences.ui:213
+msgid "Downloads"
+msgstr "Íoslódálacha"
+
+#: data/ui/preferences.ui:217
+msgid "Location"
+msgstr "Suíomh"
+
+#: data/ui/preferences.ui:220
+msgid "Download Directory"
+msgstr "Comhadlann Íoslódála"
+
+#: data/ui/preferences.ui:221
+msgid "Default (Downloads)"
+msgstr "Réamhshocrú (Íoslódálacha)"
+
+#: data/ui/preferences.ui:224
+msgid "Choose…"
+msgstr "Roghnaigh…"
+
+#: data/ui/preferences.ui:232
+msgid "Reset to default"
+msgstr "Athshocraigh go réamhshocrú"
+
+#: data/ui/preferences.ui:244
+msgid "Download Notifications"
+msgstr "Fógraí Íoslódála"
+
+#: data/ui/preferences.ui:245
+msgid "Notify when a file download completes"
+msgstr "Cuir in iúl nuair a chríochnaíonn íoslódáil comhaid"
+
+#: data/ui/preferences.ui:250
+msgid "Notification Type"
+msgstr "Cineál Fógra"
+
+#: data/ui/preferences.ui:251
+msgid "How download notifications are displayed"
+msgstr "Conas a thaispeántar fógraí íoslódála"
+
+#: data/ui/preferences.ui:255
+msgid "In-app Toast"
+msgstr "Tósta in-aipe"
+
+#: data/ui/preferences.ui:256
+msgid "System Notification"
+msgstr "Fógra Córais"
+
+#: data/ui/preferences.ui:257
+msgid "Both"
+msgstr "Iad Araon"
+
+#: data/ui/preferences.ui:269
+msgid "Spellcheck"
+msgstr "Litreoir"
+
+#: data/ui/preferences.ui:273
+msgid "Spell Checking"
+msgstr "Seiceáil Litrithe"
+
+#: data/ui/preferences.ui:276
+msgid "Enable Spell Checking"
+msgstr "Cumasaigh Seiceáil Litrithe"
+
+#: data/ui/preferences.ui:277
+msgid "Check spelling as you type"
+msgstr "Seiceáil litriú agus tú ag clóscríobh"
+
+#: data/ui/preferences.ui:282
+msgid "Auto-Detect Language"
+msgstr "Braith an Teanga go hUathoibríoch"
+
+#: data/ui/preferences.ui:283
+msgid "Detect the writing language automatically"
+msgstr "Braith teanga na scríbhneoireachta go huathoibríoch"
+
+#: data/ui/preferences.ui:288
+msgid "Enable Auto-Correct"
+msgstr "Cumasaigh uathcheartú"
+
+#: data/ui/preferences.ui:289
+msgid "Automatically fix common spelling mistakes"
+msgstr "Deisigh botúin choitianta litrithe go huathoibríoch"
+
+#: data/ui/preferences.ui:294
+msgid "Header Bar Language Control"
+msgstr "Rialú Teanga ar an mBarra Ceanntáisc"
+
+#: data/ui/preferences.ui:295
+msgid "Show the spell-check language dropdown in the header bar"
+msgstr "Taispeáin anuas-roghchlár teanga an litreora ar an mbarra ceanntáisc"
+
+#: data/ui/preferences.ui:301
+msgid "Star a language to pin it to the top"
+msgstr "Cuir réalta le teanga lena pinneáil ag an mbarr"
+
+#: data/ui/preferences.ui:310
+msgid "Privacy"
+msgstr "Príobháideacht"
+
+#: data/ui/preferences.ui:314
+msgid "Site Permissions"
+msgstr "Ceadanna Suíomh"
+
+#: data/ui/preferences.ui:315
+msgid "Stored allow/deny decisions for websites"
+msgstr "Cinntí ceadaithe/diúltaithe stóráilte do shuíomhanna gréasáin"
+
+#: data/ui/preferences.ui:318
+msgid "Clear All"
+msgstr "Glan Uile"
+
+#: data/ui/preferences.ui:331
+msgid "Accessibility"
+msgstr "Inrochtaineacht"
+
+#: data/ui/preferences.ui:335
+msgid "Motion and Focus"
+msgstr "Gluaiseacht agus Fócas"
+
+#: data/ui/preferences.ui:338
+msgid "Reduce Motion"
+msgstr "Laghdaigh Gluaisne"
+
+#: data/ui/preferences.ui:339
+msgid "Minimize animations and transitions"
+msgstr "Íoslaghdaigh beochan agus trasnaíocht"
+
+#: data/ui/preferences.ui:344
+msgid "Focus Indicators"
+msgstr "Táscairí Fócais"
+
+#: data/ui/preferences.ui:345
+msgid "Show visible outlines around focused elements"
+msgstr "Taispeáin imlínte infheicthe thart ar ghnéithe dírithe"
+
+#: data/ui/preferences.ui:350
+msgid "High Contrast Mode"
+msgstr "Mód Ardchodarsnachta"
+
+#: data/ui/preferences.ui:351
+msgid "Increase contrast for better readability"
+msgstr "Méadaigh codarsnacht le haghaidh inléiteacht níos fearr"
+
+#: data/ui/preferences.ui:358 data/ui/keyboard-shortcuts.ui:90
+msgid "Zoom"
+msgstr "Súmáil"
+
+#: data/ui/preferences.ui:361
+msgid "Accessibility Zoom"
+msgstr "Súmáil Inrochtaineachta"
+
+#: data/ui/preferences.ui:362
+msgid "Set a minimum zoom level for all accounts"
+msgstr "Socraigh íosleibhéal zúmála do gach cuntas"
+
+#: data/ui/preferences.ui:367
+msgid "Minimum Zoom Level"
+msgstr "Leibhéal Súmála Íosta"
+
+#: data/ui/preferences.ui:368
+msgid "Applied to all webviews"
+msgstr "Curtha i bhfeidhm ar gach amharc gréasáin"
+
+#: data/ui/preferences.ui:383
+msgid "Header Bar Zoom Controls"
+msgstr "Rialtáin Zúmála an Bharra Ceanntásca"
+
+#: data/ui/preferences.ui:384
+msgid "Show zoom buttons in the header bar"
+msgstr "Taispeáin cnaipí súmála ar an mbarra ceanntáisc"
+
+#: data/ui/preferences.ui:391
+msgid "Screen Reader Support"
+msgstr "Tacaíocht Léitheora Scáileáin"
+
+#: data/ui/preferences.ui:394
+msgid "Screen Reader Optimizations"
+msgstr "Optamuithe Léitheora Scáileáin"
+
+#: data/ui/preferences.ui:395
+msgid "Improve compatibility with assistive technologies — restart required"
+msgstr ""
+"Feabhsaigh comhoiriúnacht le teicneolaíochtaí cúnta — atosú riachtanach"
+
+#: data/ui/preferences.ui:402
+msgid "Shortcuts"
+msgstr "Aicearraí"
+
+#: data/ui/preferences.ui:406
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "Cumasaigh aicearraí méarchláir le haghaidh gníomhartha coitianta"
+
+#: data/ui/preferences.ui:411
+msgid "Accessibility Shortcuts"
+msgstr "Aicearraí Inrochtaineachta"
+
+#: data/ui/preferences.ui:412
+msgid "Enable shortcuts for accessibility features"
+msgstr "Cumasaigh aicearraí do ghnéithe inrochtaineachta"
+
+#: data/ui/preferences.ui:417
+msgid "Developer Shortcuts"
+msgstr "Aicearraí Forbróra"
+
+#: data/ui/preferences.ui:418
+msgid "Enable shortcuts for developer tools"
+msgstr "Cumasaigh aicearraí d'uirlisí forbróra"
+
+#: data/ui/preferences.ui:423
+msgid "Notification Shortcuts"
+msgstr "Aicearraí Fógra"
+
+#: data/ui/preferences.ui:424
+msgid "Enable shortcuts for notification actions"
+msgstr "Cumasaigh aicearraí do ghníomhartha fógraí"
+
+#: data/ui/keyboard-shortcuts.ui:12
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: data/ui/keyboard-shortcuts.ui:15
+msgid "Reload WhatsApp Web"
+msgstr "Athlódáil WhatsApp Web"
+
+#: data/ui/keyboard-shortcuts.ui:16
+msgid "Reload the current page"
+msgstr "Athluchtaigh an leathanach reatha"
+
+#: data/ui/keyboard-shortcuts.ui:22
+msgid "Force Reload"
+msgstr "Athluchtaigh go hÉigeantach"
+
+#: data/ui/keyboard-shortcuts.ui:23
+msgid "Reload, bypassing the cache"
+msgstr "Athluchtaigh, ag seachaint an taisce"
+
+#: data/ui/keyboard-shortcuts.ui:29
+msgid "Find in Page"
+msgstr "Aimsigh sa Leathanach"
+
+#: data/ui/keyboard-shortcuts.ui:30
+msgid "Search the current page"
+msgstr "Cuardaigh an leathanach reatha"
+
+#: data/ui/keyboard-shortcuts.ui:38
+msgid "Accounts"
+msgstr "Cuntais"
+
+#: data/ui/keyboard-shortcuts.ui:41
+msgid "Next Account"
+msgstr "An Chéad Chuntas Eile"
+
+#: data/ui/keyboard-shortcuts.ui:42
+msgid "Switch to the next account"
+msgstr "Athraigh go dtí an chéad chuntas eile"
+
+#: data/ui/keyboard-shortcuts.ui:48
+msgid "Previous Account"
+msgstr "An Cuntas Roimhe Seo"
+
+#: data/ui/keyboard-shortcuts.ui:49
+msgid "Switch to the previous account"
+msgstr "Athraigh go dtí an cuntas roimhe seo"
+
+#: data/ui/keyboard-shortcuts.ui:56
+msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
+msgstr "Léim go cuntas 1–9 (Alt+1 … Alt+9)"
+
+#: data/ui/keyboard-shortcuts.ui:67
+msgid "Fullscreen"
+msgstr "Scáileán iomlán"
+
+#: data/ui/keyboard-shortcuts.ui:68
+msgid "Toggle fullscreen mode"
+msgstr "Scoránaigh mód lánscáileáin"
+
+#: data/ui/keyboard-shortcuts.ui:74
+msgid "Minimize Window"
+msgstr "Íoslaghdaigh an Fhuinneog"
+
+#: data/ui/keyboard-shortcuts.ui:75
+msgid "Minimize the window"
+msgstr "Íoslaghdaigh an fhuinneog"
+
+#: data/ui/keyboard-shortcuts.ui:81
+msgid "Close Window"
+msgstr "Dún an Fhuinneog"
+
+#: data/ui/keyboard-shortcuts.ui:82
+msgid "Close the window"
+msgstr "Dún an fhuinneog"
+
+#: data/ui/keyboard-shortcuts.ui:94
+msgid "Increase the zoom level"
+msgstr "Méadaigh an leibhéal súmála"
+
+#: data/ui/keyboard-shortcuts.ui:101
+msgid "Decrease the zoom level"
+msgstr "Laghdaigh an leibhéal súmála"
+
+#: data/ui/keyboard-shortcuts.ui:108
+msgid "Reset zoom to 100%"
+msgstr "Athshocraigh an tsúmáil go 100%"
+
+#: data/ui/keyboard-shortcuts.ui:114
+msgid "Toggle Header Bar Zoom Controls"
+msgstr "Scoránaigh Rialuithe Súmála an Bharra Ceanntáisc"
+
+#: data/ui/keyboard-shortcuts.ui:115
+msgid "Show or hide the zoom buttons"
+msgstr "Taispeáin nó folaigh na cnaipí súmála"
+
+#: data/ui/keyboard-shortcuts.ui:123
+msgid "Developer"
+msgstr "Forbróir"
+
+#: data/ui/keyboard-shortcuts.ui:127
+msgid "Open the developer tools"
+msgstr "Oscail na huirlisí forbróra"
+
+#: data/ui/keyboard-shortcuts.ui:133
+msgid "Inspect Element"
+msgstr "Iniúch Eilimint"
+
+#: data/ui/keyboard-shortcuts.ui:134
+msgid "Pick an element to inspect"
+msgstr "Roghnaigh eilimint le hiniúchadh"
+
+#: data/ui/keyboard-shortcuts.ui:142
+msgid "Application"
+msgstr "Feidhmchlár"
+
+#: data/ui/keyboard-shortcuts.ui:146
+msgid "Open preferences"
+msgstr "Oscail na sainroghanna"
+
+#: data/ui/keyboard-shortcuts.ui:153
+msgid "Show this shortcuts dialog"
+msgstr "Taispeáin an dialóg aicearraí seo"
+
+#: data/ui/keyboard-shortcuts.ui:160
+msgid "Quit Karere"
+msgstr "Scoir Karere"
+
+#: data/io.github.tobagin.karere.desktop.in:3
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "Cliant WhatsApp"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Cliant dúchasach WhatsApp Web le haghaidh deisce Linux"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;comhrá;teachtaireachtaí;gréasán;cumarsáid;"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
+msgid "Chat on WhatsApp"
+msgstr "Comhrá ar WhatsApp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:24
+msgid ""
+"Karere brings WhatsApp to your Linux desktop with a native look and feel. It"
+" integrates seamlessly with your environment, offering a clean, modern "
+"interface that respects your system's theme and workflow. By wrapping "
+"WhatsApp Web, it ensures you have access to all the latest features while "
+"adding powerful desktop-specific capabilities."
+msgstr ""
+"Tugann Karere WhatsApp chuig do dheasc Linux le cuma agus mothú dúchasach. "
+"Comhtháthaíonn sé go réidh le do thimpeallacht, ag tairiscint comhéadan glan"
+" nua-aimseartha a urramaíonn téama agus sreabhadh oibre do chórais. Trí "
+"WhatsApp Web a fhilleadh, cinntíonn sé go bhfuil rochtain agat ar na gnéithe"
+" is déanaí go léir agus é ag cur cumais shainiúla deisce cumhachtacha leis."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:30
+msgid "Key features include:"
+msgstr "Áirítear ar na príomhghnéithe:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:32
+msgid "Native system notifications and tray icon support"
+msgstr "Tacaíocht do dheilbhín tráidire agus fógraí dúchasacha an chórais"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:33
+msgid ""
+"Persistent login sessions so you don't need to scan the QR code every time"
+msgstr ""
+"Seisiúin logála isteach leanúnacha ionas nach gá duit an cód QR a scanadh "
+"gach uair"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:34
+msgid "Privacy controls and comprehensive spell-checking settings"
+msgstr ""
+"Rialuithe príobháideachta agus socruithe cuimsitheacha seiceála litrithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:35
+msgid "Smooth performance with hardware acceleration"
+msgstr "Feidhmíocht réidh le luasghéarú crua-earraí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:36
+msgid "Proper clipboard integration for text and images"
+msgstr "Comhtháthú ceart gearrthaisce do théacs agus íomhánna"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+msgid ""
+"Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend "
+"with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
+msgstr ""
+"Tógtha anois ar CEF/Chromium 148. Cuireann Karere 4.0 creat Chromium "
+"Embedded Framework in ionad an chúláis WebKitGTK, ag tabhairt seinm iomlán "
+"ceangaltán físe (H.264/AAC), tacaíocht ilchuntais le seisiúin scoite, súmáil"
+" in aghaidh an chuntais, agus inneall rindreála níos tapúla agus níos "
+"comhoiriúnaí, agus an blaosc dúchasach GTK4/libadwaita céanna á coinneáil."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:49
+msgid "Main application window with WhatsApp Web integration"
+msgstr "Príomhfhuinneog an fheidhmchláir le comhtháthú WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:53
+msgid "About dialog showing application information"
+msgstr "Dialóg eolais ag taispeáint faisnéise an fheidhmchláir"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:57
+msgid "Application preferences and settings dialog"
+msgstr "Dialóg sainroghanna agus socruithe an fheidhmchláir"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:61
+#: data/io.github.tobagin.karere.metainfo.xml.in:703
+msgid "Keyboard shortcuts and productivity features"
+msgstr "Aicearraí méarchláir agus gnéithe táirgiúlachta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:74
+msgid "Thiago Fernandes"
+msgstr "Thiago Fernandes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:94
+msgid "whatsapp"
+msgstr "whatsapp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:95
+msgid "chat"
+msgstr "comhrá"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:96
+msgid "messaging"
+msgstr "teachtaireachtaí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:97
+msgid "web"
+msgstr "gréasán"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:98
+msgid "communication"
+msgstr "cumarsáid"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:106
+msgid ""
+"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+"Existing accounts must be re-linked — there is no migration from v3."
+msgstr ""
+"Is fórc crua é Karere 4.0 a atógann an feidhmchlár ar CEF/Chromium 148. "
+"Caithfear cuntais atá ann a athnascadh — níl aon imirce ó v3."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:107
+msgid "Major changes:"
+msgstr "Príomhathruithe:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:109
+msgid ""
+"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+"proprietary-codec builds for H.264/AAC video attachment playback"
+msgstr ""
+"Athraíodh an cúlás rindreála ó WhatsApp WebKitGTK go CEF/Chromium 148, le "
+"tógálacha codec dílseánaigh do sheinm ceangaltán físe H.264/AAC"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:110
+msgid ""
+"Multi-account support: each account runs in an isolated CEF RequestContext "
+"with its own cookies and storage; accounts are ordered most-recently-used"
+msgstr ""
+"Tacaíocht ilchuntais: ritheann gach cuntas i RequestContext CEF scoite lena "
+"fhianáin agus stóráil féin; ordaítear cuntais de réir an úsáid is déanaí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:111
+msgid ""
+"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+msgstr ""
+"Aitheantas cuntais (ainm + abhatár) aimsithe go huathoibríoch ó Stór "
+"inmheánach WhatsApp Web, le scríobadh DOM díghrádaithe mar chúltaca a "
+"thaispeántar le suaitheantas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:112
+msgid ""
+"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
+"accessibility minimum-zoom floor"
+msgstr ""
+"Súmáil in aghaidh an chuntais (Ctrl +/-/0) le rialuithe súmála roghnacha "
+"barra ceanntáisc agus urlár súmála íosta inrochtaineachta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:113
+msgid ""
+"Native system tray (StatusNotifierItem), desktop notifications, download "
+"manager, and image/text paste reimplemented on the CEF stack"
+msgstr ""
+"Tráidire córais dúchasach (StatusNotifierItem), fógraí deisce, bainisteoir "
+"íoslódála, agus greamú íomhá/téacs athchruthaithe ar an gcruach CEF"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:114
+msgid ""
+"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+"popover for the off-screen-rendered web view"
+msgstr ""
+"Leagan amach soghluaiste-fhreagrúil, lánscáileán JavaScript, agus "
+"preabfhuinneog roghchláir comhthéacs OSR don amharc gréasáin lasmuigh den "
+"scáileán"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:115
+msgid ""
+"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
+"browsing"
+msgstr ""
+"Sainroghanna inrochtaineachta: laghdaigh gluaiseacht, infheictheacht fáinne "
+"fócais, agus brabhsáil charait"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:116
+msgid ""
+"Live spell-check language switching and a separately installable Debug "
+"symbol extension for symbolicated crash reports"
+msgstr ""
+"Athrú beo teanga seiceála litrithe agus eisínteacht siombail Dífhabhtaithe "
+"insuiteáilte ar leithligh do thuairiscí tuairteála siombalaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:123
+msgid ""
+"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
+"clear behavior removed upstream — Karere now dismisses notifications "
+"explicitly)"
+msgstr ""
+"Réitithe: suaitheantais/meirgí fógraí ag fanacht tar éis fócais ar GNOME 50 "
+"(iompar uathghlanta bainte ón bhfoinse — díbhíonn Karere fógraí go sainráite"
+" anois)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:124
+msgid ""
+"Fixed: blank-window race when autostarted before the network/portal stack is"
+" ready (auto-retry with exponential backoff)"
+msgstr ""
+"Réitithe: rás fuinneog folaimh nuair a uathosaítear é roimh an gcruach "
+"líonra/tairsí a bheith réidh (uath-atriail le cúlú easpónantúil)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:131
+msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+msgstr ""
+"Curtha leis: pinneáil teangacha seiceála litrithe is fearr leat ag an mbarr "
+"den anuas-roghchlár"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:132
+msgid ""
+"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
+"instead of locale codes"
+msgstr ""
+"Curtha leis: taispeánann an t-anuas-roghchlár seiceála litrithe ainmneacha "
+"teanga nádúrtha (\"Béarla (RA)\") seachas cóid logánaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:133
+msgid ""
+"Added: account switcher uses a popover on desktop windows (bottom sheet "
+"preserved on mobile)"
+msgstr ""
+"Curtha leis: úsáideann an t-athraitheoir cuntas preabfhuinneog ar fhuinneoga"
+" deisce (bileog íochtair coinnithe ar shoghluaiste)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:134
+msgid ""
+"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
+"43, CachyOS, Bazzite, postmarketOS)"
+msgstr ""
+"Réitithe: tuairteáil feidhmchláir ag tosú ar chórais GNOME 50 / glibc 2.42+ "
+"(Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:135
+msgid ""
+"Fixed: locale-dependent crash that required manually setting "
+"LC_ALL=en_GB.UTF-8"
+msgstr ""
+"Réitithe: tuairteáil ag brath ar logánú a d'éiligh LC_ALL=en_GB.UTF-8 a "
+"shocrú de láimh"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:136
+msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+msgstr ""
+"Réitithe: leagan amach soghluaiste briste ag athruithe DOM WhatsApp Web le "
+"déanaí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:137
+msgid ""
+"Fixed: downloaded files with duplicate names silently overwriting each other"
+" (now appends (1), (2), ...)"
+msgstr ""
+"Réitithe: comhaid íoslódáilte le hainmneacha dúblacha ag forscríobh a chéile"
+" go ciúin (cuireann sé (1), (2), ... leis anois)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:138
+msgid ""
+"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+"dependencies to latest compatible versions"
+msgstr ""
+"Ardaíodh WebKitGTK go 2.52.3, foclóirí LibreOffice go 26.2.3.2, spleáchais "
+"Rust go dtí na leaganacha comhoiriúnacha is déanaí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:145
+msgid ""
+"Fixed voice and video calls in production Flatpak (Flathub linter-compatible"
+" pre-built plugin)"
+msgstr ""
+"Réitíodh glaonna gutha agus físe i Flatpak táirgthe (breiseán réamhthógtha "
+"comhoiriúnach le scrúdaitheoir Flathub)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:152
+msgid ""
+"Fixed voice and video calls not working in the production build (missing "
+"noise suppression plugin)"
+msgstr ""
+"Réitíodh glaonna gutha agus físe nach raibh ag obair sa tógáil táirgthe "
+"(breiseán coiscthe torainn ar iarraidh)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:159
+msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+msgstr ""
+"Curtha leis: tacaíocht do ghlaonna gutha agus físe trí WebKitGTK 2.50.5 le "
+"WebRTC cumasaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:160
+msgid "Fixed download filenames now use WhatsApp's original filename"
+msgstr ""
+"Réitithe: úsáideann ainmneacha comhad íoslódáilte ainm comhaid bunaidh "
+"WhatsApp anois"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:161
+msgid "Fixed duplicate downloads auto-increment instead of failing"
+msgstr ""
+"Réitithe: méadaíonn íoslódálacha dúblacha go huathoibríoch in ionad teip"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:162
+msgid ""
+"Fixed window now properly unminimizes when activated from launcher or tray"
+msgstr ""
+"Réitithe: díoslaghdaíonn an fhuinneog i gceart anois nuair a "
+"ghníomhachtaítear é ón lainseálaí nó ón tráidire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:163
+msgid "Fixed notification sounds now respect GNOME volume controls"
+msgstr "Réitithe: urramaíonn fuaimeanna fógraí rialuithe airde GNOME anois"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:164
+msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+msgstr ""
+"Nóta: tá gá le cuntais WhatsApp a athnascadh tar éis an uasghrádaithe seo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:171
+msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+msgstr "Réitíodh teip tógála Flatpak de bharr athruithe API ashpd 0.13"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:178
+msgid ""
+"Fixed voice and video calls showing \"Your browser doesn't support calling\""
+msgstr ""
+"Réitíodh glaonna gutha agus físe ag taispeáint \"Ní thacaíonn do bhrabhsálaí"
+" le glaonna\""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:179
+msgid ""
+"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+"Linux environments"
+msgstr ""
+"Réitíodh méarchlár ar an scáileán nach raibh ag teacht aníos go hiontaofa ar"
+" thimpeallachtaí Linux Phosh agus tadhall-bhunaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:180
+msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+msgstr ""
+"Réitíodh íoslódálacha URL blob (m.sh. Sábháil Íomhá ón amharcóir meán)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:181
+msgid "Redesigned application icons for stable and development variants"
+msgstr ""
+"Athdhearadh deilbhíní feidhmchláir do leaganacha cobhsaí agus forbartha"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:182
+msgid "Updated all Rust dependencies to latest versions"
+msgstr "Nuashonraíodh gach spleáchas Rust go dtí na leaganacha is déanaí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:183
+msgid "Upgraded to GNOME Platform 50"
+msgstr "Uasghrádaíodh go Ardán GNOME 50"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:184
+msgid "Removed ffmpeg-full extension (no longer required)"
+msgstr "Baineadh eisínteacht ffmpeg-full (níl gá léi a thuilleadh)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:191
+msgid "Fixed freezes when viewing media galleries"
+msgstr "Réitíodh reoanna agus gailearaithe meán á bhfeiceáil"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:192
+msgid "Fixed crash on launch due to memory pressure threshold ordering"
+msgstr "Réitíodh tuairteáil ag tosú de bharr ordú tairsí brú cuimhne"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:193
+msgid "Fixed download destination and context menu issues"
+msgstr "Réitíodh fadhbanna ceann scríbe íoslódála agus roghchláir comhthéacs"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:194
+msgid "Fixed dead key composition for first character in input fields"
+msgstr "Réitíodh cumadh marbheochrach don chéad charachtar i réimsí ionchuir"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:195
+msgid ""
+"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
+"handling"
+msgstr ""
+"Cuireadh athróga timpeallachta GStreamer/PipeWire le Flatpak táirgthe le "
+"haghaidh láimhseáil meán éifeachtach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:202
+msgid "Fixed download destination handling"
+msgstr "Réitíodh láimhseáil ceann scríbe íoslódála"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:203
+msgid "Resolved WebKit crashes on media-heavy pages"
+msgstr "Réitíodh tuairteálacha WebKit ar leathanaigh le go leor meán"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:210
+msgid "Fixed: Download destination path handling regression"
+msgstr "Réitithe: aischéimniú láimhseáil cosáin ceann scríbe íoslódála"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:217
+msgid ""
+"Fixed: JS injection and path traversal vulnerabilities in download handling"
+msgstr ""
+"Réitithe: leochaileachtaí instealladh JS agus trasnú cosáin i láimhseáil "
+"íoslódála"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:224
+msgid ""
+"Fixed: Handle WebKit web process crashes with auto-reload and user "
+"notification"
+msgstr ""
+"Réitithe: láimhseáil tuairteálacha próisis ghréasáin WebKit le huath-"
+"athluchtú agus fógra úsáideora"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:225
+msgid "Fixed: JS injection and path traversal vulnerabilities"
+msgstr "Réitithe: leochaileachtaí instealladh JS agus trasnú cosáin"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:226
+msgid "Fixed: Panic in notification handling"
+msgstr "Réitithe: scaoll i láimhseáil fógraí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:233
+msgid "Added complete multi-account support with sidebar and tray integration"
+msgstr ""
+"Curtha leis: tacaíocht ilchuntais iomlán le comhtháthú barra taoibh agus "
+"tráidire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:234
+msgid "Added per-account zoom settings and improved accessibility"
+msgstr ""
+"Curtha leis: socruithe súmála in aghaidh an chuntais agus inrochtaineacht "
+"feabhsaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:235
+msgid "Fixed startup race conditions and resource usage issues"
+msgstr "Réitíodh rás-choinníollacha tosaithe agus fadhbanna úsáide acmhainní"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:242
+msgid ""
+"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+msgstr ""
+"Curtha leis: tacaíocht Súmála (Ctrl +/-/0) le buanseasmhacht agus rialuithe "
+"sainroghanna"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:243
+msgid "Fixed window size increasing on every restart"
+msgstr "Réitíodh méid na fuinneoige ag méadú gach atosú"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:250
+msgid ""
+"Fixed: Resolved webview reload loop on startup due to incorrect window size "
+"detection"
+msgstr ""
+"Réitithe: réitíodh lúb athluchtaithe amharc gréasáin ag tosú de bharr braite"
+" mícheart ar mhéid na fuinneoige"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:257
+msgid ""
+"Added WebRTC permission handling in preparation for WhatsApp Web voice/video"
+" calls"
+msgstr ""
+"Curtha leis: láimhseáil ceada WebRTC mar ullmhú do ghlaonna gutha/físe "
+"WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:258
+msgid "Improved mobile UI resizing consistency"
+msgstr "Feabhsaíodh comhsheasmhacht athraithe méid UI soghluaiste"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:265
+msgid ""
+"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+"(silences sounds)"
+msgstr ""
+"Réitithe: urramaíonn an feidhmchlár socruithe \"Ná Cuir Isteach Orm\" an "
+"chórais ar GNOME anois (ciúnaíonn sé fuaimeanna)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:266
+msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+msgstr ""
+"Réitithe: seachnaíonn fógraí amharcanna DND (tosaíocht laghdaithe go Gnách)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:273
+msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+msgstr ""
+"Réitíodh deilbhíní tráidire ar KDE/GNOME (infheicthe ar théamaí geala/dorcha"
+" araon)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:274
+msgid "Restored correct app icons and transparent backgrounds"
+msgstr "Athchóiríodh deilbhíní feidhmchláir cearta agus cúlraí trédhearcacha"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:275
+msgid "Improved icon compatibility across desktop environments"
+msgstr "Feabhsaíodh comhoiriúnacht deilbhíní ar fud timpeallachtaí deisce"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:282
+msgid ""
+"Fixed application freezing on resume by reverting aggressive cache "
+"optimization"
+msgstr ""
+"Réitíodh reo feidhmchláir ag atosú trí optamúchán ionsaitheach taisce a "
+"aischur"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:283
+msgid "Fixed background validation to ensure app starts correctly"
+msgstr ""
+"Réitíodh bailíochtú cúlra lena chinntiú go dtosaíonn an feidhmchlár i gceart"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:284
+msgid "Optimized memory usage in mobile responsive scripts"
+msgstr "Optamaíodh úsáid cuimhne i scripteanna soghluaiste-fhreagrúla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:285
+msgid "Improved icon rendering (symbolic icons now use currentColor)"
+msgstr ""
+"Feabhsaíodh rindreáil deilbhíní (úsáideann deilbhíní siombalacha "
+"currentColor anois)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:292
+msgid "Fixed window resize behavior to prevent excessive reloading"
+msgstr ""
+"Réitíodh iompar athraithe méid na fuinneoige le hathluchtú iomarcach a chosc"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:293
+msgid "Fixed background notifications reliability"
+msgstr "Réitíodh iontaofacht fógraí cúlra"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:300
+msgid "Fixed Flatpak build failure by correcting config"
+msgstr "Réitíodh teip tógála Flatpak trí chumraíocht a cheartú"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:307
+msgid "Fixed \"Too many open files\" crash by reusing notification resources"
+msgstr ""
+"Réitíodh tuairteáil \"An iomarca comhad oscailte\" trí acmhainní fógraí a "
+"athúsáid"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:308
+msgid "Fixed zombie process accumulation"
+msgstr "Réitíodh carnadh próiseas zombaí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:309
+msgid "Improved overall stability"
+msgstr "Feabhsaíodh cobhsaíocht fhoriomlán"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:316
+msgid "Ctrl+N keyboard shortcut for opening a new chat"
+msgstr "Aicearra méarchláir Ctrl+N chun comhrá nua a oscailt"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:317
+msgid ""
+"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+"Lomiri"
+msgstr ""
+"Tacaíocht leagan amach soghluaiste le huath-bhrath do Phosh, Plasma Mobile, "
+"agus Lomiri"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:318
+msgid "Tray icon click now toggles window visibility"
+msgstr ""
+"Scoránaíonn cliceáil ar dheilbhín an tráidire infheictheacht na fuinneoige "
+"anois"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:319
+msgid "Window size is saved and restored when hiding/showing"
+msgstr ""
+"Sábháiltear agus athchóirítear méid na fuinneoige nuair a "
+"fholaítear/thaispeántar í"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:320
+msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+msgstr ""
+"Athraíodh socrú an leagain amach soghluaiste go anuas-roghchlár "
+"(uathoibríoch/cumasaithe/díchumasaithe)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:327
+msgid ""
+"Updated application summary and description for better AppStream compliance"
+msgstr ""
+"Nuashonraíodh achoimre agus cur síos an fheidhmchláir le haghaidh "
+"comhlíonadh AppStream níos fearr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:334
+msgid ""
+"Notification Chat Linking: Clicking a notification now opens the specific "
+"chat in Karere."
+msgstr ""
+"Nascadh Comhrá Fógra: Osclaíonn cliceáil ar fhógra an comhrá sonrach i "
+"Karere anois."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:335
+msgid ""
+"Webcam Support: Added support for using the webcam (Status updates, Video "
+"calls) with a new permission dialog."
+msgstr ""
+"Tacaíocht Ceamara Gréasáin: Curtha leis tacaíocht le ceamara gréasáin a "
+"úsáid (nuashonruithe Stádais, glaonna físe) le dialóg ceada nua."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:342
+msgid ""
+"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+"compatibility"
+msgstr ""
+"Greamú íomhá feabhsaithe le hionchódú Base64 le haghaidh comhoiriúnacht "
+"iontaofa WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:343
+msgid "Added middle-click paste from primary selection (selected text)"
+msgstr ""
+"Curtha leis: greamú meán-chliceáil ón bpríomhroghnúchán (téacs roghnaithe)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:344
+msgid "Fixed double-paste issue with middle-click"
+msgstr "Réitíodh fadhb dhúbailte greamaithe le meán-chliceáil"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:351
+msgid "Fixed missing GSettings schema in Flatpak builds"
+msgstr "Réitíodh scéimre GSettings ar iarraidh i dtógálacha Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:352
+msgid "Added new application icons"
+msgstr "Curtha leis: deilbhíní feidhmchláir nua"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:353
+msgid "Corrected metadata description references"
+msgstr "Ceartaíodh tagairtí cur síos meiteashonraí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:360
+msgid ""
+"Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+msgstr ""
+"Athrú go Tairseach Fógraí XDG (ashpd) le haghaidh tacaíocht bhosca gainimh "
+"níos fearr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:361
+msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+msgstr "Bain ceadanna fógraí D-Bus díreacha do lámhscríbhinn níos glaine"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:362
+msgid "Fixed Open action for downloaded files"
+msgstr "Réitíodh an gníomh Oscail do chomhaid íoslódáilte"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:363
+msgid "Fixed Dead Key/composition input issues"
+msgstr "Réitíodh fadhbanna ionchuir Eochair Mharbh/cumadh"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:364
+msgid "Migrated Flatpak build logic to meson.build"
+msgstr "Aistríodh loighic tógála Flatpak go meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:371
+msgid ""
+"Switch to XDG Background Portal for autostart (improves security and "
+"compatibility)"
+msgstr ""
+"Athrú go Tairseach Chúlra XDG don uathosú (feabhsaíonn slándáil agus "
+"comhoiriúnacht)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:378
+msgid "Add new contributor Sabri Ünal to the About dialog"
+msgstr "Cuir an rannchuiditheoir nua Sabri Ünal leis an dialóg eolais"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:379
+msgid "General improvements and versioning updates"
+msgstr "Feabhsuithe ginearálta agus nuashonruithe leagain"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:386
+msgid "Restore autostart permission for improved compatibility"
+msgstr "Athchóirigh cead uathosaithe le haghaidh comhoiriúnacht fheabhsaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:393
+msgid "Remove unnecessary autostart permission to satisfy linter"
+msgstr "Bain cead uathosaithe nach gá chun an scrúdaitheoir a shásamh"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:400
+msgid "Add xdg-config/autostart permission for autostart support"
+msgstr "Cuir cead xdg-config/autostart leis le haghaidh tacaíocht uathosaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:406
+msgid "Bug Fix Release"
+msgstr "Eisiúint Réitithe Fabhtanna"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:407
+#: data/io.github.tobagin.karere.metainfo.xml.in:416
+msgid "Changes:"
+msgstr "Athruithe:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:409
+msgid ""
+"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
+msgstr ""
+"Réitíodh deilbhín tráidire ar iarraidh ar GNOME trí chead "
+"StatusNotifierWatcher a chur leis"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:415
+msgid "Update and Bug Fix Release"
+msgstr "Eisiúint Nuashonraithe agus Réitithe Fabhtanna"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:418
+msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+msgstr ""
+"Curtha leis: scoránaí \"Rith ag an Tosú\" sna sainroghanna (réamhshocrú: "
+"bréagach)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:419
+msgid "Fixed autostart toggle pathing for Flatpak environments"
+msgstr "Réitíodh cosán an scoránaí uathosaithe do thimpeallachtaí Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:420
+msgid "Fixed tray icon quit behavior"
+msgstr "Réitíodh iompar scoir deilbhín an tráidire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:421
+msgid "Added striped symbolic icons for development version"
+msgstr "Curtha leis: deilbhíní siombalacha stríocacha don leagan forbartha"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:427
+msgid "🎉 Major Release 2.0.0"
+msgstr "🎉 Mór-Eisiúint 2.0.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:428
+#: data/io.github.tobagin.karere.metainfo.xml.in:452
+#: data/io.github.tobagin.karere.metainfo.xml.in:507
+#: data/io.github.tobagin.karere.metainfo.xml.in:577
+#: data/io.github.tobagin.karere.metainfo.xml.in:695
+msgid "New Features:"
+msgstr "Gnéithe Nua:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:430
+msgid "Full rewrite in Rust! 🦀"
+msgstr "Athscríobh iomlán in Rust! 🦀"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:431
+msgid "New System Tray Icon support"
+msgstr "Tacaíocht nua do Dheilbhín Tráidire an Chórais"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:432
+msgid "Notifications fully working with persistence fixes"
+msgstr "Fógraí ag obair go hiomlán le réiteacha buanseasmhachta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:433
+msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+msgstr "Aistrithe ó Vala go Rust/GTK4/Libadwaita dúchasach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:434
+msgid "Redesigned/streamlined preferences dialog"
+msgstr "Dialóg sainroghanna athdhearaithe/sruthlínithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:435
+msgid "Enhanced performance and stability"
+msgstr "Feidhmíocht agus cobhsaíocht fheabhsaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:441
+msgid "🐛 Bug Fix Release"
+msgstr "🐛 Eisiúint Réitithe Fabhtanna"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:442
+msgid "Fixed:"
+msgstr "Réitithe:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:444
+msgid ""
+"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+"activation"
+msgstr ""
+"Réitíodh reo tosaithe criticiúil (sníomhaire) trí ghníomhachtú D-Bus a chur "
+"i bhfeidhm"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:445
+msgid "Ensure application starts properly in the background without delay"
+msgstr "Cinntigh go dtosaíonn an feidhmchlár i gceart sa chúlra gan mhoill"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:451
+msgid "🎉 Feature Release"
+msgstr "🎉 Eisiúint Gné"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:454
+msgid "🎤 Microphone permission support for voice notes"
+msgstr "🎤 Tacaíocht ceada micreafóin do nótaí gutha"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:455
+msgid "🚀 Start in background option for autostart"
+msgstr "🚀 Rogha tosaithe sa chúlra don uathosú"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:456
+msgid "🔄 Manual reload and auto-reload on network reconnection"
+msgstr "🔄 Athluchtú láimhe agus uath-athluchtú nuair a athnasctar an líonra"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:458
+#: data/io.github.tobagin.karere.metainfo.xml.in:474
+#: data/io.github.tobagin.karere.metainfo.xml.in:485
+#: data/io.github.tobagin.karere.metainfo.xml.in:496
+#: data/io.github.tobagin.karere.metainfo.xml.in:559
+#: data/io.github.tobagin.karere.metainfo.xml.in:596
+#: data/io.github.tobagin.karere.metainfo.xml.in:623
+#: data/io.github.tobagin.karere.metainfo.xml.in:648
+#: data/io.github.tobagin.karere.metainfo.xml.in:665
+#: data/io.github.tobagin.karere.metainfo.xml.in:682
+msgid "Improvements:"
+msgstr "Feabhsuithe:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:460
+msgid "⚡ Performance optimizations for startup and shutdown"
+msgstr "⚡ Optamúcháin feidhmíochta do thosú agus do mhúchadh"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:461
+msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+msgstr "📝 Luchtú foclóra asincrónach do thúsú níos réidhe an Litreora"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:462
+msgid "📖 Added MPRIS workaround documentation"
+msgstr "📖 Curtha leis: doiciméadúchán réiteach MPRIS"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:464
+#: data/io.github.tobagin.karere.metainfo.xml.in:518
+#: data/io.github.tobagin.karere.metainfo.xml.in:566
+#: data/io.github.tobagin.karere.metainfo.xml.in:586
+#: data/io.github.tobagin.karere.metainfo.xml.in:642
+#: data/io.github.tobagin.karere.metainfo.xml.in:659
+#: data/io.github.tobagin.karere.metainfo.xml.in:676
+msgid "Bug Fixes:"
+msgstr "Réiteacha Fabhtanna:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:466
+msgid "Fixed missing dictionaries on startup"
+msgstr "Réitíodh foclóirí ar iarraidh ag tosú"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:467
+msgid "Fixed application freeze during lifecycle events"
+msgstr "Réitíodh reo feidhmchláir le linn imeachtaí saolré"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:473
+msgid "🔧 Maintenance Release"
+msgstr "🔧 Eisiúint Chothabhála"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:476
+msgid "Updated build configuration and dependencies"
+msgstr "Nuashonraíodh cumraíocht tógála agus spleáchais"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:477
+msgid "Enhanced packaging for better compatibility"
+msgstr "Pacáistiú feabhsaithe le haghaidh comhoiriúnacht níos fearr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:478
+msgid "Minor bug fixes and stability improvements"
+msgstr "Réiteacha mionfhabhtanna agus feabhsuithe cobhsaíochta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:484
+msgid "📝 Documentation and Metadata Update"
+msgstr "📝 Nuashonrú Doiciméadúcháin agus Meiteashonraí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:487
+msgid "Updated about dialog screenshot"
+msgstr "Nuashonraíodh seat scáileáin na dialóige eolais"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:488
+msgid "Updated application screenshots"
+msgstr "Nuashonraíodh seatanna scáileáin an fheidhmchláir"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:489
+msgid "Minor README corrections"
+msgstr "Mioncheartúcháin README"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:495
+msgid "📸 Screenshots and Documentation Update"
+msgstr "📸 Nuashonrú Seatanna Scáileáin agus Doiciméadúcháin"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:498
+msgid "Updated application screenshots with current UI appearance"
+msgstr ""
+"Nuashonraíodh seatanna scáileáin an fheidhmchláir le cuma reatha an UI"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:499
+msgid "Refreshed About dialog screenshot"
+msgstr "Athnuadh seat scáileáin na dialóige eolais"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:500
+msgid "Enhanced visual documentation for users"
+msgstr "Feabhsaíodh doiciméadúchán amhairc d'úsáideoirí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:506
+msgid "🎉 Version 1.0.0 - Major Milestone Release"
+msgstr "🎉 Leagan 1.0.0 - Mór-Eisiúint Cloiche Míle"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:509
+msgid "✅ Fixed WhatsApp Web notification banner persistence"
+msgstr "✅ Réitíodh buanseasmhacht meirge fógra WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:510
+msgid "✅ Fixed notifications not working properly"
+msgstr "✅ Réitíodh fógraí nach raibh ag obair i gceart"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:511
+msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+msgstr "🖼️ Curtha leis: tacaíocht greamú íomhá tríd an ngearrthaisce (Ctrl+V)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:512
+msgid ""
+"📥 Implemented download manager with custom directory and toast notifications"
+msgstr ""
+"📥 Cuireadh bainisteoir íoslódála i bhfeidhm le comhadlann shaincheaptha agus"
+" fógraí tóstail"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:513
+msgid ""
+"♿ Enhanced accessibility with screen reader optimization and keyboard "
+"navigation"
+msgstr ""
+"♿ Inrochtaineacht fheabhsaithe le optamúchán léitheora scáileáin agus "
+"nascleanúint méarchláir"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:514
+msgid "📝 Added comprehensive spell checking system with auto-detection"
+msgstr "📝 Curtha leis: córas cuimsitheach seiceála litrithe le huath-bhrath"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:515
+msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+msgstr "🔤 Comhtháthaíodh 80+ foclóir teanga ó LibreOffice"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:516
+msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+msgstr ""
+"⌨️ Curtha leis: dialóg aicearraí méarchláir ag úsáid AdwShortcutsDialog"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:520
+msgid ""
+"Fixed Ctrl+V paste for text content - now works for both text and images"
+msgstr ""
+"Réitíodh greamú Ctrl+V do théacs - oibríonn sé anois do théacs agus íomhánna"
+" araon"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:521
+msgid "Fixed WhatsApp notification permission not persisting across sessions"
+msgstr "Réitíodh cead fógra WhatsApp nach raibh buan thar sheisiúin"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:522
+msgid "Fixed notifications banner appearing on every app launch"
+msgstr "Réitíodh meirge fógraí ag teacht aníos ag gach lainseáil feidhmchláir"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:523
+msgid "Fixed WebView zoom being enabled by default (now disabled)"
+msgstr ""
+"Réitíodh súmáil WebView a bhí cumasaithe de réir réamhshocraithe "
+"(díchumasaithe anois)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:524
+msgid "Fixed clipboard manager intercepting all paste events"
+msgstr ""
+"Réitíodh bainisteoir gearrthaisce ag idircheapadh gach imeacht greamaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:525
+msgid ""
+"Removed hardcoded blueprint compiler paths for cross-architecture support"
+msgstr ""
+"Baineadh cosáin chruabhailte tiomsaitheoir blueprint do thacaíocht "
+"trasailtíreachta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:527
+msgid "Code Quality Improvements:"
+msgstr "Feabhsuithe Cáilíochta Cóid:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:529
+msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+msgstr ""
+"♻️ Mór-athchóiriú: atheagraíodh an bonn cóid le hainmneacha comhad "
+"PascalCase"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:530
+msgid "♻️ Refactored Window.vala into specialized manager components"
+msgstr ""
+"♻️ Athchóiríodh Window.vala go comhpháirteanna bainisteora speisialaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:531
+msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+msgstr ""
+"♻️ Baineadh logáil shaincheaptha agus tuairisciú tuairteála (úsáid "
+"journalctl an chórais)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:532
+msgid ""
+"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+msgstr ""
+"🗑️ Baineadh gné Ná Cuir Isteach Orm (láimhseáilte ag deamhan fógraí an "
+"chórais)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:533
+msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+msgstr ""
+"🗑️ Glanadh comhaid tástála atá imithe i léig agus spleáchais nár úsáideadh"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:534
+msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+msgstr "🗑️ Baineadh spleáchais json-glib, gee, agus libsoup"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:535
+msgid "🧹 Centralized settings management with SettingsManager singleton"
+msgstr "🧹 Lárnaíodh bainistíocht socruithe le singleton SettingsManager"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:536
+msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+msgstr ""
+"🧹 Baineadh DependencyContainer.vala (insteall spleáchais nár úsáideadh)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:537
+msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+msgstr "📸 Atheagraíodh seatanna scáileáin sa chomhadlann data/screenshots/"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:539
+#: data/io.github.tobagin.karere.metainfo.xml.in:609
+#: data/io.github.tobagin.karere.metainfo.xml.in:631
+msgid "Technical Changes:"
+msgstr "Athruithe Teicniúla:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:541
+msgid "Implemented UserScript injection for Notification.permission state"
+msgstr ""
+"Cuireadh instealladh UserScript i bhfeidhm do staid Notification.permission"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:542
+msgid "Connected show_notification signal handler for WebKit notifications"
+msgstr "Nascadh láimhseálaí comhartha show_notification do fhógraí WebKit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:543
+msgid "WebKitGTK 6.0 storage persistence verified and documented"
+msgstr "Fíoraíodh agus doiciméadaíodh buanseasmhacht stórála WebKitGTK 6.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:544
+msgid "Updated SettingsManager to be the default for all settings access"
+msgstr ""
+"Nuashonraíodh SettingsManager le bheith ina réamhshocrú do gach rochtain "
+"socruithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:545
+msgid "Improved build system with cleaner dependency management"
+msgstr "Feabhsaíodh córas tógála le bainistíocht spleáchais níos glaine"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:547
+msgid "Documentation:"
+msgstr "Doiciméadúchán:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:549
+msgid "📚 Enhanced README with accessibility features documentation"
+msgstr "📚 Feabhsaíodh README le doiciméadúchán gnéithe inrochtaineachta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:550
+msgid "📚 Documented all keyboard shortcuts by category"
+msgstr "📚 Doiciméadaíodh gach aicearra méarchláir de réir catagóire"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:551
+msgid "📚 Added spell checking configuration guide"
+msgstr "📚 Curtha leis: treoir chumraíochta seiceála litrithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:552
+msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+msgstr "📚 Réitíodh URLanna stór GitHub (karere-vala → karere)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:558
+msgid "🐛 Runtime Update and Bug Fixes"
+msgstr "🐛 Nuashonrú Am Rite agus Réiteacha Fabhtanna"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:561
+msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+msgstr ""
+"Nuashonraíodh am rite GNOME go leagan 49 le haghaidh comhoiriúnacht "
+"fheabhsaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:562
+msgid "Improved system integration with latest platform libraries"
+msgstr "Feabhsaíodh comhtháthú córais leis na leabharlanna ardáin is déanaí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:563
+msgid "Better support for modern desktop environments"
+msgstr "Tacaíocht níos fearr do thimpeallachtaí deisce nua-aimseartha"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:564
+msgid "Enhanced stability and performance optimizations"
+msgstr "Cobhsaíocht fheabhsaithe agus optamúcháin feidhmíochta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:568
+msgid "Resolved compatibility issues with newer GNOME environments"
+msgstr "Réitíodh fadhbanna comhoiriúnachta le timpeallachtaí GNOME nua"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:569
+msgid "Fixed potential rendering inconsistencies"
+msgstr "Réitíodh neamhréireachtaí rindreála a d'fhéadfadh tarlú"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:570
+msgid "Improved error handling and recovery mechanisms"
+msgstr "Feabhsaíodh láimhseáil earráidí agus meicníochtaí téarnaimh"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:576
+msgid ""
+"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+msgstr ""
+"✨ Tacaíocht Emoji Fheabhsaithe, Láimhseáil Nasc Seachtrach, agus Feabhsuithe"
+" Tógála"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:579
+msgid ""
+"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+msgstr ""
+"Curtha leis: clófhoirne Noto Color Emoji ardchaighdeáin (v2.047, tacaíocht "
+"Unicode 16.0)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:580
+msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+msgstr "Feabhsaíodh rindreáil WebKit le huasmhéid luasghéaraithe crua-earraí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:581
+msgid "Improved emoji consistency with bundled font system"
+msgstr "Feabhsaíodh comhsheasmhacht emoji le córas clófhoirne cuachta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:582
+msgid "Optimized font loading to eliminate display conflicts"
+msgstr "Optamaíodh luchtú clófhoirne chun coinbhleachtaí taispeána a dhíchur"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:583
+msgid "Added WebKit cache control setting for improved rendering consistency"
+msgstr ""
+"Curtha leis: socrú rialaithe taisce WebKit le haghaidh comhsheasmhacht "
+"rindreála fheabhsaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:584
+msgid "Cache disabled by default to prevent emoji rendering issues"
+msgstr ""
+"Taisce díchumasaithe de réir réamhshocraithe chun fadhbanna rindreála emoji "
+"a chosc"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:588
+msgid ""
+"Fixed external links not opening in default browser when running in Flatpak"
+msgstr ""
+"Réitíodh naisc sheachtracha nach raibh ag oscailt sa bhrabhsálaí "
+"réamhshocraithe agus iad ag rith i Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:589
+msgid "Improved external link handling with proper Flatpak portal support"
+msgstr ""
+"Feabhsaíodh láimhseáil nasc seachtrach le tacaíocht cheart tairsí Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:590
+msgid "Fixed random emoji display issues and blank emoji problems"
+msgstr ""
+"Réitíodh fadhbanna taispeána emoji randamacha agus fadhbanna emoji folaimh"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:591
+msgid "Fixed invalid meson version requirement preventing builds"
+msgstr "Réitíodh riachtanas leagain meson neamhbhailí a chosc tógálacha"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:592
+msgid "Corrected dependency version specifications in meson.build"
+msgstr "Ceartaíodh sonraíochtaí leagain spleáchais i meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:593
+msgid "Resolved flatpak-builder compatibility issues"
+msgstr "Réitíodh fadhbanna comhoiriúnachta flatpak-builder"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:594
+msgid "Enhanced URL validation for external link detection"
+msgstr "Feabhsaíodh bailíochtú URL do bhrath nasc seachtrach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:598
+msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+msgstr ""
+"Díchuireadh truailliú taisce WebKit a chuir isteach ar rindreáil emoji"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:599
+msgid "Streamlined font stack for consistent emoji appearance"
+msgstr "Sruthlíníodh cruach clófhoirne le haghaidh cuma chomhsheasmhach emoji"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:600
+msgid "Enhanced 2D canvas acceleration for better graphics performance"
+msgstr ""
+"Feabhsaíodh luasghéarú chanbhás 2D le haghaidh feidhmíocht ghrafaic níos "
+"fearr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:601
+msgid "Improved font loading stability and reduced race conditions"
+msgstr ""
+"Feabhsaíodh cobhsaíocht luchtaithe clófhoirne agus laghdaíodh rás-"
+"choinníollacha"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:602
+msgid "Better sandboxed environment compatibility"
+msgstr "Comhoiriúnacht níos fearr le timpeallacht bhosca gainimh"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:603
+msgid "More reliable link opening mechanism"
+msgstr "Meicníocht oscailte nasc níos iontaofa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:604
+msgid "Enhanced logging for external link operations"
+msgstr "Logáil fheabhsaithe d'oibríochtaí nasc seachtrach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:605
+msgid "Better build system compatibility with different environments"
+msgstr "Comhoiriúnacht níos fearr le córas tógála le timpeallachtaí éagsúla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:606
+msgid "Enhanced CI/CD pipeline stability"
+msgstr "Cobhsaíocht fheabhsaithe píblíne CI/CD"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:607
+msgid "More robust dependency handling"
+msgstr "Láimhseáil spleáchais níos láidre"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:611
+msgid ""
+"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+"only)"
+msgstr ""
+"Baineadh athrú gníomhaire úsáideora soghluaiste nár ghá (níl WhatsApp Web "
+"ach don deasc)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:612
+msgid "Disabled problematic WebKit caches causing font corruption"
+msgstr "Díchumasaíodh taiscí WebKit fadhbacha a bhí ag truailliú clófhoirní"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:613
+msgid "Simplified emoji font configuration to single high-quality source"
+msgstr "Simplíodh cumraíocht clófhoirne emoji go foinse aonair ardchaighdeáin"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:614
+msgid "Restored Safari Linux user agent for native WebKit experience"
+msgstr ""
+"Athchóiríodh gníomhaire úsáideora Safari Linux do thaithí dhúchasach WebKit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:615
+msgid "Added subpixel font scaling and advanced rendering optimizations"
+msgstr ""
+"Curtha leis: scálú clófhoirne fophicteilín agus optamúcháin rindreála chun "
+"cinn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:616
+msgid "Implemented Flatpak portal system for external link handling"
+msgstr ""
+"Cuireadh córas tairsí Flatpak i bhfeidhm do láimhseáil nasc seachtrach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:622
+msgid "🔧 Code Refactoring and Architecture Improvements"
+msgstr "🔧 Athchóiriú Cóid agus Feabhsuithe Ailtireachta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:625
+msgid "Converted template files to preprocessor directives for cleaner code"
+msgstr ""
+"Tiontaíodh comhaid teimpléid go treoracha réamhphróiseálaí do chód níos "
+"glaine"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:626
+msgid "Eliminated .vala.in template substitution system"
+msgstr "Díchuireadh córas ionadaíochta teimpléid .vala.in"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:627
+msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+msgstr ""
+"Curtha leis: tiomsú coinníollach ag am tiomsaithe ag úsáid bratach "
+"DEVELOPMENT"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:628
+msgid "Improved build system maintainability and type safety"
+msgstr "Feabhsaíodh inchothaithe agus sábháilteacht cineáil an chórais tógála"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:629
+msgid "Added contributors Aman Das and Cameo to about dialog"
+msgstr ""
+"Cuireadh na rannchuiditheoirí Aman Das agus Cameo leis an dialóg eolais"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:633
+msgid ""
+"Replaced window.vala.in and preferences.vala.in with direct .vala files"
+msgstr ""
+"Cuireadh comhaid .vala dhíreacha in ionad window.vala.in agus "
+"preferences.vala.in"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:634
+msgid "Updated meson.build to use Vala preprocessor directives"
+msgstr ""
+"Nuashonraíodh meson.build chun treoracha réamhphróiseálaí Vala a úsáid"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:635
+msgid "Simplified source file management in build system"
+msgstr "Simplíodh bainistíocht comhad foinse sa chóras tógála"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:641
+#: data/io.github.tobagin.karere.metainfo.xml.in:675
+msgid "🐛 Bug Fixes and Improvements"
+msgstr "🐛 Réiteacha Fabhtanna agus Feabhsuithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:644
+msgid "Fixed crash when handling invalid user input data"
+msgstr ""
+"Réitíodh tuairteáil agus sonraí ionchuir úsáideora neamhbhailí á láimhseáil"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:645
+msgid "Resolved memory leak in notification cleanup"
+msgstr "Réitíodh sceitheadh cuimhne i nglanadh fógraí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:646
+msgid "Corrected accessibility focus handling"
+msgstr "Ceartaíodh láimhseáil fócais inrochtaineachta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:650
+msgid "Better error handling for network timeouts"
+msgstr "Láimhseáil earráidí níos fearr do theorainneacha ama líonra"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:651
+msgid "Enhanced stability for extended usage"
+msgstr "Cobhsaíocht fheabhsaithe d'úsáid fhadaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:652
+msgid "Performance optimizations for scrolling"
+msgstr "Optamúcháin feidhmíochta do scrollú"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:658
+msgid "🔧 Metadata and Standards Compliance"
+msgstr "🔧 Comhlíonadh Meiteashonraí agus Caighdeán"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:661
+msgid "Fixed duplicate provides tags in metainfo validation"
+msgstr "Réitíodh clibeanna provides dúblacha i mbailíochtú metainfo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:662
+msgid "Corrected AppStream metainfo format compliance"
+msgstr "Ceartaíodh comhlíonadh formáide metainfo AppStream"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:663
+msgid "Resolved invalid markup in release descriptions"
+msgstr "Réitíodh marcáil neamhbhailí i gcur síos eisiúintí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:667
+msgid "Updated all references from appdata to metainfo format"
+msgstr "Nuashonraíodh gach tagairt ó fhormáid appdata go metainfo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:668
+msgid "Enhanced Flathub compliance and validation"
+msgstr "Feabhsaíodh comhlíonadh agus bailíochtú Flathub"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:669
+msgid "Improved translation file consistency"
+msgstr "Feabhsaíodh comhsheasmhacht comhad aistriúcháin"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:678
+msgid "Fixed crash when handling invalid notification data"
+msgstr "Réitíodh tuairteáil agus sonraí fógra neamhbhailí á láimhseáil"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:679
+msgid "Resolved memory leak in WebKit manager cleanup"
+msgstr "Réitíodh sceitheadh cuimhne i nglanadh bainisteoir WebKit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:680
+msgid "Corrected window state persistence on shutdown"
+msgstr "Ceartaíodh buanseasmhacht staid fuinneoige ag múchadh"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:684
+msgid "Better error handling for network disconnections"
+msgstr "Láimhseáil earráidí níos fearr do dhínasc líonra"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:685
+msgid "Enhanced stability during long sessions"
+msgstr "Cobhsaíocht fheabhsaithe le linn seisiún fada"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:686
+msgid "Performance optimizations for faster startup"
+msgstr "Optamúcháin feidhmíochta do thosú níos tapúla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:692
+msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+msgstr "🚀 Mór-Imirce Ailtireachta: Python go Vala/GTK4"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:693
+msgid ""
+"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+"performance and integration."
+msgstr ""
+"ATHRÚ BRISEACH: athscríobh iomlán ó Python go Vala dúchasach le haghaidh "
+"feidhmíocht agus comhtháthú níos fearr."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:694
+msgid ""
+"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+"with WhatsApp Web as this is a completely new application implementation."
+msgstr ""
+"⚠️ Tábhachtach: Tar éis uasghrádaithe, beidh ort do ghléas soghluaiste a "
+"athshioncronú le WhatsApp Web ós rud é gur cur i bhfeidhm feidhmchláir go "
+"hiomlán nua é seo."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:697
+msgid "Native Vala/GTK4 implementation for optimal performance"
+msgstr "Cur i bhfeidhm dúchasach Vala/GTK4 le haghaidh feidhmíocht is fearr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:698
+msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+msgstr "UI LibAdwaita nua-aimseartha le comhéadan dearbhaitheach Blueprint"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:699
+msgid "Enhanced WebKitGTK 6.0 integration"
+msgstr "Comhtháthú WebKitGTK 6.0 feabhsaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:700
+msgid "Advanced notification system with native desktop integration"
+msgstr "Córas fógraí chun cinn le comhtháthú deisce dúchasach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:701
+msgid "Comprehensive accessibility support"
+msgstr "Tacaíocht inrochtaineachta chuimsitheach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:702
+msgid "Professional logging and crash reporting system"
+msgstr "Córas gairmiúil logála agus tuairiscithe tuairteála"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:704
+msgid "Multi-language spell checking support"
+msgstr "Tacaíocht seiceála litrithe ilteangach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:705
+msgid "Granular privacy and notification controls"
+msgstr "Rialuithe mionchruinne príobháideachta agus fógraí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:706
+msgid "Hardware-accelerated rendering"
+msgstr "Rindreáil luasghéaraithe crua-earraí"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:707
+msgid "Improved memory efficiency and startup performance"
+msgstr "Éifeachtúlacht cuimhne agus feidhmíocht tosaithe fheabhsaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:709
+msgid "Technical Improvements:"
+msgstr "Feabhsuithe Teicniúla:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:711
+msgid "Migrated from Python 3 to native Vala compilation"
+msgstr "Aistríodh ó Python 3 go tiomsú dúchasach Vala"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:712
+msgid "Modern Meson build system with Blueprint UI compilation"
+msgstr "Córas tógála Meson nua-aimseartha le tiomsú UI Blueprint"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:713
+msgid "Comprehensive test suite with unit and integration tests"
+msgstr "Sraith tástála chuimsitheach le tástálacha aonaid agus comhtháthaithe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:714
+msgid "Production-ready error handling and crash recovery"
+msgstr "Láimhseáil earráidí réidh do tháirgeadh agus téarnamh tuairteála"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:715
+msgid "Enhanced security with proper sandboxing"
+msgstr "Slándáil fheabhsaithe le bosca gainimh ceart"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:716
+msgid "Complete internationalization support"
+msgstr "Tacaíocht idirnáisiúnaithe iomlán"
+
+#: src/window.rs:303
+msgid "Account"
+msgstr "Cuntas"
+
+#: src/window.rs:632
+msgid "Waiting for QR scan…"
+msgstr "Ag fanacht le scanadh QR…"
+
+#: src/window.rs:654
+msgid "degraded"
+msgstr "díghrádaithe"
+
+#: src/window.rs:670
+msgid "Unread messages"
+msgstr "Teachtaireachtaí neamhléite"
+
+#: src/window.rs:678
+msgid "Edit account"
+msgstr "Cuir cuntas in eagar"
+
+#: src/window.rs:694
+msgid "Remove account"
+msgstr "Bain cuntas"
+
+#: src/window.rs:696
+msgid "Can't remove the only account"
+msgstr "Ní féidir an t-aon chuntas a bhaint"
+
+#: src/window.rs:778
+msgid "Maximum of 9 accounts reached"
+msgstr "Uasmhéid de 9 gcuntas sroichte"
+
+#: src/window.rs:804
+msgid "Label"
+msgstr "Lipéad"
+
+#: src/window.rs:818
+msgid "Name"
+msgstr "Ainm"
+
+#: src/window.rs:819
+msgid "WhatsApp ID"
+msgstr "Aitheantas WhatsApp"
+
+#: src/window.rs:821
+msgid "Avatar URL"
+msgstr "URL Abhatáir"
+
+#: src/window.rs:830 src/window.rs:919
+msgid "Cancel"
+msgstr "Cealaigh"
+
+#: src/window.rs:831
+msgid "Save"
+msgstr "Sábháil"
+
+#: src/window.rs:840
+msgid "Add Account"
+msgstr "Cuir Cuntas Leis"
+
+#: src/window.rs:842
+msgid "Edit Account"
+msgstr "Cuir Cuntas in Eagar"
+
+#: src/window.rs:909
+msgid "Remove account?"
+msgstr "Bain cuntas?"
+
+#: src/window.rs:920
+msgid "Remove"
+msgstr "Bain"
+
+#: src/actions.rs:263
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
 "seamless desktop integration with comprehensive logging and crash reporting "
@@ -670,274 +2243,10 @@ msgstr ""
 "sholáthraíonn comhtháthú deisce gan uaim le cumais chuimsitheacha logála "
 "agus tuairiscithe tuairteála"
 
-#: src/main.rs
+#: src/actions.rs:282
 msgid "Source"
 msgstr "Foinse"
 
-#: src/main.rs
+#: src/actions.rs:285
 msgid "Special Thanks"
 msgstr "Buíochas Faoin Leith"
-
-#: src/preferences.rs
-msgid "1 Dictionary"
-msgstr "1 Foclóir"
-
-#: src/preferences.rs
-msgid "Dictionaries"
-msgstr "Foclóirí"
-
-#: src/preferences.rs
-msgid "Select Download Directory"
-msgstr "Roghnaigh Comhadlann Íoslódála"
-
-#: src/preferences.rs
-msgid "Select"
-msgstr "Roghnaigh"
-
-#: src/tray.rs
-msgid "Running via Rust & GTK4"
-msgstr "Ag rith trí Rust & GTK4"
-
-#: src/tray.rs
-msgid "Hide Window"
-msgstr "Folaigh an Fhuinneog"
-
-#: src/tray.rs
-msgid "Show Window"
-msgstr "Taispeáin an Fhuinneog"
-
-#: src/window.rs
-msgid "Re-authentication Required"
-msgstr "Tá Athfhíordheimhniú ag Teastáil"
-
-#: src/window.rs
-msgid ""
-"Karere has been updated with a new browser engine that enables voice and "
-"video calls.\n"
-"\n"
-"Your existing WhatsApp session could not be transferred to the new engine. "
-"Please scan the QR code to re-link your account(s). This is a one-time step."
-msgstr ""
-"Tá Karere nuashonraithe le hinneal brabhsálaí nua a chuireann glaonna gutha "
-"agus físe ar fáil.\n"
-"\n"
-"Níorbh fhéidir do sheisiún WhatsApp reatha a aistriú chuig an inneal nua. "
-"Scan an cód QR le do thoil chun do chuntas/cuntais a athnasc. Is céim aon "
-"uaire amháin é seo."
-
-#: src/window.rs
-msgid "_OK"
-msgstr "_Ceart go leor"
-
-#: src/window.rs
-#, fuzzy
-msgid "Download Failed"
-msgstr "Comhadlann Íoslódála"
-
-#: src/window.rs
-msgid "An error occurred while downloading the file."
-msgstr "Tharla earráid agus an comhad á íoslódáil."
-
-#: src/window.rs
-msgid "OK"
-msgstr "Ceart go leor"
-
-#: src/window.rs
-msgid "WhatsApp Web Notification Permission"
-msgstr "Cead Fógra WhatsApp Web"
-
-#: src/window.rs
-msgid ""
-"WhatsApp Web wants to show desktop notifications for new messages. Would you "
-"like to allow notifications?"
-msgstr ""
-"Ba mhaith le WhatsApp Web fógraí deisce a thaispeáint le haghaidh "
-"teachtaireachtaí nua. Ar mhaith leat fógraí a cheadú?"
-
-#: src/window.rs
-msgid "Deny"
-msgstr "Diúltaigh"
-
-#: src/window.rs
-msgid "Allow"
-msgstr "Ceadaigh"
-
-#: src/window.rs
-msgid "WhatsApp Web Camera & Microphone Permission"
-msgstr "Cead Ceamara & Micreafón WhatsApp Web"
-
-#: src/window.rs
-msgid ""
-"WhatsApp Web wants to access your camera and microphone. Would you like to "
-"allow access?"
-msgstr ""
-"Ba mhaith le WhatsApp Web rochtain a fháil ar do cheamara agus do "
-"mhicreafón. Ar mhaith leat rochtain a cheadú?"
-
-#: src/window.rs
-msgid "WhatsApp Web Camera Permission"
-msgstr "Cead Ceamara WhatsApp Web"
-
-#: src/window.rs
-msgid ""
-"WhatsApp Web wants to access your camera. Would you like to allow access?"
-msgstr ""
-"Ba mhaith le WhatsApp Web rochtain a fháil ar do cheamara. Ar mhaith leat "
-"rochtain a cheadú?"
-
-#: src/window.rs
-msgid "WhatsApp Web Microphone Permission"
-msgstr "Cead Micreafóin WhatsApp Web"
-
-#: src/window.rs
-msgid ""
-"WhatsApp Web wants to access your microphone. Would you like to allow access?"
-msgstr ""
-"Ba mhaith le WhatsApp Web rochtain a fháil ar do mhicreafón. Ar mhaith leat "
-"rochtain a cheadú?"
-
-#: src/window.rs
-msgid "WhatsApp"
-msgstr "WhatsApp"
-
-#: src/window.rs
-msgid "New message"
-msgstr "Teachtaireacht nua"
-
-#: src/window.rs
-msgid "New message received"
-msgstr "Teachtaireacht nua faighte"
-
-#: src/window.rs
-msgid "Web process %s. Reloading…"
-msgstr "Próiseas gréasáin %s. Ag athlódáil…"
-
-#: src/window.rs
-msgid "Web process %s. Reload manually with Ctrl+R"
-msgstr "Próiseas gréasáin %s. Athlódáil de láimh le Ctrl+R"
-
-#: src/window.rs
-msgid "No account"
-msgstr "Gan chuntas"
-
-#: src/window.rs
-#, fuzzy
-msgid "Account Limit Reached"
-msgstr "Ainm an chuntais"
-
-#: src/window.rs
-msgid "You have reached the maximum number of accounts"
-msgstr "Tá an líon uasta cuntas sroichte agat"
-
-#: src/window.rs
-msgid "You can increase or disable this limit in Preferences → Accounts."
-msgstr "Is féidir leat an teorainn seo a mhéadú nó a dhíchumasú i Sainroghanna → Cuntais."
-
-#: src/window.rs
-#, fuzzy
-msgid "Edit Account"
-msgstr "Athraigh Cuntas"
-
-#: src/window.rs
-msgid "Add New Account"
-msgstr "Cuir Cuntas Nua Leis"
-
-#: src/window.rs
-#, fuzzy
-msgid "Account Name"
-msgstr "Ainm an chuntais"
-
-#: src/window.rs
-msgid "Emoji"
-msgstr "Emoji"
-
-#: src/window.rs
-msgid "Choose Avatar Color"
-msgstr "Roghnaigh Dath Íomhá Phróifíle"
-
-#: src/window.rs
-msgid "Color"
-msgstr "Dath"
-
-#: src/window.rs
-msgid "Save"
-msgstr "Sábháil"
-
-#: src/window.rs
-#, fuzzy
-msgid "Add Account"
-msgstr "Cuir Cuntas Nua Leis"
-
-#: src/window.rs
-msgid "_Cancel"
-msgstr "_Cealaigh"
-
-#: src/window.rs
-msgid "Remove account"
-msgstr "Bain cuntas"
-
-#: src/window.rs
-msgid "This action cannot be undone."
-msgstr "Ní féidir an gníomh seo a chealú."
-
-#: src/window.rs
-msgid "_Remove"
-msgstr "_Bain"
-
-#: src/window.rs
-#, fuzzy
-msgid "Reset All Zoom Levels?"
-msgstr "Leibhéal Súmála"
-
-#: src/window.rs
-msgid "_Apply"
-msgstr "_Cuir i bhFeidhm"
-
-#: data/io.github.tobagin.karere.desktop.in
-msgid "@APP_NAME@"
-msgstr "@APP_NAME@"
-
-#: data/io.github.tobagin.karere.desktop.in
-msgid "WhatsApp Client"
-msgstr "Cliant WhatsApp"
-
-#: data/io.github.tobagin.karere.desktop.in
-msgid "Native WhatsApp Web client for Linux desktop"
-msgstr "Cliant dúchasach WhatsApp Web le haghaidh deisce Linux"
-
-#: data/io.github.tobagin.karere.desktop.in
-msgid "whatsapp;chat;messaging;web;communication;"
-msgstr "whatsapp;comhrá;teachtaireachtaí;gréasán;cumarsáid;"
-
-#~ msgid "Toggle Do Not Disturb"
-#~ msgstr "Scoránaigh Ná Cuir Isteach"
-
-#~ msgid "Webview Zoom"
-#~ msgstr "Súmáil an Amharcán Gréasáin"
-
-#~ msgid "Enable Webview Zoom"
-#~ msgstr "Cumasaigh Súmáil an Amharcán Gréasáin"
-
-#~ msgid "Allow zooming in and out of the web content"
-#~ msgstr "Ceadaigh súmáil isteach agus amach as an inneachar gréasáin"
-
-#~ msgid "Adjust the magnification of the web content"
-#~ msgstr "Coigeartaigh méadú an inneachair ghréasáin"
-
-#~ msgid "Restore zoom to the default level"
-#~ msgstr "Athbhunaigh an tsúmáil chuig an leibhéal réamhshocraithe"
-
-#~ msgid "Screen Reader Status"
-#~ msgstr "Stádas an Léitheora Scáileáin"
-
-#~ msgid "Current screen reader detection state"
-#~ msgstr "Stádas braite léitheora scáileáin reatha"
-
-#~ msgid "Inactive"
-#~ msgstr "Neamhghníomhach"
-
-#~ msgid "Enter account name:"
-#~ msgstr "Iontráil ainm an chuntais:"
-
-#~ msgid "_Add"
-#~ msgstr "_Cuir leis"

@@ -43,6 +43,8 @@ finish-args:
   - --filesystem=xdg-download
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
+  # Relaunch on language change (single-instance app restarts via host).
+  - --talk-name=org.freedesktop.Flatpak
   # Autostart goes through the XDG Background portal (ashpd) — no autostart
   # filesystem or portal.Desktop talk-name needed (portal busnames auto-granted).
   - --env=LD_LIBRARY_PATH=/app/lib/cef
@@ -91,6 +93,12 @@ modules:
       # Flathub pulls the tagged GitHub source. Update tag + commit per beta.
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v4.0.0-beta2
-        commit: ea6de8935fdf6225cfe875f2be593112c21a1981
+        tag: v4.0.0-beta3
+        commit: UPDATE_TO_BETA3_TAG_COMMIT
       - cargo-sources.json
+    # Move our gettext catalogs out of share/locale so flatpak's automatic
+    # per-language .Locale extension (which only deploys the host's languages)
+    # doesn't strip the locales the in-app language picker offers.
+    post-install:
+      - mkdir -p ${FLATPAK_DEST}/share/karere
+      - mv ${FLATPAK_DEST}/share/locale ${FLATPAK_DEST}/share/karere/locale

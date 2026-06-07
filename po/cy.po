@@ -1,0 +1,2221 @@
+# Welsh translations for karere package.
+# Copyright (C) 2026 THE karere'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the karere package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: karere\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-07 11:42+0100\n"
+"PO-Revision-Date: 2026-06-06 20:03+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: cy\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/main.rs:37
+msgid "Karere starting"
+msgstr "Karere yn cychwyn"
+
+#: src/window.rs:912
+msgid "This removes the local session for"
+msgstr "Mae hyn yn dileu'r sesiwn leol ar gyfer"
+
+#: src/window.rs:915
+msgid "The device stays linked on your phone until you remove it there."
+msgstr ""
+"Bydd y ddyfais yn aros wedi'i chysylltu ar eich ffôn nes i chi ei thynnu "
+"yno."
+
+#: src/tray.rs:43 src/tray.rs:66 src/tray.rs:73 data/ui/window.ui:12
+#: data/ui/window.ui:23 src/actions.rs:258
+msgid "Karere"
+msgstr "Karere"
+
+#. Translators: tray tooltip body; leading number is the unread count.
+#: src/tray.rs:68
+msgid "unread"
+msgstr "heb eu darllen"
+
+#: src/tray.rs:93
+msgid "Hide Window"
+msgstr "Cuddio'r Ffenestr"
+
+#: src/tray.rs:95
+msgid "Show Window"
+msgstr "Dangos y Ffenestr"
+
+#: src/tray.rs:139 data/ui/window.ui:255 data/ui/preferences.ui:10
+#: data/ui/keyboard-shortcuts.ui:145
+msgid "Preferences"
+msgstr "Dewisiadau"
+
+#: src/tray.rs:145 data/ui/window.ui:261 data/ui/preferences.ui:405
+#: data/ui/keyboard-shortcuts.ui:152
+msgid "Keyboard Shortcuts"
+msgstr "Bysellau Brys"
+
+#: src/tray.rs:151
+msgid "About Karere"
+msgstr "Ynghylch Karere"
+
+#: src/tray.rs:158 data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159
+msgid "Quit"
+msgstr "Gadael"
+
+#: src/preferences.rs:92
+msgid "Restart Karere?"
+msgstr "Ailgychwyn Karere?"
+
+#: src/preferences.rs:94
+msgid "The language change takes effect after Karere restarts."
+msgstr "Daw'r newid iaith i rym ar ôl i Karere ailgychwyn."
+
+#: src/preferences.rs:97
+msgid "Later"
+msgstr "Yn nes ymlaen"
+
+#: src/preferences.rs:98
+msgid "Restart Now"
+msgstr "Ailgychwyn Nawr"
+
+#: src/preferences.rs:316
+msgid "System Default"
+msgstr "Rhagosodiad y System"
+
+#: data/ui/window.ui:24
+msgid "GTK4 WhatsApp Web Client"
+msgstr "Cleient WhatsApp Web GTK4"
+
+#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
+msgid "Zoom Out"
+msgstr "Lleihau'r Chwyddo"
+
+#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
+msgid "Reset Zoom"
+msgstr "Ailosod y Chwyddo"
+
+#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
+msgid "Zoom In"
+msgstr "Cynyddu'r Chwyddo"
+
+#: data/ui/window.ui:70
+msgid "Spell Checking Language"
+msgstr "Iaith Gwirio Sillafu"
+
+#: data/ui/window.ui:77
+msgid "Menu"
+msgstr "Dewislen"
+
+#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
+msgid "Switch Account"
+msgstr "Newid Cyfrif"
+
+#: data/ui/window.ui:111
+msgid "Find in page"
+msgstr "Canfod ar y dudalen"
+
+#: data/ui/window.ui:131
+msgid "Previous match"
+msgstr "Cydweddiad blaenorol"
+
+#: data/ui/window.ui:137
+msgid "Next match"
+msgstr "Cydweddiad nesaf"
+
+#: data/ui/window.ui:173 data/ui/preferences.ui:109 data/ui/preferences.ui:118
+#: data/ui/keyboard-shortcuts.ui:126
+msgid "Developer Tools"
+msgstr "Offer Datblygwr"
+
+#: data/ui/window.ui:184
+msgid "Close Developer Tools"
+msgstr "Cau Offer Datblygwr"
+
+#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
+msgid "Add new account"
+msgstr "Ychwanegu cyfrif newydd"
+
+#: data/ui/window.ui:251
+msgid "Refresh WhatsApp Web"
+msgstr "Adnewyddu WhatsApp Web"
+
+#: data/ui/window.ui:265
+msgid "About"
+msgstr "Ynghylch"
+
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:139
+msgid "General"
+msgstr "Cyffredinol"
+
+#: data/ui/preferences.ui:17
+msgid "Startup"
+msgstr "Cychwyn"
+
+#: data/ui/preferences.ui:20
+msgid "Run on Startup"
+msgstr "Rhedeg wrth Gychwyn"
+
+#: data/ui/preferences.ui:21
+msgid "Launch Karere automatically when you log in"
+msgstr "Lansio Karere'n awtomatig pan fyddwch yn mewngofnodi"
+
+#: data/ui/preferences.ui:26
+msgid "Start in Background"
+msgstr "Cychwyn yn y Cefndir"
+
+#: data/ui/preferences.ui:27
+msgid "Start minimized without showing the window"
+msgstr "Cychwyn wedi'i leihau heb ddangos y ffenestr"
+
+#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
+msgid "Window"
+msgstr "Ffenestr"
+
+#: data/ui/preferences.ui:37
+msgid "Window Close Behavior"
+msgstr "Ymddygiad Cau'r Ffenestr"
+
+#: data/ui/preferences.ui:38
+msgid "What happens when you close the window"
+msgstr "Beth sy'n digwydd pan fyddwch yn cau'r ffenestr"
+
+#: data/ui/preferences.ui:42
+msgid "Run in Background"
+msgstr "Rhedeg yn y Cefndir"
+
+#: data/ui/preferences.ui:43
+msgid "Quit Application"
+msgstr "Gadael y Rhaglen"
+
+#: data/ui/preferences.ui:51
+msgid "System Tray Icon"
+msgstr "Eicon Hambwrdd y System"
+
+#: data/ui/preferences.ui:52
+msgid "Auto: shown when a system tray is available"
+msgstr "Awto: yn ymddangos pan fydd hambwrdd system ar gael"
+
+#: data/ui/preferences.ui:56 data/ui/preferences.ui:97
+msgid "Auto"
+msgstr "Awto"
+
+#: data/ui/preferences.ui:57 data/ui/preferences.ui:98
+msgid "Enabled"
+msgstr "Wedi'i Alluogi"
+
+#: data/ui/preferences.ui:58 data/ui/preferences.ui:99
+msgid "Disabled"
+msgstr "Wedi'i Analluogi"
+
+#: data/ui/preferences.ui:68
+msgid "Appearance"
+msgstr "Ymddangosiad"
+
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:300
+msgid "Language"
+msgstr "Iaith"
+
+#: data/ui/preferences.ui:72
+msgid "Application language. Requires restart."
+msgstr "Iaith y rhaglen. Mae angen ailgychwyn."
+
+#: data/ui/preferences.ui:77
+msgid "Theme"
+msgstr "Thema"
+
+#: data/ui/preferences.ui:78
+msgid "Choose the application color scheme"
+msgstr "Dewiswch gynllun lliw y rhaglen"
+
+#: data/ui/preferences.ui:82
+msgid "Follow System"
+msgstr "Dilyn y System"
+
+#: data/ui/preferences.ui:83
+msgid "Light"
+msgstr "Golau"
+
+#: data/ui/preferences.ui:84
+msgid "Dark"
+msgstr "Tywyll"
+
+#: data/ui/preferences.ui:92
+msgid "Mobile Layout"
+msgstr "Cynllun Symudol"
+
+#: data/ui/preferences.ui:93
+msgid ""
+"Single-pane layout. Auto: on mobile shells or narrow windows; "
+"Enabled/Disabled: force on or off at any size"
+msgstr ""
+"Cynllun un-paen. Awto: ar gregyn symudol neu ffenestri cul; Wedi'i "
+"Alluogi/Analluogi: gorfodi ymlaen neu i ffwrdd ar unrhyw faint"
+
+#: data/ui/preferences.ui:112
+msgid "Enable Developer Tools"
+msgstr "Galluogi Offer Datblygwr"
+
+#: data/ui/preferences.ui:113
+msgid "Allow inspecting and debugging the WebView"
+msgstr "Caniatáu archwilio a dadfygio'r WebView"
+
+#: data/ui/preferences.ui:119
+msgid "Open the developer tools for the current page"
+msgstr "Agor yr offer datblygwr ar gyfer y dudalen gyfredol"
+
+#: data/ui/preferences.ui:123
+msgid "Open"
+msgstr "Agor"
+
+#: data/ui/preferences.ui:135 data/ui/preferences.ui:241
+msgid "Notifications"
+msgstr "Hysbysiadau"
+
+#: data/ui/preferences.ui:142
+msgid "Enable Notifications"
+msgstr "Galluogi Hysbysiadau"
+
+#: data/ui/preferences.ui:143
+msgid "Master toggle for all notifications"
+msgstr "Prif switsh ar gyfer pob hysbysiad"
+
+#: data/ui/preferences.ui:150
+msgid "Messages"
+msgstr "Negeseuon"
+
+#: data/ui/preferences.ui:153
+msgid "Message Notifications"
+msgstr "Hysbysiadau Negeseuon"
+
+#: data/ui/preferences.ui:154
+msgid "Show notifications for incoming messages"
+msgstr "Dangos hysbysiadau ar gyfer negeseuon sy'n dod i mewn"
+
+#: data/ui/preferences.ui:159
+msgid "Change Tray Icon on Message"
+msgstr "Newid Eicon yr Hambwrdd ar Neges"
+
+#: data/ui/preferences.ui:160
+msgid "Animate the tray icon when a new message arrives"
+msgstr "Animeiddio eicon yr hambwrdd pan ddaw neges newydd"
+
+#: data/ui/preferences.ui:167
+msgid "Message Preview"
+msgstr "Rhagolwg o'r Neges"
+
+#: data/ui/preferences.ui:168
+msgid "Some settings only apply when Karere controls the popup"
+msgstr ""
+"Mae rhai gosodiadau ond yn berthnasol pan fydd Karere'n rheoli'r naidlen"
+
+#: data/ui/preferences.ui:171
+msgid "Show Sender Name"
+msgstr "Dangos Enw'r Anfonwr"
+
+#: data/ui/preferences.ui:172
+msgid "Display the contact name in notifications"
+msgstr "Dangos enw'r cyswllt mewn hysbysiadau"
+
+#: data/ui/preferences.ui:177
+msgid "Show Message Text"
+msgstr "Dangos Testun y Neges"
+
+#: data/ui/preferences.ui:178
+msgid "Display message content in notifications"
+msgstr "Dangos cynnwys y neges mewn hysbysiadau"
+
+#: data/ui/preferences.ui:183
+msgid "Preview Length"
+msgstr "Hyd y Rhagolwg"
+
+#: data/ui/preferences.ui:184
+msgid "How much of the message to show"
+msgstr "Faint o'r neges i'w ddangos"
+
+#: data/ui/preferences.ui:188
+msgid "Short"
+msgstr "Byr"
+
+#: data/ui/preferences.ui:189
+msgid "Medium"
+msgstr "Canolig"
+
+#: data/ui/preferences.ui:190
+msgid "Long"
+msgstr "Hir"
+
+#: data/ui/preferences.ui:200
+msgid "Sounds"
+msgstr "Seiniau"
+
+#: data/ui/preferences.ui:203
+msgid "Notification Sounds"
+msgstr "Seiniau Hysbysu"
+
+#: data/ui/preferences.ui:204
+msgid "Play WhatsApp's notification sound for new messages"
+msgstr "Chwarae sain hysbysu WhatsApp ar gyfer negeseuon newydd"
+
+#: data/ui/preferences.ui:213
+msgid "Downloads"
+msgstr "Lawrlwythiadau"
+
+#: data/ui/preferences.ui:217
+msgid "Location"
+msgstr "Lleoliad"
+
+#: data/ui/preferences.ui:220
+msgid "Download Directory"
+msgstr "Cyfeiriadur Lawrlwytho"
+
+#: data/ui/preferences.ui:221
+msgid "Default (Downloads)"
+msgstr "Rhagosodedig (Lawrlwythiadau)"
+
+#: data/ui/preferences.ui:224
+msgid "Choose…"
+msgstr "Dewis…"
+
+#: data/ui/preferences.ui:232
+msgid "Reset to default"
+msgstr "Ailosod i'r rhagosodiad"
+
+#: data/ui/preferences.ui:244
+msgid "Download Notifications"
+msgstr "Hysbysiadau Lawrlwytho"
+
+#: data/ui/preferences.ui:245
+msgid "Notify when a file download completes"
+msgstr "Hysbysu pan fydd lawrlwythiad ffeil yn cwblhau"
+
+#: data/ui/preferences.ui:250
+msgid "Notification Type"
+msgstr "Math o Hysbysiad"
+
+#: data/ui/preferences.ui:251
+msgid "How download notifications are displayed"
+msgstr "Sut mae hysbysiadau lawrlwytho'n cael eu dangos"
+
+#: data/ui/preferences.ui:255
+msgid "In-app Toast"
+msgstr "Tost yn y Rhaglen"
+
+#: data/ui/preferences.ui:256
+msgid "System Notification"
+msgstr "Hysbysiad System"
+
+#: data/ui/preferences.ui:257
+msgid "Both"
+msgstr "Y Ddau"
+
+#: data/ui/preferences.ui:269
+msgid "Spellcheck"
+msgstr "Gwirio Sillafu"
+
+#: data/ui/preferences.ui:273
+msgid "Spell Checking"
+msgstr "Gwirio Sillafu"
+
+#: data/ui/preferences.ui:276
+msgid "Enable Spell Checking"
+msgstr "Galluogi Gwirio Sillafu"
+
+#: data/ui/preferences.ui:277
+msgid "Check spelling as you type"
+msgstr "Gwirio sillafu wrth i chi deipio"
+
+#: data/ui/preferences.ui:282
+msgid "Auto-Detect Language"
+msgstr "Awto-Ganfod Iaith"
+
+#: data/ui/preferences.ui:283
+msgid "Detect the writing language automatically"
+msgstr "Canfod iaith ysgrifennu'n awtomatig"
+
+#: data/ui/preferences.ui:288
+msgid "Enable Auto-Correct"
+msgstr "Galluogi Awto-Gywiro"
+
+#: data/ui/preferences.ui:289
+msgid "Automatically fix common spelling mistakes"
+msgstr "Trwsio camgymeriadau sillafu cyffredin yn awtomatig"
+
+#: data/ui/preferences.ui:294
+msgid "Header Bar Language Control"
+msgstr "Rheolaeth Iaith y Bar Pennyn"
+
+#: data/ui/preferences.ui:295
+msgid "Show the spell-check language dropdown in the header bar"
+msgstr "Dangos y gwymplen iaith gwirio sillafu yn y bar pennyn"
+
+#: data/ui/preferences.ui:301
+msgid "Star a language to pin it to the top"
+msgstr "Serennu iaith i'w phinio i'r brig"
+
+#: data/ui/preferences.ui:310
+msgid "Privacy"
+msgstr "Preifatrwydd"
+
+#: data/ui/preferences.ui:314
+msgid "Site Permissions"
+msgstr "Caniatâdau Gwefannau"
+
+#: data/ui/preferences.ui:315
+msgid "Stored allow/deny decisions for websites"
+msgstr "Penderfyniadau caniatáu/gwrthod wedi'u storio ar gyfer gwefannau"
+
+#: data/ui/preferences.ui:318
+msgid "Clear All"
+msgstr "Clirio'r Cyfan"
+
+#: data/ui/preferences.ui:331
+msgid "Accessibility"
+msgstr "Hygyrchedd"
+
+#: data/ui/preferences.ui:335
+msgid "Motion and Focus"
+msgstr "Symudiad a Ffocws"
+
+#: data/ui/preferences.ui:338
+msgid "Reduce Motion"
+msgstr "Lleihau Symud"
+
+#: data/ui/preferences.ui:339
+msgid "Minimize animations and transitions"
+msgstr "Lleihau animeiddiadau a thrawsnewidiadau"
+
+#: data/ui/preferences.ui:344
+msgid "Focus Indicators"
+msgstr "Dangosyddion Ffocws"
+
+#: data/ui/preferences.ui:345
+msgid "Show visible outlines around focused elements"
+msgstr "Dangos amlinellau gweladwy o amgylch elfennau â ffocws"
+
+#: data/ui/preferences.ui:350
+msgid "High Contrast Mode"
+msgstr "Modd Cyferbyniad Uchel"
+
+#: data/ui/preferences.ui:351
+msgid "Increase contrast for better readability"
+msgstr "Cynyddu cyferbyniad ar gyfer gwell darllenadwyedd"
+
+#: data/ui/preferences.ui:358 data/ui/keyboard-shortcuts.ui:90
+msgid "Zoom"
+msgstr "Chwyddo"
+
+#: data/ui/preferences.ui:361
+msgid "Accessibility Zoom"
+msgstr "Chwyddo Hygyrchedd"
+
+#: data/ui/preferences.ui:362
+msgid "Set a minimum zoom level for all accounts"
+msgstr "Gosod lefel chwyddo isaf ar gyfer pob cyfrif"
+
+#: data/ui/preferences.ui:367
+msgid "Minimum Zoom Level"
+msgstr "Lefel Chwyddo Isaf"
+
+#: data/ui/preferences.ui:368
+msgid "Applied to all webviews"
+msgstr "Wedi'i gymhwyso i bob webview"
+
+#: data/ui/preferences.ui:383
+msgid "Header Bar Zoom Controls"
+msgstr "Rheolaethau Chwyddo'r Bar Pennyn"
+
+#: data/ui/preferences.ui:384
+msgid "Show zoom buttons in the header bar"
+msgstr "Dangos botymau chwyddo yn y bar pennyn"
+
+#: data/ui/preferences.ui:391
+msgid "Screen Reader Support"
+msgstr "Cefnogaeth Darllenydd Sgrin"
+
+#: data/ui/preferences.ui:394
+msgid "Screen Reader Optimizations"
+msgstr "Optimeiddiadau Darllenydd Sgrin"
+
+#: data/ui/preferences.ui:395
+msgid "Improve compatibility with assistive technologies — restart required"
+msgstr "Gwella cydnawsedd â thechnolegau cynorthwyol — angen ailgychwyn"
+
+#: data/ui/preferences.ui:402
+msgid "Shortcuts"
+msgstr "Bysellau Brys"
+
+#: data/ui/preferences.ui:406
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "Galluogi bysellau brys ar gyfer gweithredoedd cyffredin"
+
+#: data/ui/preferences.ui:411
+msgid "Accessibility Shortcuts"
+msgstr "Bysellau Brys Hygyrchedd"
+
+#: data/ui/preferences.ui:412
+msgid "Enable shortcuts for accessibility features"
+msgstr "Galluogi bysellau brys ar gyfer nodweddion hygyrchedd"
+
+#: data/ui/preferences.ui:417
+msgid "Developer Shortcuts"
+msgstr "Bysellau Brys Datblygwr"
+
+#: data/ui/preferences.ui:418
+msgid "Enable shortcuts for developer tools"
+msgstr "Galluogi bysellau brys ar gyfer offer datblygwr"
+
+#: data/ui/preferences.ui:423
+msgid "Notification Shortcuts"
+msgstr "Bysellau Brys Hysbysu"
+
+#: data/ui/preferences.ui:424
+msgid "Enable shortcuts for notification actions"
+msgstr "Galluogi bysellau brys ar gyfer gweithredoedd hysbysu"
+
+#: data/ui/keyboard-shortcuts.ui:12
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: data/ui/keyboard-shortcuts.ui:15
+msgid "Reload WhatsApp Web"
+msgstr "Ail-lwytho WhatsApp Web"
+
+#: data/ui/keyboard-shortcuts.ui:16
+msgid "Reload the current page"
+msgstr "Ail-lwytho'r dudalen gyfredol"
+
+#: data/ui/keyboard-shortcuts.ui:22
+msgid "Force Reload"
+msgstr "Gorfodi Ail-lwytho"
+
+#: data/ui/keyboard-shortcuts.ui:23
+msgid "Reload, bypassing the cache"
+msgstr "Ail-lwytho, gan osgoi'r storfa"
+
+#: data/ui/keyboard-shortcuts.ui:29
+msgid "Find in Page"
+msgstr "Canfod ar y Dudalen"
+
+#: data/ui/keyboard-shortcuts.ui:30
+msgid "Search the current page"
+msgstr "Chwilio'r dudalen gyfredol"
+
+#: data/ui/keyboard-shortcuts.ui:38
+msgid "Accounts"
+msgstr "Cyfrifon"
+
+#: data/ui/keyboard-shortcuts.ui:41
+msgid "Next Account"
+msgstr "Cyfrif Nesaf"
+
+#: data/ui/keyboard-shortcuts.ui:42
+msgid "Switch to the next account"
+msgstr "Newid i'r cyfrif nesaf"
+
+#: data/ui/keyboard-shortcuts.ui:48
+msgid "Previous Account"
+msgstr "Cyfrif Blaenorol"
+
+#: data/ui/keyboard-shortcuts.ui:49
+msgid "Switch to the previous account"
+msgstr "Newid i'r cyfrif blaenorol"
+
+#: data/ui/keyboard-shortcuts.ui:56
+msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
+msgstr "Neidio i gyfrif 1–9 (Alt+1 … Alt+9)"
+
+#: data/ui/keyboard-shortcuts.ui:67
+msgid "Fullscreen"
+msgstr "Sgrin Lawn"
+
+#: data/ui/keyboard-shortcuts.ui:68
+msgid "Toggle fullscreen mode"
+msgstr "Toglo'r modd sgrin lawn"
+
+#: data/ui/keyboard-shortcuts.ui:74
+msgid "Minimize Window"
+msgstr "Lleihau'r Ffenestr"
+
+#: data/ui/keyboard-shortcuts.ui:75
+msgid "Minimize the window"
+msgstr "Lleihau'r ffenestr"
+
+#: data/ui/keyboard-shortcuts.ui:81
+msgid "Close Window"
+msgstr "Cau'r Ffenestr"
+
+#: data/ui/keyboard-shortcuts.ui:82
+msgid "Close the window"
+msgstr "Cau'r ffenestr"
+
+#: data/ui/keyboard-shortcuts.ui:94
+msgid "Increase the zoom level"
+msgstr "Cynyddu'r lefel chwyddo"
+
+#: data/ui/keyboard-shortcuts.ui:101
+msgid "Decrease the zoom level"
+msgstr "Lleihau'r lefel chwyddo"
+
+#: data/ui/keyboard-shortcuts.ui:108
+msgid "Reset zoom to 100%"
+msgstr "Ailosod y chwyddo i 100%"
+
+#: data/ui/keyboard-shortcuts.ui:114
+msgid "Toggle Header Bar Zoom Controls"
+msgstr "Toglo Rheolaethau Chwyddo'r Bar Pennyn"
+
+#: data/ui/keyboard-shortcuts.ui:115
+msgid "Show or hide the zoom buttons"
+msgstr "Dangos neu guddio'r botymau chwyddo"
+
+#: data/ui/keyboard-shortcuts.ui:123
+msgid "Developer"
+msgstr "Datblygwr"
+
+#: data/ui/keyboard-shortcuts.ui:127
+msgid "Open the developer tools"
+msgstr "Agor yr offer datblygwr"
+
+#: data/ui/keyboard-shortcuts.ui:133
+msgid "Inspect Element"
+msgstr "Archwilio Elfen"
+
+#: data/ui/keyboard-shortcuts.ui:134
+msgid "Pick an element to inspect"
+msgstr "Dewis elfen i'w archwilio"
+
+#: data/ui/keyboard-shortcuts.ui:142
+msgid "Application"
+msgstr "Rhaglen"
+
+#: data/ui/keyboard-shortcuts.ui:146
+msgid "Open preferences"
+msgstr "Agor dewisiadau"
+
+#: data/ui/keyboard-shortcuts.ui:153
+msgid "Show this shortcuts dialog"
+msgstr "Dangos y ddeialog bysellau brys hon"
+
+#: data/ui/keyboard-shortcuts.ui:160
+msgid "Quit Karere"
+msgstr "Gadael Karere"
+
+#: data/io.github.tobagin.karere.desktop.in:3
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "Cleient WhatsApp"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Cleient WhatsApp Web brodorol ar gyfer bwrdd gwaith Linux"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;sgwrs;negeseuon;gwe;cyfathrebu;"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
+msgid "Chat on WhatsApp"
+msgstr "Sgwrsio ar WhatsApp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:24
+msgid ""
+"Karere brings WhatsApp to your Linux desktop with a native look and feel. It"
+" integrates seamlessly with your environment, offering a clean, modern "
+"interface that respects your system's theme and workflow. By wrapping "
+"WhatsApp Web, it ensures you have access to all the latest features while "
+"adding powerful desktop-specific capabilities."
+msgstr ""
+"Mae Karere'n dod â WhatsApp i'ch bwrdd gwaith Linux gyda golwg a theimlad "
+"brodorol. Mae'n integreiddio'n ddi-dor â'ch amgylchedd, gan gynnig "
+"rhyngwyneb glân, modern sy'n parchu thema a llif gwaith eich system. Drwy "
+"lapio WhatsApp Web, mae'n sicrhau bod gennych fynediad i'r holl nodweddion "
+"diweddaraf wrth ychwanegu galluoedd pwerus penodol i'r bwrdd gwaith."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:30
+msgid "Key features include:"
+msgstr "Mae'r prif nodweddion yn cynnwys:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:32
+msgid "Native system notifications and tray icon support"
+msgstr "Cefnogaeth hysbysiadau system brodorol ac eicon hambwrdd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:33
+msgid ""
+"Persistent login sessions so you don't need to scan the QR code every time"
+msgstr ""
+"Sesiynau mewngofnodi parhaus fel nad oes angen sganio'r cod QR bob tro"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:34
+msgid "Privacy controls and comprehensive spell-checking settings"
+msgstr "Rheolaethau preifatrwydd a gosodiadau gwirio sillafu cynhwysfawr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:35
+msgid "Smooth performance with hardware acceleration"
+msgstr "Perfformiad llyfn gyda chyflymu caledwedd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:36
+msgid "Proper clipboard integration for text and images"
+msgstr "Integreiddiad clipfwrdd priodol ar gyfer testun a delweddau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+msgid ""
+"Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend "
+"with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
+msgstr ""
+"Bellach wedi'i adeiladu ar CEF/Chromium 148. Mae Karere 4.0 yn disodli'r "
+"pen-ôl WebKitGTK gyda'r Chromium Embedded Framework, gan ddod â chwarae "
+"atodiadau fideo llawn (H.264/AAC), cefnogaeth aml-gyfrif gyda sesiynau "
+"ynysig, chwyddo fesul cyfrif, a pheiriant rendro cyflymach, mwy cydnaws wrth"
+" gadw'r un gragen GTK4/libadwaita brodorol."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:49
+msgid "Main application window with WhatsApp Web integration"
+msgstr "Prif ffenestr y rhaglen gydag integreiddiad WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:53
+msgid "About dialog showing application information"
+msgstr "Deialog ynghylch yn dangos gwybodaeth y rhaglen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:57
+msgid "Application preferences and settings dialog"
+msgstr "Deialog dewisiadau a gosodiadau'r rhaglen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:61
+#: data/io.github.tobagin.karere.metainfo.xml.in:703
+msgid "Keyboard shortcuts and productivity features"
+msgstr "Bysellau brys a nodweddion cynhyrchiant"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:74
+msgid "Thiago Fernandes"
+msgstr "Thiago Fernandes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:94
+msgid "whatsapp"
+msgstr "whatsapp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:95
+msgid "chat"
+msgstr "sgwrs"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:96
+msgid "messaging"
+msgstr "negeseuon"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:97
+msgid "web"
+msgstr "gwe"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:98
+msgid "communication"
+msgstr "cyfathrebu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:106
+msgid ""
+"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+"Existing accounts must be re-linked — there is no migration from v3."
+msgstr ""
+"Mae Karere 4.0 yn fforc galed sy'n ailadeiladu'r rhaglen ar CEF/Chromium "
+"148. Rhaid ailgysylltu cyfrifon presennol — nid oes mudo o v3."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:107
+msgid "Major changes:"
+msgstr "Prif newidiadau:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:109
+msgid ""
+"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+"proprietary-codec builds for H.264/AAC video attachment playback"
+msgstr ""
+"Newidiwyd y pen-ôl rendro o WebKitGTK i CEF/Chromium 148, gydag adeiladau "
+"côd-perchnogol ar gyfer chwarae atodiadau fideo H.264/AAC"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:110
+msgid ""
+"Multi-account support: each account runs in an isolated CEF RequestContext "
+"with its own cookies and storage; accounts are ordered most-recently-used"
+msgstr ""
+"Cefnogaeth aml-gyfrif: mae pob cyfrif yn rhedeg mewn CEF RequestContext "
+"ynysig gyda'i gwcis a'i storfa ei hun; mae cyfrifon wedi'u trefnu yn ôl y "
+"rhai a ddefnyddiwyd ddiweddaraf"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:111
+msgid ""
+"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+msgstr ""
+"Hunaniaeth cyfrif (enw + afatar) wedi'i ddarganfod yn awtomatig o Store "
+"mewnol WhatsApp Web, gyda dewis wrth gefn crafu DOM gostyngedig wedi'i "
+"ddangos gan fathodyn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:112
+msgid ""
+"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
+"accessibility minimum-zoom floor"
+msgstr ""
+"Chwyddo fesul cyfrif (Ctrl +/-/0) gyda rheolaethau chwyddo bar pennyn "
+"dewisol a llawr chwyddo isaf hygyrchedd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:113
+msgid ""
+"Native system tray (StatusNotifierItem), desktop notifications, download "
+"manager, and image/text paste reimplemented on the CEF stack"
+msgstr ""
+"Hambwrdd system brodorol (StatusNotifierItem), hysbysiadau bwrdd gwaith, "
+"rheolwr lawrlwytho, a gludo delwedd/testun wedi'u hailweithredu ar y pentwr "
+"CEF"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:114
+msgid ""
+"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+"popover for the off-screen-rendered web view"
+msgstr ""
+"Cynllun symudol-ymatebol, sgrin lawn JavaScript, a naidlen dewislen-cyd-"
+"destun OSR ar gyfer y wedd we wedi'i rendro oddi ar y sgrin"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:115
+msgid ""
+"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
+"browsing"
+msgstr ""
+"Dewisiadau hygyrchedd: lleihau-symud, gweladwyedd cylch-ffocws, a phori "
+"caret"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:116
+msgid ""
+"Live spell-check language switching and a separately installable Debug "
+"symbol extension for symbolicated crash reports"
+msgstr ""
+"Newid iaith gwirio sillafu byw ac estyniad symbol Dadfygio y gellir ei osod "
+"ar wahân ar gyfer adroddiadau damweiniau symbolaidd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:123
+msgid ""
+"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
+"clear behavior removed upstream — Karere now dismisses notifications "
+"explicitly)"
+msgstr ""
+"Trwsiwyd: bathodynnau/baneri hysbysu'n aros ar ôl ffocws ar GNOME 50 "
+"(ymddygiad awto-glirio wedi'i ddileu i fyny'r afon — mae Karere bellach yn "
+"diystyru hysbysiadau'n benodol)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:124
+msgid ""
+"Fixed: blank-window race when autostarted before the network/portal stack is"
+" ready (auto-retry with exponential backoff)"
+msgstr ""
+"Trwsiwyd: ras ffenestr-wag pan gychwynnir yn awtomatig cyn bod y pentwr "
+"rhwydwaith/porth yn barod (awto-ailgynnig gydag enciliad esbonyddol)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:131
+msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+msgstr "Ychwanegwyd: pinio hoff ieithoedd gwirio sillafu i frig y gwymplen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:132
+msgid ""
+"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
+"instead of locale codes"
+msgstr ""
+"Ychwanegwyd: mae'r gwymplen gwirio sillafu'n dangos enwau ieithoedd naturiol"
+" (\"Saesneg (DU)\") yn lle codau locale"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:133
+msgid ""
+"Added: account switcher uses a popover on desktop windows (bottom sheet "
+"preserved on mobile)"
+msgstr ""
+"Ychwanegwyd: mae'r switsher cyfrifon yn defnyddio naidlen ar ffenestri bwrdd"
+" gwaith (cadwyd y ddalen waelod ar symudol)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:134
+msgid ""
+"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
+"43, CachyOS, Bazzite, postmarketOS)"
+msgstr ""
+"Trwsiwyd: damwain y rhaglen wrth lansio ar systemau GNOME 50 / glibc 2.42+ "
+"(Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:135
+msgid ""
+"Fixed: locale-dependent crash that required manually setting "
+"LC_ALL=en_GB.UTF-8"
+msgstr ""
+"Trwsiwyd: damwain dibynnol-ar-locale a oedd angen gosod LC_ALL=en_GB.UTF-8 â"
+" llaw"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:136
+msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+msgstr ""
+"Trwsiwyd: cynllun symudol wedi torri gan newidiadau DOM diweddar WhatsApp "
+"Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:137
+msgid ""
+"Fixed: downloaded files with duplicate names silently overwriting each other"
+" (now appends (1), (2), ...)"
+msgstr ""
+"Trwsiwyd: ffeiliau wedi'u lawrlwytho ag enwau dyblyg yn trosysgrifo ei "
+"gilydd yn dawel (bellach yn atodi (1), (2), ...)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:138
+msgid ""
+"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+"dependencies to latest compatible versions"
+msgstr ""
+"Cynyddwyd WebKitGTK i 2.52.3, geiriaduron LibreOffice i 26.2.3.2, "
+"dibyniaethau Rust i'r fersiynau cydnaws diweddaraf"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:145
+msgid ""
+"Fixed voice and video calls in production Flatpak (Flathub linter-compatible"
+" pre-built plugin)"
+msgstr ""
+"Trwsiwyd galwadau llais a fideo yn y Flatpak cynhyrchu (ategyn parod cydnaws"
+" â linter Flathub)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:152
+msgid ""
+"Fixed voice and video calls not working in the production build (missing "
+"noise suppression plugin)"
+msgstr ""
+"Trwsiwyd galwadau llais a fideo nad oeddent yn gweithio yn yr adeiledd "
+"cynhyrchu (ategyn lleihau sŵn ar goll)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:159
+msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+msgstr ""
+"Ychwanegwyd cefnogaeth galwadau llais a fideo drwy WebKitGTK 2.50.5 gyda "
+"WebRTC"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:160
+msgid "Fixed download filenames now use WhatsApp's original filename"
+msgstr ""
+"Trwsiwyd enwau ffeiliau lawrlwytho i ddefnyddio enw ffeil gwreiddiol "
+"WhatsApp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:161
+msgid "Fixed duplicate downloads auto-increment instead of failing"
+msgstr "Trwsiwyd lawrlwythiadau dyblyg i awto-gynyddu yn lle methu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:162
+msgid ""
+"Fixed window now properly unminimizes when activated from launcher or tray"
+msgstr ""
+"Trwsiwyd ffenestr bellach yn dad-leihau'n briodol pan gaiff ei gweithredu "
+"o'r lansiwr neu'r hambwrdd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:163
+msgid "Fixed notification sounds now respect GNOME volume controls"
+msgstr "Trwsiwyd seiniau hysbysu bellach yn parchu rheolaethau sain GNOME"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:164
+msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+msgstr ""
+"Nodyn: mae angen ailgysylltu cyfrifon WhatsApp ar ôl yr uwchraddiad hwn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:171
+msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+msgstr ""
+"Trwsiwyd methiant adeiladu Flatpak a achoswyd gan newidiadau API ashpd 0.13"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:178
+msgid ""
+"Fixed voice and video calls showing \"Your browser doesn't support calling\""
+msgstr ""
+"Trwsiwyd galwadau llais a fideo yn dangos \"Nid yw eich porwr yn cefnogi "
+"galw\""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:179
+msgid ""
+"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+"Linux environments"
+msgstr ""
+"Trwsiwyd bysellfwrdd ar y sgrin nad oedd yn ymddangos yn ddibynadwy ar Phosh"
+" ac amgylcheddau Linux â chyffyrddiad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:180
+msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+msgstr ""
+"Trwsiwyd lawrlwythiadau URL blob (e.e. Cadw Delwedd o'r gwyliwr cyfryngau)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:181
+msgid "Redesigned application icons for stable and development variants"
+msgstr ""
+"Ailgynlluniwyd eiconau'r rhaglen ar gyfer amrywiadau sefydlog a datblygu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:182
+msgid "Updated all Rust dependencies to latest versions"
+msgstr "Diweddarwyd pob dibyniaeth Rust i'r fersiynau diweddaraf"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:183
+msgid "Upgraded to GNOME Platform 50"
+msgstr "Uwchraddiwyd i Lwyfan GNOME 50"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:184
+msgid "Removed ffmpeg-full extension (no longer required)"
+msgstr "Tynnwyd estyniad ffmpeg-full (nid oes angen mwyach)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:191
+msgid "Fixed freezes when viewing media galleries"
+msgstr "Trwsiwyd rhewi wrth wylio orielau cyfryngau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:192
+msgid "Fixed crash on launch due to memory pressure threshold ordering"
+msgstr "Trwsiwyd damwain wrth lansio oherwydd trefn trothwy pwysau cof"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:193
+msgid "Fixed download destination and context menu issues"
+msgstr "Trwsiwyd materion cyrchfan lawrlwytho a dewislen cyd-destun"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:194
+msgid "Fixed dead key composition for first character in input fields"
+msgstr ""
+"Trwsiwyd cyfansoddiad bysell farw ar gyfer y nod cyntaf mewn meysydd mewnbwn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:195
+msgid ""
+"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
+"handling"
+msgstr ""
+"Ychwanegwyd newidynnau amgylchedd GStreamer/PipeWire i'r Flatpak cynhyrchu "
+"ar gyfer trin cyfryngau effeithlon"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:202
+msgid "Fixed download destination handling"
+msgstr "Trwsiwyd trin cyrchfan lawrlwytho"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:203
+msgid "Resolved WebKit crashes on media-heavy pages"
+msgstr "Datryswyd damweiniau WebKit ar dudalennau cyfryngau-drwm"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:210
+msgid "Fixed: Download destination path handling regression"
+msgstr "Trwsiwyd: atchweliad trin llwybr cyrchfan lawrlwytho"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:217
+msgid ""
+"Fixed: JS injection and path traversal vulnerabilities in download handling"
+msgstr ""
+"Trwsiwyd: gwendidau chwistrellu JS a thramwyo llwybr wrth drin lawrlwytho"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:224
+msgid ""
+"Fixed: Handle WebKit web process crashes with auto-reload and user "
+"notification"
+msgstr ""
+"Trwsiwyd: trin damweiniau proses we WebKit gydag awto-ail-lwytho a hysbysiad"
+" i'r defnyddiwr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:225
+msgid "Fixed: JS injection and path traversal vulnerabilities"
+msgstr "Trwsiwyd: gwendidau chwistrellu JS a thramwyo llwybr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:226
+msgid "Fixed: Panic in notification handling"
+msgstr "Trwsiwyd: panig wrth drin hysbysiadau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:233
+msgid "Added complete multi-account support with sidebar and tray integration"
+msgstr ""
+"Ychwanegwyd cefnogaeth aml-gyfrif gyflawn gyda bar ochr ac integreiddiad "
+"hambwrdd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:234
+msgid "Added per-account zoom settings and improved accessibility"
+msgstr "Ychwanegwyd gosodiadau chwyddo fesul cyfrif a gwell hygyrchedd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:235
+msgid "Fixed startup race conditions and resource usage issues"
+msgstr "Trwsiwyd amodau ras cychwyn a materion defnydd adnoddau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:242
+msgid ""
+"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+msgstr ""
+"Ychwanegwyd cefnogaeth Chwyddo (Ctrl +/-/0) gyda pharhad a rheolaethau dewis"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:243
+msgid "Fixed window size increasing on every restart"
+msgstr "Trwsiwyd maint y ffenestr yn cynyddu ar bob ailgychwyn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:250
+msgid ""
+"Fixed: Resolved webview reload loop on startup due to incorrect window size "
+"detection"
+msgstr ""
+"Trwsiwyd: datryswyd dolen ail-lwytho webview wrth gychwyn oherwydd canfod "
+"maint ffenestr anghywir"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:257
+msgid ""
+"Added WebRTC permission handling in preparation for WhatsApp Web voice/video"
+" calls"
+msgstr ""
+"Ychwanegwyd trin caniatâd WebRTC i baratoi ar gyfer galwadau llais/fideo "
+"WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:258
+msgid "Improved mobile UI resizing consistency"
+msgstr "Gwellwyd cysondeb ail-feintio UI symudol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:265
+msgid ""
+"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+"(silences sounds)"
+msgstr ""
+"Trwsiwyd: mae'r rhaglen bellach yn parchu gosodiadau \"Peidiwch ag "
+"Aflonyddu\" y system ar GNOME (yn tawelu seiniau)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:266
+msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+msgstr ""
+"Trwsiwyd: mae hysbysiadau'n osgoi delweddau DND (blaenoriaeth wedi'i gostwng"
+" i Arferol)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:273
+msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+msgstr ""
+"Trwsiwyd eiconau hambwrdd ar KDE/GNOME (gweladwy ar themâu golau a thywyll)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:274
+msgid "Restored correct app icons and transparent backgrounds"
+msgstr "Adferwyd eiconau cywir y rhaglen a chefndiroedd tryloyw"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:275
+msgid "Improved icon compatibility across desktop environments"
+msgstr "Gwellwyd cydnawsedd eiconau ar draws amgylcheddau bwrdd gwaith"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:282
+msgid ""
+"Fixed application freezing on resume by reverting aggressive cache "
+"optimization"
+msgstr ""
+"Trwsiwyd rhewi'r rhaglen wrth ailddechrau drwy ddychwelyd optimeiddiad "
+"storfa ymosodol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:283
+msgid "Fixed background validation to ensure app starts correctly"
+msgstr "Trwsiwyd dilysu cefndir i sicrhau bod y rhaglen yn cychwyn yn gywir"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:284
+msgid "Optimized memory usage in mobile responsive scripts"
+msgstr "Optimeiddiwyd defnydd cof mewn sgriptiau ymatebol symudol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:285
+msgid "Improved icon rendering (symbolic icons now use currentColor)"
+msgstr ""
+"Gwellwyd rendro eiconau (mae eiconau symbolaidd bellach yn defnyddio "
+"currentColor)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:292
+msgid "Fixed window resize behavior to prevent excessive reloading"
+msgstr "Trwsiwyd ymddygiad ail-feintio ffenestr i atal ail-lwytho gormodol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:293
+msgid "Fixed background notifications reliability"
+msgstr "Trwsiwyd dibynadwyedd hysbysiadau cefndir"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:300
+msgid "Fixed Flatpak build failure by correcting config"
+msgstr "Trwsiwyd methiant adeiladu Flatpak drwy gywiro config"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:307
+msgid "Fixed \"Too many open files\" crash by reusing notification resources"
+msgstr ""
+"Trwsiwyd damwain \"Gormod o ffeiliau ar agor\" drwy ailddefnyddio adnoddau "
+"hysbysu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:308
+msgid "Fixed zombie process accumulation"
+msgstr "Trwsiwyd cronni proses sombi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:309
+msgid "Improved overall stability"
+msgstr "Gwellwyd sefydlogrwydd cyffredinol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:316
+msgid "Ctrl+N keyboard shortcut for opening a new chat"
+msgstr "Bysell frys Ctrl+N ar gyfer agor sgwrs newydd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:317
+msgid ""
+"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+"Lomiri"
+msgstr ""
+"Cefnogaeth cynllun symudol gydag awto-ganfod ar gyfer Phosh, Plasma Mobile, "
+"a Lomiri"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:318
+msgid "Tray icon click now toggles window visibility"
+msgstr "Mae clicio eicon yr hambwrdd bellach yn toglo gweladwyedd y ffenestr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:319
+msgid "Window size is saved and restored when hiding/showing"
+msgstr "Mae maint y ffenestr yn cael ei gadw a'i adfer wrth guddio/dangos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:320
+msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+msgstr ""
+"Newidiwyd gosodiad cynllun symudol i gwymplen (awto/wedi'i alluogi/wedi'i "
+"analluogi)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:327
+msgid ""
+"Updated application summary and description for better AppStream compliance"
+msgstr ""
+"Diweddarwyd crynodeb a disgrifiad y rhaglen ar gyfer gwell cydymffurfiad "
+"AppStream"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:334
+msgid ""
+"Notification Chat Linking: Clicking a notification now opens the specific "
+"chat in Karere."
+msgstr ""
+"Cysylltu Sgwrs Hysbysu: Mae clicio hysbysiad bellach yn agor y sgwrs benodol"
+" yn Karere."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:335
+msgid ""
+"Webcam Support: Added support for using the webcam (Status updates, Video "
+"calls) with a new permission dialog."
+msgstr ""
+"Cefnogaeth Gwe-gamera: Ychwanegwyd cefnogaeth ar gyfer defnyddio'r we-gamera"
+" (diweddariadau Statws, galwadau Fideo) gyda deialog caniatâd newydd."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:342
+msgid ""
+"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+"compatibility"
+msgstr ""
+"Gwellwyd gludo delwedd gyda chodio Base64 ar gyfer cydnawsedd dibynadwy "
+"WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:343
+msgid "Added middle-click paste from primary selection (selected text)"
+msgstr "Ychwanegwyd gludo clic-canol o'r dewis cynradd (testun a ddewiswyd)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:344
+msgid "Fixed double-paste issue with middle-click"
+msgstr "Trwsiwyd mater gludo-ddwbl gyda chlic-canol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:351
+msgid "Fixed missing GSettings schema in Flatpak builds"
+msgstr "Trwsiwyd sgema GSettings ar goll mewn adeiladau Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:352
+msgid "Added new application icons"
+msgstr "Ychwanegwyd eiconau rhaglen newydd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:353
+msgid "Corrected metadata description references"
+msgstr "Cywirwyd cyfeiriadau disgrifiad metadata"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:360
+msgid ""
+"Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+msgstr ""
+"Newid i Borth Hysbysu XDG (ashpd) ar gyfer gwell cefnogaeth blwch tywod"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:361
+msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+msgstr ""
+"Tynnu caniatâdau hysbysu D-Bus uniongyrchol ar gyfer maniffest glanach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:362
+msgid "Fixed Open action for downloaded files"
+msgstr "Trwsiwyd gweithred Agor ar gyfer ffeiliau wedi'u lawrlwytho"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:363
+msgid "Fixed Dead Key/composition input issues"
+msgstr "Trwsiwyd materion mewnbwn Bysell Farw/cyfansoddiad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:364
+msgid "Migrated Flatpak build logic to meson.build"
+msgstr "Mudwyd rhesymeg adeiladu Flatpak i meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:371
+msgid ""
+"Switch to XDG Background Portal for autostart (improves security and "
+"compatibility)"
+msgstr ""
+"Newid i Borth Cefndir XDG ar gyfer awto-gychwyn (yn gwella diogelwch a "
+"chydnawsedd)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:378
+msgid "Add new contributor Sabri Ünal to the About dialog"
+msgstr "Ychwanegu cyfrannwr newydd Sabri Ünal i'r ddeialog ynghylch"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:379
+msgid "General improvements and versioning updates"
+msgstr "Gwelliannau cyffredinol a diweddariadau fersiynu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:386
+msgid "Restore autostart permission for improved compatibility"
+msgstr "Adfer caniatâd awto-gychwyn ar gyfer gwell cydnawsedd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:393
+msgid "Remove unnecessary autostart permission to satisfy linter"
+msgstr "Tynnu caniatâd awto-gychwyn diangen i fodloni'r linter"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:400
+msgid "Add xdg-config/autostart permission for autostart support"
+msgstr ""
+"Ychwanegu caniatâd xdg-config/autostart ar gyfer cefnogaeth awto-gychwyn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:406
+msgid "Bug Fix Release"
+msgstr "Datganiad Trwsio Namau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:407
+#: data/io.github.tobagin.karere.metainfo.xml.in:416
+msgid "Changes:"
+msgstr "Newidiadau:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:409
+msgid ""
+"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
+msgstr ""
+"Trwsiwyd eicon hambwrdd ar goll ar GNOME drwy ychwanegu caniatâd "
+"StatusNotifierWatcher"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:415
+msgid "Update and Bug Fix Release"
+msgstr "Datganiad Diweddaru a Thrwsio Namau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:418
+msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+msgstr ""
+"Ychwanegwyd togl \"Rhedeg wrth Gychwyn\" yn y dewisiadau (rhagosodiad: "
+"anwir)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:419
+msgid "Fixed autostart toggle pathing for Flatpak environments"
+msgstr "Trwsiwyd llwybro togl awto-gychwyn ar gyfer amgylcheddau Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:420
+msgid "Fixed tray icon quit behavior"
+msgstr "Trwsiwyd ymddygiad gadael eicon yr hambwrdd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:421
+msgid "Added striped symbolic icons for development version"
+msgstr "Ychwanegwyd eiconau symbolaidd streipiog ar gyfer y fersiwn datblygu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:427
+msgid "🎉 Major Release 2.0.0"
+msgstr "🎉 Datganiad Mawr 2.0.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:428
+#: data/io.github.tobagin.karere.metainfo.xml.in:452
+#: data/io.github.tobagin.karere.metainfo.xml.in:507
+#: data/io.github.tobagin.karere.metainfo.xml.in:577
+#: data/io.github.tobagin.karere.metainfo.xml.in:695
+msgid "New Features:"
+msgstr "Nodweddion Newydd:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:430
+msgid "Full rewrite in Rust! 🦀"
+msgstr "Ailysgrifennu llawn yn Rust! 🦀"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:431
+msgid "New System Tray Icon support"
+msgstr "Cefnogaeth Eicon Hambwrdd System newydd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:432
+msgid "Notifications fully working with persistence fixes"
+msgstr "Hysbysiadau'n gweithio'n llawn gyda thrwsiadau parhad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:433
+msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+msgstr "Wedi'i drosglwyddo o Vala i Rust/GTK4/Libadwaita brodorol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:434
+msgid "Redesigned/streamlined preferences dialog"
+msgstr "Deialog dewisiadau wedi'i hailgynllunio/symleiddio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:435
+msgid "Enhanced performance and stability"
+msgstr "Perfformiad a sefydlogrwydd gwell"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:441
+msgid "🐛 Bug Fix Release"
+msgstr "🐛 Datganiad Trwsio Namau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:442
+msgid "Fixed:"
+msgstr "Trwsiwyd:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:444
+msgid ""
+"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+"activation"
+msgstr ""
+"Trwsiwyd mater rhewi cychwyn beirniadol (troellwr) drwy weithredu actifadu "
+"D-Bus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:445
+msgid "Ensure application starts properly in the background without delay"
+msgstr "Sicrhau bod y rhaglen yn cychwyn yn briodol yn y cefndir heb oedi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:451
+msgid "🎉 Feature Release"
+msgstr "🎉 Datganiad Nodwedd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:454
+msgid "🎤 Microphone permission support for voice notes"
+msgstr "🎤 Cefnogaeth caniatâd meicroffon ar gyfer nodiadau llais"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:455
+msgid "🚀 Start in background option for autostart"
+msgstr "🚀 Opsiwn cychwyn yn y cefndir ar gyfer awto-gychwyn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:456
+msgid "🔄 Manual reload and auto-reload on network reconnection"
+msgstr ""
+"🔄 Ail-lwytho â llaw ac awto-ail-lwytho wrth ailgysylltu â'r rhwydwaith"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:458
+#: data/io.github.tobagin.karere.metainfo.xml.in:474
+#: data/io.github.tobagin.karere.metainfo.xml.in:485
+#: data/io.github.tobagin.karere.metainfo.xml.in:496
+#: data/io.github.tobagin.karere.metainfo.xml.in:559
+#: data/io.github.tobagin.karere.metainfo.xml.in:596
+#: data/io.github.tobagin.karere.metainfo.xml.in:623
+#: data/io.github.tobagin.karere.metainfo.xml.in:648
+#: data/io.github.tobagin.karere.metainfo.xml.in:665
+#: data/io.github.tobagin.karere.metainfo.xml.in:682
+msgid "Improvements:"
+msgstr "Gwelliannau:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:460
+msgid "⚡ Performance optimizations for startup and shutdown"
+msgstr "⚡ Optimeiddiadau perfformiad ar gyfer cychwyn a chau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:461
+msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+msgstr ""
+"📝 Llwytho geiriadur anghydamserol ar gyfer cychwyn Gwirio Sillafu llyfnach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:462
+msgid "📖 Added MPRIS workaround documentation"
+msgstr "📖 Ychwanegwyd dogfennaeth ateb dros dro MPRIS"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:464
+#: data/io.github.tobagin.karere.metainfo.xml.in:518
+#: data/io.github.tobagin.karere.metainfo.xml.in:566
+#: data/io.github.tobagin.karere.metainfo.xml.in:586
+#: data/io.github.tobagin.karere.metainfo.xml.in:642
+#: data/io.github.tobagin.karere.metainfo.xml.in:659
+#: data/io.github.tobagin.karere.metainfo.xml.in:676
+msgid "Bug Fixes:"
+msgstr "Trwsiadau Namau:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:466
+msgid "Fixed missing dictionaries on startup"
+msgstr "Trwsiwyd geiriaduron ar goll wrth gychwyn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:467
+msgid "Fixed application freeze during lifecycle events"
+msgstr "Trwsiwyd rhewi'r rhaglen yn ystod digwyddiadau cylch bywyd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:473
+msgid "🔧 Maintenance Release"
+msgstr "🔧 Datganiad Cynnal a Chadw"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:476
+msgid "Updated build configuration and dependencies"
+msgstr "Diweddarwyd cyfluniad adeiladu a dibyniaethau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:477
+msgid "Enhanced packaging for better compatibility"
+msgstr "Gwellwyd pecynnu ar gyfer gwell cydnawsedd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:478
+msgid "Minor bug fixes and stability improvements"
+msgstr "Trwsiadau namau bach a gwelliannau sefydlogrwydd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:484
+msgid "📝 Documentation and Metadata Update"
+msgstr "📝 Diweddariad Dogfennaeth a Metadata"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:487
+msgid "Updated about dialog screenshot"
+msgstr "Diweddarwyd sgrinlun y ddeialog ynghylch"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:488
+msgid "Updated application screenshots"
+msgstr "Diweddarwyd sgrinluniau'r rhaglen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:489
+msgid "Minor README corrections"
+msgstr "Cywiriadau README bach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:495
+msgid "📸 Screenshots and Documentation Update"
+msgstr "📸 Diweddariad Sgrinluniau a Dogfennaeth"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:498
+msgid "Updated application screenshots with current UI appearance"
+msgstr "Diweddarwyd sgrinluniau'r rhaglen gydag ymddangosiad UI cyfredol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:499
+msgid "Refreshed About dialog screenshot"
+msgstr "Adnewyddwyd sgrinlun y ddeialog Ynghylch"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:500
+msgid "Enhanced visual documentation for users"
+msgstr "Gwellwyd dogfennaeth weledol ar gyfer defnyddwyr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:506
+msgid "🎉 Version 1.0.0 - Major Milestone Release"
+msgstr "🎉 Fersiwn 1.0.0 - Datganiad Carreg Filltir Fawr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:509
+msgid "✅ Fixed WhatsApp Web notification banner persistence"
+msgstr "✅ Trwsiwyd parhad baner hysbysu WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:510
+msgid "✅ Fixed notifications not working properly"
+msgstr "✅ Trwsiwyd hysbysiadau nad oeddent yn gweithio'n briodol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:511
+msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+msgstr "🖼️ Ychwanegwyd cefnogaeth gludo delwedd drwy'r clipfwrdd (Ctrl+V)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:512
+msgid ""
+"📥 Implemented download manager with custom directory and toast notifications"
+msgstr ""
+"📥 Gweithredwyd rheolwr lawrlwytho gyda chyfeiriadur addasedig a hysbysiadau "
+"tost"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:513
+msgid ""
+"♿ Enhanced accessibility with screen reader optimization and keyboard "
+"navigation"
+msgstr ""
+"♿ Gwellwyd hygyrchedd gydag optimeiddio darllenydd sgrin a llywio "
+"bysellfwrdd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:514
+msgid "📝 Added comprehensive spell checking system with auto-detection"
+msgstr "📝 Ychwanegwyd system gwirio sillafu cynhwysfawr gydag awto-ganfod"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:515
+msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+msgstr "🔤 Integreiddiwyd 80+ geiriadur iaith o LibreOffice"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:516
+msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+msgstr ""
+"⌨️ Ychwanegwyd deialog bysellau brys gan ddefnyddio AdwShortcutsDialog"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:520
+msgid ""
+"Fixed Ctrl+V paste for text content - now works for both text and images"
+msgstr ""
+"Trwsiwyd gludo Ctrl+V ar gyfer cynnwys testun - bellach yn gweithio ar gyfer"
+" testun a delweddau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:521
+msgid "Fixed WhatsApp notification permission not persisting across sessions"
+msgstr ""
+"Trwsiwyd caniatâd hysbysu WhatsApp nad oedd yn parhau ar draws sesiynau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:522
+msgid "Fixed notifications banner appearing on every app launch"
+msgstr "Trwsiwyd baner hysbysu'n ymddangos ar bob lansiad o'r rhaglen"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:523
+msgid "Fixed WebView zoom being enabled by default (now disabled)"
+msgstr ""
+"Trwsiwyd chwyddo WebView wedi'i alluogi'n ragosodedig (bellach wedi'i "
+"analluogi)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:524
+msgid "Fixed clipboard manager intercepting all paste events"
+msgstr "Trwsiwyd rheolwr clipfwrdd yn rhyng-gipio pob digwyddiad gludo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:525
+msgid ""
+"Removed hardcoded blueprint compiler paths for cross-architecture support"
+msgstr ""
+"Tynnwyd llwybrau casglydd blueprint wedi'u côdio'n galed ar gyfer cefnogaeth"
+" traws-bensaernïaeth"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:527
+msgid "Code Quality Improvements:"
+msgstr "Gwelliannau Ansawdd Côd:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:529
+msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+msgstr ""
+"♻️ Ailwampio mawr: Aildrefnwyd y sylfaen côd gydag enwau ffeiliau PascalCase"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:530
+msgid "♻️ Refactored Window.vala into specialized manager components"
+msgstr "♻️ Ailwampiwyd Window.vala yn gydrannau rheolwr arbenigol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:531
+msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+msgstr ""
+"♻️ Tynnwyd cofnodi addasedig ac adrodd damweiniau (defnyddiwch journalctl y "
+"system)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:532
+msgid ""
+"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+msgstr ""
+"🗑️ Tynnwyd nodwedd Peidiwch ag Aflonyddu (yn cael ei thrin gan ddaemon "
+"hysbysu'r system)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:533
+msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+msgstr ""
+"🗑️ Glanhawyd ffeiliau prawf darfodedig a dibyniaethau heb eu defnyddio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:534
+msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+msgstr "🗑️ Tynnwyd dibyniaethau json-glib, gee, a libsoup"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:535
+msgid "🧹 Centralized settings management with SettingsManager singleton"
+msgstr "🧹 Canolwyd rheoli gosodiadau gyda singleton SettingsManager"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:536
+msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+msgstr ""
+"🧹 Tynnwyd DependencyContainer.vala (chwistrelliad dibyniaeth heb ei "
+"ddefnyddio)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:537
+msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+msgstr "📸 Aildrefnwyd sgrinluniau i mewn i gyfeiriadur data/screenshots/"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:539
+#: data/io.github.tobagin.karere.metainfo.xml.in:609
+#: data/io.github.tobagin.karere.metainfo.xml.in:631
+msgid "Technical Changes:"
+msgstr "Newidiadau Technegol:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:541
+msgid "Implemented UserScript injection for Notification.permission state"
+msgstr ""
+"Gweithredwyd chwistrelliad UserScript ar gyfer cyflwr "
+"Notification.permission"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:542
+msgid "Connected show_notification signal handler for WebKit notifications"
+msgstr ""
+"Cysylltwyd y triniwr signal show_notification ar gyfer hysbysiadau WebKit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:543
+msgid "WebKitGTK 6.0 storage persistence verified and documented"
+msgstr "Gwiriwyd a dogfennwyd parhad storfa WebKitGTK 6.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:544
+msgid "Updated SettingsManager to be the default for all settings access"
+msgstr ""
+"Diweddarwyd SettingsManager i fod yn rhagosodiad ar gyfer pob mynediad "
+"gosodiadau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:545
+msgid "Improved build system with cleaner dependency management"
+msgstr "Gwellwyd y system adeiladu gyda rheoli dibyniaethau glanach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:547
+msgid "Documentation:"
+msgstr "Dogfennaeth:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:549
+msgid "📚 Enhanced README with accessibility features documentation"
+msgstr "📚 Gwellwyd README gyda dogfennaeth nodweddion hygyrchedd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:550
+msgid "📚 Documented all keyboard shortcuts by category"
+msgstr "📚 Dogfennwyd pob bysell frys yn ôl categori"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:551
+msgid "📚 Added spell checking configuration guide"
+msgstr "📚 Ychwanegwyd canllaw cyfluniad gwirio sillafu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:552
+msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+msgstr "📚 Trwsiwyd URLau ystorfa GitHub (karere-vala → karere)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:558
+msgid "🐛 Runtime Update and Bug Fixes"
+msgstr "🐛 Diweddariad Amser Rhedeg a Thrwsiadau Namau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:561
+msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+msgstr "Diweddarwyd amser rhedeg GNOME i fersiwn 49 ar gyfer gwell cydnawsedd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:562
+msgid "Improved system integration with latest platform libraries"
+msgstr "Gwellwyd integreiddiad system gyda llyfrgelloedd llwyfan diweddaraf"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:563
+msgid "Better support for modern desktop environments"
+msgstr "Gwell cefnogaeth ar gyfer amgylcheddau bwrdd gwaith modern"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:564
+msgid "Enhanced stability and performance optimizations"
+msgstr "Sefydlogrwydd ac optimeiddiadau perfformiad gwell"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:568
+msgid "Resolved compatibility issues with newer GNOME environments"
+msgstr "Datryswyd materion cydnawsedd ag amgylcheddau GNOME mwy newydd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:569
+msgid "Fixed potential rendering inconsistencies"
+msgstr "Trwsiwyd anghysondebau rendro posibl"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:570
+msgid "Improved error handling and recovery mechanisms"
+msgstr "Gwellwyd mecanweithiau trin gwallau ac adfer"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:576
+msgid ""
+"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+msgstr ""
+"✨ Gwell Cefnogaeth Emoji, Trin Dolenni Allanol, a Gwelliannau Adeiladu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:579
+msgid ""
+"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+msgstr ""
+"Ychwanegwyd ffontiau Noto Color Emoji o ansawdd uchel (v2.047, cefnogaeth "
+"Unicode 16.0)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:580
+msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+msgstr "Gwellwyd rendro WebKit gyda chyflymu caledwedd uchaf"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:581
+msgid "Improved emoji consistency with bundled font system"
+msgstr "Gwellwyd cysondeb emoji gyda system ffont wedi'i bwndelu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:582
+msgid "Optimized font loading to eliminate display conflicts"
+msgstr "Optimeiddiwyd llwytho ffont i ddileu gwrthdrawiadau arddangos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:583
+msgid "Added WebKit cache control setting for improved rendering consistency"
+msgstr ""
+"Ychwanegwyd gosodiad rheoli storfa WebKit ar gyfer gwell cysondeb rendro"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:584
+msgid "Cache disabled by default to prevent emoji rendering issues"
+msgstr "Storfa wedi'i hanalluogi'n ragosodedig i atal materion rendro emoji"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:588
+msgid ""
+"Fixed external links not opening in default browser when running in Flatpak"
+msgstr ""
+"Trwsiwyd dolenni allanol nad oeddent yn agor mewn porwr rhagosodedig wrth "
+"redeg yn Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:589
+msgid "Improved external link handling with proper Flatpak portal support"
+msgstr "Gwellwyd trin dolenni allanol gyda chefnogaeth porth Flatpak briodol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:590
+msgid "Fixed random emoji display issues and blank emoji problems"
+msgstr "Trwsiwyd materion arddangos emoji ar hap a phroblemau emoji gwag"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:591
+msgid "Fixed invalid meson version requirement preventing builds"
+msgstr "Trwsiwyd gofyniad fersiwn meson annilys a oedd yn atal adeiladu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:592
+msgid "Corrected dependency version specifications in meson.build"
+msgstr "Cywirwyd manylebau fersiwn dibyniaeth yn meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:593
+msgid "Resolved flatpak-builder compatibility issues"
+msgstr "Datryswyd materion cydnawsedd flatpak-builder"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:594
+msgid "Enhanced URL validation for external link detection"
+msgstr "Gwellwyd dilysu URL ar gyfer canfod dolenni allanol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:598
+msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+msgstr "Dilëwyd llygriad storfa WebKit a oedd yn effeithio ar rendro emoji"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:599
+msgid "Streamlined font stack for consistent emoji appearance"
+msgstr "Symleiddiwyd y pentwr ffont ar gyfer ymddangosiad emoji cyson"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:600
+msgid "Enhanced 2D canvas acceleration for better graphics performance"
+msgstr "Gwellwyd cyflymu cynfas 2D ar gyfer gwell perfformiad graffeg"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:601
+msgid "Improved font loading stability and reduced race conditions"
+msgstr "Gwellwyd sefydlogrwydd llwytho ffont a lleihawyd amodau ras"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:602
+msgid "Better sandboxed environment compatibility"
+msgstr "Gwell cydnawsedd amgylchedd blwch tywod"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:603
+msgid "More reliable link opening mechanism"
+msgstr "Mecanwaith agor dolenni mwy dibynadwy"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:604
+msgid "Enhanced logging for external link operations"
+msgstr "Gwellwyd cofnodi ar gyfer gweithrediadau dolenni allanol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:605
+msgid "Better build system compatibility with different environments"
+msgstr "Gwell cydnawsedd system adeiladu gyda gwahanol amgylcheddau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:606
+msgid "Enhanced CI/CD pipeline stability"
+msgstr "Gwellwyd sefydlogrwydd piblinell CI/CD"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:607
+msgid "More robust dependency handling"
+msgstr "Trin dibyniaethau mwy cadarn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:611
+msgid ""
+"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+"only)"
+msgstr ""
+"Tynnwyd newid asiant defnyddiwr symudol diangen (mae WhatsApp Web yn fwrdd "
+"gwaith yn unig)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:612
+msgid "Disabled problematic WebKit caches causing font corruption"
+msgstr ""
+"Analluogwyd storfeydd WebKit problemus a oedd yn achosi llygriad ffont"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:613
+msgid "Simplified emoji font configuration to single high-quality source"
+msgstr "Symleiddiwyd cyfluniad ffont emoji i un ffynhonnell o ansawdd uchel"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:614
+msgid "Restored Safari Linux user agent for native WebKit experience"
+msgstr ""
+"Adferwyd asiant defnyddiwr Safari Linux ar gyfer profiad WebKit brodorol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:615
+msgid "Added subpixel font scaling and advanced rendering optimizations"
+msgstr "Ychwanegwyd graddio ffont is-bicsel ac optimeiddiadau rendro uwch"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:616
+msgid "Implemented Flatpak portal system for external link handling"
+msgstr "Gweithredwyd system porth Flatpak ar gyfer trin dolenni allanol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:622
+msgid "🔧 Code Refactoring and Architecture Improvements"
+msgstr "🔧 Ailwampio Côd a Gwelliannau Pensaernïaeth"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:625
+msgid "Converted template files to preprocessor directives for cleaner code"
+msgstr ""
+"Trosglwyddwyd ffeiliau templed i gyfarwyddebau rhag-broseswr ar gyfer côd "
+"glanach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:626
+msgid "Eliminated .vala.in template substitution system"
+msgstr "Dilëwyd system amnewid templed .vala.in"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:627
+msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+msgstr ""
+"Ychwanegwyd casglu amodol amser-casglu gan ddefnyddio'r faner DEVELOPMENT"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:628
+msgid "Improved build system maintainability and type safety"
+msgstr "Gwellwyd cynaladwyedd a diogelwch math y system adeiladu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:629
+msgid "Added contributors Aman Das and Cameo to about dialog"
+msgstr "Ychwanegwyd cyfranwyr Aman Das a Cameo i'r ddeialog ynghylch"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:633
+msgid ""
+"Replaced window.vala.in and preferences.vala.in with direct .vala files"
+msgstr ""
+"Disodlwyd window.vala.in a preferences.vala.in gyda ffeiliau .vala "
+"uniongyrchol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:634
+msgid "Updated meson.build to use Vala preprocessor directives"
+msgstr "Diweddarwyd meson.build i ddefnyddio cyfarwyddebau rhag-broseswr Vala"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:635
+msgid "Simplified source file management in build system"
+msgstr "Symleiddiwyd rheoli ffeiliau ffynhonnell yn y system adeiladu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:641
+#: data/io.github.tobagin.karere.metainfo.xml.in:675
+msgid "🐛 Bug Fixes and Improvements"
+msgstr "🐛 Trwsiadau Namau a Gwelliannau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:644
+msgid "Fixed crash when handling invalid user input data"
+msgstr "Trwsiwyd damwain wrth drin data mewnbwn defnyddiwr annilys"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:645
+msgid "Resolved memory leak in notification cleanup"
+msgstr "Datryswyd gollyngiad cof wrth lanhau hysbysiadau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:646
+msgid "Corrected accessibility focus handling"
+msgstr "Cywirwyd trin ffocws hygyrchedd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:650
+msgid "Better error handling for network timeouts"
+msgstr "Gwell trin gwallau ar gyfer goramserau rhwydwaith"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:651
+msgid "Enhanced stability for extended usage"
+msgstr "Gwellwyd sefydlogrwydd ar gyfer defnydd estynedig"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:652
+msgid "Performance optimizations for scrolling"
+msgstr "Optimeiddiadau perfformiad ar gyfer sgrolio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:658
+msgid "🔧 Metadata and Standards Compliance"
+msgstr "🔧 Cydymffurfiad Metadata a Safonau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:661
+msgid "Fixed duplicate provides tags in metainfo validation"
+msgstr "Trwsiwyd tagiau provides dyblyg wrth ddilysu metainfo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:662
+msgid "Corrected AppStream metainfo format compliance"
+msgstr "Cywirwyd cydymffurfiad fformat metainfo AppStream"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:663
+msgid "Resolved invalid markup in release descriptions"
+msgstr "Datryswyd marcio annilys mewn disgrifiadau datganiad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:667
+msgid "Updated all references from appdata to metainfo format"
+msgstr "Diweddarwyd pob cyfeiriad o fformat appdata i metainfo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:668
+msgid "Enhanced Flathub compliance and validation"
+msgstr "Gwellwyd cydymffurfiad a dilysu Flathub"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:669
+msgid "Improved translation file consistency"
+msgstr "Gwellwyd cysondeb ffeil cyfieithu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:678
+msgid "Fixed crash when handling invalid notification data"
+msgstr "Trwsiwyd damwain wrth drin data hysbysu annilys"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:679
+msgid "Resolved memory leak in WebKit manager cleanup"
+msgstr "Datryswyd gollyngiad cof wrth lanhau rheolwr WebKit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:680
+msgid "Corrected window state persistence on shutdown"
+msgstr "Cywirwyd parhad cyflwr ffenestr wrth gau"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:684
+msgid "Better error handling for network disconnections"
+msgstr "Gwell trin gwallau ar gyfer datgysylltiadau rhwydwaith"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:685
+msgid "Enhanced stability during long sessions"
+msgstr "Gwellwyd sefydlogrwydd yn ystod sesiynau hir"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:686
+msgid "Performance optimizations for faster startup"
+msgstr "Optimeiddiadau perfformiad ar gyfer cychwyn cyflymach"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:692
+msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+msgstr "🚀 Mudo Pensaernïaeth Mawr: Python i Vala/GTK4"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:693
+msgid ""
+"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+"performance and integration."
+msgstr ""
+"NEWID TORRI: Ailysgrifennu llawn o Python i Vala brodorol ar gyfer gwell "
+"perfformiad ac integreiddiad."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:694
+msgid ""
+"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+"with WhatsApp Web as this is a completely new application implementation."
+msgstr ""
+"⚠️ Pwysig: Ar ôl uwchraddio, bydd angen i chi ailgysoni'ch dyfais symudol "
+"gyda WhatsApp Web gan fod hwn yn weithrediad rhaglen cwbl newydd."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:697
+msgid "Native Vala/GTK4 implementation for optimal performance"
+msgstr "Gweithrediad Vala/GTK4 brodorol ar gyfer perfformiad optimaidd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:698
+msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+msgstr "UI LibAdwaita modern gyda rhyngwyneb datganiadol Blueprint"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:699
+msgid "Enhanced WebKitGTK 6.0 integration"
+msgstr "Integreiddiad WebKitGTK 6.0 gwell"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:700
+msgid "Advanced notification system with native desktop integration"
+msgstr "System hysbysu uwch gydag integreiddiad bwrdd gwaith brodorol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:701
+msgid "Comprehensive accessibility support"
+msgstr "Cefnogaeth hygyrchedd cynhwysfawr"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:702
+msgid "Professional logging and crash reporting system"
+msgstr "System gofnodi ac adrodd damweiniau proffesiynol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:704
+msgid "Multi-language spell checking support"
+msgstr "Cefnogaeth gwirio sillafu aml-iaith"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:705
+msgid "Granular privacy and notification controls"
+msgstr "Rheolaethau preifatrwydd a hysbysu manwl"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:706
+msgid "Hardware-accelerated rendering"
+msgstr "Rendro wedi'i gyflymu gan galedwedd"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:707
+msgid "Improved memory efficiency and startup performance"
+msgstr "Gwell effeithlonrwydd cof a pherfformiad cychwyn"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:709
+msgid "Technical Improvements:"
+msgstr "Gwelliannau Technegol:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:711
+msgid "Migrated from Python 3 to native Vala compilation"
+msgstr "Mudwyd o Python 3 i gasglu Vala brodorol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:712
+msgid "Modern Meson build system with Blueprint UI compilation"
+msgstr "System adeiladu Meson modern gyda chasglu UI Blueprint"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:713
+msgid "Comprehensive test suite with unit and integration tests"
+msgstr "Cyfres brawf cynhwysfawr gyda phrofion uned ac integreiddio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:714
+msgid "Production-ready error handling and crash recovery"
+msgstr "Trin gwallau ac adfer damweiniau parod i gynhyrchu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:715
+msgid "Enhanced security with proper sandboxing"
+msgstr "Diogelwch gwell gyda blwch tywod priodol"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:716
+msgid "Complete internationalization support"
+msgstr "Cefnogaeth rhyngwladoli gyflawn"
+
+#: src/window.rs:303
+msgid "Account"
+msgstr "Cyfrif"
+
+#: src/window.rs:632
+msgid "Waiting for QR scan…"
+msgstr "Yn aros am sgan QR…"
+
+#: src/window.rs:654
+msgid "degraded"
+msgstr "gostyngedig"
+
+#: src/window.rs:670
+msgid "Unread messages"
+msgstr "Negeseuon heb eu darllen"
+
+#: src/window.rs:678
+msgid "Edit account"
+msgstr "Golygu cyfrif"
+
+#: src/window.rs:694
+msgid "Remove account"
+msgstr "Tynnu cyfrif"
+
+#: src/window.rs:696
+msgid "Can't remove the only account"
+msgstr "Methu tynnu'r unig gyfrif"
+
+#: src/window.rs:778
+msgid "Maximum of 9 accounts reached"
+msgstr "Cyrhaeddwyd uchafswm o 9 cyfrif"
+
+#: src/window.rs:804
+msgid "Label"
+msgstr "Label"
+
+#: src/window.rs:818
+msgid "Name"
+msgstr "Enw"
+
+#: src/window.rs:819
+msgid "WhatsApp ID"
+msgstr "ID WhatsApp"
+
+#: src/window.rs:821
+msgid "Avatar URL"
+msgstr "URL Afatar"
+
+#: src/window.rs:830 src/window.rs:919
+msgid "Cancel"
+msgstr "Diddymu"
+
+#: src/window.rs:831
+msgid "Save"
+msgstr "Cadw"
+
+#: src/window.rs:840
+msgid "Add Account"
+msgstr "Ychwanegu Cyfrif"
+
+#: src/window.rs:842
+msgid "Edit Account"
+msgstr "Golygu Cyfrif"
+
+#: src/window.rs:909
+msgid "Remove account?"
+msgstr "Tynnu cyfrif?"
+
+#: src/window.rs:920
+msgid "Remove"
+msgstr "Tynnu"
+
+#: src/actions.rs:263
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+"Lapiwr GTK4/LibAdwaita modern, brodorol ar gyfer WhatsApp Web sy'n darparu "
+"integreiddiad bwrdd gwaith di-dor gyda galluoedd cofnodi ac adrodd "
+"damweiniau cynhwysfawr"
+
+#: src/actions.rs:282
+msgid "Source"
+msgstr "Ffynhonnell"
+
+#: src/actions.rs:285
+msgid "Special Thanks"
+msgstr "Diolch Arbennig"

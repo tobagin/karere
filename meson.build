@@ -1,5 +1,5 @@
 project('karere', 'rust',
-          version: '4.0.0-beta2',
+          version: '4.0.0-beta3',
     meson_version: '>= 0.59.0',
   default_options: [ 'warning_level=2', 'werror=false', ],
 )

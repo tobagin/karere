@@ -11,6 +11,7 @@ mod cdp;
 mod cef_runtime;
 mod devtools;
 mod handlers;
+mod i18n;
 mod ipc;
 mod notifications;
 mod paste;
@@ -105,12 +106,27 @@ fn init_gettext() {
         let _ = setlocale(LocaleCategory::LcAll, "C.UTF-8");
     }
 
+    // UI-language override: export LANGUAGE before textdomain so gettext picks
+    // the pinned catalog over the system LC_MESSAGES. Must run here in main,
+    // single-threaded, before any CEF/GTK thread starts.
+    if let Some(lang) = i18n::override_locale() {
+        log::info!("UI language overridden to {lang}");
+        unsafe {
+            std::env::set_var("LANGUAGE", &lang);
+        }
+    }
+
+    // Ship our catalogs under share/karere/locale, NOT the standard
+    // share/locale: flatpak auto-splits share/locale into a per-language
+    // `.Locale` extension that only deploys the host's languages, which would
+    // strip every locale the in-app language picker offers. A non-standard dir
+    // stays wholly inside the app so all catalogs are always present.
     let locale_dir = if std::env::var("FLATPAK_ID").is_ok() {
-        std::path::PathBuf::from("/app/share/locale")
+        std::path::PathBuf::from("/app/share/karere/locale")
     } else {
         std::env::current_dir()
             .map(|d| d.join("locale"))
-            .unwrap_or_else(|_| std::path::PathBuf::from("/app/share/locale"))
+            .unwrap_or_else(|_| std::path::PathBuf::from("/app/share/karere/locale"))
     };
 
     if let Err(e) = bindtextdomain("karere", locale_dir) {
