@@ -8,7 +8,12 @@ use cef::{
 use crate::handlers::render_process::ShellRenderProcessHandlerBuilder;
 use parking_lot::Mutex;
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
+
+/// Process-global message-pump coalescing flag (browser process only): true
+/// while a single do_message_loop_work() is already scheduled but not yet run.
+static PUMP_SCHEDULED: AtomicBool = AtomicBool::new(false);
 
 /// True when launched with `--debug` / `--debuglevel=…`. Gates developer-only
 /// surfaces that widen the attack surface (the F12 DevTools CDP port). Release
@@ -237,10 +242,20 @@ wrap_browser_process_handler! {
         fn on_schedule_message_pump_work(&self, delay_ms: i64) {
             // Floor at 8ms: under continuous work CEF reschedules with delay 0,
             // and a 0ms timeout would fire every main-loop iteration → 100% spin.
-            // 8ms caps the busy rate at ~125 Hz (the old steady rate) while still
-            // letting CEF's larger idle delays through for low idle CPU.
+            // 8ms caps the busy rate at ~125 Hz while still letting CEF's larger
+            // idle delays through for low idle CPU.
             let delay = u64::try_from(delay_ms).unwrap_or(0).max(8);
-            glib::timeout_add_once(Duration::from_millis(delay), || {
+            // Coalesce to a SINGLE pending pump, PROCESS-GLOBAL: CEF can hand out
+            // fresh handler instances, so a per-handler flag may not dedupe.
+            // Without coalescing CEF's high-frequency schedule calls each queue
+            // another glib timeout, the backlog fires together, re-triggers work,
+            // and pins a core (#151). Clear before do_message_loop_work() so a
+            // pump scheduled *during* that work registers the next single timeout.
+            if PUMP_SCHEDULED.swap(true, Ordering::AcqRel) {
+                return;
+            }
+            glib::timeout_add_once(Duration::from_millis(delay), move || {
+                PUMP_SCHEDULED.store(false, Ordering::Release);
                 cef::do_message_loop_work();
             });
         }

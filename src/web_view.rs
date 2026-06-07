@@ -523,8 +523,17 @@ mod imp {
             *self.shared.lock() = Some(shared.clone());
 
             // CEF on_paint runs on the glib main thread (external_message_pump);
-            // drive redraws via a tick callback that polls the dirty flag.
-            widget.add_tick_callback(move |w, _clock| {
+            // poll the dirty flag and queue a render when a frame arrives. Uses a
+            // 60 Hz WALL-CLOCK timer, NOT add_tick_callback: a tick callback is
+            // paced by the widget frame clock, which free-runs (pinning a core)
+            // when vsync is unreliable — e.g. software/non-conformant Vulkan
+            // (issue #151). A timeout is bounded, and idle ticks are a cheap
+            // lock + bool check (~0 CPU) since nothing is dirty.
+            let w_weak = widget.downgrade();
+            glib::timeout_add_local(std::time::Duration::from_millis(16), move || {
+                let Some(w) = w_weak.upgrade() else {
+                    return glib::ControlFlow::Break;
+                };
                 let imp = w.imp();
                 let Some(shared) = imp.shared.lock().clone() else {
                     return glib::ControlFlow::Continue;
@@ -813,6 +822,24 @@ mod imp {
         /// Record window visibility (kept for callers; sound gating uses the JS hook now).
         pub fn set_window_visible(&self, visible: bool) {
             self.window_visible.store(visible, Ordering::Relaxed);
+            // Gate the foreground browser's compositing on real window
+            // visibility. Without this CEF keeps compositing WhatsApp's
+            // animations while the window is hidden (tray/minimized/
+            // start-in-background), pinning a core in software-GL OSR (#151).
+            if let Some(b) = self.browser.lock().as_ref()
+                && let Some(host) = b.host()
+            {
+                if visible {
+                    host.was_hidden(0);
+                    host.was_resized();
+                    host.invalidate(cef::PaintElementType::VIEW);
+                } else {
+                    host.was_hidden(1);
+                }
+            }
+            if visible {
+                self.obj().queue_render();
+            }
         }
 
         /// Push the mute flag (`window.__karereMuteNotifSound`) to every account.
@@ -1086,12 +1113,20 @@ mod imp {
             *self.browser.lock() = Some(browser.clone());
 
             if let Some(host) = browser.host() {
-                host.was_hidden(0);
-                host.notify_screen_info_changed();
-                host.was_resized();
-                // Force a fresh paint even if CEF thinks visibility is unchanged,
-                // so the new foreground immediately overwrites any stale texture.
-                host.invalidate(cef::PaintElementType::VIEW);
+                // Respect window visibility: when the window is hidden (e.g.
+                // start-in-background) the new foreground must stay paused, or
+                // CEF composites an invisible page at full rate (#151).
+                if self.window_visible.load(Ordering::Relaxed) {
+                    host.was_hidden(0);
+                    host.notify_screen_info_changed();
+                    host.was_resized();
+                    // Force a fresh paint even if CEF thinks visibility is
+                    // unchanged, so the new foreground immediately overwrites any
+                    // stale texture.
+                    host.invalidate(cef::PaintElementType::VIEW);
+                } else {
+                    host.was_hidden(1);
+                }
             }
             self.obj().queue_render();
             self.apply_audio_mute();
