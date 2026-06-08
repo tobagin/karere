@@ -66,8 +66,17 @@ wrap_app! {
                 "DocumentPictureInPictureAPI\
                  ,IsolateOrigins\
                  ,site-per-process\
-                 ,SpareRendererForSitePerProcess",
+                 ,SpareRendererForSitePerProcess\
+                 ,PersistentHistograms\
+                 ,Ukm",
             );
+            // PersistentHistograms backs metrics in a memory-mapped .pma file in
+            // the user-data-dir; a truncated/invalidated mapping SIGBUSes in
+            // PersistentSampleMap::Accumulate (seen crashing the browser process
+            // via a UKM "dropped entry" histogram write). Off → histograms live on
+            // the heap, removing the mmap fault path. Ukm: Google URL-Keyed
+            // telemetry — a WhatsApp client has no use for it; off kills the
+            // observed crash's caller and the telemetry.
 
             // Embedded F12 DevTools (CDP frontend) is DEBUG-ONLY. It needs a
             // loopback debugging PORT, a wildcard inspector origin, and the
