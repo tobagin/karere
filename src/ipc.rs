@@ -27,8 +27,6 @@ pub enum BrowserMessage {
         y: Option<f64>,
     },
     DragHover { phase: String, x: f64, y: f64 },
-    SetViewportSize { w: i32, h: i32 },
-    CloseNotifByTag { tag: String },
     #[cfg(debug_assertions)]
     Ping,
 }
@@ -130,8 +128,6 @@ impl BrowserMessage {
     const KNOWN_TAGS: &'static [&'static str] = &[
         "DispatchPasteEvent",
         "DragHover",
-        "SetViewportSize",
-        "CloseNotifByTag",
         #[cfg(debug_assertions)]
         "Ping",
     ];
@@ -140,8 +136,6 @@ impl BrowserMessage {
         match self {
             BrowserMessage::DispatchPasteEvent { .. } => "DispatchPasteEvent",
             BrowserMessage::DragHover { .. } => "DragHover",
-            BrowserMessage::SetViewportSize { .. } => "SetViewportSize",
-            BrowserMessage::CloseNotifByTag { .. } => "CloseNotifByTag",
             #[cfg(debug_assertions)]
             BrowserMessage::Ping => "Ping",
         }
@@ -232,8 +226,6 @@ mod tests {
                 x: 12.5,
                 y: 34.0,
             },
-            BrowserMessage::SetViewportSize { w: 800, h: 600 },
-            BrowserMessage::CloseNotifByTag { tag: "chat-42".into() },
             #[cfg(debug_assertions)]
             BrowserMessage::Ping,
         ];

@@ -33,6 +33,8 @@ fn main() -> Result<()> {
     )
     .init();
 
+    install_panic_hook();
+
     init_gettext();
     let banner = gettext("Karere starting");
     log::info!("{}", banner);
@@ -98,6 +100,33 @@ fn main() -> Result<()> {
         cef::shutdown();
     }
     std::process::exit(code);
+}
+
+/// Log every Rust panic with file:line, message, and (when `RUST_BACKTRACE` is
+/// set) a backtrace, before the process unwinds/aborts. A browser-process panic
+/// otherwise dies with no diagnosable trace — the Ukm SIGSEGV had to be
+/// recovered from a coredump; a Rust-side panic now lands in the same log
+/// stream with its exact location. Runs in every process (set before the
+/// browser/subprocess split), so subprocess panics are captured too. This does
+/// not recover: it logs, then the default panic behavior proceeds.
+fn install_panic_hook() {
+    let default_hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        let loc = info
+            .location()
+            .map(|l| format!("{}:{}:{}", l.file(), l.line(), l.column()))
+            .unwrap_or_else(|| "<unknown location>".to_string());
+        let msg = info
+            .payload()
+            .downcast_ref::<&str>()
+            .copied()
+            .or_else(|| info.payload().downcast_ref::<String>().map(String::as_str))
+            .unwrap_or("<non-string panic payload>");
+        let bt = std::backtrace::Backtrace::capture();
+        log::error!("PANIC at {loc}: {msg}\n{bt}");
+        // Preserve default reporting (stderr print / abort) for good measure.
+        default_hook(info);
+    }));
 }
 
 fn init_gettext() {

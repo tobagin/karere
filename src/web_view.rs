@@ -84,7 +84,12 @@ impl KarereWebView {
     }
 
     pub fn shared(&self) -> crate::handlers::SharedRef {
-        self.imp().shared.lock().as_ref().unwrap().clone()
+        self.imp()
+            .shared
+            .lock()
+            .as_ref()
+            .expect("KarereWebView::shared() called before construction initialized it")
+            .clone()
     }
 
     /// Run `script` in the page's main frame if a browser is live. Drives the
@@ -1003,7 +1008,12 @@ mod imp {
             account_id: Option<String>,
             make_foreground: bool,
         ) {
-            let shared = self.shared.lock().as_ref().unwrap().clone();
+            let shared = self
+                .shared
+                .lock()
+                .as_ref()
+                .expect("create_browser_now called before shared was initialized")
+                .clone();
             let (client, life) = if self.devtools.load(Ordering::Relaxed) {
                 ClientBuilder::build_devtools_for(shared.clone())
             } else {

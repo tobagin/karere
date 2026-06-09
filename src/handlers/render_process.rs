@@ -6,7 +6,7 @@
 //!   the context exists (not `register_extension`, which runs before context
 //!   creation and breaks the page's JS), so rendering is unaffected.
 //! - `on_process_message_received`: decode + dispatch [`BrowserMessage`]s
-//!   (mostly M13 stubs; debug `Ping` replies `Pong`).
+//!   (paste/drop re-emission; debug `Ping` replies `Pong`).
 
 use std::os::raw::c_int;
 
@@ -104,8 +104,8 @@ impl ShellRenderProcessHandlerBuilder {
     }
 }
 
-/// Route a decoded [`BrowserMessage`] to its handler. Most variants are M13
-/// stubs that log; debug `Ping` replies `Pong` on the originating frame.
+/// Route a decoded [`BrowserMessage`] to its handler: paste/drop events are
+/// re-emitted as page CustomEvents; debug `Ping` replies `Pong` on the frame.
 fn dispatch(msg: BrowserMessage, frame: Option<&mut Frame>) {
     match msg {
         BrowserMessage::DispatchPasteEvent {
@@ -155,12 +155,6 @@ fn dispatch(msg: BrowserMessage, frame: Option<&mut Frame>) {
                     0,
                 );
             }
-        }
-        BrowserMessage::SetViewportSize { w, h } => {
-            log::debug!("renderer: SetViewportSize {w}x{h} — stub (M14)");
-        }
-        BrowserMessage::CloseNotifByTag { tag } => {
-            log::debug!("renderer: CloseNotifByTag {tag} — stub (M20)");
         }
         #[cfg(debug_assertions)]
         BrowserMessage::Ping => {
