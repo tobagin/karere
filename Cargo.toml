@@ -1,6 +1,6 @@
 [package]
 name = "karere"
-version = "4.0.0-beta5"
+version = "4.0.0-beta6"
 edition = "2024"
 description = "GTK4 + libadwaita + CEF native WhatsApp client (Karere v4)"
 license = "GPL-3.0-or-later"
