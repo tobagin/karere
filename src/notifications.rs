@@ -64,6 +64,13 @@ impl Tracker {
             crate::accounts::set_unread(account_id, true);
         }
 
+        // Per-account mute: keep the passive unread badge (set above) but
+        // suppress the banner + tray-count bump for this account.
+        if crate::accounts::manager().is_muted(account_id) {
+            log::info!("notifications: suppressed (account {account_id} muted)");
+            return;
+        }
+
         if settings.boolean("notify-tray-icon")
             && let Some(app) = gio::Application::default()
         {

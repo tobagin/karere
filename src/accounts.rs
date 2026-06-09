@@ -45,6 +45,10 @@ pub struct Account {
     pub zoom_level: f64,
     #[serde(default)]
     pub permissions: AccountPermissions,
+    /// When true, suppress this account's notification banners + tray bump (the
+    /// unread badge still shows). Per-account, persisted.
+    #[serde(default)]
+    pub muted: bool,
 }
 
 fn default_zoom() -> f64 {
@@ -75,6 +79,7 @@ impl Account {
             has_session: false,
             zoom_level: default_zoom(),
             permissions: AccountPermissions::default(),
+            muted: false,
         }
     }
 }
@@ -387,6 +392,32 @@ impl AccountManager {
             }
         }
         let _ = self.save();
+    }
+
+    /// Set this account's notification mute flag; persists + emits
+    /// accounts-changed only on a real change (so toggling the active account's
+    /// row doesn't trigger a needless switcher rebuild).
+    pub fn set_muted(&self, id: &str, muted: bool) {
+        {
+            let mut list = self.imp().accounts.borrow_mut();
+            match list.iter_mut().find(|a| a.id == id) {
+                Some(a) if a.muted != muted => a.muted = muted,
+                _ => return,
+            }
+        }
+        let _ = self.save();
+        self.emit_changed();
+    }
+
+    /// Whether `id`'s notifications are muted (unknown id → not muted).
+    pub fn is_muted(&self, id: &str) -> bool {
+        self.imp()
+            .accounts
+            .borrow()
+            .iter()
+            .find(|a| a.id == id)
+            .map(|a| a.muted)
+            .unwrap_or(false)
     }
 
     /// Look up an account by id.

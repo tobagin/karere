@@ -671,6 +671,36 @@ mod imp {
                 row.add_suffix(&dot);
             }
 
+            // Per-account notification mute toggle. Icons are the app's shipped
+            // symbolic pair (app-id-prefixed so Flatpak exports them).
+            fn apply_mute_visual(btn: &gtk::ToggleButton) {
+                let app_id = crate::application::APP_ID;
+                if btn.is_active() {
+                    btn.set_icon_name(&format!("{app_id}-do-not-disturb-symbolic"));
+                    btn.set_tooltip_text(Some(&gettextrs::gettext(
+                        "Notifications muted — click to unmute",
+                    )));
+                } else {
+                    btn.set_icon_name(&format!("{app_id}-notification-symbolic"));
+                    btn.set_tooltip_text(Some(&gettextrs::gettext("Mute notifications")));
+                }
+            }
+            let mute = gtk::ToggleButton::new();
+            mute.add_css_class("flat");
+            mute.set_valign(gtk::Align::Center);
+            // set_active before connect: programmatic state must not fire toggled.
+            mute.set_active(account.muted);
+            apply_mute_visual(&mute);
+            mute.connect_toggled(clone!(
+                #[strong]
+                id,
+                move |btn| {
+                    crate::accounts::manager().set_muted(&id, btn.is_active());
+                    apply_mute_visual(btn);
+                }
+            ));
+            row.add_suffix(&mute);
+
             // Edit + remove affordances (no reorder controls — MRU only).
             let edit = gtk::Button::from_icon_name("document-edit-symbolic");
             edit.add_css_class("flat");
