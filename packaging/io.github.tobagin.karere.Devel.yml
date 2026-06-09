@@ -39,6 +39,12 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
   - --socket=pulseaudio
+  # --device=all is required for the camera (WhatsApp video calls): flatpak has
+  # no video-only device scope (valid types: dri,all,kvm,shm,input,usb) and this
+  # CEF/Chromium build's PipeWire camera portal path does not enumerate cameras
+  # (tested 2026-06-09: dri+shm + WebRtcPipeWireCamera → "camera not found").
+  # So raw /dev/video* via --device=all is the only working option here. Revisit
+  # if a newer CEF gains working portal camera capture (then dri+shm + portal).
   - --device=all
   # xdg-download (not home) passes the linter without a home-filesystem exception;
   # downloads land in ~/Downloads.

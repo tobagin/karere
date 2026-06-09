@@ -67,16 +67,21 @@ wrap_app! {
                  ,IsolateOrigins\
                  ,site-per-process\
                  ,SpareRendererForSitePerProcess\
-                 ,PersistentHistograms\
-                 ,Ukm",
+                 ,PersistentHistograms",
             );
             // PersistentHistograms backs metrics in a memory-mapped .pma file in
             // the user-data-dir; a truncated/invalidated mapping SIGBUSes in
             // PersistentSampleMap::Accumulate (seen crashing the browser process
             // via a UKM "dropped entry" histogram write). Off → histograms live on
-            // the heap, removing the mmap fault path. Ukm: Google URL-Keyed
-            // telemetry — a WhatsApp client has no use for it; off kills the
-            // observed crash's caller and the telemetry.
+            // the heap, removing the mmap fault path — this alone fixes that SIGBUS.
+            //
+            // Do NOT also disable `Ukm`: the segmentation platform still runs
+            // UkmDatabaseClient::PreProfileInit at startup, which constructs a
+            // UkmObserver and calls UkmRecorderImpl::AddUkmRecorderObserver on the
+            // recorder. With Ukm disabled that recorder is null → SIGSEGV in
+            // PreProfileInit before the window ever shows (symbolized 2026-06-09).
+            // UKM has no metrics consent in CEF, so the recorder stays inert (no
+            // upload) anyway — leaving the feature on is privacy-neutral here.
 
             // Embedded F12 DevTools (CDP frontend) is DEBUG-ONLY. It needs a
             // loopback debugging PORT, a wildcard inspector origin, and the
