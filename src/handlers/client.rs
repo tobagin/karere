@@ -116,12 +116,14 @@ wrap_client! {
                 }
                 Ok(RendererMessage::SetClipboard { text, primary }) => {
                     // Page-driven write to the host clipboard (no user gesture);
-                    // cap it so a hostile page can't dump unbounded data.
+                    // cap it so a hostile page can't dump unbounded data, then
+                    // strip control chars so it can't smuggle terminal escape
+                    // sequences into the victim's clipboard (see sanitize_clipboard).
                     const MAX_CLIPBOARD_BYTES: usize = 1024 * 1024;
                     if text.len() > MAX_CLIPBOARD_BYTES {
                         log::warn!("SetClipboard: oversized text ({} bytes), dropping", text.len());
                     } else {
-                        write_host_clipboard(&text, primary);
+                        write_host_clipboard(&sanitize_clipboard(&text), primary);
                     }
                     1
                 }
@@ -205,6 +207,17 @@ wrap_client! {
     }
 }
 
+/// Strip control characters from a page-supplied clipboard write so a hostile
+/// page can't smuggle terminal escape sequences (ANSI/OSC) that execute commands
+/// or spoof output when the victim pastes into a terminal. Tab/newline/CR are
+/// kept so legitimate multi-line copies survive; every other C0 control, DEL,
+/// and the C1 range is dropped (all flagged by `char::is_control`).
+fn sanitize_clipboard(text: &str) -> String {
+    text.chars()
+        .filter(|c| !c.is_control() || matches!(c, '\t' | '\n' | '\r'))
+        .collect()
+}
+
 /// Mirror page-reported selection/copy text onto the host GDK clipboard. Runs on
 /// the CEF UI thread (= glib main thread under the external pump), so GDK access
 /// is safe here.
@@ -251,5 +264,24 @@ impl ClientBuilder {
             ShellDownloadHandlerBuilder::build(ShellDownloadHandler::new(shared)),
         );
         (client, life)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::sanitize_clipboard;
+
+    #[test]
+    fn strips_escape_and_control_chars() {
+        // ESC-based ANSI/OSC injection is the real threat; it must not survive.
+        assert_eq!(sanitize_clipboard("\x1b]0;pwned\x07ls"), "0;pwnedls");
+        assert_eq!(sanitize_clipboard("a\x00b\x07c\x7fd"), "abcd");
+    }
+
+    #[test]
+    fn keeps_legitimate_whitespace_and_unicode() {
+        // Multi-line copies from the chat must round-trip unchanged.
+        assert_eq!(sanitize_clipboard("line1\nline2\tx\r\n"), "line1\nline2\tx\r\n");
+        assert_eq!(sanitize_clipboard("héllo 相片 🙂"), "héllo 相片 🙂");
     }
 }
