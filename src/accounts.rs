@@ -394,19 +394,19 @@ impl AccountManager {
         let _ = self.save();
     }
 
-    /// Set this account's notification mute flag; persists + emits
-    /// accounts-changed only on a real change (so toggling the active account's
-    /// row doesn't trigger a needless switcher rebuild).
+    /// Set this account's notification mute flag and persist it. Deliberately
+    /// does NOT emit accounts-changed: the only UI reflection is the row's own
+    /// mute toggle (updated in place by its handler), and emitting here would
+    /// rebuild the switcher synchronously from within that toggle's callback —
+    /// destroying the live button mid-handler (mirrors set_zoom's reasoning).
     pub fn set_muted(&self, id: &str, muted: bool) {
-        {
-            let mut list = self.imp().accounts.borrow_mut();
-            match list.iter_mut().find(|a| a.id == id) {
-                Some(a) if a.muted != muted => a.muted = muted,
-                _ => return,
-            }
+        let mut list = self.imp().accounts.borrow_mut();
+        match list.iter_mut().find(|a| a.id == id) {
+            Some(a) if a.muted != muted => a.muted = muted,
+            _ => return,
         }
+        drop(list);
         let _ = self.save();
-        self.emit_changed();
     }
 
     /// Whether `id`'s notifications are muted (unknown id → not muted).

@@ -692,11 +692,19 @@ mod imp {
             mute.set_active(account.muted);
             apply_mute_visual(&mute);
             mute.connect_toggled(clone!(
+                #[weak(rename_to = this)]
+                self,
                 #[strong]
                 id,
                 move |btn| {
                     crate::accounts::manager().set_muted(&id, btn.is_active());
                     apply_mute_visual(btn);
+                    // Re-push the ding-mute flag now so it takes effect live, not
+                    // just on the next page load. Each browser re-evaluates its
+                    // own account's mute state.
+                    if let Some(web) = this.web_view.borrow().as_ref() {
+                        web.apply_audio_mute();
+                    }
                 }
             ));
             row.add_suffix(&mute);

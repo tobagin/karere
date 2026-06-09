@@ -226,15 +226,28 @@ window.__karereMobileApplied=true;{EMBED_MOBILE}\n}})();"
     );
 }
 
-/// Push `window.__karereMuteNotifSound` so the bundle hook (70-notification-sound.js)
-/// blocks WhatsApp's notification/UI tones when the master or notification-sound
-/// toggle is off. Called from `on_load_end` (survives navigation) and on live
-/// settings change. (M14x)
-pub(crate) fn apply_notif_sound_from_settings(browser: &cef::Browser) {
-    use cef::{CefString, ImplBrowser, ImplFrame};
+/// Effective notification-sound mute for `browser`: muted when the global
+/// master/sound toggle is off OR this browser's account is individually muted
+/// (per-account mute must silence the ding, not just the banner).
+pub(crate) fn notif_sound_muted_for(browser: &cef::Browser) -> bool {
+    use cef::ImplBrowser;
     use gtk::prelude::SettingsExt;
     let s = gtk::gio::Settings::new(crate::application::APP_ID);
-    let muted = !s.boolean("notifications-enabled") || !s.boolean("notify-sound-enabled");
+    if !s.boolean("notifications-enabled") || !s.boolean("notify-sound-enabled") {
+        return true;
+    }
+    crate::accounts::account_for_browser(browser.identifier())
+        .map(|id| crate::accounts::manager().is_muted(&id))
+        .unwrap_or(false)
+}
+
+/// Push `window.__karereMuteNotifSound` so the bundle hook (70-notification-sound.js)
+/// blocks WhatsApp's notification/UI tones when the master/notification-sound
+/// toggle is off OR the account is muted. Called from `on_load_end` (survives
+/// navigation), on live settings change, and on a per-account mute toggle. (M14x)
+pub(crate) fn apply_notif_sound_from_settings(browser: &cef::Browser) {
+    use cef::{CefString, ImplBrowser, ImplFrame};
+    let muted = notif_sound_muted_for(browser);
     let Some(frame) = browser.main_frame() else {
         return;
     };
@@ -852,30 +865,16 @@ mod imp {
         /// tones (not WebRTC call audio or voice notes). Muted when master OR
         /// notification-sound toggle is off.
         pub fn apply_audio_mute(&self) {
-            use gtk::prelude::SettingsExt;
-            let s = gtk::gio::Settings::new(crate::application::APP_ID);
-            let muted =
-                !s.boolean("notifications-enabled") || !s.boolean("notify-sound-enabled");
-
-            let push = |b: &Browser| {
-                if let Some(frame) = b.main_frame() {
-                    let js = format!("window.__karereMuteNotifSound = {muted};");
-                    frame.execute_java_script(
-                        Some(&CefString::from(js.as_str())),
-                        Some(&CefString::from("karere://notif-sound")),
-                        0,
-                    );
-                }
-            };
-
+            // Per-browser: each re-evaluates global toggle OR its own account's
+            // mute (see super::notif_sound_muted_for).
             let browsers = self.browsers.lock();
             if browsers.is_empty() {
                 if let Some(b) = self.browser.lock().as_ref() {
-                    push(b);
+                    super::apply_notif_sound_from_settings(b);
                 }
             } else {
                 for b in browsers.values() {
-                    push(b);
+                    super::apply_notif_sound_from_settings(b);
                 }
             }
         }
