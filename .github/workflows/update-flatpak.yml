@@ -3,7 +3,9 @@ name: Update Flathub on Tag
 on:
   push:
     tags:
-      - 'v*.*.*'  # semver tags, e.g. v1.2.3
+      - 'v*.*.*'   # stable semver tags, e.g. v1.2.3
+      - '!v*-*'    # exclude pre-releases (v4.0.0-beta6, -rc, …) — those go to
+                   # the flathub `beta` branch via a manual PR, not stable master
   workflow_dispatch:
 
 jobs:
