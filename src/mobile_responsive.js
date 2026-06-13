@@ -195,10 +195,12 @@ function main(){
         addCss(".NavSidebar { transition: transform 0.25s ease-in-out !important }")
         addCss(".message-out {  padding-right: 20px !important; }");
         addCss(".message-in {  padding-left: 20px !important; }");  
+        addCss(".focusable-list-item {  padding-left: 15px !important; padding-right: 15px !important; }");
         addCss("span { font-size: "+107+"% !important; }");    
         addCss(".copyable-text { font-size: "+106+"% !important; }");         
         addCss(".html-span { font-size: 96% !important; }");
         addCss('[data-animate-dropdown-item="true"] { left: 2vw !important ; } ');
+        addCss('[data-testid="conversation-header"] .html-button { width: 25px !important; }');
     } catch (e) { console.log("Error while applying css: "+e) }
 
   // Listener prioritaire pour Enter
