@@ -30,7 +30,7 @@
 - [x] 5.1 Confirmed: v4 carries `ci.yml`, `build-cef-codecs.yml`, `update-flatpak.yml`, `.github/scripts/smoke-test.sh`; v3-only `build-webkitgtk.yml` / `build-gst-plugin-audiofx.yml` absent (intentional — superseded by `build-cef-codecs.yml`)
 - [x] 5.2 Confirmed: `update-flatpak.yml` copies only `cargo-sources.json` (no `cargo-sources-gst.json`) and excludes pre-releases via `- '!v*-*'`
 - [x] 5.3 Confirmed: `ci.yml` builds `…Devel.yml` + runs `smoke-test.sh`; cache-key files (`…Devel.yml`, `cargo-sources.json`, `Cargo.lock`) all exist
-- [ ] 5.4 After promotion (post §8): confirm `ci.yml` runs on the `main` push, and after tagging (post §9) confirm `update-flatpak.yml` fired on `v4.0.0`
+- [x] 5.4 Confirmed: `ci.yml` fired on the `main` push (run 27496857898); `update-flatpak.yml` fired on `v4.0.0` (run 27496861032, success in 8s) and opened Flathub PR #162 with the correct rewritten pin (`type: git`, `tag: v4.0.0`, `commit: dcfe128`) — end-to-end proof the 4.2 fix works
 
 ## 6. Build verification (pre-promotion)
 
@@ -39,26 +39,26 @@
 
 ## 7. Preserve v3 history
 
-- [ ] 7.1 `git tag v3-final <v3 main tip from 1.3>` and `git push origin v3-final`
-- [ ] 7.2 (Optional, per Open Question) `git branch v3 <v3 main tip>` and `git push origin v3`
-- [ ] 7.3 Verify every v3 commit is reachable from a ref (`git tag --contains` / `git branch --contains` spot check)
+- [x] 7.1 `v3-final` tag created at `efd1a5f` (pure v3 tip) and pushed
+- [x] 7.2 `v3` branch created at `efd1a5f` and pushed (`origin/v3`)
+- [x] 7.3 Verified v3 reachable (222 commits). **DISCOVERY:** `origin/main`'s true tip was `679545f` — 4 commits *beyond* `efd1a5f`: stray **v4 CEF-CI** commits (`build-cef-codecs.yml` + `tools/build-cef-codecs.sh`) committed onto the v3 main by mistake. These are parallel duplicates of v4's own `afaae5b/4d276ae/d788405/be6a564`, which v4 then *superseded* with 3 newer commits (`1a37861` shallow-Chromium-sync, `8a26eae` comment trim, `e6ed9f7` #151 patch). No unique content lost. Preserved `679545f` anyway under tag `pre-v4-promotion` (pushed) before force-push
 
 ## 8. Promote v4 to main (DESTRUCTIVE — gate behind explicit confirmation)
 
-- [ ] 8.1 `git checkout main && git reset --hard karere-4-gtk-cef`
-- [ ] 8.2 Verify local `main` tree == v4 tip (`git diff karere-4-gtk-cef main` is empty)
-- [ ] 8.3 `git push --force-with-lease origin main`
-- [ ] 8.4 Confirm `origin/main` tip equals the v4 release commit
+- [x] 8.1 `git checkout main && git reset --hard karere-4-gtk-cef` → main at `dcfe128`
+- [x] 8.2 Verified local `main` tree == v4 tip (empty diff)
+- [x] 8.3 `git push --force-with-lease=main:679545f origin main` → forced update `679545f...dcfe128`
+- [x] 8.4 Confirmed `origin/main` == `dcfe128` (v4 release commit)
 
 ## 9. Tag stable release
 
-- [ ] 9.1 `git tag -a v4.0.0 main -m "Karere 4.0.0"` on the new `main` tip
-- [ ] 9.2 `git push origin v4.0.0`
-- [ ] 9.3 Confirm the `update-flatpak` workflow fired and opened the Flathub stable PR (do not auto-merge)
+- [x] 9.1 `git tag -a v4.0.0 main -m "Karere 4.0.0"` → at `dcfe128`
+- [x] 9.2 `git push origin v4.0.0`
+- [x] 9.3 `update-flatpak` fired and opened Flathub PR #162 — left open (not merged)
 
 ## 10. Post-release verification
 
-- [ ] 10.1 Fresh-clone smoke check or `git fetch && git reset --hard origin/main`; confirm version reads `4.0.0` everywhere
-- [ ] 10.2 Confirm `v3-final` / `v3.*` tags / `origin/master` all still resolve (no v3 loss)
-- [ ] 10.3 Confirm `ci.yml` ran green on the new `main` HEAD (build + headless smoke gate)
-- [ ] 10.4 Note orphaned old-`main`-based branches (`feat/multi-account-completion`, `voip-fix-wip`, `account1009/main`) for the maintainer; no action required
+- [x] 10.1 Verified at `origin/main`: meson `4.0.0`, Cargo `4.0.0`, metainfo top release `4.0.0` (2026-06-14), CHANGELOG `[4.0.0] - 2026-06-14`
+- [x] 10.2 Confirmed all v3 refs resolve: `v3` branch + `origin/v3`, tags `v3-final` / `pre-v4-promotion` / `v3.0.0–3.1.1`, and `origin/master` (`ff52459`) — no v3 loss
+- [x] 10.3 `ci.yml` on new `main` HEAD (run 27496857898) — build + headless smoke gate **passed (success)**
+- [x] 10.4 Orphaned old-`main`-based branches noted for the maintainer (no action): `feat/multi-account-completion` (`origin` d248d87), `voip-fix-wip`, `account1009/main`. They predate the v4 line
