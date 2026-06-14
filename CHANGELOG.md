@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [4.0.0] - 2026-06-05
+## [4.0.0] - 2026-06-14
 
 **Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148.** The rendering backend
 moves from WebKitGTK to the Chromium Embedded Framework (off-screen rendered, composited into a

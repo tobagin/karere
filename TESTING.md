@@ -10,8 +10,8 @@ Per PRD §11.
 - [ ] `webrtc.github.io/samples/src/content/peerconnection/pc1/` completes a peer connection.
   - [ ] `getUserMedia` triggers AdwAlertDialog prompt.
   - [ ] Allow → camera + mic active.
-- [ ] Open/close 50 times: no leaked memory (`heaptrack ./gtk-cef-shell`).
-- [ ] After quit: `ps -ef | grep gtk-cef-shell` shows no orphan processes.
+- [ ] Open/close 50 times: no leaked memory (`heaptrack ./karere`).
+- [ ] After quit: `ps -ef | grep karere` shows no orphan processes.
 
 ## Automated
 
@@ -50,7 +50,7 @@ File anything that breaks at **<https://github.com/tobagin/karere/issues>**.
 
 Include:
 
-- **Version**: `flatpak info io.github.tobagin.karere` (confirm it says `4.0.0-beta…`)
+- **Version**: `flatpak info io.github.tobagin.karere` (confirm it says `4.0.0`)
 - **Desktop**: GNOME/KDE/other, Wayland or X11, distro
 - **Steps to reproduce** + what you expected vs. saw
 - **Logs**: run `flatpak run io.github.tobagin.karere` from a terminal, paste relevant output

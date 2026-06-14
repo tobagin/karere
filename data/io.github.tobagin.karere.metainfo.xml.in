@@ -101,7 +101,7 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
-    <release version="4.0.0" date="2026-06-05">
+    <release version="4.0.0" date="2026-06-14">
       <description>
         <p>Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. Existing accounts must be re-linked — there is no migration from v3.</p>
         <p>Major changes:</p>

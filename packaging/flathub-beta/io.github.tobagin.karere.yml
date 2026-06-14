@@ -88,11 +88,13 @@ modules:
     config-opts:
       - -Dprofile=default
     sources:
-      # Flathub pulls the tagged GitHub source. Update tag + commit per beta.
+      # Flathub pulls the tagged GitHub source. Update tag + commit per release.
+      # At the 4.0.0 stable release beta tracks the same tag; `commit` is synced
+      # to the v4.0.0 tag commit when the beta-branch PR is opened.
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v4.0.0-beta7
-        commit: cb789bb2de6d80cc94b1451834bdbe8222e6ed6b
+        tag: v4.0.0
+        commit: e45a3efef29d0d0a479a56d6f81b3f5b12a8df1b
       - cargo-sources.json
     # Move our gettext catalogs out of share/locale so flatpak's automatic
     # per-language .Locale extension (which only deploys the host's languages)

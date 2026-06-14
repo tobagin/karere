@@ -88,8 +88,14 @@ modules:
     config-opts:
       - -Dprofile=default
     sources:
-      - type: dir
-        path: ..
+      # Flathub builds from the tagged GitHub release. The update-flatpak.yml
+      # workflow rewrites `tag`/`commit` to the pushed stable tag when it opens
+      # the Flathub PR; the values here are the last-synced placeholders. (Local
+      # development builds use the Devel manifest, which sources `type: dir`.)
+      - type: git
+        url: https://github.com/tobagin/karere
+        tag: v4.0.0
+        commit: e45a3efef29d0d0a479a56d6f81b3f5b12a8df1b
       - cargo-sources.json
     # Move our gettext catalogs out of share/locale so flatpak's automatic
     # per-language .Locale extension (which only deploys the host's languages)

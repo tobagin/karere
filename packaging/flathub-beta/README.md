@@ -4,9 +4,11 @@ This directory holds the manifest used to publish Karere to the **`flathub-beta`
 remote — a separate channel from stable. Stable users never see beta builds; testers
 opt in explicitly.
 
-It differs from the in-tree dev manifest (`packaging/io.github.tobagin.karere.yml`)
-in exactly one way: the `karere` module pulls a **tagged git source** from GitHub
-instead of the local `type: dir` checkout (Flathub cannot build from a local dir).
+Like the stable manifest (`packaging/io.github.tobagin.karere.yml`), the `karere`
+module pulls a **tagged git source** from GitHub (Flathub cannot build from a local
+dir); it differs only in the `tag`/`commit` pin. Local development instead uses the
+Devel manifest (`packaging/io.github.tobagin.karere.Devel.yml`), whose `karere`
+module sources the working tree via `type: dir`.
 
 ## How a beta gets published
 
