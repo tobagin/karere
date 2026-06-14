@@ -175,6 +175,14 @@ Karere is designed with privacy in mind:
 codecs (H.264/AAC), removing the WebKitGTK platform limitation that blocked video playback in
 v3 and earlier.
 
+### Voice & Video Calls
+**Calling requires WhatsApp Web's beta program.** Voice and video calls are still a beta feature
+on WhatsApp Web itself — the call buttons only appear once your account is enrolled in the
+**WhatsApp Web beta**. Karere provides the codecs and permissions plumbing (microphone/camera
+prompts, H.264/AAC), but it cannot surface call controls that WhatsApp Web does not expose. To
+enable them, join the beta from the official WhatsApp client (Settings on your phone, or the
+WhatsApp Web beta opt-in); calls then work in Karere like any other WhatsApp Web feature.
+
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
