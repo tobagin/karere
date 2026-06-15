@@ -602,6 +602,17 @@ mod imp {
                 self.init_gl();
             }
             self.bootstrap_pool();
+
+            // Follow fractional scale changes (e.g. dragging between monitors of
+            // different scale) so device_scale_factor / paint buffer track. A
+            // pure scale change need not re-run size_allocate, so watch the
+            // surface's `scale` property directly. (#155)
+            if let Some(surface) = widget.native().and_then(|n| n.surface()) {
+                surface.connect_scale_notify(glib::clone!(
+                    #[weak] widget,
+                    move |_s| widget.imp().refresh_screen_scale()
+                ));
+            }
         }
 
         fn unrealize(&self) {
@@ -614,13 +625,16 @@ mod imp {
 
         fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
             self.parent_size_allocate(width, height, baseline);
-            let scale = self.obj().scale_factor();
-            let phys_w = width * scale;
-            let phys_h = height * scale;
+            // CEF's view rect and mouse events are in DIP (logical) units; its
+            // GetScreenInfo.device_scale_factor maps them to the physical paint
+            // buffer (on_paint dimensions). Pass the *logical* size plus the
+            // *fractional* surface scale so content lays out at the correct size
+            // on fractional displays — e.g. 150 % GNOME scaling (#155).
+            let scale = surface_scale(&self.obj());
 
             if let Some(shared) = self.shared.lock().as_ref() {
                 let mut s = shared.lock();
-                s.size = (phys_w, phys_h);
+                s.size = (width, height);
                 s.scale_factor = scale as f32;
             }
 
@@ -706,6 +720,23 @@ mod imp {
             *self.browser.lock() = None;
         }
 
+        /// Push the current fractional surface scale into the shared state and
+        /// tell CEF its screen info changed, so the device_scale_factor and
+        /// paint buffer follow a live scale change. (#155)
+        fn refresh_screen_scale(&self) {
+            let scale = surface_scale(&self.obj()) as f32;
+            if let Some(shared) = self.shared.lock().as_ref() {
+                shared.lock().scale_factor = scale;
+            }
+            if let Some(browser) = resolved_browser(self)
+                && let Some(host) = browser.host()
+            {
+                host.notify_screen_info_changed();
+                host.was_resized();
+            }
+            self.obj().queue_render();
+        }
+
         /// Present the snapshotted CEF context menu as a GTK `Popover` of buttons at
         /// the cursor over the `GLArea`. Main-thread only. Button click records the
         /// command + pops down; `closed` dispatches `cont`/`cancel` (exactly one).
@@ -740,10 +771,10 @@ mod imp {
             build_menu_box(&items, &container, &obj, &popover);
             popover.set_child(Some(&container));
 
-            // `run_context_menu` cursor is device-pixel; GTK widget coords are
-            // logical, so divide by scale (inverse of the input-forwarding multiply).
-            let s = scale(&obj);
-            let rect = gtk::gdk::Rectangle::new(x_dev / s, y_dev / s, 1, 1);
+            // CEF reports the cursor in view coords, which are DIP now that we
+            // forward mouse events in DIP (#155) — the same space as GTK widget
+            // coords, so use them directly for the popover anchor.
+            let rect = gtk::gdk::Rectangle::new(x_dev, y_dev, 1, 1);
             popover.set_pointing_to(Some(&rect));
 
             // Resolve the callback AFTER popdown (webview re-focused): dispatch the
@@ -1427,11 +1458,28 @@ mod imp {
         widget.add_controller(scroll);
 
         // Keyboard -----------------------------------------------------------
+        // An input-method context turns raw key events into composed text:
+        // dead keys (US-International ``+a → à``) and full IMEs only yield the
+        // final character through `commit`, never from a single keyval. Route
+        // keys through it and forward the committed text to CEF as CHAR events
+        // (#154). Keys the IM doesn't consume fall back to the keyval below.
+        let im = gtk::IMMulticontext::new();
+        im.set_client_widget(Some(widget));
+        im.connect_commit(glib::clone!(
+            #[weak] widget,
+            move |_im, text| {
+                for ch in text.chars() {
+                    send_char(&widget, ch as u16, 0);
+                }
+            }
+        ));
+
         let keys = gtk::EventControllerKey::new();
         keys.connect_key_pressed(glib::clone!(
             #[weak] widget,
+            #[strong] im,
             #[upgrade_or] glib::Propagation::Proceed,
-            move |_ctrl, keyval, keycode, state| {
+            move |ctrl, keyval, keycode, state| {
                 use gtk::gdk::{Key, ModifierType};
                 // M17: intercept Ctrl+V before CEF. If GDK clipboard holds an image
                 // or files, synthesize the paste and swallow the key so CEF's
@@ -1453,7 +1501,21 @@ mod imp {
                 {
                     promote_primary_to_clipboard();
                 }
-                send_key(&widget, keyval, keycode, state, true);
+                // Always deliver the raw key-down so the page sees navigation,
+                // Enter-to-send, and shortcut keys.
+                send_key_raw(&widget, keyval, keycode, state, true);
+                // Let the IM compose. On a dead key it buffers and returns true
+                // (no commit yet); on the next key it fires `commit` with the
+                // composed text. Plain keys also commit here.
+                let consumed = ctrl
+                    .current_event()
+                    .map(|e| im.filter_keypress(&e))
+                    .unwrap_or(false);
+                if !consumed {
+                    // IM produced no text (no IM running, or a combo like Ctrl+C);
+                    // emit the keyval's character directly so typing still works.
+                    send_char_from_keyval(&widget, keyval, state);
+                }
                 // Let accelerator combos (Ctrl/Alt/Super+key, F5/F11) bubble to
                 // window/app shortcuts; consume the rest so typing stays in the webview.
                 if is_accelerator_key(keyval, state) {
@@ -1465,8 +1527,12 @@ mod imp {
         ));
         keys.connect_key_released(glib::clone!(
             #[weak] widget,
-            move |_ctrl, keyval, keycode, state| {
-                send_key(&widget, keyval, keycode, state, false);
+            #[strong] im,
+            move |ctrl, keyval, keycode, state| {
+                if let Some(e) = ctrl.current_event() {
+                    im.filter_keypress(&e);
+                }
+                send_key_raw(&widget, keyval, keycode, state, false);
             }
         ));
         widget.add_controller(keys);
@@ -1475,11 +1541,19 @@ mod imp {
         let focus = gtk::EventControllerFocus::new();
         focus.connect_enter(glib::clone!(
             #[weak] widget,
-            move |_| set_focus(&widget, true)
+            #[strong] im,
+            move |_| {
+                im.focus_in();
+                set_focus(&widget, true);
+            }
         ));
         focus.connect_leave(glib::clone!(
             #[weak] widget,
-            move |_| set_focus(&widget, false)
+            #[strong] im,
+            move |_| {
+                im.focus_out();
+                set_focus(&widget, false);
+            }
         ));
         widget.add_controller(focus);
 
@@ -1658,20 +1732,29 @@ mod imp {
         }
     }
 
-    fn scale(widget: &super::KarereWebView) -> i32 {
-        widget.scale_factor().max(1)
+    /// Fractional display scale (DIP→physical) read from the widget's surface,
+    /// e.g. 1.5 for 150 % GNOME fractional scaling. Falls back to the integer
+    /// scale factor before the surface exists. CEF's screen-info scale and the
+    /// paint buffer are sized from this; mouse/view coords stay in DIP. (#155)
+    fn surface_scale(widget: &super::KarereWebView) -> f64 {
+        widget
+            .native()
+            .and_then(|n| n.surface())
+            .map(|s| s.scale())
+            .filter(|s| *s > 0.0)
+            .unwrap_or_else(|| widget.scale_factor() as f64)
     }
 
     fn send_move(widget: &super::KarereWebView, x: f64, y: f64, modifiers: u32, leave: bool) {
-        let s = scale(widget);
         if !leave {
             // Remember cursor so wheel events scroll the element under it.
             widget.imp().last_mouse_x.store(x as i32, Ordering::Relaxed);
             widget.imp().last_mouse_y.store(y as i32, Ordering::Relaxed);
         }
+        // DIP (logical) coords — CEF maps to physical via device_scale_factor.
         let event = MouseEvent {
-            x: (x as i32) * s,
-            y: (y as i32) * s,
+            x: x as i32,
+            y: y as i32,
             modifiers,
         };
         with_host(widget, |host| {
@@ -1688,10 +1771,9 @@ mod imp {
         n_press: i32,
         modifiers: u32,
     ) {
-        let s = scale(widget);
         let event = MouseEvent {
-            x: (x as i32) * s,
-            y: (y as i32) * s,
+            x: x as i32,
+            y: y as i32,
             modifiers,
         };
         let btn = match button {
@@ -1706,58 +1788,83 @@ mod imp {
     }
 
     fn send_wheel(widget: &super::KarereWebView, dx: f64, dy: f64, modifiers: u32) {
-        let s = scale(widget);
         // GTK deltas are wheel ticks (1.0 = one notch); CEF wants pixel deltas.
         const STEP: f64 = 40.0;
         // CEF hit-tests the cursor to pick the scroll target; (0,0) scrolls nothing.
+        // Coords/deltas in DIP — CEF maps to physical via device_scale_factor.
         let imp = widget.imp();
         let event = MouseEvent {
-            x: imp.last_mouse_x.load(Ordering::Relaxed) * s,
-            y: imp.last_mouse_y.load(Ordering::Relaxed) * s,
+            x: imp.last_mouse_x.load(Ordering::Relaxed),
+            y: imp.last_mouse_y.load(Ordering::Relaxed),
             modifiers,
         };
         with_host(widget, |host| {
             host.send_mouse_wheel_event(
                 Some(&event),
-                (-dx * STEP) as i32 * s,
-                (-dy * STEP) as i32 * s,
+                (-dx * STEP) as i32,
+                (-dy * STEP) as i32,
             );
         });
     }
 
-    fn send_key(
+    /// Send only the raw key-down/up (RAWKEYDOWN / KEYUP) — no CHAR. Character
+    /// insertion is driven separately by the IM `commit` (`send_char`) or the
+    /// keyval fallback (`send_char_from_keyval`), so dead keys compose. (#154)
+    fn send_key_raw(
         widget: &super::KarereWebView,
         keyval: gtk::gdk::Key,
         keycode: u32,
         state: gtk::gdk::ModifierType,
         down: bool,
     ) {
-        let modifiers = modifiers_from_state(state);
-        let windows_key_code = gdk_key_to_vk(keyval);
-        let character = keyval.to_unicode().map(|c| c as u16).unwrap_or(0);
-
-        let base = KeyEvent {
+        let evt = KeyEvent {
             size: std::mem::size_of::<sys::_cef_key_event_t>(),
             type_: if down { KeyEventType::RAWKEYDOWN } else { KeyEventType::KEYUP },
-            modifiers,
-            windows_key_code,
+            modifiers: modifiers_from_state(state),
+            windows_key_code: gdk_key_to_vk(keyval),
             native_key_code: keycode as i32,
             is_system_key: 0,
-            character,
-            unmodified_character: character,
+            character: 0,
+            unmodified_character: 0,
             focus_on_editable_field: 0,
         };
         with_host(widget, |host| {
-            host.send_key_event(Some(&base));
-            if down && character != 0 {
-                let char_evt = KeyEvent {
-                    type_: KeyEventType::CHAR,
-                    windows_key_code: character as i32,
-                    ..base.clone()
-                };
-                host.send_key_event(Some(&char_evt));
-            }
+            host.send_key_event(Some(&evt));
         });
+    }
+
+    /// Send a single composed UTF-16 unit as a CEF CHAR event. Used for IM
+    /// `commit` text (dead-key / IME composition). (#154)
+    fn send_char(widget: &super::KarereWebView, code: u16, modifiers: u32) {
+        if code == 0 {
+            return;
+        }
+        let evt = KeyEvent {
+            size: std::mem::size_of::<sys::_cef_key_event_t>(),
+            type_: KeyEventType::CHAR,
+            modifiers,
+            windows_key_code: code as i32,
+            native_key_code: 0,
+            is_system_key: 0,
+            character: code,
+            unmodified_character: code,
+            focus_on_editable_field: 0,
+        };
+        with_host(widget, |host| {
+            host.send_key_event(Some(&evt));
+        });
+    }
+
+    /// CHAR fallback for keys the IM did not consume (no IM running, or a combo
+    /// like Ctrl+C): derive the character straight from the keyval. (#154)
+    fn send_char_from_keyval(
+        widget: &super::KarereWebView,
+        keyval: gtk::gdk::Key,
+        state: gtk::gdk::ModifierType,
+    ) {
+        if let Some(ch) = keyval.to_unicode() {
+            send_char(widget, ch as u16, modifiers_from_state(state));
+        }
     }
 
     fn set_focus(widget: &super::KarereWebView, focused: bool) {
@@ -2059,7 +2166,7 @@ mod imp {
             // Only letters/digits map cleanly to a Windows VK via ASCII (A–Z, 0–9).
             // Punctuation collides with named VKs (e.g. '.'=0x2E=VK_DELETE), making
             // Chromium treat the keydown as a command and drop the char. Use 0; the
-            // CHAR event in `send_key` still inserts the character as text.
+            // separate CHAR event (IM commit / keyval fallback) still inserts it.
             _ => keyval
                 .to_unicode()
                 .filter(|c| c.is_ascii_alphanumeric())

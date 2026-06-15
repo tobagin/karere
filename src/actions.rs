@@ -257,7 +257,7 @@ fn register_about(app: &KarereApplication) {
             let dialog = adw::AboutDialog::builder()
                 .application_name(gettext("Karere"))
                 .application_icon(APP_ID)
-                .developer_name("The Karere Team")
+                .developer_name("Thiago Fernandes")
                 .version(env!("CARGO_PKG_VERSION"))
                 .comments(gettext(
                     "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities",
@@ -266,7 +266,7 @@ fn register_about(app: &KarereApplication) {
                 .issue_url("https://github.com/tobagin/karere/issues")
                 .support_url("https://github.com/tobagin/karere/discussions")
                 .license_type(gtk::License::Gpl30)
-                .copyright("© 2025 The Karere Team")
+                .copyright("© 2025 Thiago Fernandes")
                 .developers(developers.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
                 .designers(designers.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
                 .artists(artists.iter().map(|s| String::from(*s)).collect::<Vec<_>>())

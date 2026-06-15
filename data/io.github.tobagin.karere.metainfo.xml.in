@@ -101,6 +101,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.0.1" date="2026-06-15">
+      <description>
+        <ul>
+          <li>Fixed: accented characters from dead keys (e.g. the US-International layout) now compose correctly instead of inserting the base letter — input is routed through the system input method (#154)</li>
+          <li>Fixed: web content is now sized correctly under fractional display scaling such as 150%; the view and input use logical coordinates with the fractional scale applied for crisp rendering (#155, #156)</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.0.0" date="2026-06-14">
       <description>
         <p>Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. Existing accounts must be re-linked — there is no migration from v3.</p>

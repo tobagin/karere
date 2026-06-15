@@ -95,13 +95,9 @@ wrap_load_handler! {
                 // M18 4.1: restore this account's persisted zoom (floor-lifted).
                 crate::web_view::apply_zoom_from_account(browser);
                 // M21: inject the mobile-responsive script when the layout is
-                // mobile for the current window width (logical = physical /
-                // scale). Mirrors v3's inject-on-load.
-                let width_logical = {
-                    let s = self.handler.shared.lock();
-                    let scale = if s.scale_factor > 0.0 { s.scale_factor } else { 1.0 };
-                    (s.size.0 as f32 / scale).round() as i32
-                };
+                // mobile for the current window width. `shared.size` is already
+                // the logical (DIP) viewport (#155). Mirrors v3's inject-on-load.
+                let width_logical = self.handler.shared.lock().size.0;
                 crate::web_view::apply_mobile_layout(browser, width_logical);
                 // M14x: push the notif-sound mute flag so the bundle hook
                 // silences WhatsApp's ding when sounds are off (page `window`

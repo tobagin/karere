@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.0.1] - 2026-06-15
+
+### Fixed
+- **Accent / dead-key input**: Composing accented characters (e.g. `` ` `` + `a` → `à` on the US-International layout) inserted the bare base letter instead. Key events are now routed through a GTK input-method context, so dead keys and full IMEs compose correctly before reaching the off-screen web view. (#154)
+- **Fractional display scaling**: Web content rendered too small under fractional scaling (e.g. 150% on GNOME Wayland). CEF's view rect and mouse events are now expressed in logical (DIP) coordinates with the **fractional** surface scale supplied as `device_scale_factor`, so content matches the rest of the UI and stays crisp. Scale changes (e.g. moving between monitors) are tracked live. (#155, #156)
+
+### Changed
+- About dialog: developer name and copyright now credit "Thiago Fernandes" rather than "The Karere Team".
+
 ## [4.0.0] - 2026-06-14
 
 **Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148.** The rendering backend

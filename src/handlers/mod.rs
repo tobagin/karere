@@ -56,7 +56,10 @@ pub struct DownloadFailed {
 #[derive(Default)]
 pub struct SharedState {
     pub frame: FrameBuffer,
+    /// Logical (DIP) viewport size — CEF's GetViewRect. The physical paint
+    /// buffer is this × `scale_factor` (device_scale_factor). (#155)
     pub size: (i32, i32),
+    /// Fractional display scale (DIP→physical), e.g. 1.5 at 150 %. (#155)
     pub scale_factor: f32,
     pub title: String,
     pub is_loading: bool,

@@ -134,7 +134,7 @@ wrap_context_menu_handler! {
                 return 1;
             }
 
-            // Cursor in view (device-pixel) coords; GTK divides by scale factor.
+            // Cursor in view coords — DIP, matching the mouse events we feed CEF.
             let (x, y) = match &params {
                 Some(p) => {
                     if log::log_enabled!(log::Level::Debug) {
