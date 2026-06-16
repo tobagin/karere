@@ -51,7 +51,18 @@ wrap_render_handler! {
         ) -> ::std::os::raw::c_int {
             let Some(info) = screen_info else { return 0 };
             let s = self.handler.shared.lock();
-            info.device_scale_factor = s.scale_factor.max(1.0);
+            let (w, h) = s.size;
+            // device_scale_factor is pinned to 1: this CEF build ignores it for
+            // OSR sizing anyway, and the HiDPI buffer is produced by a physical
+            // view rect + a compensating page zoom instead (#158). Pinning it
+            // makes the CSS viewport == view_rect deterministically.
+            info.device_scale_factor = 1.0;
+            info.depth = 24;
+            info.depth_per_component = 8;
+            info.is_monochrome = 0;
+            let rect = Rect { x: 0, y: 0, width: w.max(1), height: h.max(1) };
+            info.rect = rect.clone();
+            info.available_rect = rect;
             1
         }
 

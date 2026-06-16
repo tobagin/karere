@@ -92,12 +92,18 @@ wrap_load_handler! {
             // navigation).
             if let Some(browser) = browser {
                 apply_autocorrect_from_settings(browser);
-                // M18 4.1: restore this account's persisted zoom (floor-lifted).
-                crate::web_view::apply_zoom_from_account(browser);
+                // `shared.size` is physical (#158); the integer display scale also
+                // folds into the page zoom that emulates the HiDPI buffer.
+                let (width_logical, display_scale) = {
+                    let s = self.handler.shared.lock();
+                    let scale = if s.scale_factor > 0.0 { s.scale_factor } else { 1.0 };
+                    ((s.size.0 as f32 / scale).round() as i32, scale as f64)
+                };
+                // M18 4.1: restore this account's persisted zoom (floor-lifted),
+                // scaled up by the display scale to fill the physical buffer.
+                crate::web_view::apply_zoom_from_account(browser, display_scale);
                 // M21: inject the mobile-responsive script when the layout is
-                // mobile for the current window width. `shared.size` is already
-                // the logical (DIP) viewport (#155). Mirrors v3's inject-on-load.
-                let width_logical = self.handler.shared.lock().size.0;
+                // mobile for the current window width. Mirrors v3's inject-on-load.
                 crate::web_view::apply_mobile_layout(browser, width_logical);
                 // M14x: push the notif-sound mute flag so the bundle hook
                 // silences WhatsApp's ding when sounds are off (page `window`

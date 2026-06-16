@@ -56,8 +56,10 @@ pub struct DownloadFailed {
 #[derive(Default)]
 pub struct SharedState {
     pub frame: FrameBuffer,
-    /// Logical (DIP) viewport size — CEF's GetViewRect. The physical paint
-    /// buffer is this × `scale_factor` (device_scale_factor). (#155)
+    /// Logical (DIP) viewport size — CEF's GetViewRect and GetScreenInfo rect.
+    /// With non-empty screen rects Chromium honours device_scale_factor, so the
+    /// physical paint buffer = this × `scale_factor` = the GLArea framebuffer
+    /// (1:1, crisp). (#155, #158)
     pub size: (i32, i32),
     /// Integer paint scale (DIP→physical) matching the `GtkGLArea` framebuffer,
     /// e.g. 2 at 150 % fractional scaling. Fed to CEF as device_scale_factor so the

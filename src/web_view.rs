@@ -153,6 +153,17 @@ pub(crate) fn cef_to_linear(cef: f64) -> f64 {
     (cef * 1.2_f64.ln()).exp()
 }
 
+/// CEF `BrowserHost` zoom level to apply for a user zoom factor at a given
+/// integer display scale. Because this CEF build ignores device_scale_factor for
+/// OSR, the paint buffer is sized to the physical (logical × scale) view rect for
+/// crispness; an equal page zoom then restores content to its logical size. The
+/// display-scale term is added in CEF's log domain (each unit = ×1.2) so it is
+/// NOT subject to the user-zoom `[ZOOM_MIN, ZOOM_MAX]` clamp. (#158)
+pub(crate) fn host_zoom_level(user_linear: f64, display_scale: f64) -> f64 {
+    let scale_term = display_scale.max(1.0).ln() / 1.2_f64.ln();
+    linear_to_cef(user_linear) + scale_term
+}
+
 /// Effective accessibility zoom floor (linear): `zoom-level` setting when the
 /// `webview-zoom` toggle is on, else the hard CEF minimum. Shared by the window's
 /// zoom actions and the load handler's first-paint apply. (M18 5.x)
@@ -263,7 +274,7 @@ pub(crate) fn apply_notif_sound_from_settings(browser: &cef::Browser) {
 /// `browser`, rewriting the persisted value if the floor lifted it. Called from
 /// `on_load_end` so each account restores its zoom on first paint and after
 /// navigation. (M18 4.1 / 5.2)
-pub(crate) fn apply_zoom_from_account(browser: &cef::Browser) {
+pub(crate) fn apply_zoom_from_account(browser: &cef::Browser, display_scale: f64) {
     use cef::{ImplBrowser, ImplBrowserHost};
     let Some(id) = crate::accounts::account_for_browser(browser.identifier()) else {
         return;
@@ -274,7 +285,7 @@ pub(crate) fn apply_zoom_from_account(browser: &cef::Browser) {
         .unwrap_or(1.0);
     let effective = persisted.max(zoom_floor());
     if let Some(host) = browser.host() {
-        host.set_zoom_level(linear_to_cef(effective));
+        host.set_zoom_level(host_zoom_level(effective, display_scale));
     }
     if (effective - persisted).abs() >= f64::EPSILON {
         crate::accounts::manager().set_zoom(&id, effective);
@@ -626,17 +637,19 @@ mod imp {
 
         fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
             self.parent_size_allocate(width, height, baseline);
-            // CEF's view rect and mouse events are in DIP (logical) units; its
-            // GetScreenInfo.device_scale_factor maps them to the physical paint
-            // buffer (on_paint dimensions). Pass the *logical* size plus the
-            // GLArea's *integer* framebuffer scale so the paint buffer maps 1:1
-            // onto the framebuffer — anything less is upscaled and blurs the web
-            // view on fractional displays, e.g. 150 % GNOME scaling (#155, #158).
+            // This CEF build ignores device_scale_factor for OSR: on_paint always
+            // matches GetViewRect exactly. So the view rect must be PHYSICAL
+            // (logical × integer GLArea scale) to fill the framebuffer 1:1 and stay
+            // crisp; the resulting too-many-CSS-px (content too small) is corrected
+            // by an equal page zoom applied to the browser (see host_zoom_level).
+            // Mouse/wheel/menu coords are therefore physical too. (#158)
             let scale = paint_scale(&self.obj());
+            let phys_w = (width as f64 * scale).round() as i32;
+            let phys_h = (height as f64 * scale).round() as i32;
 
             if let Some(shared) = self.shared.lock().as_ref() {
                 let mut s = shared.lock();
-                s.size = (width, height);
+                s.size = (phys_w, phys_h);
                 s.scale_factor = scale as f32;
             }
 
@@ -722,21 +735,31 @@ mod imp {
             *self.browser.lock() = None;
         }
 
-        /// Push the current integer paint scale into the shared state and tell CEF
-        /// its screen info changed, so the device_scale_factor and paint buffer
-        /// follow a live scale change. (#155, #158)
+        /// Recompute the physical paint size + scale for a live scale change
+        /// (e.g. dragging between monitors) and tell CEF, then re-apply zoom so
+        /// the display-scale term tracks the new scale. (#155, #158)
         fn refresh_screen_scale(&self) {
-            let scale = paint_scale(&self.obj()) as f32;
+            let widget = self.obj();
+            let scale = paint_scale(&widget);
+            let (lw, lh) = (widget.width(), widget.height());
             if let Some(shared) = self.shared.lock().as_ref() {
-                shared.lock().scale_factor = scale;
+                let mut s = shared.lock();
+                s.scale_factor = scale as f32;
+                if lw > 0 && lh > 0 {
+                    s.size = (
+                        (lw as f64 * scale).round() as i32,
+                        (lh as f64 * scale).round() as i32,
+                    );
+                }
             }
             if let Some(browser) = resolved_browser(self)
                 && let Some(host) = browser.host()
             {
                 host.notify_screen_info_changed();
                 host.was_resized();
+                super::apply_zoom_from_account(&browser, scale);
             }
-            self.obj().queue_render();
+            widget.queue_render();
         }
 
         /// Present the snapshotted CEF context menu as a GTK `Popover` of buttons at
@@ -773,10 +796,11 @@ mod imp {
             build_menu_box(&items, &container, &obj, &popover);
             popover.set_child(Some(&container));
 
-            // CEF reports the cursor in view coords, which are DIP now that we
-            // forward mouse events in DIP (#155) — the same space as GTK widget
-            // coords, so use them directly for the popover anchor.
-            let rect = gtk::gdk::Rectangle::new(x_dev, y_dev, 1, 1);
+            // CEF reports the cursor in view coords = physical pixels (view_rect
+            // is physical, #158); GTK widget coords are logical, so divide by the
+            // integer scale to anchor the popover at the cursor.
+            let s = obj.scale_factor().max(1);
+            let rect = gtk::gdk::Rectangle::new(x_dev / s, y_dev / s, 1, 1);
             popover.set_pointing_to(Some(&rect));
 
             // Resolve the callback AFTER popdown (webview re-focused): dispatch the
@@ -817,22 +841,36 @@ mod imp {
             }
         }
 
-        /// Set the foreground browser's zoom from a linear factor (clamped + → CEF
-        /// log level). CEF UI thread only. (M18)
+        /// Current integer display scale from the shared state (≥ 1). Folded into
+        /// the applied zoom to emulate the HiDPI paint buffer (#158).
+        fn display_scale(&self) -> f64 {
+            self.shared
+                .lock()
+                .as_ref()
+                .map(|s| s.lock().scale_factor as f64)
+                .unwrap_or(1.0)
+                .max(1.0)
+        }
+
+        /// Set the foreground browser's zoom from a linear factor. The display
+        /// scale is added on top (page-zoom HiDPI emulation, #158). CEF UI thread
+        /// only. (M18)
         pub fn set_zoom_linear(&self, linear: f64) {
             if let Some(browser) = self.browser.lock().as_ref().cloned()
                 && let Some(host) = browser.host()
             {
-                host.set_zoom_level(super::linear_to_cef(linear));
+                host.set_zoom_level(super::host_zoom_level(linear, self.display_scale()));
             }
         }
 
-        /// Foreground browser's zoom as a linear factor, or 1.0 if none. (M18)
+        /// Foreground browser's USER zoom as a linear factor (the display-scale
+        /// term removed), or 1.0 if none. (M18)
         pub fn get_zoom_linear(&self) -> f64 {
             if let Some(browser) = self.browser.lock().as_ref().cloned()
                 && let Some(host) = browser.host()
             {
-                super::cef_to_linear(host.zoom_level())
+                let scale_term = self.display_scale().ln() / 1.2_f64.ln();
+                super::cef_to_linear(host.zoom_level() - scale_term)
             } else {
                 1.0
             }
@@ -1756,15 +1794,18 @@ mod imp {
     }
 
     fn send_move(widget: &super::KarereWebView, x: f64, y: f64, modifiers: u32, leave: bool) {
+        // CEF view coords are physical pixels (view_rect is physical, #158):
+        // scale the logical GTK cursor by the integer GLArea scale. Store it in
+        // the same space so wheel events hit-test the element under the cursor.
+        let s = widget.scale_factor().max(1);
+        let (px, py) = (x as i32 * s, y as i32 * s);
         if !leave {
-            // Remember cursor so wheel events scroll the element under it.
-            widget.imp().last_mouse_x.store(x as i32, Ordering::Relaxed);
-            widget.imp().last_mouse_y.store(y as i32, Ordering::Relaxed);
+            widget.imp().last_mouse_x.store(px, Ordering::Relaxed);
+            widget.imp().last_mouse_y.store(py, Ordering::Relaxed);
         }
-        // DIP (logical) coords — CEF maps to physical via device_scale_factor.
         let event = MouseEvent {
-            x: x as i32,
-            y: y as i32,
+            x: px,
+            y: py,
             modifiers,
         };
         with_host(widget, |host| {
@@ -1781,9 +1822,11 @@ mod imp {
         n_press: i32,
         modifiers: u32,
     ) {
+        // Physical (pixel) coords — view_rect is physical (#158).
+        let s = widget.scale_factor().max(1);
         let event = MouseEvent {
-            x: x as i32,
-            y: y as i32,
+            x: x as i32 * s,
+            y: y as i32 * s,
             modifiers,
         };
         let btn = match button {
@@ -1801,7 +1844,8 @@ mod imp {
         // GTK deltas are wheel ticks (1.0 = one notch); CEF wants pixel deltas.
         const STEP: f64 = 40.0;
         // CEF hit-tests the cursor to pick the scroll target; (0,0) scrolls nothing.
-        // Coords/deltas in DIP — CEF maps to physical via device_scale_factor.
+        // last_mouse_* is already physical; scale the deltas to match (#158).
+        let s = widget.scale_factor().max(1);
         let imp = widget.imp();
         let event = MouseEvent {
             x: imp.last_mouse_x.load(Ordering::Relaxed),
@@ -1811,8 +1855,8 @@ mod imp {
         with_host(widget, |host| {
             host.send_mouse_wheel_event(
                 Some(&event),
-                (-dx * STEP) as i32,
-                (-dy * STEP) as i32,
+                (-dx * STEP) as i32 * s,
+                (-dy * STEP) as i32 * s,
             );
         });
     }
