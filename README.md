@@ -47,6 +47,9 @@ proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
 > QR code for each account.
 
+> **Latest patch — 4.0.2.** Fixes blurry web-view text under fractional display
+> scaling (e.g. 150%/175% on GNOME Wayland).
+
 For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
 
 ## Features
