@@ -1460,11 +1460,13 @@ mod imp {
         widget.add_controller(scroll);
 
         // Keyboard -----------------------------------------------------------
-        // An input-method context turns raw key events into composed text:
-        // dead keys (US-International ``+a → à``) and full IMEs only yield the
-        // final character through `commit`, never from a single keyval. Route
-        // keys through it and forward the committed text to CEF as CHAR events
-        // (#154). Keys the IM doesn't consume fall back to the keyval below.
+        // Text input goes through an input-method context so dead keys
+        // (US-International ``+a → à``) and full IMEs compose; the IM delivers
+        // the final text via `commit`, which we forward to CEF as CHAR events
+        // (#154). This mirrors GtkText: filter the key through the IM first, and
+        // if it consumes the key, do NOT also send a raw key or a keyval char —
+        // the `commit` is the only source of text. Only keys the IM does NOT
+        // consume (Enter, arrows, shortcuts, Ctrl-combos) get a raw key event.
         let im = gtk::IMMulticontext::new();
         im.set_client_widget(Some(widget));
         im.connect_commit(glib::clone!(
@@ -1503,21 +1505,19 @@ mod imp {
                 {
                     promote_primary_to_clipboard();
                 }
-                // Always deliver the raw key-down so the page sees navigation,
-                // Enter-to-send, and shortcut keys.
-                send_key_raw(&widget, keyval, keycode, state, true);
-                // Let the IM compose. On a dead key it buffers and returns true
-                // (no commit yet); on the next key it fires `commit` with the
-                // composed text. Plain keys also commit here.
+                // IM gets first crack. A consumed key is text (a letter, or a
+                // dead-key composition still buffering) — the `commit` handler
+                // emits the CHAR, so we send nothing else and swallow the key.
                 let consumed = ctrl
                     .current_event()
                     .map(|e| im.filter_keypress(&e))
                     .unwrap_or(false);
-                if !consumed {
-                    // IM produced no text (no IM running, or a combo like Ctrl+C);
-                    // emit the keyval's character directly so typing still works.
-                    send_char_from_keyval(&widget, keyval, state);
+                if consumed {
+                    return glib::Propagation::Stop;
                 }
+                // Not text: deliver the raw key-down so the page sees Enter,
+                // arrows, Ctrl-combos, F-keys, etc.
+                send_key_raw(&widget, keyval, keycode, state, true);
                 // Let accelerator combos (Ctrl/Alt/Super+key, F5/F11) bubble to
                 // window/app shortcuts; consume the rest so typing stays in the webview.
                 if is_accelerator_key(keyval, state) {
@@ -1531,10 +1531,15 @@ mod imp {
             #[weak] widget,
             #[strong] im,
             move |ctrl, keyval, keycode, state| {
-                if let Some(e) = ctrl.current_event() {
-                    im.filter_keypress(&e);
+                // Mirror the press path: if the IM consumes the release, it
+                // belongs to composition — don't also send a raw key-up.
+                let consumed = ctrl
+                    .current_event()
+                    .map(|e| im.filter_keypress(&e))
+                    .unwrap_or(false);
+                if !consumed {
+                    send_key_raw(&widget, keyval, keycode, state, false);
                 }
-                send_key_raw(&widget, keyval, keycode, state, false);
             }
         ));
         widget.add_controller(keys);
@@ -1813,8 +1818,8 @@ mod imp {
     }
 
     /// Send only the raw key-down/up (RAWKEYDOWN / KEYUP) — no CHAR. Character
-    /// insertion is driven separately by the IM `commit` (`send_char`) or the
-    /// keyval fallback (`send_char_from_keyval`), so dead keys compose. (#154)
+    /// insertion is driven separately by the IM `commit` (`send_char`), so dead
+    /// keys compose and there's no double-insert on the first key. (#154)
     fn send_key_raw(
         widget: &super::KarereWebView,
         keyval: gtk::gdk::Key,
@@ -1860,17 +1865,6 @@ mod imp {
         });
     }
 
-    /// CHAR fallback for keys the IM did not consume (no IM running, or a combo
-    /// like Ctrl+C): derive the character straight from the keyval. (#154)
-    fn send_char_from_keyval(
-        widget: &super::KarereWebView,
-        keyval: gtk::gdk::Key,
-        state: gtk::gdk::ModifierType,
-    ) {
-        if let Some(ch) = keyval.to_unicode() {
-            send_char(widget, ch as u16, modifiers_from_state(state));
-        }
-    }
 
     fn set_focus(widget: &super::KarereWebView, focused: bool) {
         with_host(widget, |host| host.set_focus(focused as i32));
