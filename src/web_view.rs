@@ -603,10 +603,11 @@ mod imp {
             }
             self.bootstrap_pool();
 
-            // Follow fractional scale changes (e.g. dragging between monitors of
-            // different scale) so device_scale_factor / paint buffer track. A
-            // pure scale change need not re-run size_allocate, so watch the
-            // surface's `scale` property directly. (#155)
+            // Follow scale changes (e.g. dragging between monitors of different
+            // scale) so device_scale_factor / paint buffer track. The surface
+            // `scale` notify fires across the integer boundaries the OSR buffer
+            // cares about; a pure fractional change leaves the integer paint
+            // scale unchanged, so refresh_screen_scale is then a cheap no-op. (#155, #158)
             if let Some(surface) = widget.native().and_then(|n| n.surface()) {
                 surface.connect_scale_notify(glib::clone!(
                     #[weak] widget,
@@ -628,9 +629,10 @@ mod imp {
             // CEF's view rect and mouse events are in DIP (logical) units; its
             // GetScreenInfo.device_scale_factor maps them to the physical paint
             // buffer (on_paint dimensions). Pass the *logical* size plus the
-            // *fractional* surface scale so content lays out at the correct size
-            // on fractional displays — e.g. 150 % GNOME scaling (#155).
-            let scale = surface_scale(&self.obj());
+            // GLArea's *integer* framebuffer scale so the paint buffer maps 1:1
+            // onto the framebuffer — anything less is upscaled and blurs the web
+            // view on fractional displays, e.g. 150 % GNOME scaling (#155, #158).
+            let scale = paint_scale(&self.obj());
 
             if let Some(shared) = self.shared.lock().as_ref() {
                 let mut s = shared.lock();
@@ -720,11 +722,11 @@ mod imp {
             *self.browser.lock() = None;
         }
 
-        /// Push the current fractional surface scale into the shared state and
-        /// tell CEF its screen info changed, so the device_scale_factor and
-        /// paint buffer follow a live scale change. (#155)
+        /// Push the current integer paint scale into the shared state and tell CEF
+        /// its screen info changed, so the device_scale_factor and paint buffer
+        /// follow a live scale change. (#155, #158)
         fn refresh_screen_scale(&self) {
-            let scale = surface_scale(&self.obj()) as f32;
+            let scale = paint_scale(&self.obj()) as f32;
             if let Some(shared) = self.shared.lock().as_ref() {
                 shared.lock().scale_factor = scale;
             }
@@ -1732,17 +1734,20 @@ mod imp {
         }
     }
 
-    /// Fractional display scale (DIP→physical) read from the widget's surface,
-    /// e.g. 1.5 for 150 % GNOME fractional scaling. Falls back to the integer
-    /// scale factor before the surface exists. CEF's screen-info scale and the
-    /// paint buffer are sized from this; mouse/view coords stay in DIP. (#155)
-    fn surface_scale(widget: &super::KarereWebView) -> f64 {
-        widget
-            .native()
-            .and_then(|n| n.surface())
-            .map(|s| s.scale())
-            .filter(|s| *s > 0.0)
-            .unwrap_or_else(|| widget.scale_factor() as f64)
+    /// Scale (DIP→physical) the OSR paint buffer must use so it maps 1:1 onto the
+    /// `GtkGLArea` framebuffer. `GtkGLArea` always allocates that framebuffer at the
+    /// *integer* `gtk_widget_get_scale_factor()` (`width * scale`, `height * scale`)
+    /// — it cannot render at a fractional scale — so CEF MUST paint at the same
+    /// integer scale. Painting at the fractional surface scale (e.g. 1.5) leaves the
+    /// texture smaller than the framebuffer, and the fullscreen-quad blit upscales it
+    /// (GL_LINEAR), which is what blurred the web view under fractional scaling (#158).
+    ///
+    /// At 150 % this paints at 2× into the 2× framebuffer (crisp), and the compositor
+    /// downscales the result to the 1.5× surface — a single high-quality downscale,
+    /// the same path every GTK GLArea takes on a fractional display. View rect and
+    /// mouse/wheel coords stay in DIP (CEF maps them via device_scale_factor). (#155, #158)
+    fn paint_scale(widget: &super::KarereWebView) -> f64 {
+        widget.scale_factor().max(1) as f64
     }
 
     fn send_move(widget: &super::KarereWebView, x: f64, y: f64, modifiers: u32, leave: bool) {
