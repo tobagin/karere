@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Fixed
+- **Blurry web view under fractional scaling**: The 4.0.1 fix sized CEF's paint buffer from the *fractional* surface scale (e.g. 1.5 at 150%), but `GtkGLArea` always allocates its framebuffer at the *integer* `scale_factor` (2×). The smaller paint buffer was then upscaled by the fullscreen-quad blit, blurring text. CEF now paints at the integer GLArea scale so the buffer maps 1:1 onto the framebuffer; the compositor performs the single final downscale to the fractional surface, keeping text crisp at 150%/175%. View rect and pointer coordinates remain in logical (DIP) units. (#158)
+
 ## [4.0.1] - 2026-06-15
 
 ### Fixed

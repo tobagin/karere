@@ -59,7 +59,10 @@ pub struct SharedState {
     /// Logical (DIP) viewport size — CEF's GetViewRect. The physical paint
     /// buffer is this × `scale_factor` (device_scale_factor). (#155)
     pub size: (i32, i32),
-    /// Fractional display scale (DIP→physical), e.g. 1.5 at 150 %. (#155)
+    /// Integer paint scale (DIP→physical) matching the `GtkGLArea` framebuffer,
+    /// e.g. 2 at 150 % fractional scaling. Fed to CEF as device_scale_factor so the
+    /// paint buffer maps 1:1 onto the framebuffer (a fractional value would be
+    /// upscaled by the blit and blur the web view). (#155, #158)
     pub scale_factor: f32,
     pub title: String,
     pub is_loading: bool,
