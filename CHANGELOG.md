@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.2] - 2026-06-16
 
 ### Fixed
-- **Blurry web view under fractional scaling**: The 4.0.1 fix sized CEF's paint buffer from the *fractional* surface scale (e.g. 1.5 at 150%), but `GtkGLArea` always allocates its framebuffer at the *integer* `scale_factor` (2×). The smaller paint buffer was then upscaled by the fullscreen-quad blit, blurring text. CEF now paints at the integer GLArea scale so the buffer maps 1:1 onto the framebuffer; the compositor performs the single final downscale to the fractional surface, keeping text crisp at 150%/175%. View rect and pointer coordinates remain in logical (DIP) units. (#158)
+- **Blurry web view under fractional scaling**: Text in the WhatsApp view was blurry at fractional/HiDPI display scales (e.g. 150%/200% on GNOME Wayland). This CEF build ignores `device_scale_factor` for off-screen rendering, so the page is now painted at the `GtkGLArea`'s exact physical framebuffer size (1:1, no upscale) for crispness, and a compensating page zoom keeps content at its logical size. Mouse/wheel/menu coordinates follow in physical pixels, and the scale is re-applied on live monitor changes. (#158)
+- **Stray space after the first letter**: Typing the first character into an empty message could insert a spurious space — a 4.0.1 input-method regression. Key handling now matches `GtkText`: composed text comes solely from the input method's `commit`, with no duplicate keyval fallback racing the first keystroke. (#154)
 
 ## [4.0.1] - 2026-06-15
 

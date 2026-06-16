@@ -104,7 +104,8 @@
     <release version="4.0.2" date="2026-06-16">
       <description>
         <ul>
-          <li>Fixed: the web view is now crisp under fractional display scaling (e.g. 150%/175% on GNOME Wayland). The off-screen page is rendered to match the GLArea's pixel buffer exactly instead of being upscaled, so text is no longer blurry (#158)</li>
+          <li>Fixed: the web view is now crisp under fractional/HiDPI display scaling (e.g. 150%/200% on GNOME Wayland) — the page is rendered to match the window's pixel buffer exactly instead of being upscaled, while staying at the correct size (#158)</li>
+          <li>Fixed: typing the first letter of a message no longer inserts a stray space after it (a 4.0.1 input regression) (#154)</li>
         </ul>
       </description>
     </release>
