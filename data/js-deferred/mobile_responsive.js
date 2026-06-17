@@ -274,7 +274,12 @@ document.addEventListener('keydown', (e) => {
           timeout = setTimeout(() => {
             const editableElement = lastFocusEl;
             let text = editableElement.innerText || editableElement.textContent;
-            if ( ! text.includes(' ') &&  text.trim().length > 0 && sent ==0 )
+            // KARERE PATCH (#159): upstream inserts a trailing space after the
+            // first character to coax Ubuntu Touch's on-screen keyboard. Karere's
+            // "mobile" layout is a narrow desktop window with a real keyboard, so
+            // this just inserts a stray space after the first letter typed —
+            // disabled here. (`sent` stays 0, so the cleanup branch below is inert.)
+            if ( false && ! text.includes(' ') &&  text.trim().length > 0 && sent ==0 )
             {
               console.log("Add space at the end");
               document.execCommand("insertText", false, " ");
