@@ -45,6 +45,14 @@ impl KarereWindow {
         }
     }
 
+    /// Re-emulate the web content color scheme on this window's web view after a
+    /// theme change. (#160)
+    pub fn reapply_web_color_scheme(&self) {
+        if let Some(web) = self.imp().web_view.borrow().as_ref() {
+            web.reapply_color_scheme();
+        }
+    }
+
     /// Pre-warm all account browsers so WhatsApp loads and notifications work
     /// before the window is ever shown.
     pub fn prewarm(&self) {
@@ -279,6 +287,13 @@ mod imp {
                     crate::tray::set_window_visible(win.is_visible());
                     if let Some(web) = this.web_view.borrow().as_ref() {
                         web.set_window_visible(win.is_visible());
+                    }
+                    // Re-assert the theme when the window is first shown: a
+                    // start-in-background window is built (light, after CEF reset
+                    // the color scheme) and presented later, so apply the dark
+                    // selection at present time. (#160)
+                    if win.is_visible() {
+                        crate::application::apply_theme(&gio::Settings::new(crate::application::APP_ID));
                     }
                 }
             ));

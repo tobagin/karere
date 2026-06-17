@@ -40,6 +40,12 @@ impl KarereApplication {
         let window = KarereWindow::new(app, url);
 
         let settings = gio::Settings::new(APP_ID);
+        // Re-assert the color scheme here: CEF initialization (between `startup`
+        // and this point) can reset the GTK/Adwaita color scheme, so a dark
+        // selection chosen at `startup` is lost — the window then opens light
+        // until the user toggles the theme. Re-applying after CEF init makes it
+        // stick, including the start-in-background case below. (#160)
+        apply_theme(&settings);
         if settings.boolean("start-in-background") && crate::tray::is_active() {
             log::info!(
                 "start-in-background=true and tray configured — window built but not presented"
@@ -76,9 +82,21 @@ fn map_theme(value: &str) -> adw::ColorScheme {
     }
 }
 
-fn apply_theme(settings: &gio::Settings) {
+pub(crate) fn apply_theme(settings: &gio::Settings) {
     let value = settings.string("theme");
-    adw::StyleManager::default().set_color_scheme(map_theme(value.as_str()));
+    let mgr = adw::StyleManager::default();
+    mgr.set_color_scheme(map_theme(value.as_str()));
+    // Mirror the effective scheme to the web content: WhatsApp Web (on its
+    // default "System" theme) follows prefers-color-scheme, which CEF never
+    // derives from the libadwaita theme — so emulate it over CDP. (#160)
+    crate::cdp::set_dark_preference(mgr.is_dark());
+    if let Some(app) = gio::Application::default().and_downcast::<gtk::Application>() {
+        for win in app.windows() {
+            if let Some(kw) = win.downcast_ref::<KarereWindow>() {
+                kw.reapply_web_color_scheme();
+            }
+        }
+    }
 }
 
 fn register_accels(app: &KarereApplication) {
@@ -173,6 +191,18 @@ mod imp {
                 Some("theme"),
                 |s, _| apply_theme(s),
             );
+            // On the "system" theme, the effective dark state flips when the
+            // desktop scheme changes; re-mirror it to the web content. (#160)
+            adw::StyleManager::default().connect_dark_notify(|mgr| {
+                crate::cdp::set_dark_preference(mgr.is_dark());
+                if let Some(app) = gio::Application::default().and_downcast::<gtk::Application>() {
+                    for win in app.windows() {
+                        if let Some(kw) = win.downcast_ref::<KarereWindow>() {
+                            kw.reapply_web_color_scheme();
+                        }
+                    }
+                }
+            });
             // Live tray enable/disable/auto.
             settings.connect_changed(Some("systray-icon"), |_, _| {
                 crate::tray::apply_setting();

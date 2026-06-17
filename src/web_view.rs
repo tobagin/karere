@@ -83,6 +83,29 @@ impl KarereWebView {
         imp::send_inspect_shortcut(self);
     }
 
+    /// Re-emulate `prefers-color-scheme` on every live browser to match the
+    /// current Karere theme (call after the theme changes). (#160)
+    pub fn reapply_color_scheme(&self) {
+        let imp = self.imp();
+        let mut hosts = Vec::new();
+        {
+            use cef::ImplBrowser;
+            for b in imp.browsers.lock().values() {
+                if let Some(h) = b.host() {
+                    hosts.push(h);
+                }
+            }
+            if let Some(b) = imp.browser.lock().as_ref()
+                && let Some(h) = b.host()
+            {
+                hosts.push(h);
+            }
+        }
+        for h in &hosts {
+            crate::cdp::apply_color_scheme(h);
+        }
+    }
+
     pub fn shared(&self) -> crate::handlers::SharedRef {
         self.imp()
             .shared

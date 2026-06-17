@@ -13,6 +13,7 @@
 use std::cell::RefCell;
 use std::collections::HashSet;
 use std::rc::Rc;
+use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
 use cef::{
     Browser, BrowserHost, DevToolsMessageObserver, ImplBrowser, ImplBrowserHost,
@@ -25,6 +26,41 @@ use cef::rc::Rc as _;
 
 // Transport is console.log (not Runtime.addBinding): bindingCalled only reaches the registering session, but consoleAPICalled reaches any session with Runtime.enable.
 const NOTIF_PREFIX: &str = "__KARERE_NOTIF__:";
+
+/// Desired web-content color scheme, mirrored from the Karere theme (#160).
+/// WhatsApp Web (on its default "System" theme) follows `prefers-color-scheme`;
+/// CEF never reads the app's libadwaita scheme, so we emulate the media feature
+/// over CDP. Set by [`set_dark_preference`] (theme apply); read by [`arm`] and
+/// [`apply_color_scheme`].
+static PREFERS_DARK: AtomicBool = AtomicBool::new(false);
+
+/// Update the desired web-content color scheme. Live browsers are re-emulated by
+/// the caller (the GTK layer iterates its web views); newly-loaded pages pick it
+/// up via [`arm`]. (#160)
+pub fn set_dark_preference(dark: bool) {
+    PREFERS_DARK.store(dark, Ordering::Relaxed);
+}
+
+/// Emulate `prefers-color-scheme` on `host`'s page realm to match the current
+/// [`PREFERS_DARK`]. Sent on attach/load and on live theme changes. (#160)
+pub fn apply_color_scheme(host: &BrowserHost) {
+    // Out-of-band id range so it can't collide with a session's bumped ids.
+    static CTR: AtomicU32 = AtomicU32::new(2_000_000);
+    let id = CTR.fetch_add(1, Ordering::Relaxed);
+    let scheme = if PREFERS_DARK.load(Ordering::Relaxed) {
+        "dark"
+    } else {
+        "light"
+    };
+    send(
+        host,
+        &json_msg(
+            id,
+            "Emulation.setEmulatedMedia",
+            &format!("{{\"features\":[{{\"name\":\"prefers-color-scheme\",\"value\":\"{scheme}\"}}]}}"),
+        ),
+    );
+}
 
 const SW_PATCH: &str = r#"
 (function () {
@@ -283,6 +319,8 @@ fn arm(host: &BrowserHost, state: &Rc<RefCell<State>>) {
     send(host, &json_msg(id, "Runtime.enable", "{}"));
     let id = state.borrow_mut().bump();
     send(host, &json_msg(id, "Runtime.evaluate", &eval_params(PAGE_PATCH)));
+    // Match the web content's color scheme to the Karere theme (#160).
+    apply_color_scheme(host);
     // Read the current WhatsApp locale; `handle` reconciles it against the
     // override and reloads once if needed. Skip when no reload is pending.
     // Page.enable so we get loadEventFired — the reliable point to read the
