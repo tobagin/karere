@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.0.3] - 2026-06-17
+
+### Fixed
+- **Theme not applied at startup**: When Karere launched into the background at login, the window opened in the light theme even with dark selected (until the theme was toggled). CEF initialization could reset the GTK/Adwaita color scheme; the theme is now re-asserted after CEF init and when the window is first shown. Additionally, WhatsApp Web content now follows the selected theme via emulated `prefers-color-scheme` (when WhatsApp's own theme is "System default"). (#160)
+- **Stray space in mobile layout**: Typing in the narrow/mobile layout inserted a spurious space after the first letter. The upstream mobile-responsive script inserts a trailing space to work around Ubuntu Touch's on-screen keyboard; that hack is disabled on Karere's desktop mobile layout. (#159)
+
 ## [4.0.2] - 2026-06-16
 
 ### Fixed

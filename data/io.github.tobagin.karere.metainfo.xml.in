@@ -101,6 +101,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.0.3" date="2026-06-17">
+      <description>
+        <ul>
+          <li>Fixed: the selected theme is now applied from startup, including when the app launches into the background at login — the window no longer opens light when dark is selected. WhatsApp Web content also follows the theme now (when WhatsApp's own theme is set to System default) (#160)</li>
+          <li>Fixed: typing in the narrow/mobile layout no longer inserts a stray space after the first letter (#159)</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.0.2" date="2026-06-16">
       <description>
         <ul>
