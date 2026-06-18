@@ -106,6 +106,15 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
         }
       }
     }
+
+    Adw.PreferencesGroup {
+      title: _("Experimental");
+
+      Adw.SwitchRow row_gpu_render {
+        title: _("GPU Rendering");
+        subtitle: _("Render the chat view on the GPU. Requires a restart. If the chat area is blank, turn this off and restart.");
+      }
+    }
   }
 
   Adw.PreferencesPage {

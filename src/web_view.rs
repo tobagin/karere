@@ -1872,13 +1872,19 @@ mod imp {
         use std::sync::OnceLock;
         static EN: OnceLock<bool> = OnceLock::new();
         *EN.get_or_init(|| {
-            // Capability (EGL dma-buf import) can only be checked with the GLArea
-            // GL context current, which doesn't hold until GTK calls render() —
-            // after the browser is created. So gate on the env opt-in here; the
-            // actual import happens in draw() and logs on failure. (gpu-osr)
-            let enabled = std::env::var("KARERE_GPU_OSR")
-                .map(|v| v == "1" || v == "true")
-                .unwrap_or(false);
+            // Read once — the shared-texture flag is fixed for the browser's
+            // lifetime, so this is restart-required. Env wins as a dev override /
+            // kill-switch; otherwise the experimental `gpu-rendering` GSetting.
+            // Capability can't be probed here (the GLArea GL context isn't current
+            // until render); the import in draw() logs if it fails. (gpu-osr)
+            let enabled = match std::env::var("KARERE_GPU_OSR").ok().as_deref() {
+                Some("1") | Some("true") => true,
+                Some("0") | Some("false") => false,
+                _ => {
+                    use gtk::prelude::SettingsExt;
+                    gtk::gio::Settings::new(crate::application::APP_ID).boolean("gpu-rendering")
+                }
+            };
             log::info!("accel_osr: enabled={enabled}");
             enabled
         })

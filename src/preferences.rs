@@ -85,15 +85,10 @@ fn active_window() -> Option<gtk::Window> {
     app.active_window()
 }
 
-/// Ask whether to restart now to apply the UI-language change (it only takes
-/// effect at startup). Shown instead of a toast so the choice is explicit.
-fn prompt_restart(parent: gtk::Widget) {
-    let dialog = adw::AlertDialog::new(
-        Some(&gettext("Restart Karere?")),
-        Some(&gettext(
-            "The language change takes effect after Karere restarts.",
-        )),
-    );
+/// Ask whether to restart now to apply a startup-only setting (UI language,
+/// GPU rendering, …). Shown instead of a toast so the choice is explicit.
+fn prompt_restart(parent: gtk::Widget, body: &str) {
+    let dialog = adw::AlertDialog::new(Some(&gettext("Restart Karere?")), Some(body));
     dialog.add_response("later", &gettext("Later"));
     dialog.add_response("restart", &gettext("Restart Now"));
     dialog.set_response_appearance("restart", adw::ResponseAppearance::Suggested);
@@ -150,6 +145,8 @@ mod imp {
         pub row_dev_enable: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub btn_dev_open: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub row_gpu_render: TemplateChild<adw::SwitchRow>,
 
         #[template_child]
         pub row_master_toggle: TemplateChild<adw::SwitchRow>,
@@ -280,6 +277,19 @@ mod imp {
             );
             bind_switch(settings, "enable-developer-tools", &self.row_dev_enable);
 
+            // Experimental GPU rendering — restart-required (the shared-texture
+            // flag is read once at browser creation). (gpu-osr)
+            bind_switch(settings, "gpu-rendering", &self.row_gpu_render);
+            let dialog_weak = self.obj().downgrade();
+            settings.connect_changed(Some("gpu-rendering"), move |_, _| {
+                if let Some(dialog) = dialog_weak.upgrade() {
+                    prompt_restart(
+                        dialog.upcast(),
+                        &gettext("GPU rendering takes effect after Karere restarts."),
+                    );
+                }
+            });
+
             bind_switch(settings, "run-on-startup", &self.row_startup);
             let app_weak = app.downgrade();
             settings.connect_changed(
@@ -332,7 +342,10 @@ mod imp {
                 }
                 let _ = settings.set_string("app-language", code);
                 if let Some(dialog) = dialog.upgrade() {
-                    prompt_restart(dialog.upcast());
+                    prompt_restart(
+                        dialog.upcast(),
+                        &gettext("The language change takes effect after Karere restarts."),
+                    );
                 }
             });
         }
