@@ -529,6 +529,10 @@ mod imp {
         texture: AtomicU32,
         tex_w: AtomicI32,
         tex_h: AtomicI32,
+        /// GPU-OSR: dedicated texture the imported DMA-BUF EGLImage binds to, and
+        /// the live EGLImage kept alive while that texture is sampled. (gpu-osr)
+        accel_tex: AtomicU32,
+        imported: RefCell<Option<crate::gl_dmabuf::ImportedImage>>,
         /// Last pointer position (logical px) so wheel events hit the element
         /// under the cursor, not the top-left corner.
         last_mouse_x: AtomicI32,
@@ -592,7 +596,7 @@ mod imp {
                 };
                 let cursor_name = {
                     let mut s = shared.lock();
-                    if s.frame.dirty {
+                    if s.frame.dirty || s.accel.as_ref().is_some_and(|a| a.dirty) {
                         w.queue_render();
                     }
                     if s.cursor_dirty {
@@ -1115,6 +1119,9 @@ mod imp {
 
             let window_info = WindowInfo {
                 windowless_rendering_enabled: 1,
+                // GPU-accelerated OSR: hand us a DMA-BUF via on_accelerated_paint
+                // instead of a CPU buffer, when supported + opted in. (gpu-osr)
+                shared_texture_enabled: accel_osr_enabled() as i32,
                 ..Default::default()
             };
             let settings = BrowserSettings {
@@ -1366,14 +1373,34 @@ mod imp {
             self.texture.store(tex, Ordering::Relaxed);
             self.tex_w.store(0, Ordering::Relaxed);
             self.tex_h.store(0, Ordering::Relaxed);
+
+            // GPU-OSR: a second texture the imported DMA-BUF EGLImage targets.
+            let mut atex = 0;
+            unsafe {
+                gl::GenTextures(1, &mut atex);
+                gl::BindTexture(gl::TEXTURE_2D, atex);
+                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint);
+                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
+                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint);
+                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint);
+                gl::BindTexture(gl::TEXTURE_2D, 0);
+            }
+            self.accel_tex.store(atex, Ordering::Relaxed);
         }
 
         unsafe fn teardown_gl(&self) {
+            // Release the live EGLImage while the GL context is still current.
+            *self.imported.borrow_mut() = None;
             unsafe {
                 let tex = self.texture.load(Ordering::Relaxed);
                 if tex != 0 {
                     gl::DeleteTextures(1, &tex);
                     self.texture.store(0, Ordering::Relaxed);
+                }
+                let atex = self.accel_tex.load(Ordering::Relaxed);
+                if atex != 0 {
+                    gl::DeleteTextures(1, &atex);
+                    self.accel_tex.store(0, Ordering::Relaxed);
                 }
                 let vbo = self.vbo.load(Ordering::Relaxed);
                 if vbo != 0 {
@@ -1404,46 +1431,71 @@ mod imp {
                 gl::ClearColor(0.0, 0.0, 0.0, 1.0);
                 gl::Clear(gl::COLOR_BUFFER_BIT);
 
-                if s.frame.width == 0 || s.frame.height == 0 || s.frame.pixels.is_empty() {
-                    return;
-                }
-
-                let tex = self.texture.load(Ordering::Relaxed);
-                gl::BindTexture(gl::TEXTURE_2D, tex);
-                let tw = self.tex_w.load(Ordering::Relaxed);
-                let th = self.tex_h.load(Ordering::Relaxed);
-                if (tw, th) != (s.frame.width, s.frame.height) {
-                    gl::TexImage2D(
-                        gl::TEXTURE_2D,
-                        0,
-                        gl::RGBA8 as GLint,
-                        s.frame.width,
-                        s.frame.height,
-                        0,
-                        gl::RGBA,
-                        gl::UNSIGNED_BYTE,
-                        s.frame.pixels.as_ptr() as *const c_void,
-                    );
-                    self.tex_w.store(s.frame.width, Ordering::Relaxed);
-                    self.tex_h.store(s.frame.height, Ordering::Relaxed);
-                    s.frame.dirty = false;
-                } else if s.frame.dirty {
-                    gl::TexSubImage2D(
-                        gl::TEXTURE_2D,
-                        0,
-                        0,
-                        0,
-                        s.frame.width,
-                        s.frame.height,
-                        gl::RGBA,
-                        gl::UNSIGNED_BYTE,
-                        s.frame.pixels.as_ptr() as *const c_void,
-                    );
-                    s.frame.dirty = false;
-                }
+                // GPU path: import the pending DMA-BUF to the accel texture. (gpu-osr)
+                let (tex, bgra) = if let Some(af) = s.accel.as_mut() {
+                    let atex = self.accel_tex.load(Ordering::Relaxed);
+                    if af.dirty {
+                        if let Some(img) = crate::gl_dmabuf::import_to_texture(
+                            atex, af.width, af.height, af.fourcc, af.modifier, &af.planes,
+                        ) {
+                            // Keep the EGLImage alive while the texture is sampled;
+                            // dropping the previous one releases it.
+                            *self.imported.borrow_mut() = Some(img);
+                        }
+                        af.dirty = false;
+                    }
+                    if self.imported.borrow().is_none() {
+                        return; // nothing imported yet
+                    }
+                    (atex, 0_i32)
+                } else {
+                    // Software path: upload the CPU BGRA buffer.
+                    if s.frame.width == 0 || s.frame.height == 0 || s.frame.pixels.is_empty() {
+                        return;
+                    }
+                    let tex = self.texture.load(Ordering::Relaxed);
+                    gl::BindTexture(gl::TEXTURE_2D, tex);
+                    let tw = self.tex_w.load(Ordering::Relaxed);
+                    let th = self.tex_h.load(Ordering::Relaxed);
+                    if (tw, th) != (s.frame.width, s.frame.height) {
+                        gl::TexImage2D(
+                            gl::TEXTURE_2D,
+                            0,
+                            gl::RGBA8 as GLint,
+                            s.frame.width,
+                            s.frame.height,
+                            0,
+                            gl::RGBA,
+                            gl::UNSIGNED_BYTE,
+                            s.frame.pixels.as_ptr() as *const c_void,
+                        );
+                        self.tex_w.store(s.frame.width, Ordering::Relaxed);
+                        self.tex_h.store(s.frame.height, Ordering::Relaxed);
+                        s.frame.dirty = false;
+                    } else if s.frame.dirty {
+                        gl::TexSubImage2D(
+                            gl::TEXTURE_2D,
+                            0,
+                            0,
+                            0,
+                            s.frame.width,
+                            s.frame.height,
+                            gl::RGBA,
+                            gl::UNSIGNED_BYTE,
+                            s.frame.pixels.as_ptr() as *const c_void,
+                        );
+                        s.frame.dirty = false;
+                    }
+                    (tex, 1_i32)
+                };
                 drop(s);
 
-                gl::UseProgram(self.program.load(Ordering::Relaxed));
+                let prog = self.program.load(Ordering::Relaxed);
+                gl::UseProgram(prog);
+                let loc = gl::GetUniformLocation(prog, c"u_bgra".as_ptr() as *const _);
+                if loc >= 0 {
+                    gl::Uniform1i(loc, bgra);
+                }
                 gl::BindVertexArray(self.vao.load(Ordering::Relaxed));
                 gl::ActiveTexture(gl::TEXTURE0);
                 gl::BindTexture(gl::TEXTURE_2D, tex);
@@ -1812,6 +1864,26 @@ mod imp {
     /// downscales the result to the 1.5× surface — a single high-quality downscale,
     /// the same path every GTK GLArea takes on a fractional display. View rect and
     /// mouse/wheel coords stay in DIP (CEF maps them via device_scale_factor). (#155, #158)
+    /// GPU-accelerated OSR opt-in: env `KARERE_GPU_OSR=1` AND EGL dma-buf import
+    /// is available on the current GL context. Cached on first call, which must
+    /// happen with the GLArea GL context current (browser creation, post-init_gl).
+    /// (gpu-osr)
+    pub(super) fn accel_osr_enabled() -> bool {
+        use std::sync::OnceLock;
+        static EN: OnceLock<bool> = OnceLock::new();
+        *EN.get_or_init(|| {
+            // Capability (EGL dma-buf import) can only be checked with the GLArea
+            // GL context current, which doesn't hold until GTK calls render() —
+            // after the browser is created. So gate on the env opt-in here; the
+            // actual import happens in draw() and logs on failure. (gpu-osr)
+            let enabled = std::env::var("KARERE_GPU_OSR")
+                .map(|v| v == "1" || v == "true")
+                .unwrap_or(false);
+            log::info!("accel_osr: enabled={enabled}");
+            enabled
+        })
+    }
+
     fn paint_scale(widget: &super::KarereWebView) -> f64 {
         widget.scale_factor().max(1) as f64
     }
@@ -2257,8 +2329,12 @@ precision highp float;
 in vec2 v_uv;
 out vec4 frag;
 uniform sampler2D u_tex;
+// 1 = software path (CEF BGRA bytes uploaded as RGBA → swizzle back).
+// 0 = GPU dma-buf path (EGL imports the real format → sample as RGBA). (gpu-osr)
+uniform int u_bgra;
 void main() {
-    frag = texture(u_tex, v_uv).bgra;
+    vec4 c = texture(u_tex, v_uv);
+    frag = (u_bgra == 1) ? c.bgra : c.rgba;
 }
 "#;
 

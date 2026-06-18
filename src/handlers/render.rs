@@ -115,6 +115,66 @@ wrap_render_handler! {
             log::debug!("on_paint {}x{}", width, height);
         }
 
+        // GPU path: when shared-texture OSR is enabled, CEF delivers a DMA-BUF
+        // handle here instead of a CPU buffer via on_paint. Dup the plane fds and
+        // stash the frame for `draw` to import via EGL. (gpu-osr)
+        fn on_accelerated_paint(
+            &self,
+            browser: Option<&mut Browser>,
+            _type_: PaintElementType,
+            _dirty_rects: Option<&[Rect]>,
+            info: Option<&cef::AcceleratedPaintInfo>,
+        ) {
+            let Some(info) = info else { return };
+            // Same foreground gating as on_paint.
+            {
+                let fg = self.handler.shared.lock().foreground_browser_id;
+                if fg != 0 {
+                    let painting = browser.as_ref().map(|b| b.identifier()).unwrap_or(0);
+                    if painting != fg {
+                        return;
+                    }
+                }
+            }
+            let (w, h) = (info.extra.coded_size.width, info.extra.coded_size.height);
+            if w <= 0 || h <= 0 {
+                return;
+            }
+            let Some(fourcc) = crate::gl_dmabuf::cef_format_to_fourcc(info.format) else {
+                log::warn!("on_accelerated_paint: unsupported color format");
+                return;
+            };
+            // Dup each plane fd (CEF's are valid only for this call) into an OwnedFd.
+            let mut planes = Vec::with_capacity(info.plane_count as usize);
+            for p in info.planes.iter().take(info.plane_count.max(0) as usize) {
+                let owned = unsafe { std::os::fd::BorrowedFd::borrow_raw(p.fd) }.try_clone_to_owned();
+                match owned {
+                    Ok(fd) => planes.push(crate::gl_dmabuf::Plane {
+                        fd,
+                        offset: p.offset,
+                        stride: p.stride,
+                    }),
+                    Err(e) => {
+                        log::warn!("on_accelerated_paint: dup plane fd failed: {e}");
+                        return;
+                    }
+                }
+            }
+            if planes.is_empty() {
+                return;
+            }
+            let mut s = self.handler.shared.lock();
+            s.accel = Some(crate::gl_dmabuf::AccelFrame {
+                width: w,
+                height: h,
+                fourcc,
+                modifier: info.modifier,
+                planes,
+                dirty: true,
+            });
+            log::debug!("on_accelerated_paint {w}x{h} fourcc={fourcc:#x} mod={:#x}", info.modifier);
+        }
+
         // Fires when an editable field gains focus (input_mode != NONE) — a
         // reliable signal the spellcheck service is live. Apply dictionaries
         // once per load here, vs. guessing readiness with timers.

@@ -10,6 +10,7 @@ mod application;
 mod cdp;
 mod cef_runtime;
 mod devtools;
+mod gl_dmabuf;
 mod handlers;
 mod i18n;
 mod ipc;
