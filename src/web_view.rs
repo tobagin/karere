@@ -476,7 +476,8 @@ mod imp {
     use cef::{
         self, Browser, BrowserSettings, CefString, EventFlags, ImplBrowser, ImplBrowserHost,
         ImplFrame, ImplRequestContextHandler, ImplRunContextMenuCallback, KeyEvent, KeyEventType,
-        MouseButtonType, MouseEvent, RequestContext, RequestContextHandler, RequestContextSettings,
+        MouseButtonType, MouseEvent, PointerType, RequestContext, RequestContextHandler,
+        RequestContextSettings, TouchEvent, TouchEventType,
         RunContextMenuCallback, WindowInfo, WrapRequestContextHandler,
         browser_host_create_browser_sync, rc::Rc, request_context_create_context, sys,
         wrap_request_context_handler,
@@ -1509,11 +1510,48 @@ mod imp {
     fn install_input_controllers(widget: &super::KarereWebView) {
         use gtk::gdk;
 
+        // Touch --------------------------------------------------------------
+        // Touchscreens (Phosh) need native touch events for scrolling — emulated
+        // pointer events don't drive WhatsApp's touch scroll. A touch-only
+        // GestureDrag gives clean widget-relative single-finger press/move/release
+        // (covers scroll and tap); the mouse controllers below skip the emulated
+        // pointer stream so the page isn't double-fed. Pinch is future work. (#162)
+        let drag = gtk::GestureDrag::new();
+        drag.set_touch_only(true);
+        drag.connect_drag_begin(glib::clone!(
+            #[weak] widget,
+            move |_g, x, y| {
+                widget.grab_focus();
+                set_focus(&widget, true);
+                send_touch(&widget, 0, x, y, TouchEventType::PRESSED);
+            }
+        ));
+        drag.connect_drag_update(glib::clone!(
+            #[weak] widget,
+            move |g, ox, oy| {
+                if let Some((sx, sy)) = g.start_point() {
+                    send_touch(&widget, 0, sx + ox, sy + oy, TouchEventType::MOVED);
+                }
+            }
+        ));
+        drag.connect_drag_end(glib::clone!(
+            #[weak] widget,
+            move |g, ox, oy| {
+                if let Some((sx, sy)) = g.start_point() {
+                    send_touch(&widget, 0, sx + ox, sy + oy, TouchEventType::RELEASED);
+                }
+            }
+        ));
+        widget.add_controller(drag);
+
         // Mouse motion -------------------------------------------------------
         let motion = gtk::EventControllerMotion::new();
         motion.connect_motion(glib::clone!(
             #[weak] widget,
             move |ctrl, x, y| {
+                if is_pointer_emulated(ctrl) {
+                    return; // touch handled above; don't double-feed as mouse
+                }
                 let modifiers = modifiers_from_state(ctrl.current_event_state());
                 send_move(&widget, x, y, modifiers, false);
             }
@@ -1533,6 +1571,9 @@ mod imp {
             click.connect_pressed(glib::clone!(
                 #[weak] widget,
                 move |gesture, n_press, x, y| {
+                    if is_pointer_emulated(gesture) {
+                        return; // touch handled by the drag gesture (#162)
+                    }
                     widget.grab_focus();
                     // Focus CEF on every click: at launch the GLArea may already hold
                     // GTK focus, so `grab_focus` is a no-op and the enter signal never
@@ -1550,6 +1591,9 @@ mod imp {
             click.connect_released(glib::clone!(
                 #[weak] widget,
                 move |gesture, n_press, x, y| {
+                    if is_pointer_emulated(gesture) {
+                        return; // touch handled by the drag gesture (#162)
+                    }
                     let modifiers = modifiers_from_state(gesture.current_event_state());
                     send_click(&widget, x, y, button, false, n_press, modifiers);
                 }
@@ -1740,6 +1784,16 @@ mod imp {
             return true;
         }
         matches!(keyval, Key::F5 | Key::F11)
+    }
+
+    /// True when the controller's current event is a pointer event GTK
+    /// synthesised from a touch sequence. Those are handled by the touch drag
+    /// gesture, so the mouse controllers skip them to avoid double-feeding the
+    /// page. (#162)
+    fn is_pointer_emulated(ctrl: &impl IsA<gtk::EventController>) -> bool {
+        ctrl.current_event()
+            .map(|e| e.is_pointer_emulated())
+            .unwrap_or(false)
     }
 
     fn modifiers_from_state(state: gtk::gdk::ModifierType) -> u32 {
@@ -1960,6 +2014,33 @@ mod imp {
                 (-dy * STEP) as i32 * s,
             );
         });
+    }
+
+    /// Forward a touch point to CEF so the page gets native touchstart/move/end
+    /// — required for touch scrolling on touchscreens (Phosh), which emulated
+    /// pointer events don't drive. Coords are physical (× scale), like the mouse
+    /// path. (#162)
+    fn send_touch(
+        widget: &super::KarereWebView,
+        id: i32,
+        x: f64,
+        y: f64,
+        type_: TouchEventType,
+    ) {
+        let s = widget.scale_factor().max(1) as f32;
+        let event = TouchEvent {
+            id,
+            x: x as f32 * s,
+            y: y as f32 * s,
+            radius_x: 0.0,
+            radius_y: 0.0,
+            rotation_angle: 0.0,
+            pressure: 1.0,
+            type_,
+            modifiers: 0,
+            pointer_type: PointerType::TOUCH,
+        };
+        with_host(widget, |host| host.send_touch_event(Some(&event)));
     }
 
     /// Send only the raw key-down/up (RAWKEYDOWN / KEYUP) — no CHAR. Character
