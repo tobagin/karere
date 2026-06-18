@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.0.4] - 2026-06-18
+
+### Added
+- **Experimental GPU rendering**: An opt-in "GPU Rendering" toggle (Preferences → General → Experimental) switches the WhatsApp view from software off-screen rendering to GPU-accelerated rendering, importing CEF's frame as a DMA-BUF directly into the GL texture via EGL — eliminating the per-frame CPU readback + upload for lower CPU/power use. Default off; restart-required. If the chat area is blank on your hardware, turn it off and restart (the Preferences window always renders). `KARERE_GPU_OSR=1`/`0` overrides as a dev/kill-switch.
+
 ## [4.0.3] - 2026-06-17
 
 ### Fixed
