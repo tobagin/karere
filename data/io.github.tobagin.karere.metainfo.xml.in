@@ -105,6 +105,7 @@
       <description>
         <ul>
           <li>Fixed: the ARM64 (aarch64) build, which had been failing since 4.0.4 due to a type error in the GPU-rendering code — so this is the first release to reach ARM64 (Phosh / mobile) users with the recent fixes, including touch scrolling (#162)</li>
+          <li>Improved: smoother scrolling, especially with a touchpad — fine scroll deltas are no longer dropped, and wheel vs touchpad input is scaled appropriately (#161)</li>
         </ul>
       </description>
     </release>

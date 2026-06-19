@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **ARM64 builds**: A hardcoded `*const i8` for `eglQueryString` in the GPU-rendering code (added in 4.0.4) broke compilation on aarch64, where `c_char` is `u8` — so the arm64 Flatpak failed to build and never published. Use `c_char` so it builds on both architectures. This release also carries the 4.0.5 touch-scrolling fix to arm64 users for the first time.
+- **Smoother scrolling**: Scrolling was jumpy/slow, especially with a touchpad — fine sub-pixel deltas were truncated and dropped. Scroll deltas now accumulate their fractional remainder between events, and the step is chosen from the scroll unit (mouse wheel vs touchpad pixel deltas), so touchpad scrolling is smooth and mouse-wheel speed is more natural. (#161)
 
 ## [4.0.5] - 2026-06-19
 
