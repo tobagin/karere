@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.0.5] - 2026-06-19
+
+### Fixed
+- **Touch scrolling**: On touchscreens (e.g. Phosh / mobile Linux), the chat view didn't respond properly to touch — especially scrolling. v4's off-screen renderer forwarded only mouse and wheel events, so a finger drag never reached WhatsApp as a touch gesture. Touch input is now forwarded to the web view as native touch events, restoring touch scrolling and tapping. (#162)
+
 ## [4.0.4] - 2026-06-18
 
 ### Added
