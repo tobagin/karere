@@ -538,6 +538,10 @@ mod imp {
         /// under the cursor, not the top-left corner.
         last_mouse_x: AtomicI32,
         last_mouse_y: AtomicI32,
+        /// Sub-pixel scroll remainder per axis, carried between scroll events so
+        /// fine touchpad deltas aren't truncated away. Main-thread only. (#161)
+        scroll_accum_x: std::cell::Cell<f64>,
+        scroll_accum_y: std::cell::Cell<f64>,
         /// CEF browser id for context-menu registry (de)registration; `0` until spawn.
         browser_id: AtomicI32,
         /// Pending OSR context-menu callback (non-`Send`, main-thread only). Resolved
@@ -1610,7 +1614,10 @@ mod imp {
             #[upgrade_or] glib::Propagation::Proceed,
             move |ctrl, dx, dy| {
                 let modifiers = modifiers_from_state(ctrl.current_event_state());
-                send_wheel(&widget, dx, dy, modifiers);
+                // Surface unit = pixel deltas (touchpad); Wheel unit = notch
+                // clicks (mouse). Scaled differently in send_wheel. (#161)
+                let precise = ctrl.unit() == gtk::gdk::ScrollUnit::Surface;
+                send_wheel(&widget, dx, dy, modifiers, precise);
                 glib::Propagation::Stop
             }
         ));
@@ -1995,24 +2002,42 @@ mod imp {
         });
     }
 
-    fn send_wheel(widget: &super::KarereWebView, dx: f64, dy: f64, modifiers: u32) {
-        // GTK deltas are wheel ticks (1.0 = one notch); CEF wants pixel deltas.
-        const STEP: f64 = 40.0;
-        // CEF hit-tests the cursor to pick the scroll target; (0,0) scrolls nothing.
-        // last_mouse_* is already physical; scale the deltas to match (#158).
-        let s = widget.scale_factor().max(1);
+    fn send_wheel(
+        widget: &super::KarereWebView,
+        dx: f64,
+        dy: f64,
+        modifiers: u32,
+        precise: bool,
+    ) {
+        // CEF wants pixel deltas. A mouse wheel reports notch clicks (±1) → use a
+        // browser-like notch size; a touchpad (Surface unit) reports pixel-ish
+        // deltas → pass through near 1:1. (#161)
+        let step = if precise { 1.0 } else { 100.0 };
+        let s = widget.scale_factor().max(1) as f64;
         let imp = widget.imp();
+
+        // Accumulate sub-pixel deltas so fine touchpad motion isn't truncated to
+        // zero (the old `as i32` dropped small deltas → jumpy/slow scroll). Keep
+        // the fractional remainder for the next event. (#161)
+        let ax = imp.scroll_accum_x.get() + (-dx * step * s);
+        let ay = imp.scroll_accum_y.get() + (-dy * step * s);
+        let ix = ax.trunc();
+        let iy = ay.trunc();
+        imp.scroll_accum_x.set(ax - ix);
+        imp.scroll_accum_y.set(ay - iy);
+        if ix == 0.0 && iy == 0.0 {
+            return; // no whole pixel yet — keep accumulating
+        }
+
+        // CEF hit-tests the cursor to pick the scroll target; (0,0) scrolls nothing.
+        // last_mouse_* is already physical.
         let event = MouseEvent {
             x: imp.last_mouse_x.load(Ordering::Relaxed),
             y: imp.last_mouse_y.load(Ordering::Relaxed),
             modifiers,
         };
         with_host(widget, |host| {
-            host.send_mouse_wheel_event(
-                Some(&event),
-                (-dx * STEP) as i32 * s,
-                (-dy * STEP) as i32 * s,
-            );
+            host.send_mouse_wheel_event(Some(&event), ix as i32, iy as i32);
         });
     }
 
