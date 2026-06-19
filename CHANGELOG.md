@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.0.6] - 2026-06-19
+
+### Fixed
+- **ARM64 builds**: A hardcoded `*const i8` for `eglQueryString` in the GPU-rendering code (added in 4.0.4) broke compilation on aarch64, where `c_char` is `u8` — so the arm64 Flatpak failed to build and never published. Use `c_char` so it builds on both architectures. This release also carries the 4.0.5 touch-scrolling fix to arm64 users for the first time.
+
 ## [4.0.5] - 2026-06-19
 
 ### Fixed

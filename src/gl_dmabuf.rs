@@ -41,7 +41,7 @@ type EglAttrib = i32;
 /// so the function pointers stay valid. (gpu-osr)
 struct Egl {
     get_current_display: unsafe extern "C" fn() -> EglDisplay,
-    query_string: unsafe extern "C" fn(EglDisplay, c_int) -> *const i8,
+    query_string: unsafe extern "C" fn(EglDisplay, c_int) -> *const c_char,
     create_image: unsafe extern "C" fn(
         EglDisplay,
         *mut c_void, // ctx (EGL_NO_CONTEXT)
@@ -78,7 +78,7 @@ fn load_egl() -> Option<Egl> {
             .get::<unsafe extern "C" fn() -> EglDisplay>(b"eglGetCurrentDisplay\0")
             .ok()?;
         let query_string = *lib
-            .get::<unsafe extern "C" fn(EglDisplay, c_int) -> *const i8>(b"eglQueryString\0")
+            .get::<unsafe extern "C" fn(EglDisplay, c_int) -> *const c_char>(b"eglQueryString\0")
             .ok()?;
         let get_proc = *lib
             .get::<unsafe extern "C" fn(*const c_char) -> *const c_void>(b"eglGetProcAddress\0")
