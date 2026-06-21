@@ -1514,6 +1514,21 @@ mod imp {
     fn install_input_controllers(widget: &super::KarereWebView) {
         use gtk::gdk;
 
+        // Input method (dead keys, IMEs). Created first so the click handler can
+        // anchor the candidate window at the click point (#163). Text input goes
+        // through it: `commit` is the only source of text, forwarded as CHAR
+        // events (#154).
+        let im = gtk::IMMulticontext::new();
+        im.set_client_widget(Some(widget));
+        im.connect_commit(glib::clone!(
+            #[weak] widget,
+            move |_im, text| {
+                for ch in text.chars() {
+                    send_char(&widget, ch as u16, 0);
+                }
+            }
+        ));
+
         // Touch --------------------------------------------------------------
         // Touchscreens (Phosh) need native touch events for scrolling — emulated
         // pointer events don't drive WhatsApp's touch scroll. A touch-only
@@ -1574,6 +1589,7 @@ mod imp {
             let click = gtk::GestureClick::builder().button(button).build();
             click.connect_pressed(glib::clone!(
                 #[weak] widget,
+                #[strong] im,
                 move |gesture, n_press, x, y| {
                     if is_pointer_emulated(gesture) {
                         return; // touch handled by the drag gesture (#162)
@@ -1583,6 +1599,11 @@ mod imp {
                     // GTK focus, so `grab_focus` is a no-op and the enter signal never
                     // fires, leaving CEF unfocused (no caret until refocus).
                     set_focus(&widget, true);
+                    // Anchor the IME candidate window at the click — ~where the
+                    // text field/caret is — instead of the top-left corner. (#163)
+                    // ponytail: click point, not the live caret; CEF's bypassed
+                    // IME can't report the caret. Route CEF IME for true tracking.
+                    im.set_cursor_location(&gtk::gdk::Rectangle::new(x as i32, y as i32, 1, 1));
                     let modifiers = modifiers_from_state(gesture.current_event_state());
                     send_click(&widget, x, y, button, true, n_press, modifiers);
                     // M17: middle-click also pastes primary. Not claimed, so CEF still
@@ -1624,24 +1645,10 @@ mod imp {
         widget.add_controller(scroll);
 
         // Keyboard -----------------------------------------------------------
-        // Text input goes through an input-method context so dead keys
-        // (US-International ``+a → à``) and full IMEs compose; the IM delivers
-        // the final text via `commit`, which we forward to CEF as CHAR events
-        // (#154). This mirrors GtkText: filter the key through the IM first, and
-        // if it consumes the key, do NOT also send a raw key or a keyval char —
-        // the `commit` is the only source of text. Only keys the IM does NOT
-        // consume (Enter, arrows, shortcuts, Ctrl-combos) get a raw key event.
-        let im = gtk::IMMulticontext::new();
-        im.set_client_widget(Some(widget));
-        im.connect_commit(glib::clone!(
-            #[weak] widget,
-            move |_im, text| {
-                for ch in text.chars() {
-                    send_char(&widget, ch as u16, 0);
-                }
-            }
-        ));
-
+        // Filter each key through the IM first; if it consumes the key, the
+        // `commit` is the only source of text — don't also send a raw key/keyval.
+        // Only keys the IM doesn't consume (Enter, arrows, Ctrl-combos) get a raw
+        // key event. (#154)
         let keys = gtk::EventControllerKey::new();
         keys.connect_key_pressed(glib::clone!(
             #[weak] widget,
