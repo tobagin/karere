@@ -101,6 +101,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.0.7" date="2026-06-22">
+      <description>
+        <ul>
+          <li>Fixed: sluggish touchpad scrolling — disabled Chromium's smooth-scroll animation for instant, responsive scrolling (#161)</li>
+          <li>Fixed: input-method candidate popups (e.g. ibus-libpinyin) appeared in the top-left corner; they now show by the chat input where you click (#163)</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.0.6" date="2026-06-19">
       <description>
         <ul>

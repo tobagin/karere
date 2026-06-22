@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.0.7] - 2026-06-22
+
+### Fixed
+- **Sluggish touchpad scrolling**: Chromium's smooth-scroll animation on the off-screen view added a start delay and glide that felt slow versus native touchpad scrolling. Disabled it for instant, responsive scrolling. (#161)
+- **Input-method candidate window**: The IME candidate/suggestion popup (e.g. ibus-libpinyin) appeared in the top-left corner instead of by the text field. It's now anchored at the click point where you focus the chat input. (#163)
+
 ## [4.0.6] - 2026-06-19
 
 ### Fixed
