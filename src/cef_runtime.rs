@@ -125,9 +125,6 @@ wrap_app! {
                 Some(&"auto".into()),
             );
             cmd.append_switch(Some(&"enable-webrtc-vea-vda".into()));
-            // OSR only exposes mouse-wheel events; Chromium's smooth-scroll
-            // animation on those adds a start delay + glide that feels sluggish
-            // vs native touchpad scrolling. Disable it for instant response. (#161)
             cmd.append_switch(Some(&"disable-smooth-scrolling".into()));
             // M17 paste bridge: lets the renderer fetch tempfile payloads over
             // file:// (blocked from non-file origins by default). Reach is scoped
