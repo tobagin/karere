@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.0.8] - 2026-06-22
+
+### Fixed
+- **On-screen keyboard stuck open on mobile**: On Phosh / GNOME Mobile the virtual keyboard stayed up the whole time instead of only when editing. The web view's input context was treated as focused whenever the view held focus; it now follows the actual text field in WhatsApp, so the keyboard appears when you tap a message/search box and hides otherwise.
+
 ## [4.0.7] - 2026-06-22
 
 ### Fixed
