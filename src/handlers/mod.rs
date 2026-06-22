@@ -95,6 +95,11 @@ pub struct SharedState {
     /// start). Focus re-applies only when resolved settings differ, so a live
     /// language switch re-checks on returning focus to the composer.
     pub spellcheck_last: Option<(bool, Vec<String>)>,
+    /// Pending IM focus state from CEF's virtual-keyboard request: `Some(true)`
+    /// when a page editable gains focus, `Some(false)` when it blurs. Drained by
+    /// the widget timer to focus/unfocus the IM context — so Phosh's on-screen
+    /// keyboard tracks the actual text field, not the always-focused GLArea.
+    pub keyboard_request: Option<bool>,
     /// Latest CEF cursor as a GTK/CSS name, plus dirty flag. OSR never touches
     /// the GTK cursor; the widget tick callback applies this.
     pub cursor_name: &'static str,

@@ -175,14 +175,16 @@ wrap_render_handler! {
             log::debug!("on_accelerated_paint {w}x{h} fourcc={fourcc:#x} mod={:#x}", info.modifier);
         }
 
-        // Fires when an editable field gains focus (input_mode != NONE) — a
-        // reliable signal the spellcheck service is live. Apply dictionaries
-        // once per load here, vs. guessing readiness with timers.
+        // Fires when a page editable gains/loses focus. Drives two things: the IM
+        // focus (so Phosh's on-screen keyboard tracks the text field, not the
+        // always-focused GLArea), and — when an editable gains focus — a reliable
+        // signal the spellcheck service is live, to apply dictionaries once per load.
         fn on_virtual_keyboard_requested(
             &self,
             browser: Option<&mut Browser>,
             input_mode: TextInputMode,
         ) {
+            self.handler.shared.lock().keyboard_request = Some(input_mode != TextInputMode::NONE);
             if input_mode == TextInputMode::NONE {
                 return;
             }

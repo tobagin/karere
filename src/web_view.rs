@@ -560,6 +560,10 @@ mod imp {
         /// `on_load_end` re-evaluates the gate.
         pub mobile_active: std::cell::Cell<bool>,
         pub mobile_init: std::cell::Cell<bool>,
+        /// The GLArea's IM context, stored so the widget timer can focus it in/out
+        /// in response to CEF's editable-focus signal (keyboard_request). Set once
+        /// in `install_input_controllers`.
+        pub im_context: RefCell<Option<gtk::IMMulticontext>>,
     }
 
     #[glib::object_subclass]
@@ -599,20 +603,32 @@ mod imp {
                 let Some(shared) = imp.shared.lock().clone() else {
                     return glib::ControlFlow::Continue;
                 };
-                let cursor_name = {
+                let (cursor_name, keyboard_request) = {
                     let mut s = shared.lock();
                     if s.frame.dirty || s.accel.as_ref().is_some_and(|a| a.dirty) {
                         w.queue_render();
                     }
-                    if s.cursor_dirty {
+                    let cursor = if s.cursor_dirty {
                         s.cursor_dirty = false;
                         Some(s.cursor_name)
                     } else {
                         None
-                    }
+                    };
+                    (cursor, s.keyboard_request.take())
                 };
                 if let Some(name) = cursor_name {
                     w.set_cursor_from_name(Some(name));
+                }
+                // Editable focus changed in the page → focus the IM context so the
+                // on-screen keyboard shows only for real text fields.
+                if let Some(focused) = keyboard_request {
+                    if let Some(im) = imp.im_context.borrow().as_ref() {
+                        if focused {
+                            im.focus_in();
+                        } else {
+                            im.focus_out();
+                        }
+                    }
                 }
                 glib::ControlFlow::Continue
             });
@@ -1524,6 +1540,9 @@ mod imp {
                 }
             }
         ));
+        // Stored so the widget timer can focus it in/out from CEF's editable-focus
+        // signal — see the keyboard_request drain.
+        widget.imp().im_context.replace(Some(im.clone()));
 
         // Touch --------------------------------------------------------------
         // Touchscreens (Phosh) need native touch events for scrolling — emulated
@@ -1711,9 +1730,12 @@ mod imp {
         let focus = gtk::EventControllerFocus::new();
         focus.connect_enter(glib::clone!(
             #[weak] widget,
-            #[strong] im,
             move |_| {
-                im.focus_in();
+                // Note: no im.focus_in() here. The GLArea holds GTK focus almost
+                // always, so focusing the IM on widget-focus kept Phosh's on-screen
+                // keyboard up permanently. IM focus-in is driven by the page's
+                // editable-focus signal instead (keyboard_request). focus_out stays
+                // on leave so the keyboard hides when leaving the webview entirely.
                 set_focus(&widget, true);
             }
         ));
