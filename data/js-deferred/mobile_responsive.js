@@ -246,8 +246,14 @@ document.addEventListener('keydown', (e) => {
                 
       }
     }
-    console.log('Enter pressed, blur !');
-    lastFocusEl.blur();
+    // Karere: blur-after-send dismisses the on-screen keyboard on a phone, but
+    // the mobile layout is also used on desktop (narrow/forced window) where
+    // there's no OSK — there it just drops focus and you must re-click. Only
+    // blur on touch devices so desktop keeps the message box focused.
+    if (navigator.maxTouchPoints > 0) {
+      console.log('Enter pressed, blur !');
+      lastFocusEl.blur();
+    }
   }
 }, true); // <-- "true" pour écouter en phase capture (avant les listeners normaux)
 

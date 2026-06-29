@@ -1,5 +1,3 @@
-# Local development build: separate .Devel app-id (profile=development),
-# parallel-installable alongside the stable/beta io.github.tobagin.karere.
 app-id: io.github.tobagin.karere.Devel
 runtime: org.gnome.Platform
 runtime-version: '50'
@@ -9,16 +7,12 @@ sdk-extensions:
 command: karere
 appstream-compose: true
 
-# Detached debug symbols extension; flatpak-builder fills /app/lib/debug from the
-# unstripped binary (see Cargo.toml) to keep the base bundle small.
 add-extensions:
   io.github.tobagin.karere.Devel.Debug:
     directory: lib/debug
     autodelete: true
     no-autodownload: true
 
-# Drop dev-only artifacts Flathub flags. /lib/cef/include is NOT under /include,
-# so CEF's headers (used by the embedded loader) survive the /include cleanup.
 cleanup:
   - '*.la'
   - '*.a'
@@ -30,7 +24,6 @@ build-options:
     CARGO_HOME: /run/build/karere/cargo
     CARGO_NET_OFFLINE: 'true'
     CEF_PATH: /app/lib/cef
-    # Cap parallel rustc jobs so the heavy crate graph doesn't OOM-kill (137).
     CARGO_BUILD_JOBS: '6'
 
 finish-args:
@@ -39,33 +32,17 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
   - --socket=pulseaudio
-  # --device=all is required for the camera (WhatsApp video calls): flatpak has
-  # no video-only device scope (valid types: dri,all,kvm,shm,input,usb) and this
-  # CEF/Chromium build's PipeWire camera portal path does not enumerate cameras
-  # (tested 2026-06-09: dri+shm + WebRtcPipeWireCamera → "camera not found").
-  # So raw /dev/video* via --device=all is the only working option here. Revisit
-  # if a newer CEF gains working portal camera capture (then dri+shm + portal).
   - --device=all
-  # xdg-download (not home) passes the linter without a home-filesystem exception;
-  # downloads land in ~/Downloads.
   - --filesystem=xdg-download
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
-  # Autostart goes through the XDG Background portal (ashpd) — no autostart
-  # filesystem or portal.Desktop talk-name needed (portal busnames auto-granted).
   - --env=LD_LIBRARY_PATH=/app/lib/cef
-  # Force GTK's GL renderer: the default Vulkan renderer can't present the CEF
-  # OSR GLArea under Wayland on newer Mesa/Mutter (GNOME OS Nightly → black
-  # window, issue #164). GL renderer is Wayland-native and works there.
   - --env=GSK_RENDERER=gl
 
 modules:
   - name: cef-binaries
     buildsystem: simple
     build-commands:
-      # Merge the CEF tarball into one flat layout (cmake prereqs + Release/ +
-      # Resources/): cef-dll-sys build.rs cmakes this dir and copies root files
-      # next to the binary, so build and runtime both need it merged.
       - mkdir -p /app/lib/cef
       - cp -a include libcef_dll cmake CMakeLists.txt /app/lib/cef/
       - cp -a Release/. /app/lib/cef/
@@ -73,9 +50,6 @@ modules:
       - chmod +x /app/lib/cef/chrome-sandbox || true
       - install -Dm644 archive.json /app/lib/cef/archive.json
     sources:
-      # Proprietary-codec CEF (H.264/AAC) from tools/build-cef-codecs.sh. C-API
-      # compatible with the cef 149.3.0+149.0.6 bindings (CEF freezes its C API per
-      # branch); archive.json carries the matching 149.0.6 name for the crate's check.
       - type: archive
         only-arches: [x86_64]
         url: https://github.com/tobagin/karere/releases/download/cef-149.0.6-proprietary-codecs/cef_binary_149.0.6%2Bg0d0eeb6%2Bchromium-149.0.7827.201_linux64_minimal.zip
@@ -103,9 +77,6 @@ modules:
       - type: dir
         path: ..
       - cargo-sources.json
-    # Move our gettext catalogs out of share/locale so flatpak's automatic
-    # per-language .Locale extension (which only deploys the host's languages)
-    # doesn't strip the locales the in-app language picker offers.
     post-install:
       - mkdir -p ${FLATPAK_DEST}/share/karere
       - mv ${FLATPAK_DEST}/share/locale ${FLATPAK_DEST}/share/karere/locale
