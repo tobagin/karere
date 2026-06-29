@@ -11,8 +11,8 @@
 **/build-dir-offline/
 # ostree repo produced by flatpak-builder --repo (e.g. packaging/repo)
 **/repo/
-# Claude Code: ignore personal/local state, but track shared workflow tooling
-# (.claude/skills, .claude/commands) so /opsx OpenSpec commands work in-repo.
+# ignore personal/local state, but track shared workflow tooling
+# (skills, commands) so /opsx OpenSpec commands work in-repo.
 .claude/settings.local.json
 *.gresource
 /data/ui/*.ui
