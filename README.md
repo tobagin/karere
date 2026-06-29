@@ -15,10 +15,10 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 4.0.0 — Switched to CEF/Chromium 148
+## 🎉 Version 4.1 — CEF/Chromium 149
 
 **Karere 4.0** is a ground-up rewrite that swaps the rendering backend from WebKitGTK to the
-**Chromium Embedded Framework (CEF/Chromium 148)** while keeping the same native
+**Chromium Embedded Framework (CEF/Chromium 149)** while keeping the same native
 GTK4/libadwaita shell. It is a **hard fork** of Karere v3: there is **no automatic migration**
 — existing accounts must be re-linked by scanning the QR code again on first launch.
 
@@ -28,29 +28,21 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.0.0
+### 🆕 What's New in 4.1.1
 
-- **CEF/Chromium 148 backend** with proprietary-codec video attachment playback (H.264/AAC).
-- **Multi-account**: each account runs in an isolated CEF `RequestContext` (separate cookies and
-  storage); accounts are listed most-recently-used. Identity (name + avatar) is auto-discovered
-  from WhatsApp Web's internal `Store`, with a degraded DOM-scrape fallback surfaced by a badge.
-- **Per-account zoom** (`Ctrl +/-/0`) with optional header-bar zoom controls and an accessibility
-  minimum-zoom floor.
-- **Desktop integration on CEF**: native system tray (StatusNotifierItem), desktop notifications,
-  download manager, and image/text paste all reimplemented on the new stack.
-- **Mobile-responsive layout**, JavaScript fullscreen, and an off-screen-rendering context menu.
-- **Accessibility preferences**: reduce-motion, focus-ring visibility, caret browsing.
-- **Live spell-check language switching** and a separately installable **Debug symbol extension**
-  (`io.github.tobagin.karere.Debug`) for symbolicated crash reports via `coredumpctl debug karere`.
+- **Black/blank window fixed on GNOME OS and newer Wayland setups**: GTK's default Vulkan renderer
+  couldn't present the CEF view under Wayland on recent Mesa/Mutter, leaving the window black.
+  Karere now uses GTK's GL renderer, which renders correctly there. (#164)
+- **Mobile layout keeps input focus on Enter (desktop)**: pressing Enter to send no longer drops
+  focus from the message box on a computer, while phones still hide the on-screen keyboard.
+- **CEF/Chromium 149** (from 4.1.0): updated the bundled browser engine from CEF 148, picking up
+  the latest Chromium security and rendering fixes.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
 > QR code for each account.
 
-> **Latest patch — 4.0.2.** Fixes blurry web-view text under fractional display
-> scaling (e.g. 150%/175% on GNOME Wayland).
-
-For detailed release notes and version history, see [CHANGELOG.md](CHANGELOG.md).
+For the full release history, see [CHANGELOG.md](CHANGELOG.md).
 
 ## Features
 
@@ -158,7 +150,7 @@ Karere is built using modern GNOME technologies:
 - **Rust**: Primary programming language for memory safety and performance
 - **GTK4**: Modern toolkit with excellent Wayland support
 - **LibAdwaita**: Native GNOME design language and components
-- **CEF / Chromium 148**: Chromium Embedded Framework renders WhatsApp Web (off-screen, composited into a GTK `GLArea`)
+- **CEF / Chromium 149**: Chromium Embedded Framework renders WhatsApp Web (off-screen, composited into a GTK `GLArea`)
 - **Blueprint**: Declarative UI definition language
 - **Flatpak**: Secure application distribution
 
@@ -174,7 +166,7 @@ Karere is designed with privacy in mind:
 ## Known Limitations
 
 ### Video Attachments
-**Video attachments now play in-app.** The v4 CEF/Chromium 148 backend ships with proprietary
+**Video attachments now play in-app.** The v4 CEF/Chromium 149 backend ships with proprietary
 codecs (H.264/AAC), removing the WebKitGTK platform limitation that blocked video playback in
 v3 and earlier.
 
