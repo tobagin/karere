@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.1.1] - 2026-06-29
+
+### Fixed
+- **Black/blank window on GNOME OS and other newer Wayland setups**: GTK's default Vulkan renderer couldn't present the CEF browser view under Wayland on recent Mesa/Mutter, leaving the window black. Karere now uses GTK's GL renderer, which renders correctly there. (#164)
+- **Mobile layout dropped the message box focus on Enter (desktop)**: When using the mobile layout on a computer, pressing Enter to send a message moved focus away from the input, so you had to click it again. Focus is now kept on non-touch devices, while phones still hide the on-screen keyboard after sending.
+
 ## [4.1.0] - 2026-06-29
 
 ### Changed

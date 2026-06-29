@@ -101,6 +101,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.1.1" date="2026-06-29">
+      <description>
+        <ul>
+          <li>Fixed a black/blank window on GNOME OS and other newer Wayland setups by switching to GTK's GL renderer, which presents the CEF browser view correctly where the default Vulkan renderer could not. (#164)</li>
+          <li>Fixed the mobile layout dropping the message box focus when pressing Enter on a computer; focus is now kept on non-touch devices while phones still hide the keyboard after sending.</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.1.0" date="2026-06-29">
       <description>
         <ul>
