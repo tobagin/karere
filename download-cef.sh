@@ -3,7 +3,7 @@
 # Version must match the 'cef' crate's bundled CEF version (148.0.8 at time of writing).
 set -euo pipefail
 
-CEF_VERSION="${CEF_VERSION:-148.0.8+g18e00ea+chromium-148.0.7778.96}"
+CEF_VERSION="${CEF_VERSION:-149.0.5+g6770623+chromium-149.0.7827.197}"
 ARCH="$(uname -m)"
 
 case "$ARCH" in

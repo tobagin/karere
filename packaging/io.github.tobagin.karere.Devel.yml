@@ -54,6 +54,10 @@ finish-args:
   # Autostart goes through the XDG Background portal (ashpd) — no autostart
   # filesystem or portal.Desktop talk-name needed (portal busnames auto-granted).
   - --env=LD_LIBRARY_PATH=/app/lib/cef
+  # Force GTK's GL renderer: the default Vulkan renderer can't present the CEF
+  # OSR GLArea under Wayland on newer Mesa/Mutter (GNOME OS Nightly → black
+  # window, issue #164). GL renderer is Wayland-native and works there.
+  - --env=GSK_RENDERER=gl
 
 modules:
   - name: cef-binaries
@@ -70,25 +74,25 @@ modules:
       - install -Dm644 archive.json /app/lib/cef/archive.json
     sources:
       # Proprietary-codec CEF (H.264/AAC) from tools/build-cef-codecs.sh. C-API
-      # compatible with the cef 148.0.8 bindings (CEF freezes its C API per branch);
-      # archive.json keeps the .8 name so the crate's version check passes.
+      # compatible with the cef 149.3.0+149.0.6 bindings (CEF freezes its C API per
+      # branch); archive.json carries the matching 149.0.6 name for the crate's check.
       - type: archive
         only-arches: [x86_64]
-        url: https://github.com/tobagin/karere/releases/download/cef-148.0.10-proprietary-codecs-151fix/cef_binary_148.0.10%2Bg7ee53f5%2Bchromium-148.0.7778.218_linux64_minimal.zip
-        sha256: 8c388a503a1706e3eb09f843def41996082f806927ae7cbd0be7bc36981a164d
+        url: https://github.com/tobagin/karere/releases/download/cef-149.0.6-proprietary-codecs/cef_binary_149.0.6%2Bg0d0eeb6%2Bchromium-149.0.7827.201_linux64_minimal.zip
+        sha256: 5842bda0660124a31b6067e8a318fd91bae2a917b21da2529b4867b4515e5926
       - type: archive
         only-arches: [aarch64]
-        url: https://github.com/tobagin/karere/releases/download/cef-148.0.10-proprietary-codecs-151fix/cef_binary_148.0.10%2Bg7ee53f5%2Bchromium-148.0.7778.218_linuxarm64_minimal.zip
-        sha256: a6500896f3ebaef1d4126e9818c874d6f0735b3d95acf092e36496af430c991c
+        url: https://github.com/tobagin/karere/releases/download/cef-149.0.6-proprietary-codecs/cef_binary_149.0.6%2Bg0d0eeb6%2Bchromium-149.0.7827.201_linuxarm64_minimal.zip
+        sha256: 6aaa886225ad8fc6d035b259b05f89fdb2c1ce918e1cf7e03aa48f9409f90e09
       - type: inline
         only-arches: [x86_64]
         contents: |
-          {"type":"minimal","name":"cef_binary_148.0.8+g18e00ea+chromium-148.0.7778.96_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
+          {"type":"minimal","name":"cef_binary_149.0.6+g0d0eeb6+chromium-149.0.7827.201_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
       - type: inline
         only-arches: [aarch64]
         contents: |
-          {"type":"minimal","name":"cef_binary_148.0.8+g18e00ea+chromium-148.0.7778.96_linuxarm64_minimal.tar.bz2","sha1":"7bccca86d0a44ba34fe928a0a7e91d80901a5be6"}
+          {"type":"minimal","name":"cef_binary_149.0.6+g0d0eeb6+chromium-149.0.7827.201_linuxarm64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
 
   - name: karere

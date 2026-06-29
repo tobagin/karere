@@ -26,7 +26,7 @@ libadwaita = { version = "0.9", features = ["v1_6"] }
 glib = "0.22"
 gio = "0.22"
 gdk-pixbuf = "0.22"
-cef = { version = "148", features = ["build-util"] }
+cef = { version = "149", features = ["build-util"] }
 epoxy = "0.1"
 gl = "0.14"
 libloading = "0.8"

@@ -36,6 +36,12 @@ case "${CEF_ARCH:-x64}" in
   *) echo "error: CEF_ARCH must be x64 or arm64 (got '${CEF_ARCH}')" >&2; exit 2 ;;
 esac
 
+# FORCE_CLEAN=1 wipes + re-syncs the tree from scratch (first build, or to recover
+# a corrupt tree). Default OFF so a re-run RESUMES an interrupted sync (e.g. after a
+# googlesource HTTP 429 or an out-of-disk) instead of throwing away the checkout.
+FORCE_CLEAN_FLAG=""
+[[ "${FORCE_CLEAN:-0}" == "1" ]] && FORCE_CLEAN_FLAG="--force-clean"
+
 echo ">> CEF_BRANCH      = $CEF_BRANCH"
 echo ">> DOWNLOAD_DIR    = $DOWNLOAD_DIR"
 echo ">> arch            = $ARCH_BUILD"
@@ -60,8 +66,15 @@ if [[ ! -f "$AUTOMATE" ]]; then
 fi
 
 # 3. GN args: proprietary_codecs + ffmpeg_branding=Chrome compile in H.264/AAC;
-#    is_official_build = release-grade optimized build matching upstream.
-export GN_DEFINES="is_official_build=true proprietary_codecs=true ffmpeg_branding=Chrome"
+#    is_official_build = release-grade optimized build matching upstream. The rest
+#    are hard-won fixes for building on a modern Fedora host — the bare
+#    official+codecs set alone fails to compile/link here:
+#    - is_cfi=false                    : official build enables CFI which asserts "CFI requires ThinLTO"; we disable LTO.
+#    - use_sysroot=true                : Fedora glibc 2.42 too new for Chromium headers; build against the bundled sysroot.
+#    - treat_warnings_as_errors=false  : bundled sqlite3.c trips -Wincompatible-pointer-types-discards-qualifiers under -Werror.
+#    - concurrent_links=1              : the libcef.so link OOM-kills on 31 GB RAM (exit 247); serialize links.
+#    - use_system_libffi=false / use_cups=false : avoid host -lffi_pic link error / cups-config dep.
+export GN_DEFINES="is_official_build=true is_component_build=false proprietary_codecs=true ffmpeg_branding=Chrome use_thin_lto=false chrome_pgo_phase=false is_cfi=false use_cups=false use_system_libffi=false use_sysroot=true treat_warnings_as_errors=false concurrent_links=1 symbol_level=0 blink_symbol_level=0"
 export CEF_USE_GN=1  # CEF flag mirror, kept in sync for older trees
 
 echo ">> GN_DEFINES = $GN_DEFINES"
@@ -77,15 +90,34 @@ python3 "$AUTOMATE" \
   --no-debug-build \
   --build-target=cefsimple \
   $ARCH_BUILD \
-  --force-clean \
+  $FORCE_CLEAN_FLAG \
   --no-build
+
+CHROMIUM_SRC="$DOWNLOAD_DIR/chromium/src"
+
+# 4a-bis. Fetch the build toolchain (clang, rust, gn helpers, ...) AND the sysroot via
+#     gclient hooks. This MUST run AFTER the 4a sync — automate-git syncs with
+#     --nohooks, which leaves third_party/llvm-build/.../clang absent, and a re-run of
+#     4a's `gclient sync --reset` wipes any clang fetched earlier — and BEFORE the 4c
+#     build, which uses --no-update (no re-sync) so it won't clobber what we fetch here.
+#     Without this, cef/tools/gclient_hook.py dies with FileNotFoundError: clang. Idempotent.
+echo ">> running gclient hooks (clang/rust/toolchain)"
+( cd "$DOWNLOAD_DIR/chromium" && gclient runhooks )
+
+# Belt-and-suspenders: ensure the matching Debian sysroot (use_sysroot=true needs it;
+# a fresh glibc host fails header checks without it). install-sysroot is idempotent.
+case "${CEF_ARCH:-x64}" in
+  x64)   SYSROOT_ARCH=amd64 ;;
+  arm64) SYSROOT_ARCH=arm64 ;;
+esac
+echo ">> ensuring $SYSROOT_ARCH sysroot"
+python3 "$CHROMIUM_SRC/build/linux/sysroot_scripts/install-sysroot.py" --arch="$SYSROOT_ARCH"
 
 # 4b. Apply Karere CEF source patches (idle-CPU fix #151, etc.). Patches live in
 #     tools/cef-patches/ and apply from the Chromium src root (paths cover both
 #     base/ and cef/). Idempotent: skip a patch already present in the tree.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PATCH_DIR="$SCRIPT_DIR/cef-patches"
-CHROMIUM_SRC="$DOWNLOAD_DIR/chromium/src"
 if compgen -G "$PATCH_DIR/*.patch" >/dev/null; then
   for patch in "$PATCH_DIR"/*.patch; do
     name="$(basename "$patch")"
