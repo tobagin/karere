@@ -94,8 +94,8 @@ modules:
       # development builds use the Devel manifest, which sources `type: dir`.)
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v4.0.8
-        commit: b591d5505d83730d5ba27a32e15bda28b88090c3
+        tag: v4.1.0
+        commit: 2cb6196c4c87aea3564ce46b8a394b4474e78a83
       - cargo-sources.json
     # Move our gettext catalogs out of share/locale so flatpak's automatic
     # per-language .Locale extension (which only deploys the host's languages)

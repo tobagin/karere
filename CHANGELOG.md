@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.1.0] - 2026-06-29
+
+### Changed
+- **Updated the bundled browser engine to CEF 149 (Chromium 149.0.7827)**, up from CEF 148. This picks up the latest Chromium security and rendering fixes. Proprietary codecs (H.264/AAC) remain enabled so WhatsApp audio/video calls and MP4 playback keep working.
+
 ## [4.0.8] - 2026-06-22
 
 ### Fixed
