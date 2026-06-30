@@ -120,9 +120,25 @@ wrap_app! {
             // notification sound; Karere emits its own gio::Notification + paplay.
             // If a native banner ever leaks through, add --disable-notification-sound.
             cmd.append_switch(Some(&"enable-features=UseOzonePlatform".into()));
+            // Force CEF's Ozone backend to match the display server GTK uses.
+            // `ozone-platform-hint=auto` let CEF resolve to X11/Xwayland (the
+            // --socket=fallback-x11 path), which can't present onto the Wayland
+            // GTK GLArea — a startup race that paints the window black on GNOME OS
+            // (#164). CEF inits before GTK opens its display, so detect from the
+            // env the same way GDK4 picks its backend.
+            let gdk_x11 = std::env::var("GDK_BACKEND")
+                .map(|b| b.split(',').next() == Some("x11"))
+                .unwrap_or(false);
+            let ozone = if gdk_x11 {
+                "x11"
+            } else if std::env::var_os("WAYLAND_DISPLAY").is_some() {
+                "wayland"
+            } else {
+                "x11"
+            };
             cmd.append_switch_with_value(
-                Some(&"ozone-platform-hint".into()),
-                Some(&"auto".into()),
+                Some(&"ozone-platform".into()),
+                Some(&ozone.into()),
             );
             cmd.append_switch(Some(&"enable-webrtc-vea-vda".into()));
             cmd.append_switch(Some(&"disable-smooth-scrolling".into()));
