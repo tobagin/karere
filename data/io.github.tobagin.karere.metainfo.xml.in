@@ -101,6 +101,13 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.1.2" date="2026-06-30">
+      <description>
+        <ul>
+          <li>Fixed the GNOME OS / Wayland black window for real (#164): CEF was racing to the X11 Ozone backend and failing to present onto the Wayland view; Karere now forces CEF's Ozone backend to match the display server, so it no longer intermittently starts black.</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.1.1" date="2026-06-29">
       <description>
         <ul>

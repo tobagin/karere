@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.1.2] - 2026-06-30
+
+### Fixed
+- **GNOME OS / Wayland black window (#164), properly this time**: even with the 4.1.1 GL-renderer change the window was still intermittently black (a startup race). CEF was auto-selecting the X11/Xwayland Ozone backend, which can't present onto the Wayland view. Karere now forces CEF's Ozone backend to match the display server GTK uses, removing the race.
+
 ## [4.1.1] - 2026-06-29
 
 ### Fixed

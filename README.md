@@ -28,15 +28,14 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.1.1
+### 🆕 What's New in 4.1.2
 
-- **Black/blank window fixed on GNOME OS and newer Wayland setups**: GTK's default Vulkan renderer
-  couldn't present the CEF view under Wayland on recent Mesa/Mutter, leaving the window black.
-  Karere now uses GTK's GL renderer, which renders correctly there. (#164)
-- **Mobile layout keeps input focus on Enter (desktop)**: pressing Enter to send no longer drops
-  focus from the message box on a computer, while phones still hide the on-screen keyboard.
-- **CEF/Chromium 149** (from 4.1.0): updated the bundled browser engine from CEF 148, picking up
-  the latest Chromium security and rendering fixes.
+- **GNOME OS / Wayland black window fixed for real (#164)**: CEF was racing to the X11/Xwayland
+  Ozone backend and failing to present onto the Wayland view (black even with the 4.1.1 GL-renderer
+  change). Karere now forces CEF's Ozone backend to match the display server, removing the race.
+
+Recent in the 4.1 line: mobile-layout keeps the message box focused on Enter on desktop, and the
+bundled browser engine moved to **CEF/Chromium 149**.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
