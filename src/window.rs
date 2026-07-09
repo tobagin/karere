@@ -617,7 +617,7 @@ mod imp {
             crate::tray::set_accounts(summaries);
 
             // Sync the header avatar to the active (or MRU-first) account.
-            let active = mgr.active().or_else(|| accounts.first().cloned());
+            let active = mgr.active().or_else(|| mgr.mru_first());
             if let Some(a) = active {
                 let label = row_title(&a);
                 self.account_avatar.set_text(Some(&label));
@@ -724,7 +724,7 @@ mod imp {
             ));
             row.add_suffix(&mute);
 
-            // Edit + remove affordances (no reorder controls — MRU only).
+            // Edit + remove affordances (no reorder controls — creation order).
             let edit = gtk::Button::from_icon_name("document-edit-symbolic");
             edit.add_css_class("flat");
             edit.set_valign(gtk::Align::Center);
@@ -778,14 +778,15 @@ mod imp {
             self.account_bottom_sheet.set_open(false);
         }
 
-        /// Switch to the account at `idx` in MRU order (no-op if out of range).
+        /// Switch to the account at `idx` in stable list order (no-op if out of range).
         fn switch_to_index(&self, idx: usize) {
             if let Some(a) = crate::accounts::manager().get_accounts_sorted().get(idx) {
                 self.switch_account(&a.id);
             }
         }
 
-        /// Cycle the active account by `delta` (+1 next, -1 previous) in MRU order.
+        /// Cycle the active account by `delta` (+1 next, -1 previous) in stable
+        /// list order — the same order the switcher shows (#166).
         fn cycle_account(&self, delta: i32) {
             let mgr = crate::accounts::manager();
             let accts = mgr.get_accounts_sorted();
@@ -1001,7 +1002,7 @@ mod imp {
                         // Removing the foreground account leaves no visible
                         // browser; promote the MRU-first survivor.
                         if was_active
-                            && let Some(next) = mgr.get_accounts_sorted().first()
+                            && let Some(next) = mgr.mru_first()
                         {
                             this.switch_account(&next.id);
                         }
@@ -1111,7 +1112,7 @@ mod imp {
             ));
             window.add_action(&add_account);
 
-            // Account-switch shortcuts: cycle next/prev + jump-to-Nth (MRU).
+            // Account-switch shortcuts: cycle next/prev + jump-to-Nth (stable order).
             let next_account = gio::SimpleAction::new("next-account", None);
             next_account.connect_activate(clone!(
                 #[weak(rename_to = this)]

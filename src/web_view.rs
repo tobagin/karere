@@ -1033,7 +1033,8 @@ mod imp {
             // older installs) to "Account 1" so it matches added accounts.
             mgr.backfill_labels();
             let accounts = mgr.get_accounts_sorted();
-            let Some(first) = accounts.first().cloned() else {
+            // Boot into the last-used account, not list-first (#166).
+            let Some(first) = mgr.mru_first() else {
                 log::error!("spawn_all_accounts: no account after add()");
                 return;
             };

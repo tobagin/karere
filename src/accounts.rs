@@ -231,9 +231,10 @@ pub fn save_to(path: &std::path::Path, accounts: &[Account]) -> Result<(), Accou
     Ok(())
 }
 
-/// Sort in place by `last_used_at` descending.
-pub fn sort_mru(accounts: &mut [Account]) {
-    accounts.sort_by(|a, b| b.last_used_at.cmp(&a.last_used_at));
+/// Sort in place by `created_at` ascending (id tiebreak): a stable order that
+/// never reshuffles on switch, so the switcher list and Alt+N stay put (#166).
+pub fn sort_stable(accounts: &mut [Account]) {
+    accounts.sort_by(|a, b| a.created_at.cmp(&b.created_at).then_with(|| a.id.cmp(&b.id)));
 }
 
 mod imp {
@@ -342,11 +343,23 @@ impl AccountManager {
         self.emit_changed();
     }
 
-    /// MRU-ordered clone of the account list.
+    /// Stable (creation-ordered) clone of the account list — the order the
+    /// switcher shows and Alt+1..9 index into (#166).
     pub fn get_accounts_sorted(&self) -> Vec<Account> {
         let mut out = self.imp().accounts.borrow().clone();
-        sort_mru(&mut out);
+        sort_stable(&mut out);
         out
+    }
+
+    /// Most-recently-used account: startup activation + promoting a survivor
+    /// after the active account is removed.
+    pub fn mru_first(&self) -> Option<Account> {
+        self.imp()
+            .accounts
+            .borrow()
+            .iter()
+            .max_by_key(|a| a.last_used_at)
+            .cloned()
     }
 
     /// Store discovered `wid`/`pushname` for `id`.
@@ -575,20 +588,20 @@ pub fn set_unread(account_id: &str, unread: bool) {
 mod tests {
     use super::*;
 
-    fn acct_with(last_used: i64) -> Account {
+    fn acct_with(created: i64) -> Account {
         let mut a = Account::new();
-        a.last_used_at = last_used;
+        a.created_at = created;
         a
     }
 
     #[test]
-    fn mru_sort_orders_by_last_used_desc() {
+    fn stable_sort_orders_by_created_asc() {
         let b = acct_with(200);
-        let a = acct_with(300);
-        let c = acct_with(100);
+        let a = acct_with(100);
+        let c = acct_with(300);
         let (bid, aid, cid) = (b.id.clone(), a.id.clone(), c.id.clone());
         let mut list = vec![b, a, c];
-        sort_mru(&mut list);
+        sort_stable(&mut list);
         assert_eq!(
             list.iter().map(|x| x.id.clone()).collect::<Vec<_>>(),
             vec![aid, bid, cid],
