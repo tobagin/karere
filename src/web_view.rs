@@ -1965,7 +1965,24 @@ mod imp {
                 Some("0") | Some("false") => false,
                 _ => {
                     use gtk::prelude::SettingsExt;
-                    gtk::gio::Settings::new(crate::application::APP_ID).boolean("gpu-rendering")
+                    let want = gtk::gio::Settings::new(crate::application::APP_ID)
+                        .boolean("gpu-rendering");
+                    // NVIDIA can't back CEF's exportable shared images — the GPU
+                    // process fails SkSurface init and no accelerated frame ever
+                    // arrives, leaving the chat area black (#167). /sys/bus is
+                    // visible inside the flatpak sandbox (/sys/module is not).
+                    // Coarse driver-bound check — false-positives on hybrid
+                    // setups rendering on the iGPU; KARERE_GPU_OSR=1 forces.
+                    if want && std::path::Path::new("/sys/bus/pci/drivers/nvidia").exists() {
+                        log::warn!(
+                            "accel_osr: NVIDIA driver detected — GPU rendering is \
+                             unsupported (CEF shared-image export fails, #167); \
+                             using software rendering. KARERE_GPU_OSR=1 to force."
+                        );
+                        false
+                    } else {
+                        want
+                    }
                 }
             };
             log::info!("accel_osr: enabled={enabled}");
