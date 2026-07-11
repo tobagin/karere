@@ -22,12 +22,12 @@ error: CEF_BRANCH is required.
     https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding
 
   Then re-run, e.g.:
-    CEF_BRANCH=NNNN tools/build-cef-codecs.sh ~/cef-build
+    CEF_BRANCH=NNNN tools/build-cef-codecs.sh ~/Projects/cef-build
 EOF
   exit 2
 fi
 
-DOWNLOAD_DIR="${1:-$HOME/cef-build}"
+DOWNLOAD_DIR="${1:-$HOME/Projects/cef-build}"
 DEPOT_TOOLS_DIR="$DOWNLOAD_DIR/depot_tools"
 # CEF_ARCH=x64 (default) or arm64. Karere ships both; build each separately.
 case "${CEF_ARCH:-x64}" in
