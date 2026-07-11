@@ -2064,9 +2064,11 @@ mod imp {
         precise: bool,
     ) {
         // CEF wants pixel deltas. A mouse wheel reports notch clicks (±1) → use a
-        // browser-like notch size; a touchpad (Surface unit) reports pixel-ish
-        // deltas → pass through near 1:1. (#161)
-        let step = if precise { 1.0 } else { 100.0 };
+        // browser-like notch size. A touchpad (Surface unit) reports surface-unit
+        // deltas; Chromium's own Wayland backend scales those by
+        // kWheelDelta(53) / kAxisValueScale(10) = 5.3 (wayland_pointer.cc), so
+        // match it — 1:1 passthrough was ~5x slower than every browser. (#161)
+        let step = if precise { 5.3 } else { 100.0 };
         let s = widget.scale_factor().max(1) as f64;
         let imp = widget.imp();
 
