@@ -564,6 +564,11 @@ mod imp {
         /// in response to CEF's editable-focus signal (keyboard_request). Set once
         /// in `install_input_controllers`.
         pub im_context: RefCell<Option<gtk::IMMulticontext>>,
+        /// Mirror of the IM context's focus state. The page can leave the IM
+        /// focused-out (a send re-renders the input → virtual-keyboard NONE with
+        /// no follow-up), which kills dead-key composition; the key handler uses
+        /// this to re-focus the IM on the next physical keypress. (#154)
+        pub im_focused: std::cell::Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -628,6 +633,7 @@ mod imp {
                         } else {
                             im.focus_out();
                         }
+                        imp.im_focused.set(focused);
                     }
                 }
                 glib::ControlFlow::Continue
@@ -1688,6 +1694,14 @@ mod imp {
                 {
                     promote_primary_to_clipboard();
                 }
+                // A physical keypress means the user is typing — if the page's
+                // editable-focus signal left the IM focused-out (post-send input
+                // re-render), dead keys silently stop composing. Re-focus first. (#154)
+                let imp = widget.imp();
+                if !imp.im_focused.get() {
+                    im.focus_in();
+                    imp.im_focused.set(true);
+                }
                 // IM gets first crack. A consumed key is text (a letter, or a
                 // dead-key composition still buffering) — the `commit` handler
                 // emits the CHAR, so we send nothing else and swallow the key.
@@ -1745,6 +1759,7 @@ mod imp {
             #[strong] im,
             move |_| {
                 im.focus_out();
+                widget.imp().im_focused.set(false);
                 set_focus(&widget, false);
             }
         ));
