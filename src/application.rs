@@ -46,19 +46,14 @@ impl KarereApplication {
         // until the user toggles the theme. Re-applying after CEF init makes it
         // stick, including the start-in-background case below. (#160)
         apply_theme(&settings);
-        if settings.boolean("start-in-background") && crate::tray::is_active() {
-            log::info!(
-                "start-in-background=true and tray configured — window built but not presented"
-            );
+        // Honored even without a tray icon: relaunching the app presents the
+        // existing window (see the top of this fn), so it stays reachable. (#170)
+        if settings.boolean("start-in-background") {
+            log::info!("start-in-background=true — window built but not presented");
             // OSR browsers only spawn when the window is shown; pre-warm so
             // WhatsApp loads and notifies while we stay in the background.
             window.prewarm();
         } else {
-            if settings.boolean("start-in-background") && !crate::tray::is_active() {
-                log::info!(
-                    "start-in-background=true but no tray configured — presenting window so it is reachable"
-                );
-            }
             window.present();
         }
     }

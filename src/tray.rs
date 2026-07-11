@@ -287,11 +287,6 @@ fn watcher_present() -> bool {
     })
 }
 
-/// Whether the tray service is running (drives the start-in-background gate).
-pub fn is_active() -> bool {
-    tray_lock().is_some()
-}
-
 /// Current unread count held in tray state (0 when no tray is running).
 pub fn unread_count() -> u32 {
     tray_lock()
