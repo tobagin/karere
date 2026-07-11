@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.1.3] - 2026-07-11
+
+### Fixed
+- **Touchpad scrolling was ~5x too slow (#161)**: touchpad deltas were passed to the browser engine 1:1, while Chromium's own Wayland backend scales them by 5.3. Karere now applies the same scaling, so touchpad scrolling matches other browsers (this also removes the perceived delay before scrolling started).
+- **Dead-key accents intermittently stopped working (#154)**: after sending a message, WhatsApp's input re-render could leave the input-method context unfocused, so dead keys (e.g. US Intl `à`, `é`) typed the plain letter. The IM is now re-focused on the next keypress.
+- **Start in background was ignored without a tray icon (#170)**: the window was always presented when no tray was active. The setting is now honored regardless; launching Karere again brings the window up.
+- **Black chat area on NVIDIA drivers (#167)**: NVIDIA can't allocate the shared images the accelerated rendering path needs, so no frame ever arrived. Karere now detects a bound NVIDIA driver and falls back to software rendering (`KARERE_GPU_OSR=1` still forces GPU rendering on hybrid-GPU setups).
+
 ## [4.1.2] - 2026-06-30
 
 ### Fixed
