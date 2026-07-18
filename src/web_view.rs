@@ -2056,6 +2056,23 @@ mod imp {
         });
     }
 
+    /// Live pointer position in physical widget coords, for wheel hit-testing —
+    /// touchpad scrolls arrive without motion events, so cached coords go stale. (#161)
+    fn pointer_pos_physical(widget: &super::KarereWebView) -> Option<(i32, i32)> {
+        let pointer = widget.display().default_seat()?.pointer()?;
+        let native = widget.native()?;
+        let (sx, sy, _) = native.surface()?.device_position(&pointer)?;
+        // Surface → widget coords: strip the native's window-decoration offset,
+        // then map through the widget tree.
+        let (tx, ty) = native.surface_transform();
+        let p = native.compute_point(
+            widget,
+            &gtk::graphene::Point::new((sx - tx) as f32, (sy - ty) as f32),
+        )?;
+        let s = widget.scale_factor().max(1);
+        Some((p.x() as i32 * s, p.y() as i32 * s))
+    }
+
     fn send_wheel(
         widget: &super::KarereWebView,
         dx: f64,
@@ -2086,10 +2103,19 @@ mod imp {
         }
 
         // CEF hit-tests the cursor to pick the scroll target; (0,0) scrolls nothing.
-        // last_mouse_* is already physical.
+        // Touchpad scrolling doesn't move the pointer, so the cached motion coords
+        // can be stale (pointer entered without motion — window presented under
+        // the cursor, workspace switch): query the live position, fall back to
+        // last_mouse_* (already physical). (#161)
+        let (hx, hy) = pointer_pos_physical(widget).unwrap_or_else(|| {
+            (
+                imp.last_mouse_x.load(Ordering::Relaxed),
+                imp.last_mouse_y.load(Ordering::Relaxed),
+            )
+        });
         let event = MouseEvent {
-            x: imp.last_mouse_x.load(Ordering::Relaxed),
-            y: imp.last_mouse_y.load(Ordering::Relaxed),
+            x: hx,
+            y: hy,
             modifiers,
         };
         with_host(widget, |host| {
