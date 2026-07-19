@@ -42,6 +42,15 @@ esac
 FORCE_CLEAN_FLAG=""
 [[ "${FORCE_CLEAN:-0}" == "1" ]] && FORCE_CLEAN_FLAG="--force-clean"
 
+# Extra automate-git.py flags (e.g. --no-chromium-history in throwaway containers).
+AUTOMATE_EXTRA="${AUTOMATE_EXTRA:-}"
+
+# Pin the exact CEF commit (e.g. 8042e43 from "150.0.10+g8042e43+…") instead of
+# branch tip — the produced binaries must match the Rust cef crate's pinned
+# version, and branch tip can be a release ahead.
+CHECKOUT_FLAG=""
+[[ -n "${CEF_CHECKOUT:-}" ]] && CHECKOUT_FLAG="--checkout=$CEF_CHECKOUT"
+
 echo ">> CEF_BRANCH      = $CEF_BRANCH"
 echo ">> DOWNLOAD_DIR    = $DOWNLOAD_DIR"
 echo ">> arch            = $ARCH_BUILD"
@@ -83,15 +92,30 @@ echo
 # 4a. Checkout/sync only (no build yet) so we can patch the tree before building.
 #     --force-clean wipes the tree first, so it MUST run on this phase only —
 #     running it on the build phase (4c) would revert the patch below.
-python3 "$AUTOMATE" \
-  --download-dir="$DOWNLOAD_DIR" \
-  --branch="$CEF_BRANCH" \
-  --minimal-distrib \
-  --no-debug-build \
-  --build-target=cefsimple \
-  $ARCH_BUILD \
-  $FORCE_CLEAN_FLAG \
-  --no-build
+#     Bootstrapping quirk: automate's checkout phase ends by running CEF's
+#     gclient_hook.py, which needs the gn/clang toolchain that only `gclient
+#     runhooks` fetches — so the FIRST pass on a fresh tree always fails there.
+#     Run the hooks and retry once; the retry's sync is a fast no-op.
+checkout() {
+  python3 "$AUTOMATE" \
+    --download-dir="$DOWNLOAD_DIR" \
+    --branch="$CEF_BRANCH" \
+    --minimal-distrib \
+    --no-debug-build \
+    --build-target=cefsimple \
+    $ARCH_BUILD \
+    $FORCE_CLEAN_FLAG \
+    $CHECKOUT_FLAG \
+    $AUTOMATE_EXTRA \
+    --no-build \
+    --no-distrib
+}
+if ! checkout; then
+  echo ">> checkout pass failed (expected on a fresh tree: gclient_hook needs"
+  echo ">> the hook-fetched toolchain) — running gclient hooks and retrying"
+  ( cd "$DOWNLOAD_DIR/chromium" && gclient runhooks )
+  checkout
+fi
 
 CHROMIUM_SRC="$DOWNLOAD_DIR/chromium/src"
 
@@ -104,6 +128,10 @@ CHROMIUM_SRC="$DOWNLOAD_DIR/chromium/src"
 echo ">> running gclient hooks (clang/rust/toolchain)"
 ( cd "$DOWNLOAD_DIR/chromium" && gclient runhooks )
 
+# GCS-fetched tools can land without exec bits when hooks run as root (container
+# builds); every devtools-frontend ninja action then dies with EACCES on node.
+chmod +x "$DOWNLOAD_DIR"/chromium/src/third_party/node/linux/node-linux-*/bin/node 2>/dev/null || true
+
 # Belt-and-suspenders: ensure the matching Debian sysroot (use_sysroot=true needs it;
 # a fresh glibc host fails header checks without it). install-sysroot is idempotent.
 case "${CEF_ARCH:-x64}" in
@@ -112,6 +140,12 @@ case "${CEF_ARCH:-x64}" in
 esac
 echo ">> ensuring $SYSROOT_ARCH sysroot"
 python3 "$CHROMIUM_SRC/build/linux/sysroot_scripts/install-sysroot.py" --arch="$SYSROOT_ARCH"
+# The x64 HOST toolchain (protoc, codegen) always needs the amd64 sysroot, and
+# a target_cpu=arm64 gclient sync removes it (DEPS condition no longer matches).
+if [[ "$SYSROOT_ARCH" != "amd64" ]]; then
+  echo ">> ensuring amd64 host sysroot"
+  python3 "$CHROMIUM_SRC/build/linux/sysroot_scripts/install-sysroot.py" --arch=amd64
+fi
 
 # 4b. Apply Karere CEF source patches (idle-CPU fix #151, etc.). Patches live in
 #     tools/cef-patches/ and apply from the Chromium src root (paths cover both
@@ -141,13 +175,16 @@ python3 "$AUTOMATE" \
   --no-debug-build \
   --build-target=cefsimple \
   $ARCH_BUILD \
+  $CHECKOUT_FLAG \
+  $AUTOMATE_EXTRA \
   --no-update \
   --force-build \
   --force-distrib
 
 # 5. Locate the tarball + print sha256.
 DISTRIB_DIR="$DOWNLOAD_DIR/chromium/src/cef/binary_distrib"
-TARBALL="$(ls -t "$DISTRIB_DIR"/cef_binary_*_linux*_minimal.tar.bz2 2>/dev/null | head -1 || true)"
+# CEF ≤149 emitted .tar.bz2; 150+ emits .zip. Accept either.
+TARBALL="$(ls -t "$DISTRIB_DIR"/cef_binary_*_linux*_minimal.tar.bz2 "$DISTRIB_DIR"/cef_binary_*_linux*_minimal.zip 2>/dev/null | head -1 || true)"
 
 if [[ -z "$TARBALL" ]]; then
   echo "error: build finished but no minimal tarball found under $DISTRIB_DIR" >&2

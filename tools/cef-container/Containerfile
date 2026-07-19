@@ -1,0 +1,27 @@
+# Throwaway CEF proprietary-codec builder. Downloads the latest sources matching
+# the Rust `cef` crate, builds x64 + arm64 minimal distribs, drops tarballs +
+# sha256 in /out. The ~200 GB work tree lives in an anonymous volume (/work),
+# discarded with --rm — nothing is kept between runs.
+#
+#   podman build -f tools/cef-container/Containerfile -t cef-codecs tools/
+#   podman run --rm -v ./cef-out:/out:Z cef-codecs
+#
+#   env overrides: CEF_BRANCH=7871 (skip auto-detect), ARCHES="x64" (default "x64 arm64")
+#
+# Package set mirrors the proven .github/workflows/build-cef-codecs.yml runner:
+# with use_sysroot=true everything else comes from Chromium's bundled toolchain.
+FROM docker.io/library/ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      git python3 curl ca-certificates lsb-release file unzip bzip2 xz-utils \
+      build-essential pkg-config patch \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY build-cef-codecs.sh /opt/karere/build-cef-codecs.sh
+COPY cef-patches/ /opt/karere/cef-patches/
+COPY cef-container/entrypoint.sh /opt/karere/entrypoint.sh
+RUN chmod +x /opt/karere/build-cef-codecs.sh /opt/karere/entrypoint.sh
+
+VOLUME /work
+ENTRYPOINT ["/opt/karere/entrypoint.sh"]
