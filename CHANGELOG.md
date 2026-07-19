@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.2.0] - 2026-07-19
+
+### Changed
+- **Browser engine upgraded to CEF 150.0.10 / Chromium 150.0.7871.101** (from 149): current Chromium security fixes, with proprietary codecs (H.264/AAC) still included so video attachments play in-app. The idle-CPU message-pump fix (#151) is carried over.
+
+### Fixed
+- **Touchpad scroll no longer needs a click first (#161)**: wheel events were hit-tested against the last mouse-motion position, which could be stale when the pointer arrived over the window without moving (workspace switch, window presented under the cursor). Scrolling now targets the live pointer position, like every other app.
+
 ## [4.1.3] - 2026-07-11
 
 ### Fixed

@@ -101,6 +101,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.2.0" date="2026-07-19">
+      <description>
+        <ul>
+          <li>Upgraded the browser engine to CEF 150 / Chromium 150 for current security fixes; video attachments (H.264/AAC) keep playing in-app.</li>
+          <li>Fixed touchpad scrolling sometimes needing a click in a pane before it responded; scrolling now targets the pane under the pointer like every other app. (#161)</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.1.3" date="2026-07-11">
       <description>
         <ul>

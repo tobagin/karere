@@ -15,10 +15,10 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 4.1 — CEF/Chromium 149
+## 🎉 Version 4.2 — CEF/Chromium 150
 
 **Karere 4.0** is a ground-up rewrite that swaps the rendering backend from WebKitGTK to the
-**Chromium Embedded Framework (CEF/Chromium 149)** while keeping the same native
+**Chromium Embedded Framework (CEF/Chromium 150)** while keeping the same native
 GTK4/libadwaita shell. It is a **hard fork** of Karere v3: there is **no automatic migration**
 — existing accounts must be re-linked by scanning the QR code again on first launch.
 
@@ -28,19 +28,16 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.1.3
+### 🆕 What's New in 4.2.0
 
-- **Touchpad scrolling fixed (#161)**: it was ~5x slower than every browser (with a delay before it
-  started). Deltas are now scaled the way Chromium's own Wayland backend scales them.
-- **Dead-key accents no longer die after sending (#154)**: WhatsApp's input re-render could leave
-  the input method unfocused, typing `a` instead of `à`; it's now re-focused on the next keypress.
-- **"Start in background" works without a tray icon (#170)**: the setting is honored regardless;
-  relaunching Karere brings the window up.
-- **Black chat area on NVIDIA fixed (#167)**: Karere detects NVIDIA drivers and falls back to
-  software rendering where the accelerated path can't deliver frames.
+- **Browser engine upgraded to CEF 150 / Chromium 150.0.7871.101**: current Chromium security
+  fixes, with proprietary codecs (H.264/AAC) still included so video attachments play in-app.
+- **Touchpad scroll no longer needs a click first (#161)**: wheel events now hit-test the live
+  pointer position, so scrolling works over whichever pane you're hovering — like every other app.
 
-Recent in the 4.1 line: CEF's Ozone backend matches the display server (no more black-window race
-on Wayland), and the bundled browser engine moved to **CEF/Chromium 149**.
+Recent in the 4.x line: touchpad scroll speed matches Chromium, dead-key accents survive sends,
+"Start in background" works without a tray icon, and NVIDIA systems fall back to software
+rendering instead of a black chat area.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
@@ -154,7 +151,7 @@ Karere is built using modern GNOME technologies:
 - **Rust**: Primary programming language for memory safety and performance
 - **GTK4**: Modern toolkit with excellent Wayland support
 - **LibAdwaita**: Native GNOME design language and components
-- **CEF / Chromium 149**: Chromium Embedded Framework renders WhatsApp Web (off-screen, composited into a GTK `GLArea`)
+- **CEF / Chromium 150**: Chromium Embedded Framework renders WhatsApp Web (off-screen, composited into a GTK `GLArea`)
 - **Blueprint**: Declarative UI definition language
 - **Flatpak**: Secure application distribution
 
@@ -170,7 +167,7 @@ Karere is designed with privacy in mind:
 ## Known Limitations
 
 ### Video Attachments
-**Video attachments now play in-app.** The v4 CEF/Chromium 149 backend ships with proprietary
+**Video attachments now play in-app.** The v4 CEF/Chromium 150 backend ships with proprietary
 codecs (H.264/AAC), removing the WebKitGTK platform limitation that blocked video playback in
 v3 and earlier.
 
