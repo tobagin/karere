@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.2.1] - 2026-07-19
+
+### Added
+- **"Match WhatsApp Colors" appearance toggle (#168)**: opt-in preference that tints the window, header bar, and dialogs with WhatsApp Web's own background colors so the app chrome blends with the page. Follows the in-app theme (light/dark) and applies live. Off by default — nothing changes unless you enable it. Colors contributed by @pakovm-git.
+
+### Changed
+- Avatar rounding for notifications no longer uses unsafe pixel access (contributed by @loxoron218, #172).
+
 ## [4.2.0] - 2026-07-19
 
 ### Changed

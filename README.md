@@ -28,16 +28,16 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.2.0
+### 🆕 What's New in 4.2.1
 
-- **Browser engine upgraded to CEF 150 / Chromium 150.0.7871.101**: current Chromium security
-  fixes, with proprietary codecs (H.264/AAC) still included so video attachments play in-app.
-- **Touchpad scroll no longer needs a click first (#161)**: wheel events now hit-test the live
-  pointer position, so scrolling works over whichever pane you're hovering — like every other app.
+- **"Match WhatsApp Colors" (#168)**: new opt-in Appearance setting that tints the window and
+  header bar with WhatsApp Web's own background colors, so the app chrome blends with the page.
+  Follows the light/dark theme and applies live. Thanks @pakovm-git for the prototype!
+- **Safer avatar processing (#172)**: notification avatar rounding dropped its `unsafe` pixel
+  access. Thanks @loxoron218!
 
-Recent in the 4.x line: touchpad scroll speed matches Chromium, dead-key accents survive sends,
-"Start in background" works without a tray icon, and NVIDIA systems fall back to software
-rendering instead of a black chat area.
+Recent in the 4.2 line: the browser engine moved to **CEF/Chromium 150** and touchpad scrolling
+no longer needs a click in the pane first.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the

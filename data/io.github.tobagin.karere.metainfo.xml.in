@@ -101,6 +101,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.2.1" date="2026-07-19">
+      <description>
+        <ul>
+          <li>New opt-in "Match WhatsApp Colors" appearance setting: tints the window and header bar with WhatsApp Web's own background colors so the app blends with the page. Follows the light/dark theme and applies instantly. (#168)</li>
+          <li>Safer avatar processing for notifications (community contribution). (#172)</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.2.0" date="2026-07-19">
       <description>
         <ul>
