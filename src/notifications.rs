@@ -248,12 +248,13 @@ fn round_avatar(image_bytes: &[u8]) -> Option<Vec<u8>> {
 
     let size = AVATAR_SIZE;
     let r = size as f64 / 2.0;
+    let stride = rgba.rowstride() as usize;
+    let pixels = rgba.read_pixel_bytes();
     for y in 0..size {
         for x in 0..size {
             let dx = x as f64 + 0.5 - r;
             let dy = y as f64 + 0.5 - r;
             let dist = (dx * dx + dy * dy).sqrt();
-            // 1px feathered edge between r-0.5 and r+0.5.
             let cover = if dist <= r - 0.5 {
                 1.0
             } else if dist >= r + 0.5 {
@@ -262,8 +263,6 @@ fn round_avatar(image_bytes: &[u8]) -> Option<Vec<u8>> {
                 (r + 0.5 - dist).clamp(0.0, 1.0)
             };
             if cover < 1.0 {
-                let pixels = unsafe { rgba.pixels() };
-                let stride = rgba.rowstride() as usize;
                 let idx = y as usize * stride + x as usize * 4;
                 if idx + 3 < pixels.len() {
                     let a = pixels[idx + 3] as f64 * cover;
