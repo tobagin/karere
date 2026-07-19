@@ -66,6 +66,11 @@
       <summary>Theme</summary>
       <description>Application theme (system, light, dark).</description>
     </key>
+    <key name="match-whatsapp-colors" type="b">
+      <default>false</default>
+      <summary>Match WhatsApp colors</summary>
+      <description>Tint the window and header bar with WhatsApp Web's background colors so the app chrome blends with the page.</description>
+    </key>
     <key name="app-language" type="s">
       <default>''</default>
       <summary>Application language override</summary>

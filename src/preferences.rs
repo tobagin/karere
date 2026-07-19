@@ -140,6 +140,8 @@ mod imp {
         #[template_child]
         pub row_theme: TemplateChild<adw::ComboRow>,
         #[template_child]
+        pub row_wa_colors: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub row_mobile_layout: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub row_dev_enable: TemplateChild<adw::SwitchRow>,
@@ -269,6 +271,7 @@ mod imp {
                 &self.row_theme,
                 &["system", "light", "dark"],
             );
+            bind_switch(settings, "match-whatsapp-colors", &self.row_wa_colors);
             bind_combo_string(
                 settings,
                 "mobile-layout",

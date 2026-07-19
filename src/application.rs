@@ -176,6 +176,40 @@ mod imp {
                 );
             }
 
+            // Optional tint of the GTK chrome (window/headerbar/dialog
+            // backgrounds) with WhatsApp Web's own background so the shell
+            // blends with the page (`match-whatsapp-colors`). Driven off
+            // AdwStyleManager rather than a CSS media query so it follows
+            // Karere's theme setting, not just the desktop scheme. (#168)
+            {
+                let wa_bg = gtk::CssProvider::new();
+                if let Some(display) = gtk::gdk::Display::default() {
+                    gtk::style_context_add_provider_for_display(
+                        &display,
+                        &wa_bg,
+                        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+                    );
+                }
+                let apply_wa_bg = move || {
+                    let css = if gio::Settings::new(APP_ID).boolean("match-whatsapp-colors") {
+                        let bg = if adw::StyleManager::default().is_dark() {
+                            "#1d1f1f"
+                        } else {
+                            "#f7f5f3"
+                        };
+                        format!("@define-color window_bg_color {bg};")
+                    } else {
+                        String::new()
+                    };
+                    wa_bg.load_from_string(&css);
+                };
+                apply_wa_bg();
+                let apply = apply_wa_bg.clone();
+                adw::StyleManager::default().connect_dark_notify(move |_| apply());
+                gio::Settings::new(APP_ID)
+                    .connect_changed(Some("match-whatsapp-colors"), move |_, _| apply_wa_bg());
+            }
+
             // Start the SNI tray; honors GNOME skip policy + KARERE_FORCE_TRAY
             // internally, so it's safe to call unconditionally.
             crate::tray::start();
