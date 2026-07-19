@@ -255,6 +255,7 @@ fn round_avatar(image_bytes: &[u8]) -> Option<Vec<u8>> {
             let dx = x as f64 + 0.5 - r;
             let dy = y as f64 + 0.5 - r;
             let dist = (dx * dx + dy * dy).sqrt();
+            // 1px feathered edge between r-0.5 and r+0.5.
             let cover = if dist <= r - 0.5 {
                 1.0
             } else if dist >= r + 0.5 {
