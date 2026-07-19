@@ -52,21 +52,21 @@ modules:
     sources:
       - type: archive
         only-arches: [x86_64]
-        url: https://github.com/tobagin/karere/releases/download/cef-149.0.6-proprietary-codecs/cef_binary_149.0.6%2Bg0d0eeb6%2Bchromium-149.0.7827.201_linux64_minimal.zip
-        sha256: 5842bda0660124a31b6067e8a318fd91bae2a917b21da2529b4867b4515e5926
+        url: https://github.com/tobagin/karere/releases/download/cef-150.0.10-proprietary-codecs/cef_binary_150.0.10%2Bg8042e43%2Bchromium-150.0.7871.101_linux64_minimal.zip
+        sha256: 3bbe298368c4d87c19ad9b7ed4e8449ea91b32ffa3cefc8672791a1b96c9c3b9
       - type: archive
         only-arches: [aarch64]
-        url: https://github.com/tobagin/karere/releases/download/cef-149.0.6-proprietary-codecs/cef_binary_149.0.6%2Bg0d0eeb6%2Bchromium-149.0.7827.201_linuxarm64_minimal.zip
-        sha256: 6aaa886225ad8fc6d035b259b05f89fdb2c1ce918e1cf7e03aa48f9409f90e09
+        url: https://github.com/tobagin/karere/releases/download/cef-150.0.10-proprietary-codecs/cef_binary_150.0.10%2Bg8042e43%2Bchromium-150.0.7871.101_linuxarm64_minimal.zip
+        sha256: 543bc10ce854fc39b0493ff8b369c47d65fa43f2fb974b734252eea805bffc53
       - type: inline
         only-arches: [x86_64]
         contents: |
-          {"type":"minimal","name":"cef_binary_149.0.6+g0d0eeb6+chromium-149.0.7827.201_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
+          {"type":"minimal","name":"cef_binary_150.0.10+g8042e43+chromium-150.0.7871.101_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
       - type: inline
         only-arches: [aarch64]
         contents: |
-          {"type":"minimal","name":"cef_binary_149.0.6+g0d0eeb6+chromium-149.0.7827.201_linuxarm64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
+          {"type":"minimal","name":"cef_binary_150.0.10+g8042e43+chromium-150.0.7871.101_linuxarm64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
 
   - name: karere
