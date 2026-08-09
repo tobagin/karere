@@ -197,7 +197,12 @@ mod imp {
                         } else {
                             "#f7f5f3"
                         };
-                        format!("@define-color window_bg_color {bg};")
+                        // Modern libadwaita styles via CSS variables; keep the
+                        // legacy @define-color for older runtimes.
+                        format!(
+                            ":root {{ --window-bg-color: {bg}; }}\n\
+                             @define-color window_bg_color {bg};"
+                        )
                     } else {
                         String::new()
                     };
@@ -206,8 +211,13 @@ mod imp {
                 apply_wa_bg();
                 let apply = apply_wa_bg.clone();
                 adw::StyleManager::default().connect_dark_notify(move |_| apply());
-                gio::Settings::new(APP_ID)
-                    .connect_changed(Some("match-whatsapp-colors"), move |_, _| apply_wa_bg());
+                // GSettings signals die with the object — keep this one alive
+                // for the app's lifetime or the toggle only applies on restart.
+                let settings_wa = gio::Settings::new(APP_ID);
+                settings_wa.connect_changed(Some("match-whatsapp-colors"), move |_, _| {
+                    apply_wa_bg()
+                });
+                std::mem::forget(settings_wa);
             }
 
             // Start the SNI tray; honors GNOME skip policy + KARERE_FORCE_TRAY
