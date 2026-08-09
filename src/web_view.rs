@@ -588,8 +588,15 @@ mod imp {
 
             let scale = widget.scale_factor() as f32;
             // Default viewport so prewarm browsers (created before sizing) lay out
-            // usably; the real allocation replaces it on first show.
-            let shared = new_shared((1280, 800), scale);
+            // usably; the real allocation replaces it on first show. Stored
+            // PHYSICAL (logical 1280×800 × scale) like size_allocate writes it —
+            // a logical seed with the pre-realize scale guess of 2 (multi-monitor
+            // mixed scale) read back as 640 logical in on_load_end and wrongly
+            // injected the mobile layout (#176).
+            let shared = new_shared(
+                ((1280.0 * scale) as i32, (800.0 * scale) as i32),
+                scale,
+            );
             *self.shared.lock() = Some(shared.clone());
 
             // CEF on_paint runs on the glib main thread (external_message_pump);
