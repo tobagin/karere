@@ -20,9 +20,12 @@ impl KarereWindow {
     }
 
     /// Force a real quit, bypassing the `close-button-action=background` branch.
+    /// Runs the teardown directly instead of via `close()`: GTK's `close()` is a
+    /// silent no-op on a hidden/never-realized window, which left the tray's
+    /// "Quit" dead while running in the background (#175).
     pub fn quit_now(&self) {
         self.imp().force_quit.set(true);
-        self.close();
+        self.imp().quit_teardown();
     }
 
     /// Switch the active account (driven by the tray's per-account entries).
@@ -236,36 +239,8 @@ mod imp {
                         return glib::Propagation::Stop;
                     }
 
-                    // "quit"/unknown/forced: fall through to CEF-close gate. Tear
-                    // down embedded DevTools first so its browser closes too.
-                    this.close_devtools();
-                    let web_opt = this.web_view.borrow().clone();
-                    let Some(web) = web_opt else {
-                        return glib::Propagation::Proceed;
-                    };
-                    if this.closing.get() && web.is_browser_closed() {
-                        return glib::Propagation::Proceed;
-                    }
-                    if !this.closing.get() {
-                        this.closing.set(true);
-                        web.close_browser();
-                        let win_weak = win.downgrade();
-                        let web_weak = web.downgrade();
-                        glib::timeout_add_local(
-                            std::time::Duration::from_millis(50),
-                            move || {
-                                let (Some(win), Some(web)) = (win_weak.upgrade(), web_weak.upgrade()) else {
-                                    return glib::ControlFlow::Break;
-                                };
-                                if web.is_browser_closed() {
-                                    win.close();
-                                    glib::ControlFlow::Break
-                                } else {
-                                    glib::ControlFlow::Continue
-                                }
-                            },
-                        );
-                    }
+                    // "quit"/unknown/forced: destroy after the CEF-close gate.
+                    this.quit_teardown();
                     glib::Propagation::Stop
                 }
             ));
@@ -1302,6 +1277,36 @@ mod imp {
                     }
                 }
                 glib::ControlFlow::Break
+            });
+        }
+
+        /// Close DevTools + all browsers, then destroy the window once CEF
+        /// confirms the close. Does not go through GTK `close()`/close-request,
+        /// so it works on a hidden or never-realized window too (#175).
+        pub(super) fn quit_teardown(&self) {
+            if self.closing.get() {
+                return; // teardown already in flight
+            }
+            self.closing.set(true);
+            self.close_devtools();
+            let web_opt = self.web_view.borrow().clone();
+            let Some(web) = web_opt else {
+                self.obj().destroy();
+                return;
+            };
+            web.close_browser();
+            let win_weak = self.obj().downgrade();
+            let web_weak = web.downgrade();
+            glib::timeout_add_local(std::time::Duration::from_millis(50), move || {
+                let (Some(win), Some(web)) = (win_weak.upgrade(), web_weak.upgrade()) else {
+                    return glib::ControlFlow::Break;
+                };
+                if web.is_browser_closed() {
+                    win.destroy();
+                    glib::ControlFlow::Break
+                } else {
+                    glib::ControlFlow::Continue
+                }
             });
         }
 

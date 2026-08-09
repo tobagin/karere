@@ -39,7 +39,12 @@ fn register_quit(app: &KarereApplication) {
         #[weak]
         app,
         move |_, _| {
-            if let Some(win) = app.active_window().and_downcast::<crate::window::KarereWindow>() {
+            // A hidden window may not be "active" — fall back to the window list. (#175)
+            if let Some(win) = app
+                .active_window()
+                .or_else(|| app.windows().into_iter().next())
+                .and_downcast::<crate::window::KarereWindow>()
+            {
                 win.quit_now();
             } else {
                 app.quit();
