@@ -1991,11 +1991,12 @@ mod imp {
                         .boolean("gpu-rendering");
                     // NVIDIA can't back CEF's exportable shared images — the GPU
                     // process fails SkSurface init and no accelerated frame ever
-                    // arrives, leaving the chat area black (#167). /sys/bus is
-                    // visible inside the flatpak sandbox (/sys/module is not).
-                    // Coarse driver-bound check — false-positives on hybrid
-                    // setups rendering on the iGPU; KARERE_GPU_OSR=1 forces.
-                    if want && std::path::Path::new("/sys/bus/pci/drivers/nvidia").exists() {
+                    // arrives, leaving the chat area black (#167). Probe the GL
+                    // context actually rendering (current here: realize →
+                    // init_gl → browser creation) instead of the PCI driver
+                    // list, so hybrid setups rendering on another GPU keep the
+                    // accel path (#173). KARERE_GPU_OSR=1 forces.
+                    if want && gl_vendor_is_nvidia() {
                         log::warn!(
                             "accel_osr: NVIDIA driver detected — GPU rendering is \
                              unsupported (CEF shared-image export fails, #167); \
@@ -2010,6 +2011,21 @@ mod imp {
             log::info!("accel_osr: enabled={enabled}");
             enabled
         })
+    }
+
+    /// True when the current GL context is driven by the NVIDIA proprietary
+    /// driver (GL_VENDOR contains "NVIDIA"; Mesa reports "Mesa"/"AMD" even on
+    /// NVIDIA hardware via nouveau/NVK, where shared images are untested but
+    /// not known-broken). Requires a current GL context — returns false when
+    /// there is none. (gpu-osr)
+    fn gl_vendor_is_nvidia() -> bool {
+        let p = unsafe { gl::GetString(gl::VENDOR) };
+        if p.is_null() {
+            return false;
+        }
+        let vendor = unsafe { std::ffi::CStr::from_ptr(p.cast()) }.to_string_lossy();
+        log::info!("accel_osr: GL_VENDOR={vendor}");
+        vendor.contains("NVIDIA")
     }
 
     fn paint_scale(widget: &super::KarereWebView) -> f64 {
