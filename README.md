@@ -28,7 +28,15 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.2.1
+### 🆕 What's New in 4.2.2
+
+- **Smoother scrolling (#173)**: off-screen frame rate raised to 60 fps for fluid scroll/typing with no idle cost.
+- **Hybrid NVIDIA handling (#173)**: detection now uses the live GL context, so hybrid GPUs keep acceleration; fallback remains for background starts.
+- **Tray Quit while hidden (#175)**: tray "Quit" now works even when the window was never shown (start-in-background).
+- **HiDPI mobile layout (#176)**: fixed WhatsApp starting in mobile layout on mixed-scale monitors until resized.
+- **Match WhatsApp Colors live (#168)**: the Appearance toggle now applies instantly without a restart.
+
+### Also in 4.2.1
 
 - **"Match WhatsApp Colors" (#168)**: new opt-in Appearance setting that tints the window and
   header bar with WhatsApp Web's own background colors, so the app chrome blends with the page.

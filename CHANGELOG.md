@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.2.2] - 2026-08-10
+
+### Fixed
+- **Tray Quit while hidden (#175)**: tray "Quit" did nothing when the window was hidden (start-in-background or close-to-background) because it went through GTK close on a never-realized window; it now tears down CEF directly and destroys the window after CEF confirms close.
+- **Mobile layout on HiDPI (#176)**: on multi-monitor setups with mixed scales, WhatsApp loaded in the single-pane mobile layout until a threshold-crossing resize; the prewarm viewport is now seeded in physical pixels so the mobile gate computes correctly.
+- **Smoother scrolling and NVIDIA detection (#173)**: off-screen frame rate raised from 30 to 60 fps (measurably smoother scroll/typing with nil idle cost); NVIDIA detection now probes the live GL context (`GL_VENDOR`) so hybrid GPUs keep acceleration, with a fallback for background starts where no context is current.
+- **"Match WhatsApp Colors" live apply (#168)**: enabling/disabling the tint required a restart because the signal's `GSettings` instance was dropped; it now follows the toggle live (also fixes `--window-bg-color` alongside the legacy color).
+
 ## [4.2.1] - 2026-07-19
 
 ### Added

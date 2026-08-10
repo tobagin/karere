@@ -101,6 +101,16 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.2.2" date="2026-08-10">
+      <description>
+        <ul>
+          <li>Fixed tray “Quit” doing nothing while the window is hidden (e.g. Start in background) (#175).</li>
+          <li>Fixed WhatsApp loading in mobile layout on HiDPI displays until resized; the prewarm viewport is now sized in physical pixels (#176).</li>
+          <li>Improved NVIDIA detection via the live GL context so hybrid GPUs keep accelerated rendering, hardened the fallback for background starts, and raised the off-screen frame rate from 30 to 60 fps for smoother scroll/typing (#173).</li>
+          <li>Fixed “Match WhatsApp Colors” applying only after restart; it now updates live when toggled (#168).</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.2.1" date="2026-07-19">
       <description>
         <ul>
