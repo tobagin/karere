@@ -1160,9 +1160,13 @@ mod imp {
                 ..Default::default()
             };
             let settings = BrowserSettings {
-                // 30fps OSR: ample for a chat UI and halves the idle compositor/
-                // paint load vs 60 (WhatsApp's idle animations keep invalidating).
-                windowless_frame_rate: 30,
+                // 60fps OSR: the old 30 cap read as scroll/typing lag next to a
+                // real browser (#173) — measured 29 vs 58fps under wheel load.
+                // Idle cost is nil (an idle chat paints ~0 frames; hidden windows
+                // are paused via was_hidden, #151), so this only spends CPU while
+                // content actually animates. Runtime set_windowless_frame_rate is
+                // a no-op in this CEF build, so the rate is fixed at creation.
+                windowless_frame_rate: 60,
                 ..Default::default()
             };
 
@@ -2021,7 +2025,12 @@ mod imp {
     fn gl_vendor_is_nvidia() -> bool {
         let p = unsafe { gl::GetString(gl::VENDOR) };
         if p.is_null() {
-            return false;
+            // No current GL context — prewarm (start-in-background) creates
+            // browsers before the GLArea realizes. Fall back to the coarse
+            // driver-bound check so NVIDIA still gets software rendering
+            // instead of the broken accel path (#167); hybrid setups rendering
+            // on the iGPU lose accel only in this prewarmed case.
+            return std::path::Path::new("/sys/bus/pci/drivers/nvidia").exists();
         }
         let vendor = unsafe { std::ffi::CStr::from_ptr(p.cast()) }.to_string_lossy();
         log::info!("accel_osr: GL_VENDOR={vendor}");
