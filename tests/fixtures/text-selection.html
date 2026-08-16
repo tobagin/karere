@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Karere text selection regression fixture</title>
+<style>
+  body { margin: 0; background: #efeae2; font: 18px system-ui, sans-serif; color: #111b21; }
+  main { width: 760px; margin: 60px auto; }
+  .label { color: #54656f; font-size: 14px; margin-bottom: 24px; }
+  .bubble { width: 560px; padding: 16px 18px; margin: 16px 0; border-radius: 12px; background: white; box-shadow: 0 1px 2px #0002; line-height: 1.5; }
+  .mine { margin-left: auto; background: #d9fdd3; }
+  ::selection { background: #3390ff; color: white; }
+</style>
+<main>
+  <div class="label">Synthetic Karere regression fixture — no private chat content</div>
+  <div class="bubble">This fixture verifies ordinary selectable chat text.</div>
+  <div class="bubble mine"><span id="target">Select and copy this multi-word Unicode message 🙂 across two lines without losing the mouse release.</span></div>
+</main>
+<script>
+  const text = document.getElementById('target').firstChild;
+  const range = document.createRange();
+  range.setStart(text, 7);
+  range.setEnd(text, 59);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+</script>

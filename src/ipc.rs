@@ -17,6 +17,9 @@ pub enum PasteBlob {
 /// Messages from the browser process to the renderer subprocess.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum BrowserMessage {
+    /// Read the main frame's live selection and report it through SetClipboard.
+    /// This is user-triggered (Ctrl+C or CEF's Copy menu command).
+    CopySelection,
     /// Synthesize a paste/drop; for drops x/y are release widget coords.
     DispatchPasteEvent {
         mime: String,
@@ -142,6 +145,7 @@ fn decode_payload<T: for<'de> Deserialize<'de>>(
 
 impl BrowserMessage {
     const KNOWN_TAGS: &'static [&'static str] = &[
+        "CopySelection",
         "DispatchPasteEvent",
         "DragHover",
         #[cfg(debug_assertions)]
@@ -150,6 +154,7 @@ impl BrowserMessage {
 
     pub fn variant_tag(&self) -> &'static str {
         match self {
+            BrowserMessage::CopySelection => "CopySelection",
             BrowserMessage::DispatchPasteEvent { .. } => "DispatchPasteEvent",
             BrowserMessage::DragHover { .. } => "DragHover",
             #[cfg(debug_assertions)]
@@ -221,6 +226,7 @@ mod tests {
     #[test]
     fn browser_roundtrip_every_variant() {
         let cases = vec![
+            BrowserMessage::CopySelection,
             BrowserMessage::DispatchPasteEvent {
                 mime: "image/png".into(),
                 kind: "paste".into(),

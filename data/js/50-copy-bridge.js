@@ -21,7 +21,21 @@
   }
 
   try {
-    // Ctrl+C / context-menu copy → regular clipboard. Bubble-phase listener
+    // Host-triggered explicit Copy reads selection synchronously in this renderer,
+    // rather than racing the debounced PRIMARY mirror. Empty/collapsed selections
+    // deliberately send nothing so an existing regular clipboard is preserved.
+    function copyLiveSelection() {
+      try {
+        var sel = window.getSelection();
+        var text = sel && !sel.isCollapsed ? sel.toString() : "";
+        if (text) send("SetClipboard", { text: text, primary: false });
+      } catch (_) {}
+    }
+    window.addEventListener("karere:copy-selection", copyLiveSelection, false);
+
+    // Keep listening for page-originated Copy operations. Host Ctrl+C/menu actions
+    // dispatch the private host event above because OSR does not reliably emit
+    // this DOM event.
     // (after the page sets clipboardData): prefer that data, else the selection.
     document.addEventListener(
       "copy",
@@ -33,7 +47,7 @@
           } catch (_) {}
           if (!text) {
             var sel = window.getSelection();
-            text = sel ? sel.toString() : "";
+            text = sel && !sel.isCollapsed ? sel.toString() : "";
           }
           try {
             console.log("karere copy event: " + (text ? text.length + " chars" : "EMPTY"));

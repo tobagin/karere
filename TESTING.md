@@ -13,6 +13,20 @@ Per PRD §11.
 - [ ] Open/close 50 times: no leaked memory (`heaptrack ./karere`).
 - [ ] After quit: `ps -ef | grep karere` shows no orphan processes.
 
+### Text selection and clipboard (#178)
+
+Use only synthetic/non-sensitive text when recording evidence.
+
+- [ ] On Wayland, drag across several words and multiple lines in a received and sent message; the highlight follows the pointer and remains after release.
+- [ ] Immediately press Ctrl+C (before pausing after the drag), then paste into an external GTK text editor; the exact Unicode/multi-line selection appears.
+- [ ] Repeat using right-click → CEF **Copy**; dismissing the menu without choosing an item must not change the clipboard.
+- [ ] Click without selecting and press Ctrl+C; pre-existing regular clipboard content must remain unchanged.
+- [ ] Select text normally, then middle-click in an editable field; PRIMARY selection paste still works once and ordinary selection alone does not overwrite regular CLIPBOARD.
+- [ ] Switch between two accounts and repeat; input and copied text must always come from the visible account.
+- [ ] Repeat at desktop and narrow/mobile-responsive widths, and at 1× and 2× scale factors.
+- [ ] Repeat the drag, immediate Ctrl+C, and context-menu Copy checks on X11.
+- [ ] On touch hardware, verify touch scrolling/taps remain independent and do not produce duplicate mouse clicks.
+
 ## Automated
 
 Use Rust 1.97.1 with its matching rustfmt and Clippy components. Run the repository-wide acceptance gates from the repository root:
@@ -54,6 +68,11 @@ On a PinePhone running Mobian 13 under Phosh:
 3. Launch normally and confirm WhatsApp renders, accepts touch input, and remains visible after portrait/landscape resize.
 4. Enable **Start in Background**, restart, then present Karere from the app launcher/tray and confirm the prewarmed browser appears rather than a blank GLArea.
 5. Quit and confirm no Karere/CEF process remains. Capture a screenshot and terminal log as release evidence.
+
+### Text selection automation
+
+- [ ] `cargo test` — unit and headless integration coverage, including ordered raw mouse drag lifecycle, click counts, touch-emulation suppression, HiDPI coordinates, CEF Copy command classification, IPC, clipboard sanitization/caps, and clean SIGTERM exit.
+- [ ] `node tests/copy_bridge.test.js` — executes the production injected copy bridge with populated, duplicate, Unicode/multi-line, immediate-copy, PRIMARY debounce, and empty/collapsed selection cases.
 
 ## Beta testing (flathub-beta)
 

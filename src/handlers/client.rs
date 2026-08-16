@@ -1,3 +1,5 @@
+#![allow(clippy::too_many_arguments)] // generated WrapClient constructor mirrors CEF's handlers
+
 use cef::{
     self, CefString, Client, ContextMenuHandler, DisplayHandler, DownloadHandler, FindHandler,
     ImplBrowser, ImplClient, ImplFrame, LifeSpanHandler, LoadHandler, PermissionHandler,
@@ -79,7 +81,16 @@ mod generated_client {
             // Attribute message to its account via the sending browser's id.
             let cef_id = browser.as_ref().map(|b| b.identifier()).unwrap_or(0);
             let account_id = crate::accounts::account_for_browser(cef_id);
-            match RendererMessage::try_from_cef_message(message) {
+            let decoded = RendererMessage::try_from_cef_message(message);
+            // Clipboard messages take the production-used narrow adapter after
+            // the real CEF decoder. Other renderer messages continue through the
+            // full client match below.
+            if let Ok(message) = decoded.as_ref()
+                && dispatch_renderer_message_with(message, write_host_clipboard).is_some()
+            {
+                return 1;
+            }
+            match decoded {
                 Ok(RendererMessage::ConsoleLog { level, msg }) => {
                     match level.as_str() {
                         "error" => log::error!("[page] {msg}"),
@@ -119,19 +130,8 @@ mod generated_client {
                     }
                     1
                 }
-                Ok(RendererMessage::SetClipboard { text, primary }) => {
-                    // Page-driven write to the host clipboard (no user gesture);
-                    // cap it so a hostile page can't dump unbounded data, then
-                    // strip control chars so it can't smuggle terminal escape
-                    // sequences into the victim's clipboard (see sanitize_clipboard).
-                    const MAX_CLIPBOARD_BYTES: usize = 1024 * 1024;
-                    if text.len() > MAX_CLIPBOARD_BYTES {
-                        log::warn!("SetClipboard: oversized text ({} bytes), dropping", text.len());
-                    } else {
-                        write_host_clipboard(&sanitize_clipboard(&text), primary);
-                    }
-                    1
-                }
+                // Handled by dispatch_renderer_message_with above.
+                Ok(RendererMessage::SetClipboard { .. }) => 1,
                 Ok(RendererMessage::ProfileIdentity { wid, pushname, source }) => {
                     if let Some(id) = account_id.as_deref() {
                         // Identity = page connected → clear awaiting-pairing. A
@@ -215,6 +215,59 @@ mod generated_client {
 
 pub use generated_client::ClientBuilder;
 
+const MAX_CLIPBOARD_BYTES: usize = 1024 * 1024;
+
+/// Validate and sanitize a page clipboard payload. Returning `None` means the
+/// existing destination clipboard must be preserved.
+fn prepare_clipboard_write(text: &str) -> Option<String> {
+    if text.is_empty() || text.len() > MAX_CLIPBOARD_BYTES {
+        return None;
+    }
+    let sanitized = sanitize_clipboard(text);
+    (!sanitized.is_empty()).then_some(sanitized)
+}
+
+/// Consume the typed message produced by the real client CEF decoder. `None`
+/// means the message belongs to another client concern; `Some(false)` is a
+/// rejected empty/oversized clipboard payload.
+pub(crate) fn dispatch_renderer_message_with(
+    message: &crate::ipc::RendererMessage,
+    write: impl FnOnce(&str, bool),
+) -> Option<bool> {
+    match message {
+        crate::ipc::RendererMessage::SetClipboard { text, primary } => {
+            Some(dispatch_clipboard_write(text, *primary, write))
+        }
+        _ => None,
+    }
+}
+
+/// Production SetClipboard adapter with an injectable destination writer. The
+/// browser-process handler uses this with GDK; regression tests use an in-memory
+/// writer while exercising the identical cap, sanitizer, and CLIPBOARD/PRIMARY
+/// destination decision.
+pub(crate) fn dispatch_clipboard_write(
+    text: &str,
+    primary: bool,
+    write: impl FnOnce(&str, bool),
+) -> bool {
+    match prepare_clipboard_write(text) {
+        Some(text) => {
+            write(&text, primary);
+            true
+        }
+        None => {
+            if text.len() > MAX_CLIPBOARD_BYTES {
+                log::warn!(
+                    "SetClipboard: oversized text ({} bytes), dropping",
+                    text.len()
+                );
+            }
+            false
+        }
+    }
+}
+
 /// Strip control characters from a page-supplied clipboard write so a hostile
 /// page can't smuggle terminal escape sequences (ANSI/OSC) that execute commands
 /// or spoof output when the victim pastes into a terminal. Tab/newline/CR are
@@ -277,7 +330,10 @@ impl ClientBuilder {
 
 #[cfg(test)]
 mod tests {
-    use super::sanitize_clipboard;
+    use super::{
+        MAX_CLIPBOARD_BYTES, dispatch_renderer_message_with, prepare_clipboard_write,
+        sanitize_clipboard,
+    };
 
     #[test]
     fn strips_escape_and_control_chars() {
@@ -294,5 +350,60 @@ mod tests {
             "line1\nline2\tx\r\n"
         );
         assert_eq!(sanitize_clipboard("héllo 相片 🙂"), "héllo 相片 🙂");
+    }
+
+    #[test]
+    fn clipboard_adapter_preserves_existing_value_for_empty_or_oversized_input() {
+        assert_eq!(prepare_clipboard_write(""), None);
+        assert_eq!(prepare_clipboard_write("\x1b\x07"), None);
+        assert_eq!(
+            prepare_clipboard_write(&"x".repeat(MAX_CLIPBOARD_BYTES + 1)),
+            None
+        );
+    }
+
+    #[test]
+    fn clipboard_adapter_accepts_repeated_unicode_multiline_copy() {
+        let text = "first line\nZażółć 🙂";
+        assert_eq!(prepare_clipboard_write(text).as_deref(), Some(text));
+        assert_eq!(prepare_clipboard_write(text).as_deref(), Some(text));
+        assert_eq!(prepare_clipboard_write("a\x1bb").as_deref(), Some("ab"));
+    }
+
+    #[test]
+    fn production_dispatch_selects_destination_and_sanitizes_before_write() {
+        let mut writes = Vec::new();
+        for message in [
+            crate::ipc::RendererMessage::SetClipboard {
+                text: "regular\x1b text".to_owned(),
+                primary: false,
+            },
+            crate::ipc::RendererMessage::SetClipboard {
+                text: "primary\ntext".to_owned(),
+                primary: true,
+            },
+        ] {
+            assert_eq!(
+                dispatch_renderer_message_with(&message, |text, primary| {
+                    writes.push((primary, text.to_owned()));
+                }),
+                Some(true)
+            );
+        }
+        let empty = crate::ipc::RendererMessage::SetClipboard {
+            text: String::new(),
+            primary: false,
+        };
+        assert_eq!(
+            dispatch_renderer_message_with(&empty, |_, _| unreachable!()),
+            Some(false)
+        );
+        assert_eq!(
+            writes,
+            vec![
+                (false, "regular text".to_owned()),
+                (true, "primary\ntext".to_owned()),
+            ]
+        );
     }
 }

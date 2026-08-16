@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **PinePhone / GLES-only startup (#177)**: the CEF presentation GLArea now explicitly negotiates the GLES 3.0 context its shaders require instead of defaulting to desktop OpenGL. CPU off-screen paint remains the fallback when accelerated DMA-BUF rendering is unavailable; a rejected import now recreates the affected browser pool without shared textures so CPU frames resume instead of leaving a blank view. The stable and Devel Flatpaks retain the `GSK_RENDERER=gl` workaround for GNOME OS/Wayland (#164).
+- **Chat text selection and copying (#178)**: dragging across message text now preserves the complete mouse press/move/release sequence. Immediate Ctrl+C and the context-menu Copy command read the live page selection, so they no longer race Linux PRIMARY clipboard synchronization.
 
 ## [4.2.2] - 2026-08-10
 

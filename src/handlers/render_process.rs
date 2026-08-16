@@ -81,8 +81,9 @@ wrap_render_process_handler! {
         ) -> c_int {
             let Some(message) = message else { return 0 };
             match BrowserMessage::try_from_cef_message(message) {
-                Ok(msg) => {
-                    dispatch(msg, frame);
+                Ok(message) => {
+                    let mut sink = frame.map(FrameDispatchSink);
+                    dispatch_browser_message_with(message, &mut sink);
                     1
                 }
                 Err(ipc::IpcError::UnknownVariant(name)) => {
@@ -104,10 +105,61 @@ impl ShellRenderProcessHandlerBuilder {
     }
 }
 
-/// Route a decoded [`BrowserMessage`] to its handler: paste/drop events are
-/// re-emitted as page CustomEvents; debug `Ping` replies `Pong` on the frame.
-fn dispatch(msg: BrowserMessage, frame: Option<&mut Frame>) {
+/// Renderer operations used by the production CEF frame and by the headless
+/// pipeline regression. The seam sits at the actual `Frame` calls, after typed
+/// IPC decoding, so tests cannot bypass browser-message dispatch.
+pub(crate) trait RendererDispatchSink {
+    fn execute_java_script(&mut self, script: &str, source_url: &str);
+    fn send_to_browser(&mut self, message: RendererMessage);
+}
+
+struct FrameDispatchSink<'a>(&'a mut Frame);
+
+impl RendererDispatchSink for FrameDispatchSink<'_> {
+    fn execute_java_script(&mut self, script: &str, source_url: &str) {
+        self.0.execute_java_script(
+            Some(&CefString::from(script)),
+            Some(&CefString::from(source_url)),
+            0,
+        );
+    }
+
+    fn send_to_browser(&mut self, message: RendererMessage) {
+        if let Some(mut message) = message.to_cef_message() {
+            self.0
+                .send_process_message(ProcessId::BROWSER, Some(&mut message));
+        }
+    }
+}
+
+impl<S: RendererDispatchSink> RendererDispatchSink for Option<S> {
+    fn execute_java_script(&mut self, script: &str, source_url: &str) {
+        if let Some(sink) = self {
+            sink.execute_java_script(script, source_url);
+        }
+    }
+
+    fn send_to_browser(&mut self, message: RendererMessage) {
+        if let Some(sink) = self {
+            sink.send_to_browser(message);
+        }
+    }
+}
+
+const COPY_SELECTION_SCRIPT: &str =
+    "window.dispatchEvent(new CustomEvent('karere:copy-selection'))";
+
+/// Dispatch the typed message produced by the real CEF process-message decoder.
+/// Tests inject only the final frame sink because constructing CEF ref-counted
+/// process messages without a running CEF context is unsupported.
+pub(crate) fn dispatch_browser_message_with(
+    msg: BrowserMessage,
+    sink: &mut impl RendererDispatchSink,
+) {
     match msg {
+        BrowserMessage::CopySelection => {
+            sink.execute_java_script(COPY_SELECTION_SCRIPT, "karere://copy-selection");
+        }
         BrowserMessage::DispatchPasteEvent {
             mime,
             kind,
@@ -116,7 +168,6 @@ fn dispatch(msg: BrowserMessage, frame: Option<&mut Frame>) {
             x,
             y,
         } => {
-            let Some(frame) = frame else { return };
             // Re-shape into a discriminated object so `paste_bridge.js` can
             // branch on `payload.kind` without serde's externally-tagged form.
             let payload_json = match payload {
@@ -137,33 +188,17 @@ fn dispatch(msg: BrowserMessage, frame: Option<&mut Frame>) {
             let script = format!(
                 "window.dispatchEvent(new CustomEvent('karere:dispatch-paste',{{detail:{detail}}}))"
             );
-            frame.execute_java_script(
-                Some(&CefString::from(script.as_str())),
-                Some(&CefString::from("karere://paste")),
-                0,
-            );
+            sink.execute_java_script(&script, "karere://paste");
         }
         BrowserMessage::DragHover { phase, x, y } => {
-            if let Some(frame) = frame {
-                let detail = serde_json::json!({ "phase": phase, "x": x, "y": y });
-                let script = format!(
-                    "window.dispatchEvent(new CustomEvent('karere:drag-hover',{{detail:{detail}}}))"
-                );
-                frame.execute_java_script(
-                    Some(&CefString::from(script.as_str())),
-                    Some(&CefString::from("karere://drag")),
-                    0,
-                );
-            }
+            let detail = serde_json::json!({ "phase": phase, "x": x, "y": y });
+            let script = format!(
+                "window.dispatchEvent(new CustomEvent('karere:drag-hover',{{detail:{detail}}}))"
+            );
+            sink.execute_java_script(&script, "karere://drag");
         }
         #[cfg(debug_assertions)]
-        BrowserMessage::Ping => {
-            if let Some(frame) = frame
-                && let Some(mut pong) = RendererMessage::Pong.to_cef_message()
-            {
-                frame.send_process_message(ProcessId::BROWSER, Some(&mut pong));
-            }
-        }
+        BrowserMessage::Ping => sink.send_to_browser(RendererMessage::Pong),
     }
 }
 
@@ -197,15 +232,8 @@ wrap_v8_handler! {
             let variant = read(0);
             let inner_json = read(1);
 
-            // Wrap inner fields into serde's externally-tagged envelope: unit
-            // variant -> `"Tag"`, else `{"Tag": <inner>}`.
-            let envelope = if inner_json.trim().is_empty() || inner_json == "null" {
-                format!("\"{variant}\"")
-            } else {
-                format!("{{\"{variant}\":{inner_json}}}")
-            };
-
-            if let Some(mut msg) = ipc::to_cef_message(&variant, envelope)
+            if let Some(message) = renderer_message_from_v8_args(&variant, &inner_json)
+                && let Some(mut msg) = message.to_cef_message()
                 && let Some(ctx) = v8_context_get_current_context()
                 && let Some(frame) = ctx.frame()
             {
@@ -220,6 +248,23 @@ impl KarereV8HandlerBuilder {
     pub fn build() -> V8Handler {
         Self::new(KarereV8Handler)
     }
+}
+
+/// Build the exact renderer→browser envelope emitted by `karere_send`. This is
+/// shared with the pipeline regression so the JavaScript result traverses the
+/// production V8 bridge rather than being reconstructed as RendererMessage.
+pub(crate) fn renderer_message_from_v8_args(
+    variant: &str,
+    inner_json: &str,
+) -> Option<RendererMessage> {
+    // Wrap inner fields into serde's externally-tagged envelope: unit variant
+    // -> `"Tag"`, else `{"Tag": <inner>}`.
+    let envelope = if inner_json.trim().is_empty() || inner_json == "null" {
+        format!("\"{variant}\"")
+    } else {
+        format!("{{\"{variant}\":{inner_json}}}")
+    };
+    serde_json::from_str(&envelope).ok()
 }
 
 #[derive(Clone, Default)]

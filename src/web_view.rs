@@ -511,7 +511,7 @@ mod imp {
     use cef::{
         self, Browser, BrowserSettings, CefString, EventFlags, ImplBrowser, ImplBrowserHost,
         ImplFrame, ImplRequestContextHandler, ImplRunContextMenuCallback, KeyEvent, KeyEventType,
-        MouseButtonType, MouseEvent, PointerType, RequestContext, RequestContextHandler,
+        MouseButtonType, MouseEvent, PointerType, ProcessId, RequestContext, RequestContextHandler,
         RequestContextSettings, RunContextMenuCallback, TouchEvent, TouchEventType, WindowInfo,
         WrapRequestContextHandler, browser_host_create_browser_sync, rc::Rc,
         request_context_create_context, sys, wrap_request_context_handler,
@@ -839,6 +839,16 @@ mod imp {
             *self.pending_url.lock() = Some(url.to_owned());
         }
 
+        fn cancel_context_menu(&self) {
+            self.pending_menu_command.set(None);
+            if let Some(cb) = self.pending_menu_callback.borrow_mut().take() {
+                cb.cancel();
+            }
+            if let Some(pop) = self.context_popover.borrow_mut().take() {
+                pop.unparent();
+            }
+        }
+
         pub fn close_browser(&self) {
             #[cfg(test)]
             if self.suppress_browser_creation.load(Ordering::Acquire) {
@@ -847,12 +857,7 @@ mod imp {
 
             // Cancel any in-flight OSR menu so CEF doesn't leak pending-menu state
             // on mid-menu teardown, and drop the popover.
-            if let Some(cb) = self.pending_menu_callback.borrow_mut().take() {
-                cb.cancel();
-            }
-            if let Some(pop) = self.context_popover.borrow_mut().take() {
-                pop.unparent();
-            }
+            self.cancel_context_menu();
             let id = self.browser_id.swap(0, Ordering::Relaxed);
             if id != 0 {
                 super::unregister_context_menu_widget(id);
@@ -1008,6 +1013,10 @@ mod imp {
                         match cmd {
                             Some(id) => {
                                 log::debug!("context menu: cont(id={id})");
+                                dispatch_explicit_copy(
+                                    ExplicitCopyTrigger::ContextMenu(id),
+                                    || request_live_selection(&obj),
+                                );
                                 cb.cont(id, EventFlags::default());
                             }
                             None => cb.cancel(),
@@ -1382,6 +1391,18 @@ mod imp {
             browser: Browser,
             life: ShellLifeSpanHandler,
         ) {
+            // A menu belongs to the browser that opened it. Cancel it before an
+            // account switch so a delayed Copy activation cannot target the newly
+            // foregrounded account's selection.
+            if self
+                .browser
+                .lock()
+                .as_ref()
+                .is_some_and(|previous| previous.identifier() != browser.identifier())
+            {
+                self.cancel_context_menu();
+            }
+
             // Pause the OUTGOING foreground. Required so a later switch back wakes
             // it with a real visibility change: `was_hidden(0)` is a no-op on an
             // already-visible browser and emits no paint, which would leave a
@@ -1728,6 +1749,215 @@ mod imp {
         }
     }
 
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    struct ClickHistory {
+        button: u32,
+        x: f64,
+        y: f64,
+        time: u32,
+        count: i32,
+    }
+
+    /// Button state shared by the real GTK legacy-event controller and motion
+    /// controller. Unlike GestureClick, raw button releases are not cancelled
+    /// when a pointer crosses GTK's drag threshold.
+    #[derive(Debug, Default)]
+    pub(super) struct MouseButtonTracker {
+        pressed: u32,
+        press_counts: [i32; 3],
+        last_click: Option<ClickHistory>,
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    pub(super) enum MouseInput {
+        Press {
+            button: u32,
+            x: f64,
+            y: f64,
+            time: u32,
+            double_time: u32,
+            double_distance: f64,
+            modifiers: u32,
+        },
+        Motion { x: f64, y: f64, modifiers: u32 },
+        Release { button: u32, x: f64, y: f64, modifiers: u32 },
+        Cancel { x: f64, y: f64 },
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    pub(super) enum MouseDispatch {
+        Click {
+            x: f64,
+            y: f64,
+            button: u32,
+            down: bool,
+            count: i32,
+            modifiers: u32,
+        },
+        Move { x: f64, y: f64, modifiers: u32 },
+    }
+
+    impl MouseButtonTracker {
+        pub(super) fn handle(&mut self, input: MouseInput) -> Vec<MouseDispatch> {
+            match input {
+                MouseInput::Press {
+                    button,
+                    x,
+                    y,
+                    time,
+                    double_time,
+                    double_distance,
+                    modifiers,
+                } => self
+                    .press(button, x, y, time, double_time, double_distance)
+                    .map(|count| MouseDispatch::Click {
+                        x,
+                        y,
+                        button,
+                        down: true,
+                        count,
+                        modifiers: modifiers | self.active_modifiers(),
+                    })
+                    .into_iter()
+                    .collect(),
+                MouseInput::Motion { x, y, modifiers } => vec![MouseDispatch::Move {
+                    x,
+                    y,
+                    modifiers: modifiers | self.active_modifiers(),
+                }],
+                MouseInput::Release { button, x, y, modifiers } => self
+                    .release(button)
+                    .map(|count| MouseDispatch::Click {
+                        x,
+                        y,
+                        button,
+                        down: false,
+                        count,
+                        modifiers,
+                    })
+                    .into_iter()
+                    .collect(),
+                MouseInput::Cancel { x, y } => self
+                    .cancel_all()
+                    .into_iter()
+                    .map(|(button, count)| MouseDispatch::Click {
+                        x,
+                        y,
+                        button,
+                        down: false,
+                        count,
+                        modifiers: 0,
+                    })
+                    .collect(),
+            }
+        }
+
+        pub(super) fn press(
+            &mut self,
+            button: u32,
+            x: f64,
+            y: f64,
+            time: u32,
+            double_time: u32,
+            double_distance: f64,
+        ) -> Option<i32> {
+            let mask = button_mask(button)?;
+            if self.pressed & mask != 0 {
+                return None;
+            }
+            let count = self
+                .last_click
+                .filter(|last| {
+                    last.button == button
+                        && time.wrapping_sub(last.time) <= double_time
+                        && (x - last.x).abs() <= double_distance
+                        && (y - last.y).abs() <= double_distance
+                })
+                .map_or(1, |last| (last.count % 3) + 1);
+            self.pressed |= mask;
+            self.press_counts[(button - 1) as usize] = count;
+            self.last_click = Some(ClickHistory { button, x, y, time, count });
+            Some(count)
+        }
+
+        pub(super) fn release(&mut self, button: u32) -> Option<i32> {
+            let mask = button_mask(button)?;
+            if self.pressed & mask == 0 {
+                return None;
+            }
+            self.pressed &= !mask;
+            Some(self.press_counts[(button - 1) as usize].max(1))
+        }
+
+        pub(super) fn active_modifiers(&self) -> u32 {
+            self.pressed
+        }
+
+        pub(super) fn cancel_all(&mut self) -> Vec<(u32, i32)> {
+            (1..=3)
+                .filter_map(|button| self.release(button).map(|count| (button, count)))
+                .collect()
+        }
+    }
+
+    pub(super) fn should_forward_mouse(pointer_emulated: bool) -> bool {
+        !pointer_emulated
+    }
+
+    fn button_mask(button: u32) -> Option<u32> {
+        use sys::cef_event_flags_t as F;
+        match button {
+            1 => Some(F::EVENTFLAG_LEFT_MOUSE_BUTTON.0),
+            2 => Some(F::EVENTFLAG_MIDDLE_MOUSE_BUTTON.0),
+            3 => Some(F::EVENTFLAG_RIGHT_MOUSE_BUTTON.0),
+            _ => None,
+        }
+    }
+
+    fn dispatch_mouse(widget: &super::KarereWebView, event: MouseDispatch) {
+        dispatch_mouse_with(
+            event,
+            |x, y, button, down, count, modifiers| {
+                send_click(widget, x, y, button, down, count, modifiers)
+            },
+            |x, y, modifiers| send_move(widget, x, y, modifiers, false),
+        );
+    }
+
+    /// Production dispatch seam shared by the installed GTK controllers and the
+    /// headless regression harness. Keeping the sink injectable proves that the
+    /// adapter calls the click/move forwarding path rather than merely mutating
+    /// button state.
+    pub(super) fn dispatch_mouse_with(
+        event: MouseDispatch,
+        mut click: impl FnMut(f64, f64, u32, bool, i32, u32),
+        mut motion: impl FnMut(f64, f64, u32),
+    ) {
+        match event {
+            MouseDispatch::Click {
+                x,
+                y,
+                button,
+                down,
+                count,
+                modifiers,
+            } => click(x, y, button, down, count, modifiers),
+            MouseDispatch::Move { x, y, modifiers } => motion(x, y, modifiers),
+        }
+    }
+
+    fn release_stuck_mouse_buttons(
+        widget: &super::KarereWebView,
+        state: &std::rc::Rc<RefCell<MouseButtonTracker>>,
+    ) {
+        let scale = widget.scale_factor().max(1) as f64;
+        let x = widget.imp().last_mouse_x.load(Ordering::Relaxed) as f64 / scale;
+        let y = widget.imp().last_mouse_y.load(Ordering::Relaxed) as f64 / scale;
+        for event in state.borrow_mut().handle(MouseInput::Cancel { x, y }) {
+            dispatch_mouse(widget, event);
+        }
+    }
+
     fn install_input_controllers(widget: &super::KarereWebView) {
         use gtk::gdk;
 
@@ -1783,69 +2013,110 @@ mod imp {
         ));
         widget.add_controller(drag);
 
-        // Mouse motion -------------------------------------------------------
+        // Mouse --------------------------------------------------------------
+        // Keep raw button lifecycle separate from GTK gestures. GestureClick's
+        // `released` signal is cancelled after a drag threshold crossing, which
+        // used to leave CEF logically button-down and made text unselectable.
+        let mouse_buttons = std::rc::Rc::new(RefCell::new(MouseButtonTracker::default()));
+
         let motion = gtk::EventControllerMotion::new();
         motion.connect_motion(glib::clone!(
-            #[weak]
-            widget,
+            #[weak] widget,
+            #[strong] mouse_buttons,
             move |ctrl, x, y| {
-                if is_pointer_emulated(ctrl) {
+                if !should_forward_mouse(is_pointer_emulated(ctrl)) {
                     return; // touch handled above; don't double-feed as mouse
                 }
                 let modifiers = modifiers_from_state(ctrl.current_event_state());
-                send_move(&widget, x, y, modifiers, false);
+                for event in mouse_buttons
+                    .borrow_mut()
+                    .handle(MouseInput::Motion { x, y, modifiers })
+                {
+                    dispatch_mouse(&widget, event);
+                }
             }
         ));
         motion.connect_leave(glib::clone!(
-            #[weak]
-            widget,
+            #[weak] widget,
+            #[strong] mouse_buttons,
             move |ctrl| {
-                let modifiers = modifiers_from_state(ctrl.current_event_state());
+                let modifiers = modifiers_from_state(ctrl.current_event_state())
+                    | mouse_buttons.borrow().active_modifiers();
                 send_move(&widget, 0.0, 0.0, modifiers, true);
             }
         ));
         widget.add_controller(motion);
 
-        // Mouse buttons ------------------------------------------------------
-        for button in 1..=3 {
-            let click = gtk::GestureClick::builder().button(button).build();
-            click.connect_pressed(glib::clone!(
-                #[weak]
-                widget,
-                #[strong]
-                im,
-                move |gesture, n_press, x, y| {
-                    if is_pointer_emulated(gesture) {
-                        return; // touch handled by the drag gesture (#162)
-                    }
-                    widget.grab_focus();
-                    // Focus CEF on every click: at launch the GLArea may already hold
-                    // GTK focus, so `grab_focus` is a no-op and the enter signal never
-                    // fires, leaving CEF unfocused (no caret until refocus).
-                    set_focus(&widget, true);
-                    im.set_cursor_location(&gtk::gdk::Rectangle::new(x as i32, y as i32, 1, 1));
-                    let modifiers = modifiers_from_state(gesture.current_event_state());
-                    send_click(&widget, x, y, button, true, n_press, modifiers);
-                    // M17: middle-click also pastes primary. Not claimed, so CEF still
-                    // gets the middle button (preserves middle-click-to-open-link).
-                    if button == 2 {
-                        read_primary_clipboard_paste(&widget, x, y);
-                    }
+        let buttons = gtk::EventControllerLegacy::new();
+        buttons.connect_event(glib::clone!(
+            #[weak] widget,
+            #[strong] im,
+            #[strong] mouse_buttons,
+            #[upgrade_or] glib::Propagation::Proceed,
+            move |_ctrl, event| {
+                use gtk::gdk::{ButtonEvent, EventType};
+                if !should_forward_mouse(event.is_pointer_emulated()) {
+                    return glib::Propagation::Proceed;
                 }
-            ));
-            click.connect_released(glib::clone!(
-                #[weak]
-                widget,
-                move |gesture, n_press, x, y| {
-                    if is_pointer_emulated(gesture) {
-                        return; // touch handled by the drag gesture (#162)
-                    }
-                    let modifiers = modifiers_from_state(gesture.current_event_state());
-                    send_click(&widget, x, y, button, false, n_press, modifiers);
+                if event.event_type() == EventType::GrabBroken {
+                    release_stuck_mouse_buttons(&widget, &mouse_buttons);
+                    return glib::Propagation::Proceed;
                 }
-            ));
-            widget.add_controller(click);
-        }
+                let Some(button_event) = event.downcast_ref::<ButtonEvent>() else {
+                    return glib::Propagation::Proceed;
+                };
+                let button = button_event.button();
+                let Some((x, y)) = event.position() else {
+                    return glib::Propagation::Proceed;
+                };
+                let modifiers = modifiers_from_state(event.modifier_state());
+                match event.event_type() {
+                    EventType::ButtonPress => {
+                        let settings = widget.settings();
+                        widget.grab_focus();
+                        set_focus(&widget, true);
+                        im.set_cursor_location(&gtk::gdk::Rectangle::new(
+                            x as i32, y as i32, 1, 1,
+                        ));
+                        let events = mouse_buttons.borrow_mut().handle(MouseInput::Press {
+                            button,
+                            x,
+                            y,
+                            time: event.time(),
+                            double_time: settings.gtk_double_click_time().max(0) as u32,
+                            double_distance: settings.gtk_double_click_distance().max(0) as f64,
+                            modifiers,
+                        });
+                        if !events.is_empty() && button == 2 {
+                            read_primary_clipboard_paste(&widget, x, y);
+                        }
+                        for event in events {
+                            dispatch_mouse(&widget, event);
+                        }
+                    }
+                    EventType::ButtonRelease => {
+                        for event in mouse_buttons.borrow_mut().handle(MouseInput::Release {
+                            button,
+                            x,
+                            y,
+                            modifiers,
+                        }) {
+                            dispatch_mouse(&widget, event);
+                        }
+                    }
+                    _ => {}
+                }
+                glib::Propagation::Proceed
+            }
+        ));
+        widget.add_controller(buttons);
+
+        // A cancelled device grab or widget teardown must not strand CEF in a
+        // button-down state. Normal releases have already removed their bit.
+        widget.connect_unrealize(glib::clone!(
+            #[strong] mouse_buttons,
+            move |widget| release_stuck_mouse_buttons(widget, &mouse_buttons)
+        ));
 
         // Scroll -------------------------------------------------------------
         let scroll = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::BOTH_AXES);
@@ -1890,16 +2161,13 @@ mod imp {
                 {
                     return glib::Propagation::Stop;
                 }
-                // M17 outbound: CEF's offscreen copy never reaches the system clipboard
-                // (DOM `copy` doesn't fire in OSR). Page selection is mirrored to PRIMARY
-                // (50-copy-bridge), so on Ctrl+C promote PRIMARY → CLIPBOARD at the GTK
-                // layer. Key still forwards to CEF below.
-                if state.contains(ModifierType::CONTROL_MASK)
-                    && !state.intersects(ModifierType::ALT_MASK | ModifierType::SUPER_MASK)
-                    && matches!(keyval, Key::c | Key::C)
-                {
-                    promote_primary_to_clipboard();
-                }
+                // OSR's native copy has no platform clipboard. Ask the renderer
+                // for the current selection now, without racing the 50 ms PRIMARY
+                // mirror. The key still forwards so page copy behavior is preserved.
+                dispatch_explicit_copy(
+                    ExplicitCopyTrigger::Keyboard { keyval, state },
+                    || request_live_selection(&widget),
+                );
                 // A physical keypress means the user is typing — if the page's
                 // editable-focus signal left the IM focused-out (post-send input
                 // re-render), dead keys silently stop composing. Re-focus first. (#154)
@@ -2033,6 +2301,43 @@ mod imp {
         widget.add_controller(drop_target);
 
         let _ = gdk::ModifierType::SHIFT_MASK; // suppress unused-import warning
+    }
+
+    pub(super) fn is_copy_shortcut(
+        keyval: gtk::gdk::Key,
+        state: gtk::gdk::ModifierType,
+    ) -> bool {
+        use gtk::gdk::{Key, ModifierType};
+        state.contains(ModifierType::CONTROL_MASK)
+            && !state.intersects(ModifierType::ALT_MASK | ModifierType::SUPER_MASK)
+            && matches!(keyval, Key::c | Key::C)
+    }
+
+    #[derive(Debug, Clone, Copy)]
+    pub(super) enum ExplicitCopyTrigger {
+        Keyboard {
+            keyval: gtk::gdk::Key,
+            state: gtk::gdk::ModifierType,
+        },
+        ContextMenu(i32),
+    }
+
+    /// Shared production trigger used by both the installed key controller and
+    /// the CEF context-menu callback. The request sink is injectable so tests
+    /// cover command dispatch, not just shortcut/command classification.
+    pub(super) fn dispatch_explicit_copy(
+        trigger: ExplicitCopyTrigger,
+        request: impl FnOnce(),
+    ) {
+        let requested = match trigger {
+            ExplicitCopyTrigger::Keyboard { keyval, state } => is_copy_shortcut(keyval, state),
+            ExplicitCopyTrigger::ContextMenu(command_id) => {
+                crate::handlers::context_menu::is_copy_command(command_id)
+            }
+        };
+        if requested {
+            request();
+        }
     }
 
     fn is_accelerator_key(keyval: gtk::gdk::Key, state: gtk::gdk::ModifierType) -> bool {
@@ -2173,12 +2478,17 @@ mod imp {
         None
     }
 
-    fn with_host<F: FnOnce(&cef::BrowserHost)>(widget: &super::KarereWebView, f: F) {
-        if let Some(b) = resolved_browser(widget.imp())
-            && let Some(host) = b.host()
-        {
-            f(&host);
+    pub(super) fn with_resolved<T>(resolve: impl FnOnce() -> Option<T>, send: impl FnOnce(T)) {
+        if let Some(target) = resolve() {
+            send(target);
         }
+    }
+
+    fn with_host<F: FnOnce(&cef::BrowserHost)>(widget: &super::KarereWebView, f: F) {
+        with_resolved(
+            || resolved_browser(widget.imp()).and_then(|browser| browser.host()),
+            |host| f(&host),
+        );
     }
 
     /// Scale (DIP→physical) the OSR paint buffer must use so it maps 1:1 onto the
@@ -2266,23 +2576,96 @@ mod imp {
         widget.scale_factor().max(1) as f64
     }
 
-    fn send_move(widget: &super::KarereWebView, x: f64, y: f64, modifiers: u32, leave: bool) {
-        // CEF view coords are physical pixels (view_rect is physical, #158):
-        // scale the logical GTK cursor by the integer GLArea scale. Store it in
-        // the same space so wheel events hit-test the element under the cursor.
-        let s = widget.scale_factor().max(1);
-        let (px, py) = (x as i32 * s, y as i32 * s);
+    pub(super) fn physical_mouse_coordinates(x: f64, y: f64, scale: i32) -> (i32, i32) {
+        (x as i32 * scale.max(1), y as i32 * scale.max(1))
+    }
+
+    /// CEF mouse-host operations. Production implements this on BrowserHost;
+    /// tests inject an in-memory host only at this final API boundary.
+    pub(super) trait MouseEventSink {
+        fn send_mouse_move(&mut self, event: &MouseEvent, leave: bool);
+        fn send_mouse_click(
+            &mut self,
+            event: &MouseEvent,
+            button: MouseButtonType,
+            mouse_up: bool,
+            click_count: i32,
+        );
+    }
+
+    impl MouseEventSink for cef::BrowserHost {
+        fn send_mouse_move(&mut self, event: &MouseEvent, leave: bool) {
+            self.send_mouse_move_event(Some(event), leave as i32);
+        }
+
+        fn send_mouse_click(
+            &mut self,
+            event: &MouseEvent,
+            button: MouseButtonType,
+            mouse_up: bool,
+            click_count: i32,
+        ) {
+            self.send_mouse_click_event(Some(event), button, mouse_up as i32, click_count);
+        }
+    }
+
+    pub(super) fn send_move_with<S: MouseEventSink>(
+        x: f64,
+        y: f64,
+        scale: i32,
+        modifiers: u32,
+        leave: bool,
+        resolve: impl FnOnce() -> Option<S>,
+        mut update_position: impl FnMut(i32, i32),
+    ) {
+        // CEF view coords are physical pixels (view_rect is physical, #158).
+        let (px, py) = physical_mouse_coordinates(x, y, scale);
         if !leave {
-            widget.imp().last_mouse_x.store(px, Ordering::Relaxed);
-            widget.imp().last_mouse_y.store(py, Ordering::Relaxed);
+            update_position(px, py);
         }
         let event = MouseEvent {
             x: px,
             y: py,
             modifiers,
         };
-        with_host(widget, |host| {
-            host.send_mouse_move_event(Some(&event), leave as i32);
+        with_resolved(resolve, |mut sink| sink.send_mouse_move(&event, leave));
+    }
+
+    fn send_move(widget: &super::KarereWebView, x: f64, y: f64, modifiers: u32, leave: bool) {
+        let imp = widget.imp();
+        send_move_with(
+            x,
+            y,
+            widget.scale_factor(),
+            modifiers,
+            leave,
+            || resolved_browser(imp).and_then(|browser| browser.host()),
+            |px, py| {
+                imp.last_mouse_x.store(px, Ordering::Relaxed);
+                imp.last_mouse_y.store(py, Ordering::Relaxed);
+            },
+        );
+    }
+
+    pub(super) fn send_click_with<S: MouseEventSink>(
+        position: (f64, f64),
+        scale: i32,
+        button: (u32, bool, i32),
+        modifiers: u32,
+        resolve: impl FnOnce() -> Option<S>,
+    ) {
+        let (x, y) = position;
+        let (button, down, n_press) = button;
+        let btn = match button {
+            1 => MouseButtonType::LEFT,
+            2 => MouseButtonType::MIDDLE,
+            3 => MouseButtonType::RIGHT,
+            _ => return,
+        };
+        let (x, y) = physical_mouse_coordinates(x, y, scale);
+        let event = MouseEvent { x, y, modifiers };
+        with_resolved(resolve, |mut sink| {
+            sink.send_mouse_click(&event, btn, !down, n_press.max(1));
         });
     }
 
@@ -2295,22 +2678,13 @@ mod imp {
         n_press: i32,
         modifiers: u32,
     ) {
-        // Physical (pixel) coords — view_rect is physical (#158).
-        let s = widget.scale_factor().max(1);
-        let event = MouseEvent {
-            x: x as i32 * s,
-            y: y as i32 * s,
+        send_click_with(
+            (x, y),
+            widget.scale_factor(),
+            (button, down, n_press),
             modifiers,
-        };
-        let btn = match button {
-            1 => MouseButtonType::LEFT,
-            2 => MouseButtonType::MIDDLE,
-            3 => MouseButtonType::RIGHT,
-            _ => return,
-        };
-        with_host(widget, |host| {
-            host.send_mouse_click_event(Some(&event), btn, (!down) as i32, n_press.max(1));
-        });
+            || resolved_browser(widget.imp()).and_then(|browser| browser.host()),
+        );
     }
 
     /// Live pointer position in physical widget coords, for wheel hit-testing —
@@ -2552,8 +2926,8 @@ mod imp {
     }
 
     /// On Ctrl+V, inspect the GDK clipboard. If it holds an image or files, async-read
-    /// + dispatch a synthetic paste and return `true` so the caller swallows the key
-    ///   (CEF's GDK-blind native paste must not also fire). Text-only/empty → `false`.
+    /// and dispatch a synthetic paste, returning `true` so the caller swallows the key
+    /// (CEF's GDK-blind native paste must not also fire). Text-only/empty → `false`.
     fn try_intercept_paste(widget: &super::KarereWebView) -> bool {
         let Some(display) = gtk::gdk::Display::default() else {
             return false;
@@ -2689,22 +3063,37 @@ mod imp {
             .unwrap_or_else(|| "application/octet-stream".to_string())
     }
 
-    /// Ctrl+C: copy PRIMARY (synced to the page selection by `50-copy-bridge.js`)
-    /// into CLIPBOARD, since CEF's offscreen copy never reaches the system clipboard.
-    fn promote_primary_to_clipboard() {
-        let Some(display) = gtk::gdk::Display::default() else {
-            return;
+    /// Final browser→renderer transport used by explicit Copy. Keeping the seam
+    /// at `Frame::send_process_message` lets the headless regression capture the
+    /// real typed CEF envelope while production still resolves the live frame.
+    pub(super) trait RendererMessageSink {
+        fn send_to_renderer(&mut self, message: crate::ipc::BrowserMessage);
+    }
+
+    impl RendererMessageSink for cef::Frame {
+        fn send_to_renderer(&mut self, message: crate::ipc::BrowserMessage) {
+            if let Some(mut message) = message.to_cef_message() {
+                self.send_process_message(ProcessId::RENDERER, Some(&mut message));
+            }
+        }
+    }
+
+    pub(super) fn request_live_selection_with<S: RendererMessageSink>(
+        resolve: impl FnOnce() -> Option<S>,
+    ) -> bool {
+        let Some(mut sink) = resolve() else {
+            return false;
         };
-        let clipboard = display.clipboard();
-        display
-            .primary_clipboard()
-            .read_text_async(gtk::gio::Cancellable::NONE, move |res| {
-                if let Ok(Some(text)) = res
-                    && !text.is_empty()
-                {
-                    clipboard.set_text(text.as_str());
-                }
-            });
+        sink.send_to_renderer(crate::ipc::BrowserMessage::CopySelection);
+        true
+    }
+
+    /// Ask only the current foreground browser's main renderer frame to copy its
+    /// live selection. The response returns through RendererMessage::SetClipboard.
+    fn request_live_selection(widget: &super::KarereWebView) {
+        request_live_selection_with(|| {
+            resolved_browser(widget.imp()).and_then(|browser| browser.main_frame())
+        });
     }
 
     /// Middle-click: paste primary-clipboard text into the element at `(x, y)` if
@@ -2845,7 +3234,7 @@ mod tests {
     use gtk::subclass::prelude::*;
     use std::sync::{Mutex, Once};
 
-    use super::{CpuUpload, KarereWebView, ZOOM_MAX, cef_to_linear, cpu_upload, linear_to_cef};
+    use super::{CpuUpload, KarereWebView, cpu_upload};
 
     static GTK_TEST_LOCK: Mutex<()> = Mutex::new(());
     static TEST_SCHEMA: Once = Once::new();
@@ -3030,6 +3419,407 @@ mod tests {
 
         window.destroy();
     }
+}
+
+#[cfg(test)]
+mod input_tests {
+    use super::imp::{
+        ExplicitCopyTrigger, MouseButtonTracker, MouseDispatch, MouseEventSink, MouseInput,
+        RendererMessageSink, dispatch_explicit_copy, dispatch_mouse_with,
+        physical_mouse_coordinates, request_live_selection_with, send_click_with, send_move_with,
+        should_forward_mouse,
+    };
+    use crate::handlers::{
+        client::dispatch_renderer_message_with,
+        render_process::{
+            RendererDispatchSink, dispatch_browser_message_with, renderer_message_from_v8_args,
+        },
+    };
+    use base64::Engine;
+    use cef::sys::cef_event_flags_t as F;
+    use cef::{MouseButtonType, MouseEvent};
+    use gtk::gdk::{Key, ModifierType};
+    use std::cell::{Cell, RefCell};
+    use std::process::Command;
+
+    #[derive(Debug, PartialEq)]
+    enum Observed {
+        Click {
+            browser: i32,
+            x: i32,
+            y: i32,
+            button: u32,
+            down: bool,
+            count: i32,
+            modifiers: u32,
+        },
+        Move {
+            browser: i32,
+            x: i32,
+            y: i32,
+            modifiers: u32,
+        },
+    }
+
+    #[derive(Clone)]
+    struct FakeMouseHost<'a> {
+        browser: i32,
+        out: &'a RefCell<Vec<Observed>>,
+    }
+
+    impl MouseEventSink for FakeMouseHost<'_> {
+        fn send_mouse_move(&mut self, event: &MouseEvent, _leave: bool) {
+            self.out.borrow_mut().push(Observed::Move {
+                browser: self.browser,
+                x: event.x,
+                y: event.y,
+                modifiers: event.modifiers,
+            });
+        }
+
+        fn send_mouse_click(
+            &mut self,
+            event: &MouseEvent,
+            button: MouseButtonType,
+            mouse_up: bool,
+            click_count: i32,
+        ) {
+            let button = if button == MouseButtonType::LEFT {
+                1
+            } else if button == MouseButtonType::MIDDLE {
+                2
+            } else {
+                3
+            };
+            self.out.borrow_mut().push(Observed::Click {
+                browser: self.browser,
+                x: event.x,
+                y: event.y,
+                button,
+                down: !mouse_up,
+                count: click_count,
+                modifiers: event.modifiers,
+            });
+        }
+    }
+
+    fn route_mouse(
+        event: MouseDispatch,
+        active: &Cell<i32>,
+        scale: i32,
+        out: &RefCell<Vec<Observed>>,
+    ) {
+        dispatch_mouse_with(
+            event,
+            |x, y, button, down, count, modifiers| {
+                send_click_with((x, y), scale, (button, down, count), modifiers, || {
+                    Some(FakeMouseHost {
+                        browser: active.get(),
+                        out,
+                    })
+                });
+            },
+            |x, y, modifiers| {
+                send_move_with(
+                    x,
+                    y,
+                    scale,
+                    modifiers,
+                    false,
+                    || {
+                        Some(FakeMouseHost {
+                            browser: active.get(),
+                            out,
+                        })
+                    },
+                    |_, _| {},
+                );
+            },
+        );
+    }
+
+    struct JavaScriptRenderer<'a> {
+        selection: &'a str,
+        collapsed: bool,
+        clipboard: &'a RefCell<Vec<(bool, String)>>,
+    }
+
+    impl RendererDispatchSink for JavaScriptRenderer<'_> {
+        fn execute_java_script(&mut self, script: &str, source_url: &str) {
+            assert_eq!(source_url, "karere://copy-selection");
+            let b64 = base64::engine::general_purpose::STANDARD;
+            let output = Command::new("node")
+                .args([
+                    "tests/copy_bridge_pipeline.js",
+                    &b64.encode(self.selection),
+                    if self.collapsed { "true" } else { "false" },
+                    &b64.encode(script),
+                ])
+                .output()
+                .expect("node must execute the production copy bridge");
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            let result: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+            if result.is_null() {
+                return;
+            }
+            let message = renderer_message_from_v8_args(
+                result["name"].as_str().unwrap(),
+                result["innerJson"].as_str().unwrap(),
+            )
+            .unwrap();
+            dispatch_renderer_message_with(&message, |text, primary| {
+                self.clipboard.borrow_mut().push((primary, text.to_owned()));
+            });
+        }
+
+        fn send_to_browser(&mut self, _message: crate::ipc::RendererMessage) {
+            panic!("copy selection must execute JavaScript, not send a renderer reply");
+        }
+    }
+
+    struct ForegroundFrame<'a> {
+        browser: i32,
+        requested_browsers: &'a RefCell<Vec<i32>>,
+        renderer: JavaScriptRenderer<'a>,
+    }
+
+    impl RendererMessageSink for ForegroundFrame<'_> {
+        fn send_to_renderer(&mut self, message: crate::ipc::BrowserMessage) {
+            self.requested_browsers.borrow_mut().push(self.browser);
+            // This is the typed value delivered by Frame::send_process_message
+            // after the production renderer callback decodes its CEF envelope.
+            dispatch_browser_message_with(message, &mut self.renderer);
+        }
+    }
+
+    fn copy_through_production_adapters(
+        trigger: ExplicitCopyTrigger,
+        active: &Cell<i32>,
+        selection: &str,
+        collapsed: bool,
+        requested_browsers: &RefCell<Vec<i32>>,
+        clipboard: &RefCell<Vec<(bool, String)>>,
+    ) {
+        dispatch_explicit_copy(trigger, || {
+            assert!(request_live_selection_with(|| Some(ForegroundFrame {
+                browser: active.get(),
+                requested_browsers,
+                renderer: JavaScriptRenderer {
+                    selection,
+                    collapsed,
+                    clipboard,
+                },
+            })));
+        });
+    }
+
+    #[test]
+    fn drag_then_immediate_keyboard_and_command_copy_use_foreground_pipeline() {
+        let active = Cell::new(7);
+        let observed = RefCell::new(Vec::new());
+        let mut adapter = MouseButtonTracker::default();
+        let inputs = [
+            MouseInput::Press {
+                button: 1,
+                x: 10.0,
+                y: 10.0,
+                time: 100,
+                double_time: 250,
+                double_distance: 5.0,
+                modifiers: 0,
+            },
+            // Far beyond the historical GTK GestureClick threshold.
+            MouseInput::Motion {
+                x: 110.0,
+                y: 42.0,
+                modifiers: 0,
+            },
+            MouseInput::Release {
+                button: 1,
+                x: 110.0,
+                y: 42.0,
+                modifiers: 0,
+            },
+        ];
+        for input in inputs {
+            for event in adapter.handle(input) {
+                route_mouse(event, &active, 2, &observed);
+            }
+        }
+        assert_eq!(
+            observed.into_inner(),
+            vec![
+                Observed::Click {
+                    browser: 7,
+                    x: 20,
+                    y: 20,
+                    button: 1,
+                    down: true,
+                    count: 1,
+                    modifiers: F::EVENTFLAG_LEFT_MOUSE_BUTTON.0,
+                },
+                Observed::Move {
+                    browser: 7,
+                    x: 220,
+                    y: 84,
+                    modifiers: F::EVENTFLAG_LEFT_MOUSE_BUTTON.0,
+                },
+                Observed::Click {
+                    browser: 7,
+                    x: 220,
+                    y: 84,
+                    button: 1,
+                    down: false,
+                    count: 1,
+                    modifiers: 0,
+                },
+            ]
+        );
+
+        let clipboard = RefCell::new(vec![(false, "existing".to_owned())]);
+        let requested_browsers = RefCell::new(Vec::new());
+        let selection = "first line\nZażółć 🙂\x1b";
+        let sanitized_selection = "first line\nZażółć 🙂";
+        copy_through_production_adapters(
+            ExplicitCopyTrigger::Keyboard {
+                keyval: Key::c,
+                state: ModifierType::CONTROL_MASK,
+            },
+            &active,
+            selection,
+            false,
+            &requested_browsers,
+            &clipboard,
+        );
+        // Switching pooled accounts between copy actions must re-resolve the
+        // foreground frame; browser 7 must not receive later requests.
+        active.set(8);
+        copy_through_production_adapters(
+            ExplicitCopyTrigger::ContextMenu(cef::sys::cef_menu_id_t::MENU_ID_COPY as i32),
+            &active,
+            selection,
+            false,
+            &requested_browsers,
+            &clipboard,
+        );
+        assert_eq!(
+            clipboard.borrow().as_slice(),
+            [
+                (false, "existing".to_owned()),
+                (false, sanitized_selection.to_owned()),
+                (false, sanitized_selection.to_owned()),
+            ]
+        );
+
+        // Empty/collapsed live selection produces no SetClipboard in JavaScript;
+        // even a defensive empty envelope cannot clobber the existing value.
+        copy_through_production_adapters(
+            ExplicitCopyTrigger::Keyboard {
+                keyval: Key::C,
+                state: ModifierType::CONTROL_MASK,
+            },
+            &active,
+            "",
+            true,
+            &requested_browsers,
+            &clipboard,
+        );
+        assert_eq!(clipboard.borrow().len(), 3);
+        assert_eq!(requested_browsers.borrow().as_slice(), [7, 8, 8]);
+    }
+
+    #[test]
+    fn every_event_re_resolves_the_foreground_after_account_switch() {
+        let active = Cell::new(1);
+        let observed = RefCell::new(Vec::new());
+        let mut adapter = MouseButtonTracker::default();
+        for event in adapter.handle(MouseInput::Press {
+            button: 1,
+            x: 1.0,
+            y: 1.0,
+            time: 1,
+            double_time: 250,
+            double_distance: 5.0,
+            modifiers: 0,
+        }) {
+            route_mouse(event, &active, 1, &observed);
+        }
+        active.set(2);
+        for input in [
+            MouseInput::Motion {
+                x: 20.0,
+                y: 20.0,
+                modifiers: 0,
+            },
+            MouseInput::Release {
+                button: 1,
+                x: 20.0,
+                y: 20.0,
+                modifiers: 0,
+            },
+        ] {
+            for event in adapter.handle(input) {
+                route_mouse(event, &active, 1, &observed);
+            }
+        }
+        let observed = observed.into_inner();
+        assert!(matches!(observed[0], Observed::Click { browser: 1, .. }));
+        assert!(observed[1..].iter().all(|event| matches!(
+            event,
+            Observed::Move { browser: 2, .. } | Observed::Click { browser: 2, .. }
+        )));
+    }
+
+    #[test]
+    fn preserves_multiclick_buttons_touch_suppression_layouts_and_cancellation() {
+        assert!(should_forward_mouse(false));
+        assert!(!should_forward_mouse(true));
+        for width in [600.0, 1280.0] {
+            let x = width - 10.1;
+            assert_eq!(physical_mouse_coordinates(x, 7.1, 1), (x as i32, 7));
+            assert_eq!(physical_mouse_coordinates(x, 7.1, 2), (x as i32 * 2, 14));
+        }
+
+        let mut adapter = MouseButtonTracker::default();
+        for (time, expected) in [(100, 1), (200, 2), (300, 3), (400, 1)] {
+            assert_eq!(adapter.press(1, 4.0, 5.0, time, 250, 5.0), Some(expected));
+            assert_eq!(adapter.press(1, 4.0, 5.0, time, 250, 5.0), None);
+            assert_eq!(adapter.release(1), Some(expected));
+        }
+        adapter.press(2, 1.0, 1.0, 1_000, 250, 5.0).unwrap();
+        adapter.press(3, 1.0, 1.0, 1_001, 250, 5.0).unwrap();
+        let cancelled = adapter.handle(MouseInput::Cancel { x: 9.0, y: 8.0 });
+        assert_eq!(cancelled.len(), 2);
+        assert_eq!(adapter.active_modifiers(), 0);
+    }
+
+    #[test]
+    fn non_copy_commands_and_modified_shortcuts_do_not_request_selection() {
+        let requests = Cell::new(0);
+        for trigger in [
+            ExplicitCopyTrigger::Keyboard {
+                keyval: Key::c,
+                state: ModifierType::empty(),
+            },
+            ExplicitCopyTrigger::Keyboard {
+                keyval: Key::c,
+                state: ModifierType::CONTROL_MASK | ModifierType::ALT_MASK,
+            },
+            ExplicitCopyTrigger::ContextMenu(cef::sys::cef_menu_id_t::MENU_ID_PASTE as i32),
+        ] {
+            dispatch_explicit_copy(trigger, || requests.set(requests.get() + 1));
+        }
+        assert_eq!(requests.get(), 0);
+    }
+}
+
+#[cfg(test)]
+mod zoom_tests {
+    use super::{cef_to_linear, linear_to_cef, ZOOM_MAX};
 
     /// linear → CEF → linear round-trips within 1e-9 across the range.
     #[test]

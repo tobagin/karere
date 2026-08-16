@@ -90,6 +90,12 @@ const FORBIDDEN: [i32; 3] = [
     IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
 ];
 
+/// Classify Chromium's Copy command by stable CEF command id, never by its
+/// localized display label.
+pub(crate) fn is_copy_command(command_id: i32) -> bool {
+    command_id == cef::sys::cef_menu_id_t::MENU_ID_COPY as i32
+}
+
 #[derive(Clone, Default)]
 pub struct ShellContextMenuHandler;
 
@@ -222,5 +228,19 @@ fn normalize_separators(types: &[MenuItemType], remove: &mut [bool]) {
         && types[i] == MenuItemType::SEPARATOR
     {
         remove[i] = true;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_copy_command;
+
+    #[test]
+    fn copy_is_classified_by_cef_command_id_not_label() {
+        let copy = cef::sys::cef_menu_id_t::MENU_ID_COPY as i32;
+        let paste = cef::sys::cef_menu_id_t::MENU_ID_PASTE as i32;
+        assert!(is_copy_command(copy));
+        assert!(!is_copy_command(paste));
+        assert!(!is_copy_command(0));
     }
 }
