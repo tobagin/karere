@@ -54,7 +54,10 @@ fn ensure_dir() -> std::io::Result<PathBuf> {
     use std::os::unix::fs::DirBuilderExt;
     let dir = paste_dir();
     if !dir.exists() {
-        std::fs::DirBuilder::new().mode(0o700).recursive(true).create(&dir)?;
+        std::fs::DirBuilder::new()
+            .mode(0o700)
+            .recursive(true)
+            .create(&dir)?;
     }
     Ok(dir)
 }

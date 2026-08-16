@@ -36,7 +36,7 @@ This project follows the principles of respect, inclusivity, and professionalism
 ### Prerequisites
 
 - **SDKs**: `org.gnome.Sdk//49`, `org.freedesktop.Sdk.Extension.rust-stable//24.08`
-- **Tools**: `flatpak-builder`, `cargo` (optional, for local checks)
+- **Tools**: `flatpak-builder`, Rust/Cargo 1.97.1 with the matching rustfmt and Clippy components (optional, for local checks)
 
 ### Building with Flatpak (Recommended)
 
@@ -57,9 +57,11 @@ For quick iteration (requires `cargo`, `gtk4-devel`, `libadwaita-devel` on host)
 # Run via Cargo
 cargo run
 
-# Check/Lint
-cargo check
-cargo clippy
+# Repository-wide Rust quality gates (Rust 1.97.1)
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace --all-targets
+cargo check --workspace --all-targets
 ```
 
 ---
@@ -68,8 +70,9 @@ cargo clippy
 
 ### Rust Code Style
 
-- Follow standard Rust formatting (`cargo fmt`)
-- Run `cargo clippy` to catch common issues
+- Use Rust 1.97.1 and its matching rustfmt/Clippy components.
+- Check all Rust targets with `cargo fmt --all -- --check`.
+- Treat every all-target Clippy warning as an error with `cargo clippy --workspace --all-targets -- -D warnings`.
 - Structs and Enums: `PascalCase`
 - Functions and Variables: `snake_case`
 

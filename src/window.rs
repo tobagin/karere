@@ -191,9 +191,7 @@ mod imp {
                 .flags(gio::SettingsBindFlags::GET)
                 .build();
             // Seed the label from the active account's persisted zoom (floor-lifted).
-            self.update_zoom_label(
-                Self::load_zoom_for_active_account().max(Self::zoom_floor()),
-            );
+            self.update_zoom_label(Self::load_zoom_for_active_account().max(Self::zoom_floor()));
 
             // Reduce-motion: drive process-wide `gtk-enable-animations`
             // (inverted) from the GSetting, with live propagation. App-global by
@@ -216,15 +214,12 @@ mod imp {
                 ),
             );
 
-            settings.connect_changed(
-                Some("close-button-action"),
-                |s, _key| {
-                    log::info!(
-                        "close-button-action changed to {:?}",
-                        s.string("close-button-action").as_str()
-                    );
-                },
-            );
+            settings.connect_changed(Some("close-button-action"), |s, _key| {
+                log::info!(
+                    "close-button-action changed to {:?}",
+                    s.string("close-button-action").as_str()
+                );
+            });
 
             let settings_for_close = settings.clone();
             window.connect_close_request(clone!(
@@ -268,7 +263,9 @@ mod imp {
                     // the color scheme) and presented later, so apply the dark
                     // selection at present time. (#160)
                     if win.is_visible() {
-                        crate::application::apply_theme(&gio::Settings::new(crate::application::APP_ID));
+                        crate::application::apply_theme(&gio::Settings::new(
+                            crate::application::APP_ID,
+                        ));
                     }
                 }
             ));
@@ -411,26 +408,26 @@ mod imp {
                     show_crash_dialog(&win, req, dialog_open.clone());
                 }
 
-                if !completed.is_empty() || !failed.is_empty() {
-                    if let Some(win) = win_weak.upgrade() {
-                        // Honour the "Notification Type" setting: toast, system
-                        // notification, or both.
-                        let dl_type = gtk::gio::Settings::new(crate::application::APP_ID)
-                            .string("notify-download-type");
-                        for dl in completed {
-                            match dl_type.as_str() {
-                                "notification" => show_download_notification(&dl),
-                                "both" => {
-                                    show_download_toast(&toast_overlay, &win, dl.clone());
-                                    show_download_notification(&dl);
-                                }
-                                // "toast" and any unexpected value
-                                _ => show_download_toast(&toast_overlay, &win, dl),
+                if (!completed.is_empty() || !failed.is_empty())
+                    && let Some(win) = win_weak.upgrade()
+                {
+                    // Honour the "Notification Type" setting: toast, system
+                    // notification, or both.
+                    let dl_type = gtk::gio::Settings::new(crate::application::APP_ID)
+                        .string("notify-download-type");
+                    for dl in completed {
+                        match dl_type.as_str() {
+                            "notification" => show_download_notification(&dl),
+                            "both" => {
+                                show_download_toast(&toast_overlay, &win, dl.clone());
+                                show_download_notification(&dl);
                             }
+                            // "toast" and any unexpected value
+                            _ => show_download_toast(&toast_overlay, &win, dl),
                         }
-                        for fail in failed {
-                            show_download_failed(&win, fail);
-                        }
+                    }
+                    for fail in failed {
+                        show_download_failed(&win, fail);
                     }
                 }
 
@@ -493,8 +490,7 @@ mod imp {
                         };
                         let web = win.imp().web_view.borrow().clone();
                         if let Some(web) = web {
-                            crate::notifications::tracker()
-                                .on_focus_gained(|js| web.run_js(js));
+                            crate::notifications::tracker().on_focus_gained(|js| web.run_js(js));
                         }
                     },
                 );
@@ -507,9 +503,8 @@ mod imp {
         pub fn setup_account_switcher(&self) {
             // Instantiate the wide-variant popover and parent it to the header
             // account button.
-            let builder = gtk::Builder::from_resource(
-                "/io/github/tobagin/karere/ui/account_switcher.ui",
-            );
+            let builder =
+                gtk::Builder::from_resource("/io/github/tobagin/karere/ui/account_switcher.ui");
             if let Some(popover) = builder.object::<gtk::Popover>("account_switcher_popover") {
                 popover.set_parent(&*self.account_button);
                 *self.account_popover.borrow_mut() = Some(popover);
@@ -598,7 +593,9 @@ mod imp {
                 self.account_avatar.set_text(Some(&label));
                 match a.avatar_png.as_deref().and_then(texture_from_png) {
                     Some(tex) => self.account_avatar.set_custom_image(Some(&tex)),
-                    None => self.account_avatar.set_custom_image(None::<&gtk::gdk::Texture>),
+                    None => self
+                        .account_avatar
+                        .set_custom_image(None::<&gtk::gdk::Texture>),
                 }
             }
         }
@@ -803,9 +800,10 @@ mod imp {
             let count = mgr.get_accounts_sorted().len();
             if count >= MAX_ACCOUNTS {
                 self.close_switcher();
-                self.toast_overlay.add_toast(adw::Toast::new(&gettextrs::gettext(
-                    "Maximum of 9 accounts reached",
-                )));
+                self.toast_overlay
+                    .add_toast(adw::Toast::new(&gettextrs::gettext(
+                        "Maximum of 9 accounts reached",
+                    )));
                 return;
             }
             let n = count + 1;
@@ -844,8 +842,14 @@ mod imp {
                 r.add_css_class("property");
                 r
             };
-            group.add(&dim(&gettextrs::gettext("Name"), account.pushname.as_deref()));
-            group.add(&dim(&gettextrs::gettext("WhatsApp ID"), account.wid.as_deref()));
+            group.add(&dim(
+                &gettextrs::gettext("Name"),
+                account.pushname.as_deref(),
+            ));
+            group.add(&dim(
+                &gettextrs::gettext("WhatsApp ID"),
+                account.wid.as_deref(),
+            ));
             group.add(&dim(
                 &gettextrs::gettext("Avatar URL"),
                 account.avatar_url.as_deref(),
@@ -976,9 +980,7 @@ mod imp {
                         );
                         // Removing the foreground account leaves no visible
                         // browser; promote the MRU-first survivor.
-                        if was_active
-                            && let Some(next) = mgr.mru_first()
-                        {
+                        if was_active && let Some(next) = mgr.mru_first() {
                             this.switch_account(&next.id);
                         }
                     }
@@ -1332,7 +1334,7 @@ mod imp {
         /// `spell-checking-languages` and switches the live browser (no reload);
         /// toggling a star persists `favorite-spell-check-languages` and re-sorts.
         fn setup_spellcheck(&self) {
-            use crate::spellcheck_ui::{self, SpellLang};
+            use crate::spellcheck_ui::{self, SpellLang, SpellToggleCallback};
             use gtk::gio::prelude::SettingsExtManual;
             use std::rc::Rc;
 
@@ -1341,8 +1343,9 @@ mod imp {
 
             // Visible only when spellcheck is enabled AND the headerbar control is
             // opted in; track both keys.
-            let spell_dropdown_visible =
-                |s: &gio::Settings| s.boolean("enable-spell-checking") && s.boolean("spellcheck-headerbar");
+            let spell_dropdown_visible = |s: &gio::Settings| {
+                s.boolean("enable-spell-checking") && s.boolean("spellcheck-headerbar")
+            };
             dropdown.set_visible(spell_dropdown_visible(&settings));
             for key in ["enable-spell-checking", "spellcheck-headerbar"] {
                 settings.connect_changed(
@@ -1358,17 +1361,14 @@ mod imp {
             // Live auto-correct toggle: push the flag into the running page (the
             // load handler re-seeds it on every navigation).
             let win_ac = self.obj().downgrade();
-            settings.connect_changed(
-                Some("enable-auto-correct"),
-                move |s, _| {
-                    let on = s.boolean("enable-auto-correct");
-                    if let Some(win) = win_ac.upgrade()
-                        && let Some(web) = win.imp().web_view.borrow().as_ref()
-                    {
-                        web.run_js(&format!("window.__karereAutoCorrect = {on};"));
-                    }
-                },
-            );
+            settings.connect_changed(Some("enable-auto-correct"), move |s, _| {
+                let on = s.boolean("enable-auto-correct");
+                if let Some(win) = win_ac.upgrade()
+                    && let Some(web) = win.imp().web_view.borrow().as_ref()
+                {
+                    web.run_js(&format!("window.__karereAutoCorrect = {on};"));
+                }
+            });
 
             let favorites = strv_vec(&settings, "favorite-spell-check-languages");
             let store = spellcheck_ui::build_store(&favorites);
@@ -1381,7 +1381,7 @@ mod imp {
             dropdown.set_factory(Some(&spellcheck_ui::build_button_factory()));
 
             // Star toggle → persist favorites and re-sort.
-            let on_toggle: Rc<dyn Fn(&SpellLang, bool)> = Rc::new(clone!(
+            let on_toggle: SpellToggleCallback = Rc::new(clone!(
                 #[strong]
                 settings,
                 #[strong]
@@ -1551,11 +1551,7 @@ mod imp {
         crate::spellcheck::resolve_languages(&explicit, settings.boolean("auto-detect-language"))
     }
 
-    fn show_crash_dialog(
-        win: &super::KarereWindow,
-        req: CrashDialog,
-        dialog_open: Rc<Cell<bool>>,
-    ) {
+    fn show_crash_dialog(win: &super::KarereWindow, req: CrashDialog, dialog_open: Rc<Cell<bool>>) {
         let dialog = adw::AlertDialog::new(Some(&req.title), Some(&req.body));
         dialog.add_response("cancel", "Cancel");
         dialog.add_response("logs", "Open logs");
@@ -1643,7 +1639,10 @@ mod imp {
         notif.set_body(Some(name));
         notif.set_icon(&gtk::gio::ThemedIcon::new("folder-download-symbolic"));
         // Click / Open → app.open-download with the file path.
-        notif.set_default_action_and_target_value("app.open-download", Some(&file_path.to_variant()));
+        notif.set_default_action_and_target_value(
+            "app.open-download",
+            Some(&file_path.to_variant()),
+        );
         notif.add_button_with_target_value(
             "Open",
             "app.open-download",
@@ -1680,8 +1679,7 @@ mod imp {
     fn open_logs() {
         let dir = glib::user_data_dir().join(APP_ID);
         let uri = format!("file://{}", dir.display());
-        if let Err(err) =
-            gio::AppInfo::launch_default_for_uri(&uri, None::<&gio::AppLaunchContext>)
+        if let Err(err) = gio::AppInfo::launch_default_for_uri(&uri, None::<&gio::AppLaunchContext>)
         {
             log::warn!("open-logs: could not open {uri}: {err}");
         }

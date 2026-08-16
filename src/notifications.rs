@@ -213,7 +213,10 @@ fn decode_data_url(url: &str) -> Option<Vec<u8>> {
     }
     // base64 inflates ~4:3; reject oversized payloads before allocating/decoding.
     if payload.len() > MAX_ICON_BYTES / 3 * 4 + 4 {
-        log::warn!("notif icon: data URL too large ({} b64 bytes), dropping", payload.len());
+        log::warn!(
+            "notif icon: data URL too large ({} b64 bytes), dropping",
+            payload.len()
+        );
         return None;
     }
     let bytes = base64::engine::general_purpose::STANDARD

@@ -34,6 +34,15 @@ type EglImage = *mut c_void;
 // eglCreateImageKHR uses EGLint (32-bit) attributes — NOT the 64-bit EGLAttrib
 // of core eglCreateImage. Using the wrong width misaligns the list. (gpu-osr)
 type EglAttrib = i32;
+type EglCreateImage = unsafe extern "C" fn(
+    EglDisplay,
+    *mut c_void,
+    c_uint,
+    *mut c_void,
+    *const EglAttrib,
+) -> EglImage;
+type EglDestroyImage = unsafe extern "C" fn(EglDisplay, EglImage) -> c_uint;
+type GlImageTargetTexture2d = unsafe extern "C" fn(c_uint, EglImage);
 
 /// EGL/GL-OES entry points. Core EGL is dlsym'd from libEGL directly (the GL
 /// proc loader / `eglGetProcAddress` does NOT return core EGL functions);
@@ -42,15 +51,9 @@ type EglAttrib = i32;
 struct Egl {
     get_current_display: unsafe extern "C" fn() -> EglDisplay,
     query_string: unsafe extern "C" fn(EglDisplay, c_int) -> *const c_char,
-    create_image: unsafe extern "C" fn(
-        EglDisplay,
-        *mut c_void, // ctx (EGL_NO_CONTEXT)
-        c_uint,      // target
-        *mut c_void, // buffer (NULL)
-        *const EglAttrib,
-    ) -> EglImage,
-    destroy_image: unsafe extern "C" fn(EglDisplay, EglImage) -> c_uint,
-    image_target_texture_2d: unsafe extern "C" fn(c_uint, EglImage),
+    create_image: EglCreateImage,
+    destroy_image: EglDestroyImage,
+    image_target_texture_2d: GlImageTargetTexture2d,
     _lib: Library,
 }
 
@@ -89,16 +92,20 @@ fn load_egl() -> Option<Egl> {
         let di = get_proc(c"eglDestroyImageKHR".as_ptr());
         let itt = get_proc(c"glEGLImageTargetTexture2DOES".as_ptr());
         if ci.is_null() || di.is_null() || itt.is_null() {
-            log::warn!("gl_dmabuf: missing EGL/GL-OES extension entry points; accelerated OSR unavailable");
+            log::warn!(
+                "gl_dmabuf: missing EGL/GL-OES extension entry points; accelerated OSR unavailable"
+            );
             return None;
         }
 
         Some(Egl {
             get_current_display,
             query_string,
-            create_image: std::mem::transmute::<*const c_void, _>(ci),
-            destroy_image: std::mem::transmute::<*const c_void, _>(di),
-            image_target_texture_2d: std::mem::transmute::<*const c_void, _>(itt),
+            create_image: std::mem::transmute::<*const c_void, EglCreateImage>(ci),
+            destroy_image: std::mem::transmute::<*const c_void, EglDestroyImage>(di),
+            image_target_texture_2d: std::mem::transmute::<*const c_void, GlImageTargetTexture2d>(
+                itt,
+            ),
             _lib: lib,
         })
     }
@@ -132,7 +139,10 @@ pub fn is_supported() -> bool {
             }
             let s = CStr::from_ptr(exts).to_string_lossy();
             let ok = s.contains("EGL_EXT_image_dma_buf_import");
-            log::warn!("gl_dmabuf: dma-buf import {}", if ok { "supported" } else { "NOT supported" });
+            log::warn!(
+                "gl_dmabuf: dma-buf import {}",
+                if ok { "supported" } else { "NOT supported" }
+            );
             ok
         }
     })
@@ -235,9 +245,12 @@ pub fn import_to_texture(
             attrs.as_ptr(),
         );
         if image.is_null() {
-            static WARNED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+            static WARNED: std::sync::atomic::AtomicBool =
+                std::sync::atomic::AtomicBool::new(false);
             if !WARNED.swap(true, std::sync::atomic::Ordering::Relaxed) {
-                log::warn!("gl_dmabuf: eglCreateImageKHR failed (fourcc={fourcc_format:#x} mod={modifier:#x})");
+                log::warn!(
+                    "gl_dmabuf: eglCreateImageKHR failed (fourcc={fourcc_format:#x} mod={modifier:#x})"
+                );
             }
             return None;
         }
@@ -248,7 +261,9 @@ pub fn import_to_texture(
 
         static FIRST: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
         if FIRST.swap(false, std::sync::atomic::Ordering::Relaxed) {
-            log::info!("gl_dmabuf: first DMA-BUF import OK ({width}x{height} fourcc={fourcc_format:#x}) — GPU OSR active");
+            log::info!(
+                "gl_dmabuf: first DMA-BUF import OK ({width}x{height} fourcc={fourcc_format:#x}) — GPU OSR active"
+            );
         }
 
         Some(ImportedImage { dpy, image })

@@ -96,19 +96,14 @@ mod avatar_b64 {
     use base64::engine::general_purpose::STANDARD as B64;
     use serde::{Deserialize, Deserializer, Serializer};
 
-    pub fn serialize<S: Serializer>(
-        bytes: &Option<Vec<u8>>,
-        ser: S,
-    ) -> Result<S::Ok, S::Error> {
+    pub fn serialize<S: Serializer>(bytes: &Option<Vec<u8>>, ser: S) -> Result<S::Ok, S::Error> {
         match bytes {
             Some(b) => ser.serialize_some(&B64.encode(b)),
             None => ser.serialize_none(),
         }
     }
 
-    pub fn deserialize<'de, D: Deserializer<'de>>(
-        de: D,
-    ) -> Result<Option<Vec<u8>>, D::Error> {
+    pub fn deserialize<'de, D: Deserializer<'de>>(de: D) -> Result<Option<Vec<u8>>, D::Error> {
         let opt = Option::<String>::deserialize(de)?;
         match opt {
             Some(s) => B64
@@ -214,8 +209,7 @@ pub fn save_to(path: &std::path::Path, accounts: &[Account]) -> Result<(), Accou
             .create(dir)
             .map_err(|e| AccountsError::Io(e.to_string()))?;
     }
-    let json = serde_json::to_vec_pretty(accounts)
-        .map_err(|e| AccountsError::Io(e.to_string()))?;
+    let json = serde_json::to_vec_pretty(accounts).map_err(|e| AccountsError::Io(e.to_string()))?;
     let tmp = path.with_extension("json.tmp");
     let _ = std::fs::remove_file(&tmp);
     let mut f = std::fs::OpenOptions::new()
@@ -234,7 +228,11 @@ pub fn save_to(path: &std::path::Path, accounts: &[Account]) -> Result<(), Accou
 /// Sort in place by `created_at` ascending (id tiebreak): a stable order that
 /// never reshuffles on switch, so the switcher list and Alt+N stay put (#166).
 pub fn sort_stable(accounts: &mut [Account]) {
-    accounts.sort_by(|a, b| a.created_at.cmp(&b.created_at).then_with(|| a.id.cmp(&b.id)));
+    accounts.sort_by(|a, b| {
+        a.created_at
+            .cmp(&b.created_at)
+            .then_with(|| a.id.cmp(&b.id))
+    });
 }
 
 mod imp {
@@ -435,12 +433,22 @@ impl AccountManager {
 
     /// Look up an account by id.
     pub fn get(&self, id: &str) -> Option<Account> {
-        self.imp().accounts.borrow().iter().find(|a| a.id == id).cloned()
+        self.imp()
+            .accounts
+            .borrow()
+            .iter()
+            .find(|a| a.id == id)
+            .cloned()
     }
 
     /// The currently-active account, if any.
     pub fn active(&self) -> Option<Account> {
-        self.imp().accounts.borrow().iter().find(|a| a.is_active).cloned()
+        self.imp()
+            .accounts
+            .borrow()
+            .iter()
+            .find(|a| a.is_active)
+            .cloned()
     }
 
     /// Store decoded avatar PNG bytes for `id`.
@@ -648,7 +656,7 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("karere-acct-{}", uuid::Uuid::new_v4()));
         let path = dir.join("accounts.json");
         let good = acct_with(42);
-        save_to(&path, &[good.clone()]).unwrap();
+        save_to(&path, std::slice::from_ref(&good)).unwrap();
         let before = std::fs::read(&path).unwrap();
 
         let tmp = path.with_extension("json.tmp");

@@ -21,9 +21,7 @@ static PUMP_SCHEDULED: AtomicBool = AtomicBool::new(false);
 pub fn debug_enabled() -> bool {
     use std::sync::OnceLock;
     static D: OnceLock<bool> = OnceLock::new();
-    *D.get_or_init(|| {
-        std::env::args().any(|a| a == "--debug" || a.starts_with("--debuglevel="))
-    })
+    *D.get_or_init(|| std::env::args().any(|a| a == "--debug" || a.starts_with("--debuglevel=")))
 }
 
 #[derive(Clone, Default)]
@@ -313,7 +311,6 @@ impl ShellBrowserProcessHandlerBuilder {
         Self::new(handler)
     }
 }
-
 
 pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
     // Reclaim any paste tempfiles leaked by a prior crash before CEF starts.

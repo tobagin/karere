@@ -114,7 +114,11 @@ impl ShellPermissionHandlerBuilder {
 /// Record the user's choice. Always remembered (browser-style), so the prompt
 /// never re-fires for that origin + permission.
 fn persist(origin: &str, mask: u32, allow: bool) {
-    let decision = if allow { Decision::Allow } else { Decision::Deny };
+    let decision = if allow {
+        Decision::Allow
+    } else {
+        Decision::Deny
+    };
     permissions_store::set(origin, mask, decision);
 }
 
@@ -153,7 +157,9 @@ fn notifications_allowed() -> bool {
 
 fn active_window() -> Option<gtk::Window> {
     use gtk::prelude::*;
-    let app = gio::Application::default()?.downcast::<gtk::Application>().ok()?;
+    let app = gio::Application::default()?
+        .downcast::<gtk::Application>()
+        .ok()?;
     app.active_window()
 }
 
@@ -175,13 +181,27 @@ fn requests_camera(mask: u32) -> bool {
 pub(crate) fn describe_permissions(mask: u32) -> String {
     use cef::sys::cef_permission_request_types_t as P;
     let mut parts = Vec::new();
-    if requests_microphone(mask) { parts.push("microphone"); }
-    if requests_camera(mask) { parts.push("camera"); }
-    if mask & (P::CEF_PERMISSION_TYPE_GEOLOCATION as u32) != 0 { parts.push("location"); }
-    if mask & (P::CEF_PERMISSION_TYPE_NOTIFICATIONS as u32) != 0 { parts.push("notifications"); }
-    if mask & (P::CEF_PERMISSION_TYPE_MIDI_SYSEX as u32) != 0 { parts.push("MIDI devices"); }
-    if mask & (P::CEF_PERMISSION_TYPE_CLIPBOARD as u32) != 0 { parts.push("clipboard"); }
-    if parts.is_empty() { return "device access".into(); }
+    if requests_microphone(mask) {
+        parts.push("microphone");
+    }
+    if requests_camera(mask) {
+        parts.push("camera");
+    }
+    if mask & (P::CEF_PERMISSION_TYPE_GEOLOCATION as u32) != 0 {
+        parts.push("location");
+    }
+    if mask & (P::CEF_PERMISSION_TYPE_NOTIFICATIONS as u32) != 0 {
+        parts.push("notifications");
+    }
+    if mask & (P::CEF_PERMISSION_TYPE_MIDI_SYSEX as u32) != 0 {
+        parts.push("MIDI devices");
+    }
+    if mask & (P::CEF_PERMISSION_TYPE_CLIPBOARD as u32) != 0 {
+        parts.push("clipboard");
+    }
+    if parts.is_empty() {
+        return "device access".into();
+    }
     parts.join(", ")
 }
 

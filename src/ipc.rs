@@ -26,7 +26,11 @@ pub enum BrowserMessage {
         x: Option<f64>,
         y: Option<f64>,
     },
-    DragHover { phase: String, x: f64, y: f64 },
+    DragHover {
+        phase: String,
+        x: f64,
+        y: f64,
+    },
     #[cfg(debug_assertions)]
     Ping,
 }
@@ -48,7 +52,9 @@ pub enum RendererMessage {
         source: Option<String>,
     },
     AwaitingPairing,
-    StoreUnavailable { reason: String },
+    StoreUnavailable {
+        reason: String,
+    },
     /// `icon` is a renderer-inlined data URL.
     NotificationSeen {
         account_id: String,
@@ -57,11 +63,21 @@ pub enum RendererMessage {
         icon: Option<String>,
         tag: String,
     },
-    NotificationClosed { tag: String },
-    ConsoleLog { level: String, msg: String },
-    PasteConsumed { tempfile_path: Option<PathBuf> },
+    NotificationClosed {
+        tag: String,
+    },
+    ConsoleLog {
+        level: String,
+        msg: String,
+    },
+    PasteConsumed {
+        tempfile_path: Option<PathBuf>,
+    },
     /// `primary` targets the PRIMARY selection (middle-click) not the clipboard.
-    SetClipboard { text: String, primary: bool },
+    SetClipboard {
+        text: String,
+        primary: bool,
+    },
     #[cfg(debug_assertions)]
     Pong,
 }
@@ -231,9 +247,12 @@ mod tests {
         ];
         for value in cases {
             let payload = encode(&value);
-            let back =
-                decode_payload::<BrowserMessage>(value.variant_tag(), &payload, BrowserMessage::KNOWN_TAGS)
-                    .expect("roundtrip");
+            let back = decode_payload::<BrowserMessage>(
+                value.variant_tag(),
+                &payload,
+                BrowserMessage::KNOWN_TAGS,
+            )
+            .expect("roundtrip");
             assert_eq!(value, back);
         }
     }
@@ -269,7 +288,9 @@ mod tests {
             RendererMessage::PasteConsumed {
                 tempfile_path: Some("/run/user/1000/karere/paste-abc".into()),
             },
-            RendererMessage::PasteConsumed { tempfile_path: None },
+            RendererMessage::PasteConsumed {
+                tempfile_path: None,
+            },
             RendererMessage::SetClipboard {
                 text: "hello".into(),
                 primary: true,
@@ -292,8 +313,12 @@ mod tests {
     #[test]
     fn rejects_unknown_name() {
         let payload = encode(&RendererMessage::AwaitingPairing);
-        let err = decode_payload::<RendererMessage>("NoSuchVariant", &payload, RendererMessage::KNOWN_TAGS)
-            .unwrap_err();
+        let err = decode_payload::<RendererMessage>(
+            "NoSuchVariant",
+            &payload,
+            RendererMessage::KNOWN_TAGS,
+        )
+        .unwrap_err();
         assert_eq!(err, IpcError::UnknownVariant("NoSuchVariant".into()));
     }
 
@@ -311,8 +336,9 @@ mod tests {
     #[test]
     fn rejects_bad_json() {
         let payload = B64.encode(b"{not json");
-        let err = decode_payload::<RendererMessage>("ConsoleLog", &payload, RendererMessage::KNOWN_TAGS)
-            .unwrap_err();
+        let err =
+            decode_payload::<RendererMessage>("ConsoleLog", &payload, RendererMessage::KNOWN_TAGS)
+                .unwrap_err();
         assert!(matches!(err, IpcError::Json(_)));
     }
 }

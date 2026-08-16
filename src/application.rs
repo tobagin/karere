@@ -109,7 +109,10 @@ fn register_accels(app: &KarereApplication) {
         ("win.inspect-element", &["<Primary><Shift>c"]),
         ("win.find-in-page", &["<Primary>f"]),
         ("win.next-account", &["<Primary>Tab", "<Primary>Page_Down"]),
-        ("win.prev-account", &["<Primary><Shift>Tab", "<Primary>Page_Up"]),
+        (
+            "win.prev-account",
+            &["<Primary><Shift>Tab", "<Primary>Page_Up"],
+        ),
         ("win.switch-account-index(1)", &["<Alt>1"]),
         ("win.switch-account-index(2)", &["<Alt>2"]),
         ("win.switch-account-index(3)", &["<Alt>3"]),
@@ -123,10 +126,7 @@ fn register_accels(app: &KarereApplication) {
             "win.zoom-in",
             &["<Primary>plus", "<Primary>equal", "<Primary>KP_Add"],
         ),
-        (
-            "win.zoom-out",
-            &["<Primary>minus", "<Primary>KP_Subtract"],
-        ),
+        ("win.zoom-out", &["<Primary>minus", "<Primary>KP_Subtract"]),
         ("win.zoom-reset", &["<Primary>0", "<Primary>KP_0"]),
     ];
     for (action, accels) in bindings {
@@ -214,9 +214,8 @@ mod imp {
                 // GSettings signals die with the object — keep this one alive
                 // for the app's lifetime or the toggle only applies on restart.
                 let settings_wa = gio::Settings::new(APP_ID);
-                settings_wa.connect_changed(Some("match-whatsapp-colors"), move |_, _| {
-                    apply_wa_bg()
-                });
+                settings_wa
+                    .connect_changed(Some("match-whatsapp-colors"), move |_, _| apply_wa_bg());
                 std::mem::forget(settings_wa);
             }
 
@@ -226,10 +225,7 @@ mod imp {
 
             let settings = gio::Settings::new(APP_ID);
             apply_theme(&settings);
-            settings.connect_changed(
-                Some("theme"),
-                |s, _| apply_theme(s),
-            );
+            settings.connect_changed(Some("theme"), |s, _| apply_theme(s));
             // On the "system" theme, the effective dark state flips when the
             // desktop scheme changes; re-mirror it to the web content. (#160)
             adw::StyleManager::default().connect_dark_notify(|mgr| {

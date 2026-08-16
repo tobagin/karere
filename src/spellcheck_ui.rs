@@ -17,6 +17,8 @@ glib::wrapper! {
     pub struct SpellLang(ObjectSubclass<imp::SpellLang>);
 }
 
+pub type SpellToggleCallback = Rc<dyn Fn(&SpellLang, bool)>;
+
 impl SpellLang {
     pub fn new(code: &str, name: &str, favorite: bool) -> Self {
         glib::Object::builder()
@@ -47,20 +49,14 @@ pub fn build_sorter() -> gtk::CustomSorter {
         match (a.favorite(), b.favorite()) {
             (true, false) => gtk::Ordering::Smaller,
             (false, true) => gtk::Ordering::Larger,
-            _ => a
-                .name()
-                .to_lowercase()
-                .cmp(&b.name().to_lowercase())
-                .into(),
+            _ => a.name().to_lowercase().cmp(&b.name().to_lowercase()).into(),
         }
     })
 }
 
 /// Factory for the popup rows: friendly name + a trailing star `ToggleButton`.
 /// `on_toggle(lang, now_favorite)` fires when the user clicks a star.
-pub fn build_list_factory(
-    on_toggle: Rc<dyn Fn(&SpellLang, bool)>,
-) -> gtk::SignalListItemFactory {
+pub fn build_list_factory(on_toggle: SpellToggleCallback) -> gtk::SignalListItemFactory {
     let factory = gtk::SignalListItemFactory::new();
 
     factory.connect_setup(|_, item| {
@@ -91,7 +87,10 @@ pub fn build_list_factory(
             return;
         };
         let label = row.first_child().and_downcast::<gtk::Label>().unwrap();
-        let star = row.last_child().and_downcast::<gtk::ToggleButton>().unwrap();
+        let star = row
+            .last_child()
+            .and_downcast::<gtk::ToggleButton>()
+            .unwrap();
 
         label.set_text(&lang.name());
         update_star_visual(&star, lang.favorite());
@@ -104,7 +103,9 @@ pub fn build_list_factory(
         let on_toggle = on_toggle.clone();
         let lang_weak = lang.downgrade();
         let id = star.connect_toggled(move |btn| {
-            let Some(lang) = lang_weak.upgrade() else { return };
+            let Some(lang) = lang_weak.upgrade() else {
+                return;
+            };
             let now = btn.is_active();
             update_star_visual(btn, now);
             on_toggle(&lang, now);

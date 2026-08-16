@@ -21,7 +21,9 @@ impl KarereWebView {
     /// Embedded DevTools frontend: permissive client keeps every navigation in-view.
     pub fn new_devtools() -> Self {
         let obj: Self = glib::Object::new();
-        obj.imp().devtools.store(true, std::sync::atomic::Ordering::Relaxed);
+        obj.imp()
+            .devtools
+            .store(true, std::sync::atomic::Ordering::Relaxed);
         obj
     }
 
@@ -132,7 +134,8 @@ impl KarereWebView {
     /// Spawn (or, if already present, surface) the browser for `account_id`.
     /// `foreground` makes it the visible account immediately.
     pub fn spawn_account(&self, account_id: &str, foreground: bool) {
-        self.imp().spawn_browser(Some(account_id.to_owned()), foreground);
+        self.imp()
+            .spawn_browser(Some(account_id.to_owned()), foreground);
     }
 
     /// Pre-warm every account's browser without showing any foreground, so
@@ -254,7 +257,10 @@ pub(crate) fn should_use_mobile_layout(width_logical_px: i32) -> bool {
         _ => {
             if let Ok(desktop) = std::env::var("XDG_CURRENT_DESKTOP") {
                 let d = desktop.to_lowercase();
-                if ["phosh", "plasma-mobile", "lomiri"].iter().any(|m| d.contains(m)) {
+                if ["phosh", "plasma-mobile", "lomiri"]
+                    .iter()
+                    .any(|m| d.contains(m))
+                {
                     return true;
                 }
             }
@@ -347,7 +353,9 @@ pub(crate) fn apply_zoom_from_account(browser: &cef::Browser, display_scale: f64
 /// off→on makes Chromium recompute markers with the new dictionary. CEF UI thread only.
 fn force_spellcheck_recheck(browser: &cef::Browser) {
     use cef::{CefString, ImplBrowser, ImplFrame};
-    let Some(frame) = browser.main_frame() else { return };
+    let Some(frame) = browser.main_frame() else {
+        return;
+    };
     let js = "(function(){var e=document.activeElement;if(!e)return;\
 try{var t=e.closest&&e.closest('[contenteditable=\"true\"],input,textarea');var n=t||e;\
 n.spellcheck=false;void n.offsetHeight;n.spellcheck=true;}catch(_){}})();";
@@ -366,8 +374,12 @@ fn write_spellcheck_dictionaries(browser: &cef::Browser, langs: &[String]) -> bo
         list_value_create, value_create,
     };
 
-    let Some(host) = browser.host() else { return false };
-    let Some(ctx) = host.request_context() else { return false };
+    let Some(host) = browser.host() else {
+        return false;
+    };
+    let Some(ctx) = host.request_context() else {
+        return false;
+    };
     let Some(mut list) = list_value_create() else {
         return false;
     };
@@ -485,11 +497,7 @@ pub fn dispatch_context_menu(
     y: i32,
     callback: cef::RunContextMenuCallback,
 ) {
-    let view = CTX_MENU_WIDGETS.with(|m| {
-        m.borrow()
-            .get(&browser_id)
-            .and_then(|w| w.upgrade())
-    });
+    let view = CTX_MENU_WIDGETS.with(|m| m.borrow().get(&browser_id).and_then(|w| w.upgrade()));
     match view {
         Some(v) => v.imp().show_context_menu(items, x, y, callback),
         None => {
@@ -504,13 +512,10 @@ mod imp {
         self, Browser, BrowserSettings, CefString, EventFlags, ImplBrowser, ImplBrowserHost,
         ImplFrame, ImplRequestContextHandler, ImplRunContextMenuCallback, KeyEvent, KeyEventType,
         MouseButtonType, MouseEvent, PointerType, RequestContext, RequestContextHandler,
-        RequestContextSettings, TouchEvent, TouchEventType,
-        RunContextMenuCallback, WindowInfo, WrapRequestContextHandler,
-        browser_host_create_browser_sync, rc::Rc, request_context_create_context, sys,
-        wrap_request_context_handler,
+        RequestContextSettings, RunContextMenuCallback, TouchEvent, TouchEventType, WindowInfo,
+        WrapRequestContextHandler, browser_host_create_browser_sync, rc::Rc,
+        request_context_create_context, sys, wrap_request_context_handler,
     };
-    use std::cell::RefCell;
-    use std::collections::HashMap;
     use gl::types::{GLenum, GLint, GLuint};
     use glib::subclass::Signal;
     use gtk::glib;
@@ -518,8 +523,10 @@ mod imp {
     use gtk::subclass::prelude::*;
     use once_cell::sync::Lazy;
     use parking_lot::Mutex;
+    use std::cell::RefCell;
+    use std::collections::HashMap;
     use std::ffi::{CString, c_void};
-    
+
     use std::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, Ordering};
 
     use crate::handlers::{ClientBuilder, SharedRef, life_span::ShellLifeSpanHandler, new_shared};
@@ -648,10 +655,7 @@ mod imp {
             // a logical seed with the pre-realize scale guess of 2 (multi-monitor
             // mixed scale) read back as 640 logical in on_load_end and wrongly
             // injected the mobile layout (#176).
-            let shared = new_shared(
-                ((1280.0 * scale) as i32, (800.0 * scale) as i32),
-                scale,
-            );
+            let shared = new_shared(((1280.0 * scale) as i32, (800.0 * scale) as i32), scale);
             *self.shared.lock() = Some(shared.clone());
 
             // CEF on_paint runs on the glib main thread (external_message_pump);
@@ -688,15 +692,15 @@ mod imp {
                 }
                 // Editable focus changed in the page → focus the IM context so the
                 // on-screen keyboard shows only for real text fields.
-                if let Some(focused) = keyboard_request {
-                    if let Some(im) = imp.im_context.borrow().as_ref() {
-                        if focused {
-                            im.focus_in();
-                        } else {
-                            im.focus_out();
-                        }
-                        imp.im_focused.set(focused);
+                if let Some(focused) = keyboard_request
+                    && let Some(im) = imp.im_context.borrow().as_ref()
+                {
+                    if focused {
+                        im.focus_in();
+                    } else {
+                        im.focus_out();
                     }
+                    imp.im_focused.set(focused);
                 }
                 glib::ControlFlow::Continue
             });
@@ -707,11 +711,13 @@ mod imp {
         }
 
         fn signals() -> &'static [Signal] {
-            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| vec![
-                Signal::builder("title-changed")
-                    .param_types([String::static_type()])
-                    .build(),
-            ]);
+            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
+                vec![
+                    Signal::builder("title-changed")
+                        .param_types([String::static_type()])
+                        .build(),
+                ]
+            });
             SIGNALS.as_ref()
         }
     }
@@ -751,7 +757,8 @@ mod imp {
             // scale unchanged, so refresh_screen_scale is then a cheap no-op. (#155, #158)
             if let Some(surface) = widget.native().and_then(|n| n.surface()) {
                 surface.connect_scale_notify(glib::clone!(
-                    #[weak] widget,
+                    #[weak]
+                    widget,
                     move |_s| widget.imp().refresh_screen_scale()
                 ));
             }
@@ -881,9 +888,7 @@ mod imp {
         /// `shared_texture_enabled` is immutable after browser creation, so dropping
         /// only the failed accelerated frame cannot restore CPU `on_paint` delivery.
         fn restart_with_software_osr(&self) {
-            log::warn!(
-                "accelerated OSR disabled for this view; recreating browsers for CPU paint"
-            );
+            log::warn!("accelerated OSR disabled for this view; recreating browsers for CPU paint");
             let is_devtools = self.devtools.load(Ordering::Relaxed);
             // Keep account contexts that were already initializing. Their callbacks
             // consult the new software-only flag, and retaining them avoids racing a
@@ -991,7 +996,8 @@ mod imp {
             // Resolve the callback AFTER popdown (webview re-focused): dispatch the
             // activated command, or cancel if dismissed without a selection.
             popover.connect_closed(glib::clone!(
-                #[weak] obj,
+                #[weak]
+                obj,
                 move |pop| {
                     let imp = obj.imp();
                     let cmd = imp.pending_menu_command.take();
@@ -1564,8 +1570,16 @@ mod imp {
                 gl::BindTexture(gl::TEXTURE_2D, atex);
                 gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint);
                 gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
-                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint);
-                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint);
+                gl::TexParameteri(
+                    gl::TEXTURE_2D,
+                    gl::TEXTURE_WRAP_S,
+                    gl::CLAMP_TO_EDGE as GLint,
+                );
+                gl::TexParameteri(
+                    gl::TEXTURE_2D,
+                    gl::TEXTURE_WRAP_T,
+                    gl::CLAMP_TO_EDGE as GLint,
+                );
                 gl::BindTexture(gl::TEXTURE_2D, 0);
             }
             self.accel_tex.store(atex, Ordering::Relaxed);
@@ -1720,7 +1734,8 @@ mod imp {
         let im = gtk::IMMulticontext::new();
         im.set_client_widget(Some(widget));
         im.connect_commit(glib::clone!(
-            #[weak] widget,
+            #[weak]
+            widget,
             move |_im, text| {
                 for ch in text.chars() {
                     send_char(&widget, ch as u16, 0);
@@ -1740,7 +1755,8 @@ mod imp {
         let drag = gtk::GestureDrag::new();
         drag.set_touch_only(true);
         drag.connect_drag_begin(glib::clone!(
-            #[weak] widget,
+            #[weak]
+            widget,
             move |_g, x, y| {
                 widget.grab_focus();
                 set_focus(&widget, true);
@@ -1748,7 +1764,8 @@ mod imp {
             }
         ));
         drag.connect_drag_update(glib::clone!(
-            #[weak] widget,
+            #[weak]
+            widget,
             move |g, ox, oy| {
                 if let Some((sx, sy)) = g.start_point() {
                     send_touch(&widget, 0, sx + ox, sy + oy, TouchEventType::MOVED);
@@ -1756,7 +1773,8 @@ mod imp {
             }
         ));
         drag.connect_drag_end(glib::clone!(
-            #[weak] widget,
+            #[weak]
+            widget,
             move |g, ox, oy| {
                 if let Some((sx, sy)) = g.start_point() {
                     send_touch(&widget, 0, sx + ox, sy + oy, TouchEventType::RELEASED);
@@ -1768,7 +1786,8 @@ mod imp {
         // Mouse motion -------------------------------------------------------
         let motion = gtk::EventControllerMotion::new();
         motion.connect_motion(glib::clone!(
-            #[weak] widget,
+            #[weak]
+            widget,
             move |ctrl, x, y| {
                 if is_pointer_emulated(ctrl) {
                     return; // touch handled above; don't double-feed as mouse
@@ -1778,7 +1797,8 @@ mod imp {
             }
         ));
         motion.connect_leave(glib::clone!(
-            #[weak] widget,
+            #[weak]
+            widget,
             move |ctrl| {
                 let modifiers = modifiers_from_state(ctrl.current_event_state());
                 send_move(&widget, 0.0, 0.0, modifiers, true);
@@ -1790,8 +1810,10 @@ mod imp {
         for button in 1..=3 {
             let click = gtk::GestureClick::builder().button(button).build();
             click.connect_pressed(glib::clone!(
-                #[weak] widget,
-                #[strong] im,
+                #[weak]
+                widget,
+                #[strong]
+                im,
                 move |gesture, n_press, x, y| {
                     if is_pointer_emulated(gesture) {
                         return; // touch handled by the drag gesture (#162)
@@ -1812,7 +1834,8 @@ mod imp {
                 }
             ));
             click.connect_released(glib::clone!(
-                #[weak] widget,
+                #[weak]
+                widget,
                 move |gesture, n_press, x, y| {
                     if is_pointer_emulated(gesture) {
                         return; // touch handled by the drag gesture (#162)
@@ -1825,12 +1848,12 @@ mod imp {
         }
 
         // Scroll -------------------------------------------------------------
-        let scroll = gtk::EventControllerScroll::new(
-            gtk::EventControllerScrollFlags::BOTH_AXES,
-        );
+        let scroll = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::BOTH_AXES);
         scroll.connect_scroll(glib::clone!(
-            #[weak] widget,
-            #[upgrade_or] glib::Propagation::Proceed,
+            #[weak]
+            widget,
+            #[upgrade_or]
+            glib::Propagation::Proceed,
             move |ctrl, dx, dy| {
                 let modifiers = modifiers_from_state(ctrl.current_event_state());
                 // Surface unit = pixel deltas (touchpad); Wheel unit = notch
@@ -1849,9 +1872,12 @@ mod imp {
         // key event. (#154)
         let keys = gtk::EventControllerKey::new();
         keys.connect_key_pressed(glib::clone!(
-            #[weak] widget,
-            #[strong] im,
-            #[upgrade_or] glib::Propagation::Proceed,
+            #[weak]
+            widget,
+            #[strong]
+            im,
+            #[upgrade_or]
+            glib::Propagation::Proceed,
             move |ctrl, keyval, keycode, state| {
                 use gtk::gdk::{Key, ModifierType};
                 // M17: intercept Ctrl+V before CEF. If GDK clipboard holds an image
@@ -1905,8 +1931,10 @@ mod imp {
             }
         ));
         keys.connect_key_released(glib::clone!(
-            #[weak] widget,
-            #[strong] im,
+            #[weak]
+            widget,
+            #[strong]
+            im,
             move |ctrl, keyval, keycode, state| {
                 // Mirror the press path: if the IM consumes the release, it
                 // belongs to composition — don't also send a raw key-up.
@@ -1924,7 +1952,8 @@ mod imp {
         // Focus --------------------------------------------------------------
         let focus = gtk::EventControllerFocus::new();
         focus.connect_enter(glib::clone!(
-            #[weak] widget,
+            #[weak]
+            widget,
             move |_| {
                 // Note: no im.focus_in() here. The GLArea holds GTK focus almost
                 // always, so focusing the IM on widget-focus kept Phosh's on-screen
@@ -1935,8 +1964,10 @@ mod imp {
             }
         ));
         focus.connect_leave(glib::clone!(
-            #[weak] widget,
-            #[strong] im,
+            #[weak]
+            widget,
+            #[strong]
+            im,
             move |_| {
                 im.focus_out();
                 widget.imp().im_focused.set(false);
@@ -1948,15 +1979,14 @@ mod imp {
         // Drag-drop ----------------------------------------------------------
         // M17: accept file drops; surface each as a synthetic `drop` on the element
         // under the cursor (paste_bridge.js targets it via the envelope's coords).
-        let drop_target = gtk::DropTarget::new(
-            gdk::FileList::static_type(),
-            gdk::DragAction::COPY,
-        );
+        let drop_target = gtk::DropTarget::new(gdk::FileList::static_type(), gdk::DragAction::COPY);
         // Forward hover (enter/motion/leave) so the page's dropzone overlay mounts
         // DURING the hover — CEF only delivers the drop on release, too late to mount.
         drop_target.connect_enter(glib::clone!(
-            #[weak] widget,
-            #[upgrade_or] gdk::DragAction::COPY,
+            #[weak]
+            widget,
+            #[upgrade_or]
+            gdk::DragAction::COPY,
             move |_t, x, y| {
                 send_drag_hover(&widget, "enter", x, y);
                 gdk::DragAction::COPY
@@ -1964,8 +1994,10 @@ mod imp {
         ));
         let last_motion = std::cell::Cell::new(std::time::Instant::now());
         drop_target.connect_motion(glib::clone!(
-            #[weak] widget,
-            #[upgrade_or] gdk::DragAction::COPY,
+            #[weak]
+            widget,
+            #[upgrade_or]
+            gdk::DragAction::COPY,
             move |_t, x, y| {
                 // Throttle to ~10/s: keeps the dropzone alive without flooding IPC.
                 let now = std::time::Instant::now();
@@ -1977,12 +2009,15 @@ mod imp {
             }
         ));
         drop_target.connect_leave(glib::clone!(
-            #[weak] widget,
+            #[weak]
+            widget,
             move |_t| send_drag_hover(&widget, "leave", 0.0, 0.0)
         ));
         drop_target.connect_drop(glib::clone!(
-            #[weak] widget,
-            #[upgrade_or] false,
+            #[weak]
+            widget,
+            #[upgrade_or]
+            false,
             move |_target, value, x, y| {
                 match value.get::<gdk::FileList>() {
                     Ok(list) => {
@@ -1997,7 +2032,7 @@ mod imp {
         ));
         widget.add_controller(drop_target);
 
-        let _ = gdk::ModifierType::SHIFT_MASK;  // suppress unused-import warning
+        let _ = gdk::ModifierType::SHIFT_MASK; // suppress unused-import warning
     }
 
     fn is_accelerator_key(keyval: gtk::gdk::Key, state: gtk::gdk::ModifierType) -> bool {
@@ -2024,13 +2059,27 @@ mod imp {
         use gtk::gdk::ModifierType;
         use sys::cef_event_flags_t as F;
         let mut m = 0u32;
-        if state.contains(ModifierType::SHIFT_MASK) { m |= F::EVENTFLAG_SHIFT_DOWN.0; }
-        if state.contains(ModifierType::CONTROL_MASK) { m |= F::EVENTFLAG_CONTROL_DOWN.0; }
-        if state.contains(ModifierType::ALT_MASK) { m |= F::EVENTFLAG_ALT_DOWN.0; }
-        if state.contains(ModifierType::SUPER_MASK) { m |= F::EVENTFLAG_COMMAND_DOWN.0; }
-        if state.contains(ModifierType::BUTTON1_MASK) { m |= F::EVENTFLAG_LEFT_MOUSE_BUTTON.0; }
-        if state.contains(ModifierType::BUTTON2_MASK) { m |= F::EVENTFLAG_MIDDLE_MOUSE_BUTTON.0; }
-        if state.contains(ModifierType::BUTTON3_MASK) { m |= F::EVENTFLAG_RIGHT_MOUSE_BUTTON.0; }
+        if state.contains(ModifierType::SHIFT_MASK) {
+            m |= F::EVENTFLAG_SHIFT_DOWN.0;
+        }
+        if state.contains(ModifierType::CONTROL_MASK) {
+            m |= F::EVENTFLAG_CONTROL_DOWN.0;
+        }
+        if state.contains(ModifierType::ALT_MASK) {
+            m |= F::EVENTFLAG_ALT_DOWN.0;
+        }
+        if state.contains(ModifierType::SUPER_MASK) {
+            m |= F::EVENTFLAG_COMMAND_DOWN.0;
+        }
+        if state.contains(ModifierType::BUTTON1_MASK) {
+            m |= F::EVENTFLAG_LEFT_MOUSE_BUTTON.0;
+        }
+        if state.contains(ModifierType::BUTTON2_MASK) {
+            m |= F::EVENTFLAG_MIDDLE_MOUSE_BUTTON.0;
+        }
+        if state.contains(ModifierType::BUTTON3_MASK) {
+            m |= F::EVENTFLAG_RIGHT_MOUSE_BUTTON.0;
+        }
         m
     }
 
@@ -2072,8 +2121,10 @@ mod imp {
                     }
                     let cmd = *command_id;
                     btn.connect_clicked(glib::clone!(
-                        #[weak] obj,
-                        #[weak] popover,
+                        #[weak]
+                        obj,
+                        #[weak]
+                        popover,
                         move |_| {
                             log::debug!("context menu: item activated id={cmd}");
                             // Record the choice; `closed` runs `cont` after popdown + refocus.
@@ -2279,13 +2330,7 @@ mod imp {
         Some((p.x() as i32 * s, p.y() as i32 * s))
     }
 
-    fn send_wheel(
-        widget: &super::KarereWebView,
-        dx: f64,
-        dy: f64,
-        modifiers: u32,
-        precise: bool,
-    ) {
+    fn send_wheel(widget: &super::KarereWebView, dx: f64, dy: f64, modifiers: u32, precise: bool) {
         // CEF wants pixel deltas. A mouse wheel reports notch clicks (±1) → use a
         // browser-like notch size. A touchpad (Surface unit) reports surface-unit
         // deltas; Chromium's own Wayland backend scales those by
@@ -2333,13 +2378,7 @@ mod imp {
     /// — required for touch scrolling on touchscreens (Phosh), which emulated
     /// pointer events don't drive. Coords are physical (× scale), like the mouse
     /// path. (#162)
-    fn send_touch(
-        widget: &super::KarereWebView,
-        id: i32,
-        x: f64,
-        y: f64,
-        type_: TouchEventType,
-    ) {
+    fn send_touch(widget: &super::KarereWebView, id: i32, x: f64, y: f64, type_: TouchEventType) {
         let s = widget.scale_factor().max(1) as f32;
         let event = TouchEvent {
             id,
@@ -2368,7 +2407,11 @@ mod imp {
     ) {
         let evt = KeyEvent {
             size: std::mem::size_of::<sys::_cef_key_event_t>(),
-            type_: if down { KeyEventType::RAWKEYDOWN } else { KeyEventType::KEYUP },
+            type_: if down {
+                KeyEventType::RAWKEYDOWN
+            } else {
+                KeyEventType::KEYUP
+            },
             modifiers: modifiers_from_state(state),
             windows_key_code: gdk_key_to_vk(keyval),
             native_key_code: keycode as i32,
@@ -2403,7 +2446,6 @@ mod imp {
             host.send_key_event(Some(&evt));
         });
     }
-
 
     fn set_focus(widget: &super::KarereWebView, focused: bool) {
         with_host(widget, |host| host.set_focus(focused as i32));
@@ -2511,7 +2553,7 @@ mod imp {
 
     /// On Ctrl+V, inspect the GDK clipboard. If it holds an image or files, async-read
     /// + dispatch a synthetic paste and return `true` so the caller swallows the key
-    /// (CEF's GDK-blind native paste must not also fire). Text-only/empty → `false`.
+    ///   (CEF's GDK-blind native paste must not also fire). Text-only/empty → `false`.
     fn try_intercept_paste(widget: &super::KarereWebView) -> bool {
         let Some(display) = gtk::gdk::Display::default() else {
             return false;
@@ -2554,7 +2596,8 @@ mod imp {
         clipboard.read_text_async(
             gtk::gio::Cancellable::NONE,
             glib::clone!(
-                #[weak] widget,
+                #[weak]
+                widget,
                 move |res| match res {
                     Ok(Some(text)) if !text.is_empty() => {
                         send_text_paste(&widget, text.as_str(), None)
@@ -2570,7 +2613,8 @@ mod imp {
         clipboard.read_texture_async(
             gtk::gio::Cancellable::NONE,
             glib::clone!(
-                #[weak] widget,
+                #[weak]
+                widget,
                 move |res| match res {
                     Ok(Some(texture)) => {
                         let bytes = texture.save_to_png_bytes();
@@ -2596,7 +2640,8 @@ mod imp {
             glib::Priority::DEFAULT,
             gtk::gio::Cancellable::NONE,
             glib::clone!(
-                #[weak] widget,
+                #[weak]
+                widget,
                 move |res| match res {
                     Ok(value) => match value.get::<gtk::gdk::FileList>() {
                         Ok(list) => {
@@ -2623,7 +2668,8 @@ mod imp {
         file.load_contents_async(
             gtk::gio::Cancellable::NONE,
             glib::clone!(
-                #[weak] widget,
+                #[weak]
+                widget,
                 move |res| match res {
                     Ok((bytes, _etag)) => {
                         let mime = guess_mime(name.as_deref(), &bytes);
@@ -2650,16 +2696,15 @@ mod imp {
             return;
         };
         let clipboard = display.clipboard();
-        display.primary_clipboard().read_text_async(
-            gtk::gio::Cancellable::NONE,
-            move |res| {
+        display
+            .primary_clipboard()
+            .read_text_async(gtk::gio::Cancellable::NONE, move |res| {
                 if let Ok(Some(text)) = res
                     && !text.is_empty()
                 {
                     clipboard.set_text(text.as_str());
                 }
-            },
-        );
+            });
     }
 
     /// Middle-click: paste primary-clipboard text into the element at `(x, y)` if
@@ -2671,7 +2716,8 @@ mod imp {
         display.primary_clipboard().read_text_async(
             gtk::gio::Cancellable::NONE,
             glib::clone!(
-                #[weak] widget,
+                #[weak]
+                widget,
                 move |res| match res {
                     Ok(Some(text)) if !text.is_empty() => {
                         send_text_paste(&widget, text.as_str(), Some((x, y)))
@@ -2809,17 +2855,12 @@ mod tests {
             let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
             let dir = root.join("target/web-view-test-schemas");
             std::fs::create_dir_all(&dir).unwrap();
-            let schema = std::fs::read_to_string(
-                root.join("data/io.github.tobagin.karere.gschema.xml.in"),
-            )
-            .unwrap()
-            .replace("@APP_ID@", crate::application::APP_ID)
-            .replace("@APP_PATH@", "/io/github/tobagin/karere/");
-            std::fs::write(
-                dir.join("io.github.tobagin.karere.gschema.xml"),
-                schema,
-            )
-            .unwrap();
+            let schema =
+                std::fs::read_to_string(root.join("data/io.github.tobagin.karere.gschema.xml.in"))
+                    .unwrap()
+                    .replace("@APP_ID@", crate::application::APP_ID)
+                    .replace("@APP_PATH@", "/io/github/tobagin/karere/");
+            std::fs::write(dir.join("io.github.tobagin.karere.gschema.xml"), schema).unwrap();
             assert!(
                 std::process::Command::new("glib-compile-schemas")
                     .arg(&dir)
@@ -2841,7 +2882,9 @@ mod tests {
     /// detached API-selection helper.
     #[test]
     fn gles_contract_is_shared_by_main_and_devtools_views() {
-        let _guard = GTK_TEST_LOCK.lock().unwrap_or_else(|error| error.into_inner());
+        let _guard = GTK_TEST_LOCK
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
         prepare_widget_test_runtime();
         if gtk::init().is_err() {
             eprintln!("skipping GTK widget contract test: no display available");
@@ -2930,7 +2973,10 @@ mod tests {
             .build();
         window.present();
         while gtk::glib::MainContext::default().iteration(false) {}
-        assert!(view.is_realized(), "test requires the production GLArea draw path");
+        assert!(
+            view.is_realized(),
+            "test requires the production GLArea draw path"
+        );
         imp.fallback_test_events.borrow_mut().clear();
 
         // An invalid DMA-BUF reaches the real import call from draw() and must be
@@ -2951,7 +2997,10 @@ mod tests {
             dirty: true,
         });
         unsafe { imp.draw() };
-        assert!(shared.lock().accel.is_none(), "draw must discard rejected DMA-BUF");
+        assert!(
+            shared.lock().accel.is_none(),
+            "draw must discard rejected DMA-BUF"
+        );
         assert!(imp.software_osr_forced.load(Ordering::Acquire));
 
         // draw() schedules, rather than recursively performs, browser teardown.
@@ -2968,7 +3017,10 @@ mod tests {
         // the production upload path. A clean frame proves the callback is visible.
         let pixels = [1_u8, 2, 3, 255];
         crate::handlers::render::dispatch_cpu_paint_for_test(&shared, &pixels, 1, 1);
-        assert_eq!(cpu_upload(&shared.lock().frame, (0, 0)), CpuUpload::Allocate);
+        assert_eq!(
+            cpu_upload(&shared.lock().frame, (0, 0)),
+            CpuUpload::Allocate
+        );
         unsafe { imp.draw() };
         let state = shared.lock();
         assert!(!state.frame.dirty, "CPU callback must be consumed by draw");

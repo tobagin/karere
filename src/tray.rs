@@ -238,9 +238,7 @@ pub fn apply_setting() {
     let want = match mode.as_str() {
         "disabled" => false,
         "enabled" => true,
-        _ => {
-            std::env::var("KARERE_FORCE_TRAY").as_deref() == Ok("1") || !should_skip_on_gnome()
-        }
+        _ => std::env::var("KARERE_FORCE_TRAY").as_deref() == Ok("1") || !should_skip_on_gnome(),
     };
     if want {
         start();

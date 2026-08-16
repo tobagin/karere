@@ -161,8 +161,7 @@ fn resolve_dir() -> PathBuf {
         }
         log::warn!("download-directory {dir:?} is missing or not writable; using XDG Downloads");
     }
-    let xdg = glib::user_special_dir(glib::UserDirectory::Downloads)
-        .unwrap_or_else(glib::home_dir);
+    let xdg = glib::user_special_dir(glib::UserDirectory::Downloads).unwrap_or_else(glib::home_dir);
     ensure_writable_dir(&xdg);
     xdg
 }
@@ -363,10 +362,7 @@ mod tests {
 
     #[test]
     fn dedupe_walks_suffixes() {
-        let dir = std::env::temp_dir().join(format!(
-            "karere-dl-test-{}",
-            std::process::id()
-        ));
+        let dir = std::env::temp_dir().join(format!("karere-dl-test-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
 

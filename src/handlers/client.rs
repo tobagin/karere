@@ -4,6 +4,7 @@ use cef::{
     RenderHandler, RequestHandler, WrapClient, rc::Rc, wrap_client,
 };
 
+use super::SharedRef;
 use super::display::{ShellDisplayHandler, ShellDisplayHandlerBuilder};
 use super::download::{ShellDownloadHandler, ShellDownloadHandlerBuilder};
 use super::find::{ShellFindHandler, ShellFindHandlerBuilder};
@@ -12,14 +13,18 @@ use super::load::{ShellLoadHandler, ShellLoadHandlerBuilder};
 use super::permission::ShellPermissionHandlerBuilder;
 use super::render::{ShellRenderHandler, ShellRenderHandlerBuilder};
 use super::{ShellContextMenuHandlerBuilder, ShellRequestHandler, ShellRequestHandlerBuilder};
-use super::SharedRef;
 use base64::Engine;
 
 /// Degraded-mode DOM scraper (M20 §6). Not in the injected bundle; run in an
 /// account's main frame only on `StoreUnavailable`.
 const DOM_FALLBACK_JS: &str = include_str!("../../data/js-deferred/profile_dom_fallback.js");
 
-wrap_client! {
+// The CEF macro generates a constructor with one argument per registered handler.
+#[allow(clippy::too_many_arguments)]
+mod generated_client {
+    use super::*;
+
+    wrap_client! {
     pub struct ClientBuilder {
         render_handler: RenderHandler,
         life_span_handler: LifeSpanHandler,
@@ -204,8 +209,11 @@ wrap_client! {
                 }
             }
         }
+        }
     }
 }
+
+pub use generated_client::ClientBuilder;
 
 /// Strip control characters from a page-supplied clipboard write so a hostile
 /// page can't smuggle terminal escape sequences (ANSI/OSC) that execute commands
@@ -274,14 +282,17 @@ mod tests {
     #[test]
     fn strips_escape_and_control_chars() {
         // ESC-based ANSI/OSC injection is the real threat; it must not survive.
-        assert_eq!(sanitize_clipboard("\x1b]0;pwned\x07ls"), "0;pwnedls");
+        assert_eq!(sanitize_clipboard("\x1b]0;pwned\x07ls"), "]0;pwnedls");
         assert_eq!(sanitize_clipboard("a\x00b\x07c\x7fd"), "abcd");
     }
 
     #[test]
     fn keeps_legitimate_whitespace_and_unicode() {
         // Multi-line copies from the chat must round-trip unchanged.
-        assert_eq!(sanitize_clipboard("line1\nline2\tx\r\n"), "line1\nline2\tx\r\n");
+        assert_eq!(
+            sanitize_clipboard("line1\nline2\tx\r\n"),
+            "line1\nline2\tx\r\n"
+        );
         assert_eq!(sanitize_clipboard("héllo 相片 🙂"), "héllo 相片 🙂");
     }
 }

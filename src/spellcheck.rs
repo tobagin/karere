@@ -3,11 +3,7 @@
 
 /// `parse_locale("en_GB.UTF-8")` → `Some(("en", Some("GB")))`; `None` if empty.
 pub fn parse_locale(code: &str) -> Option<(String, Option<String>)> {
-    let base = code
-        .split(['.', '@'])
-        .next()
-        .unwrap_or("")
-        .trim();
+    let base = code.split(['.', '@']).next().unwrap_or("").trim();
     if base.is_empty() {
         return None;
     }
@@ -37,11 +33,7 @@ pub const DEFAULT_DICT: &str = "en-GB";
 /// auto-detected supported code when `auto_detect`, else [`DEFAULT_DICT`].
 /// Never empty, so the dropdown never defaults to index 0 (Afrikaans).
 pub fn resolve_languages(explicit: &[String], auto_detect: bool) -> Vec<String> {
-    let explicit: Vec<String> = explicit
-        .iter()
-        .filter(|s| !s.is_empty())
-        .cloned()
-        .collect();
+    let explicit: Vec<String> = explicit.iter().filter(|s| !s.is_empty()).cloned().collect();
     if !explicit.is_empty() {
         return explicit;
     }
@@ -284,7 +276,10 @@ mod tests {
     #[test]
     fn best_supported_maps_to_chromium_set() {
         assert_eq!(best_supported_code("pt_BR"), Some("pt-BR".to_string()));
-        assert_eq!(best_supported_code("en_US.UTF-8"), Some("en-US".to_string()));
+        assert_eq!(
+            best_supported_code("en_US.UTF-8"),
+            Some("en-US".to_string())
+        );
         assert_eq!(best_supported_code("en_IE"), Some("en-GB".to_string()));
         assert_eq!(best_supported_code("en_GH"), Some("en-GB".to_string()));
         assert_eq!(best_supported_code("de"), Some("de".to_string()));
@@ -295,7 +290,10 @@ mod tests {
     fn resolve_languages_falls_back_to_default_dict() {
         // No explicit list, auto-detect off → en-GB, never empty (which would
         // leave the dropdown on index 0 = Afrikaans).
-        assert_eq!(resolve_languages(&[], false), vec![DEFAULT_DICT.to_string()]);
+        assert_eq!(
+            resolve_languages(&[], false),
+            vec![DEFAULT_DICT.to_string()]
+        );
         // Explicit selection always wins.
         assert_eq!(
             resolve_languages(&["de".to_string()], true),

@@ -1,6 +1,8 @@
 use anyhow::Result;
 use cef::{CefString, ImplCommandLine, args::Args};
-use gettextrs::{LocaleCategory, bind_textdomain_codeset, bindtextdomain, gettext, setlocale, textdomain};
+use gettextrs::{
+    LocaleCategory, bind_textdomain_codeset, bindtextdomain, gettext, setlocale, textdomain,
+};
 use gtk::glib;
 use gtk::prelude::*;
 
@@ -62,12 +64,14 @@ fn main() -> Result<()> {
         assert!(ret >= 0, "subprocess execute_process failed: {ret}");
         return Ok(());
     }
-    assert_eq!(ret, -1, "browser process must return -1 from execute_process");
+    assert_eq!(
+        ret, -1,
+        "browser process must return -1 from execute_process"
+    );
 
     let url = parse_url_flag().unwrap_or_else(|| "https://web.whatsapp.com".into());
 
-    gio::resources_register_include!("karere.gresource")
-        .expect("failed to register gresource");
+    gio::resources_register_include!("karere.gresource").expect("failed to register gresource");
 
     let app = KarereApplication::new();
 

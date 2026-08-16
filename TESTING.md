@@ -15,6 +15,16 @@ Per PRD §11.
 
 ## Automated
 
+Use Rust 1.97.1 with its matching rustfmt and Clippy components. Run the repository-wide acceptance gates from the repository root:
+
+```sh
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace --all-targets
+```
+
+The startup integration test launches the application by its fixed application ID. If another Karere instance is active on the session bus, run the test suite in an isolated session with `dbus-run-session -- cargo test --workspace --all-targets`.
+
 ### Software GLES startup (issue #177)
 
 The startup regression launches the real `karere --url about:blank` binary three times. First, a debug-only legacy desktop-GL contract must reproduce the pre-fix context error and prove browser creation remains fenced. It then verifies the fixed GLES contract as a visible window and with `start-in-background` prewarm followed by presentation. Xvfb provides deterministic X11; Mesa is pinned to llvmpipe with desktop GL capped below the required 3.0 API while GLES 3.2 remains available. Accelerated OSR is disabled so CEF uses its CPU `on_paint` fallback, and the production `GSK_RENDERER=gl` policy remains active. The fixed launches require a GLES 3.x context and browser spawn and fail on a GLArea/context-creation error, timeout, premature exit, or unclean app-action shutdown.

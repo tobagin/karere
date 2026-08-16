@@ -19,8 +19,7 @@ const TIMEOUT: Duration = Duration::from_secs(2);
 pub fn fetch_frontend_url(port: u16) -> Result<String, String> {
     let body = http_get(port, "/json/list")?;
     log::debug!("cdp /json/list -> {body}");
-    pick_frontend_url(&body, port)
-        .ok_or_else(|| "no inspectable page target found".to_owned())
+    pick_frontend_url(&body, port).ok_or_else(|| "no inspectable page target found".to_owned())
 }
 
 fn http_get(port: u16, path: &str) -> Result<String, String> {
@@ -69,13 +68,14 @@ fn http_get(port: u16, path: &str) -> Result<String, String> {
         buf.extend_from_slice(&chunk[..n]);
     }
 
-    Ok(String::from_utf8_lossy(&buf[header_end..header_end + content_len.min(buf.len() - header_end)]).into_owned())
+    Ok(String::from_utf8_lossy(
+        &buf[header_end..header_end + content_len.min(buf.len() - header_end)],
+    )
+    .into_owned())
 }
 
 fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {
-    haystack
-        .windows(needle.len())
-        .position(|w| w == needle)
+    haystack.windows(needle.len()).position(|w| w == needle)
 }
 
 /// Pick a page target from `/json/list` and return its absolute
@@ -135,7 +135,9 @@ fn split_objects(body: &str) -> Vec<String> {
             }
             '}' => {
                 depth -= 1;
-                if depth == 0 && let Some(s) = start.take() {
+                if depth == 0
+                    && let Some(s) = start.take()
+                {
                     out.push(body[s..=i].to_owned());
                 }
             }

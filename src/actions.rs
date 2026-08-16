@@ -130,10 +130,9 @@ fn register_open_download(app: &KarereApplication) {
                 // gio must run on the glib main thread.
                 glib::MainContext::default().invoke(move || {
                     let uri = format!("file://{path}");
-                    if let Err(err) = gio::AppInfo::launch_default_for_uri(
-                        &uri,
-                        None::<&gio::AppLaunchContext>,
-                    ) {
+                    if let Err(err) =
+                        gio::AppInfo::launch_default_for_uri(&uri, None::<&gio::AppLaunchContext>)
+                    {
                         log::warn!("open-download: fallback launch_default_for_uri failed: {err}");
                     }
                 });
@@ -326,9 +325,7 @@ fn register_sync_autostart(app: &KarereApplication) {
                 Background::request().auto_start(false).send().await
             };
             match result {
-                Ok(_) => log::info!(
-                    "ashpd Background::request completed (auto_start={want})"
-                ),
+                Ok(_) => log::info!("ashpd Background::request completed (auto_start={want})"),
                 Err(err) => log::warn!("ashpd Background::request failed: {err}"),
             }
         });

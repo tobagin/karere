@@ -57,7 +57,9 @@ pub fn apply_color_scheme(host: &BrowserHost) {
         &json_msg(
             id,
             "Emulation.setEmulatedMedia",
-            &format!("{{\"features\":[{{\"name\":\"prefers-color-scheme\",\"value\":\"{scheme}\"}}]}}"),
+            &format!(
+                "{{\"features\":[{{\"name\":\"prefers-color-scheme\",\"value\":\"{scheme}\"}}]}}"
+            ),
         ),
     );
 }
@@ -318,7 +320,10 @@ fn arm(host: &BrowserHost, state: &Rc<RefCell<State>>) {
     let id = state.borrow_mut().bump();
     send(host, &json_msg(id, "Runtime.enable", "{}"));
     let id = state.borrow_mut().bump();
-    send(host, &json_msg(id, "Runtime.evaluate", &eval_params(PAGE_PATCH)));
+    send(
+        host,
+        &json_msg(id, "Runtime.evaluate", &eval_params(PAGE_PATCH)),
+    );
     // Match the web content's color scheme to the Karere theme (#160).
     apply_color_scheme(host);
     // Read the current WhatsApp locale; `handle` reconciles it against the
@@ -424,7 +429,10 @@ fn handle(state: &Rc<RefCell<State>>, host: &BrowserHost, v: &serde_json::Value)
         "Runtime.executionContextCreated" => match session {
             None => {
                 let id = state.borrow_mut().bump();
-                send(host, &json_msg(id, "Runtime.evaluate", &eval_params(PAGE_PATCH)));
+                send(
+                    host,
+                    &json_msg(id, "Runtime.evaluate", &eval_params(PAGE_PATCH)),
+                );
             }
             Some(s) if state.borrow().sw_sessions.contains(s) => {
                 let s = s.to_owned();
@@ -520,19 +528,18 @@ fn reconcile_lang(state: &Rc<RefCell<State>>, host: &BrowserHost, probe: Option<
         }
         st.desired_lang.clone()
     };
-    let (html_lang, pref) = match probe.and_then(|s| serde_json::from_str::<serde_json::Value>(s).ok()) {
-        Some(v) => (
-            v.get("h").and_then(|x| x.as_str()).unwrap_or("").to_lowercase(),
-            v.get("p").and_then(|x| x.as_str()).map(str::to_owned),
-        ),
-        None => (String::new(), None),
-    };
-    let base = |s: &str| {
-        s.split(['-', '_'])
-            .next()
-            .unwrap_or(s)
-            .to_lowercase()
-    };
+    let (html_lang, pref) =
+        match probe.and_then(|s| serde_json::from_str::<serde_json::Value>(s).ok()) {
+            Some(v) => (
+                v.get("h")
+                    .and_then(|x| x.as_str())
+                    .unwrap_or("")
+                    .to_lowercase(),
+                v.get("p").and_then(|x| x.as_str()).map(str::to_owned),
+            ),
+            None => (String::new(), None),
+        };
+    let base = |s: &str| s.split(['-', '_']).next().unwrap_or(s).to_lowercase();
     let needs_reload = match &desired {
         // Reload when the rendered language's base differs from the wanted base
         // (`pt_BR` → `pt`). Skip when `html_lang` is empty: the page hasn't set
@@ -574,7 +581,10 @@ fn reconcile_lang(state: &Rc<RefCell<State>>, host: &BrowserHost, probe: Option<
         ),
     };
     let id = state.borrow_mut().bump();
-    send(host, &json_msg(id, "Runtime.evaluate", &eval_params(&set_js)));
+    send(
+        host,
+        &json_msg(id, "Runtime.evaluate", &eval_params(&set_js)),
+    );
     log::info!("cdp: switching WhatsApp Web locale -> {desired:?}");
 }
 

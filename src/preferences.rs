@@ -74,8 +74,7 @@ fn active_web_view() -> Option<crate::web_view::KarereWebView> {
         .active_window()?
         .downcast::<crate::window::KarereWindow>()
         .ok()?;
-    let wv = win.imp().web_view.borrow().clone();
-    wv
+    win.imp().web_view.borrow().clone()
 }
 
 fn active_window() -> Option<gtk::Window> {
@@ -295,14 +294,11 @@ mod imp {
 
             bind_switch(settings, "run-on-startup", &self.row_startup);
             let app_weak = app.downgrade();
-            settings.connect_changed(
-                Some("run-on-startup"),
-                move |_, _| {
-                    if let Some(app) = app_weak.upgrade() {
-                        app.activate_action("sync-autostart", None);
-                    }
-                },
-            );
+            settings.connect_changed(Some("run-on-startup"), move |_, _| {
+                if let Some(app) = app_weak.upgrade() {
+                    app.activate_action("sync-autostart", None);
+                }
+            });
 
             // Present first so the OSR view is realized before DevTools attaches.
             self.btn_dev_open.connect_clicked(|_| {
@@ -358,7 +354,11 @@ mod imp {
             bind_switch(settings, "notify-messages", &self.row_notify_msg);
             bind_switch(settings, "notify-tray-icon", &self.row_tray_anim);
             bind_switch(settings, "notify-preview-name", &self.row_preview_name);
-            bind_switch(settings, "notify-preview-message", &self.row_preview_message);
+            bind_switch(
+                settings,
+                "notify-preview-message",
+                &self.row_preview_message,
+            );
             bind_combo_enum(settings, "notify-preview-length", &self.row_preview_len);
             bind_switch(settings, "notify-sound-enabled", &self.row_sound_enable);
 
@@ -401,8 +401,8 @@ mod imp {
                         if let Ok(folder) = res
                             && let Some(path) = folder.path()
                         {
-                            let _ = settings
-                                .set_string("download-directory", &path.to_string_lossy());
+                            let _ =
+                                settings.set_string("download-directory", &path.to_string_lossy());
                             if let Some(row) = row.upgrade() {
                                 row.set_subtitle(&path.to_string_lossy());
                             }
@@ -431,7 +431,7 @@ mod imp {
         }
 
         fn bind_spellcheck(&self, settings: &gio::Settings) {
-            use crate::spellcheck_ui::{self, SpellLang};
+            use crate::spellcheck_ui::{self, SpellLang, SpellToggleCallback};
             use std::rc::Rc;
 
             bind_switch(settings, "enable-spell-checking", &self.row_spell_enable);
@@ -453,7 +453,7 @@ mod imp {
             row.set_factory(Some(&spellcheck_ui::build_button_factory()));
 
             // Star toggle → persist favorites and re-sort.
-            let on_toggle: Rc<dyn Fn(&SpellLang, bool)> = Rc::new({
+            let on_toggle: SpellToggleCallback = Rc::new({
                 let settings = settings.clone();
                 let sorter = sorter.clone();
                 move |lang: &SpellLang, now: bool| {
@@ -571,7 +571,11 @@ mod imp {
                 .bind("zoom-level", &self.row_zoom_level.get(), "value")
                 .flags(gio::SettingsBindFlags::DEFAULT)
                 .build();
-            bind_switch(settings, "zoom-controls-headerbar", &self.row_zoom_headerbar);
+            bind_switch(
+                settings,
+                "zoom-controls-headerbar",
+                &self.row_zoom_headerbar,
+            );
             bind_switch(settings, "screen-reader-opts", &self.row_sr_opts);
             bind_switch(settings, "enable-shortcuts", &self.row_kb_shortcuts);
             bind_switch(settings, "a11y-shortcuts", &self.row_a11y_shortcuts);

@@ -2,7 +2,7 @@ use std::os::raw::c_int;
 
 use cef::{
     self, Browser, CefString, ContextMenuHandler, ContextMenuParams, Frame, ImplBrowser,
-    ImplContextMenuParams, ImplContextMenuHandler, ImplMenuModel, ImplRunContextMenuCallback,
+    ImplContextMenuHandler, ImplContextMenuParams, ImplMenuModel, ImplRunContextMenuCallback,
     MenuItemType, MenuModel, RunContextMenuCallback, WrapContextMenuHandler, rc::Rc,
     wrap_context_menu_handler,
 };

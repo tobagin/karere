@@ -2,9 +2,10 @@ use std::time::{Duration, Instant};
 
 use cef::{
     self, Browser, Callback, CefString, Frame, ImplBrowser, ImplFrame, ImplRequest,
-    ImplRequestHandler, ImplResourceRequestHandler, Request, RequestHandler, ResourceRequestHandler,
-    ReturnValue, TerminationStatus, WindowOpenDisposition, WrapRequestHandler,
-    WrapResourceRequestHandler, rc::Rc, wrap_request_handler, wrap_resource_request_handler,
+    ImplRequestHandler, ImplResourceRequestHandler, Request, RequestHandler,
+    ResourceRequestHandler, ReturnValue, TerminationStatus, WindowOpenDisposition,
+    WrapRequestHandler, WrapResourceRequestHandler, rc::Rc, wrap_request_handler,
+    wrap_resource_request_handler,
 };
 
 use super::{CrashDialog, SharedRef};
@@ -274,7 +275,10 @@ mod tests {
 
     #[test]
     fn host_parsing_strips_port_and_userinfo() {
-        assert_eq!(host_of("//user:pw@web.whatsapp.com:443/x"), Some("web.whatsapp.com".to_string()));
+        assert_eq!(
+            host_of("//user:pw@web.whatsapp.com:443/x"),
+            Some("web.whatsapp.com".to_string())
+        );
         assert_eq!(host_of("//google.com"), Some("google.com".to_string()));
     }
 }
