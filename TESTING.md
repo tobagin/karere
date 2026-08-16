@@ -15,7 +15,35 @@ Per PRD §11.
 
 ## Automated
 
-- [ ] `cargo test` — headless integration test launches `--url about:blank` and confirms clean exit on SIGTERM.
+### Software GLES startup (issue #177)
+
+The startup regression launches the real `karere --url about:blank` binary three times. First, a debug-only legacy desktop-GL contract must reproduce the pre-fix context error and prove browser creation remains fenced. It then verifies the fixed GLES contract as a visible window and with `start-in-background` prewarm followed by presentation. Xvfb provides deterministic X11; Mesa is pinned to llvmpipe with desktop GL capped below the required 3.0 API while GLES 3.2 remains available. Accelerated OSR is disabled so CEF uses its CPU `on_paint` fallback, and the production `GSK_RENDERER=gl` policy remains active. The fixed launches require a GLES 3.x context and browser spawn and fail on a GLArea/context-creation error, timeout, premature exit, or unclean app-action shutdown.
+
+```sh
+dbus-run-session -- xvfb-run -a -s '-screen 0 1280x800x24' \
+  cargo test --test gl_context_startup -- --nocapture --test-threads=1
+```
+
+Requirements: `Xvfb`, `dbus-run-session`, `gapplication`, `gsettings`, `glib-compile-schemas`, and a Mesa llvmpipe installation. This committed fixture covers fallback X11; PinePhone Wayland/Phosh remains a supplemental hardware smoke test. The reporter supplied no full startup log beyond an error about creating a GL context, so the regression rejects both Karere's `GLArea realize error` diagnostic and common GL-context creation-error wording without claiming an unobserved exact message.
+
+Production-widget contract and CPU-frame state tests run with:
+
+```sh
+GSETTINGS_SCHEMA_DIR="$PWD/target/test-schemas" GSETTINGS_BACKEND=memory \
+  xvfb-run -a cargo test web_view::tests:: -- --nocapture
+```
+
+Generate `target/test-schemas/gschemas.compiled` from `data/io.github.tobagin.karere.gschema.xml.in` (substituting the stable app ID/path) before that command; the integration test performs this setup automatically.
+
+### PinePhone / Mobian Flatpak smoke
+
+On a PinePhone running Mobian 13 under Phosh:
+
+1. Install the current aarch64 Flatpak from Flathub (or the locally built Devel manifest).
+2. Run `flatpak run io.github.tobagin.karere --url about:blank` from a terminal and confirm the log reports `GLArea context ready: api=...GLES... version=3.x`, with no `GLArea realize error`.
+3. Launch normally and confirm WhatsApp renders, accepts touch input, and remains visible after portrait/landscape resize.
+4. Enable **Start in Background**, restart, then present Karere from the app launcher/tray and confirm the prewarmed browser appears rather than a blank GLArea.
+5. Quit and confirm no Karere/CEF process remains. Capture a screenshot and terminal log as release evidence.
 
 ## Beta testing (flathub-beta)
 

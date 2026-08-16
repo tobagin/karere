@@ -30,9 +30,23 @@ The shell SHALL provide a `CefGtkArea` widget that subclasses `gtk::GLArea` via 
 - **WHEN** a caller invokes `set_url` before the widget has realized
 - **THEN** the URL is stored in a `Mutex<Option<String>>` pending slot and applied when `create_browser` runs at realize time
 
+### Requirement: Production GLArea explicitly negotiates GLES 3.0
+
+The production `KarereWebView` GLArea SHALL set `allowed-apis` to GLES and require version 3.0 in `ObjectImpl::constructed`, before widget realization. The main-account and DevTools constructors MUST share this contract. After `make_current()`, realization MUST report GTK's original context error and return before `init_gl()` or browser-pool bootstrap when context creation fails; on success it SHALL log the negotiated API and version before invoking raw GL.
+
+#### Scenario: GLES-only system realizes the production widget
+
+- **WHEN** a production main or DevTools view realizes on a system that provides GLES 3.x but not desktop OpenGL
+- **THEN** GTK negotiates a GLES context at least version 3.0 and the existing `#version 300 es` shaders initialize
+
+#### Scenario: Context creation fails before renderer or browser setup
+
+- **WHEN** GTK records an error while creating or making current the GLArea context
+- **THEN** the original GTK error remains observable, `init_gl()` is not called, and no browser-pool bootstrap occurs
+
 ### Requirement: GLES 3.0 renderer uploads BGRA8 frames as a textured fullscreen quad
 
-The widget SHALL render each frame by sampling the CEF paint buffer from a 2D texture drawn over a fullscreen quad. Shaders MUST target `#version 300 es` with `precision highp float;`. The fragment shader MUST swizzle `.bgra` because the buffer bytes are BGRA but are uploaded as `GL_RGBA` (GLES has no `GL_BGRA` upload format). The texture MUST use `GL_RGBA8` internal format with `GL_LINEAR` filtering and `GL_CLAMP_TO_EDGE` wrap.
+The widget SHALL render each frame by sampling the CEF paint buffer from a 2D texture drawn over a fullscreen quad. Shaders MUST target `#version 300 es` with `precision highp float;`. The CPU paint fallback MUST upload CEF's BGRA bytes as `GL_RGBA`, and the fragment shader MUST swizzle `.bgra` because GLES has no portable `GL_BGRA` upload format. The texture MUST use `GL_RGBA8` internal format with `GL_LINEAR` filtering and `GL_CLAMP_TO_EDGE` wrap. Accelerated DMA-BUF OSR SHALL remain optional and capability/setting-gated; a failed import MUST release the pending accelerated frame so an existing or subsequent CPU `on_paint` frame can become visible.
 
 #### Scenario: First paint allocates texture storage
 
@@ -46,8 +60,13 @@ The widget SHALL render each frame by sampling the CEF paint buffer from a 2D te
 
 #### Scenario: Fragment shader corrects channel order
 
-- **WHEN** the fragment shader samples the texture
+- **WHEN** the fragment shader samples a CPU paint texture
 - **THEN** the sampled color is swizzled `.bgra` so BGRA bytes appear with red, green, blue, alpha in the correct channels on screen
+
+#### Scenario: Accelerated import rejection preserves CPU fallback
+
+- **WHEN** accelerated OSR is enabled but the current GLES/EGL stack rejects a DMA-BUF import
+- **THEN** the rejected accelerated frame is discarded, accelerated OSR is disabled for that view, and its browser pool is recreated without CEF shared textures so subsequent `on_paint` CPU frames can become visible instead of remaining permanently blank
 
 ### Requirement: Resize propagates physical pixels and DPI to the browser host
 

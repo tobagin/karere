@@ -212,3 +212,27 @@ impl ShellRenderHandlerBuilder {
         Self::new(handler)
     }
 }
+
+/// Exercise the exact CEF `RenderHandler::on_paint` callback implementation in
+/// production-shaped renderer tests without manufacturing a CEF `Browser`.
+#[cfg(test)]
+pub(crate) fn dispatch_cpu_paint_for_test(
+    shared: &SharedRef,
+    pixels: &[u8],
+    width: i32,
+    height: i32,
+) {
+    let handler = ShellRenderHandlerBuilder {
+        handler: ShellRenderHandler::new(shared.clone()),
+        cef_object: std::ptr::null_mut(),
+    };
+    ImplRenderHandler::on_paint(
+        &handler,
+        None,
+        PaintElementType::VIEW,
+        None,
+        pixels.as_ptr(),
+        width,
+        height,
+    );
+}

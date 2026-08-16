@@ -5,6 +5,10 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **PinePhone / GLES-only startup (#177)**: the CEF presentation GLArea now explicitly negotiates the GLES 3.0 context its shaders require instead of defaulting to desktop OpenGL. CPU off-screen paint remains the fallback when accelerated DMA-BUF rendering is unavailable; a rejected import now recreates the affected browser pool without shared textures so CPU frames resume instead of leaving a blank view. The stable and Devel Flatpaks retain the `GSK_RENDERER=gl` workaround for GNOME OS/Wayland (#164).
 
 ## [4.2.2] - 2026-08-10
 

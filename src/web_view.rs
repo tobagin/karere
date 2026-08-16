@@ -176,6 +176,33 @@ pub(crate) fn cef_to_linear(cef: f64) -> f64 {
     (cef * 1.2_f64.ln()).exp()
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CpuUpload {
+    Empty,
+    Allocate,
+    Update,
+    Reuse,
+}
+
+/// Decide how the production draw path should handle the latest CPU frame.
+/// Keeping this decision independent from raw GL calls makes empty/resize/reuse
+/// behavior explicit while the actual upload remains in `KarereWebView::draw`.
+fn cpu_upload(frame: &crate::handlers::FrameBuffer, texture_size: (i32, i32)) -> CpuUpload {
+    if frame.width <= 0 || frame.height <= 0 || frame.pixels.is_empty() {
+        CpuUpload::Empty
+    } else if texture_size != (frame.width, frame.height) {
+        CpuUpload::Allocate
+    } else if frame.dirty {
+        CpuUpload::Update
+    } else {
+        CpuUpload::Reuse
+    }
+}
+
+fn discard_failed_accel<T>(pending: &mut Option<T>) {
+    pending.take();
+}
+
 /// CEF `BrowserHost` zoom level to apply for a user zoom factor at a given
 /// integer display scale. Because this CEF build ignores device_scale_factor for
 /// OSR, the paint buffer is sized to the physical (logical × scale) view rect for
@@ -521,6 +548,18 @@ mod imp {
         pub pending_url: Mutex<Option<String>>,
         /// Set for the embedded DevTools view; selects the permissive client.
         pub devtools: AtomicBool,
+        /// One-way runtime kill switch for this widget's accelerated OSR browsers.
+        /// A rejected DMA-BUF flips it before the browser pool is recreated, so CEF
+        /// resumes delivering CPU `on_paint` frames instead of repeatedly exporting
+        /// accelerated frames that this GL context cannot import.
+        pub software_osr_forced: AtomicBool,
+        /// Test-only observations at the real close/create boundaries. This lets the
+        /// DMA-BUF regression execute the production deferred restart without
+        /// requiring a live CEF subprocess inside the unit-test process.
+        #[cfg(test)]
+        pub fallback_test_events: RefCell<Vec<(&'static str, Option<bool>)>>,
+        #[cfg(test)]
+        pub suppress_browser_creation: AtomicBool,
         /// Last chrome-window visibility (recorded; sound gating no longer uses it).
         #[allow(dead_code)]
         pub window_visible: AtomicBool,
@@ -582,6 +621,22 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             let widget = self.obj();
+            // The production shaders are GLSL ES 3.00. Negotiate that exact API
+            // before realization instead of letting GtkGLArea prefer desktop GL;
+            // GLES-only Mesa stacks (including PinePhone) otherwise fail context
+            // creation before either the CPU or DMA-BUF OSR path can present.
+            #[cfg(debug_assertions)]
+            let allowed_api = if std::env::var_os("KARERE_TEST_FORCE_DESKTOP_GL").is_some() {
+                // Integration-test-only reproduction of the pre-fix contract. The
+                // Mesa fixture rejects desktop GL while retaining GLES 3.x.
+                gtk::gdk::GLAPI::GL
+            } else {
+                gtk::gdk::GLAPI::GLES
+            };
+            #[cfg(not(debug_assertions))]
+            let allowed_api = gtk::gdk::GLAPI::GLES;
+            widget.set_allowed_apis(allowed_api);
+            widget.set_required_version(3, 0);
             widget.set_has_depth_buffer(false);
             widget.set_has_stencil_buffer(false);
             widget.set_auto_render(false);
@@ -667,7 +722,21 @@ mod imp {
             let widget = self.obj();
             widget.make_current();
             if let Some(err) = widget.error() {
+                // Fence all GL setup and browser creation behind a valid current
+                // context. Keep GTK's original error intact for diagnostics.
                 log::error!("GLArea realize error: {err}");
+                return;
+            }
+            if let Some(context) = widget.context() {
+                let (major, minor) = context.version();
+                log::info!(
+                    "GLArea context ready: api={:?} version={major}.{minor}",
+                    widget.api()
+                );
+            } else {
+                // A successful make_current() should always expose its context.
+                // Do not continue into raw GL or CEF bootstrap if GTK does not.
+                log::error!("GLArea realize error: no context after make_current");
                 return;
             }
             unsafe {
@@ -764,6 +833,11 @@ mod imp {
         }
 
         pub fn close_browser(&self) {
+            #[cfg(test)]
+            if self.suppress_browser_creation.load(Ordering::Acquire) {
+                self.fallback_test_events.borrow_mut().push(("close", None));
+            }
+
             // Cancel any in-flight OSR menu so CEF doesn't leak pending-menu state
             // on mid-menu teardown, and drop the popover.
             if let Some(cb) = self.pending_menu_callback.borrow_mut().take() {
@@ -781,8 +855,14 @@ mod imp {
             // browser if it's outside the pool.
             let pooled: Vec<Browser> = self.browsers.lock().drain().map(|(_, b)| b).collect();
             self.life_spans.lock().clear();
+            self.cdp_registrations.borrow_mut().clear();
+            self.pending_contexts.lock().clear();
             *self.foreground.lock() = None;
+            if let Some(shared) = self.shared.lock().as_ref() {
+                shared.lock().foreground_browser_id = 0;
+            }
             for browser in &pooled {
+                crate::accounts::unregister_browser(browser.identifier());
                 if let Some(host) = browser.host() {
                     host.close_browser(0);
                 }
@@ -794,6 +874,50 @@ mod imp {
                 host.close_browser(0);
             }
             *self.browser.lock() = None;
+            *self.life_span.lock() = None;
+        }
+
+        /// Recreate this widget's browser pool with CEF shared textures disabled.
+        /// `shared_texture_enabled` is immutable after browser creation, so dropping
+        /// only the failed accelerated frame cannot restore CPU `on_paint` delivery.
+        fn restart_with_software_osr(&self) {
+            log::warn!(
+                "accelerated OSR disabled for this view; recreating browsers for CPU paint"
+            );
+            let is_devtools = self.devtools.load(Ordering::Relaxed);
+            // Keep account contexts that were already initializing. Their callbacks
+            // consult the new software-only flag, and retaining them avoids racing a
+            // duplicate context/browser creation during a first-frame fallback.
+            let pending = std::mem::take(&mut *self.pending_contexts.lock());
+            self.close_browser();
+            *self.pending_contexts.lock() = pending;
+            if is_devtools {
+                self.spawn_browser(None, true);
+            } else {
+                self.spawn_all_accounts(true);
+            }
+        }
+
+        /// Make the accelerated-to-software transition exactly once and defer the
+        /// CEF pool restart until after the current GLArea render callback returns.
+        pub(super) fn force_software_osr(&self) -> bool {
+            !self.software_osr_forced.swap(true, Ordering::AcqRel)
+        }
+
+        fn schedule_software_osr_fallback(&self) {
+            if !self.force_software_osr() {
+                return;
+            }
+            let weak = self.obj().downgrade();
+            glib::idle_add_local_once(move || {
+                if let Some(widget) = weak.upgrade() {
+                    widget.imp().restart_with_software_osr();
+                }
+            });
+        }
+
+        pub(super) fn shared_texture_enabled_for_browser(&self) -> bool {
+            !self.software_osr_forced.load(Ordering::Acquire) && accel_osr_enabled()
         }
 
         /// Recompute the physical paint size + scale for a live scale change
@@ -1066,13 +1190,33 @@ mod imp {
         /// to its init callback ([`on_account_context_ready`]). The legacy/DevTools
         /// path uses the global context and is created synchronously.
         pub fn spawn_browser(&self, account_id: Option<String>, make_foreground: bool) {
-            if let Some(id) = account_id.as_ref()
-                && self.browsers.lock().contains_key(id)
-            {
-                if make_foreground {
-                    self.switch_to(id);
-                }
+            #[cfg(test)]
+            if self.suppress_browser_creation.load(Ordering::Acquire) {
+                // Before fallback the exact capability probe is irrelevant to this
+                // test seam (and may require an installed GSettings schema). After
+                // fallback, call the production selector and observe the immutable
+                // WindowInfo choice that the recreated browser would receive.
+                let shared_textures = if self.software_osr_forced.load(Ordering::Acquire) {
+                    self.shared_texture_enabled_for_browser()
+                } else {
+                    true
+                };
+                self.fallback_test_events
+                    .borrow_mut()
+                    .push(("create", Some(shared_textures)));
                 return;
+            }
+
+            if let Some(id) = account_id.as_ref() {
+                if self.browsers.lock().contains_key(id) {
+                    if make_foreground {
+                        self.switch_to(id);
+                    }
+                    return;
+                }
+                if self.pending_contexts.lock().contains_key(id) {
+                    return;
+                }
             }
 
             let Some(id) = account_id else {
@@ -1156,7 +1300,7 @@ mod imp {
                 windowless_rendering_enabled: 1,
                 // GPU-accelerated OSR: hand us a DMA-BUF via on_accelerated_paint
                 // instead of a CPU buffer, when supported + opted in. (gpu-osr)
-                shared_texture_enabled: accel_osr_enabled() as i32,
+                shared_texture_enabled: self.shared_texture_enabled_for_browser() as i32,
                 ..Default::default()
             };
             let settings = BrowserSettings {
@@ -1459,7 +1603,7 @@ mod imp {
             }
         }
 
-        unsafe fn draw(&self) {
+        pub(super) unsafe fn draw(&self) {
             let shared = match self.shared.lock().as_ref() {
                 Some(s) => s.clone(),
                 None => return,
@@ -1471,59 +1615,84 @@ mod imp {
                 gl::Clear(gl::COLOR_BUFFER_BIT);
 
                 // GPU path: import the pending DMA-BUF to the accel texture. (gpu-osr)
-                let (tex, bgra) = if let Some(af) = s.accel.as_mut() {
-                    let atex = self.accel_tex.load(Ordering::Relaxed);
-                    if af.dirty {
-                        if let Some(img) = crate::gl_dmabuf::import_to_texture(
-                            atex, af.width, af.height, af.fourcc, af.modifier, &af.planes,
-                        ) {
-                            // Keep the EGLImage alive while the texture is sampled;
-                            // dropping the previous one releases it.
-                            *self.imported.borrow_mut() = Some(img);
-                        }
+                let atex = self.accel_tex.load(Ordering::Relaxed);
+                let mut accel_failed = false;
+                if let Some(af) = s.accel.as_mut()
+                    && af.dirty
+                {
+                    if let Some(img) = crate::gl_dmabuf::import_to_texture(
+                        atex,
+                        af.width,
+                        af.height,
+                        af.fourcc,
+                        af.modifier,
+                        &af.planes,
+                    ) {
+                        // Keep the EGLImage alive while the texture is sampled;
+                        // dropping the previous one releases it.
+                        *self.imported.borrow_mut() = Some(img);
                         af.dirty = false;
+                    } else {
+                        accel_failed = true;
                     }
-                    if self.imported.borrow().is_none() {
-                        return; // nothing imported yet
-                    }
+                }
+                if accel_failed {
+                    // A rejected DMA-BUF must not pin draw() to a permanently
+                    // blank/stale accelerated branch. Drop it so an existing or
+                    // subsequent CEF CPU on_paint frame can become visible.
+                    log::warn!("accelerated OSR import failed; falling back to CPU paint");
+                    super::discard_failed_accel(&mut s.accel);
+                    *self.imported.borrow_mut() = None;
+                    // CEF's shared-texture choice is fixed at browser creation.
+                    // Recreate the pool after this render callback so subsequent
+                    // callbacks are CPU on_paint rather than more unusable DMA-BUFs.
+                    self.schedule_software_osr_fallback();
+                }
+
+                let use_accel = s.accel.is_some() && self.imported.borrow().is_some();
+                let (tex, bgra) = if use_accel {
                     (atex, 0_i32)
                 } else {
-                    // Software path: upload the CPU BGRA buffer.
-                    if s.frame.width == 0 || s.frame.height == 0 || s.frame.pixels.is_empty() {
-                        return;
-                    }
+                    // Software path: upload CEF's CPU BGRA buffer through the
+                    // valid GLES context (software OSR does not eliminate GLArea).
                     let tex = self.texture.load(Ordering::Relaxed);
-                    gl::BindTexture(gl::TEXTURE_2D, tex);
                     let tw = self.tex_w.load(Ordering::Relaxed);
                     let th = self.tex_h.load(Ordering::Relaxed);
-                    if (tw, th) != (s.frame.width, s.frame.height) {
-                        gl::TexImage2D(
-                            gl::TEXTURE_2D,
-                            0,
-                            gl::RGBA8 as GLint,
-                            s.frame.width,
-                            s.frame.height,
-                            0,
-                            gl::RGBA,
-                            gl::UNSIGNED_BYTE,
-                            s.frame.pixels.as_ptr() as *const c_void,
-                        );
-                        self.tex_w.store(s.frame.width, Ordering::Relaxed);
-                        self.tex_h.store(s.frame.height, Ordering::Relaxed);
-                        s.frame.dirty = false;
-                    } else if s.frame.dirty {
-                        gl::TexSubImage2D(
-                            gl::TEXTURE_2D,
-                            0,
-                            0,
-                            0,
-                            s.frame.width,
-                            s.frame.height,
-                            gl::RGBA,
-                            gl::UNSIGNED_BYTE,
-                            s.frame.pixels.as_ptr() as *const c_void,
-                        );
-                        s.frame.dirty = false;
+                    match super::cpu_upload(&s.frame, (tw, th)) {
+                        super::CpuUpload::Empty => return,
+                        super::CpuUpload::Allocate => {
+                            gl::BindTexture(gl::TEXTURE_2D, tex);
+                            gl::TexImage2D(
+                                gl::TEXTURE_2D,
+                                0,
+                                gl::RGBA8 as GLint,
+                                s.frame.width,
+                                s.frame.height,
+                                0,
+                                gl::RGBA,
+                                gl::UNSIGNED_BYTE,
+                                s.frame.pixels.as_ptr() as *const c_void,
+                            );
+                            self.tex_w.store(s.frame.width, Ordering::Relaxed);
+                            self.tex_h.store(s.frame.height, Ordering::Relaxed);
+                            s.frame.dirty = false;
+                        }
+                        super::CpuUpload::Update => {
+                            gl::BindTexture(gl::TEXTURE_2D, tex);
+                            gl::TexSubImage2D(
+                                gl::TEXTURE_2D,
+                                0,
+                                0,
+                                0,
+                                s.frame.width,
+                                s.frame.height,
+                                gl::RGBA,
+                                gl::UNSIGNED_BYTE,
+                                s.frame.pixels.as_ptr() as *const c_void,
+                            );
+                            s.frame.dirty = false;
+                        }
+                        super::CpuUpload::Reuse => {}
                     }
                     (tex, 1_i32)
                 };
@@ -1973,9 +2142,9 @@ mod imp {
     /// downscales the result to the 1.5× surface — a single high-quality downscale,
     /// the same path every GTK GLArea takes on a fractional display. View rect and
     /// mouse/wheel coords stay in DIP (CEF maps them via device_scale_factor). (#155, #158)
-    /// GPU-accelerated OSR opt-in: env `KARERE_GPU_OSR=1` AND EGL dma-buf import
-    /// is available on the current GL context. Cached on first call, which must
-    /// happen with the GLArea GL context current (browser creation, post-init_gl).
+    /// GPU-accelerated OSR opt-in: env `KARERE_GPU_OSR=1` (or its setting) AND
+    /// EGL dma-buf import must be available on the current GL context. Cached on
+    /// first call; a prewarm before realization safely resolves to CPU OSR.
     /// (gpu-osr)
     pub(super) fn accel_osr_enabled() -> bool {
         use std::sync::OnceLock;
@@ -1984,9 +2153,10 @@ mod imp {
             // Read once — the shared-texture flag is fixed for the browser's
             // lifetime, so this is restart-required. Env wins as a dev override /
             // kill-switch; otherwise the experimental `gpu-rendering` GSetting.
-            // Capability can't be probed here (the GLArea GL context isn't current
-            // until render); the import in draw() logs if it fails. (gpu-osr)
-            let enabled = match std::env::var("KARERE_GPU_OSR").ok().as_deref() {
+            // The visible-start path calls this after init_gl with the context
+            // current. Background prewarm has no context, so capability probing
+            // deliberately disables shared textures for that process. (gpu-osr)
+            let requested = match std::env::var("KARERE_GPU_OSR").ok().as_deref() {
                 Some("1") | Some("true") => true,
                 Some("0") | Some("false") => false,
                 _ => {
@@ -2012,7 +2182,11 @@ mod imp {
                     }
                 }
             };
-            log::info!("accel_osr: enabled={enabled}");
+            // Do not ask CEF for shared textures unless this current GL/EGL
+            // display can import them. Without this pre-browser fence CEF may
+            // never call CPU on_paint, leaving a blank first frame.
+            let enabled = requested && crate::gl_dmabuf::is_supported();
+            log::info!("accel_osr: requested={requested} enabled={enabled}");
             enabled
         })
     }
@@ -2550,7 +2724,7 @@ void main() {
 }
 "#;
 
-    const FS: &str = r#"#version 300 es
+    pub(super) const FS: &str = r#"#version 300 es
 precision highp float;
 in vec2 v_uv;
 out vec4 frag;
@@ -2620,8 +2794,190 @@ void main() {
 }
 
 #[cfg(test)]
-mod zoom_tests {
-    use super::{cef_to_linear, linear_to_cef, ZOOM_MAX};
+mod tests {
+    use gtk::prelude::*;
+    use gtk::subclass::prelude::*;
+    use std::sync::{Mutex, Once};
+
+    use super::{CpuUpload, KarereWebView, ZOOM_MAX, cef_to_linear, cpu_upload, linear_to_cef};
+
+    static GTK_TEST_LOCK: Mutex<()> = Mutex::new(());
+    static TEST_SCHEMA: Once = Once::new();
+
+    fn prepare_widget_test_runtime() {
+        TEST_SCHEMA.call_once(|| {
+            let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+            let dir = root.join("target/web-view-test-schemas");
+            std::fs::create_dir_all(&dir).unwrap();
+            let schema = std::fs::read_to_string(
+                root.join("data/io.github.tobagin.karere.gschema.xml.in"),
+            )
+            .unwrap()
+            .replace("@APP_ID@", crate::application::APP_ID)
+            .replace("@APP_PATH@", "/io/github/tobagin/karere/");
+            std::fs::write(
+                dir.join("io.github.tobagin.karere.gschema.xml"),
+                schema,
+            )
+            .unwrap();
+            assert!(
+                std::process::Command::new("glib-compile-schemas")
+                    .arg(&dir)
+                    .status()
+                    .unwrap()
+                    .success()
+            );
+            // SAFETY: GTK/GSettings widget tests are serialized by GTK_TEST_LOCK,
+            // and this Once runs before either test initializes GTK or GSettings.
+            unsafe {
+                std::env::set_var("GSETTINGS_SCHEMA_DIR", dir);
+                std::env::set_var("GSETTINGS_BACKEND", "memory");
+            }
+        });
+    }
+
+    /// Both production constructors configure the inherited GLArea before it is
+    /// realized. This exercises the real widget construction path rather than a
+    /// detached API-selection helper.
+    #[test]
+    fn gles_contract_is_shared_by_main_and_devtools_views() {
+        let _guard = GTK_TEST_LOCK.lock().unwrap_or_else(|error| error.into_inner());
+        prepare_widget_test_runtime();
+        if gtk::init().is_err() {
+            eprintln!("skipping GTK widget contract test: no display available");
+            return;
+        }
+
+        for view in [KarereWebView::new(), KarereWebView::new_devtools()] {
+            assert!(!view.is_realized());
+            assert_eq!(view.allowed_apis(), gtk::gdk::GLAPI::GLES);
+            assert!(
+                view.required_version() >= (3, 0),
+                "GLSL ES 3.00 shaders require GLES 3.0 or newer"
+            );
+        }
+
+        // Force GTK's production create-context signal to fail. The subclass
+        // realize implementation must preserve that error and must not cross
+        // the browser-bootstrap fence.
+        let failed = KarereWebView::new();
+        failed.connect_create_context(|area| {
+            let error =
+                gtk::glib::Error::new(gtk::gio::IOErrorEnum::Failed, "injected GL context failure");
+            area.set_error(Some(&error));
+            None
+        });
+        let window = gtk::Window::builder()
+            .default_width(64)
+            .default_height(64)
+            .child(&failed)
+            .build();
+        window.present();
+        while gtk::glib::MainContext::default().iteration(false) {}
+
+        let error = failed
+            .error()
+            .expect("injected context failure must remain observable");
+        assert!(error.message().contains("injected GL context failure"));
+        assert!(failed.imp().browser.lock().is_none());
+        assert!(failed.imp().browsers.lock().is_empty());
+        assert!(failed.imp().pending_contexts.lock().is_empty());
+        window.destroy();
+
+        assert_rejected_accelerated_frame_restarts_pool_then_renders_cpu_callback();
+    }
+
+    #[test]
+    fn cpu_upload_covers_empty_first_reuse_update_and_resize() {
+        let mut frame = crate::handlers::FrameBuffer::default();
+        assert_eq!(cpu_upload(&frame, (0, 0)), CpuUpload::Empty);
+
+        // CEF supplies BGRA bytes; the fragment shader performs the matching
+        // BGRA swizzle on the software path.
+        frame.width = 2;
+        frame.height = 1;
+        frame.pixels = vec![1, 2, 3, 255, 4, 5, 6, 255];
+        frame.dirty = true;
+        assert_eq!(cpu_upload(&frame, (0, 0)), CpuUpload::Allocate);
+        assert!(super::imp::FS.contains("c.bgra"));
+
+        frame.dirty = false;
+        assert_eq!(cpu_upload(&frame, (2, 1)), CpuUpload::Reuse);
+        frame.dirty = true;
+        assert_eq!(cpu_upload(&frame, (2, 1)), CpuUpload::Update);
+
+        frame.width = 1;
+        frame.height = 2;
+        assert_eq!(cpu_upload(&frame, (2, 1)), CpuUpload::Allocate);
+    }
+
+    fn assert_rejected_accelerated_frame_restarts_pool_then_renders_cpu_callback() {
+        use std::os::fd::OwnedFd;
+        use std::sync::atomic::Ordering;
+
+        crate::load_gl();
+
+        // Use the production DevTools construction/realize/draw path, but stop at
+        // the CEF create boundary so this unit test does not need a second live CEF
+        // runtime. The observations below are emitted by close_browser/spawn_browser.
+        let view = KarereWebView::new_devtools();
+        let imp = view.imp();
+        imp.suppress_browser_creation.store(true, Ordering::Release);
+        let window = gtk::Window::builder()
+            .default_width(64)
+            .default_height(64)
+            .child(&view)
+            .build();
+        window.present();
+        while gtk::glib::MainContext::default().iteration(false) {}
+        assert!(view.is_realized(), "test requires the production GLArea draw path");
+        imp.fallback_test_events.borrow_mut().clear();
+
+        // An invalid DMA-BUF reaches the real import call from draw() and must be
+        // rejected deterministically by EGL. /dev/null supplies an owned, valid fd
+        // while fourcc=0 is intentionally not a DRM pixel format.
+        let fd: OwnedFd = std::fs::File::open("/dev/null").unwrap().into();
+        let shared = imp.shared.lock().as_ref().unwrap().clone();
+        shared.lock().accel = Some(crate::gl_dmabuf::AccelFrame {
+            width: 1,
+            height: 1,
+            fourcc: 0,
+            modifier: 0,
+            planes: vec![crate::gl_dmabuf::Plane {
+                fd,
+                offset: 0,
+                stride: 4,
+            }],
+            dirty: true,
+        });
+        unsafe { imp.draw() };
+        assert!(shared.lock().accel.is_none(), "draw must discard rejected DMA-BUF");
+        assert!(imp.software_osr_forced.load(Ordering::Acquire));
+
+        // draw() schedules, rather than recursively performs, browser teardown.
+        assert!(imp.fallback_test_events.borrow().is_empty());
+        while gtk::glib::MainContext::default().iteration(false) {}
+        assert_eq!(
+            imp.fallback_test_events.borrow().as_slice(),
+            [("close", None), ("create", Some(false))],
+            "idle restart must close the affected pool before recreating it without shared textures"
+        );
+
+        // Invoke the exact CEF RenderHandler::on_paint implementation used by the
+        // recreated software browser, then draw the resulting BGRA frame through
+        // the production upload path. A clean frame proves the callback is visible.
+        let pixels = [1_u8, 2, 3, 255];
+        crate::handlers::render::dispatch_cpu_paint_for_test(&shared, &pixels, 1, 1);
+        assert_eq!(cpu_upload(&shared.lock().frame, (0, 0)), CpuUpload::Allocate);
+        unsafe { imp.draw() };
+        let state = shared.lock();
+        assert!(!state.frame.dirty, "CPU callback must be consumed by draw");
+        assert_eq!(state.frame.pixels, pixels);
+        drop(state);
+        assert_eq!(cpu_upload(&shared.lock().frame, (1, 1)), CpuUpload::Reuse);
+
+        window.destroy();
+    }
 
     /// linear → CEF → linear round-trips within 1e-9 across the range.
     #[test]
