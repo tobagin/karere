@@ -152,6 +152,40 @@ else
     echo "SKIP: xmllint not found, skipping well-formed check"
 fi
 
+# 8) tools/build-cef-codecs.sh documents the shipping Chromium line (KARE-011)
+if [[ -n "$CEF_DEFAULT" ]]; then
+    CHROMIUM_LINE="chromium-${CEF_DEFAULT##*chromium-}"
+    if grep -Fq "$CHROMIUM_LINE" tools/build-cef-codecs.sh; then
+        pass "build-cef-codecs.sh contains shipping Chromium line $CHROMIUM_LINE"
+    else
+        fail "build-cef-codecs.sh does not contain shipping Chromium line $CHROMIUM_LINE"
+    fi
+    if grep -Eq 'Chromium 148|chromium-148' tools/build-cef-codecs.sh; then
+        fail "build-cef-codecs.sh still contains stale Chromium 148 reference"
+    else
+        pass "build-cef-codecs.sh has no stale Chromium 148 reference"
+    fi
+    # Runtime error surface: missing CEF_BRANCH prints the Chromium line and exits 2
+    TMPFILE="$(mktemp)"
+    set +e
+    # env -u CEF_BRANCH: strip any leaked CEF_BRANCH so a stray export in the
+    # invoking shell cannot push the script past its guard into a real build.
+    env -u CEF_BRANCH bash tools/build-cef-codecs.sh 2>"$TMPFILE"
+    CODE=$?
+    set -e
+    if [[ "$CODE" -ne 2 ]]; then
+        fail "build-cef-codecs.sh without CEF_BRANCH exited $CODE, expected 2"
+    else
+        pass "build-cef-codecs.sh without CEF_BRANCH exits 2"
+    fi
+    if grep -Fq "$CHROMIUM_LINE" "$TMPFILE"; then
+        pass "build-cef-codecs.sh error message contains $CHROMIUM_LINE"
+    else
+        fail "build-cef-codecs.sh error message does not contain $CHROMIUM_LINE"
+    fi
+    rm -f "$TMPFILE"
+fi
+
 # Summary
 if [[ "$FAIL" -ne 0 ]]; then
     echo "---" >&2

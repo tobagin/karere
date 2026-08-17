@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Stale Chromium line comments in `tools/build-cef-codecs.sh` synced to 150 (KARE-011)**: the `CEF_BRANCH` usage comment and the missing-branch error message now name chromium-150.0.7871.101 instead of the retired 148 line; `tests/cef_version_refs.sh` pins the build script's comments to the shipping Chromium line.
 - **Stale CEF version references synced to CEF 150.0.10 (KARE-009)**: `download-cef.sh` default and header comment, the AppStream current-description paragraph, and the `cef-binary-provisioning` openspec scenario now match the shipping CEF 150.0.10+g8042e43+chromium-150.0.7871.101 tag (crate + Flatpak manifests + README 4.2).
 - **PinePhone / GLES-only startup (#177)**: the CEF presentation GLArea now explicitly negotiates the GLES 3.0 context its shaders require instead of defaulting to desktop OpenGL. CPU off-screen paint remains the fallback when accelerated DMA-BUF rendering is unavailable; a rejected import now recreates the affected browser pool without shared textures so CPU frames resume instead of leaving a blank view. The stable and Devel Flatpaks retain the `GSK_RENDERER=gl` workaround for GNOME OS/Wayland (#164).
 - **Chat text selection and copying (#178)**: dragging across message text now preserves the complete mouse press/move/release sequence. Immediate Ctrl+C and the context-menu Copy command read the live page selection, so they no longer race Linux PRIMARY clipboard synchronization.

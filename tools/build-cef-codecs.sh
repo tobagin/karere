@@ -8,7 +8,7 @@
 # carries patent-licensing obligations, falling on whoever hosts the tarball.
 #
 # Usage: CEF_BRANCH=<n> tools/build-cef-codecs.sh [download-dir]
-#   CEF_BRANCH MUST match Karere's Chromium 148 line (chromium-148.0.7778.96); wrong
+#   CEF_BRANCH MUST match Karere's Chromium 150 line (chromium-150.0.7871.101); wrong
 #   branch wastes the whole build, so the script refuses to start without it.
 #
 set -euo pipefail
@@ -17,8 +17,8 @@ if [[ -z "${CEF_BRANCH:-}" ]]; then
   cat >&2 <<'EOF'
 error: CEF_BRANCH is required.
 
-  Set it to the CEF branch number for Chromium 148 (the line Karere targets,
-  chromium-148.0.7778.96). Look it up at:
+  Set it to the CEF branch number for Chromium 150 (the line Karere targets,
+  chromium-150.0.7871.101). Look it up at:
     https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding
 
   Then re-run, e.g.:
