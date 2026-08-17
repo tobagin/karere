@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       cef_branch:
-        description: "CEF branch number for Chromium 148 (see https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)"
+        description: "CEF branch number for Chromium 150 (see https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)"
         required: true
         type: string
       runner:
@@ -91,7 +91,7 @@ jobs:
       - name: Upload CEF distribution
         uses: actions/upload-artifact@v4
         with:
-          name: cef-148-proprietary-codecs-linux64
+          name: cef-150-proprietary-codecs-linux64
           path: |
             ${{ steps.dist.outputs.tarball }}
             ${{ steps.dist.outputs.tarball }}.sha256

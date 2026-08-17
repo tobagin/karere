@@ -186,6 +186,38 @@ if [[ -n "$CEF_DEFAULT" ]]; then
     rm -f "$TMPFILE"
 fi
 
+# 9) .github/workflows/build-cef-codecs.yml pinned to shipping Chromium major (KARE-013)
+if [[ -n "$CEF_DEFAULT" ]]; then
+    CHROMIUM_MAJOR="${CEF_DEFAULT##*chromium-}"
+    CHROMIUM_MAJOR="${CHROMIUM_MAJOR%%.*}"
+    if [[ -z "$CHROMIUM_MAJOR" ]]; then
+        fail "could not derive Chromium major from CEF_DEFAULT ($CEF_DEFAULT)"
+    else
+        if ! grep -Fq "Chromium $CHROMIUM_MAJOR" .github/workflows/build-cef-codecs.yml; then
+            fail "build-cef-codecs.yml description missing 'Chromium $CHROMIUM_MAJOR'"
+        else
+            pass "build-cef-codecs.yml description contains Chromium $CHROMIUM_MAJOR"
+        fi
+        if ! grep -Fq "cef-$CHROMIUM_MAJOR-proprietary-codecs" .github/workflows/build-cef-codecs.yml; then
+            fail "build-cef-codecs.yml artifact name missing 'cef-$CHROMIUM_MAJOR-proprietary-codecs'"
+        else
+            pass "build-cef-codecs.yml artifact name contains cef-$CHROMIUM_MAJOR-proprietary-codecs"
+        fi
+        CHROMIUM_OCCURRENCES="$(grep -oE 'Chromium [0-9]+' .github/workflows/build-cef-codecs.yml 2>/dev/null | sort -u || true)"
+        if [[ "$CHROMIUM_OCCURRENCES" != "Chromium $CHROMIUM_MAJOR" ]]; then
+            fail "build-cef-codecs.yml Chromium refs not pinned to $CHROMIUM_MAJOR (found: ${CHROMIUM_OCCURRENCES:-<none>})"
+        else
+            pass "build-cef-codecs.yml Chromium refs pinned to $CHROMIUM_MAJOR"
+        fi
+        ARTIFACT_OCCURRENCES="$(grep -oE 'cef-[0-9]+-proprietary-codecs' .github/workflows/build-cef-codecs.yml 2>/dev/null | sort -u || true)"
+        if [[ "$ARTIFACT_OCCURRENCES" != "cef-$CHROMIUM_MAJOR-proprietary-codecs" ]]; then
+            fail "build-cef-codecs.yml artifact refs not pinned to $CHROMIUM_MAJOR (found: ${ARTIFACT_OCCURRENCES:-<none>})"
+        else
+            pass "build-cef-codecs.yml artifact refs pinned to $CHROMIUM_MAJOR"
+        fi
+    fi
+fi
+
 # Summary
 if [[ "$FAIL" -ne 0 ]]; then
     echo "---" >&2
