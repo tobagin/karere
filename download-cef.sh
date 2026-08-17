@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Download + extract CEF Linux binary distribution into ./cef-binaries/
-# Version must match the 'cef' crate's bundled CEF version (148.0.8 at time of writing).
+# Version must match the 'cef' crate's bundled CEF version (150.0.10 / chromium 150.0.7871.101 at time of writing).
+# See Cargo.toml / Cargo.lock (cef crate) and packaging/io.github.tobagin.karere*.yml (cef-binaries URLs) for the sources of truth.
 set -euo pipefail
 
-CEF_VERSION="${CEF_VERSION:-149.0.5+g6770623+chromium-149.0.7827.197}"
+CEF_VERSION="${CEF_VERSION:-150.0.10+g8042e43+chromium-150.0.7871.101}"
 ARCH="$(uname -m)"
 
 case "$ARCH" in

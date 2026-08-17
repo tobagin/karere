@@ -36,7 +36,7 @@
       <li>Proper clipboard integration for text and images</li>
     </ul>
     <p>
-      Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend with the
+      Now built on CEF/Chromium 150. Karere 4.0 replaces the WebKitGTK backend with the
       Chromium Embedded Framework, bringing full video attachment playback (H.264/AAC),
       multi-account support with isolated sessions, per-account zoom, and a faster, more
       compatible rendering engine while keeping the same native GTK4/libadwaita shell.
