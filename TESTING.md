@@ -39,6 +39,7 @@ cargo test --workspace --all-targets
 
 ```sh
 tools/verify-po.sh  # translation catalog health gate (sentinels, msgfmt, LINGUAS parity, version)
+meson compile -C build-pot karere-pot && tools/verify-po.sh  # must be Rust-complete: 513-msgid pot, ALL CHECKS PASSED
 ```
 
 The startup integration test launches the application by its fixed application ID. If another Karere instance is active on the session bus, run the test suite in an isolated session with `dbus-run-session -- cargo test --workspace --all-targets`.

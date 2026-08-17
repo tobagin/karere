@@ -1,6 +1,6 @@
 project('karere', 'rust',
           version: '4.2.2',
-    meson_version: '>= 0.59.0',
+    meson_version: '>= 0.60.0', # custom_target install_tag requires 0.60.0
   default_options: [ 'warning_level=2', 'werror=false', ],
 )
 
@@ -61,7 +61,7 @@ custom_target('cargo-build',
 )
 
 subdir('data')
-subdir('po')  # po/meson.build: i18n.gettext('karere', preset: 'glib'), verbatim from v3
+subdir('po')  # po targets hand-rolled; karere-pot/karere-update-po invoke tools/update-po.sh
 
 gnome.post_install(
   glib_compile_schemas: true,

@@ -68,9 +68,7 @@ Version is derived from `meson.build` (no pinned `2.0.0`).
 
 ### Known limitations & expectations
 
-- **The meson `karere-pot` target omits `--language=C`**, so `xgettext` fails
-  to parse the `.rs` sources and extracts only a few strings. Do not use the
-  meson target for pot generation — route through `tools/update-po.sh`.
+- **Pot generation has one canonical path — `tools/update-po.sh` (also via meson).** `po/meson.build` declares `karere-pot` and `karere-update-po` as meson run targets that invoke `tools/update-po.sh` (the two-pass `xgettext` + `msgmerge -U --backup=none` procedure described above); there is no separate `i18n.gettext` pot machinery. Both meson names run the full regenerate+merge (pot + all 72 `.po`), not pot-only. The hand-rolled `po` wiring requires meson ≥0.60.0 (`custom_target` `install_tag`).
 - **Expected warnings from the Rust join:** `xgettext --language=C` parses Rust
   via the C parser; Rust character literals (e.g. `'x'`) trigger benign
   `warning: unterminated character constant` diagnostics (one per file/line,
