@@ -73,6 +73,7 @@ On a PinePhone running Mobian 13 under Phosh:
 
 - [ ] `cargo test` — unit and headless integration coverage, including ordered raw mouse drag lifecycle, click counts, touch-emulation suppression, HiDPI coordinates, CEF Copy command classification, IPC, clipboard sanitization/caps, and clean SIGTERM exit.
 - [ ] `node tests/copy_bridge.test.js` — executes the production injected copy bridge with populated, duplicate, Unicode/multi-line, immediate-copy, PRIMARY debounce, and empty/collapsed selection cases.
+- [ ] `bash tests/flathub_beta_cef_policy.sh` — offline; asserts the flathub-beta CEF/engine policy (beta manifest mirrors stable: CEF tag, archive.json names, karere tag, GSK_RENDERER=gl, zero chromium-148).
 
 ## Beta testing (flathub-beta)
 

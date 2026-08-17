@@ -54,3 +54,7 @@ bumped to the final `vX.Y.Z`. `master` publishes to the `flathub` (stable) remot
 > **Note:** stable and beta share the app-id `io.github.tobagin.karere`, hence the same
 > data dir `~/.var/app/io.github.tobagin.karere`. A tester running both points one data
 > dir at two builds; the v4 first-launch migration dialog handles the v3→v4 re-link.
+
+## Between beta cycles
+
+Between beta cycles the manifest **mirrors the current stable release** (same `tag`/`commit`, CEF binaries, `archive.json` names, and `GSK_RENDERER=gl`) so beta-channel testers do not receive an older build. The next beta cycle re-pins it to the new `vX.Y.Z-betaN` tag. This invariant is enforced by `tests/flathub_beta_cef_policy.sh` (offline, no network).

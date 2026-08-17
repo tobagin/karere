@@ -46,6 +46,7 @@ finish-args:
   # Autostart goes through the XDG Background portal (ashpd) — no autostart
   # filesystem or portal.Desktop talk-name needed (portal busnames auto-granted).
   - --env=LD_LIBRARY_PATH=/app/lib/cef
+  - --env=GSK_RENDERER=gl
 
 modules:
   - name: cef-binaries
@@ -61,26 +62,26 @@ modules:
       - chmod +x /app/lib/cef/chrome-sandbox || true
       - install -Dm644 archive.json /app/lib/cef/archive.json
     sources:
-      # Proprietary-codec CEF (H.264/AAC) from tools/build-cef-codecs.sh. C-API
-      # compatible with the cef 148.0.8 bindings (CEF freezes its C API per branch);
-      # archive.json keeps the .8 name so the crate's version check passes.
+      # Proprietary-codec CEF (H.264/AAC) from tools/build-cef-codecs.sh,
+      # matching the `cef` crate pinned by the built tag (150 for v4.2.x).
+      # archive.json cites the exact shipped tag so the crate's version check passes.
       - type: archive
         only-arches: [x86_64]
-        url: https://github.com/tobagin/karere/releases/download/cef-148.0.10-proprietary-codecs-151fix/cef_binary_148.0.10%2Bg7ee53f5%2Bchromium-148.0.7778.218_linux64_minimal.zip
-        sha256: 8c388a503a1706e3eb09f843def41996082f806927ae7cbd0be7bc36981a164d
+        url: https://github.com/tobagin/karere/releases/download/cef-150.0.10-proprietary-codecs/cef_binary_150.0.10%2Bg8042e43%2Bchromium-150.0.7871.101_linux64_minimal.zip
+        sha256: 3bbe298368c4d87c19ad9b7ed4e8449ea91b32ffa3cefc8672791a1b96c9c3b9
       - type: archive
         only-arches: [aarch64]
-        url: https://github.com/tobagin/karere/releases/download/cef-148.0.10-proprietary-codecs-151fix/cef_binary_148.0.10%2Bg7ee53f5%2Bchromium-148.0.7778.218_linuxarm64_minimal.zip
-        sha256: a6500896f3ebaef1d4126e9818c874d6f0735b3d95acf092e36496af430c991c
+        url: https://github.com/tobagin/karere/releases/download/cef-150.0.10-proprietary-codecs/cef_binary_150.0.10%2Bg8042e43%2Bchromium-150.0.7871.101_linuxarm64_minimal.zip
+        sha256: 543bc10ce854fc39b0493ff8b369c47d65fa43f2fb974b734252eea805bffc53
       - type: inline
         only-arches: [x86_64]
         contents: |
-          {"type":"minimal","name":"cef_binary_148.0.8+g18e00ea+chromium-148.0.7778.96_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
+          {"type":"minimal","name":"cef_binary_150.0.10+g8042e43+chromium-150.0.7871.101_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
       - type: inline
         only-arches: [aarch64]
         contents: |
-          {"type":"minimal","name":"cef_binary_148.0.8+g18e00ea+chromium-148.0.7778.96_linuxarm64_minimal.tar.bz2","sha1":"7bccca86d0a44ba34fe928a0a7e91d80901a5be6"}
+          {"type":"minimal","name":"cef_binary_150.0.10+g8042e43+chromium-150.0.7871.101_linuxarm64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
 
   - name: karere
@@ -89,12 +90,12 @@ modules:
       - -Dprofile=default
     sources:
       # Flathub pulls the tagged GitHub source. Update tag + commit per release.
-      # At the 4.0.0 stable release beta tracks the same tag; `commit` is synced
-      # to the v4.0.0 tag commit when the beta-branch PR is opened.
+      # Between beta cycles beta mirrors stable; `commit` is synced to the tag
+      # commit when the Flathub beta branch is pushed.
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v4.0.0
-        commit: e45a3efef29d0d0a479a56d6f81b3f5b12a8df1b
+        tag: v4.2.2
+        commit: 88de207ed8a0382057a56e9b6756bd690cb8566c
       - cargo-sources.json
     # Move our gettext catalogs out of share/locale so flatpak's automatic
     # per-language .Locale extension (which only deploys the host's languages)
