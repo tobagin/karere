@@ -37,6 +37,10 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace --all-targets
 ```
 
+```sh
+tools/verify-po.sh  # translation catalog health gate (sentinels, msgfmt, LINGUAS parity, version)
+```
+
 The startup integration test launches the application by its fixed application ID. If another Karere instance is active on the session bus, run the test suite in an isolated session with `dbus-run-session -- cargo test --workspace --all-targets`.
 
 ### Software GLES startup (issue #177)

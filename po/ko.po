@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-07 11:42+0100\n"
+"POT-Creation-Date: 2026-08-17 16:58+0100\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,22 +17,2299 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/main.rs:37
+#: data/io.github.tobagin.karere.desktop.in:3
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
+
+#: data/ui/window.ui:265
+msgid "About"
+msgstr "정보"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:53
+msgid "About dialog showing application information"
+msgstr "애플리케이션 정보를 표시하는 정보 대화 상자"
+
+#: data/ui/preferences.ui:348
+msgid "Accessibility"
+msgstr "접근성"
+
+#: data/ui/preferences.ui:428
+msgid "Accessibility Shortcuts"
+msgstr "접근성 단축키"
+
+#: data/ui/preferences.ui:378
+msgid "Accessibility Zoom"
+msgstr "접근성 확대/축소"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:234
+msgid ""
+"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
+"browsing"
+msgstr "접근성 기본 설정: 동작 줄이기, 초점 링 표시, 캐럿 브라우징"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:230
+msgid ""
+"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+msgstr ""
+"WhatsApp Web의 내부 Store에서 계정 ID(이름 + 아바타)를 자동으로 검색하며, 배"
+"지로 표시되는 DOM 스크랩 대체 방식을 제공합니다"
+
+#: data/ui/keyboard-shortcuts.ui:38
+msgid "Accounts"
+msgstr "계정"
+
+#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
+msgid "Add new account"
+msgstr "새 계정 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:497
+msgid "Add new contributor Sabri Ünal to the About dialog"
+msgstr "정보 대화 상자에 새 기여자 Sabri Ünal 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:519
+msgid "Add xdg-config/autostart permission for autostart support"
+msgstr "자동 시작 지원을 위해 xdg-config/autostart 권한 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:537
+msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+msgstr "기본 설정에 \"시작 시 실행\" 토글 추가(기본값: false)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:314
+msgid ""
+"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
+"handling"
+msgstr ""
+"효율적인 미디어 처리를 위해 프로덕션 Flatpak에 GStreamer/PipeWire 환경 변수 "
+"추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:702
+msgid "Added WebKit cache control setting for improved rendering consistency"
+msgstr "향상된 렌더링 일관성을 위한 WebKit 캐시 제어 설정 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:376
+msgid ""
+"Added WebRTC permission handling in preparation for WhatsApp Web voice/video "
+"calls"
+msgstr "WhatsApp Web 음성/영상 통화 준비를 위한 WebRTC 권한 처리 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:361
+msgid ""
+"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+msgstr "유지 및 기본 설정 컨트롤을 갖춘 확대/축소 지원(Ctrl +/-/0) 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:195
+msgid ""
+"Added an experimental \"GPU Rendering\" option (Preferences → General → "
+"Experimental) that renders the chat view on the GPU via accelerated off-"
+"screen rendering for lower CPU and power use. Off by default and requires a "
+"restart; if the chat area is blank on your hardware, turn it off and restart"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:746
+msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+msgstr "DEVELOPMENT 플래그를 사용한 컴파일 시 조건부 컴파일 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:352
+msgid "Added complete multi-account support with sidebar and tray integration"
+msgstr "사이드바 및 트레이 통합을 갖춘 완전한 다중 계정 지원 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:748
+msgid "Added contributors Aman Das and Cameo to about dialog"
+msgstr "정보 대화 상자에 기여자 Aman Das 및 Cameo 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:698
+msgid ""
+"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+msgstr "고품질 Noto Color Emoji 글꼴 추가(v2.047, Unicode 16.0 지원)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:462
+msgid "Added middle-click paste from primary selection (selected text)"
+msgstr "기본 선택(선택한 텍스트)에서 가운데 클릭 붙여넣기 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:471
+msgid "Added new application icons"
+msgstr "새 애플리케이션 아이콘 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:353
+msgid "Added per-account zoom settings and improved accessibility"
+msgstr "계정별 확대/축소 설정 추가 및 접근성 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:540
+msgid "Added striped symbolic icons for development version"
+msgstr "개발 버전용 줄무늬 심볼릭 아이콘 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:734
+msgid "Added subpixel font scaling and advanced rendering optimizations"
+msgstr "서브픽셀 글꼴 스케일링 및 고급 렌더링 최적화 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:278
+msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+msgstr "WebRTC 지원 WebKitGTK 2.50.5를 통한 음성 및 영상 통화 지원 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:252
+msgid ""
+"Added: account switcher uses a popover on desktop windows (bottom sheet "
+"preserved on mobile)"
+msgstr ""
+"추가: 계정 전환기가 데스크톱 창에서 팝오버를 사용(모바일에서는 하단 시트 유"
+"지)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:250
+msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+msgstr "추가: 즐겨 사용하는 맞춤법 검사 언어를 드롭다운 맨 위에 고정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:251
+msgid ""
+"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
+"instead of locale codes"
+msgstr ""
+"추가: 맞춤법 검사 드롭다운이 로케일 코드 대신 자연어 이름(\"English (UK)\")"
+"을 표시"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:819
+msgid "Advanced notification system with native desktop integration"
+msgstr "네이티브 데스크톱 통합을 갖춘 고급 알림 시스템"
+
+#: data/ui/preferences.ui:119
+msgid "Allow inspecting and debugging the WebView"
+msgstr "WebView 검사 및 디버깅을 허용합니다"
+
+#: data/ui/preferences.ui:177
+msgid "Animate the tray icon when a new message arrives"
+msgstr "새 메시지가 도착하면 트레이 아이콘에 애니메이션을 적용합니다"
+
+#: data/ui/preferences.ui:68
+msgid "Appearance"
+msgstr "모양"
+
+#: data/ui/keyboard-shortcuts.ui:142
+msgid "Application"
+msgstr "애플리케이션"
+
+#: data/ui/preferences.ui:72
+msgid "Application language. Requires restart."
+msgstr "애플리케이션 언어입니다. 다시 시작이 필요합니다."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:57
+msgid "Application preferences and settings dialog"
+msgstr "애플리케이션 기본 설정 및 설정 대화 상자"
+
+#: data/ui/preferences.ui:385
+msgid "Applied to all webviews"
+msgstr "모든 웹뷰에 적용됨"
+
+#: data/ui/preferences.ui:56 data/ui/preferences.ui:103
+msgid "Auto"
+msgstr "자동"
+
+#: data/ui/preferences.ui:299
+msgid "Auto-Detect Language"
+msgstr "언어 자동 감지"
+
+#: data/ui/preferences.ui:52
+msgid "Auto: shown when a system tray is available"
+msgstr "자동: 시스템 트레이를 사용할 수 있을 때 표시"
+
+#: data/ui/preferences.ui:306
+msgid "Automatically fix common spelling mistakes"
+msgstr "흔한 맞춤법 실수를 자동으로 수정합니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:812
+msgid ""
+"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+"performance and integration."
+msgstr ""
+"주요 변경: 더 나은 성능과 통합을 위해 Python에서 네이티브 Vala로 완전히 재작"
+"성."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:724
+msgid "Better build system compatibility with different environments"
+msgstr "다양한 환경과의 빌드 시스템 호환성 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:803
+msgid "Better error handling for network disconnections"
+msgstr "네트워크 연결 끊김에 대한 오류 처리 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:769
+msgid "Better error handling for network timeouts"
+msgstr "네트워크 시간 초과에 대한 오류 처리 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:721
+msgid "Better sandboxed environment compatibility"
+msgstr "더 나은 샌드박스 환경 호환성"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:682
+msgid "Better support for modern desktop environments"
+msgstr "최신 데스크톱 환경에 대한 지원 향상"
+
+#: data/ui/preferences.ui:93
+msgid "Blend the window and header bar with WhatsApp Web's background"
+msgstr ""
+
+#: data/ui/preferences.ui:274
+msgid "Both"
+msgstr "둘 다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:525
+msgid "Bug Fix Release"
+msgstr "버그 수정 릴리스"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:583
+#: data/io.github.tobagin.karere.metainfo.xml.in:637
+#: data/io.github.tobagin.karere.metainfo.xml.in:685
+#: data/io.github.tobagin.karere.metainfo.xml.in:705
+#: data/io.github.tobagin.karere.metainfo.xml.in:761
+#: data/io.github.tobagin.karere.metainfo.xml.in:778
+#: data/io.github.tobagin.karere.metainfo.xml.in:795
+msgid "Bug Fixes:"
+msgstr "버그 수정:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:257
+msgid ""
+"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+"dependencies to latest compatible versions"
+msgstr ""
+"WebKitGTK를 2.52.3으로, LibreOffice 사전을 26.2.3.2로, Rust 종속성을 최신 호"
+"환 버전으로 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:703
+msgid "Cache disabled by default to prevent emoji rendering issues"
+msgstr "이모지 렌더링 문제를 방지하기 위해 캐시를 기본적으로 사용 안 함"
+
+#: data/ui/preferences.ui:176
+msgid "Change Tray Icon on Message"
+msgstr "메시지 수신 시 트레이 아이콘 변경"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:526
+#: data/io.github.tobagin.karere.metainfo.xml.in:535
+msgid "Changes:"
+msgstr "변경 사항:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
+msgid "Chat on WhatsApp"
+msgstr "WhatsApp에서 채팅"
+
+#: data/ui/preferences.ui:294
+msgid "Check spelling as you type"
+msgstr "입력하는 동안 맞춤법을 검사합니다"
+
+#: data/ui/preferences.ui:78
+msgid "Choose the application color scheme"
+msgstr "애플리케이션 색 구성표를 선택합니다"
+
+#: data/ui/preferences.ui:241
+msgid "Choose…"
+msgstr "선택…"
+
+#: data/ui/preferences.ui:335
+msgid "Clear All"
+msgstr "모두 지우기"
+
+#: data/ui/window.ui:184
+msgid "Close Developer Tools"
+msgstr "개발자 도구 닫기"
+
+#: data/ui/keyboard-shortcuts.ui:81
+msgid "Close Window"
+msgstr "창 닫기"
+
+#: data/ui/keyboard-shortcuts.ui:82
+msgid "Close the window"
+msgstr "창을 닫습니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:646
+msgid "Code Quality Improvements:"
+msgstr "코드 품질 개선:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:835
+msgid "Complete internationalization support"
+msgstr "완전한 국제화 지원"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:820
+msgid "Comprehensive accessibility support"
+msgstr "포괄적인 접근성 지원"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:832
+msgid "Comprehensive test suite with unit and integration tests"
+msgstr "단위 및 통합 테스트를 갖춘 포괄적인 테스트 모음"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:661
+msgid "Connected show_notification signal handler for WebKit notifications"
+msgstr "WebKit 알림을 위한 show_notification 신호 핸들러 연결"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:744
+msgid "Converted template files to preprocessor directives for cleaner code"
+msgstr "더 깔끔한 코드를 위해 템플릿 파일을 전처리기 지시문으로 변환"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:781
+msgid "Corrected AppStream metainfo format compliance"
+msgstr "AppStream metainfo 형식 준수 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:765
+msgid "Corrected accessibility focus handling"
+msgstr "접근성 초점 처리 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:711
+msgid "Corrected dependency version specifications in meson.build"
+msgstr "meson.build의 종속성 버전 사양 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:472
+msgid "Corrected metadata description references"
+msgstr "메타데이터 설명 참조 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:799
+msgid "Corrected window state persistence on shutdown"
+msgstr "종료 시 창 상태 유지 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:435
+msgid "Ctrl+N keyboard shortcut for opening a new chat"
+msgstr "새 채팅 열기를 위한 Ctrl+N 키보드 단축키"
+
+#: data/ui/preferences.ui:84
+msgid "Dark"
+msgstr "어둡게"
+
+#: data/ui/keyboard-shortcuts.ui:101
+msgid "Decrease the zoom level"
+msgstr "확대/축소 수준을 낮춥니다"
+
+#: data/ui/preferences.ui:238
+msgid "Default (Downloads)"
+msgstr "기본값 (다운로드)"
+
+#: data/ui/preferences.ui:300
+msgid "Detect the writing language automatically"
+msgstr "작성 언어를 자동으로 감지합니다"
+
+#: data/ui/keyboard-shortcuts.ui:123
+msgid "Developer"
+msgstr "개발자"
+
+#: data/ui/preferences.ui:434
+msgid "Developer Shortcuts"
+msgstr "개발자 단축키"
+
+#: data/ui/window.ui:173 data/ui/preferences.ui:115 data/ui/preferences.ui:124
+#: data/ui/keyboard-shortcuts.ui:126
+msgid "Developer Tools"
+msgstr "개발자 도구"
+
+#: data/ui/preferences.ui:58 data/ui/preferences.ui:105
+msgid "Disabled"
+msgstr "사용 안 함"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:731
+msgid "Disabled problematic WebKit caches causing font corruption"
+msgstr "글꼴 손상을 일으키던 문제성 WebKit 캐시 사용 안 함"
+
+#: data/ui/preferences.ui:195
+msgid "Display message content in notifications"
+msgstr "알림에 메시지 내용을 표시합니다"
+
+#: data/ui/preferences.ui:189
+msgid "Display the contact name in notifications"
+msgstr "알림에 연락처 이름을 표시합니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:666
+msgid "Documentation:"
+msgstr "문서:"
+
+#: data/ui/preferences.ui:237
+msgid "Download Directory"
+msgstr "다운로드 디렉터리"
+
+#: data/ui/preferences.ui:261
+msgid "Download Notifications"
+msgstr "다운로드 알림"
+
+#: data/ui/preferences.ui:230
+msgid "Downloads"
+msgstr "다운로드"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:745
+msgid "Eliminated .vala.in template substitution system"
+msgstr ".vala.in 템플릿 치환 시스템 제거"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:717
+msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+msgstr "이모지 렌더링에 영향을 주던 WebKit 캐시 손상 제거"
+
+#: data/ui/preferences.ui:305
+msgid "Enable Auto-Correct"
+msgstr "자동 교정 사용"
+
+#: data/ui/preferences.ui:118
+msgid "Enable Developer Tools"
+msgstr "개발자 도구 사용"
+
+#: data/ui/preferences.ui:159
+msgid "Enable Notifications"
+msgstr "알림 사용"
+
+#: data/ui/preferences.ui:293
+msgid "Enable Spell Checking"
+msgstr "맞춤법 검사 사용"
+
+#: data/ui/preferences.ui:423
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "일반 작업에 대한 키보드 단축키를 사용합니다"
+
+#: data/ui/preferences.ui:429
+msgid "Enable shortcuts for accessibility features"
+msgstr "접근성 기능 단축키를 사용합니다"
+
+#: data/ui/preferences.ui:435
+msgid "Enable shortcuts for developer tools"
+msgstr "개발자 도구 단축키를 사용합니다"
+
+#: data/ui/preferences.ui:441
+msgid "Enable shortcuts for notification actions"
+msgstr "알림 작업 단축키를 사용합니다"
+
+#: data/ui/preferences.ui:57 data/ui/preferences.ui:104
+msgid "Enabled"
+msgstr "사용함"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:719
+msgid "Enhanced 2D canvas acceleration for better graphics performance"
+msgstr "더 나은 그래픽 성능을 위한 2D 캔버스 가속 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:725
+msgid "Enhanced CI/CD pipeline stability"
+msgstr "CI/CD 파이프라인 안정성 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:787
+msgid "Enhanced Flathub compliance and validation"
+msgstr "Flathub 준수 및 유효성 검사 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:713
+msgid "Enhanced URL validation for external link detection"
+msgstr "외부 링크 감지를 위한 URL 유효성 검사 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:699
+msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+msgstr "최대 하드웨어 가속으로 WebKit 렌더링 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:818
+msgid "Enhanced WebKitGTK 6.0 integration"
+msgstr "향상된 WebKitGTK 6.0 통합"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:461
+msgid ""
+"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+"compatibility"
+msgstr ""
+"안정적인 WhatsApp Web 호환성을 위해 Base64 인코딩으로 이미지 붙여넣기 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:723
+msgid "Enhanced logging for external link operations"
+msgstr "외부 링크 작업에 대한 로깅 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:596
+msgid "Enhanced packaging for better compatibility"
+msgstr "더 나은 호환성을 위한 패키징 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:554
+msgid "Enhanced performance and stability"
+msgstr "성능 및 안정성 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:834
+msgid "Enhanced security with proper sandboxing"
+msgstr "적절한 샌드박싱으로 보안 강화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:683
+msgid "Enhanced stability and performance optimizations"
+msgstr "안정성 및 성능 최적화 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:804
+msgid "Enhanced stability during long sessions"
+msgstr "긴 세션 동안의 안정성 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:770
+msgid "Enhanced stability for extended usage"
+msgstr "장기간 사용 시 안정성 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:619
+msgid "Enhanced visual documentation for users"
+msgstr "사용자를 위한 시각적 문서 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:564
+msgid "Ensure application starts properly in the background without delay"
+msgstr "지연 없이 애플리케이션이 백그라운드에서 제대로 시작되도록 보장"
+
+#: data/ui/preferences.ui:139
+msgid "Experimental"
+msgstr ""
+
+#: data/ui/keyboard-shortcuts.ui:29
+msgid "Find in Page"
+msgstr "페이지에서 찾기"
+
+#: data/ui/window.ui:111
+msgid "Find in page"
+msgstr "페이지에서 찾기"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:135
+msgid ""
+"Fixed \"Start in background\" being ignored when the tray icon is disabled; "
+"the setting is now honored and relaunching the app brings the window up. "
+"(#170)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:426
+msgid "Fixed \"Too many open files\" crash by reusing notification resources"
+msgstr "알림 리소스를 재사용하여 \"열린 파일이 너무 많음\" 충돌 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:639
+msgid ""
+"Fixed Ctrl+V paste for text content - now works for both text and images"
+msgstr ""
+"텍스트 내용에 대한 Ctrl+V 붙여넣기 수정 - 이제 텍스트와 이미지 모두에 작동"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:482
+msgid "Fixed Dead Key/composition input issues"
+msgstr "데드 키/조합 입력 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:419
+msgid "Fixed Flatpak build failure by correcting config"
+msgstr "구성을 수정하여 Flatpak 빌드 실패 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:290
+msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+msgstr "ashpd 0.13 API 변경으로 인한 Flatpak 빌드 실패 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:481
+msgid "Fixed Open action for downloaded files"
+msgstr "다운로드한 파일의 열기 작업 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:642
+msgid "Fixed WebView zoom being enabled by default (now disabled)"
+msgstr "WebView 확대/축소가 기본으로 사용되던 문제 수정(이제 사용 안 함)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:108
+msgid ""
+"Fixed WhatsApp loading in mobile layout on HiDPI displays until resized; the "
+"prewarm viewport is now sized in physical pixels (#176)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:640
+msgid "Fixed WhatsApp notification permission not persisting across sessions"
+msgstr "WhatsApp 알림 권한이 세션 간에 유지되지 않던 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:136
+msgid ""
+"Fixed a black chat area on NVIDIA drivers by falling back to software "
+"rendering where the accelerated path cannot deliver frames. (#167)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:150
+msgid ""
+"Fixed a black/blank window on GNOME OS and other newer Wayland setups by "
+"switching to GTK's GL renderer, which presents the CEF browser view "
+"correctly where the default Vulkan renderer could not. (#164)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:586
+msgid "Fixed application freeze during lifecycle events"
+msgstr "수명 주기 이벤트 중 애플리케이션 멈춤 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:401
+msgid ""
+"Fixed application freezing on resume by reverting aggressive cache "
+"optimization"
+msgstr "공격적인 캐시 최적화를 되돌려 재개 시 애플리케이션이 멈추던 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:538
+msgid "Fixed autostart toggle pathing for Flatpak environments"
+msgstr "Flatpak 환경의 자동 시작 토글 경로 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:412
+msgid "Fixed background notifications reliability"
+msgstr "백그라운드 알림 안정성 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:402
+msgid "Fixed background validation to ensure app starts correctly"
+msgstr "앱이 올바르게 시작되도록 백그라운드 유효성 검사 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:299
+msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+msgstr "blob URL 다운로드(예: 미디어 뷰어에서 이미지 저장) 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:643
+msgid "Fixed clipboard manager intercepting all paste events"
+msgstr "클립보드 관리자가 모든 붙여넣기 이벤트를 가로채던 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:311
+msgid "Fixed crash on launch due to memory pressure threshold ordering"
+msgstr "메모리 압박 임계값 순서로 인한 실행 시 충돌 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:797
+msgid "Fixed crash when handling invalid notification data"
+msgstr "잘못된 알림 데이터 처리 시 충돌 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:763
+msgid "Fixed crash when handling invalid user input data"
+msgstr "잘못된 사용자 입력 데이터 처리 시 충돌 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:563
+msgid ""
+"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+"activation"
+msgstr "D-Bus 활성화 구현으로 중요한 시작 시 멈춤(스피너) 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:313
+msgid "Fixed dead key composition for first character in input fields"
+msgstr "입력 필드의 첫 번째 문자에 대한 데드 키 조합 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:134
+msgid ""
+"Fixed dead-key accents (e.g. US Intl) intermittently typing the plain letter "
+"after sending a message; the input method is re-focused on the next "
+"keypress. (#154)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:463
+msgid "Fixed double-paste issue with middle-click"
+msgstr "가운데 클릭의 이중 붙여넣기 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:312
+msgid "Fixed download destination and context menu issues"
+msgstr "다운로드 대상 및 컨텍스트 메뉴 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:321
+msgid "Fixed download destination handling"
+msgstr "다운로드 대상 처리 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:279
+msgid "Fixed download filenames now use WhatsApp's original filename"
+msgstr "다운로드 파일 이름이 이제 WhatsApp의 원래 파일 이름을 사용하도록 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:280
+msgid "Fixed duplicate downloads auto-increment instead of failing"
+msgstr "중복 다운로드가 실패하는 대신 자동으로 번호가 증가하도록 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:780
+msgid "Fixed duplicate provides tags in metainfo validation"
+msgstr "metainfo 유효성 검사의 중복 provides 태그 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:707
+msgid ""
+"Fixed external links not opening in default browser when running in Flatpak"
+msgstr ""
+"Flatpak에서 실행할 때 외부 링크가 기본 브라우저에서 열리지 않던 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:310
+msgid "Fixed freezes when viewing media galleries"
+msgstr "미디어 갤러리를 볼 때 멈추던 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:710
+msgid "Fixed invalid meson version requirement preventing builds"
+msgstr "빌드를 방해하던 잘못된 meson 버전 요구 사항 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:470
+msgid "Fixed missing GSettings schema in Flatpak builds"
+msgstr "Flatpak 빌드에서 누락된 GSettings 스키마 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:585
+msgid "Fixed missing dictionaries on startup"
+msgstr "시작 시 누락된 사전 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:528
+msgid ""
+"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
+msgstr ""
+"StatusNotifierWatcher 권한을 추가하여 GNOME에서 누락된 트레이 아이콘 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:282
+msgid "Fixed notification sounds now respect GNOME volume controls"
+msgstr "알림 소리가 이제 GNOME 볼륨 컨트롤을 따르도록 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:641
+msgid "Fixed notifications banner appearing on every app launch"
+msgstr "앱을 시작할 때마다 알림 배너가 나타나던 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:298
+msgid ""
+"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+"Linux environments"
+msgstr ""
+"Phosh 및 터치 기반 Linux 환경에서 화면 키보드가 안정적으로 나타나지 않던 문"
+"제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:688
+msgid "Fixed potential rendering inconsistencies"
+msgstr "잠재적인 렌더링 불일치 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:709
+msgid "Fixed random emoji display issues and blank emoji problems"
+msgstr "무작위 이모지 표시 문제 및 빈 이모지 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:354
+msgid "Fixed startup race conditions and resource usage issues"
+msgstr "시작 시 경합 상태 및 리소스 사용 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:143
+msgid ""
+"Fixed the GNOME OS / Wayland black window for real (#164): CEF was racing to "
+"the X11 Ozone backend and failing to present onto the Wayland view; Karere "
+"now forces CEF's Ozone backend to match the display server, so it no longer "
+"intermittently starts black."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:151
+msgid ""
+"Fixed the mobile layout dropping the message box focus when pressing Enter "
+"on a computer; focus is now kept on non-touch devices while phones still "
+"hide the keyboard after sending."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:133
+msgid ""
+"Fixed touchpad scrolling being ~5x too slow with a delay before it started; "
+"deltas are now scaled the same way Chromium's own Wayland backend scales "
+"them. (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:126
+msgid ""
+"Fixed touchpad scrolling sometimes needing a click in a pane before it "
+"responded; scrolling now targets the pane under the pointer like every other "
+"app. (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:539
+msgid "Fixed tray icon quit behavior"
+msgstr "트레이 아이콘 종료 동작 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:392
+msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+msgstr "KDE/GNOME에서 트레이 아이콘 수정(밝은/어두운 테마 모두에서 표시)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:107
+msgid ""
+"Fixed tray “Quit” doing nothing while the window is hidden (e.g. Start in "
+"background) (#175)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:264
+msgid ""
+"Fixed voice and video calls in production Flatpak (Flathub linter-compatible "
+"pre-built plugin)"
+msgstr ""
+"프로덕션 Flatpak에서 음성 및 영상 통화 수정(Flathub 린터 호환 사전 빌드 플러"
+"그인)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:271
+msgid ""
+"Fixed voice and video calls not working in the production build (missing "
+"noise suppression plugin)"
+msgstr ""
+"프로덕션 빌드에서 음성 및 영상 통화가 작동하지 않던 문제 수정(누락된 노이즈 "
+"억제 플러그인)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:297
+msgid ""
+"Fixed voice and video calls showing \"Your browser doesn't support calling\""
+msgstr ""
+"음성 및 영상 통화에서 \"브라우저가 통화를 지원하지 않습니다\"가 표시되던 문"
+"제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:281
+msgid ""
+"Fixed window now properly unminimizes when activated from launcher or tray"
+msgstr "런처나 트레이에서 활성화할 때 창이 제대로 최소화 해제되도록 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:411
+msgid "Fixed window resize behavior to prevent excessive reloading"
+msgstr "과도한 다시 불러오기를 방지하도록 창 크기 조정 동작 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:362
+msgid "Fixed window size increasing on every restart"
+msgstr "다시 시작할 때마다 창 크기가 커지던 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:427
+msgid "Fixed zombie process accumulation"
+msgstr "좀비 프로세스 누적 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:110
+msgid ""
+"Fixed “Match WhatsApp Colors” applying only after restart; it now updates "
+"live when toggled (#168)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:561
+msgid "Fixed:"
+msgstr "수정 사항:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:384
+msgid ""
+"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+"(silences sounds)"
+msgstr ""
+"수정: 이제 앱이 GNOME의 시스템 \"방해 금지\" 설정을 따릅니다(소리 음소거)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:329
+msgid "Fixed: Download destination path handling regression"
+msgstr "수정: 다운로드 대상 경로 처리 회귀"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:343
+msgid ""
+"Fixed: Handle WebKit web process crashes with auto-reload and user "
+"notification"
+msgstr ""
+"수정: WebKit 웹 프로세스 충돌을 자동 다시 불러오기 및 사용자 알림으로 처리"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:344
+msgid "Fixed: JS injection and path traversal vulnerabilities"
+msgstr "수정: JS 주입 및 경로 탐색 취약점"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:336
+msgid ""
+"Fixed: JS injection and path traversal vulnerabilities in download handling"
+msgstr "수정: 다운로드 처리의 JS 주입 및 경로 탐색 취약점"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:385
+msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+msgstr "수정: 알림이 DND 시각 효과를 우회(우선순위를 보통으로 낮춤)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:345
+msgid "Fixed: Panic in notification handling"
+msgstr "수정: 알림 처리의 패닉"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:369
+msgid ""
+"Fixed: Resolved webview reload loop on startup due to incorrect window size "
+"detection"
+msgstr "수정: 잘못된 창 크기 감지로 인한 시작 시 웹뷰 다시 불러오기 루프 해결"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:218
+msgid ""
+"Fixed: accented characters from dead keys (e.g. the US-International layout) "
+"now compose correctly instead of inserting the base letter — input is routed "
+"through the system input method (#154)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:253
+msgid ""
+"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
+"43, CachyOS, Bazzite, postmarketOS)"
+msgstr ""
+"수정: GNOME 50 / glibc 2.42+ 시스템(Arch, Fedora 43, CachyOS, Bazzite, "
+"postmarketOS)에서 실행 시 앱 충돌"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:243
+msgid ""
+"Fixed: blank-window race when autostarted before the network/portal stack is "
+"ready (auto-retry with exponential backoff)"
+msgstr ""
+"수정: 네트워크/포털 스택이 준비되기 전에 자동 시작될 때 발생하던 빈 창 경합"
+"(지수 백오프로 자동 재시도)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:256
+msgid ""
+"Fixed: downloaded files with duplicate names silently overwriting each other "
+"(now appends (1), (2), ...)"
+msgstr ""
+"수정: 이름이 중복된 다운로드 파일이 서로 자동으로 덮어쓰던 문제(이제 (1), "
+"(2), ... 추가)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:173
+msgid ""
+"Fixed: input-method candidate popups (e.g. ibus-libpinyin) appeared in the "
+"top-left corner; they now show by the chat input where you click (#163)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:242
+msgid ""
+"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
+"clear behavior removed upstream — Karere now dismisses notifications "
+"explicitly)"
+msgstr ""
+"수정: GNOME 50에서 초점 이후에 남아 있던 알림 배지/배너(자동 지우기 동작이 업"
+"스트림에서 제거됨 — 이제 Karere가 알림을 명시적으로 닫습니다)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:254
+msgid ""
+"Fixed: locale-dependent crash that required manually setting "
+"LC_ALL=en_GB.UTF-8"
+msgstr "수정: LC_ALL=en_GB.UTF-8을 수동으로 설정해야 했던 로케일 의존 충돌"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:255
+msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+msgstr "수정: 최근 WhatsApp Web DOM 변경으로 깨진 모바일 레이아웃"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:165
+msgid ""
+"Fixed: on Phosh / GNOME Mobile the on-screen keyboard stayed open all the "
+"time; it now follows the focused WhatsApp text field, appearing when you tap "
+"a message or search box and hiding otherwise"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:172
+msgid ""
+"Fixed: sluggish touchpad scrolling — disabled Chromium's smooth-scroll "
+"animation for instant, responsive scrolling (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:180
+msgid ""
+"Fixed: the ARM64 (aarch64) build, which had been failing since 4.0.4 due to "
+"a type error in the GPU-rendering code — so this is the first release to "
+"reach ARM64 (Phosh / mobile) users with the recent fixes, including touch "
+"scrolling (#162)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:202
+msgid ""
+"Fixed: the selected theme is now applied from startup, including when the "
+"app launches into the background at login — the window no longer opens light "
+"when dark is selected. WhatsApp Web content also follows the theme now (when "
+"WhatsApp's own theme is set to System default) (#160)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:210
+msgid ""
+"Fixed: the web view is now crisp under fractional/HiDPI display scaling "
+"(e.g. 150%/200% on GNOME Wayland) — the page is rendered to match the "
+"window's pixel buffer exactly instead of being upscaled, while staying at "
+"the correct size (#158)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:188
+msgid ""
+"Fixed: touch scrolling and tapping in the chat view on touchscreens (e.g. "
+"Phosh / mobile Linux) — touch input is now forwarded to the web view as "
+"native touch events (#162)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:203
+msgid ""
+"Fixed: typing in the narrow/mobile layout no longer inserts a stray space "
+"after the first letter (#159)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:211
+msgid ""
+"Fixed: typing the first letter of a message no longer inserts a stray space "
+"after it (a 4.0.1 input regression) (#154)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:219
+msgid ""
+"Fixed: web content is now sized correctly under fractional display scaling "
+"such as 150%; the view and input use logical coordinates with the fractional "
+"scale applied for crisp rendering (#155, #156)"
+msgstr ""
+
+#: data/ui/preferences.ui:361
+msgid "Focus Indicators"
+msgstr "초점 표시기"
+
+#: data/ui/preferences.ui:82
+msgid "Follow System"
+msgstr "시스템 설정 따르기"
+
+#: data/ui/keyboard-shortcuts.ui:22
+msgid "Force Reload"
+msgstr "강제로 다시 불러오기"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:549
+msgid "Full rewrite in Rust! 🦀"
+msgstr "Rust로 완전히 재작성! 🦀"
+
+#: data/ui/keyboard-shortcuts.ui:67
+msgid "Fullscreen"
+msgstr "전체 화면"
+
+#: data/ui/preferences.ui:142
+msgid "GPU Rendering"
+msgstr ""
+
+#: data/ui/window.ui:24
+msgid "GTK4 WhatsApp Web Client"
+msgstr "GTK4 WhatsApp Web 클라이언트"
+
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:156
+msgid "General"
+msgstr "일반"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:498
+msgid "General improvements and versioning updates"
+msgstr "전반적인 개선 및 버전 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:824
+msgid "Granular privacy and notification controls"
+msgstr "세분화된 개인 정보 및 알림 컨트롤"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:825
+msgid "Hardware-accelerated rendering"
+msgstr "하드웨어 가속 렌더링"
+
+#: data/ui/preferences.ui:311
+msgid "Header Bar Language Control"
+msgstr "헤더 바 언어 컨트롤"
+
+#: data/ui/preferences.ui:400
+msgid "Header Bar Zoom Controls"
+msgstr "헤더 바 확대/축소 컨트롤"
+
+#: data/ui/preferences.ui:367
+msgid "High Contrast Mode"
+msgstr "고대비 모드"
+
+#: data/ui/preferences.ui:268
+msgid "How download notifications are displayed"
+msgstr "다운로드 알림 표시 방식"
+
+#: data/ui/preferences.ui:201
+msgid "How much of the message to show"
+msgstr "표시할 메시지 분량"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:735
+msgid "Implemented Flatpak portal system for external link handling"
+msgstr "외부 링크 처리를 위한 Flatpak 포털 시스템 구현"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:660
+msgid "Implemented UserScript injection for Notification.permission state"
+msgstr "Notification.permission 상태를 위한 UserScript 주입 구현"
+
+#: data/ui/preferences.ui:412
+msgid "Improve compatibility with assistive technologies — restart required"
+msgstr "보조 기술과의 호환성을 개선합니다 — 다시 시작해야 함"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:109
+msgid ""
+"Improved NVIDIA detection via the live GL context so hybrid GPUs keep "
+"accelerated rendering, hardened the fallback for background starts, and "
+"raised the off-screen frame rate from 30 to 60 fps for smoother scroll/"
+"typing (#173)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:747
+msgid "Improved build system maintainability and type safety"
+msgstr "빌드 시스템 유지 보수성 및 타입 안전성 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:664
+msgid "Improved build system with cleaner dependency management"
+msgstr "더 깔끔한 종속성 관리로 빌드 시스템 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:700
+msgid "Improved emoji consistency with bundled font system"
+msgstr "번들 글꼴 시스템으로 이모지 일관성 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:689
+msgid "Improved error handling and recovery mechanisms"
+msgstr "오류 처리 및 복구 메커니즘 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:708
+msgid "Improved external link handling with proper Flatpak portal support"
+msgstr "적절한 Flatpak 포털 지원으로 외부 링크 처리 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:720
+msgid "Improved font loading stability and reduced race conditions"
+msgstr "글꼴 로딩 안정성 개선 및 경합 상태 감소"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:394
+msgid "Improved icon compatibility across desktop environments"
+msgstr "데스크톱 환경 전반의 아이콘 호환성 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:404
+msgid "Improved icon rendering (symbolic icons now use currentColor)"
+msgstr "아이콘 렌더링 개선(심볼릭 아이콘이 이제 currentColor 사용)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:826
+msgid "Improved memory efficiency and startup performance"
+msgstr "메모리 효율성 및 시작 성능 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:377
+msgid "Improved mobile UI resizing consistency"
+msgstr "모바일 UI 크기 조정 일관성 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:428
+msgid "Improved overall stability"
+msgstr "전반적인 안정성 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:681
+msgid "Improved system integration with latest platform libraries"
+msgstr "최신 플랫폼 라이브러리와의 시스템 통합 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:788
+msgid "Improved translation file consistency"
+msgstr "번역 파일 일관성 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:181
+msgid ""
+"Improved: smoother scrolling, especially with a touchpad — fine scroll "
+"deltas are no longer dropped, and wheel vs touchpad input is scaled "
+"appropriately (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:577
+#: data/io.github.tobagin.karere.metainfo.xml.in:593
+#: data/io.github.tobagin.karere.metainfo.xml.in:604
+#: data/io.github.tobagin.karere.metainfo.xml.in:615
+#: data/io.github.tobagin.karere.metainfo.xml.in:678
+#: data/io.github.tobagin.karere.metainfo.xml.in:715
+#: data/io.github.tobagin.karere.metainfo.xml.in:742
+#: data/io.github.tobagin.karere.metainfo.xml.in:767
+#: data/io.github.tobagin.karere.metainfo.xml.in:784
+#: data/io.github.tobagin.karere.metainfo.xml.in:801
+msgid "Improvements:"
+msgstr "개선 사항:"
+
+#: data/ui/preferences.ui:272
+msgid "In-app Toast"
+msgstr "앱 내 알림"
+
+#: data/ui/preferences.ui:368
+msgid "Increase contrast for better readability"
+msgstr "가독성을 위해 대비를 높입니다"
+
+#: data/ui/keyboard-shortcuts.ui:94
+msgid "Increase the zoom level"
+msgstr "확대/축소 수준을 높입니다"
+
+#: data/ui/keyboard-shortcuts.ui:133
+msgid "Inspect Element"
+msgstr "요소 검사"
+
+#: data/ui/keyboard-shortcuts.ui:56
+msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
+msgstr "계정 1–9로 이동 (Alt+1 … Alt+9)"
+
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:262 src/tray.rs:43
+#: src/tray.rs:66 src/tray.rs:73
+msgid "Karere"
+msgstr "Karere"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:225
+msgid ""
+"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+"Existing accounts must be re-linked — there is no migration from v3."
+msgstr ""
+"Karere 4.0은 CEF/Chromium 148 기반으로 앱을 재구축한 하드 포크입니다. 기존 계"
+"정은 다시 연결해야 하며 — v3에서 마이그레이션은 지원되지 않습니다."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:24
+msgid ""
+"Karere brings WhatsApp to your Linux desktop with a native look and feel. It "
+"integrates seamlessly with your environment, offering a clean, modern "
+"interface that respects your system's theme and workflow. By wrapping "
+"WhatsApp Web, it ensures you have access to all the latest features while "
+"adding powerful desktop-specific capabilities."
+msgstr ""
+"Karere는 네이티브 모양과 느낌으로 WhatsApp을 Linux 데스크톱에 제공합니다. 사"
+"용자 환경과 자연스럽게 통합되며, 시스템 테마와 작업 흐름을 존중하는 깔끔하고 "
+"현대적인 인터페이스를 제공합니다. WhatsApp Web을 래핑하여 강력한 데스크톱 전"
+"용 기능을 추가하면서도 최신 기능을 모두 사용할 수 있도록 보장합니다."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:30
+msgid "Key features include:"
+msgstr "주요 기능:"
+
+#: data/ui/window.ui:261 data/ui/preferences.ui:422
+#: data/ui/keyboard-shortcuts.ui:152 src/tray.rs:145
+msgid "Keyboard Shortcuts"
+msgstr "키보드 단축키"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:61
+#: data/io.github.tobagin.karere.metainfo.xml.in:822
+msgid "Keyboard shortcuts and productivity features"
+msgstr "키보드 단축키 및 생산성 기능"
+
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:317
+msgid "Language"
+msgstr "언어"
+
+#: data/ui/preferences.ui:21
+msgid "Launch Karere automatically when you log in"
+msgstr "로그인할 때 Karere를 자동으로 실행합니다"
+
+#: data/ui/preferences.ui:83
+msgid "Light"
+msgstr "밝게"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:235
+msgid ""
+"Live spell-check language switching and a separately installable Debug "
+"symbol extension for symbolicated crash reports"
+msgstr ""
+"실시간 맞춤법 검사 언어 전환 및 별도로 설치 가능한 디버그 심볼 확장(심볼화된 "
+"충돌 보고서용)"
+
+#: data/ui/preferences.ui:234
+msgid "Location"
+msgstr "위치"
+
+#: data/ui/preferences.ui:207
+msgid "Long"
+msgstr "길게"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:49
+msgid "Main application window with WhatsApp Web integration"
+msgstr "WhatsApp Web이 통합된 기본 애플리케이션 창"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:226
+msgid "Major changes:"
+msgstr "주요 변경 사항:"
+
+#: data/ui/preferences.ui:160
+msgid "Master toggle for all notifications"
+msgstr "모든 알림의 기본 토글"
+
+#: data/ui/preferences.ui:92
+#, fuzzy
+msgid "Match WhatsApp Colors"
+msgstr "WhatsApp 클라이언트"
+
+#: data/ui/preferences.ui:206
+msgid "Medium"
+msgstr "보통"
+
+#: data/ui/window.ui:77
+msgid "Menu"
+msgstr "메뉴"
+
+#: data/ui/preferences.ui:170
+msgid "Message Notifications"
+msgstr "메시지 알림"
+
+#: data/ui/preferences.ui:184
+msgid "Message Preview"
+msgstr "메시지 미리 보기"
+
+#: data/ui/preferences.ui:167
+msgid "Messages"
+msgstr "메시지"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:483
+msgid "Migrated Flatpak build logic to meson.build"
+msgstr "Flatpak 빌드 로직을 meson.build로 마이그레이션"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:830
+msgid "Migrated from Python 3 to native Vala compilation"
+msgstr "Python 3에서 네이티브 Vala 컴파일로 마이그레이션"
+
+#: data/ui/keyboard-shortcuts.ui:74
+msgid "Minimize Window"
+msgstr "창 최소화"
+
+#: data/ui/preferences.ui:356
+msgid "Minimize animations and transitions"
+msgstr "애니메이션과 전환을 최소화합니다"
+
+#: data/ui/keyboard-shortcuts.ui:75
+msgid "Minimize the window"
+msgstr "창을 최소화합니다"
+
+#: data/ui/preferences.ui:384
+msgid "Minimum Zoom Level"
+msgstr "최소 확대/축소 수준"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:608
+msgid "Minor README corrections"
+msgstr "사소한 README 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:597
+msgid "Minor bug fixes and stability improvements"
+msgstr "사소한 버그 수정 및 안정성 개선"
+
+#: data/ui/preferences.ui:98
+msgid "Mobile Layout"
+msgstr "모바일 레이아웃"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:439
+msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+msgstr "모바일 레이아웃 설정을 드롭다운(자동/사용함/사용 안 함)으로 변경"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:436
+msgid ""
+"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+"Lomiri"
+msgstr "Phosh, Plasma Mobile, Lomiri 자동 감지를 갖춘 모바일 레이아웃 지원"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:233
+msgid ""
+"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+"popover for the off-screen-rendered web view"
+msgstr ""
+"모바일 반응형 레이아웃, JavaScript 전체 화면, 오프스크린 렌더링 웹뷰를 위한 "
+"OSR 컨텍스트 메뉴 팝오버"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:817
+msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+msgstr "Blueprint 선언적 인터페이스를 갖춘 현대적인 LibAdwaita UI"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:831
+msgid "Modern Meson build system with Blueprint UI compilation"
+msgstr "Blueprint UI 컴파일을 갖춘 현대적인 Meson 빌드 시스템"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:722
+msgid "More reliable link opening mechanism"
+msgstr "더 안정적인 링크 열기 메커니즘"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:726
+msgid "More robust dependency handling"
+msgstr "더 견고한 종속성 처리"
+
+#: data/ui/preferences.ui:352
+msgid "Motion and Focus"
+msgstr "모션 및 포커스"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:229
+msgid ""
+"Multi-account support: each account runs in an isolated CEF RequestContext "
+"with its own cookies and storage; accounts are ordered most-recently-used"
+msgstr ""
+"다중 계정 지원: 각 계정은 자체 쿠키와 저장소를 갖춘 격리된 CEF RequestContext"
+"에서 실행되며, 계정은 최근 사용 순으로 정렬됩니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:823
+msgid "Multi-language spell checking support"
+msgstr "다중 언어 맞춤법 검사 지원"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:816
+msgid "Native Vala/GTK4 implementation for optimal performance"
+msgstr "최적의 성능을 위한 네이티브 Vala/GTK4 구현"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Linux 데스크톱용 네이티브 WhatsApp Web 클라이언트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:32
+msgid "Native system notifications and tray icon support"
+msgstr "네이티브 시스템 알림 및 트레이 아이콘 지원"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:232
+msgid ""
+"Native system tray (StatusNotifierItem), desktop notifications, download "
+"manager, and image/text paste reimplemented on the CEF stack"
+msgstr ""
+"네이티브 시스템 트레이(StatusNotifierItem), 데스크톱 알림, 다운로드 관리자, "
+"이미지/텍스트 붙여넣기를 CEF 스택에서 재구현"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:547
+#: data/io.github.tobagin.karere.metainfo.xml.in:571
+#: data/io.github.tobagin.karere.metainfo.xml.in:626
+#: data/io.github.tobagin.karere.metainfo.xml.in:696
+#: data/io.github.tobagin.karere.metainfo.xml.in:814
+msgid "New Features:"
+msgstr "새 기능:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:550
+msgid "New System Tray Icon support"
+msgstr "새 시스템 트레이 아이콘 지원"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:117
+msgid ""
+"New opt-in \"Match WhatsApp Colors\" appearance setting: tints the window "
+"and header bar with WhatsApp Web's own background colors so the app blends "
+"with the page. Follows the light/dark theme and applies instantly. (#168)"
+msgstr ""
+
+#: data/ui/keyboard-shortcuts.ui:41
+msgid "Next Account"
+msgstr "다음 계정"
+
+#: data/ui/window.ui:137
+msgid "Next match"
+msgstr "다음 일치 항목"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:283
+msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+msgstr "참고: 이 업그레이드 후 WhatsApp 계정을 다시 연결해야 합니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:453
+msgid ""
+"Notification Chat Linking: Clicking a notification now opens the specific "
+"chat in Karere."
+msgstr "알림 채팅 연결: 이제 알림을 클릭하면 Karere에서 해당 채팅이 열립니다."
+
+#: data/ui/preferences.ui:440
+msgid "Notification Shortcuts"
+msgstr "알림 단축키"
+
+#: data/ui/preferences.ui:220
+msgid "Notification Sounds"
+msgstr "알림 소리"
+
+#: data/ui/preferences.ui:267
+msgid "Notification Type"
+msgstr "알림 유형"
+
+#: data/ui/preferences.ui:152 data/ui/preferences.ui:258
+msgid "Notifications"
+msgstr "알림"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:551
+msgid "Notifications fully working with persistence fixes"
+msgstr "유지 기능 수정으로 알림이 완전히 작동"
+
+#: data/ui/preferences.ui:262
+msgid "Notify when a file download completes"
+msgstr "파일 다운로드가 완료되면 알립니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+#, fuzzy
+msgid ""
+"Now built on CEF/Chromium 150. Karere 4.0 replaces the WebKitGTK backend "
+"with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
+msgstr ""
+"이제 CEF/Chromium 148 기반으로 구축되었습니다. Karere 4.0은 WebKitGTK 백엔드"
+"를 Chromium Embedded Framework로 대체하여 완전한 동영상 첨부 재생(H.264/"
+"AAC), 격리된 세션을 갖춘 다중 계정 지원, 계정별 확대/축소, 더 빠르고 호환성 "
+"높은 렌더링 엔진을 제공하면서도 동일한 네이티브 GTK4/libadwaita 셸을 유지합니"
+"다."
+
+#: data/ui/preferences.ui:129
+msgid "Open"
+msgstr "열기"
+
+#: data/ui/keyboard-shortcuts.ui:146
+msgid "Open preferences"
+msgstr "기본 설정 열기"
+
+#: data/ui/keyboard-shortcuts.ui:127
+msgid "Open the developer tools"
+msgstr "개발자 도구를 엽니다"
+
+#: data/ui/preferences.ui:125
+msgid "Open the developer tools for the current page"
+msgstr "현재 페이지의 개발자 도구를 엽니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:701
+msgid "Optimized font loading to eliminate display conflicts"
+msgstr "표시 충돌을 제거하도록 글꼴 로딩 최적화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:403
+msgid "Optimized memory usage in mobile responsive scripts"
+msgstr "모바일 반응형 스크립트의 메모리 사용 최적화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:231
+msgid ""
+"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
+"accessibility minimum-zoom floor"
+msgstr ""
+"계정별 확대/축소(Ctrl +/-/0), 선택적 헤더 바 확대/축소 컨트롤 및 접근성 최소 "
+"확대/축소 하한"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:805
+msgid "Performance optimizations for faster startup"
+msgstr "더 빠른 시작을 위한 성능 최적화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:771
+msgid "Performance optimizations for scrolling"
+msgstr "스크롤 성능 최적화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:33
+msgid ""
+"Persistent login sessions so you don't need to scan the QR code every time"
+msgstr "매번 QR 코드를 스캔할 필요가 없도록 로그인 세션 유지"
+
+#: data/ui/keyboard-shortcuts.ui:134
+msgid "Pick an element to inspect"
+msgstr "검사할 요소를 선택합니다"
+
+#: data/ui/preferences.ui:221
+msgid "Play WhatsApp's notification sound for new messages"
+msgstr "새 메시지에 WhatsApp 알림 소리를 재생합니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:552
+msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+msgstr "Vala에서 네이티브 Rust/GTK4/Libadwaita로 이식"
+
+#: data/ui/window.ui:255 data/ui/preferences.ui:10
+#: data/ui/keyboard-shortcuts.ui:145 src/tray.rs:139
+msgid "Preferences"
+msgstr "기본 설정"
+
+#: data/ui/preferences.ui:200
+msgid "Preview Length"
+msgstr "미리 보기 길이"
+
+#: data/ui/keyboard-shortcuts.ui:48
+msgid "Previous Account"
+msgstr "이전 계정"
+
+#: data/ui/window.ui:131
+msgid "Previous match"
+msgstr "이전 일치 항목"
+
+#: data/ui/preferences.ui:327
+msgid "Privacy"
+msgstr "개인 정보"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:34
+msgid "Privacy controls and comprehensive spell-checking settings"
+msgstr "개인 정보 컨트롤 및 포괄적인 맞춤법 검사 설정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:833
+msgid "Production-ready error handling and crash recovery"
+msgstr "프로덕션 준비된 오류 처리 및 충돌 복구"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:821
+msgid "Professional logging and crash reporting system"
+msgstr "전문적인 로깅 및 충돌 보고 시스템"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:36
+msgid "Proper clipboard integration for text and images"
+msgstr "텍스트 및 이미지에 대한 적절한 클립보드 통합"
+
+#: data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159 src/tray.rs:158
+msgid "Quit"
+msgstr "종료"
+
+#: data/ui/preferences.ui:43
+msgid "Quit Application"
+msgstr "애플리케이션 종료"
+
+#: data/ui/keyboard-shortcuts.ui:160
+msgid "Quit Karere"
+msgstr "Karere 종료"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:300
+msgid "Redesigned application icons for stable and development variants"
+msgstr "안정 버전 및 개발 버전용 애플리케이션 아이콘 재설계"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:553
+msgid "Redesigned/streamlined preferences dialog"
+msgstr "기본 설정 대화 상자 재설계/간소화"
+
+#: data/ui/preferences.ui:355
+msgid "Reduce Motion"
+msgstr "동작 줄이기"
+
+#: data/ui/window.ui:251
+msgid "Refresh WhatsApp Web"
+msgstr "WhatsApp Web 새로 고침"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:618
+msgid "Refreshed About dialog screenshot"
+msgstr "정보 대화 상자 스크린샷 갱신"
+
+#: data/ui/keyboard-shortcuts.ui:15
+msgid "Reload WhatsApp Web"
+msgstr "WhatsApp Web 다시 불러오기"
+
+#: data/ui/keyboard-shortcuts.ui:16
+msgid "Reload the current page"
+msgstr "현재 페이지를 다시 불러옵니다"
+
+#: data/ui/keyboard-shortcuts.ui:23
+msgid "Reload, bypassing the cache"
+msgstr "캐시를 무시하고 다시 불러옵니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:480
+msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+msgstr "더 깔끔한 매니페스트를 위해 직접 D-Bus 알림 권한 제거"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:512
+msgid "Remove unnecessary autostart permission to satisfy linter"
+msgstr "린터를 만족시키기 위해 불필요한 자동 시작 권한 제거"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:303
+msgid "Removed ffmpeg-full extension (no longer required)"
+msgstr "ffmpeg-full 확장 제거(더 이상 필요하지 않음)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:644
+msgid ""
+"Removed hardcoded blueprint compiler paths for cross-architecture support"
+msgstr "교차 아키텍처 지원을 위해 하드코딩된 blueprint 컴파일러 경로 제거"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:730
+msgid ""
+"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+"only)"
+msgstr ""
+"불필요한 모바일 사용자 에이전트 전환 제거(WhatsApp Web은 데스크톱 전용)"
+
+#: data/ui/preferences.ui:143
+msgid ""
+"Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
+"drivers. If the chat area is blank, turn this off and restart."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:752
+msgid "Replaced window.vala.in and preferences.vala.in with direct .vala files"
+msgstr "window.vala.in 및 preferences.vala.in을 직접 .vala 파일로 대체"
+
+#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
+msgid "Reset Zoom"
+msgstr "확대/축소 초기화"
+
+#: data/ui/preferences.ui:249
+msgid "Reset to default"
+msgstr "기본값으로 초기화"
+
+#: data/ui/keyboard-shortcuts.ui:108
+msgid "Reset zoom to 100%"
+msgstr "확대/축소를 100%로 초기화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:322
+msgid "Resolved WebKit crashes on media-heavy pages"
+msgstr "미디어가 많은 페이지에서 발생하던 WebKit 충돌 해결"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:687
+msgid "Resolved compatibility issues with newer GNOME environments"
+msgstr "최신 GNOME 환경과의 호환성 문제 해결"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:712
+msgid "Resolved flatpak-builder compatibility issues"
+msgstr "flatpak-builder 호환성 문제 해결"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:782
+msgid "Resolved invalid markup in release descriptions"
+msgstr "릴리스 설명의 잘못된 마크업 해결"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:798
+msgid "Resolved memory leak in WebKit manager cleanup"
+msgstr "WebKit 관리자 정리의 메모리 누수 해결"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:764
+msgid "Resolved memory leak in notification cleanup"
+msgstr "알림 정리의 메모리 누수 해결"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:505
+msgid "Restore autostart permission for improved compatibility"
+msgstr "호환성 개선을 위해 자동 시작 권한 복원"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:733
+msgid "Restored Safari Linux user agent for native WebKit experience"
+msgstr "네이티브 WebKit 경험을 위한 Safari Linux 사용자 에이전트 복원"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:393
+msgid "Restored correct app icons and transparent backgrounds"
+msgstr "올바른 앱 아이콘 및 투명 배경 복원"
+
+#: data/ui/preferences.ui:42
+msgid "Run in Background"
+msgstr "백그라운드에서 실행"
+
+#: data/ui/preferences.ui:20
+msgid "Run on Startup"
+msgstr "시작 시 실행"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:118
+msgid ""
+"Safer avatar processing for notifications (community contribution). (#172)"
+msgstr ""
+
+#: data/ui/preferences.ui:411
+msgid "Screen Reader Optimizations"
+msgstr "스크린 리더 최적화"
+
+#: data/ui/preferences.ui:408
+msgid "Screen Reader Support"
+msgstr "스크린 리더 지원"
+
+#: data/ui/keyboard-shortcuts.ui:30
+msgid "Search the current page"
+msgstr "현재 페이지를 검색합니다"
+
+#: data/ui/preferences.ui:379
+msgid "Set a minimum zoom level for all accounts"
+msgstr "모든 계정에 최소 확대/축소 수준을 설정합니다"
+
+#: data/ui/preferences.ui:205
+msgid "Short"
+msgstr "짧게"
+
+#: data/ui/preferences.ui:419
+msgid "Shortcuts"
+msgstr "단축키"
+
+#: data/ui/preferences.ui:194
+msgid "Show Message Text"
+msgstr "메시지 내용 표시"
+
+#: data/ui/preferences.ui:188
+msgid "Show Sender Name"
+msgstr "보낸 사람 이름 표시"
+
+#: data/ui/preferences.ui:171
+msgid "Show notifications for incoming messages"
+msgstr "수신 메시지에 대한 알림을 표시합니다"
+
+#: data/ui/keyboard-shortcuts.ui:115
+msgid "Show or hide the zoom buttons"
+msgstr "확대/축소 버튼 표시 또는 숨기기"
+
+#: data/ui/preferences.ui:312
+msgid "Show the spell-check language dropdown in the header bar"
+msgstr "헤더 바에 맞춤법 검사 언어 드롭다운을 표시합니다"
+
+#: data/ui/keyboard-shortcuts.ui:153
+msgid "Show this shortcuts dialog"
+msgstr "이 단축키 대화 상자 표시"
+
+#: data/ui/preferences.ui:362
+msgid "Show visible outlines around focused elements"
+msgstr "초점이 있는 요소 주위에 윤곽선을 표시합니다"
+
+#: data/ui/preferences.ui:401
+msgid "Show zoom buttons in the header bar"
+msgstr "헤더 바에 확대/축소 버튼을 표시합니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:732
+msgid "Simplified emoji font configuration to single high-quality source"
+msgstr "단일 고품질 소스로 이모지 글꼴 구성 간소화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:754
+msgid "Simplified source file management in build system"
+msgstr "빌드 시스템의 소스 파일 관리 간소화"
+
+#: data/ui/preferences.ui:99
+msgid ""
+"Single-pane layout. Auto: on mobile shells or narrow windows; Enabled/"
+"Disabled: force on or off at any size"
+msgstr ""
+"단일 창 레이아웃. 자동: 모바일 셸이나 좁은 창에서 적용; 사용함/사용 안 함: 크"
+"기와 관계없이 강제로 켜거나 끔"
+
+#: data/ui/preferences.ui:331
+msgid "Site Permissions"
+msgstr "사이트 권한"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:35
+msgid "Smooth performance with hardware acceleration"
+msgstr "하드웨어 가속을 통한 부드러운 성능"
+
+#: data/ui/preferences.ui:185
+msgid "Some settings only apply when Karere controls the popup"
+msgstr "일부 설정은 Karere가 팝업을 제어할 때만 적용됩니다"
+
+#: data/ui/preferences.ui:217
+msgid "Sounds"
+msgstr "소리"
+
+#: data/ui/preferences.ui:290
+msgid "Spell Checking"
+msgstr "맞춤법 검사"
+
+#: data/ui/window.ui:70
+msgid "Spell Checking Language"
+msgstr "맞춤법 검사 언어"
+
+#: data/ui/preferences.ui:286
+msgid "Spellcheck"
+msgstr "맞춤법 검사"
+
+#: data/ui/preferences.ui:318
+msgid "Star a language to pin it to the top"
+msgstr "언어를 즐겨찾기에 추가하여 맨 위에 고정합니다"
+
+#: data/ui/preferences.ui:26
+msgid "Start in Background"
+msgstr "백그라운드에서 시작"
+
+#: data/ui/preferences.ui:27
+msgid "Start minimized without showing the window"
+msgstr "창을 표시하지 않고 최소화된 상태로 시작합니다"
+
+#: data/ui/preferences.ui:17
+msgid "Startup"
+msgstr "시작"
+
+#: data/ui/preferences.ui:332
+msgid "Stored allow/deny decisions for websites"
+msgstr "웹사이트에 저장된 허용/거부 결정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:718
+msgid "Streamlined font stack for consistent emoji appearance"
+msgstr "일관된 이모지 모양을 위한 글꼴 스택 간소화"
+
+#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
+msgid "Switch Account"
+msgstr "계정 전환"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:490
+msgid ""
+"Switch to XDG Background Portal for autostart (improves security and "
+"compatibility)"
+msgstr "자동 시작을 위해 XDG 백그라운드 포털로 전환(보안 및 호환성 개선)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:479
+msgid "Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+msgstr "더 나은 샌드박스 지원을 위해 XDG 알림 포털(ashpd)로 전환"
+
+#: data/ui/keyboard-shortcuts.ui:42
+msgid "Switch to the next account"
+msgstr "다음 계정으로 전환합니다"
+
+#: data/ui/keyboard-shortcuts.ui:49
+msgid "Switch to the previous account"
+msgstr "이전 계정으로 전환합니다"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:228
+msgid ""
+"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+"proprietary-codec builds for H.264/AAC video attachment playback"
+msgstr ""
+"렌더링 백엔드를 WebKitGTK에서 CEF/Chromium 148로 전환하고, H.264/AAC 동영상 "
+"첨부 재생을 위한 독점 코덱 빌드 제공"
+
+#: data/ui/preferences.ui:273
+msgid "System Notification"
+msgstr "시스템 알림"
+
+#: data/ui/preferences.ui:51
+msgid "System Tray Icon"
+msgstr "시스템 트레이 아이콘"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:658
+#: data/io.github.tobagin.karere.metainfo.xml.in:728
+#: data/io.github.tobagin.karere.metainfo.xml.in:750
+msgid "Technical Changes:"
+msgstr "기술적 변경 사항:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:828
+msgid "Technical Improvements:"
+msgstr "기술적 개선:"
+
+#: data/ui/preferences.ui:77
+msgid "Theme"
+msgstr "테마"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:74
+msgid "Thiago Fernandes"
+msgstr "Thiago Fernandes"
+
+#: data/ui/keyboard-shortcuts.ui:114
+msgid "Toggle Header Bar Zoom Controls"
+msgstr "헤더 바 확대/축소 컨트롤 전환"
+
+#: data/ui/keyboard-shortcuts.ui:68
+msgid "Toggle fullscreen mode"
+msgstr "전체 화면 모드 전환"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:437
+msgid "Tray icon click now toggles window visibility"
+msgstr "이제 트레이 아이콘 클릭으로 창 표시 여부를 전환"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:534
+msgid "Update and Bug Fix Release"
+msgstr "업데이트 및 버그 수정 릴리스"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:680
+msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+msgstr "향상된 호환성을 위해 GNOME 런타임을 버전 49로 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:663
+msgid "Updated SettingsManager to be the default for all settings access"
+msgstr "모든 설정 접근의 기본값이 되도록 SettingsManager 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:606
+msgid "Updated about dialog screenshot"
+msgstr "정보 대화 상자 스크린샷 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:301
+msgid "Updated all Rust dependencies to latest versions"
+msgstr "모든 Rust 종속성을 최신 버전으로 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:786
+msgid "Updated all references from appdata to metainfo format"
+msgstr "appdata에서 metainfo 형식으로 모든 참조 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:607
+msgid "Updated application screenshots"
+msgstr "애플리케이션 스크린샷 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:617
+msgid "Updated application screenshots with current UI appearance"
+msgstr "현재 UI 모양을 반영하여 애플리케이션 스크린샷 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:446
+msgid ""
+"Updated application summary and description for better AppStream compliance"
+msgstr "더 나은 AppStream 준수를 위해 애플리케이션 요약 및 설명 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:595
+msgid "Updated build configuration and dependencies"
+msgstr "빌드 구성 및 종속성 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:753
+msgid "Updated meson.build to use Vala preprocessor directives"
+msgstr "Vala 전처리기 지시문을 사용하도록 meson.build 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:158
+msgid ""
+"Updated the bundled browser engine to CEF 149 (Chromium 149), up from CEF "
+"148, picking up the latest Chromium security and rendering fixes. "
+"Proprietary codecs stay enabled so WhatsApp calls and video playback keep "
+"working."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:125
+msgid ""
+"Upgraded the browser engine to CEF 150 / Chromium 150 for current security "
+"fixes; video attachments (H.264/AAC) keep playing in-app."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:302
+msgid "Upgraded to GNOME Platform 50"
+msgstr "GNOME 플랫폼 50으로 업그레이드"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:662
+msgid "WebKitGTK 6.0 storage persistence verified and documented"
+msgstr "WebKitGTK 6.0 저장소 유지 검증 및 문서화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:454
+msgid ""
+"Webcam Support: Added support for using the webcam (Status updates, Video "
+"calls) with a new permission dialog."
+msgstr ""
+"웹캠 지원: 새 권한 대화 상자와 함께 웹캠 사용(상태 업데이트, 영상 통화) 지원 "
+"추가."
+
+#: data/ui/preferences.ui:38
+msgid "What happens when you close the window"
+msgstr "창을 닫을 때의 동작"
+
+#: data/ui/keyboard-shortcuts.ui:12
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "WhatsApp 클라이언트"
+
+#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
+msgid "Window"
+msgstr "창"
+
+#: data/ui/preferences.ui:37
+msgid "Window Close Behavior"
+msgstr "창 닫기 동작"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:438
+msgid "Window size is saved and restored when hiding/showing"
+msgstr "숨기기/표시할 때 창 크기를 저장하고 복원"
+
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
+msgid "Zoom"
+msgstr "확대/축소"
+
+#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
+msgid "Zoom In"
+msgstr "확대"
+
+#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
+msgid "Zoom Out"
+msgstr "축소"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:95
+msgid "chat"
+msgstr "채팅"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:98
+msgid "communication"
+msgstr "통신"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:96
+msgid "messaging"
+msgstr "메시지"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:97
+msgid "web"
+msgstr "웹"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:94
+msgid "whatsapp"
+msgstr "whatsapp"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;chat;messaging;web;communication;채팅;메시지;웹;통신;"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:635
+msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+msgstr "⌨️ AdwShortcutsDialog를 사용한 키보드 단축키 대화 상자 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:648
+msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+msgstr "♻️ 주요 리팩터링: PascalCase 파일 이름으로 코드베이스 재구성"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:649
+msgid "♻️ Refactored Window.vala into specialized manager components"
+msgstr "♻️ Window.vala를 전용 관리자 구성 요소로 리팩터링"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:650
+msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+msgstr "♻️ 사용자 지정 로깅 및 충돌 보고 제거(시스템 journalctl 사용)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:632
+msgid ""
+"♿ Enhanced accessibility with screen reader optimization and keyboard "
+"navigation"
+msgstr "♿ 스크린 리더 최적화 및 키보드 탐색으로 접근성 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:813
+msgid ""
+"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+"with WhatsApp Web as this is a completely new application implementation."
+msgstr ""
+"⚠️ 중요: 업그레이드 후에는 완전히 새로운 애플리케이션 구현이므로 모바일 기기"
+"를 WhatsApp Web과 다시 동기화해야 합니다."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:579
+msgid "⚡ Performance optimizations for startup and shutdown"
+msgstr "⚡ 시작 및 종료 성능 최적화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:628
+msgid "✅ Fixed WhatsApp Web notification banner persistence"
+msgstr "✅ WhatsApp Web 알림 배너 유지 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:629
+msgid "✅ Fixed notifications not working properly"
+msgstr "✅ 알림이 제대로 작동하지 않던 문제 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:695
+msgid ""
+"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+msgstr "✨ 향상된 이모지 지원, 외부 링크 처리 및 빌드 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:570
+msgid "🎉 Feature Release"
+msgstr "🎉 기능 릴리스"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:546
+msgid "🎉 Major Release 2.0.0"
+msgstr "🎉 메이저 릴리스 2.0.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:625
+msgid "🎉 Version 1.0.0 - Major Milestone Release"
+msgstr "🎉 버전 1.0.0 - 주요 마일스톤 릴리스"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:573
+msgid "🎤 Microphone permission support for voice notes"
+msgstr "🎤 음성 메모를 위한 마이크 권한 지원"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:560
+msgid "🐛 Bug Fix Release"
+msgstr "🐛 버그 수정 릴리스"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:760
+#: data/io.github.tobagin.karere.metainfo.xml.in:794
+msgid "🐛 Bug Fixes and Improvements"
+msgstr "🐛 버그 수정 및 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:677
+msgid "🐛 Runtime Update and Bug Fixes"
+msgstr "🐛 런타임 업데이트 및 버그 수정"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:581
+msgid "📖 Added MPRIS workaround documentation"
+msgstr "📖 MPRIS 우회 방법 문서 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:670
+msgid "📚 Added spell checking configuration guide"
+msgstr "📚 맞춤법 검사 구성 가이드 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:669
+msgid "📚 Documented all keyboard shortcuts by category"
+msgstr "📚 모든 키보드 단축키를 카테고리별로 문서화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:668
+msgid "📚 Enhanced README with accessibility features documentation"
+msgstr "📚 접근성 기능 문서로 README 향상"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:671
+msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+msgstr "📚 GitHub 저장소 URL 수정(karere-vala → karere)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:633
+msgid "📝 Added comprehensive spell checking system with auto-detection"
+msgstr "📝 자동 감지를 갖춘 포괄적인 맞춤법 검사 시스템 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:580
+msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+msgstr "📝 더 부드러운 맞춤법 검사 초기화를 위한 비동기 사전 로딩"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:603
+msgid "📝 Documentation and Metadata Update"
+msgstr "📝 문서 및 메타데이터 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:631
+msgid ""
+"📥 Implemented download manager with custom directory and toast notifications"
+msgstr "📥 사용자 지정 디렉터리 및 알림과 함께 다운로드 관리자 구현"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:656
+msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+msgstr "📸 스크린샷을 data/screenshots/ 디렉터리로 재구성"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:614
+msgid "📸 Screenshots and Documentation Update"
+msgstr "📸 스크린샷 및 문서 업데이트"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:575
+msgid "🔄 Manual reload and auto-reload on network reconnection"
+msgstr "🔄 네트워크 재연결 시 수동 다시 불러오기 및 자동 다시 불러오기"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:634
+msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+msgstr "🔤 LibreOffice의 80개 이상 언어 사전 통합"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:741
+msgid "🔧 Code Refactoring and Architecture Improvements"
+msgstr "🔧 코드 리팩터링 및 아키텍처 개선"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:592
+msgid "🔧 Maintenance Release"
+msgstr "🔧 유지 관리 릴리스"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:777
+msgid "🔧 Metadata and Standards Compliance"
+msgstr "🔧 메타데이터 및 표준 준수"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:630
+msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+msgstr "🖼️ 클립보드(Ctrl+V)를 통한 이미지 붙여넣기 지원 추가"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:652
+msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+msgstr "🗑️ 사용되지 않는 테스트 파일 및 미사용 종속성 정리"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:651
+msgid ""
+"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+msgstr "🗑️ 방해 금지 기능 제거(시스템 알림 데몬에서 처리)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:653
+msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+msgstr "🗑️ json-glib, gee, libsoup 종속성 제거"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:811
+msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+msgstr "🚀 주요 아키텍처 마이그레이션: Python에서 Vala/GTK4로"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:574
+msgid "🚀 Start in background option for autostart"
+msgstr "🚀 자동 시작을 위한 백그라운드에서 시작 옵션"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:654
+msgid "🧹 Centralized settings management with SettingsManager singleton"
+msgstr "🧹 SettingsManager 싱글톤으로 설정 관리 중앙화"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:655
+msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+msgstr "🧹 DependencyContainer.vala 제거(사용되지 않는 종속성 주입)"
+
+#: src/main.rs:42
 msgid "Karere starting"
 msgstr "Karere 시작 중"
 
-#: src/window.rs:912
+#: src/window.rs:290
+msgid "Account"
+msgstr "계정"
+
+#: src/window.rs:619
+msgid "Waiting for QR scan…"
+msgstr "QR 스캔 대기 중…"
+
+#: src/window.rs:641
+msgid "degraded"
+msgstr "성능 저하됨"
+
+#: src/window.rs:657
+msgid "Unread messages"
+msgstr "읽지 않은 메시지"
+
+#: src/window.rs:668
+msgid "Notifications muted — click to unmute"
+msgstr ""
+
+#: src/window.rs:672
+#, fuzzy
+msgid "Mute notifications"
+msgstr "알림"
+
+#: src/window.rs:703
+msgid "Edit account"
+msgstr "계정 편집"
+
+#: src/window.rs:719
+msgid "Remove account"
+msgstr "계정 제거"
+
+#: src/window.rs:721
+msgid "Can't remove the only account"
+msgstr "유일한 계정은 제거할 수 없습니다"
+
+#: src/window.rs:805
+msgid "Maximum of 9 accounts reached"
+msgstr "최대 9개 계정에 도달했습니다"
+
+#: src/window.rs:831
+msgid "Label"
+msgstr "레이블"
+
+#: src/window.rs:846
+msgid "Name"
+msgstr "이름"
+
+#: src/window.rs:850
+msgid "WhatsApp ID"
+msgstr "WhatsApp ID"
+
+#: src/window.rs:854
+msgid "Avatar URL"
+msgstr "아바타 URL"
+
+#: src/window.rs:863 src/window.rs:952
+msgid "Cancel"
+msgstr "취소"
+
+#: src/window.rs:864
+msgid "Save"
+msgstr "저장"
+
+#: src/window.rs:873
+msgid "Add Account"
+msgstr "계정 추가"
+
+#: src/window.rs:875
+msgid "Edit Account"
+msgstr "계정 편집"
+
+#: src/window.rs:942
+msgid "Remove account?"
+msgstr "계정을 제거하시겠습니까?"
+
+#: src/window.rs:945
 msgid "This removes the local session for"
 msgstr "다음 항목의 로컬 세션을 제거합니다"
 
-#: src/window.rs:915
+#: src/window.rs:948
 msgid "The device stays linked on your phone until you remove it there."
-msgstr "기기에서 직접 연결을 해제하기 전까지는 휴대폰에 연결된 상태로 유지됩니다."
+msgstr ""
+"기기에서 직접 연결을 해제하기 전까지는 휴대폰에 연결된 상태로 유지됩니다."
 
-#: src/tray.rs:43 src/tray.rs:66 src/tray.rs:73 data/ui/window.ui:12
-#: data/ui/window.ui:23 src/actions.rs:258
-msgid "Karere"
-msgstr "Karere"
+#: src/window.rs:953
+msgid "Remove"
+msgstr "제거"
+
+#: src/actions.rs:267
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+"포괄적인 로깅 및 충돌 보고 기능과 함께 원활한 데스크톱 통합을 제공하는 현대적"
+"인 네이티브 GTK4/LibAdwaita WhatsApp Web 래퍼"
+
+#: src/actions.rs:286
+msgid "Source"
+msgstr "소스"
+
+#: src/actions.rs:289
+msgid "Special Thanks"
+msgstr "특별히 감사드립니다"
 
 #. Translators: tray tooltip body; leading number is the unread count.
 #: src/tray.rs:68
@@ -47,2030 +2324,31 @@ msgstr "창 숨기기"
 msgid "Show Window"
 msgstr "창 표시"
 
-#: src/tray.rs:139 data/ui/window.ui:255 data/ui/preferences.ui:10
-#: data/ui/keyboard-shortcuts.ui:145
-msgid "Preferences"
-msgstr "기본 설정"
-
-#: src/tray.rs:145 data/ui/window.ui:261 data/ui/preferences.ui:405
-#: data/ui/keyboard-shortcuts.ui:152
-msgid "Keyboard Shortcuts"
-msgstr "키보드 단축키"
-
 #: src/tray.rs:151
 msgid "About Karere"
 msgstr "Karere 정보"
 
-#: src/tray.rs:158 data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159
-msgid "Quit"
-msgstr "종료"
-
-#: src/preferences.rs:92
+#: src/preferences.rs:90
 msgid "Restart Karere?"
 msgstr "Karere를 다시 시작할까요?"
 
-#: src/preferences.rs:94
-msgid "The language change takes effect after Karere restarts."
-msgstr "언어 변경 사항은 Karere를 다시 시작한 후에 적용됩니다."
-
-#: src/preferences.rs:97
+#: src/preferences.rs:91
 msgid "Later"
 msgstr "나중에"
 
-#: src/preferences.rs:98
+#: src/preferences.rs:92
 msgid "Restart Now"
 msgstr "지금 다시 시작"
 
-#: src/preferences.rs:316
+#: src/preferences.rs:290
+#, fuzzy
+msgid "GPU rendering takes effect after Karere restarts."
+msgstr "언어 변경 사항은 Karere를 다시 시작한 후에 적용됩니다."
+
+#: src/preferences.rs:319
 msgid "System Default"
 msgstr "시스템 기본값"
 
-#: data/ui/window.ui:24
-msgid "GTK4 WhatsApp Web Client"
-msgstr "GTK4 WhatsApp Web 클라이언트"
-
-#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
-msgid "Zoom Out"
-msgstr "축소"
-
-#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
-msgid "Reset Zoom"
-msgstr "확대/축소 초기화"
-
-#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
-msgid "Zoom In"
-msgstr "확대"
-
-#: data/ui/window.ui:70
-msgid "Spell Checking Language"
-msgstr "맞춤법 검사 언어"
-
-#: data/ui/window.ui:77
-msgid "Menu"
-msgstr "메뉴"
-
-#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
-msgid "Switch Account"
-msgstr "계정 전환"
-
-#: data/ui/window.ui:111
-msgid "Find in page"
-msgstr "페이지에서 찾기"
-
-#: data/ui/window.ui:131
-msgid "Previous match"
-msgstr "이전 일치 항목"
-
-#: data/ui/window.ui:137
-msgid "Next match"
-msgstr "다음 일치 항목"
-
-#: data/ui/window.ui:173 data/ui/preferences.ui:109 data/ui/preferences.ui:118
-#: data/ui/keyboard-shortcuts.ui:126
-msgid "Developer Tools"
-msgstr "개발자 도구"
-
-#: data/ui/window.ui:184
-msgid "Close Developer Tools"
-msgstr "개발자 도구 닫기"
-
-#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
-msgid "Add new account"
-msgstr "새 계정 추가"
-
-#: data/ui/window.ui:251
-msgid "Refresh WhatsApp Web"
-msgstr "WhatsApp Web 새로 고침"
-
-#: data/ui/window.ui:265
-msgid "About"
-msgstr "정보"
-
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:139
-msgid "General"
-msgstr "일반"
-
-#: data/ui/preferences.ui:17
-msgid "Startup"
-msgstr "시작"
-
-#: data/ui/preferences.ui:20
-msgid "Run on Startup"
-msgstr "시작 시 실행"
-
-#: data/ui/preferences.ui:21
-msgid "Launch Karere automatically when you log in"
-msgstr "로그인할 때 Karere를 자동으로 실행합니다"
-
-#: data/ui/preferences.ui:26
-msgid "Start in Background"
-msgstr "백그라운드에서 시작"
-
-#: data/ui/preferences.ui:27
-msgid "Start minimized without showing the window"
-msgstr "창을 표시하지 않고 최소화된 상태로 시작합니다"
-
-#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
-msgid "Window"
-msgstr "창"
-
-#: data/ui/preferences.ui:37
-msgid "Window Close Behavior"
-msgstr "창 닫기 동작"
-
-#: data/ui/preferences.ui:38
-msgid "What happens when you close the window"
-msgstr "창을 닫을 때의 동작"
-
-#: data/ui/preferences.ui:42
-msgid "Run in Background"
-msgstr "백그라운드에서 실행"
-
-#: data/ui/preferences.ui:43
-msgid "Quit Application"
-msgstr "애플리케이션 종료"
-
-#: data/ui/preferences.ui:51
-msgid "System Tray Icon"
-msgstr "시스템 트레이 아이콘"
-
-#: data/ui/preferences.ui:52
-msgid "Auto: shown when a system tray is available"
-msgstr "자동: 시스템 트레이를 사용할 수 있을 때 표시"
-
-#: data/ui/preferences.ui:56 data/ui/preferences.ui:97
-msgid "Auto"
-msgstr "자동"
-
-#: data/ui/preferences.ui:57 data/ui/preferences.ui:98
-msgid "Enabled"
-msgstr "사용함"
-
-#: data/ui/preferences.ui:58 data/ui/preferences.ui:99
-msgid "Disabled"
-msgstr "사용 안 함"
-
-#: data/ui/preferences.ui:68
-msgid "Appearance"
-msgstr "모양"
-
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:300
-msgid "Language"
-msgstr "언어"
-
-#: data/ui/preferences.ui:72
-msgid "Application language. Requires restart."
-msgstr "애플리케이션 언어입니다. 다시 시작이 필요합니다."
-
-#: data/ui/preferences.ui:77
-msgid "Theme"
-msgstr "테마"
-
-#: data/ui/preferences.ui:78
-msgid "Choose the application color scheme"
-msgstr "애플리케이션 색 구성표를 선택합니다"
-
-#: data/ui/preferences.ui:82
-msgid "Follow System"
-msgstr "시스템 설정 따르기"
-
-#: data/ui/preferences.ui:83
-msgid "Light"
-msgstr "밝게"
-
-#: data/ui/preferences.ui:84
-msgid "Dark"
-msgstr "어둡게"
-
-#: data/ui/preferences.ui:92
-msgid "Mobile Layout"
-msgstr "모바일 레이아웃"
-
-#: data/ui/preferences.ui:93
-msgid ""
-"Single-pane layout. Auto: on mobile shells or narrow windows; "
-"Enabled/Disabled: force on or off at any size"
-msgstr "단일 창 레이아웃. 자동: 모바일 셸이나 좁은 창에서 적용; 사용함/사용 안 함: 크기와 관계없이 강제로 켜거나 끔"
-
-#: data/ui/preferences.ui:112
-msgid "Enable Developer Tools"
-msgstr "개발자 도구 사용"
-
-#: data/ui/preferences.ui:113
-msgid "Allow inspecting and debugging the WebView"
-msgstr "WebView 검사 및 디버깅을 허용합니다"
-
-#: data/ui/preferences.ui:119
-msgid "Open the developer tools for the current page"
-msgstr "현재 페이지의 개발자 도구를 엽니다"
-
-#: data/ui/preferences.ui:123
-msgid "Open"
-msgstr "열기"
-
-#: data/ui/preferences.ui:135 data/ui/preferences.ui:241
-msgid "Notifications"
-msgstr "알림"
-
-#: data/ui/preferences.ui:142
-msgid "Enable Notifications"
-msgstr "알림 사용"
-
-#: data/ui/preferences.ui:143
-msgid "Master toggle for all notifications"
-msgstr "모든 알림의 기본 토글"
-
-#: data/ui/preferences.ui:150
-msgid "Messages"
-msgstr "메시지"
-
-#: data/ui/preferences.ui:153
-msgid "Message Notifications"
-msgstr "메시지 알림"
-
-#: data/ui/preferences.ui:154
-msgid "Show notifications for incoming messages"
-msgstr "수신 메시지에 대한 알림을 표시합니다"
-
-#: data/ui/preferences.ui:159
-msgid "Change Tray Icon on Message"
-msgstr "메시지 수신 시 트레이 아이콘 변경"
-
-#: data/ui/preferences.ui:160
-msgid "Animate the tray icon when a new message arrives"
-msgstr "새 메시지가 도착하면 트레이 아이콘에 애니메이션을 적용합니다"
-
-#: data/ui/preferences.ui:167
-msgid "Message Preview"
-msgstr "메시지 미리 보기"
-
-#: data/ui/preferences.ui:168
-msgid "Some settings only apply when Karere controls the popup"
-msgstr "일부 설정은 Karere가 팝업을 제어할 때만 적용됩니다"
-
-#: data/ui/preferences.ui:171
-msgid "Show Sender Name"
-msgstr "보낸 사람 이름 표시"
-
-#: data/ui/preferences.ui:172
-msgid "Display the contact name in notifications"
-msgstr "알림에 연락처 이름을 표시합니다"
-
-#: data/ui/preferences.ui:177
-msgid "Show Message Text"
-msgstr "메시지 내용 표시"
-
-#: data/ui/preferences.ui:178
-msgid "Display message content in notifications"
-msgstr "알림에 메시지 내용을 표시합니다"
-
-#: data/ui/preferences.ui:183
-msgid "Preview Length"
-msgstr "미리 보기 길이"
-
-#: data/ui/preferences.ui:184
-msgid "How much of the message to show"
-msgstr "표시할 메시지 분량"
-
-#: data/ui/preferences.ui:188
-msgid "Short"
-msgstr "짧게"
-
-#: data/ui/preferences.ui:189
-msgid "Medium"
-msgstr "보통"
-
-#: data/ui/preferences.ui:190
-msgid "Long"
-msgstr "길게"
-
-#: data/ui/preferences.ui:200
-msgid "Sounds"
-msgstr "소리"
-
-#: data/ui/preferences.ui:203
-msgid "Notification Sounds"
-msgstr "알림 소리"
-
-#: data/ui/preferences.ui:204
-msgid "Play WhatsApp's notification sound for new messages"
-msgstr "새 메시지에 WhatsApp 알림 소리를 재생합니다"
-
-#: data/ui/preferences.ui:213
-msgid "Downloads"
-msgstr "다운로드"
-
-#: data/ui/preferences.ui:217
-msgid "Location"
-msgstr "위치"
-
-#: data/ui/preferences.ui:220
-msgid "Download Directory"
-msgstr "다운로드 디렉터리"
-
-#: data/ui/preferences.ui:221
-msgid "Default (Downloads)"
-msgstr "기본값 (다운로드)"
-
-#: data/ui/preferences.ui:224
-msgid "Choose…"
-msgstr "선택…"
-
-#: data/ui/preferences.ui:232
-msgid "Reset to default"
-msgstr "기본값으로 초기화"
-
-#: data/ui/preferences.ui:244
-msgid "Download Notifications"
-msgstr "다운로드 알림"
-
-#: data/ui/preferences.ui:245
-msgid "Notify when a file download completes"
-msgstr "파일 다운로드가 완료되면 알립니다"
-
-#: data/ui/preferences.ui:250
-msgid "Notification Type"
-msgstr "알림 유형"
-
-#: data/ui/preferences.ui:251
-msgid "How download notifications are displayed"
-msgstr "다운로드 알림 표시 방식"
-
-#: data/ui/preferences.ui:255
-msgid "In-app Toast"
-msgstr "앱 내 알림"
-
-#: data/ui/preferences.ui:256
-msgid "System Notification"
-msgstr "시스템 알림"
-
-#: data/ui/preferences.ui:257
-msgid "Both"
-msgstr "둘 다"
-
-#: data/ui/preferences.ui:269
-msgid "Spellcheck"
-msgstr "맞춤법 검사"
-
-#: data/ui/preferences.ui:273
-msgid "Spell Checking"
-msgstr "맞춤법 검사"
-
-#: data/ui/preferences.ui:276
-msgid "Enable Spell Checking"
-msgstr "맞춤법 검사 사용"
-
-#: data/ui/preferences.ui:277
-msgid "Check spelling as you type"
-msgstr "입력하는 동안 맞춤법을 검사합니다"
-
-#: data/ui/preferences.ui:282
-msgid "Auto-Detect Language"
-msgstr "언어 자동 감지"
-
-#: data/ui/preferences.ui:283
-msgid "Detect the writing language automatically"
-msgstr "작성 언어를 자동으로 감지합니다"
-
-#: data/ui/preferences.ui:288
-msgid "Enable Auto-Correct"
-msgstr "자동 교정 사용"
-
-#: data/ui/preferences.ui:289
-msgid "Automatically fix common spelling mistakes"
-msgstr "흔한 맞춤법 실수를 자동으로 수정합니다"
-
-#: data/ui/preferences.ui:294
-msgid "Header Bar Language Control"
-msgstr "헤더 바 언어 컨트롤"
-
-#: data/ui/preferences.ui:295
-msgid "Show the spell-check language dropdown in the header bar"
-msgstr "헤더 바에 맞춤법 검사 언어 드롭다운을 표시합니다"
-
-#: data/ui/preferences.ui:301
-msgid "Star a language to pin it to the top"
-msgstr "언어를 즐겨찾기에 추가하여 맨 위에 고정합니다"
-
-#: data/ui/preferences.ui:310
-msgid "Privacy"
-msgstr "개인 정보"
-
-#: data/ui/preferences.ui:314
-msgid "Site Permissions"
-msgstr "사이트 권한"
-
-#: data/ui/preferences.ui:315
-msgid "Stored allow/deny decisions for websites"
-msgstr "웹사이트에 저장된 허용/거부 결정"
-
-#: data/ui/preferences.ui:318
-msgid "Clear All"
-msgstr "모두 지우기"
-
-#: data/ui/preferences.ui:331
-msgid "Accessibility"
-msgstr "접근성"
-
-#: data/ui/preferences.ui:335
-msgid "Motion and Focus"
-msgstr "모션 및 포커스"
-
-#: data/ui/preferences.ui:338
-msgid "Reduce Motion"
-msgstr "동작 줄이기"
-
-#: data/ui/preferences.ui:339
-msgid "Minimize animations and transitions"
-msgstr "애니메이션과 전환을 최소화합니다"
-
-#: data/ui/preferences.ui:344
-msgid "Focus Indicators"
-msgstr "초점 표시기"
-
-#: data/ui/preferences.ui:345
-msgid "Show visible outlines around focused elements"
-msgstr "초점이 있는 요소 주위에 윤곽선을 표시합니다"
-
-#: data/ui/preferences.ui:350
-msgid "High Contrast Mode"
-msgstr "고대비 모드"
-
-#: data/ui/preferences.ui:351
-msgid "Increase contrast for better readability"
-msgstr "가독성을 위해 대비를 높입니다"
-
-#: data/ui/preferences.ui:358 data/ui/keyboard-shortcuts.ui:90
-msgid "Zoom"
-msgstr "확대/축소"
-
-#: data/ui/preferences.ui:361
-msgid "Accessibility Zoom"
-msgstr "접근성 확대/축소"
-
-#: data/ui/preferences.ui:362
-msgid "Set a minimum zoom level for all accounts"
-msgstr "모든 계정에 최소 확대/축소 수준을 설정합니다"
-
-#: data/ui/preferences.ui:367
-msgid "Minimum Zoom Level"
-msgstr "최소 확대/축소 수준"
-
-#: data/ui/preferences.ui:368
-msgid "Applied to all webviews"
-msgstr "모든 웹뷰에 적용됨"
-
-#: data/ui/preferences.ui:383
-msgid "Header Bar Zoom Controls"
-msgstr "헤더 바 확대/축소 컨트롤"
-
-#: data/ui/preferences.ui:384
-msgid "Show zoom buttons in the header bar"
-msgstr "헤더 바에 확대/축소 버튼을 표시합니다"
-
-#: data/ui/preferences.ui:391
-msgid "Screen Reader Support"
-msgstr "스크린 리더 지원"
-
-#: data/ui/preferences.ui:394
-msgid "Screen Reader Optimizations"
-msgstr "스크린 리더 최적화"
-
-#: data/ui/preferences.ui:395
-msgid "Improve compatibility with assistive technologies — restart required"
-msgstr "보조 기술과의 호환성을 개선합니다 — 다시 시작해야 함"
-
-#: data/ui/preferences.ui:402
-msgid "Shortcuts"
-msgstr "단축키"
-
-#: data/ui/preferences.ui:406
-msgid "Enable keyboard shortcuts for common actions"
-msgstr "일반 작업에 대한 키보드 단축키를 사용합니다"
-
-#: data/ui/preferences.ui:411
-msgid "Accessibility Shortcuts"
-msgstr "접근성 단축키"
-
-#: data/ui/preferences.ui:412
-msgid "Enable shortcuts for accessibility features"
-msgstr "접근성 기능 단축키를 사용합니다"
-
-#: data/ui/preferences.ui:417
-msgid "Developer Shortcuts"
-msgstr "개발자 단축키"
-
-#: data/ui/preferences.ui:418
-msgid "Enable shortcuts for developer tools"
-msgstr "개발자 도구 단축키를 사용합니다"
-
-#: data/ui/preferences.ui:423
-msgid "Notification Shortcuts"
-msgstr "알림 단축키"
-
-#: data/ui/preferences.ui:424
-msgid "Enable shortcuts for notification actions"
-msgstr "알림 작업 단축키를 사용합니다"
-
-#: data/ui/keyboard-shortcuts.ui:12
-msgid "WhatsApp"
-msgstr "WhatsApp"
-
-#: data/ui/keyboard-shortcuts.ui:15
-msgid "Reload WhatsApp Web"
-msgstr "WhatsApp Web 다시 불러오기"
-
-#: data/ui/keyboard-shortcuts.ui:16
-msgid "Reload the current page"
-msgstr "현재 페이지를 다시 불러옵니다"
-
-#: data/ui/keyboard-shortcuts.ui:22
-msgid "Force Reload"
-msgstr "강제로 다시 불러오기"
-
-#: data/ui/keyboard-shortcuts.ui:23
-msgid "Reload, bypassing the cache"
-msgstr "캐시를 무시하고 다시 불러옵니다"
-
-#: data/ui/keyboard-shortcuts.ui:29
-msgid "Find in Page"
-msgstr "페이지에서 찾기"
-
-#: data/ui/keyboard-shortcuts.ui:30
-msgid "Search the current page"
-msgstr "현재 페이지를 검색합니다"
-
-#: data/ui/keyboard-shortcuts.ui:38
-msgid "Accounts"
-msgstr "계정"
-
-#: data/ui/keyboard-shortcuts.ui:41
-msgid "Next Account"
-msgstr "다음 계정"
-
-#: data/ui/keyboard-shortcuts.ui:42
-msgid "Switch to the next account"
-msgstr "다음 계정으로 전환합니다"
-
-#: data/ui/keyboard-shortcuts.ui:48
-msgid "Previous Account"
-msgstr "이전 계정"
-
-#: data/ui/keyboard-shortcuts.ui:49
-msgid "Switch to the previous account"
-msgstr "이전 계정으로 전환합니다"
-
-#: data/ui/keyboard-shortcuts.ui:56
-msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
-msgstr "계정 1–9로 이동 (Alt+1 … Alt+9)"
-
-#: data/ui/keyboard-shortcuts.ui:67
-msgid "Fullscreen"
-msgstr "전체 화면"
-
-#: data/ui/keyboard-shortcuts.ui:68
-msgid "Toggle fullscreen mode"
-msgstr "전체 화면 모드 전환"
-
-#: data/ui/keyboard-shortcuts.ui:74
-msgid "Minimize Window"
-msgstr "창 최소화"
-
-#: data/ui/keyboard-shortcuts.ui:75
-msgid "Minimize the window"
-msgstr "창을 최소화합니다"
-
-#: data/ui/keyboard-shortcuts.ui:81
-msgid "Close Window"
-msgstr "창 닫기"
-
-#: data/ui/keyboard-shortcuts.ui:82
-msgid "Close the window"
-msgstr "창을 닫습니다"
-
-#: data/ui/keyboard-shortcuts.ui:94
-msgid "Increase the zoom level"
-msgstr "확대/축소 수준을 높입니다"
-
-#: data/ui/keyboard-shortcuts.ui:101
-msgid "Decrease the zoom level"
-msgstr "확대/축소 수준을 낮춥니다"
-
-#: data/ui/keyboard-shortcuts.ui:108
-msgid "Reset zoom to 100%"
-msgstr "확대/축소를 100%로 초기화"
-
-#: data/ui/keyboard-shortcuts.ui:114
-msgid "Toggle Header Bar Zoom Controls"
-msgstr "헤더 바 확대/축소 컨트롤 전환"
-
-#: data/ui/keyboard-shortcuts.ui:115
-msgid "Show or hide the zoom buttons"
-msgstr "확대/축소 버튼 표시 또는 숨기기"
-
-#: data/ui/keyboard-shortcuts.ui:123
-msgid "Developer"
-msgstr "개발자"
-
-#: data/ui/keyboard-shortcuts.ui:127
-msgid "Open the developer tools"
-msgstr "개발자 도구를 엽니다"
-
-#: data/ui/keyboard-shortcuts.ui:133
-msgid "Inspect Element"
-msgstr "요소 검사"
-
-#: data/ui/keyboard-shortcuts.ui:134
-msgid "Pick an element to inspect"
-msgstr "검사할 요소를 선택합니다"
-
-#: data/ui/keyboard-shortcuts.ui:142
-msgid "Application"
-msgstr "애플리케이션"
-
-#: data/ui/keyboard-shortcuts.ui:146
-msgid "Open preferences"
-msgstr "기본 설정 열기"
-
-#: data/ui/keyboard-shortcuts.ui:153
-msgid "Show this shortcuts dialog"
-msgstr "이 단축키 대화 상자 표시"
-
-#: data/ui/keyboard-shortcuts.ui:160
-msgid "Quit Karere"
-msgstr "Karere 종료"
-
-#: data/io.github.tobagin.karere.desktop.in:3
-#: data/io.github.tobagin.karere.metainfo.xml.in:15
-msgid "@APP_NAME@"
-msgstr "@APP_NAME@"
-
-#: data/io.github.tobagin.karere.desktop.in:4
-msgid "WhatsApp Client"
-msgstr "WhatsApp 클라이언트"
-
-#: data/io.github.tobagin.karere.desktop.in:5
-msgid "Native WhatsApp Web client for Linux desktop"
-msgstr "Linux 데스크톱용 네이티브 WhatsApp Web 클라이언트"
-
-#: data/io.github.tobagin.karere.desktop.in:10
-msgid "whatsapp;chat;messaging;web;communication;"
-msgstr "whatsapp;chat;messaging;web;communication;채팅;메시지;웹;통신;"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:16
-msgid "Chat on WhatsApp"
-msgstr "WhatsApp에서 채팅"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:24
-msgid ""
-"Karere brings WhatsApp to your Linux desktop with a native look and feel. It"
-" integrates seamlessly with your environment, offering a clean, modern "
-"interface that respects your system's theme and workflow. By wrapping "
-"WhatsApp Web, it ensures you have access to all the latest features while "
-"adding powerful desktop-specific capabilities."
-msgstr ""
-"Karere는 네이티브 모양과 느낌으로 WhatsApp을 Linux 데스크톱에 제공합니다. 사용자 환경과 자연스럽게 통합되며, 시스템 "
-"테마와 작업 흐름을 존중하는 깔끔하고 현대적인 인터페이스를 제공합니다. WhatsApp Web을 래핑하여 강력한 데스크톱 전용 기능을 "
-"추가하면서도 최신 기능을 모두 사용할 수 있도록 보장합니다."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:30
-msgid "Key features include:"
-msgstr "주요 기능:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:32
-msgid "Native system notifications and tray icon support"
-msgstr "네이티브 시스템 알림 및 트레이 아이콘 지원"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:33
-msgid ""
-"Persistent login sessions so you don't need to scan the QR code every time"
-msgstr "매번 QR 코드를 스캔할 필요가 없도록 로그인 세션 유지"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:34
-msgid "Privacy controls and comprehensive spell-checking settings"
-msgstr "개인 정보 컨트롤 및 포괄적인 맞춤법 검사 설정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:35
-msgid "Smooth performance with hardware acceleration"
-msgstr "하드웨어 가속을 통한 부드러운 성능"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:36
-msgid "Proper clipboard integration for text and images"
-msgstr "텍스트 및 이미지에 대한 적절한 클립보드 통합"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:38
-msgid ""
-"Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend "
-"with the Chromium Embedded Framework, bringing full video attachment "
-"playback (H.264/AAC), multi-account support with isolated sessions, per-"
-"account zoom, and a faster, more compatible rendering engine while keeping "
-"the same native GTK4/libadwaita shell."
-msgstr ""
-"이제 CEF/Chromium 148 기반으로 구축되었습니다. Karere 4.0은 WebKitGTK 백엔드를 Chromium "
-"Embedded Framework로 대체하여 완전한 동영상 첨부 재생(H.264/AAC), 격리된 세션을 갖춘 다중 계정 지원, 계정별 "
-"확대/축소, 더 빠르고 호환성 높은 렌더링 엔진을 제공하면서도 동일한 네이티브 GTK4/libadwaita 셸을 유지합니다."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:49
-msgid "Main application window with WhatsApp Web integration"
-msgstr "WhatsApp Web이 통합된 기본 애플리케이션 창"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:53
-msgid "About dialog showing application information"
-msgstr "애플리케이션 정보를 표시하는 정보 대화 상자"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:57
-msgid "Application preferences and settings dialog"
-msgstr "애플리케이션 기본 설정 및 설정 대화 상자"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:61
-#: data/io.github.tobagin.karere.metainfo.xml.in:703
-msgid "Keyboard shortcuts and productivity features"
-msgstr "키보드 단축키 및 생산성 기능"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:74
-msgid "Thiago Fernandes"
-msgstr "Thiago Fernandes"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:94
-msgid "whatsapp"
-msgstr "whatsapp"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:95
-msgid "chat"
-msgstr "채팅"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:96
-msgid "messaging"
-msgstr "메시지"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:97
-msgid "web"
-msgstr "웹"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:98
-msgid "communication"
-msgstr "통신"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:106
-msgid ""
-"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
-"Existing accounts must be re-linked — there is no migration from v3."
-msgstr ""
-"Karere 4.0은 CEF/Chromium 148 기반으로 앱을 재구축한 하드 포크입니다. 기존 계정은 다시 연결해야 하며 — v3에서"
-" 마이그레이션은 지원되지 않습니다."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:107
-msgid "Major changes:"
-msgstr "주요 변경 사항:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:109
-msgid ""
-"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
-"proprietary-codec builds for H.264/AAC video attachment playback"
-msgstr ""
-"렌더링 백엔드를 WebKitGTK에서 CEF/Chromium 148로 전환하고, H.264/AAC 동영상 첨부 재생을 위한 독점 코덱 "
-"빌드 제공"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:110
-msgid ""
-"Multi-account support: each account runs in an isolated CEF RequestContext "
-"with its own cookies and storage; accounts are ordered most-recently-used"
-msgstr ""
-"다중 계정 지원: 각 계정은 자체 쿠키와 저장소를 갖춘 격리된 CEF RequestContext에서 실행되며, 계정은 최근 사용 순으로 "
-"정렬됩니다"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:111
-msgid ""
-"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
-"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
-msgstr ""
-"WhatsApp Web의 내부 Store에서 계정 ID(이름 + 아바타)를 자동으로 검색하며, 배지로 표시되는 DOM 스크랩 대체 방식을"
-" 제공합니다"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:112
-msgid ""
-"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
-"accessibility minimum-zoom floor"
-msgstr "계정별 확대/축소(Ctrl +/-/0), 선택적 헤더 바 확대/축소 컨트롤 및 접근성 최소 확대/축소 하한"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:113
-msgid ""
-"Native system tray (StatusNotifierItem), desktop notifications, download "
-"manager, and image/text paste reimplemented on the CEF stack"
-msgstr ""
-"네이티브 시스템 트레이(StatusNotifierItem), 데스크톱 알림, 다운로드 관리자, 이미지/텍스트 붙여넣기를 CEF 스택에서 "
-"재구현"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:114
-msgid ""
-"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
-"popover for the off-screen-rendered web view"
-msgstr "모바일 반응형 레이아웃, JavaScript 전체 화면, 오프스크린 렌더링 웹뷰를 위한 OSR 컨텍스트 메뉴 팝오버"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:115
-msgid ""
-"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
-"browsing"
-msgstr "접근성 기본 설정: 동작 줄이기, 초점 링 표시, 캐럿 브라우징"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:116
-msgid ""
-"Live spell-check language switching and a separately installable Debug "
-"symbol extension for symbolicated crash reports"
-msgstr "실시간 맞춤법 검사 언어 전환 및 별도로 설치 가능한 디버그 심볼 확장(심볼화된 충돌 보고서용)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:123
-msgid ""
-"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
-"clear behavior removed upstream — Karere now dismisses notifications "
-"explicitly)"
-msgstr ""
-"수정: GNOME 50에서 초점 이후에 남아 있던 알림 배지/배너(자동 지우기 동작이 업스트림에서 제거됨 — 이제 Karere가 알림을 "
-"명시적으로 닫습니다)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:124
-msgid ""
-"Fixed: blank-window race when autostarted before the network/portal stack is"
-" ready (auto-retry with exponential backoff)"
-msgstr "수정: 네트워크/포털 스택이 준비되기 전에 자동 시작될 때 발생하던 빈 창 경합(지수 백오프로 자동 재시도)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:131
-msgid "Added: pin favorite spell-check languages to the top of the dropdown"
-msgstr "추가: 즐겨 사용하는 맞춤법 검사 언어를 드롭다운 맨 위에 고정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:132
-msgid ""
-"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
-"instead of locale codes"
-msgstr "추가: 맞춤법 검사 드롭다운이 로케일 코드 대신 자연어 이름(\"English (UK)\")을 표시"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:133
-msgid ""
-"Added: account switcher uses a popover on desktop windows (bottom sheet "
-"preserved on mobile)"
-msgstr "추가: 계정 전환기가 데스크톱 창에서 팝오버를 사용(모바일에서는 하단 시트 유지)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:134
-msgid ""
-"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
-"43, CachyOS, Bazzite, postmarketOS)"
-msgstr ""
-"수정: GNOME 50 / glibc 2.42+ 시스템(Arch, Fedora 43, CachyOS, Bazzite, "
-"postmarketOS)에서 실행 시 앱 충돌"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:135
-msgid ""
-"Fixed: locale-dependent crash that required manually setting "
-"LC_ALL=en_GB.UTF-8"
-msgstr "수정: LC_ALL=en_GB.UTF-8을 수동으로 설정해야 했던 로케일 의존 충돌"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:136
-msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
-msgstr "수정: 최근 WhatsApp Web DOM 변경으로 깨진 모바일 레이아웃"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:137
-msgid ""
-"Fixed: downloaded files with duplicate names silently overwriting each other"
-" (now appends (1), (2), ...)"
-msgstr "수정: 이름이 중복된 다운로드 파일이 서로 자동으로 덮어쓰던 문제(이제 (1), (2), ... 추가)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:138
-msgid ""
-"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
-"dependencies to latest compatible versions"
-msgstr ""
-"WebKitGTK를 2.52.3으로, LibreOffice 사전을 26.2.3.2로, Rust 종속성을 최신 호환 버전으로 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:145
-msgid ""
-"Fixed voice and video calls in production Flatpak (Flathub linter-compatible"
-" pre-built plugin)"
-msgstr "프로덕션 Flatpak에서 음성 및 영상 통화 수정(Flathub 린터 호환 사전 빌드 플러그인)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:152
-msgid ""
-"Fixed voice and video calls not working in the production build (missing "
-"noise suppression plugin)"
-msgstr "프로덕션 빌드에서 음성 및 영상 통화가 작동하지 않던 문제 수정(누락된 노이즈 억제 플러그인)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:159
-msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
-msgstr "WebRTC 지원 WebKitGTK 2.50.5를 통한 음성 및 영상 통화 지원 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:160
-msgid "Fixed download filenames now use WhatsApp's original filename"
-msgstr "다운로드 파일 이름이 이제 WhatsApp의 원래 파일 이름을 사용하도록 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:161
-msgid "Fixed duplicate downloads auto-increment instead of failing"
-msgstr "중복 다운로드가 실패하는 대신 자동으로 번호가 증가하도록 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:162
-msgid ""
-"Fixed window now properly unminimizes when activated from launcher or tray"
-msgstr "런처나 트레이에서 활성화할 때 창이 제대로 최소화 해제되도록 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:163
-msgid "Fixed notification sounds now respect GNOME volume controls"
-msgstr "알림 소리가 이제 GNOME 볼륨 컨트롤을 따르도록 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:164
-msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
-msgstr "참고: 이 업그레이드 후 WhatsApp 계정을 다시 연결해야 합니다"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:171
-msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
-msgstr "ashpd 0.13 API 변경으로 인한 Flatpak 빌드 실패 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:178
-msgid ""
-"Fixed voice and video calls showing \"Your browser doesn't support calling\""
-msgstr "음성 및 영상 통화에서 \"브라우저가 통화를 지원하지 않습니다\"가 표시되던 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:179
-msgid ""
-"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
-"Linux environments"
-msgstr "Phosh 및 터치 기반 Linux 환경에서 화면 키보드가 안정적으로 나타나지 않던 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:180
-msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
-msgstr "blob URL 다운로드(예: 미디어 뷰어에서 이미지 저장) 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:181
-msgid "Redesigned application icons for stable and development variants"
-msgstr "안정 버전 및 개발 버전용 애플리케이션 아이콘 재설계"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:182
-msgid "Updated all Rust dependencies to latest versions"
-msgstr "모든 Rust 종속성을 최신 버전으로 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:183
-msgid "Upgraded to GNOME Platform 50"
-msgstr "GNOME 플랫폼 50으로 업그레이드"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:184
-msgid "Removed ffmpeg-full extension (no longer required)"
-msgstr "ffmpeg-full 확장 제거(더 이상 필요하지 않음)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:191
-msgid "Fixed freezes when viewing media galleries"
-msgstr "미디어 갤러리를 볼 때 멈추던 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:192
-msgid "Fixed crash on launch due to memory pressure threshold ordering"
-msgstr "메모리 압박 임계값 순서로 인한 실행 시 충돌 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:193
-msgid "Fixed download destination and context menu issues"
-msgstr "다운로드 대상 및 컨텍스트 메뉴 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:194
-msgid "Fixed dead key composition for first character in input fields"
-msgstr "입력 필드의 첫 번째 문자에 대한 데드 키 조합 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:195
-msgid ""
-"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
-"handling"
-msgstr "효율적인 미디어 처리를 위해 프로덕션 Flatpak에 GStreamer/PipeWire 환경 변수 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:202
-msgid "Fixed download destination handling"
-msgstr "다운로드 대상 처리 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:203
-msgid "Resolved WebKit crashes on media-heavy pages"
-msgstr "미디어가 많은 페이지에서 발생하던 WebKit 충돌 해결"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:210
-msgid "Fixed: Download destination path handling regression"
-msgstr "수정: 다운로드 대상 경로 처리 회귀"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:217
-msgid ""
-"Fixed: JS injection and path traversal vulnerabilities in download handling"
-msgstr "수정: 다운로드 처리의 JS 주입 및 경로 탐색 취약점"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:224
-msgid ""
-"Fixed: Handle WebKit web process crashes with auto-reload and user "
-"notification"
-msgstr "수정: WebKit 웹 프로세스 충돌을 자동 다시 불러오기 및 사용자 알림으로 처리"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:225
-msgid "Fixed: JS injection and path traversal vulnerabilities"
-msgstr "수정: JS 주입 및 경로 탐색 취약점"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:226
-msgid "Fixed: Panic in notification handling"
-msgstr "수정: 알림 처리의 패닉"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:233
-msgid "Added complete multi-account support with sidebar and tray integration"
-msgstr "사이드바 및 트레이 통합을 갖춘 완전한 다중 계정 지원 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:234
-msgid "Added per-account zoom settings and improved accessibility"
-msgstr "계정별 확대/축소 설정 추가 및 접근성 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:235
-msgid "Fixed startup race conditions and resource usage issues"
-msgstr "시작 시 경합 상태 및 리소스 사용 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:242
-msgid ""
-"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
-msgstr "유지 및 기본 설정 컨트롤을 갖춘 확대/축소 지원(Ctrl +/-/0) 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:243
-msgid "Fixed window size increasing on every restart"
-msgstr "다시 시작할 때마다 창 크기가 커지던 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:250
-msgid ""
-"Fixed: Resolved webview reload loop on startup due to incorrect window size "
-"detection"
-msgstr "수정: 잘못된 창 크기 감지로 인한 시작 시 웹뷰 다시 불러오기 루프 해결"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:257
-msgid ""
-"Added WebRTC permission handling in preparation for WhatsApp Web voice/video"
-" calls"
-msgstr "WhatsApp Web 음성/영상 통화 준비를 위한 WebRTC 권한 처리 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:258
-msgid "Improved mobile UI resizing consistency"
-msgstr "모바일 UI 크기 조정 일관성 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:265
-msgid ""
-"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
-"(silences sounds)"
-msgstr "수정: 이제 앱이 GNOME의 시스템 \"방해 금지\" 설정을 따릅니다(소리 음소거)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:266
-msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
-msgstr "수정: 알림이 DND 시각 효과를 우회(우선순위를 보통으로 낮춤)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:273
-msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
-msgstr "KDE/GNOME에서 트레이 아이콘 수정(밝은/어두운 테마 모두에서 표시)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:274
-msgid "Restored correct app icons and transparent backgrounds"
-msgstr "올바른 앱 아이콘 및 투명 배경 복원"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:275
-msgid "Improved icon compatibility across desktop environments"
-msgstr "데스크톱 환경 전반의 아이콘 호환성 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:282
-msgid ""
-"Fixed application freezing on resume by reverting aggressive cache "
-"optimization"
-msgstr "공격적인 캐시 최적화를 되돌려 재개 시 애플리케이션이 멈추던 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:283
-msgid "Fixed background validation to ensure app starts correctly"
-msgstr "앱이 올바르게 시작되도록 백그라운드 유효성 검사 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:284
-msgid "Optimized memory usage in mobile responsive scripts"
-msgstr "모바일 반응형 스크립트의 메모리 사용 최적화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:285
-msgid "Improved icon rendering (symbolic icons now use currentColor)"
-msgstr "아이콘 렌더링 개선(심볼릭 아이콘이 이제 currentColor 사용)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:292
-msgid "Fixed window resize behavior to prevent excessive reloading"
-msgstr "과도한 다시 불러오기를 방지하도록 창 크기 조정 동작 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:293
-msgid "Fixed background notifications reliability"
-msgstr "백그라운드 알림 안정성 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:300
-msgid "Fixed Flatpak build failure by correcting config"
-msgstr "구성을 수정하여 Flatpak 빌드 실패 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:307
-msgid "Fixed \"Too many open files\" crash by reusing notification resources"
-msgstr "알림 리소스를 재사용하여 \"열린 파일이 너무 많음\" 충돌 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:308
-msgid "Fixed zombie process accumulation"
-msgstr "좀비 프로세스 누적 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:309
-msgid "Improved overall stability"
-msgstr "전반적인 안정성 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:316
-msgid "Ctrl+N keyboard shortcut for opening a new chat"
-msgstr "새 채팅 열기를 위한 Ctrl+N 키보드 단축키"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:317
-msgid ""
-"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
-"Lomiri"
-msgstr "Phosh, Plasma Mobile, Lomiri 자동 감지를 갖춘 모바일 레이아웃 지원"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:318
-msgid "Tray icon click now toggles window visibility"
-msgstr "이제 트레이 아이콘 클릭으로 창 표시 여부를 전환"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:319
-msgid "Window size is saved and restored when hiding/showing"
-msgstr "숨기기/표시할 때 창 크기를 저장하고 복원"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:320
-msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
-msgstr "모바일 레이아웃 설정을 드롭다운(자동/사용함/사용 안 함)으로 변경"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:327
-msgid ""
-"Updated application summary and description for better AppStream compliance"
-msgstr "더 나은 AppStream 준수를 위해 애플리케이션 요약 및 설명 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:334
-msgid ""
-"Notification Chat Linking: Clicking a notification now opens the specific "
-"chat in Karere."
-msgstr "알림 채팅 연결: 이제 알림을 클릭하면 Karere에서 해당 채팅이 열립니다."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:335
-msgid ""
-"Webcam Support: Added support for using the webcam (Status updates, Video "
-"calls) with a new permission dialog."
-msgstr "웹캠 지원: 새 권한 대화 상자와 함께 웹캠 사용(상태 업데이트, 영상 통화) 지원 추가."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:342
-msgid ""
-"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
-"compatibility"
-msgstr "안정적인 WhatsApp Web 호환성을 위해 Base64 인코딩으로 이미지 붙여넣기 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:343
-msgid "Added middle-click paste from primary selection (selected text)"
-msgstr "기본 선택(선택한 텍스트)에서 가운데 클릭 붙여넣기 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:344
-msgid "Fixed double-paste issue with middle-click"
-msgstr "가운데 클릭의 이중 붙여넣기 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:351
-msgid "Fixed missing GSettings schema in Flatpak builds"
-msgstr "Flatpak 빌드에서 누락된 GSettings 스키마 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:352
-msgid "Added new application icons"
-msgstr "새 애플리케이션 아이콘 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:353
-msgid "Corrected metadata description references"
-msgstr "메타데이터 설명 참조 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:360
-msgid ""
-"Switch to XDG Notification Portal (ashpd) for better sandboxing support"
-msgstr "더 나은 샌드박스 지원을 위해 XDG 알림 포털(ashpd)로 전환"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:361
-msgid "Remove direct D-Bus notification permissions for cleaner manifest"
-msgstr "더 깔끔한 매니페스트를 위해 직접 D-Bus 알림 권한 제거"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:362
-msgid "Fixed Open action for downloaded files"
-msgstr "다운로드한 파일의 열기 작업 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:363
-msgid "Fixed Dead Key/composition input issues"
-msgstr "데드 키/조합 입력 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:364
-msgid "Migrated Flatpak build logic to meson.build"
-msgstr "Flatpak 빌드 로직을 meson.build로 마이그레이션"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:371
-msgid ""
-"Switch to XDG Background Portal for autostart (improves security and "
-"compatibility)"
-msgstr "자동 시작을 위해 XDG 백그라운드 포털로 전환(보안 및 호환성 개선)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:378
-msgid "Add new contributor Sabri Ünal to the About dialog"
-msgstr "정보 대화 상자에 새 기여자 Sabri Ünal 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:379
-msgid "General improvements and versioning updates"
-msgstr "전반적인 개선 및 버전 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:386
-msgid "Restore autostart permission for improved compatibility"
-msgstr "호환성 개선을 위해 자동 시작 권한 복원"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:393
-msgid "Remove unnecessary autostart permission to satisfy linter"
-msgstr "린터를 만족시키기 위해 불필요한 자동 시작 권한 제거"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:400
-msgid "Add xdg-config/autostart permission for autostart support"
-msgstr "자동 시작 지원을 위해 xdg-config/autostart 권한 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:406
-msgid "Bug Fix Release"
-msgstr "버그 수정 릴리스"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:407
-#: data/io.github.tobagin.karere.metainfo.xml.in:416
-msgid "Changes:"
-msgstr "변경 사항:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:409
-msgid ""
-"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
-msgstr "StatusNotifierWatcher 권한을 추가하여 GNOME에서 누락된 트레이 아이콘 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:415
-msgid "Update and Bug Fix Release"
-msgstr "업데이트 및 버그 수정 릴리스"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:418
-msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
-msgstr "기본 설정에 \"시작 시 실행\" 토글 추가(기본값: false)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:419
-msgid "Fixed autostart toggle pathing for Flatpak environments"
-msgstr "Flatpak 환경의 자동 시작 토글 경로 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:420
-msgid "Fixed tray icon quit behavior"
-msgstr "트레이 아이콘 종료 동작 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:421
-msgid "Added striped symbolic icons for development version"
-msgstr "개발 버전용 줄무늬 심볼릭 아이콘 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:427
-msgid "🎉 Major Release 2.0.0"
-msgstr "🎉 메이저 릴리스 2.0.0"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:428
-#: data/io.github.tobagin.karere.metainfo.xml.in:452
-#: data/io.github.tobagin.karere.metainfo.xml.in:507
-#: data/io.github.tobagin.karere.metainfo.xml.in:577
-#: data/io.github.tobagin.karere.metainfo.xml.in:695
-msgid "New Features:"
-msgstr "새 기능:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:430
-msgid "Full rewrite in Rust! 🦀"
-msgstr "Rust로 완전히 재작성! 🦀"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:431
-msgid "New System Tray Icon support"
-msgstr "새 시스템 트레이 아이콘 지원"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:432
-msgid "Notifications fully working with persistence fixes"
-msgstr "유지 기능 수정으로 알림이 완전히 작동"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:433
-msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
-msgstr "Vala에서 네이티브 Rust/GTK4/Libadwaita로 이식"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:434
-msgid "Redesigned/streamlined preferences dialog"
-msgstr "기본 설정 대화 상자 재설계/간소화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:435
-msgid "Enhanced performance and stability"
-msgstr "성능 및 안정성 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:441
-msgid "🐛 Bug Fix Release"
-msgstr "🐛 버그 수정 릴리스"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:442
-msgid "Fixed:"
-msgstr "수정 사항:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:444
-msgid ""
-"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
-"activation"
-msgstr "D-Bus 활성화 구현으로 중요한 시작 시 멈춤(스피너) 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:445
-msgid "Ensure application starts properly in the background without delay"
-msgstr "지연 없이 애플리케이션이 백그라운드에서 제대로 시작되도록 보장"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:451
-msgid "🎉 Feature Release"
-msgstr "🎉 기능 릴리스"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:454
-msgid "🎤 Microphone permission support for voice notes"
-msgstr "🎤 음성 메모를 위한 마이크 권한 지원"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:455
-msgid "🚀 Start in background option for autostart"
-msgstr "🚀 자동 시작을 위한 백그라운드에서 시작 옵션"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:456
-msgid "🔄 Manual reload and auto-reload on network reconnection"
-msgstr "🔄 네트워크 재연결 시 수동 다시 불러오기 및 자동 다시 불러오기"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:458
-#: data/io.github.tobagin.karere.metainfo.xml.in:474
-#: data/io.github.tobagin.karere.metainfo.xml.in:485
-#: data/io.github.tobagin.karere.metainfo.xml.in:496
-#: data/io.github.tobagin.karere.metainfo.xml.in:559
-#: data/io.github.tobagin.karere.metainfo.xml.in:596
-#: data/io.github.tobagin.karere.metainfo.xml.in:623
-#: data/io.github.tobagin.karere.metainfo.xml.in:648
-#: data/io.github.tobagin.karere.metainfo.xml.in:665
-#: data/io.github.tobagin.karere.metainfo.xml.in:682
-msgid "Improvements:"
-msgstr "개선 사항:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:460
-msgid "⚡ Performance optimizations for startup and shutdown"
-msgstr "⚡ 시작 및 종료 성능 최적화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:461
-msgid "📝 Async dictionary loading for smoother Spell Check initialization"
-msgstr "📝 더 부드러운 맞춤법 검사 초기화를 위한 비동기 사전 로딩"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:462
-msgid "📖 Added MPRIS workaround documentation"
-msgstr "📖 MPRIS 우회 방법 문서 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:464
-#: data/io.github.tobagin.karere.metainfo.xml.in:518
-#: data/io.github.tobagin.karere.metainfo.xml.in:566
-#: data/io.github.tobagin.karere.metainfo.xml.in:586
-#: data/io.github.tobagin.karere.metainfo.xml.in:642
-#: data/io.github.tobagin.karere.metainfo.xml.in:659
-#: data/io.github.tobagin.karere.metainfo.xml.in:676
-msgid "Bug Fixes:"
-msgstr "버그 수정:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:466
-msgid "Fixed missing dictionaries on startup"
-msgstr "시작 시 누락된 사전 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:467
-msgid "Fixed application freeze during lifecycle events"
-msgstr "수명 주기 이벤트 중 애플리케이션 멈춤 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:473
-msgid "🔧 Maintenance Release"
-msgstr "🔧 유지 관리 릴리스"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:476
-msgid "Updated build configuration and dependencies"
-msgstr "빌드 구성 및 종속성 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:477
-msgid "Enhanced packaging for better compatibility"
-msgstr "더 나은 호환성을 위한 패키징 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:478
-msgid "Minor bug fixes and stability improvements"
-msgstr "사소한 버그 수정 및 안정성 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:484
-msgid "📝 Documentation and Metadata Update"
-msgstr "📝 문서 및 메타데이터 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:487
-msgid "Updated about dialog screenshot"
-msgstr "정보 대화 상자 스크린샷 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:488
-msgid "Updated application screenshots"
-msgstr "애플리케이션 스크린샷 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:489
-msgid "Minor README corrections"
-msgstr "사소한 README 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:495
-msgid "📸 Screenshots and Documentation Update"
-msgstr "📸 스크린샷 및 문서 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:498
-msgid "Updated application screenshots with current UI appearance"
-msgstr "현재 UI 모양을 반영하여 애플리케이션 스크린샷 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:499
-msgid "Refreshed About dialog screenshot"
-msgstr "정보 대화 상자 스크린샷 갱신"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:500
-msgid "Enhanced visual documentation for users"
-msgstr "사용자를 위한 시각적 문서 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:506
-msgid "🎉 Version 1.0.0 - Major Milestone Release"
-msgstr "🎉 버전 1.0.0 - 주요 마일스톤 릴리스"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:509
-msgid "✅ Fixed WhatsApp Web notification banner persistence"
-msgstr "✅ WhatsApp Web 알림 배너 유지 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:510
-msgid "✅ Fixed notifications not working properly"
-msgstr "✅ 알림이 제대로 작동하지 않던 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:511
-msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
-msgstr "🖼️ 클립보드(Ctrl+V)를 통한 이미지 붙여넣기 지원 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:512
-msgid ""
-"📥 Implemented download manager with custom directory and toast notifications"
-msgstr "📥 사용자 지정 디렉터리 및 알림과 함께 다운로드 관리자 구현"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:513
-msgid ""
-"♿ Enhanced accessibility with screen reader optimization and keyboard "
-"navigation"
-msgstr "♿ 스크린 리더 최적화 및 키보드 탐색으로 접근성 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:514
-msgid "📝 Added comprehensive spell checking system with auto-detection"
-msgstr "📝 자동 감지를 갖춘 포괄적인 맞춤법 검사 시스템 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:515
-msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
-msgstr "🔤 LibreOffice의 80개 이상 언어 사전 통합"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:516
-msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
-msgstr "⌨️ AdwShortcutsDialog를 사용한 키보드 단축키 대화 상자 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:520
-msgid ""
-"Fixed Ctrl+V paste for text content - now works for both text and images"
-msgstr "텍스트 내용에 대한 Ctrl+V 붙여넣기 수정 - 이제 텍스트와 이미지 모두에 작동"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:521
-msgid "Fixed WhatsApp notification permission not persisting across sessions"
-msgstr "WhatsApp 알림 권한이 세션 간에 유지되지 않던 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:522
-msgid "Fixed notifications banner appearing on every app launch"
-msgstr "앱을 시작할 때마다 알림 배너가 나타나던 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:523
-msgid "Fixed WebView zoom being enabled by default (now disabled)"
-msgstr "WebView 확대/축소가 기본으로 사용되던 문제 수정(이제 사용 안 함)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:524
-msgid "Fixed clipboard manager intercepting all paste events"
-msgstr "클립보드 관리자가 모든 붙여넣기 이벤트를 가로채던 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:525
-msgid ""
-"Removed hardcoded blueprint compiler paths for cross-architecture support"
-msgstr "교차 아키텍처 지원을 위해 하드코딩된 blueprint 컴파일러 경로 제거"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:527
-msgid "Code Quality Improvements:"
-msgstr "코드 품질 개선:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:529
-msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
-msgstr "♻️ 주요 리팩터링: PascalCase 파일 이름으로 코드베이스 재구성"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:530
-msgid "♻️ Refactored Window.vala into specialized manager components"
-msgstr "♻️ Window.vala를 전용 관리자 구성 요소로 리팩터링"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:531
-msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
-msgstr "♻️ 사용자 지정 로깅 및 충돌 보고 제거(시스템 journalctl 사용)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:532
-msgid ""
-"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
-msgstr "🗑️ 방해 금지 기능 제거(시스템 알림 데몬에서 처리)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:533
-msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
-msgstr "🗑️ 사용되지 않는 테스트 파일 및 미사용 종속성 정리"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:534
-msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
-msgstr "🗑️ json-glib, gee, libsoup 종속성 제거"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:535
-msgid "🧹 Centralized settings management with SettingsManager singleton"
-msgstr "🧹 SettingsManager 싱글톤으로 설정 관리 중앙화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:536
-msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
-msgstr "🧹 DependencyContainer.vala 제거(사용되지 않는 종속성 주입)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:537
-msgid "📸 Reorganized screenshots into data/screenshots/ directory"
-msgstr "📸 스크린샷을 data/screenshots/ 디렉터리로 재구성"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:539
-#: data/io.github.tobagin.karere.metainfo.xml.in:609
-#: data/io.github.tobagin.karere.metainfo.xml.in:631
-msgid "Technical Changes:"
-msgstr "기술적 변경 사항:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:541
-msgid "Implemented UserScript injection for Notification.permission state"
-msgstr "Notification.permission 상태를 위한 UserScript 주입 구현"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:542
-msgid "Connected show_notification signal handler for WebKit notifications"
-msgstr "WebKit 알림을 위한 show_notification 신호 핸들러 연결"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:543
-msgid "WebKitGTK 6.0 storage persistence verified and documented"
-msgstr "WebKitGTK 6.0 저장소 유지 검증 및 문서화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:544
-msgid "Updated SettingsManager to be the default for all settings access"
-msgstr "모든 설정 접근의 기본값이 되도록 SettingsManager 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:545
-msgid "Improved build system with cleaner dependency management"
-msgstr "더 깔끔한 종속성 관리로 빌드 시스템 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:547
-msgid "Documentation:"
-msgstr "문서:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:549
-msgid "📚 Enhanced README with accessibility features documentation"
-msgstr "📚 접근성 기능 문서로 README 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:550
-msgid "📚 Documented all keyboard shortcuts by category"
-msgstr "📚 모든 키보드 단축키를 카테고리별로 문서화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:551
-msgid "📚 Added spell checking configuration guide"
-msgstr "📚 맞춤법 검사 구성 가이드 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:552
-msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
-msgstr "📚 GitHub 저장소 URL 수정(karere-vala → karere)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:558
-msgid "🐛 Runtime Update and Bug Fixes"
-msgstr "🐛 런타임 업데이트 및 버그 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:561
-msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
-msgstr "향상된 호환성을 위해 GNOME 런타임을 버전 49로 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:562
-msgid "Improved system integration with latest platform libraries"
-msgstr "최신 플랫폼 라이브러리와의 시스템 통합 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:563
-msgid "Better support for modern desktop environments"
-msgstr "최신 데스크톱 환경에 대한 지원 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:564
-msgid "Enhanced stability and performance optimizations"
-msgstr "안정성 및 성능 최적화 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:568
-msgid "Resolved compatibility issues with newer GNOME environments"
-msgstr "최신 GNOME 환경과의 호환성 문제 해결"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:569
-msgid "Fixed potential rendering inconsistencies"
-msgstr "잠재적인 렌더링 불일치 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:570
-msgid "Improved error handling and recovery mechanisms"
-msgstr "오류 처리 및 복구 메커니즘 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:576
-msgid ""
-"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
-msgstr "✨ 향상된 이모지 지원, 외부 링크 처리 및 빌드 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:579
-msgid ""
-"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
-msgstr "고품질 Noto Color Emoji 글꼴 추가(v2.047, Unicode 16.0 지원)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:580
-msgid "Enhanced WebKit rendering with maximum hardware acceleration"
-msgstr "최대 하드웨어 가속으로 WebKit 렌더링 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:581
-msgid "Improved emoji consistency with bundled font system"
-msgstr "번들 글꼴 시스템으로 이모지 일관성 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:582
-msgid "Optimized font loading to eliminate display conflicts"
-msgstr "표시 충돌을 제거하도록 글꼴 로딩 최적화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:583
-msgid "Added WebKit cache control setting for improved rendering consistency"
-msgstr "향상된 렌더링 일관성을 위한 WebKit 캐시 제어 설정 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:584
-msgid "Cache disabled by default to prevent emoji rendering issues"
-msgstr "이모지 렌더링 문제를 방지하기 위해 캐시를 기본적으로 사용 안 함"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:588
-msgid ""
-"Fixed external links not opening in default browser when running in Flatpak"
-msgstr "Flatpak에서 실행할 때 외부 링크가 기본 브라우저에서 열리지 않던 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:589
-msgid "Improved external link handling with proper Flatpak portal support"
-msgstr "적절한 Flatpak 포털 지원으로 외부 링크 처리 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:590
-msgid "Fixed random emoji display issues and blank emoji problems"
-msgstr "무작위 이모지 표시 문제 및 빈 이모지 문제 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:591
-msgid "Fixed invalid meson version requirement preventing builds"
-msgstr "빌드를 방해하던 잘못된 meson 버전 요구 사항 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:592
-msgid "Corrected dependency version specifications in meson.build"
-msgstr "meson.build의 종속성 버전 사양 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:593
-msgid "Resolved flatpak-builder compatibility issues"
-msgstr "flatpak-builder 호환성 문제 해결"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:594
-msgid "Enhanced URL validation for external link detection"
-msgstr "외부 링크 감지를 위한 URL 유효성 검사 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:598
-msgid "Eliminated WebKit cache corruption affecting emoji rendering"
-msgstr "이모지 렌더링에 영향을 주던 WebKit 캐시 손상 제거"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:599
-msgid "Streamlined font stack for consistent emoji appearance"
-msgstr "일관된 이모지 모양을 위한 글꼴 스택 간소화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:600
-msgid "Enhanced 2D canvas acceleration for better graphics performance"
-msgstr "더 나은 그래픽 성능을 위한 2D 캔버스 가속 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:601
-msgid "Improved font loading stability and reduced race conditions"
-msgstr "글꼴 로딩 안정성 개선 및 경합 상태 감소"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:602
-msgid "Better sandboxed environment compatibility"
-msgstr "더 나은 샌드박스 환경 호환성"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:603
-msgid "More reliable link opening mechanism"
-msgstr "더 안정적인 링크 열기 메커니즘"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:604
-msgid "Enhanced logging for external link operations"
-msgstr "외부 링크 작업에 대한 로깅 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:605
-msgid "Better build system compatibility with different environments"
-msgstr "다양한 환경과의 빌드 시스템 호환성 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:606
-msgid "Enhanced CI/CD pipeline stability"
-msgstr "CI/CD 파이프라인 안정성 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:607
-msgid "More robust dependency handling"
-msgstr "더 견고한 종속성 처리"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:611
-msgid ""
-"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
-"only)"
-msgstr "불필요한 모바일 사용자 에이전트 전환 제거(WhatsApp Web은 데스크톱 전용)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:612
-msgid "Disabled problematic WebKit caches causing font corruption"
-msgstr "글꼴 손상을 일으키던 문제성 WebKit 캐시 사용 안 함"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:613
-msgid "Simplified emoji font configuration to single high-quality source"
-msgstr "단일 고품질 소스로 이모지 글꼴 구성 간소화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:614
-msgid "Restored Safari Linux user agent for native WebKit experience"
-msgstr "네이티브 WebKit 경험을 위한 Safari Linux 사용자 에이전트 복원"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:615
-msgid "Added subpixel font scaling and advanced rendering optimizations"
-msgstr "서브픽셀 글꼴 스케일링 및 고급 렌더링 최적화 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:616
-msgid "Implemented Flatpak portal system for external link handling"
-msgstr "외부 링크 처리를 위한 Flatpak 포털 시스템 구현"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:622
-msgid "🔧 Code Refactoring and Architecture Improvements"
-msgstr "🔧 코드 리팩터링 및 아키텍처 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:625
-msgid "Converted template files to preprocessor directives for cleaner code"
-msgstr "더 깔끔한 코드를 위해 템플릿 파일을 전처리기 지시문으로 변환"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:626
-msgid "Eliminated .vala.in template substitution system"
-msgstr ".vala.in 템플릿 치환 시스템 제거"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:627
-msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
-msgstr "DEVELOPMENT 플래그를 사용한 컴파일 시 조건부 컴파일 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:628
-msgid "Improved build system maintainability and type safety"
-msgstr "빌드 시스템 유지 보수성 및 타입 안전성 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:629
-msgid "Added contributors Aman Das and Cameo to about dialog"
-msgstr "정보 대화 상자에 기여자 Aman Das 및 Cameo 추가"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:633
-msgid ""
-"Replaced window.vala.in and preferences.vala.in with direct .vala files"
-msgstr "window.vala.in 및 preferences.vala.in을 직접 .vala 파일로 대체"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:634
-msgid "Updated meson.build to use Vala preprocessor directives"
-msgstr "Vala 전처리기 지시문을 사용하도록 meson.build 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:635
-msgid "Simplified source file management in build system"
-msgstr "빌드 시스템의 소스 파일 관리 간소화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:641
-#: data/io.github.tobagin.karere.metainfo.xml.in:675
-msgid "🐛 Bug Fixes and Improvements"
-msgstr "🐛 버그 수정 및 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:644
-msgid "Fixed crash when handling invalid user input data"
-msgstr "잘못된 사용자 입력 데이터 처리 시 충돌 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:645
-msgid "Resolved memory leak in notification cleanup"
-msgstr "알림 정리의 메모리 누수 해결"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:646
-msgid "Corrected accessibility focus handling"
-msgstr "접근성 초점 처리 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:650
-msgid "Better error handling for network timeouts"
-msgstr "네트워크 시간 초과에 대한 오류 처리 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:651
-msgid "Enhanced stability for extended usage"
-msgstr "장기간 사용 시 안정성 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:652
-msgid "Performance optimizations for scrolling"
-msgstr "스크롤 성능 최적화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:658
-msgid "🔧 Metadata and Standards Compliance"
-msgstr "🔧 메타데이터 및 표준 준수"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:661
-msgid "Fixed duplicate provides tags in metainfo validation"
-msgstr "metainfo 유효성 검사의 중복 provides 태그 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:662
-msgid "Corrected AppStream metainfo format compliance"
-msgstr "AppStream metainfo 형식 준수 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:663
-msgid "Resolved invalid markup in release descriptions"
-msgstr "릴리스 설명의 잘못된 마크업 해결"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:667
-msgid "Updated all references from appdata to metainfo format"
-msgstr "appdata에서 metainfo 형식으로 모든 참조 업데이트"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:668
-msgid "Enhanced Flathub compliance and validation"
-msgstr "Flathub 준수 및 유효성 검사 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:669
-msgid "Improved translation file consistency"
-msgstr "번역 파일 일관성 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:678
-msgid "Fixed crash when handling invalid notification data"
-msgstr "잘못된 알림 데이터 처리 시 충돌 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:679
-msgid "Resolved memory leak in WebKit manager cleanup"
-msgstr "WebKit 관리자 정리의 메모리 누수 해결"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:680
-msgid "Corrected window state persistence on shutdown"
-msgstr "종료 시 창 상태 유지 수정"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:684
-msgid "Better error handling for network disconnections"
-msgstr "네트워크 연결 끊김에 대한 오류 처리 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:685
-msgid "Enhanced stability during long sessions"
-msgstr "긴 세션 동안의 안정성 향상"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:686
-msgid "Performance optimizations for faster startup"
-msgstr "더 빠른 시작을 위한 성능 최적화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:692
-msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
-msgstr "🚀 주요 아키텍처 마이그레이션: Python에서 Vala/GTK4로"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:693
-msgid ""
-"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
-"performance and integration."
-msgstr "주요 변경: 더 나은 성능과 통합을 위해 Python에서 네이티브 Vala로 완전히 재작성."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:694
-msgid ""
-"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
-"with WhatsApp Web as this is a completely new application implementation."
-msgstr ""
-"⚠️ 중요: 업그레이드 후에는 완전히 새로운 애플리케이션 구현이므로 모바일 기기를 WhatsApp Web과 다시 동기화해야 합니다."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:697
-msgid "Native Vala/GTK4 implementation for optimal performance"
-msgstr "최적의 성능을 위한 네이티브 Vala/GTK4 구현"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:698
-msgid "Modern LibAdwaita UI with Blueprint declarative interface"
-msgstr "Blueprint 선언적 인터페이스를 갖춘 현대적인 LibAdwaita UI"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:699
-msgid "Enhanced WebKitGTK 6.0 integration"
-msgstr "향상된 WebKitGTK 6.0 통합"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:700
-msgid "Advanced notification system with native desktop integration"
-msgstr "네이티브 데스크톱 통합을 갖춘 고급 알림 시스템"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:701
-msgid "Comprehensive accessibility support"
-msgstr "포괄적인 접근성 지원"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:702
-msgid "Professional logging and crash reporting system"
-msgstr "전문적인 로깅 및 충돌 보고 시스템"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:704
-msgid "Multi-language spell checking support"
-msgstr "다중 언어 맞춤법 검사 지원"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:705
-msgid "Granular privacy and notification controls"
-msgstr "세분화된 개인 정보 및 알림 컨트롤"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:706
-msgid "Hardware-accelerated rendering"
-msgstr "하드웨어 가속 렌더링"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:707
-msgid "Improved memory efficiency and startup performance"
-msgstr "메모리 효율성 및 시작 성능 개선"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:709
-msgid "Technical Improvements:"
-msgstr "기술적 개선:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:711
-msgid "Migrated from Python 3 to native Vala compilation"
-msgstr "Python 3에서 네이티브 Vala 컴파일로 마이그레이션"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:712
-msgid "Modern Meson build system with Blueprint UI compilation"
-msgstr "Blueprint UI 컴파일을 갖춘 현대적인 Meson 빌드 시스템"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:713
-msgid "Comprehensive test suite with unit and integration tests"
-msgstr "단위 및 통합 테스트를 갖춘 포괄적인 테스트 모음"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:714
-msgid "Production-ready error handling and crash recovery"
-msgstr "프로덕션 준비된 오류 처리 및 충돌 복구"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:715
-msgid "Enhanced security with proper sandboxing"
-msgstr "적절한 샌드박싱으로 보안 강화"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:716
-msgid "Complete internationalization support"
-msgstr "완전한 국제화 지원"
-
-#: src/window.rs:303
-msgid "Account"
-msgstr "계정"
-
-#: src/window.rs:632
-msgid "Waiting for QR scan…"
-msgstr "QR 스캔 대기 중…"
-
-#: src/window.rs:654
-msgid "degraded"
-msgstr "성능 저하됨"
-
-#: src/window.rs:670
-msgid "Unread messages"
-msgstr "읽지 않은 메시지"
-
-#: src/window.rs:678
-msgid "Edit account"
-msgstr "계정 편집"
-
-#: src/window.rs:694
-msgid "Remove account"
-msgstr "계정 제거"
-
-#: src/window.rs:696
-msgid "Can't remove the only account"
-msgstr "유일한 계정은 제거할 수 없습니다"
-
-#: src/window.rs:778
-msgid "Maximum of 9 accounts reached"
-msgstr "최대 9개 계정에 도달했습니다"
-
-#: src/window.rs:804
-msgid "Label"
-msgstr "레이블"
-
-#: src/window.rs:818
-msgid "Name"
-msgstr "이름"
-
-#: src/window.rs:819
-msgid "WhatsApp ID"
-msgstr "WhatsApp ID"
-
-#: src/window.rs:821
-msgid "Avatar URL"
-msgstr "아바타 URL"
-
-#: src/window.rs:830 src/window.rs:919
-msgid "Cancel"
-msgstr "취소"
-
-#: src/window.rs:831
-msgid "Save"
-msgstr "저장"
-
-#: src/window.rs:840
-msgid "Add Account"
-msgstr "계정 추가"
-
-#: src/window.rs:842
-msgid "Edit Account"
-msgstr "계정 편집"
-
-#: src/window.rs:909
-msgid "Remove account?"
-msgstr "계정을 제거하시겠습니까?"
-
-#: src/window.rs:920
-msgid "Remove"
-msgstr "제거"
-
-#: src/actions.rs:263
-msgid ""
-"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
-"seamless desktop integration with comprehensive logging and crash reporting "
-"capabilities"
-msgstr ""
-"포괄적인 로깅 및 충돌 보고 기능과 함께 원활한 데스크톱 통합을 제공하는 현대적인 네이티브 GTK4/LibAdwaita WhatsApp "
-"Web 래퍼"
-
-#: src/actions.rs:282
-msgid "Source"
-msgstr "소스"
-
-#: src/actions.rs:285
-msgid "Special Thanks"
-msgstr "특별히 감사드립니다"
+#: src/preferences.rs:346
+msgid "The language change takes effect after Karere restarts."
+msgstr "언어 변경 사항은 Karere를 다시 시작한 후에 적용됩니다."

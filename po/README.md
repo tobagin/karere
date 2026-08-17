@@ -32,16 +32,53 @@ locale for `CefSettings.locale` (see `src/i18n.rs`). A change requires a restart
 
 ## Regenerating the POT
 
-`po/karere.pot` is produced from `POTFILES.in`. **The meson `karere-pot` target
-omits `--language=C`, so xgettext fails to parse the `.rs` sources** (it only
-extracts a few strings). After running the meson target, re-extract the Rust
-strings and join them in:
+The canonical one-command procedure is:
 
 ```sh
-xgettext --from-code=UTF-8 --add-comments --language=C \
-  --keyword=tr --keyword=gettext -j --package-name=karere -o po/karere.pot \
-  src/main.rs src/window.rs src/actions.rs src/tray.rs
+tools/update-po.sh
 ```
 
-The `.ui` files in `POTFILES.in` are compiled from `data/ui/*.blp` by the meson
-`blueprint_files` list (`data/meson.build`) before extraction.
+It regenerates `po/karere.pot` from `po/POTFILES.in` and re-merges all 72
+`po/*.po` catalogs (driven by `po/LINGUAS` with `msgmerge -U --backup=none`).
+Version is derived from `meson.build` (no pinned `2.0.0`).
+
+### What the script does
+
+1. **Materializes `data/ui/*.ui` from `.blp`** — runs
+   `blueprint-compiler compile --output data/ui/<name>.ui data/ui/<name>.blp`
+   for each entry in `data/meson.build`'s `blueprint_files` list
+   (`window`, `preferences`, `keyboard-shortcuts`, `account_switcher`), mirroring
+   what `data/meson.build` does at configure time. The `.ui` products are
+   gitignored (`/data/ui/*.ui`) and are removed by the script on exit
+   (including on failure via `trap`).
+2. **Split xgettext extraction** — pass 1 (`--keyword=tr --keyword=gettext`
+   `--from-code=UTF-8`) over the non-Rust subset of `POTFILES.in` (the 4 `.ui`
+   + 2 `.in` files; xgettext auto-detects Glade/Desktop/ITS), then pass 2
+   `--language=C --join-existing --keyword=tr --keyword=gettext` over **all**
+   `.rs` entries derived from `po/POTFILES.in` (currently 5 files:
+   `src/main.rs`, `src/window.rs`, `src/actions.rs`, `src/tray.rs`,
+   `src/preferences.rs`). The file list is derived via
+   `grep '\.rs$' po/POTFILES.in` — never hardcoded — so adding a new
+   Rust source to `POTFILES.in` is picked up automatically. `src/preferences.rs`
+   carries translatable strings (e.g. "GPU rendering takes effect after
+   Karere restarts.") and was previously omitted from the documented 4-file
+   join command.
+3. **LINGUAS-driven merge** — `msgmerge -U --backup=none` for each locale in
+   `po/LINGUAS` (72 entries, `msgfmt --check` clean).
+
+### Known limitations & expectations
+
+- **The meson `karere-pot` target omits `--language=C`**, so `xgettext` fails
+  to parse the `.rs` sources and extracts only a few strings. Do not use the
+  meson target for pot generation — route through `tools/update-po.sh`.
+- **Expected warnings from the Rust join:** `xgettext --language=C` parses Rust
+  via the C parser; Rust character literals (e.g. `'x'`) trigger benign
+  `warning: unterminated character constant` diagnostics (one per file/line,
+  e.g. `src/main.rs:228`). These are expected and do not indicate failure.
+- **Tilde-suffix backups are prevented** by `--backup=none` and `.gitignore`
+  (`/po/*.po~`, `/po/*.pot~`). Historical `po/*.po~` backups (en_US, es, ga,
+  pt_BR, pt_PT — v3-era 80-msgid snapshots) were removed in KARE-014.
+- **New msgids land untranslated** (`msgstr ""`, English fallback) until
+  translated — see the machine-translation caveat above. `tools/verify-po.sh`
+  is the automated catalog health gate (sentinel msgids, LINGUAS↔`.po` parity,
+  `msgfmt --check`, no `~` backups, correct `Project-Id-Version`).

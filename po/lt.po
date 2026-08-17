@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-07 11:42+0100\n"
+"POT-Creation-Date: 2026-08-17 16:58+0100\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -15,637 +15,330 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/main.rs:37
-msgid "Karere starting"
-msgstr "Karere paleidžiama"
-
-#: src/window.rs:912
-msgid "This removes the local session for"
-msgstr "Tai pašalina vietinį seansą paskyrai"
-
-#: src/window.rs:915
-msgid "The device stays linked on your phone until you remove it there."
-msgstr "Įrenginys lieka susietas jūsų telefone, kol jo ten nepašalinsite."
-
-#: src/tray.rs:43 src/tray.rs:66 src/tray.rs:73 data/ui/window.ui:12
-#: data/ui/window.ui:23 src/actions.rs:258
-msgid "Karere"
-msgstr "Karere"
-
-#. Translators: tray tooltip body; leading number is the unread count.
-#: src/tray.rs:68
-msgid "unread"
-msgstr "neperskaityta"
-
-#: src/tray.rs:93
-msgid "Hide Window"
-msgstr "Slėpti langą"
-
-#: src/tray.rs:95
-msgid "Show Window"
-msgstr "Rodyti langą"
-
-#: src/tray.rs:139 data/ui/window.ui:255 data/ui/preferences.ui:10
-#: data/ui/keyboard-shortcuts.ui:145
-msgid "Preferences"
-msgstr "Nuostatos"
-
-#: src/tray.rs:145 data/ui/window.ui:261 data/ui/preferences.ui:405
-#: data/ui/keyboard-shortcuts.ui:152
-msgid "Keyboard Shortcuts"
-msgstr "Spartieji klavišai"
-
-#: src/tray.rs:151
-msgid "About Karere"
-msgstr "Apie Karere"
-
-#: src/tray.rs:158 data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159
-msgid "Quit"
-msgstr "Išeiti"
-
-#: src/preferences.rs:92
-msgid "Restart Karere?"
-msgstr "Paleisti Karere iš naujo?"
-
-#: src/preferences.rs:94
-msgid "The language change takes effect after Karere restarts."
-msgstr "Kalbos pakeitimas įsigalios iš naujo paleidus Karere."
-
-#: src/preferences.rs:97
-msgid "Later"
-msgstr "Vėliau"
-
-#: src/preferences.rs:98
-msgid "Restart Now"
-msgstr "Paleisti iš naujo"
-
-#: src/preferences.rs:316
-msgid "System Default"
-msgstr "Sistemos numatytasis"
-
-#: data/ui/window.ui:24
-msgid "GTK4 WhatsApp Web Client"
-msgstr "GTK4 WhatsApp Web klientas"
-
-#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
-msgid "Zoom Out"
-msgstr "Tolinti"
-
-#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
-msgid "Reset Zoom"
-msgstr "Atstatyti mastelį"
-
-#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
-msgid "Zoom In"
-msgstr "Artinti"
-
-#: data/ui/window.ui:70
-msgid "Spell Checking Language"
-msgstr "Rašybos tikrinimo kalba"
-
-#: data/ui/window.ui:77
-msgid "Menu"
-msgstr "Meniu"
-
-#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
-msgid "Switch Account"
-msgstr "Perjungti paskyrą"
-
-#: data/ui/window.ui:111
-msgid "Find in page"
-msgstr "Ieškoti puslapyje"
-
-#: data/ui/window.ui:131
-msgid "Previous match"
-msgstr "Ankstesnis atitikmuo"
-
-#: data/ui/window.ui:137
-msgid "Next match"
-msgstr "Kitas atitikmuo"
-
-#: data/ui/window.ui:173 data/ui/preferences.ui:109 data/ui/preferences.ui:118
-#: data/ui/keyboard-shortcuts.ui:126
-msgid "Developer Tools"
-msgstr "Kūrėjo įrankiai"
-
-#: data/ui/window.ui:184
-msgid "Close Developer Tools"
-msgstr "Užverti kūrėjo įrankius"
-
-#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
-msgid "Add new account"
-msgstr "Pridėti naują paskyrą"
-
-#: data/ui/window.ui:251
-msgid "Refresh WhatsApp Web"
-msgstr "Atnaujinti WhatsApp Web"
+#: data/io.github.tobagin.karere.desktop.in:3
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
 
 #: data/ui/window.ui:265
 msgid "About"
 msgstr "Apie"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:139
-msgid "General"
-msgstr "Bendra"
-
-#: data/ui/preferences.ui:17
-msgid "Startup"
-msgstr "Paleidimas"
-
-#: data/ui/preferences.ui:20
-msgid "Run on Startup"
-msgstr "Paleisti sistemai startavus"
-
-#: data/ui/preferences.ui:21
-msgid "Launch Karere automatically when you log in"
-msgstr "Automatiškai paleisti Karere prisijungus"
-
-#: data/ui/preferences.ui:26
-msgid "Start in Background"
-msgstr "Paleisti fone"
-
-#: data/ui/preferences.ui:27
-msgid "Start minimized without showing the window"
-msgstr "Paleisti suskleistą, nerodant lango"
-
-#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
-msgid "Window"
-msgstr "Langas"
-
-#: data/ui/preferences.ui:37
-msgid "Window Close Behavior"
-msgstr "Lango užvėrimo elgsena"
-
-#: data/ui/preferences.ui:38
-msgid "What happens when you close the window"
-msgstr "Kas nutinka užvėrus langą"
-
-#: data/ui/preferences.ui:42
-msgid "Run in Background"
-msgstr "Veikti fone"
-
-#: data/ui/preferences.ui:43
-msgid "Quit Application"
-msgstr "Išeiti iš programos"
-
-#: data/ui/preferences.ui:51
-msgid "System Tray Icon"
-msgstr "Sistemos dėklo piktograma"
-
-#: data/ui/preferences.ui:52
-msgid "Auto: shown when a system tray is available"
-msgstr "Automatiškai: rodoma, kai prieinamas sistemos dėklas"
-
-#: data/ui/preferences.ui:56 data/ui/preferences.ui:97
-msgid "Auto"
-msgstr "Automatiškai"
-
-#: data/ui/preferences.ui:57 data/ui/preferences.ui:98
-msgid "Enabled"
-msgstr "Įjungta"
-
-#: data/ui/preferences.ui:58 data/ui/preferences.ui:99
-msgid "Disabled"
-msgstr "Išjungta"
-
-#: data/ui/preferences.ui:68
-msgid "Appearance"
-msgstr "Išvaizda"
-
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:300
-msgid "Language"
-msgstr "Kalba"
-
-#: data/ui/preferences.ui:72
-msgid "Application language. Requires restart."
-msgstr "Programos kalba. Reikia paleisti iš naujo."
-
-#: data/ui/preferences.ui:77
-msgid "Theme"
-msgstr "Tema"
-
-#: data/ui/preferences.ui:78
-msgid "Choose the application color scheme"
-msgstr "Pasirinkite programos spalvų schemą"
-
-#: data/ui/preferences.ui:82
-msgid "Follow System"
-msgstr "Sekti sistemą"
-
-#: data/ui/preferences.ui:83
-msgid "Light"
-msgstr "Šviesi"
-
-#: data/ui/preferences.ui:84
-msgid "Dark"
-msgstr "Tamsi"
-
-#: data/ui/preferences.ui:92
-msgid "Mobile Layout"
-msgstr "Mobilus išdėstymas"
-
-#: data/ui/preferences.ui:93
-msgid ""
-"Single-pane layout. Auto: on mobile shells or narrow windows; "
-"Enabled/Disabled: force on or off at any size"
-msgstr ""
-"Vieno polangio išdėstymas. Automatiškai: mobiliuose apvalkaluose ar "
-"siauruose languose; Įjungta/Išjungta: priverstinai įjungti ar išjungti bet "
-"kokiame dydyje"
-
-#: data/ui/preferences.ui:112
-msgid "Enable Developer Tools"
-msgstr "Įjungti kūrėjo įrankius"
-
-#: data/ui/preferences.ui:113
-msgid "Allow inspecting and debugging the WebView"
-msgstr "Leisti tikrinti ir derinti WebView"
-
-#: data/ui/preferences.ui:119
-msgid "Open the developer tools for the current page"
-msgstr "Atverti kūrėjo įrankius dabartiniam puslapiui"
-
-#: data/ui/preferences.ui:123
-msgid "Open"
-msgstr "Atverti"
-
-#: data/ui/preferences.ui:135 data/ui/preferences.ui:241
-msgid "Notifications"
-msgstr "Pranešimai"
-
-#: data/ui/preferences.ui:142
-msgid "Enable Notifications"
-msgstr "Įjungti pranešimus"
-
-#: data/ui/preferences.ui:143
-msgid "Master toggle for all notifications"
-msgstr "Pagrindinis visų pranešimų jungiklis"
-
-#: data/ui/preferences.ui:150
-msgid "Messages"
-msgstr "Žinutės"
-
-#: data/ui/preferences.ui:153
-msgid "Message Notifications"
-msgstr "Žinučių pranešimai"
-
-#: data/ui/preferences.ui:154
-msgid "Show notifications for incoming messages"
-msgstr "Rodyti pranešimus apie gaunamas žinutes"
-
-#: data/ui/preferences.ui:159
-msgid "Change Tray Icon on Message"
-msgstr "Keisti dėklo piktogramą gavus žinutę"
-
-#: data/ui/preferences.ui:160
-msgid "Animate the tray icon when a new message arrives"
-msgstr "Animuoti dėklo piktogramą gavus naują žinutę"
-
-#: data/ui/preferences.ui:167
-msgid "Message Preview"
-msgstr "Žinutės peržiūra"
-
-#: data/ui/preferences.ui:168
-msgid "Some settings only apply when Karere controls the popup"
-msgstr ""
-"Kai kurie nustatymai galioja tik tada, kai iškylantįjį langą valdo Karere"
-
-#: data/ui/preferences.ui:171
-msgid "Show Sender Name"
-msgstr "Rodyti siuntėjo vardą"
-
-#: data/ui/preferences.ui:172
-msgid "Display the contact name in notifications"
-msgstr "Rodyti kontakto vardą pranešimuose"
-
-#: data/ui/preferences.ui:177
-msgid "Show Message Text"
-msgstr "Rodyti žinutės tekstą"
-
-#: data/ui/preferences.ui:178
-msgid "Display message content in notifications"
-msgstr "Rodyti žinutės turinį pranešimuose"
-
-#: data/ui/preferences.ui:183
-msgid "Preview Length"
-msgstr "Peržiūros ilgis"
-
-#: data/ui/preferences.ui:184
-msgid "How much of the message to show"
-msgstr "Kiek žinutės rodyti"
-
-#: data/ui/preferences.ui:188
-msgid "Short"
-msgstr "Trumpas"
-
-#: data/ui/preferences.ui:189
-msgid "Medium"
-msgstr "Vidutinis"
-
-#: data/ui/preferences.ui:190
-msgid "Long"
-msgstr "Ilgas"
-
-#: data/ui/preferences.ui:200
-msgid "Sounds"
-msgstr "Garsai"
-
-#: data/ui/preferences.ui:203
-msgid "Notification Sounds"
-msgstr "Pranešimų garsai"
-
-#: data/ui/preferences.ui:204
-msgid "Play WhatsApp's notification sound for new messages"
-msgstr "Groti WhatsApp pranešimų garsą naujoms žinutėms"
-
-#: data/ui/preferences.ui:213
-msgid "Downloads"
-msgstr "Atsiuntimai"
-
-#: data/ui/preferences.ui:217
-msgid "Location"
-msgstr "Vieta"
-
-#: data/ui/preferences.ui:220
-msgid "Download Directory"
-msgstr "Atsiuntimų katalogas"
-
-#: data/ui/preferences.ui:221
-msgid "Default (Downloads)"
-msgstr "Numatytasis (Atsiuntimai)"
-
-#: data/ui/preferences.ui:224
-msgid "Choose…"
-msgstr "Pasirinkti…"
-
-#: data/ui/preferences.ui:232
-msgid "Reset to default"
-msgstr "Atstatyti numatytąjį"
-
-#: data/ui/preferences.ui:244
-msgid "Download Notifications"
-msgstr "Atsiuntimų pranešimai"
-
-#: data/ui/preferences.ui:245
-msgid "Notify when a file download completes"
-msgstr "Pranešti, kai failo atsiuntimas baigiamas"
-
-#: data/ui/preferences.ui:250
-msgid "Notification Type"
-msgstr "Pranešimo tipas"
-
-#: data/ui/preferences.ui:251
-msgid "How download notifications are displayed"
-msgstr "Kaip rodomi atsiuntimų pranešimai"
-
-#: data/ui/preferences.ui:255
-msgid "In-app Toast"
-msgstr "Iškylantysis pranešimas programoje"
-
-#: data/ui/preferences.ui:256
-msgid "System Notification"
-msgstr "Sistemos pranešimas"
-
-#: data/ui/preferences.ui:257
-msgid "Both"
-msgstr "Abu"
-
-#: data/ui/preferences.ui:269
-msgid "Spellcheck"
-msgstr "Rašybos tikrinimas"
-
-#: data/ui/preferences.ui:273
-msgid "Spell Checking"
-msgstr "Rašybos tikrinimas"
-
-#: data/ui/preferences.ui:276
-msgid "Enable Spell Checking"
-msgstr "Įjungti rašybos tikrinimą"
-
-#: data/ui/preferences.ui:277
-msgid "Check spelling as you type"
-msgstr "Tikrinti rašybą rašant"
-
-#: data/ui/preferences.ui:282
-msgid "Auto-Detect Language"
-msgstr "Automatiškai aptikti kalbą"
-
-#: data/ui/preferences.ui:283
-msgid "Detect the writing language automatically"
-msgstr "Automatiškai aptikti rašymo kalbą"
-
-#: data/ui/preferences.ui:288
-msgid "Enable Auto-Correct"
-msgstr "Įjungti automatinį taisymą"
-
-#: data/ui/preferences.ui:289
-msgid "Automatically fix common spelling mistakes"
-msgstr "Automatiškai taisyti dažnas rašybos klaidas"
-
-#: data/ui/preferences.ui:294
-msgid "Header Bar Language Control"
-msgstr "Kalbos valdiklis antraštės juostoje"
-
-#: data/ui/preferences.ui:295
-msgid "Show the spell-check language dropdown in the header bar"
-msgstr ""
-"Rodyti rašybos tikrinimo kalbos išskleidžiamąjį sąrašą antraštės juostoje"
-
-#: data/ui/preferences.ui:301
-msgid "Star a language to pin it to the top"
-msgstr "Pažymėkite kalbą žvaigždute, kad ją prisegtumėte viršuje"
-
-#: data/ui/preferences.ui:310
-msgid "Privacy"
-msgstr "Privatumas"
-
-#: data/ui/preferences.ui:314
-msgid "Site Permissions"
-msgstr "Svetainių leidimai"
-
-#: data/ui/preferences.ui:315
-msgid "Stored allow/deny decisions for websites"
-msgstr "Įrašyti svetainių leidimo / draudimo sprendimai"
-
-#: data/ui/preferences.ui:318
-msgid "Clear All"
-msgstr "Išvalyti viską"
-
-#: data/ui/preferences.ui:331
+#: data/io.github.tobagin.karere.metainfo.xml.in:53
+msgid "About dialog showing application information"
+msgstr "Dialogas „Apie“, rodantis programos informaciją"
+
+#: data/ui/preferences.ui:348
 msgid "Accessibility"
 msgstr "Pritaikymas neįgaliesiems"
 
-#: data/ui/preferences.ui:335
-msgid "Motion and Focus"
-msgstr "Judesys ir fokusas"
-
-#: data/ui/preferences.ui:338
-msgid "Reduce Motion"
-msgstr "Mažinti judesį"
-
-#: data/ui/preferences.ui:339
-msgid "Minimize animations and transitions"
-msgstr "Sumažinti animacijas ir perėjimus"
-
-#: data/ui/preferences.ui:344
-msgid "Focus Indicators"
-msgstr "Fokuso indikatoriai"
-
-#: data/ui/preferences.ui:345
-msgid "Show visible outlines around focused elements"
-msgstr "Rodyti matomus kontūrus aplink fokusuotus elementus"
-
-#: data/ui/preferences.ui:350
-msgid "High Contrast Mode"
-msgstr "Didelio kontrasto veiksena"
-
-#: data/ui/preferences.ui:351
-msgid "Increase contrast for better readability"
-msgstr "Padidinti kontrastą geresniam įskaitomumui"
-
-#: data/ui/preferences.ui:358 data/ui/keyboard-shortcuts.ui:90
-msgid "Zoom"
-msgstr "Mastelis"
-
-#: data/ui/preferences.ui:361
-msgid "Accessibility Zoom"
-msgstr "Pritaikymo neįgaliesiems mastelis"
-
-#: data/ui/preferences.ui:362
-msgid "Set a minimum zoom level for all accounts"
-msgstr "Nustatyti mažiausią mastelį visoms paskyroms"
-
-#: data/ui/preferences.ui:367
-msgid "Minimum Zoom Level"
-msgstr "Mažiausias mastelio lygis"
-
-#: data/ui/preferences.ui:368
-msgid "Applied to all webviews"
-msgstr "Taikoma visiems žiniatinklio rodiniams"
-
-#: data/ui/preferences.ui:383
-msgid "Header Bar Zoom Controls"
-msgstr "Mastelio valdikliai antraštės juostoje"
-
-#: data/ui/preferences.ui:384
-msgid "Show zoom buttons in the header bar"
-msgstr "Rodyti mastelio mygtukus antraštės juostoje"
-
-#: data/ui/preferences.ui:391
-msgid "Screen Reader Support"
-msgstr "Ekrano skaitytuvo palaikymas"
-
-#: data/ui/preferences.ui:394
-msgid "Screen Reader Optimizations"
-msgstr "Ekrano skaitytuvo optimizavimas"
-
-#: data/ui/preferences.ui:395
-msgid "Improve compatibility with assistive technologies — restart required"
-msgstr ""
-"Pagerinti suderinamumą su pagalbinėmis technologijomis — reikia paleisti iš "
-"naujo"
-
-#: data/ui/preferences.ui:402
-msgid "Shortcuts"
-msgstr "Spartieji klavišai"
-
-#: data/ui/preferences.ui:406
-msgid "Enable keyboard shortcuts for common actions"
-msgstr "Įjungti sparčiuosius klavišus dažniems veiksmams"
-
-#: data/ui/preferences.ui:411
+#: data/ui/preferences.ui:428
 msgid "Accessibility Shortcuts"
 msgstr "Pritaikymo neįgaliesiems spartieji klavišai"
 
-#: data/ui/preferences.ui:412
-msgid "Enable shortcuts for accessibility features"
-msgstr "Įjungti sparčiuosius klavišus pritaikymo neįgaliesiems funkcijoms"
+#: data/ui/preferences.ui:378
+msgid "Accessibility Zoom"
+msgstr "Pritaikymo neįgaliesiems mastelis"
 
-#: data/ui/preferences.ui:417
-msgid "Developer Shortcuts"
-msgstr "Kūrėjo spartieji klavišai"
+#: data/io.github.tobagin.karere.metainfo.xml.in:234
+msgid ""
+"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
+"browsing"
+msgstr ""
+"Pritaikymo neįgaliesiems nuostatos: judesio mažinimas, fokuso žiedo "
+"matomumas ir žymeklio naršymas"
 
-#: data/ui/preferences.ui:418
-msgid "Enable shortcuts for developer tools"
-msgstr "Įjungti sparčiuosius klavišus kūrėjo įrankiams"
-
-#: data/ui/preferences.ui:423
-msgid "Notification Shortcuts"
-msgstr "Pranešimų spartieji klavišai"
-
-#: data/ui/preferences.ui:424
-msgid "Enable shortcuts for notification actions"
-msgstr "Įjungti sparčiuosius klavišus pranešimų veiksmams"
-
-#: data/ui/keyboard-shortcuts.ui:12
-msgid "WhatsApp"
-msgstr "WhatsApp"
-
-#: data/ui/keyboard-shortcuts.ui:15
-msgid "Reload WhatsApp Web"
-msgstr "Įkelti WhatsApp Web iš naujo"
-
-#: data/ui/keyboard-shortcuts.ui:16
-msgid "Reload the current page"
-msgstr "Įkelti dabartinį puslapį iš naujo"
-
-#: data/ui/keyboard-shortcuts.ui:22
-msgid "Force Reload"
-msgstr "Priverstinai įkelti iš naujo"
-
-#: data/ui/keyboard-shortcuts.ui:23
-msgid "Reload, bypassing the cache"
-msgstr "Įkelti iš naujo, aplenkiant podėlį"
-
-#: data/ui/keyboard-shortcuts.ui:29
-msgid "Find in Page"
-msgstr "Ieškoti puslapyje"
-
-#: data/ui/keyboard-shortcuts.ui:30
-msgid "Search the current page"
-msgstr "Ieškoti dabartiniame puslapyje"
+#: data/io.github.tobagin.karere.metainfo.xml.in:230
+msgid ""
+"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+msgstr ""
+"Paskyros tapatybė (vardas + avataras) automatiškai aptinkama iš WhatsApp Web "
+"vidinės saugyklos, su pablogintos DOM nuskaitymo atsarga, žymima ženkleliu"
 
 #: data/ui/keyboard-shortcuts.ui:38
 msgid "Accounts"
 msgstr "Paskyros"
 
-#: data/ui/keyboard-shortcuts.ui:41
-msgid "Next Account"
-msgstr "Kita paskyra"
+#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
+msgid "Add new account"
+msgstr "Pridėti naują paskyrą"
 
-#: data/ui/keyboard-shortcuts.ui:42
-msgid "Switch to the next account"
-msgstr "Perjungti į kitą paskyrą"
+#: data/io.github.tobagin.karere.metainfo.xml.in:497
+msgid "Add new contributor Sabri Ünal to the About dialog"
+msgstr "Pridėtas naujas talkininkas Sabri Ünal į dialogą „Apie“"
 
-#: data/ui/keyboard-shortcuts.ui:48
-msgid "Previous Account"
-msgstr "Ankstesnė paskyra"
+#: data/io.github.tobagin.karere.metainfo.xml.in:519
+msgid "Add xdg-config/autostart permission for autostart support"
+msgstr ""
+"Pridėtas xdg-config/autostart leidimas automatinio paleidimo palaikymui"
 
-#: data/ui/keyboard-shortcuts.ui:49
-msgid "Switch to the previous account"
-msgstr "Perjungti į ankstesnę paskyrą"
+#: data/io.github.tobagin.karere.metainfo.xml.in:537
+msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+msgstr ""
+"Pridėtas jungiklis „Paleisti sistemai startavus“ nuostatose (numatytasis: "
+"išjungta)"
 
-#: data/ui/keyboard-shortcuts.ui:56
-msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
-msgstr "Pereiti prie paskyros 1–9 (Alt+1 … Alt+9)"
+#: data/io.github.tobagin.karere.metainfo.xml.in:314
+msgid ""
+"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
+"handling"
+msgstr ""
+"Pridėti GStreamer/PipeWire aplinkos kintamieji gamybiniam Flatpak efektyviam "
+"medijos tvarkymui"
 
-#: data/ui/keyboard-shortcuts.ui:67
-msgid "Fullscreen"
-msgstr "Visas ekranas"
+#: data/io.github.tobagin.karere.metainfo.xml.in:702
+msgid "Added WebKit cache control setting for improved rendering consistency"
+msgstr ""
+"Pridėtas WebKit podėlio valdymo nustatymas pagerintam atvaizdavimo "
+"nuoseklumui"
 
-#: data/ui/keyboard-shortcuts.ui:68
-msgid "Toggle fullscreen mode"
-msgstr "Perjungti viso ekrano veikseną"
+#: data/io.github.tobagin.karere.metainfo.xml.in:376
+msgid ""
+"Added WebRTC permission handling in preparation for WhatsApp Web voice/video "
+"calls"
+msgstr ""
+"Pridėtas WebRTC leidimų tvarkymas ruošiantis WhatsApp Web balso / vaizdo "
+"skambučiams"
 
-#: data/ui/keyboard-shortcuts.ui:74
-msgid "Minimize Window"
-msgstr "Suskleisti langą"
+#: data/io.github.tobagin.karere.metainfo.xml.in:361
+msgid ""
+"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+msgstr ""
+"Pridėtas mastelio palaikymas (Ctrl +/-/0) su išliekamumu ir nuostatų "
+"valdikliais"
 
-#: data/ui/keyboard-shortcuts.ui:75
-msgid "Minimize the window"
-msgstr "Suskleisti langą"
+#: data/io.github.tobagin.karere.metainfo.xml.in:195
+msgid ""
+"Added an experimental \"GPU Rendering\" option (Preferences → General → "
+"Experimental) that renders the chat view on the GPU via accelerated off-"
+"screen rendering for lower CPU and power use. Off by default and requires a "
+"restart; if the chat area is blank on your hardware, turn it off and restart"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:746
+msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+msgstr ""
+"Pridėta kompiliavimo metu sąlyginė kompiliacija naudojant DEVELOPMENT vėliavą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:352
+msgid "Added complete multi-account support with sidebar and tray integration"
+msgstr ""
+"Pridėtas pilnas kelių paskyrų palaikymas su šonine juosta ir dėklo "
+"integracija"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:748
+msgid "Added contributors Aman Das and Cameo to about dialog"
+msgstr "Pridėti talkininkai Aman Das ir Cameo į dialogą „Apie“"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:698
+msgid ""
+"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+msgstr ""
+"Pridėti aukštos kokybės Noto Color Emoji šriftai (v2.047, Unicode 16.0 "
+"palaikymas)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:462
+msgid "Added middle-click paste from primary selection (selected text)"
+msgstr ""
+"Pridėtas įklijavimas viduriniu spustelėjimu iš pirminės atrankos (pažymėtas "
+"tekstas)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:471
+msgid "Added new application icons"
+msgstr "Pridėtos naujos programos piktogramos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:353
+msgid "Added per-account zoom settings and improved accessibility"
+msgstr ""
+"Pridėti mastelio nustatymai kiekvienai paskyrai ir pagerintas pritaikymas "
+"neįgaliesiems"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:540
+msgid "Added striped symbolic icons for development version"
+msgstr "Pridėtos dryžuotos simbolinės piktogramos kūrimo versijai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:734
+msgid "Added subpixel font scaling and advanced rendering optimizations"
+msgstr ""
+"Pridėtas subpikselių šriftų mastelio keitimas ir pažangus atvaizdavimo "
+"optimizavimas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:278
+msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+msgstr ""
+"Pridėtas balso ir vaizdo skambučių palaikymas per WebRTC įgalintą WebKitGTK "
+"2.50.5"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:252
+msgid ""
+"Added: account switcher uses a popover on desktop windows (bottom sheet "
+"preserved on mobile)"
+msgstr ""
+"Pridėta: paskyrų perjungiklis naudoja iškylantįjį langą darbalaukio languose "
+"(apatinis lapas išlaikytas mobiliuose)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:250
+msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+msgstr ""
+"Pridėta: prisegti mėgstamas rašybos tikrinimo kalbas išskleidžiamojo sąrašo "
+"viršuje"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:251
+msgid ""
+"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
+"instead of locale codes"
+msgstr ""
+"Pridėta: rašybos tikrinimo išskleidžiamasis sąrašas rodo natūralius kalbų "
+"pavadinimus („English (UK)“) vietoje lokalės kodų"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:819
+msgid "Advanced notification system with native desktop integration"
+msgstr "Pažangi pranešimų sistema su savaimine darbalaukio integracija"
+
+#: data/ui/preferences.ui:119
+msgid "Allow inspecting and debugging the WebView"
+msgstr "Leisti tikrinti ir derinti WebView"
+
+#: data/ui/preferences.ui:177
+msgid "Animate the tray icon when a new message arrives"
+msgstr "Animuoti dėklo piktogramą gavus naują žinutę"
+
+#: data/ui/preferences.ui:68
+msgid "Appearance"
+msgstr "Išvaizda"
+
+#: data/ui/keyboard-shortcuts.ui:142
+msgid "Application"
+msgstr "Programa"
+
+#: data/ui/preferences.ui:72
+msgid "Application language. Requires restart."
+msgstr "Programos kalba. Reikia paleisti iš naujo."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:57
+msgid "Application preferences and settings dialog"
+msgstr "Programos nuostatų ir nustatymų dialogas"
+
+#: data/ui/preferences.ui:385
+msgid "Applied to all webviews"
+msgstr "Taikoma visiems žiniatinklio rodiniams"
+
+#: data/ui/preferences.ui:56 data/ui/preferences.ui:103
+msgid "Auto"
+msgstr "Automatiškai"
+
+#: data/ui/preferences.ui:299
+msgid "Auto-Detect Language"
+msgstr "Automatiškai aptikti kalbą"
+
+#: data/ui/preferences.ui:52
+msgid "Auto: shown when a system tray is available"
+msgstr "Automatiškai: rodoma, kai prieinamas sistemos dėklas"
+
+#: data/ui/preferences.ui:306
+msgid "Automatically fix common spelling mistakes"
+msgstr "Automatiškai taisyti dažnas rašybos klaidas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:812
+msgid ""
+"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+"performance and integration."
+msgstr ""
+"ARDANTIS PAKEITIMAS: visiškas perrašymas iš Python į savaimąją Vala "
+"geresniam našumui ir integracijai."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:724
+msgid "Better build system compatibility with different environments"
+msgstr "Geresnis darinio sistemos suderinamumas su skirtingomis aplinkomis"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:803
+msgid "Better error handling for network disconnections"
+msgstr "Geresnis klaidų tvarkymas tinklo atjungimams"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:769
+msgid "Better error handling for network timeouts"
+msgstr "Geresnis klaidų tvarkymas tinklo skirtiesiems laikams"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:721
+msgid "Better sandboxed environment compatibility"
+msgstr "Geresnis smėlio dėžės aplinkos suderinamumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:682
+msgid "Better support for modern desktop environments"
+msgstr "Geresnis modernių darbalaukio aplinkų palaikymas"
+
+#: data/ui/preferences.ui:93
+msgid "Blend the window and header bar with WhatsApp Web's background"
+msgstr ""
+
+#: data/ui/preferences.ui:274
+msgid "Both"
+msgstr "Abu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:525
+msgid "Bug Fix Release"
+msgstr "Klaidų taisymo laida"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:583
+#: data/io.github.tobagin.karere.metainfo.xml.in:637
+#: data/io.github.tobagin.karere.metainfo.xml.in:685
+#: data/io.github.tobagin.karere.metainfo.xml.in:705
+#: data/io.github.tobagin.karere.metainfo.xml.in:761
+#: data/io.github.tobagin.karere.metainfo.xml.in:778
+#: data/io.github.tobagin.karere.metainfo.xml.in:795
+msgid "Bug Fixes:"
+msgstr "Klaidų taisymai:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:257
+msgid ""
+"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+"dependencies to latest compatible versions"
+msgstr ""
+"WebKitGTK pakelta iki 2.52.3, LibreOffice žodynai iki 26.2.3.2, Rust "
+"priklausomybės iki naujausių suderinamų versijų"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:703
+msgid "Cache disabled by default to prevent emoji rendering issues"
+msgstr ""
+"Podėlis išjungtas pagal numatymą, kad būtų išvengta jaustukų atvaizdavimo "
+"problemų"
+
+#: data/ui/preferences.ui:176
+msgid "Change Tray Icon on Message"
+msgstr "Keisti dėklo piktogramą gavus žinutę"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:526
+#: data/io.github.tobagin.karere.metainfo.xml.in:535
+msgid "Changes:"
+msgstr "Pakeitimai:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
+msgid "Chat on WhatsApp"
+msgstr "Susirašinėkite WhatsApp"
+
+#: data/ui/preferences.ui:294
+msgid "Check spelling as you type"
+msgstr "Tikrinti rašybą rašant"
+
+#: data/ui/preferences.ui:78
+msgid "Choose the application color scheme"
+msgstr "Pasirinkite programos spalvų schemą"
+
+#: data/ui/preferences.ui:241
+msgid "Choose…"
+msgstr "Pasirinkti…"
+
+#: data/ui/preferences.ui:335
+msgid "Clear All"
+msgstr "Išvalyti viską"
+
+#: data/ui/window.ui:184
+msgid "Close Developer Tools"
+msgstr "Užverti kūrėjo įrankius"
 
 #: data/ui/keyboard-shortcuts.ui:81
 msgid "Close Window"
@@ -655,83 +348,932 @@ msgstr "Užverti langą"
 msgid "Close the window"
 msgstr "Užverti langą"
 
-#: data/ui/keyboard-shortcuts.ui:94
-msgid "Increase the zoom level"
-msgstr "Padidinti mastelį"
+#: data/io.github.tobagin.karere.metainfo.xml.in:646
+msgid "Code Quality Improvements:"
+msgstr "Kodo kokybės patobulinimai:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:835
+msgid "Complete internationalization support"
+msgstr "Pilnas internacionalizavimo palaikymas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:820
+msgid "Comprehensive accessibility support"
+msgstr "Išsamus pritaikymo neįgaliesiems palaikymas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:832
+msgid "Comprehensive test suite with unit and integration tests"
+msgstr "Išsamus testų rinkinys su vienetų ir integracijos testais"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:661
+msgid "Connected show_notification signal handler for WebKit notifications"
+msgstr "Prijungtas show_notification signalo tvarkytuvas WebKit pranešimams"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:744
+msgid "Converted template files to preprocessor directives for cleaner code"
+msgstr ""
+"Šablono failai konvertuoti į pirminio apdorojimo direktyvas švaresniam kodui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:781
+msgid "Corrected AppStream metainfo format compliance"
+msgstr "Pataisytas AppStream metainfo formato atitikimas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:765
+msgid "Corrected accessibility focus handling"
+msgstr "Pataisytas pritaikymo neįgaliesiems fokuso tvarkymas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:711
+msgid "Corrected dependency version specifications in meson.build"
+msgstr "Pataisytos priklausomybių versijų specifikacijos meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:472
+msgid "Corrected metadata description references"
+msgstr "Pataisytos metaduomenų aprašymo nuorodos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:799
+msgid "Corrected window state persistence on shutdown"
+msgstr "Pataisytas lango būsenos išliekamumas išjungiant"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:435
+msgid "Ctrl+N keyboard shortcut for opening a new chat"
+msgstr "Spartusis klavišas Ctrl+N naujam pokalbiui atverti"
+
+#: data/ui/preferences.ui:84
+msgid "Dark"
+msgstr "Tamsi"
 
 #: data/ui/keyboard-shortcuts.ui:101
 msgid "Decrease the zoom level"
 msgstr "Sumažinti mastelį"
 
-#: data/ui/keyboard-shortcuts.ui:108
-msgid "Reset zoom to 100%"
-msgstr "Atstatyti mastelį į 100 %"
+#: data/ui/preferences.ui:238
+msgid "Default (Downloads)"
+msgstr "Numatytasis (Atsiuntimai)"
 
-#: data/ui/keyboard-shortcuts.ui:114
-msgid "Toggle Header Bar Zoom Controls"
-msgstr "Perjungti mastelio valdiklius antraštės juostoje"
-
-#: data/ui/keyboard-shortcuts.ui:115
-msgid "Show or hide the zoom buttons"
-msgstr "Rodyti arba slėpti mastelio mygtukus"
+#: data/ui/preferences.ui:300
+msgid "Detect the writing language automatically"
+msgstr "Automatiškai aptikti rašymo kalbą"
 
 #: data/ui/keyboard-shortcuts.ui:123
 msgid "Developer"
 msgstr "Kūrėjas"
 
-#: data/ui/keyboard-shortcuts.ui:127
-msgid "Open the developer tools"
-msgstr "Atverti kūrėjo įrankius"
+#: data/ui/preferences.ui:434
+msgid "Developer Shortcuts"
+msgstr "Kūrėjo spartieji klavišai"
+
+#: data/ui/window.ui:173 data/ui/preferences.ui:115 data/ui/preferences.ui:124
+#: data/ui/keyboard-shortcuts.ui:126
+msgid "Developer Tools"
+msgstr "Kūrėjo įrankiai"
+
+#: data/ui/preferences.ui:58 data/ui/preferences.ui:105
+msgid "Disabled"
+msgstr "Išjungta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:731
+msgid "Disabled problematic WebKit caches causing font corruption"
+msgstr "Išjungti probleminiai WebKit podėliai, sukėlę šriftų gadinimą"
+
+#: data/ui/preferences.ui:195
+msgid "Display message content in notifications"
+msgstr "Rodyti žinutės turinį pranešimuose"
+
+#: data/ui/preferences.ui:189
+msgid "Display the contact name in notifications"
+msgstr "Rodyti kontakto vardą pranešimuose"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:666
+msgid "Documentation:"
+msgstr "Dokumentacija:"
+
+#: data/ui/preferences.ui:237
+msgid "Download Directory"
+msgstr "Atsiuntimų katalogas"
+
+#: data/ui/preferences.ui:261
+msgid "Download Notifications"
+msgstr "Atsiuntimų pranešimai"
+
+#: data/ui/preferences.ui:230
+msgid "Downloads"
+msgstr "Atsiuntimai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:745
+msgid "Eliminated .vala.in template substitution system"
+msgstr "Pašalinta .vala.in šablonų keitimo sistema"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:717
+msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+msgstr "Pašalintas WebKit podėlio gadinimas, veikęs jaustukų atvaizdavimą"
+
+#: data/ui/preferences.ui:305
+msgid "Enable Auto-Correct"
+msgstr "Įjungti automatinį taisymą"
+
+#: data/ui/preferences.ui:118
+msgid "Enable Developer Tools"
+msgstr "Įjungti kūrėjo įrankius"
+
+#: data/ui/preferences.ui:159
+msgid "Enable Notifications"
+msgstr "Įjungti pranešimus"
+
+#: data/ui/preferences.ui:293
+msgid "Enable Spell Checking"
+msgstr "Įjungti rašybos tikrinimą"
+
+#: data/ui/preferences.ui:423
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "Įjungti sparčiuosius klavišus dažniems veiksmams"
+
+#: data/ui/preferences.ui:429
+msgid "Enable shortcuts for accessibility features"
+msgstr "Įjungti sparčiuosius klavišus pritaikymo neįgaliesiems funkcijoms"
+
+#: data/ui/preferences.ui:435
+msgid "Enable shortcuts for developer tools"
+msgstr "Įjungti sparčiuosius klavišus kūrėjo įrankiams"
+
+#: data/ui/preferences.ui:441
+msgid "Enable shortcuts for notification actions"
+msgstr "Įjungti sparčiuosius klavišus pranešimų veiksmams"
+
+#: data/ui/preferences.ui:57 data/ui/preferences.ui:104
+msgid "Enabled"
+msgstr "Įjungta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:719
+msgid "Enhanced 2D canvas acceleration for better graphics performance"
+msgstr "Pagerintas 2D drobės spartinimas geresniam grafikos našumui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:725
+msgid "Enhanced CI/CD pipeline stability"
+msgstr "Pagerintas CI/CD konvejerio stabilumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:787
+msgid "Enhanced Flathub compliance and validation"
+msgstr "Pagerintas Flathub atitikimas ir tikrinimas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:713
+msgid "Enhanced URL validation for external link detection"
+msgstr "Pagerintas URL tikrinimas išorinių nuorodų aptikimui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:699
+msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+msgstr ""
+"Pagerintas WebKit atvaizdavimas su maksimaliu aparatinės įrangos spartinimu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:818
+msgid "Enhanced WebKitGTK 6.0 integration"
+msgstr "Pagerinta WebKitGTK 6.0 integracija"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:461
+msgid ""
+"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+"compatibility"
+msgstr ""
+"Pagerintas paveikslo įklijavimas su Base64 kodavimu patikimam WhatsApp Web "
+"suderinamumui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:723
+msgid "Enhanced logging for external link operations"
+msgstr "Pagerintas žurnalavimas išorinių nuorodų operacijoms"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:596
+msgid "Enhanced packaging for better compatibility"
+msgstr "Pagerintas pakavimas geresniam suderinamumui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:554
+msgid "Enhanced performance and stability"
+msgstr "Pagerintas našumas ir stabilumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:834
+msgid "Enhanced security with proper sandboxing"
+msgstr "Pagerintas saugumas su tinkama smėlio dėže"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:683
+msgid "Enhanced stability and performance optimizations"
+msgstr "Pagerintas stabilumas ir našumo optimizavimas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:804
+msgid "Enhanced stability during long sessions"
+msgstr "Pagerintas stabilumas ilgų seansų metu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:770
+msgid "Enhanced stability for extended usage"
+msgstr "Pagerintas stabilumas ilgesniam naudojimui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:619
+msgid "Enhanced visual documentation for users"
+msgstr "Pagerinta vaizdinė dokumentacija naudotojams"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:564
+msgid "Ensure application starts properly in the background without delay"
+msgstr "Užtikrinti, kad programa tinkamai pasileistų fone be vėlavimo"
+
+#: data/ui/preferences.ui:139
+msgid "Experimental"
+msgstr ""
+
+#: data/ui/keyboard-shortcuts.ui:29
+msgid "Find in Page"
+msgstr "Ieškoti puslapyje"
+
+#: data/ui/window.ui:111
+msgid "Find in page"
+msgstr "Ieškoti puslapyje"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:135
+msgid ""
+"Fixed \"Start in background\" being ignored when the tray icon is disabled; "
+"the setting is now honored and relaunching the app brings the window up. "
+"(#170)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:426
+msgid "Fixed \"Too many open files\" crash by reusing notification resources"
+msgstr ""
+"Pataisyta „Per daug atvirų failų“ strigtis pakartotinai naudojant pranešimų "
+"išteklius"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:639
+msgid ""
+"Fixed Ctrl+V paste for text content - now works for both text and images"
+msgstr ""
+"Pataisytas Ctrl+V įklijavimas teksto turiniui — dabar veikia tiek tekstui, "
+"tiek paveikslams"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:482
+msgid "Fixed Dead Key/composition input issues"
+msgstr "Pataisytos mirusio klavišo / kompozicijos įvedimo problemos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:419
+msgid "Fixed Flatpak build failure by correcting config"
+msgstr "Pataisytas Flatpak darinio gedimas pataisius konfigūraciją"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:290
+msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+msgstr ""
+"Pataisytas Flatpak darinio gedimas, kurį sukėlė ashpd 0.13 API pakeitimai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:481
+msgid "Fixed Open action for downloaded files"
+msgstr "Pataisytas veiksmas „Atverti“ atsiųstiems failams"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:642
+msgid "Fixed WebView zoom being enabled by default (now disabled)"
+msgstr ""
+"Pataisytas WebView mastelis, įgalintas pagal numatymą (dabar išjungtas)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:108
+msgid ""
+"Fixed WhatsApp loading in mobile layout on HiDPI displays until resized; the "
+"prewarm viewport is now sized in physical pixels (#176)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:640
+msgid "Fixed WhatsApp notification permission not persisting across sessions"
+msgstr "Pataisytas WhatsApp pranešimų leidimas, neišliekantis tarp seansų"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:136
+msgid ""
+"Fixed a black chat area on NVIDIA drivers by falling back to software "
+"rendering where the accelerated path cannot deliver frames. (#167)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:150
+msgid ""
+"Fixed a black/blank window on GNOME OS and other newer Wayland setups by "
+"switching to GTK's GL renderer, which presents the CEF browser view "
+"correctly where the default Vulkan renderer could not. (#164)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:586
+msgid "Fixed application freeze during lifecycle events"
+msgstr "Pataisytas programos užstrigimas gyvavimo ciklo įvykių metu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:401
+msgid ""
+"Fixed application freezing on resume by reverting aggressive cache "
+"optimization"
+msgstr ""
+"Pataisytas programos užstrigimas atsibudus atstatant agresyvų podėlio "
+"optimizavimą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:538
+msgid "Fixed autostart toggle pathing for Flatpak environments"
+msgstr "Pataisytas automatinio paleidimo jungiklio kelias Flatpak aplinkoms"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:412
+msgid "Fixed background notifications reliability"
+msgstr "Pataisytas fono pranešimų patikimumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:402
+msgid "Fixed background validation to ensure app starts correctly"
+msgstr "Pataisytas fono tikrinimas, kad programa pasileistų teisingai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:299
+msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+msgstr ""
+"Pataisyti blob URL atsiuntimai (pvz., paveikslo įrašymas iš medijos "
+"peržiūros)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:643
+msgid "Fixed clipboard manager intercepting all paste events"
+msgstr ""
+"Pataisytas mainų srities tvarkytuvas, perimantis visus įklijavimo įvykius"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:311
+msgid "Fixed crash on launch due to memory pressure threshold ordering"
+msgstr ""
+"Pataisyta strigtis paleidžiant dėl atminties spaudimo slenksčio rikiavimo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:797
+msgid "Fixed crash when handling invalid notification data"
+msgstr "Pataisyta strigtis tvarkant netinkamus pranešimų duomenis"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:763
+msgid "Fixed crash when handling invalid user input data"
+msgstr "Pataisyta strigtis tvarkant netinkamus naudotojo įvesties duomenis"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:563
+msgid ""
+"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+"activation"
+msgstr ""
+"Pataisyta kritinė paleidimo užstrigimo (suktuko) problema įgyvendinus D-Bus "
+"aktyvavimą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:313
+msgid "Fixed dead key composition for first character in input fields"
+msgstr ""
+"Pataisyta mirusių klavišų kompozicija pirmajam simboliui įvedimo laukuose"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:134
+msgid ""
+"Fixed dead-key accents (e.g. US Intl) intermittently typing the plain letter "
+"after sending a message; the input method is re-focused on the next "
+"keypress. (#154)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:463
+msgid "Fixed double-paste issue with middle-click"
+msgstr "Pataisyta dvigubo įklijavimo problema su viduriniu spustelėjimu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:312
+msgid "Fixed download destination and context menu issues"
+msgstr "Pataisytos atsiuntimo paskirties ir kontekstinio meniu problemos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:321
+msgid "Fixed download destination handling"
+msgstr "Pataisytas atsiuntimo paskirties tvarkymas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:279
+msgid "Fixed download filenames now use WhatsApp's original filename"
+msgstr ""
+"Pataisyti atsiuntimų failų pavadinimai dabar naudoja originalų WhatsApp "
+"failo pavadinimą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:280
+msgid "Fixed duplicate downloads auto-increment instead of failing"
+msgstr ""
+"Pataisyti pasikartojantys atsiuntimai dabar automatiškai didinami, o ne "
+"nepavyksta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:780
+msgid "Fixed duplicate provides tags in metainfo validation"
+msgstr "Pataisytos pasikartojančios provides žymos metainfo tikrinime"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:707
+msgid ""
+"Fixed external links not opening in default browser when running in Flatpak"
+msgstr ""
+"Pataisytos išorinės nuorodos, neatsiveriančios numatytojoje naršyklėje "
+"veikiant Flatpak aplinkoje"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:310
+msgid "Fixed freezes when viewing media galleries"
+msgstr "Pataisyti užstrigimai peržiūrint medijos galerijas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:710
+msgid "Fixed invalid meson version requirement preventing builds"
+msgstr "Pataisytas netinkamas meson versijos reikalavimas, trukdęs dariniams"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:470
+msgid "Fixed missing GSettings schema in Flatpak builds"
+msgstr "Pataisyta trūkstama GSettings schema Flatpak dariniuose"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:585
+msgid "Fixed missing dictionaries on startup"
+msgstr "Pataisyti trūkstami žodynai paleidžiant"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:528
+msgid ""
+"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
+msgstr ""
+"Pataisyta trūkstama dėklo piktograma GNOME pridėjus StatusNotifierWatcher "
+"leidimą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:282
+msgid "Fixed notification sounds now respect GNOME volume controls"
+msgstr "Pataisyta: pranešimų garsai dabar gerbia GNOME garsumo valdiklius"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:641
+msgid "Fixed notifications banner appearing on every app launch"
+msgstr ""
+"Pataisyta pranešimų juosta, atsirandanti kiekvieną kartą paleidžiant programą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:298
+msgid ""
+"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+"Linux environments"
+msgstr ""
+"Pataisyta ekrano klaviatūra, patikimai neatsirasdavusi Phosh ir lietimu "
+"valdomose Linux aplinkose"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:688
+msgid "Fixed potential rendering inconsistencies"
+msgstr "Pataisyti galimi atvaizdavimo nesutapimai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:709
+msgid "Fixed random emoji display issues and blank emoji problems"
+msgstr "Pataisytos atsitiktinės jaustukų rodymo problemos ir tušti jaustukai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:354
+msgid "Fixed startup race conditions and resource usage issues"
+msgstr "Pataisytos paleidimo lenktynių sąlygos ir išteklių naudojimo problemos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:143
+msgid ""
+"Fixed the GNOME OS / Wayland black window for real (#164): CEF was racing to "
+"the X11 Ozone backend and failing to present onto the Wayland view; Karere "
+"now forces CEF's Ozone backend to match the display server, so it no longer "
+"intermittently starts black."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:151
+msgid ""
+"Fixed the mobile layout dropping the message box focus when pressing Enter "
+"on a computer; focus is now kept on non-touch devices while phones still "
+"hide the keyboard after sending."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:133
+msgid ""
+"Fixed touchpad scrolling being ~5x too slow with a delay before it started; "
+"deltas are now scaled the same way Chromium's own Wayland backend scales "
+"them. (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:126
+msgid ""
+"Fixed touchpad scrolling sometimes needing a click in a pane before it "
+"responded; scrolling now targets the pane under the pointer like every other "
+"app. (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:539
+msgid "Fixed tray icon quit behavior"
+msgstr "Pataisyta dėklo piktogramos išėjimo elgsena"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:392
+msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+msgstr ""
+"Pataisytos dėklo piktogramos KDE/GNOME (matomos tiek šviesiose, tiek "
+"tamsiose temose)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:107
+msgid ""
+"Fixed tray “Quit” doing nothing while the window is hidden (e.g. Start in "
+"background) (#175)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:264
+msgid ""
+"Fixed voice and video calls in production Flatpak (Flathub linter-compatible "
+"pre-built plugin)"
+msgstr ""
+"Pataisyti balso ir vaizdo skambučiai gamybiniame Flatpak (su Flathub "
+"tikrintuvui suderinamu iš anksto sukurtu papildiniu)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:271
+msgid ""
+"Fixed voice and video calls not working in the production build (missing "
+"noise suppression plugin)"
+msgstr ""
+"Pataisyti balso ir vaizdo skambučiai, neveikę gamybiniame darinyje "
+"(trūkstamas triukšmo slopinimo papildinys)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:297
+msgid ""
+"Fixed voice and video calls showing \"Your browser doesn't support calling\""
+msgstr ""
+"Pataisyti balso ir vaizdo skambučiai, rodę „Jūsų naršyklė nepalaiko "
+"skambinimo“"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:281
+msgid ""
+"Fixed window now properly unminimizes when activated from launcher or tray"
+msgstr ""
+"Pataisyta: langas dabar tinkamai išskleidžiamas suaktyvinus iš leistuvo ar "
+"dėklo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:411
+msgid "Fixed window resize behavior to prevent excessive reloading"
+msgstr ""
+"Pataisyta lango dydžio keitimo elgsena, kad būtų išvengta pernelyg dažno "
+"įkėlimo iš naujo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:362
+msgid "Fixed window size increasing on every restart"
+msgstr "Pataisyta lango dydžio didėjimas kiekvieną kartą paleidžiant iš naujo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:427
+msgid "Fixed zombie process accumulation"
+msgstr "Pataisytas zombių procesų kaupimasis"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:110
+msgid ""
+"Fixed “Match WhatsApp Colors” applying only after restart; it now updates "
+"live when toggled (#168)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:561
+msgid "Fixed:"
+msgstr "Pataisyta:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:384
+msgid ""
+"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+"(silences sounds)"
+msgstr ""
+"Pataisyta: programa dabar gerbia sistemos „Netrukdyti“ nustatymus GNOME "
+"(nutildo garsus)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:329
+msgid "Fixed: Download destination path handling regression"
+msgstr "Pataisyta: atsiuntimo paskirties kelio tvarkymo regresija"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:343
+msgid ""
+"Fixed: Handle WebKit web process crashes with auto-reload and user "
+"notification"
+msgstr ""
+"Pataisyta: tvarkyti WebKit žiniatinklio proceso strigtis su automatiniu "
+"įkėlimu iš naujo ir naudotojo pranešimu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:344
+msgid "Fixed: JS injection and path traversal vulnerabilities"
+msgstr "Pataisyti: JS injekcijos ir kelio perėjimo pažeidžiamumai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:336
+msgid ""
+"Fixed: JS injection and path traversal vulnerabilities in download handling"
+msgstr ""
+"Pataisyti: JS injekcijos ir kelio perėjimo pažeidžiamumai atsiuntimų tvarkyme"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:385
+msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+msgstr ""
+"Pataisyta: pranešimai aplenkia „Netrukdyti“ vaizdinius (prioritetas "
+"sumažintas iki įprasto)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:345
+msgid "Fixed: Panic in notification handling"
+msgstr "Pataisyta: panika pranešimų tvarkyme"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:369
+msgid ""
+"Fixed: Resolved webview reload loop on startup due to incorrect window size "
+"detection"
+msgstr ""
+"Pataisyta: išspręsta žiniatinklio rodinio įkėlimo iš naujo kilpa paleidžiant "
+"dėl neteisingo lango dydžio aptikimo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:218
+msgid ""
+"Fixed: accented characters from dead keys (e.g. the US-International layout) "
+"now compose correctly instead of inserting the base letter — input is routed "
+"through the system input method (#154)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:253
+msgid ""
+"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
+"43, CachyOS, Bazzite, postmarketOS)"
+msgstr ""
+"Pataisyta: programos strigtis paleidžiant GNOME 50 / glibc 2.42+ sistemose "
+"(Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:243
+msgid ""
+"Fixed: blank-window race when autostarted before the network/portal stack is "
+"ready (auto-retry with exponential backoff)"
+msgstr ""
+"Pataisyta: tuščio lango lenktynės, kai paleidžiama automatiškai prieš "
+"tinklo / portalo posistemei būnant paruoštai (automatinis kartojimas su "
+"eksponentiniu atidėjimu)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:256
+msgid ""
+"Fixed: downloaded files with duplicate names silently overwriting each other "
+"(now appends (1), (2), ...)"
+msgstr ""
+"Pataisyta: atsiųsti failai su pasikartojančiais pavadinimais tyliai "
+"perrašydavo vienas kitą (dabar pridedama (1), (2), ...)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:173
+msgid ""
+"Fixed: input-method candidate popups (e.g. ibus-libpinyin) appeared in the "
+"top-left corner; they now show by the chat input where you click (#163)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:242
+msgid ""
+"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
+"clear behavior removed upstream — Karere now dismisses notifications "
+"explicitly)"
+msgstr ""
+"Pataisyta: išliekantys pranešimų ženkleliai / juostos po fokuso GNOME 50 "
+"(automatinio išvalymo elgsena pašalinta aukštupyje — Karere dabar atmeta "
+"pranešimus aiškiai)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:254
+msgid ""
+"Fixed: locale-dependent crash that required manually setting "
+"LC_ALL=en_GB.UTF-8"
+msgstr ""
+"Pataisyta: nuo lokalės priklausanti strigtis, reikalavusi rankiniu būdu "
+"nustatyti LC_ALL=en_GB.UTF-8"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:255
+msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+msgstr ""
+"Pataisyta: mobilus išdėstymas, sugadintas naujausių WhatsApp Web DOM "
+"pakeitimų"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:165
+msgid ""
+"Fixed: on Phosh / GNOME Mobile the on-screen keyboard stayed open all the "
+"time; it now follows the focused WhatsApp text field, appearing when you tap "
+"a message or search box and hiding otherwise"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:172
+msgid ""
+"Fixed: sluggish touchpad scrolling — disabled Chromium's smooth-scroll "
+"animation for instant, responsive scrolling (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:180
+msgid ""
+"Fixed: the ARM64 (aarch64) build, which had been failing since 4.0.4 due to "
+"a type error in the GPU-rendering code — so this is the first release to "
+"reach ARM64 (Phosh / mobile) users with the recent fixes, including touch "
+"scrolling (#162)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:202
+msgid ""
+"Fixed: the selected theme is now applied from startup, including when the "
+"app launches into the background at login — the window no longer opens light "
+"when dark is selected. WhatsApp Web content also follows the theme now (when "
+"WhatsApp's own theme is set to System default) (#160)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:210
+msgid ""
+"Fixed: the web view is now crisp under fractional/HiDPI display scaling "
+"(e.g. 150%/200% on GNOME Wayland) — the page is rendered to match the "
+"window's pixel buffer exactly instead of being upscaled, while staying at "
+"the correct size (#158)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:188
+msgid ""
+"Fixed: touch scrolling and tapping in the chat view on touchscreens (e.g. "
+"Phosh / mobile Linux) — touch input is now forwarded to the web view as "
+"native touch events (#162)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:203
+msgid ""
+"Fixed: typing in the narrow/mobile layout no longer inserts a stray space "
+"after the first letter (#159)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:211
+msgid ""
+"Fixed: typing the first letter of a message no longer inserts a stray space "
+"after it (a 4.0.1 input regression) (#154)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:219
+msgid ""
+"Fixed: web content is now sized correctly under fractional display scaling "
+"such as 150%; the view and input use logical coordinates with the fractional "
+"scale applied for crisp rendering (#155, #156)"
+msgstr ""
+
+#: data/ui/preferences.ui:361
+msgid "Focus Indicators"
+msgstr "Fokuso indikatoriai"
+
+#: data/ui/preferences.ui:82
+msgid "Follow System"
+msgstr "Sekti sistemą"
+
+#: data/ui/keyboard-shortcuts.ui:22
+msgid "Force Reload"
+msgstr "Priverstinai įkelti iš naujo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:549
+msgid "Full rewrite in Rust! 🦀"
+msgstr "Visiškai perrašyta Rust kalba! 🦀"
+
+#: data/ui/keyboard-shortcuts.ui:67
+msgid "Fullscreen"
+msgstr "Visas ekranas"
+
+#: data/ui/preferences.ui:142
+msgid "GPU Rendering"
+msgstr ""
+
+#: data/ui/window.ui:24
+msgid "GTK4 WhatsApp Web Client"
+msgstr "GTK4 WhatsApp Web klientas"
+
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:156
+msgid "General"
+msgstr "Bendra"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:498
+msgid "General improvements and versioning updates"
+msgstr "Bendri patobulinimai ir versijų atnaujinimai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:824
+msgid "Granular privacy and notification controls"
+msgstr "Detalūs privatumo ir pranešimų valdikliai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:825
+msgid "Hardware-accelerated rendering"
+msgstr "Aparatiškai spartinamas atvaizdavimas"
+
+#: data/ui/preferences.ui:311
+msgid "Header Bar Language Control"
+msgstr "Kalbos valdiklis antraštės juostoje"
+
+#: data/ui/preferences.ui:400
+msgid "Header Bar Zoom Controls"
+msgstr "Mastelio valdikliai antraštės juostoje"
+
+#: data/ui/preferences.ui:367
+msgid "High Contrast Mode"
+msgstr "Didelio kontrasto veiksena"
+
+#: data/ui/preferences.ui:268
+msgid "How download notifications are displayed"
+msgstr "Kaip rodomi atsiuntimų pranešimai"
+
+#: data/ui/preferences.ui:201
+msgid "How much of the message to show"
+msgstr "Kiek žinutės rodyti"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:735
+msgid "Implemented Flatpak portal system for external link handling"
+msgstr "Įgyvendinta Flatpak portalo sistema išorinių nuorodų tvarkymui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:660
+msgid "Implemented UserScript injection for Notification.permission state"
+msgstr "Įgyvendinta UserScript injekcija Notification.permission būsenai"
+
+#: data/ui/preferences.ui:412
+msgid "Improve compatibility with assistive technologies — restart required"
+msgstr ""
+"Pagerinti suderinamumą su pagalbinėmis technologijomis — reikia paleisti iš "
+"naujo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:109
+msgid ""
+"Improved NVIDIA detection via the live GL context so hybrid GPUs keep "
+"accelerated rendering, hardened the fallback for background starts, and "
+"raised the off-screen frame rate from 30 to 60 fps for smoother scroll/"
+"typing (#173)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:747
+msgid "Improved build system maintainability and type safety"
+msgstr "Pagerintas darinio sistemos priežiūros patogumas ir tipų saugumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:664
+msgid "Improved build system with cleaner dependency management"
+msgstr "Pagerinta darinio sistema su švaresniu priklausomybių valdymu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:700
+msgid "Improved emoji consistency with bundled font system"
+msgstr "Pagerintas jaustukų nuoseklumas su pridėta šriftų sistema"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:689
+msgid "Improved error handling and recovery mechanisms"
+msgstr "Pagerintas klaidų tvarkymas ir atkūrimo mechanizmai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:708
+msgid "Improved external link handling with proper Flatpak portal support"
+msgstr ""
+"Pagerintas išorinių nuorodų tvarkymas su tinkamu Flatpak portalo palaikymu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:720
+msgid "Improved font loading stability and reduced race conditions"
+msgstr "Pagerintas šriftų įkėlimo stabilumas ir sumažintos lenktynių sąlygos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:394
+msgid "Improved icon compatibility across desktop environments"
+msgstr "Pagerintas piktogramų suderinamumas tarp darbalaukio aplinkų"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:404
+msgid "Improved icon rendering (symbolic icons now use currentColor)"
+msgstr ""
+"Pagerintas piktogramų atvaizdavimas (simbolinės piktogramos dabar naudoja "
+"currentColor)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:826
+msgid "Improved memory efficiency and startup performance"
+msgstr "Pagerintas atminties efektyvumas ir paleidimo našumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:377
+msgid "Improved mobile UI resizing consistency"
+msgstr "Pagerintas mobilios sąsajos dydžio keitimo nuoseklumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:428
+msgid "Improved overall stability"
+msgstr "Pagerintas bendras stabilumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:681
+msgid "Improved system integration with latest platform libraries"
+msgstr ""
+"Pagerinta sistemos integracija su naujausiomis platformos bibliotekomis"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:788
+msgid "Improved translation file consistency"
+msgstr "Pagerintas vertimo failų nuoseklumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:181
+msgid ""
+"Improved: smoother scrolling, especially with a touchpad — fine scroll "
+"deltas are no longer dropped, and wheel vs touchpad input is scaled "
+"appropriately (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:577
+#: data/io.github.tobagin.karere.metainfo.xml.in:593
+#: data/io.github.tobagin.karere.metainfo.xml.in:604
+#: data/io.github.tobagin.karere.metainfo.xml.in:615
+#: data/io.github.tobagin.karere.metainfo.xml.in:678
+#: data/io.github.tobagin.karere.metainfo.xml.in:715
+#: data/io.github.tobagin.karere.metainfo.xml.in:742
+#: data/io.github.tobagin.karere.metainfo.xml.in:767
+#: data/io.github.tobagin.karere.metainfo.xml.in:784
+#: data/io.github.tobagin.karere.metainfo.xml.in:801
+msgid "Improvements:"
+msgstr "Patobulinimai:"
+
+#: data/ui/preferences.ui:272
+msgid "In-app Toast"
+msgstr "Iškylantysis pranešimas programoje"
+
+#: data/ui/preferences.ui:368
+msgid "Increase contrast for better readability"
+msgstr "Padidinti kontrastą geresniam įskaitomumui"
+
+#: data/ui/keyboard-shortcuts.ui:94
+msgid "Increase the zoom level"
+msgstr "Padidinti mastelį"
 
 #: data/ui/keyboard-shortcuts.ui:133
 msgid "Inspect Element"
 msgstr "Tikrinti elementą"
 
-#: data/ui/keyboard-shortcuts.ui:134
-msgid "Pick an element to inspect"
-msgstr "Pasirinkite tikrintiną elementą"
+#: data/ui/keyboard-shortcuts.ui:56
+msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
+msgstr "Pereiti prie paskyros 1–9 (Alt+1 … Alt+9)"
 
-#: data/ui/keyboard-shortcuts.ui:142
-msgid "Application"
-msgstr "Programa"
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:262 src/tray.rs:43
+#: src/tray.rs:66 src/tray.rs:73
+msgid "Karere"
+msgstr "Karere"
 
-#: data/ui/keyboard-shortcuts.ui:146
-msgid "Open preferences"
-msgstr "Atverti nuostatas"
-
-#: data/ui/keyboard-shortcuts.ui:153
-msgid "Show this shortcuts dialog"
-msgstr "Rodyti šį sparčiųjų klavišų dialogą"
-
-#: data/ui/keyboard-shortcuts.ui:160
-msgid "Quit Karere"
-msgstr "Išeiti iš Karere"
-
-#: data/io.github.tobagin.karere.desktop.in:3
-#: data/io.github.tobagin.karere.metainfo.xml.in:15
-msgid "@APP_NAME@"
-msgstr "@APP_NAME@"
-
-#: data/io.github.tobagin.karere.desktop.in:4
-msgid "WhatsApp Client"
-msgstr "WhatsApp klientas"
-
-#: data/io.github.tobagin.karere.desktop.in:5
-msgid "Native WhatsApp Web client for Linux desktop"
-msgstr "Savaiminis WhatsApp Web klientas Linux darbalaukiui"
-
-#: data/io.github.tobagin.karere.desktop.in:10
-msgid "whatsapp;chat;messaging;web;communication;"
-msgstr "whatsapp;pokalbis;žinutės;žiniatinklis;komunikacija;"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:16
-msgid "Chat on WhatsApp"
-msgstr "Susirašinėkite WhatsApp"
+#: data/io.github.tobagin.karere.metainfo.xml.in:225
+msgid ""
+"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+"Existing accounts must be re-linked — there is no migration from v3."
+msgstr ""
+"Karere 4.0 yra atskira šaka, perkurianti programą CEF/Chromium 148 pagrindu. "
+"Esamas paskyras reikia susieti iš naujo — perkėlimo iš v3 nėra."
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:24
 msgid ""
-"Karere brings WhatsApp to your Linux desktop with a native look and feel. It"
-" integrates seamlessly with your environment, offering a clean, modern "
+"Karere brings WhatsApp to your Linux desktop with a native look and feel. It "
+"integrates seamlessly with your environment, offering a clean, modern "
 "interface that respects your system's theme and workflow. By wrapping "
 "WhatsApp Web, it ensures you have access to all the latest features while "
 "adding powerful desktop-specific capabilities."
@@ -746,31 +1288,261 @@ msgstr ""
 msgid "Key features include:"
 msgstr "Pagrindinės funkcijos:"
 
+#: data/ui/window.ui:261 data/ui/preferences.ui:422
+#: data/ui/keyboard-shortcuts.ui:152 src/tray.rs:145
+msgid "Keyboard Shortcuts"
+msgstr "Spartieji klavišai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:61
+#: data/io.github.tobagin.karere.metainfo.xml.in:822
+msgid "Keyboard shortcuts and productivity features"
+msgstr "Spartieji klavišai ir produktyvumo funkcijos"
+
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:317
+msgid "Language"
+msgstr "Kalba"
+
+#: data/ui/preferences.ui:21
+msgid "Launch Karere automatically when you log in"
+msgstr "Automatiškai paleisti Karere prisijungus"
+
+#: data/ui/preferences.ui:83
+msgid "Light"
+msgstr "Šviesi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:235
+msgid ""
+"Live spell-check language switching and a separately installable Debug "
+"symbol extension for symbolicated crash reports"
+msgstr ""
+"Tiesioginis rašybos tikrinimo kalbos perjungimas ir atskirai įdiegiamas "
+"derinimo simbolių plėtinys simbolizuotoms strigčių ataskaitoms"
+
+#: data/ui/preferences.ui:234
+msgid "Location"
+msgstr "Vieta"
+
+#: data/ui/preferences.ui:207
+msgid "Long"
+msgstr "Ilgas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:49
+msgid "Main application window with WhatsApp Web integration"
+msgstr "Pagrindinis programos langas su WhatsApp Web integracija"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:226
+msgid "Major changes:"
+msgstr "Pagrindiniai pakeitimai:"
+
+#: data/ui/preferences.ui:160
+msgid "Master toggle for all notifications"
+msgstr "Pagrindinis visų pranešimų jungiklis"
+
+#: data/ui/preferences.ui:92
+#, fuzzy
+msgid "Match WhatsApp Colors"
+msgstr "WhatsApp klientas"
+
+#: data/ui/preferences.ui:206
+msgid "Medium"
+msgstr "Vidutinis"
+
+#: data/ui/window.ui:77
+msgid "Menu"
+msgstr "Meniu"
+
+#: data/ui/preferences.ui:170
+msgid "Message Notifications"
+msgstr "Žinučių pranešimai"
+
+#: data/ui/preferences.ui:184
+msgid "Message Preview"
+msgstr "Žinutės peržiūra"
+
+#: data/ui/preferences.ui:167
+msgid "Messages"
+msgstr "Žinutės"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:483
+msgid "Migrated Flatpak build logic to meson.build"
+msgstr "Perkelta Flatpak darinio logika į meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:830
+msgid "Migrated from Python 3 to native Vala compilation"
+msgstr "Migruota iš Python 3 į savaimąją Vala kompiliaciją"
+
+#: data/ui/keyboard-shortcuts.ui:74
+msgid "Minimize Window"
+msgstr "Suskleisti langą"
+
+#: data/ui/preferences.ui:356
+msgid "Minimize animations and transitions"
+msgstr "Sumažinti animacijas ir perėjimus"
+
+#: data/ui/keyboard-shortcuts.ui:75
+msgid "Minimize the window"
+msgstr "Suskleisti langą"
+
+#: data/ui/preferences.ui:384
+msgid "Minimum Zoom Level"
+msgstr "Mažiausias mastelio lygis"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:608
+msgid "Minor README corrections"
+msgstr "Smulkūs README pataisymai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:597
+msgid "Minor bug fixes and stability improvements"
+msgstr "Smulkūs klaidų taisymai ir stabilumo patobulinimai"
+
+#: data/ui/preferences.ui:98
+msgid "Mobile Layout"
+msgstr "Mobilus išdėstymas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:439
+msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+msgstr ""
+"Mobilaus išdėstymo nustatymas pakeistas į išskleidžiamąjį sąrašą "
+"(automatiškai/įjungta/išjungta)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:436
+msgid ""
+"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+"Lomiri"
+msgstr ""
+"Mobilaus išdėstymo palaikymas su automatiniu aptikimu Phosh, Plasma Mobile "
+"ir Lomiri"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:233
+msgid ""
+"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+"popover for the off-screen-rendered web view"
+msgstr ""
+"Mobiliam pritaikytas išdėstymas, JavaScript visas ekranas ir OSR "
+"kontekstinio meniu iškylantysis langas užkulisiuose atvaizduojamam "
+"žiniatinklio rodiniui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:817
+msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+msgstr "Moderni LibAdwaita sąsaja su Blueprint deklaratyvia sąsaja"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:831
+msgid "Modern Meson build system with Blueprint UI compilation"
+msgstr "Moderni Meson darinio sistema su Blueprint sąsajos kompiliacija"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:722
+msgid "More reliable link opening mechanism"
+msgstr "Patikimesnis nuorodų atvėrimo mechanizmas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:726
+msgid "More robust dependency handling"
+msgstr "Tvirtesnis priklausomybių tvarkymas"
+
+#: data/ui/preferences.ui:352
+msgid "Motion and Focus"
+msgstr "Judesys ir fokusas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:229
+msgid ""
+"Multi-account support: each account runs in an isolated CEF RequestContext "
+"with its own cookies and storage; accounts are ordered most-recently-used"
+msgstr ""
+"Kelių paskyrų palaikymas: kiekviena paskyra veikia izoliuotame CEF "
+"RequestContext su savais slapukais ir saugykla; paskyros rikiuojamos pagal "
+"vėliausią naudojimą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:823
+msgid "Multi-language spell checking support"
+msgstr "Daugiakalbis rašybos tikrinimo palaikymas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:816
+msgid "Native Vala/GTK4 implementation for optimal performance"
+msgstr "Savaiminė Vala/GTK4 realizacija optimaliam našumui"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Savaiminis WhatsApp Web klientas Linux darbalaukiui"
+
 #: data/io.github.tobagin.karere.metainfo.xml.in:32
 msgid "Native system notifications and tray icon support"
 msgstr "Savaiminiai sistemos pranešimai ir dėklo piktogramos palaikymas"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:33
+#: data/io.github.tobagin.karere.metainfo.xml.in:232
 msgid ""
-"Persistent login sessions so you don't need to scan the QR code every time"
+"Native system tray (StatusNotifierItem), desktop notifications, download "
+"manager, and image/text paste reimplemented on the CEF stack"
 msgstr ""
-"Išliekantys prisijungimo seansai, kad nereikėtų kaskart nuskaityti QR kodo"
+"Savaiminis sistemos dėklas (StatusNotifierItem), darbalaukio pranešimai, "
+"atsiuntimų tvarkytuvė ir paveikslo / teksto įklijavimas perdaryti CEF "
+"pagrindu"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:34
-msgid "Privacy controls and comprehensive spell-checking settings"
-msgstr "Privatumo valdikliai ir išsamūs rašybos tikrinimo nustatymai"
+#: data/io.github.tobagin.karere.metainfo.xml.in:547
+#: data/io.github.tobagin.karere.metainfo.xml.in:571
+#: data/io.github.tobagin.karere.metainfo.xml.in:626
+#: data/io.github.tobagin.karere.metainfo.xml.in:696
+#: data/io.github.tobagin.karere.metainfo.xml.in:814
+msgid "New Features:"
+msgstr "Naujos funkcijos:"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:35
-msgid "Smooth performance with hardware acceleration"
-msgstr "Sklandus veikimas su aparatine spartinimu"
+#: data/io.github.tobagin.karere.metainfo.xml.in:550
+msgid "New System Tray Icon support"
+msgstr "Naujas sistemos dėklo piktogramos palaikymas"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:36
-msgid "Proper clipboard integration for text and images"
-msgstr "Tinkama mainų srities integracija tekstui ir paveikslams"
+#: data/io.github.tobagin.karere.metainfo.xml.in:117
+msgid ""
+"New opt-in \"Match WhatsApp Colors\" appearance setting: tints the window "
+"and header bar with WhatsApp Web's own background colors so the app blends "
+"with the page. Follows the light/dark theme and applies instantly. (#168)"
+msgstr ""
+
+#: data/ui/keyboard-shortcuts.ui:41
+msgid "Next Account"
+msgstr "Kita paskyra"
+
+#: data/ui/window.ui:137
+msgid "Next match"
+msgstr "Kitas atitikmuo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:283
+msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+msgstr "Pastaba: po šio naujinimo reikia iš naujo susieti WhatsApp paskyras"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:453
+msgid ""
+"Notification Chat Linking: Clicking a notification now opens the specific "
+"chat in Karere."
+msgstr ""
+"Pranešimų susiejimas su pokalbiu: spustelėjus pranešimą dabar Karere "
+"atveriamas konkretus pokalbis."
+
+#: data/ui/preferences.ui:440
+msgid "Notification Shortcuts"
+msgstr "Pranešimų spartieji klavišai"
+
+#: data/ui/preferences.ui:220
+msgid "Notification Sounds"
+msgstr "Pranešimų garsai"
+
+#: data/ui/preferences.ui:267
+msgid "Notification Type"
+msgstr "Pranešimo tipas"
+
+#: data/ui/preferences.ui:152 data/ui/preferences.ui:258
+msgid "Notifications"
+msgstr "Pranešimai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:551
+msgid "Notifications fully working with persistence fixes"
+msgstr "Pranešimai visiškai veikia su išliekamumo pataisymais"
+
+#: data/ui/preferences.ui:262
+msgid "Notify when a file download completes"
+msgstr "Pranešti, kai failo atsiuntimas baigiamas"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:38
+#, fuzzy
 msgid ""
-"Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend "
+"Now built on CEF/Chromium 150. Karere 4.0 replaces the WebKitGTK backend "
 "with the Chromium Embedded Framework, bringing full video attachment "
 "playback (H.264/AAC), multi-account support with isolated sessions, per-"
 "account zoom, and a faster, more compatible rendering engine while keeping "
@@ -782,34 +1554,570 @@ msgstr ""
 "seansais, mastelį kiekvienai paskyrai ir greitesnį, suderinamesnį "
 "atvaizdavimo variklį, išlaikant tą patį savaimąjį GTK4/libadwaita apvalkalą."
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:49
-msgid "Main application window with WhatsApp Web integration"
-msgstr "Pagrindinis programos langas su WhatsApp Web integracija"
+#: data/ui/preferences.ui:129
+msgid "Open"
+msgstr "Atverti"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:53
-msgid "About dialog showing application information"
-msgstr "Dialogas „Apie“, rodantis programos informaciją"
+#: data/ui/keyboard-shortcuts.ui:146
+msgid "Open preferences"
+msgstr "Atverti nuostatas"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:57
-msgid "Application preferences and settings dialog"
-msgstr "Programos nuostatų ir nustatymų dialogas"
+#: data/ui/keyboard-shortcuts.ui:127
+msgid "Open the developer tools"
+msgstr "Atverti kūrėjo įrankius"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:61
-#: data/io.github.tobagin.karere.metainfo.xml.in:703
-msgid "Keyboard shortcuts and productivity features"
-msgstr "Spartieji klavišai ir produktyvumo funkcijos"
+#: data/ui/preferences.ui:125
+msgid "Open the developer tools for the current page"
+msgstr "Atverti kūrėjo įrankius dabartiniam puslapiui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:701
+msgid "Optimized font loading to eliminate display conflicts"
+msgstr "Optimizuotas šriftų įkėlimas pašalinant rodymo konfliktus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:403
+msgid "Optimized memory usage in mobile responsive scripts"
+msgstr "Optimizuotas atminties naudojimas mobiliuose atsako scenarijuose"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:231
+msgid ""
+"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
+"accessibility minimum-zoom floor"
+msgstr ""
+"Mastelis kiekvienai paskyrai (Ctrl +/-/0) su pasirenkamais mastelio "
+"valdikliais antraštės juostoje ir pritaikymo neįgaliesiems mažiausio "
+"mastelio riba"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:805
+msgid "Performance optimizations for faster startup"
+msgstr "Našumo optimizavimas greitesniam paleidimui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:771
+msgid "Performance optimizations for scrolling"
+msgstr "Našumo optimizavimas slinkimui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:33
+msgid ""
+"Persistent login sessions so you don't need to scan the QR code every time"
+msgstr ""
+"Išliekantys prisijungimo seansai, kad nereikėtų kaskart nuskaityti QR kodo"
+
+#: data/ui/keyboard-shortcuts.ui:134
+msgid "Pick an element to inspect"
+msgstr "Pasirinkite tikrintiną elementą"
+
+#: data/ui/preferences.ui:221
+msgid "Play WhatsApp's notification sound for new messages"
+msgstr "Groti WhatsApp pranešimų garsą naujoms žinutėms"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:552
+msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+msgstr "Perkelta iš Vala į savaiminį Rust/GTK4/Libadwaita"
+
+#: data/ui/window.ui:255 data/ui/preferences.ui:10
+#: data/ui/keyboard-shortcuts.ui:145 src/tray.rs:139
+msgid "Preferences"
+msgstr "Nuostatos"
+
+#: data/ui/preferences.ui:200
+msgid "Preview Length"
+msgstr "Peržiūros ilgis"
+
+#: data/ui/keyboard-shortcuts.ui:48
+msgid "Previous Account"
+msgstr "Ankstesnė paskyra"
+
+#: data/ui/window.ui:131
+msgid "Previous match"
+msgstr "Ankstesnis atitikmuo"
+
+#: data/ui/preferences.ui:327
+msgid "Privacy"
+msgstr "Privatumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:34
+msgid "Privacy controls and comprehensive spell-checking settings"
+msgstr "Privatumo valdikliai ir išsamūs rašybos tikrinimo nustatymai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:833
+msgid "Production-ready error handling and crash recovery"
+msgstr "Gamybai paruoštas klaidų tvarkymas ir strigčių atkūrimas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:821
+msgid "Professional logging and crash reporting system"
+msgstr "Profesionalus žurnalavimo ir strigčių pranešimų sistema"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:36
+msgid "Proper clipboard integration for text and images"
+msgstr "Tinkama mainų srities integracija tekstui ir paveikslams"
+
+#: data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159 src/tray.rs:158
+msgid "Quit"
+msgstr "Išeiti"
+
+#: data/ui/preferences.ui:43
+msgid "Quit Application"
+msgstr "Išeiti iš programos"
+
+#: data/ui/keyboard-shortcuts.ui:160
+msgid "Quit Karere"
+msgstr "Išeiti iš Karere"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:300
+msgid "Redesigned application icons for stable and development variants"
+msgstr "Perprojektuotos programos piktogramos stabiliam ir kūrimo variantams"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:553
+msgid "Redesigned/streamlined preferences dialog"
+msgstr "Perprojektuotas ir supaprastintas nuostatų dialogas"
+
+#: data/ui/preferences.ui:355
+msgid "Reduce Motion"
+msgstr "Mažinti judesį"
+
+#: data/ui/window.ui:251
+msgid "Refresh WhatsApp Web"
+msgstr "Atnaujinti WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:618
+msgid "Refreshed About dialog screenshot"
+msgstr "Atnaujinta dialogo „Apie“ ekrano nuotrauka"
+
+#: data/ui/keyboard-shortcuts.ui:15
+msgid "Reload WhatsApp Web"
+msgstr "Įkelti WhatsApp Web iš naujo"
+
+#: data/ui/keyboard-shortcuts.ui:16
+msgid "Reload the current page"
+msgstr "Įkelti dabartinį puslapį iš naujo"
+
+#: data/ui/keyboard-shortcuts.ui:23
+msgid "Reload, bypassing the cache"
+msgstr "Įkelti iš naujo, aplenkiant podėlį"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:480
+msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+msgstr "Pašalinti tiesioginiai D-Bus pranešimų leidimai švaresniam manifestui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:512
+msgid "Remove unnecessary autostart permission to satisfy linter"
+msgstr ""
+"Pašalintas nereikalingas automatinio paleidimo leidimas, kad būtų "
+"patenkintas tikrintuvas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:303
+msgid "Removed ffmpeg-full extension (no longer required)"
+msgstr "Pašalintas ffmpeg-full plėtinys (nebereikalingas)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:644
+msgid ""
+"Removed hardcoded blueprint compiler paths for cross-architecture support"
+msgstr ""
+"Pašalinti į kodą įrašyti blueprint kompiliatoriaus keliai "
+"daugiaarchitektūriniam palaikymui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:730
+msgid ""
+"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+"only)"
+msgstr ""
+"Pašalintas nereikalingas mobilaus naudotojo agento perjungimas (WhatsApp Web "
+"skirta tik darbalaukiui)"
+
+#: data/ui/preferences.ui:143
+msgid ""
+"Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
+"drivers. If the chat area is blank, turn this off and restart."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:752
+msgid "Replaced window.vala.in and preferences.vala.in with direct .vala files"
+msgstr ""
+"Pakeisti window.vala.in ir preferences.vala.in tiesioginiais .vala failais"
+
+#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
+msgid "Reset Zoom"
+msgstr "Atstatyti mastelį"
+
+#: data/ui/preferences.ui:249
+msgid "Reset to default"
+msgstr "Atstatyti numatytąjį"
+
+#: data/ui/keyboard-shortcuts.ui:108
+msgid "Reset zoom to 100%"
+msgstr "Atstatyti mastelį į 100 %"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:322
+msgid "Resolved WebKit crashes on media-heavy pages"
+msgstr "Išspręstos WebKit strigtys medijos turtinguose puslapiuose"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:687
+msgid "Resolved compatibility issues with newer GNOME environments"
+msgstr "Išspręstos suderinamumo problemos su naujesnėmis GNOME aplinkomis"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:712
+msgid "Resolved flatpak-builder compatibility issues"
+msgstr "Išspręstos flatpak-builder suderinamumo problemos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:782
+msgid "Resolved invalid markup in release descriptions"
+msgstr "Išspręsta netinkama ženklinimo kalba laidų aprašymuose"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:798
+msgid "Resolved memory leak in WebKit manager cleanup"
+msgstr "Išspręstas atminties nutekėjimas WebKit tvarkytuvo valyme"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:764
+msgid "Resolved memory leak in notification cleanup"
+msgstr "Išspręstas atminties nutekėjimas pranešimų valyme"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:505
+msgid "Restore autostart permission for improved compatibility"
+msgstr "Atstatytas automatinio paleidimo leidimas pagerintam suderinamumui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:733
+msgid "Restored Safari Linux user agent for native WebKit experience"
+msgstr "Atstatytas Safari Linux naudotojo agentas savaimajai WebKit patirčiai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:393
+msgid "Restored correct app icons and transparent backgrounds"
+msgstr "Atstatytos teisingos programos piktogramos ir skaidrūs fonai"
+
+#: data/ui/preferences.ui:42
+msgid "Run in Background"
+msgstr "Veikti fone"
+
+#: data/ui/preferences.ui:20
+msgid "Run on Startup"
+msgstr "Paleisti sistemai startavus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:118
+msgid ""
+"Safer avatar processing for notifications (community contribution). (#172)"
+msgstr ""
+
+#: data/ui/preferences.ui:411
+msgid "Screen Reader Optimizations"
+msgstr "Ekrano skaitytuvo optimizavimas"
+
+#: data/ui/preferences.ui:408
+msgid "Screen Reader Support"
+msgstr "Ekrano skaitytuvo palaikymas"
+
+#: data/ui/keyboard-shortcuts.ui:30
+msgid "Search the current page"
+msgstr "Ieškoti dabartiniame puslapyje"
+
+#: data/ui/preferences.ui:379
+msgid "Set a minimum zoom level for all accounts"
+msgstr "Nustatyti mažiausią mastelį visoms paskyroms"
+
+#: data/ui/preferences.ui:205
+msgid "Short"
+msgstr "Trumpas"
+
+#: data/ui/preferences.ui:419
+msgid "Shortcuts"
+msgstr "Spartieji klavišai"
+
+#: data/ui/preferences.ui:194
+msgid "Show Message Text"
+msgstr "Rodyti žinutės tekstą"
+
+#: data/ui/preferences.ui:188
+msgid "Show Sender Name"
+msgstr "Rodyti siuntėjo vardą"
+
+#: data/ui/preferences.ui:171
+msgid "Show notifications for incoming messages"
+msgstr "Rodyti pranešimus apie gaunamas žinutes"
+
+#: data/ui/keyboard-shortcuts.ui:115
+msgid "Show or hide the zoom buttons"
+msgstr "Rodyti arba slėpti mastelio mygtukus"
+
+#: data/ui/preferences.ui:312
+msgid "Show the spell-check language dropdown in the header bar"
+msgstr ""
+"Rodyti rašybos tikrinimo kalbos išskleidžiamąjį sąrašą antraštės juostoje"
+
+#: data/ui/keyboard-shortcuts.ui:153
+msgid "Show this shortcuts dialog"
+msgstr "Rodyti šį sparčiųjų klavišų dialogą"
+
+#: data/ui/preferences.ui:362
+msgid "Show visible outlines around focused elements"
+msgstr "Rodyti matomus kontūrus aplink fokusuotus elementus"
+
+#: data/ui/preferences.ui:401
+msgid "Show zoom buttons in the header bar"
+msgstr "Rodyti mastelio mygtukus antraštės juostoje"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:732
+msgid "Simplified emoji font configuration to single high-quality source"
+msgstr ""
+"Supaprastinta jaustukų šriftų konfigūracija iki vieno aukštos kokybės "
+"šaltinio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:754
+msgid "Simplified source file management in build system"
+msgstr "Supaprastintas pirminio kodo failų valdymas darinio sistemoje"
+
+#: data/ui/preferences.ui:99
+msgid ""
+"Single-pane layout. Auto: on mobile shells or narrow windows; Enabled/"
+"Disabled: force on or off at any size"
+msgstr ""
+"Vieno polangio išdėstymas. Automatiškai: mobiliuose apvalkaluose ar "
+"siauruose languose; Įjungta/Išjungta: priverstinai įjungti ar išjungti bet "
+"kokiame dydyje"
+
+#: data/ui/preferences.ui:331
+msgid "Site Permissions"
+msgstr "Svetainių leidimai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:35
+msgid "Smooth performance with hardware acceleration"
+msgstr "Sklandus veikimas su aparatine spartinimu"
+
+#: data/ui/preferences.ui:185
+msgid "Some settings only apply when Karere controls the popup"
+msgstr ""
+"Kai kurie nustatymai galioja tik tada, kai iškylantįjį langą valdo Karere"
+
+#: data/ui/preferences.ui:217
+msgid "Sounds"
+msgstr "Garsai"
+
+#: data/ui/preferences.ui:290
+msgid "Spell Checking"
+msgstr "Rašybos tikrinimas"
+
+#: data/ui/window.ui:70
+msgid "Spell Checking Language"
+msgstr "Rašybos tikrinimo kalba"
+
+#: data/ui/preferences.ui:286
+msgid "Spellcheck"
+msgstr "Rašybos tikrinimas"
+
+#: data/ui/preferences.ui:318
+msgid "Star a language to pin it to the top"
+msgstr "Pažymėkite kalbą žvaigždute, kad ją prisegtumėte viršuje"
+
+#: data/ui/preferences.ui:26
+msgid "Start in Background"
+msgstr "Paleisti fone"
+
+#: data/ui/preferences.ui:27
+msgid "Start minimized without showing the window"
+msgstr "Paleisti suskleistą, nerodant lango"
+
+#: data/ui/preferences.ui:17
+msgid "Startup"
+msgstr "Paleidimas"
+
+#: data/ui/preferences.ui:332
+msgid "Stored allow/deny decisions for websites"
+msgstr "Įrašyti svetainių leidimo / draudimo sprendimai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:718
+msgid "Streamlined font stack for consistent emoji appearance"
+msgstr "Supaprastintas šriftų rinkinys nuosekliai jaustukų išvaizdai"
+
+#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
+msgid "Switch Account"
+msgstr "Perjungti paskyrą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:490
+msgid ""
+"Switch to XDG Background Portal for autostart (improves security and "
+"compatibility)"
+msgstr ""
+"Perjungta į XDG fono portalą automatiniam paleidimui (pagerina saugumą ir "
+"suderinamumą)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:479
+msgid "Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+msgstr ""
+"Perjungta į XDG pranešimų portalą (ashpd) geresniam smėlio dėžės palaikymui"
+
+#: data/ui/keyboard-shortcuts.ui:42
+msgid "Switch to the next account"
+msgstr "Perjungti į kitą paskyrą"
+
+#: data/ui/keyboard-shortcuts.ui:49
+msgid "Switch to the previous account"
+msgstr "Perjungti į ankstesnę paskyrą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:228
+msgid ""
+"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+"proprietary-codec builds for H.264/AAC video attachment playback"
+msgstr ""
+"Atvaizdavimo posistemė pakeista iš WebKitGTK į CEF/Chromium 148, su "
+"patentuotų kodekų versijomis, skirtomis H.264/AAC vaizdo įrašų priedų "
+"atkūrimui"
+
+#: data/ui/preferences.ui:273
+msgid "System Notification"
+msgstr "Sistemos pranešimas"
+
+#: data/ui/preferences.ui:51
+msgid "System Tray Icon"
+msgstr "Sistemos dėklo piktograma"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:658
+#: data/io.github.tobagin.karere.metainfo.xml.in:728
+#: data/io.github.tobagin.karere.metainfo.xml.in:750
+msgid "Technical Changes:"
+msgstr "Techniniai pakeitimai:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:828
+msgid "Technical Improvements:"
+msgstr "Techniniai patobulinimai:"
+
+#: data/ui/preferences.ui:77
+msgid "Theme"
+msgstr "Tema"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:74
 msgid "Thiago Fernandes"
 msgstr "Thiago Fernandes"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:94
-msgid "whatsapp"
-msgstr "whatsapp"
+#: data/ui/keyboard-shortcuts.ui:114
+msgid "Toggle Header Bar Zoom Controls"
+msgstr "Perjungti mastelio valdiklius antraštės juostoje"
+
+#: data/ui/keyboard-shortcuts.ui:68
+msgid "Toggle fullscreen mode"
+msgstr "Perjungti viso ekrano veikseną"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:437
+msgid "Tray icon click now toggles window visibility"
+msgstr "Spustelėjus dėklo piktogramą dabar perjungiamas lango matomumas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:534
+msgid "Update and Bug Fix Release"
+msgstr "Naujinimo ir klaidų taisymo laida"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:680
+msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+msgstr ""
+"Atnaujinta GNOME vykdymo aplinka iki versijos 49 pagerintam suderinamumui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:663
+msgid "Updated SettingsManager to be the default for all settings access"
+msgstr ""
+"Atnaujintas SettingsManager, kad būtų numatytasis visai nustatymų prieigai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:606
+msgid "Updated about dialog screenshot"
+msgstr "Atnaujinta dialogo „Apie“ ekrano nuotrauka"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:301
+msgid "Updated all Rust dependencies to latest versions"
+msgstr "Atnaujintos visos Rust priklausomybės iki naujausių versijų"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:786
+msgid "Updated all references from appdata to metainfo format"
+msgstr "Atnaujintos visos nuorodos iš appdata į metainfo formatą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:607
+msgid "Updated application screenshots"
+msgstr "Atnaujintos programos ekrano nuotraukos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:617
+msgid "Updated application screenshots with current UI appearance"
+msgstr "Atnaujintos programos ekrano nuotraukos su dabartine sąsajos išvaizda"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:446
+msgid ""
+"Updated application summary and description for better AppStream compliance"
+msgstr ""
+"Atnaujinta programos santrauka ir aprašymas geresniam AppStream atitikimui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:595
+msgid "Updated build configuration and dependencies"
+msgstr "Atnaujinta darinio konfigūracija ir priklausomybės"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:753
+msgid "Updated meson.build to use Vala preprocessor directives"
+msgstr "Atnaujinta meson.build naudoti Vala pirminio apdorojimo direktyvas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:158
+msgid ""
+"Updated the bundled browser engine to CEF 149 (Chromium 149), up from CEF "
+"148, picking up the latest Chromium security and rendering fixes. "
+"Proprietary codecs stay enabled so WhatsApp calls and video playback keep "
+"working."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:125
+msgid ""
+"Upgraded the browser engine to CEF 150 / Chromium 150 for current security "
+"fixes; video attachments (H.264/AAC) keep playing in-app."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:302
+msgid "Upgraded to GNOME Platform 50"
+msgstr "Atnaujinta iki GNOME Platform 50"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:662
+msgid "WebKitGTK 6.0 storage persistence verified and documented"
+msgstr "WebKitGTK 6.0 saugyklos išliekamumas patikrintas ir dokumentuotas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:454
+msgid ""
+"Webcam Support: Added support for using the webcam (Status updates, Video "
+"calls) with a new permission dialog."
+msgstr ""
+"Internetinės kameros palaikymas: pridėtas internetinės kameros naudojimo "
+"palaikymas (būsenos atnaujinimai, vaizdo skambučiai) su nauju leidimų "
+"dialogu."
+
+#: data/ui/preferences.ui:38
+msgid "What happens when you close the window"
+msgstr "Kas nutinka užvėrus langą"
+
+#: data/ui/keyboard-shortcuts.ui:12
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "WhatsApp klientas"
+
+#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
+msgid "Window"
+msgstr "Langas"
+
+#: data/ui/preferences.ui:37
+msgid "Window Close Behavior"
+msgstr "Lango užvėrimo elgsena"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:438
+msgid "Window size is saved and restored when hiding/showing"
+msgstr "Lango dydis įrašomas ir atstatomas slepiant / rodant"
+
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
+msgid "Zoom"
+msgstr "Mastelis"
+
+#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
+msgid "Zoom In"
+msgstr "Artinti"
+
+#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
+msgid "Zoom Out"
+msgstr "Tolinti"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:95
 msgid "chat"
 msgstr "pokalbis"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:98
+msgid "communication"
+msgstr "komunikacija"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:96
 msgid "messaging"
@@ -819,809 +2127,35 @@ msgstr "žinutės"
 msgid "web"
 msgstr "žiniatinklis"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:98
-msgid "communication"
-msgstr "komunikacija"
+#: data/io.github.tobagin.karere.metainfo.xml.in:94
+msgid "whatsapp"
+msgstr "whatsapp"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:106
-msgid ""
-"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
-"Existing accounts must be re-linked — there is no migration from v3."
-msgstr ""
-"Karere 4.0 yra atskira šaka, perkurianti programą CEF/Chromium 148 pagrindu."
-" Esamas paskyras reikia susieti iš naujo — perkėlimo iš v3 nėra."
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;pokalbis;žinutės;žiniatinklis;komunikacija;"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:107
-msgid "Major changes:"
-msgstr "Pagrindiniai pakeitimai:"
+#: data/io.github.tobagin.karere.metainfo.xml.in:635
+msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+msgstr "⌨️ Pridėtas sparčiųjų klavišų dialogas naudojant AdwShortcutsDialog"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:109
-msgid ""
-"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
-"proprietary-codec builds for H.264/AAC video attachment playback"
-msgstr ""
-"Atvaizdavimo posistemė pakeista iš WebKitGTK į CEF/Chromium 148, su "
-"patentuotų kodekų versijomis, skirtomis H.264/AAC vaizdo įrašų priedų "
-"atkūrimui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:110
-msgid ""
-"Multi-account support: each account runs in an isolated CEF RequestContext "
-"with its own cookies and storage; accounts are ordered most-recently-used"
-msgstr ""
-"Kelių paskyrų palaikymas: kiekviena paskyra veikia izoliuotame CEF "
-"RequestContext su savais slapukais ir saugykla; paskyros rikiuojamos pagal "
-"vėliausią naudojimą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:111
-msgid ""
-"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
-"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
-msgstr ""
-"Paskyros tapatybė (vardas + avataras) automatiškai aptinkama iš WhatsApp Web"
-" vidinės saugyklos, su pablogintos DOM nuskaitymo atsarga, žymima ženkleliu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:112
-msgid ""
-"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
-"accessibility minimum-zoom floor"
-msgstr ""
-"Mastelis kiekvienai paskyrai (Ctrl +/-/0) su pasirenkamais mastelio "
-"valdikliais antraštės juostoje ir pritaikymo neįgaliesiems mažiausio "
-"mastelio riba"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:113
-msgid ""
-"Native system tray (StatusNotifierItem), desktop notifications, download "
-"manager, and image/text paste reimplemented on the CEF stack"
-msgstr ""
-"Savaiminis sistemos dėklas (StatusNotifierItem), darbalaukio pranešimai, "
-"atsiuntimų tvarkytuvė ir paveikslo / teksto įklijavimas perdaryti CEF "
-"pagrindu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:114
-msgid ""
-"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
-"popover for the off-screen-rendered web view"
-msgstr ""
-"Mobiliam pritaikytas išdėstymas, JavaScript visas ekranas ir OSR "
-"kontekstinio meniu iškylantysis langas užkulisiuose atvaizduojamam "
-"žiniatinklio rodiniui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:115
-msgid ""
-"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
-"browsing"
-msgstr ""
-"Pritaikymo neįgaliesiems nuostatos: judesio mažinimas, fokuso žiedo "
-"matomumas ir žymeklio naršymas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:116
-msgid ""
-"Live spell-check language switching and a separately installable Debug "
-"symbol extension for symbolicated crash reports"
-msgstr ""
-"Tiesioginis rašybos tikrinimo kalbos perjungimas ir atskirai įdiegiamas "
-"derinimo simbolių plėtinys simbolizuotoms strigčių ataskaitoms"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:123
-msgid ""
-"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
-"clear behavior removed upstream — Karere now dismisses notifications "
-"explicitly)"
-msgstr ""
-"Pataisyta: išliekantys pranešimų ženkleliai / juostos po fokuso GNOME 50 "
-"(automatinio išvalymo elgsena pašalinta aukštupyje — Karere dabar atmeta "
-"pranešimus aiškiai)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:124
-msgid ""
-"Fixed: blank-window race when autostarted before the network/portal stack is"
-" ready (auto-retry with exponential backoff)"
-msgstr ""
-"Pataisyta: tuščio lango lenktynės, kai paleidžiama automatiškai prieš tinklo"
-" / portalo posistemei būnant paruoštai (automatinis kartojimas su "
-"eksponentiniu atidėjimu)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:131
-msgid "Added: pin favorite spell-check languages to the top of the dropdown"
-msgstr ""
-"Pridėta: prisegti mėgstamas rašybos tikrinimo kalbas išskleidžiamojo sąrašo "
-"viršuje"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:132
-msgid ""
-"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
-"instead of locale codes"
-msgstr ""
-"Pridėta: rašybos tikrinimo išskleidžiamasis sąrašas rodo natūralius kalbų "
-"pavadinimus („English (UK)“) vietoje lokalės kodų"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:133
-msgid ""
-"Added: account switcher uses a popover on desktop windows (bottom sheet "
-"preserved on mobile)"
-msgstr ""
-"Pridėta: paskyrų perjungiklis naudoja iškylantįjį langą darbalaukio languose"
-" (apatinis lapas išlaikytas mobiliuose)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:134
-msgid ""
-"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
-"43, CachyOS, Bazzite, postmarketOS)"
-msgstr ""
-"Pataisyta: programos strigtis paleidžiant GNOME 50 / glibc 2.42+ sistemose "
-"(Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:135
-msgid ""
-"Fixed: locale-dependent crash that required manually setting "
-"LC_ALL=en_GB.UTF-8"
-msgstr ""
-"Pataisyta: nuo lokalės priklausanti strigtis, reikalavusi rankiniu būdu "
-"nustatyti LC_ALL=en_GB.UTF-8"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:136
-msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
-msgstr ""
-"Pataisyta: mobilus išdėstymas, sugadintas naujausių WhatsApp Web DOM "
-"pakeitimų"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:137
-msgid ""
-"Fixed: downloaded files with duplicate names silently overwriting each other"
-" (now appends (1), (2), ...)"
-msgstr ""
-"Pataisyta: atsiųsti failai su pasikartojančiais pavadinimais tyliai "
-"perrašydavo vienas kitą (dabar pridedama (1), (2), ...)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:138
-msgid ""
-"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
-"dependencies to latest compatible versions"
-msgstr ""
-"WebKitGTK pakelta iki 2.52.3, LibreOffice žodynai iki 26.2.3.2, Rust "
-"priklausomybės iki naujausių suderinamų versijų"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:145
-msgid ""
-"Fixed voice and video calls in production Flatpak (Flathub linter-compatible"
-" pre-built plugin)"
-msgstr ""
-"Pataisyti balso ir vaizdo skambučiai gamybiniame Flatpak (su Flathub "
-"tikrintuvui suderinamu iš anksto sukurtu papildiniu)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:152
-msgid ""
-"Fixed voice and video calls not working in the production build (missing "
-"noise suppression plugin)"
-msgstr ""
-"Pataisyti balso ir vaizdo skambučiai, neveikę gamybiniame darinyje "
-"(trūkstamas triukšmo slopinimo papildinys)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:159
-msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
-msgstr ""
-"Pridėtas balso ir vaizdo skambučių palaikymas per WebRTC įgalintą WebKitGTK "
-"2.50.5"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:160
-msgid "Fixed download filenames now use WhatsApp's original filename"
-msgstr ""
-"Pataisyti atsiuntimų failų pavadinimai dabar naudoja originalų WhatsApp "
-"failo pavadinimą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:161
-msgid "Fixed duplicate downloads auto-increment instead of failing"
-msgstr ""
-"Pataisyti pasikartojantys atsiuntimai dabar automatiškai didinami, o ne "
-"nepavyksta"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:162
-msgid ""
-"Fixed window now properly unminimizes when activated from launcher or tray"
-msgstr ""
-"Pataisyta: langas dabar tinkamai išskleidžiamas suaktyvinus iš leistuvo ar "
-"dėklo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:163
-msgid "Fixed notification sounds now respect GNOME volume controls"
-msgstr "Pataisyta: pranešimų garsai dabar gerbia GNOME garsumo valdiklius"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:164
-msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
-msgstr "Pastaba: po šio naujinimo reikia iš naujo susieti WhatsApp paskyras"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:171
-msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
-msgstr ""
-"Pataisytas Flatpak darinio gedimas, kurį sukėlė ashpd 0.13 API pakeitimai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:178
-msgid ""
-"Fixed voice and video calls showing \"Your browser doesn't support calling\""
-msgstr ""
-"Pataisyti balso ir vaizdo skambučiai, rodę „Jūsų naršyklė nepalaiko "
-"skambinimo“"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:179
-msgid ""
-"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
-"Linux environments"
-msgstr ""
-"Pataisyta ekrano klaviatūra, patikimai neatsirasdavusi Phosh ir lietimu "
-"valdomose Linux aplinkose"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:180
-msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
-msgstr ""
-"Pataisyti blob URL atsiuntimai (pvz., paveikslo įrašymas iš medijos "
-"peržiūros)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:181
-msgid "Redesigned application icons for stable and development variants"
-msgstr "Perprojektuotos programos piktogramos stabiliam ir kūrimo variantams"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:182
-msgid "Updated all Rust dependencies to latest versions"
-msgstr "Atnaujintos visos Rust priklausomybės iki naujausių versijų"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:183
-msgid "Upgraded to GNOME Platform 50"
-msgstr "Atnaujinta iki GNOME Platform 50"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:184
-msgid "Removed ffmpeg-full extension (no longer required)"
-msgstr "Pašalintas ffmpeg-full plėtinys (nebereikalingas)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:191
-msgid "Fixed freezes when viewing media galleries"
-msgstr "Pataisyti užstrigimai peržiūrint medijos galerijas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:192
-msgid "Fixed crash on launch due to memory pressure threshold ordering"
-msgstr ""
-"Pataisyta strigtis paleidžiant dėl atminties spaudimo slenksčio rikiavimo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:193
-msgid "Fixed download destination and context menu issues"
-msgstr "Pataisytos atsiuntimo paskirties ir kontekstinio meniu problemos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:194
-msgid "Fixed dead key composition for first character in input fields"
-msgstr ""
-"Pataisyta mirusių klavišų kompozicija pirmajam simboliui įvedimo laukuose"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:195
-msgid ""
-"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
-"handling"
-msgstr ""
-"Pridėti GStreamer/PipeWire aplinkos kintamieji gamybiniam Flatpak efektyviam"
-" medijos tvarkymui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:202
-msgid "Fixed download destination handling"
-msgstr "Pataisytas atsiuntimo paskirties tvarkymas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:203
-msgid "Resolved WebKit crashes on media-heavy pages"
-msgstr "Išspręstos WebKit strigtys medijos turtinguose puslapiuose"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:210
-msgid "Fixed: Download destination path handling regression"
-msgstr "Pataisyta: atsiuntimo paskirties kelio tvarkymo regresija"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:217
-msgid ""
-"Fixed: JS injection and path traversal vulnerabilities in download handling"
-msgstr ""
-"Pataisyti: JS injekcijos ir kelio perėjimo pažeidžiamumai atsiuntimų "
-"tvarkyme"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:224
-msgid ""
-"Fixed: Handle WebKit web process crashes with auto-reload and user "
-"notification"
-msgstr ""
-"Pataisyta: tvarkyti WebKit žiniatinklio proceso strigtis su automatiniu "
-"įkėlimu iš naujo ir naudotojo pranešimu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:225
-msgid "Fixed: JS injection and path traversal vulnerabilities"
-msgstr "Pataisyti: JS injekcijos ir kelio perėjimo pažeidžiamumai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:226
-msgid "Fixed: Panic in notification handling"
-msgstr "Pataisyta: panika pranešimų tvarkyme"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:233
-msgid "Added complete multi-account support with sidebar and tray integration"
-msgstr ""
-"Pridėtas pilnas kelių paskyrų palaikymas su šonine juosta ir dėklo "
-"integracija"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:234
-msgid "Added per-account zoom settings and improved accessibility"
-msgstr ""
-"Pridėti mastelio nustatymai kiekvienai paskyrai ir pagerintas pritaikymas "
-"neįgaliesiems"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:235
-msgid "Fixed startup race conditions and resource usage issues"
-msgstr ""
-"Pataisytos paleidimo lenktynių sąlygos ir išteklių naudojimo problemos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:242
-msgid ""
-"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
-msgstr ""
-"Pridėtas mastelio palaikymas (Ctrl +/-/0) su išliekamumu ir nuostatų "
-"valdikliais"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:243
-msgid "Fixed window size increasing on every restart"
-msgstr "Pataisyta lango dydžio didėjimas kiekvieną kartą paleidžiant iš naujo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:250
-msgid ""
-"Fixed: Resolved webview reload loop on startup due to incorrect window size "
-"detection"
-msgstr ""
-"Pataisyta: išspręsta žiniatinklio rodinio įkėlimo iš naujo kilpa paleidžiant"
-" dėl neteisingo lango dydžio aptikimo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:257
-msgid ""
-"Added WebRTC permission handling in preparation for WhatsApp Web voice/video"
-" calls"
-msgstr ""
-"Pridėtas WebRTC leidimų tvarkymas ruošiantis WhatsApp Web balso / vaizdo "
-"skambučiams"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:258
-msgid "Improved mobile UI resizing consistency"
-msgstr "Pagerintas mobilios sąsajos dydžio keitimo nuoseklumas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:265
-msgid ""
-"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
-"(silences sounds)"
-msgstr ""
-"Pataisyta: programa dabar gerbia sistemos „Netrukdyti“ nustatymus GNOME "
-"(nutildo garsus)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:266
-msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
-msgstr ""
-"Pataisyta: pranešimai aplenkia „Netrukdyti“ vaizdinius (prioritetas "
-"sumažintas iki įprasto)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:273
-msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
-msgstr ""
-"Pataisytos dėklo piktogramos KDE/GNOME (matomos tiek šviesiose, tiek "
-"tamsiose temose)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:274
-msgid "Restored correct app icons and transparent backgrounds"
-msgstr "Atstatytos teisingos programos piktogramos ir skaidrūs fonai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:275
-msgid "Improved icon compatibility across desktop environments"
-msgstr "Pagerintas piktogramų suderinamumas tarp darbalaukio aplinkų"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:282
-msgid ""
-"Fixed application freezing on resume by reverting aggressive cache "
-"optimization"
-msgstr ""
-"Pataisytas programos užstrigimas atsibudus atstatant agresyvų podėlio "
-"optimizavimą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:283
-msgid "Fixed background validation to ensure app starts correctly"
-msgstr "Pataisytas fono tikrinimas, kad programa pasileistų teisingai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:284
-msgid "Optimized memory usage in mobile responsive scripts"
-msgstr "Optimizuotas atminties naudojimas mobiliuose atsako scenarijuose"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:285
-msgid "Improved icon rendering (symbolic icons now use currentColor)"
-msgstr ""
-"Pagerintas piktogramų atvaizdavimas (simbolinės piktogramos dabar naudoja "
-"currentColor)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:292
-msgid "Fixed window resize behavior to prevent excessive reloading"
-msgstr ""
-"Pataisyta lango dydžio keitimo elgsena, kad būtų išvengta pernelyg dažno "
-"įkėlimo iš naujo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:293
-msgid "Fixed background notifications reliability"
-msgstr "Pataisytas fono pranešimų patikimumas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:300
-msgid "Fixed Flatpak build failure by correcting config"
-msgstr "Pataisytas Flatpak darinio gedimas pataisius konfigūraciją"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:307
-msgid "Fixed \"Too many open files\" crash by reusing notification resources"
-msgstr ""
-"Pataisyta „Per daug atvirų failų“ strigtis pakartotinai naudojant pranešimų "
-"išteklius"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:308
-msgid "Fixed zombie process accumulation"
-msgstr "Pataisytas zombių procesų kaupimasis"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:309
-msgid "Improved overall stability"
-msgstr "Pagerintas bendras stabilumas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:316
-msgid "Ctrl+N keyboard shortcut for opening a new chat"
-msgstr "Spartusis klavišas Ctrl+N naujam pokalbiui atverti"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:317
-msgid ""
-"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
-"Lomiri"
-msgstr ""
-"Mobilaus išdėstymo palaikymas su automatiniu aptikimu Phosh, Plasma Mobile "
-"ir Lomiri"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:318
-msgid "Tray icon click now toggles window visibility"
-msgstr "Spustelėjus dėklo piktogramą dabar perjungiamas lango matomumas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:319
-msgid "Window size is saved and restored when hiding/showing"
-msgstr "Lango dydis įrašomas ir atstatomas slepiant / rodant"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:320
-msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
-msgstr ""
-"Mobilaus išdėstymo nustatymas pakeistas į išskleidžiamąjį sąrašą "
-"(automatiškai/įjungta/išjungta)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:327
-msgid ""
-"Updated application summary and description for better AppStream compliance"
-msgstr ""
-"Atnaujinta programos santrauka ir aprašymas geresniam AppStream atitikimui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:334
-msgid ""
-"Notification Chat Linking: Clicking a notification now opens the specific "
-"chat in Karere."
-msgstr ""
-"Pranešimų susiejimas su pokalbiu: spustelėjus pranešimą dabar Karere "
-"atveriamas konkretus pokalbis."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:335
-msgid ""
-"Webcam Support: Added support for using the webcam (Status updates, Video "
-"calls) with a new permission dialog."
-msgstr ""
-"Internetinės kameros palaikymas: pridėtas internetinės kameros naudojimo "
-"palaikymas (būsenos atnaujinimai, vaizdo skambučiai) su nauju leidimų "
-"dialogu."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:342
-msgid ""
-"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
-"compatibility"
-msgstr ""
-"Pagerintas paveikslo įklijavimas su Base64 kodavimu patikimam WhatsApp Web "
-"suderinamumui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:343
-msgid "Added middle-click paste from primary selection (selected text)"
-msgstr ""
-"Pridėtas įklijavimas viduriniu spustelėjimu iš pirminės atrankos (pažymėtas "
-"tekstas)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:344
-msgid "Fixed double-paste issue with middle-click"
-msgstr "Pataisyta dvigubo įklijavimo problema su viduriniu spustelėjimu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:351
-msgid "Fixed missing GSettings schema in Flatpak builds"
-msgstr "Pataisyta trūkstama GSettings schema Flatpak dariniuose"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:352
-msgid "Added new application icons"
-msgstr "Pridėtos naujos programos piktogramos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:353
-msgid "Corrected metadata description references"
-msgstr "Pataisytos metaduomenų aprašymo nuorodos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:360
-msgid ""
-"Switch to XDG Notification Portal (ashpd) for better sandboxing support"
-msgstr ""
-"Perjungta į XDG pranešimų portalą (ashpd) geresniam smėlio dėžės palaikymui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:361
-msgid "Remove direct D-Bus notification permissions for cleaner manifest"
-msgstr "Pašalinti tiesioginiai D-Bus pranešimų leidimai švaresniam manifestui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:362
-msgid "Fixed Open action for downloaded files"
-msgstr "Pataisytas veiksmas „Atverti“ atsiųstiems failams"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:363
-msgid "Fixed Dead Key/composition input issues"
-msgstr "Pataisytos mirusio klavišo / kompozicijos įvedimo problemos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:364
-msgid "Migrated Flatpak build logic to meson.build"
-msgstr "Perkelta Flatpak darinio logika į meson.build"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:371
-msgid ""
-"Switch to XDG Background Portal for autostart (improves security and "
-"compatibility)"
-msgstr ""
-"Perjungta į XDG fono portalą automatiniam paleidimui (pagerina saugumą ir "
-"suderinamumą)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:378
-msgid "Add new contributor Sabri Ünal to the About dialog"
-msgstr "Pridėtas naujas talkininkas Sabri Ünal į dialogą „Apie“"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:379
-msgid "General improvements and versioning updates"
-msgstr "Bendri patobulinimai ir versijų atnaujinimai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:386
-msgid "Restore autostart permission for improved compatibility"
-msgstr "Atstatytas automatinio paleidimo leidimas pagerintam suderinamumui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:393
-msgid "Remove unnecessary autostart permission to satisfy linter"
-msgstr ""
-"Pašalintas nereikalingas automatinio paleidimo leidimas, kad būtų "
-"patenkintas tikrintuvas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:400
-msgid "Add xdg-config/autostart permission for autostart support"
-msgstr ""
-"Pridėtas xdg-config/autostart leidimas automatinio paleidimo palaikymui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:406
-msgid "Bug Fix Release"
-msgstr "Klaidų taisymo laida"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:407
-#: data/io.github.tobagin.karere.metainfo.xml.in:416
-msgid "Changes:"
-msgstr "Pakeitimai:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:409
-msgid ""
-"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
-msgstr ""
-"Pataisyta trūkstama dėklo piktograma GNOME pridėjus StatusNotifierWatcher "
-"leidimą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:415
-msgid "Update and Bug Fix Release"
-msgstr "Naujinimo ir klaidų taisymo laida"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:418
-msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
-msgstr ""
-"Pridėtas jungiklis „Paleisti sistemai startavus“ nuostatose (numatytasis: "
-"išjungta)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:419
-msgid "Fixed autostart toggle pathing for Flatpak environments"
-msgstr "Pataisytas automatinio paleidimo jungiklio kelias Flatpak aplinkoms"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:420
-msgid "Fixed tray icon quit behavior"
-msgstr "Pataisyta dėklo piktogramos išėjimo elgsena"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:421
-msgid "Added striped symbolic icons for development version"
-msgstr "Pridėtos dryžuotos simbolinės piktogramos kūrimo versijai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:427
-msgid "🎉 Major Release 2.0.0"
-msgstr "🎉 Pagrindinė laida 2.0.0"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:428
-#: data/io.github.tobagin.karere.metainfo.xml.in:452
-#: data/io.github.tobagin.karere.metainfo.xml.in:507
-#: data/io.github.tobagin.karere.metainfo.xml.in:577
-#: data/io.github.tobagin.karere.metainfo.xml.in:695
-msgid "New Features:"
-msgstr "Naujos funkcijos:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:430
-msgid "Full rewrite in Rust! 🦀"
-msgstr "Visiškai perrašyta Rust kalba! 🦀"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:431
-msgid "New System Tray Icon support"
-msgstr "Naujas sistemos dėklo piktogramos palaikymas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:432
-msgid "Notifications fully working with persistence fixes"
-msgstr "Pranešimai visiškai veikia su išliekamumo pataisymais"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:433
-msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
-msgstr "Perkelta iš Vala į savaiminį Rust/GTK4/Libadwaita"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:434
-msgid "Redesigned/streamlined preferences dialog"
-msgstr "Perprojektuotas ir supaprastintas nuostatų dialogas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:435
-msgid "Enhanced performance and stability"
-msgstr "Pagerintas našumas ir stabilumas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:441
-msgid "🐛 Bug Fix Release"
-msgstr "🐛 Klaidų taisymo laida"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:442
-msgid "Fixed:"
-msgstr "Pataisyta:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:444
-msgid ""
-"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
-"activation"
-msgstr ""
-"Pataisyta kritinė paleidimo užstrigimo (suktuko) problema įgyvendinus D-Bus "
-"aktyvavimą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:445
-msgid "Ensure application starts properly in the background without delay"
-msgstr "Užtikrinti, kad programa tinkamai pasileistų fone be vėlavimo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:451
-msgid "🎉 Feature Release"
-msgstr "🎉 Funkcijų laida"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:454
-msgid "🎤 Microphone permission support for voice notes"
-msgstr "🎤 Mikrofono leidimo palaikymas balso žinutėms"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:455
-msgid "🚀 Start in background option for autostart"
-msgstr "🚀 Paleidimo fone parinktis automatiniam paleidimui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:456
-msgid "🔄 Manual reload and auto-reload on network reconnection"
-msgstr ""
-"🔄 Rankinis įkėlimas iš naujo ir automatinis įkėlimas iš naujo prisijungus "
-"prie tinklo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:458
-#: data/io.github.tobagin.karere.metainfo.xml.in:474
-#: data/io.github.tobagin.karere.metainfo.xml.in:485
-#: data/io.github.tobagin.karere.metainfo.xml.in:496
-#: data/io.github.tobagin.karere.metainfo.xml.in:559
-#: data/io.github.tobagin.karere.metainfo.xml.in:596
-#: data/io.github.tobagin.karere.metainfo.xml.in:623
 #: data/io.github.tobagin.karere.metainfo.xml.in:648
-#: data/io.github.tobagin.karere.metainfo.xml.in:665
-#: data/io.github.tobagin.karere.metainfo.xml.in:682
-msgid "Improvements:"
-msgstr "Patobulinimai:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:460
-msgid "⚡ Performance optimizations for startup and shutdown"
-msgstr "⚡ Našumo optimizavimas paleidimui ir išjungimui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:461
-msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
 msgstr ""
-"📝 Asinchroninis žodynų įkėlimas sklandesnei rašybos tikrinimo "
-"inicializacijai"
+"♻️ Pagrindinis pertvarkymas: kodo bazė reorganizuota su PascalCase failų "
+"pavadinimais"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:462
-msgid "📖 Added MPRIS workaround documentation"
-msgstr "📖 Pridėta MPRIS apėjimo dokumentacija"
+#: data/io.github.tobagin.karere.metainfo.xml.in:649
+msgid "♻️ Refactored Window.vala into specialized manager components"
+msgstr "♻️ Window.vala pertvarkyta į specializuotus tvarkytuvo komponentus"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:464
-#: data/io.github.tobagin.karere.metainfo.xml.in:518
-#: data/io.github.tobagin.karere.metainfo.xml.in:566
-#: data/io.github.tobagin.karere.metainfo.xml.in:586
-#: data/io.github.tobagin.karere.metainfo.xml.in:642
-#: data/io.github.tobagin.karere.metainfo.xml.in:659
-#: data/io.github.tobagin.karere.metainfo.xml.in:676
-msgid "Bug Fixes:"
-msgstr "Klaidų taisymai:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:466
-msgid "Fixed missing dictionaries on startup"
-msgstr "Pataisyti trūkstami žodynai paleidžiant"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:467
-msgid "Fixed application freeze during lifecycle events"
-msgstr "Pataisytas programos užstrigimas gyvavimo ciklo įvykių metu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:473
-msgid "🔧 Maintenance Release"
-msgstr "🔧 Priežiūros laida"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:476
-msgid "Updated build configuration and dependencies"
-msgstr "Atnaujinta darinio konfigūracija ir priklausomybės"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:477
-msgid "Enhanced packaging for better compatibility"
-msgstr "Pagerintas pakavimas geresniam suderinamumui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:478
-msgid "Minor bug fixes and stability improvements"
-msgstr "Smulkūs klaidų taisymai ir stabilumo patobulinimai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:484
-msgid "📝 Documentation and Metadata Update"
-msgstr "📝 Dokumentacijos ir metaduomenų atnaujinimas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:487
-msgid "Updated about dialog screenshot"
-msgstr "Atnaujinta dialogo „Apie“ ekrano nuotrauka"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:488
-msgid "Updated application screenshots"
-msgstr "Atnaujintos programos ekrano nuotraukos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:489
-msgid "Minor README corrections"
-msgstr "Smulkūs README pataisymai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:495
-msgid "📸 Screenshots and Documentation Update"
-msgstr "📸 Ekrano nuotraukų ir dokumentacijos atnaujinimas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:498
-msgid "Updated application screenshots with current UI appearance"
-msgstr "Atnaujintos programos ekrano nuotraukos su dabartine sąsajos išvaizda"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:499
-msgid "Refreshed About dialog screenshot"
-msgstr "Atnaujinta dialogo „Apie“ ekrano nuotrauka"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:500
-msgid "Enhanced visual documentation for users"
-msgstr "Pagerinta vaizdinė dokumentacija naudotojams"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:506
-msgid "🎉 Version 1.0.0 - Major Milestone Release"
-msgstr "🎉 Versija 1.0.0 — pagrindinė pasiekimo laida"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:509
-msgid "✅ Fixed WhatsApp Web notification banner persistence"
-msgstr "✅ Pataisytas WhatsApp Web pranešimų juostos išliekamumas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:510
-msgid "✅ Fixed notifications not working properly"
-msgstr "✅ Pataisyti pranešimai, tinkamai neveikę"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:511
-msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
-msgstr "🖼️ Pridėtas paveikslo įklijavimo palaikymas per mainų sritį (Ctrl+V)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:512
-msgid ""
-"📥 Implemented download manager with custom directory and toast notifications"
+#: data/io.github.tobagin.karere.metainfo.xml.in:650
+msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
 msgstr ""
-"📥 Įgyvendinta atsiuntimų tvarkytuvė su pasirinktiniu katalogu ir "
-"iškylančiaisiais pranešimais"
+"♻️ Pašalintas pasirinktinis žurnalavimas ir strigčių pranešimai (naudokite "
+"sistemos journalctl)"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:513
+#: data/io.github.tobagin.karere.metainfo.xml.in:632
 msgid ""
 "♿ Enhanced accessibility with screen reader optimization and keyboard "
 "navigation"
@@ -1629,460 +2163,7 @@ msgstr ""
 "♿ Pagerintas pritaikymas neįgaliesiems su ekrano skaitytuvo optimizavimu ir "
 "klaviatūros navigacija"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:514
-msgid "📝 Added comprehensive spell checking system with auto-detection"
-msgstr "📝 Pridėta išsami rašybos tikrinimo sistema su automatiniu aptikimu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:515
-msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
-msgstr "🔤 Integruoti 80+ kalbų žodynai iš LibreOffice"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:516
-msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
-msgstr "⌨️ Pridėtas sparčiųjų klavišų dialogas naudojant AdwShortcutsDialog"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:520
-msgid ""
-"Fixed Ctrl+V paste for text content - now works for both text and images"
-msgstr ""
-"Pataisytas Ctrl+V įklijavimas teksto turiniui — dabar veikia tiek tekstui, "
-"tiek paveikslams"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:521
-msgid "Fixed WhatsApp notification permission not persisting across sessions"
-msgstr "Pataisytas WhatsApp pranešimų leidimas, neišliekantis tarp seansų"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:522
-msgid "Fixed notifications banner appearing on every app launch"
-msgstr ""
-"Pataisyta pranešimų juosta, atsirandanti kiekvieną kartą paleidžiant "
-"programą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:523
-msgid "Fixed WebView zoom being enabled by default (now disabled)"
-msgstr ""
-"Pataisytas WebView mastelis, įgalintas pagal numatymą (dabar išjungtas)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:524
-msgid "Fixed clipboard manager intercepting all paste events"
-msgstr ""
-"Pataisytas mainų srities tvarkytuvas, perimantis visus įklijavimo įvykius"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:525
-msgid ""
-"Removed hardcoded blueprint compiler paths for cross-architecture support"
-msgstr ""
-"Pašalinti į kodą įrašyti blueprint kompiliatoriaus keliai "
-"daugiaarchitektūriniam palaikymui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:527
-msgid "Code Quality Improvements:"
-msgstr "Kodo kokybės patobulinimai:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:529
-msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
-msgstr ""
-"♻️ Pagrindinis pertvarkymas: kodo bazė reorganizuota su PascalCase failų "
-"pavadinimais"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:530
-msgid "♻️ Refactored Window.vala into specialized manager components"
-msgstr "♻️ Window.vala pertvarkyta į specializuotus tvarkytuvo komponentus"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:531
-msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
-msgstr ""
-"♻️ Pašalintas pasirinktinis žurnalavimas ir strigčių pranešimai (naudokite "
-"sistemos journalctl)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:532
-msgid ""
-"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
-msgstr ""
-"🗑️ Pašalinta „Netrukdyti“ funkcija (tvarkoma sistemos pranešimų tarnybos)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:533
-msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
-msgstr "🗑️ Išvalyti pasenę testų failai ir nenaudojamos priklausomybės"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:534
-msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
-msgstr "🗑️ Pašalintos json-glib, gee ir libsoup priklausomybės"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:535
-msgid "🧹 Centralized settings management with SettingsManager singleton"
-msgstr "🧹 Centralizuotas nustatymų valdymas su SettingsManager vieniniu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:536
-msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
-msgstr ""
-"🧹 Pašalintas DependencyContainer.vala (nenaudojamas priklausomybių "
-"įterpimas)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:537
-msgid "📸 Reorganized screenshots into data/screenshots/ directory"
-msgstr "📸 Ekrano nuotraukos reorganizuotos į data/screenshots/ katalogą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:539
-#: data/io.github.tobagin.karere.metainfo.xml.in:609
-#: data/io.github.tobagin.karere.metainfo.xml.in:631
-msgid "Technical Changes:"
-msgstr "Techniniai pakeitimai:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:541
-msgid "Implemented UserScript injection for Notification.permission state"
-msgstr "Įgyvendinta UserScript injekcija Notification.permission būsenai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:542
-msgid "Connected show_notification signal handler for WebKit notifications"
-msgstr "Prijungtas show_notification signalo tvarkytuvas WebKit pranešimams"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:543
-msgid "WebKitGTK 6.0 storage persistence verified and documented"
-msgstr "WebKitGTK 6.0 saugyklos išliekamumas patikrintas ir dokumentuotas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:544
-msgid "Updated SettingsManager to be the default for all settings access"
-msgstr ""
-"Atnaujintas SettingsManager, kad būtų numatytasis visai nustatymų prieigai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:545
-msgid "Improved build system with cleaner dependency management"
-msgstr "Pagerinta darinio sistema su švaresniu priklausomybių valdymu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:547
-msgid "Documentation:"
-msgstr "Dokumentacija:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:549
-msgid "📚 Enhanced README with accessibility features documentation"
-msgstr ""
-"📚 Pagerintas README su pritaikymo neįgaliesiems funkcijų dokumentacija"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:550
-msgid "📚 Documented all keyboard shortcuts by category"
-msgstr "📚 Dokumentuoti visi spartieji klavišai pagal kategorijas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:551
-msgid "📚 Added spell checking configuration guide"
-msgstr "📚 Pridėtas rašybos tikrinimo konfigūravimo vadovas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:552
-msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
-msgstr "📚 Pataisyti GitHub saugyklos URL (karere-vala → karere)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:558
-msgid "🐛 Runtime Update and Bug Fixes"
-msgstr "🐛 Vykdymo aplinkos naujinimas ir klaidų taisymai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:561
-msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
-msgstr ""
-"Atnaujinta GNOME vykdymo aplinka iki versijos 49 pagerintam suderinamumui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:562
-msgid "Improved system integration with latest platform libraries"
-msgstr ""
-"Pagerinta sistemos integracija su naujausiomis platformos bibliotekomis"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:563
-msgid "Better support for modern desktop environments"
-msgstr "Geresnis modernių darbalaukio aplinkų palaikymas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:564
-msgid "Enhanced stability and performance optimizations"
-msgstr "Pagerintas stabilumas ir našumo optimizavimas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:568
-msgid "Resolved compatibility issues with newer GNOME environments"
-msgstr "Išspręstos suderinamumo problemos su naujesnėmis GNOME aplinkomis"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:569
-msgid "Fixed potential rendering inconsistencies"
-msgstr "Pataisyti galimi atvaizdavimo nesutapimai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:570
-msgid "Improved error handling and recovery mechanisms"
-msgstr "Pagerintas klaidų tvarkymas ir atkūrimo mechanizmai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:576
-msgid ""
-"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
-msgstr ""
-"✨ Pagerintas jaustukų palaikymas, išorinių nuorodų tvarkymas ir darinio "
-"patobulinimai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:579
-msgid ""
-"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
-msgstr ""
-"Pridėti aukštos kokybės Noto Color Emoji šriftai (v2.047, Unicode 16.0 "
-"palaikymas)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:580
-msgid "Enhanced WebKit rendering with maximum hardware acceleration"
-msgstr ""
-"Pagerintas WebKit atvaizdavimas su maksimaliu aparatinės įrangos spartinimu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:581
-msgid "Improved emoji consistency with bundled font system"
-msgstr "Pagerintas jaustukų nuoseklumas su pridėta šriftų sistema"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:582
-msgid "Optimized font loading to eliminate display conflicts"
-msgstr "Optimizuotas šriftų įkėlimas pašalinant rodymo konfliktus"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:583
-msgid "Added WebKit cache control setting for improved rendering consistency"
-msgstr ""
-"Pridėtas WebKit podėlio valdymo nustatymas pagerintam atvaizdavimo "
-"nuoseklumui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:584
-msgid "Cache disabled by default to prevent emoji rendering issues"
-msgstr ""
-"Podėlis išjungtas pagal numatymą, kad būtų išvengta jaustukų atvaizdavimo "
-"problemų"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:588
-msgid ""
-"Fixed external links not opening in default browser when running in Flatpak"
-msgstr ""
-"Pataisytos išorinės nuorodos, neatsiveriančios numatytojoje naršyklėje "
-"veikiant Flatpak aplinkoje"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:589
-msgid "Improved external link handling with proper Flatpak portal support"
-msgstr ""
-"Pagerintas išorinių nuorodų tvarkymas su tinkamu Flatpak portalo palaikymu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:590
-msgid "Fixed random emoji display issues and blank emoji problems"
-msgstr "Pataisytos atsitiktinės jaustukų rodymo problemos ir tušti jaustukai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:591
-msgid "Fixed invalid meson version requirement preventing builds"
-msgstr "Pataisytas netinkamas meson versijos reikalavimas, trukdęs dariniams"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:592
-msgid "Corrected dependency version specifications in meson.build"
-msgstr "Pataisytos priklausomybių versijų specifikacijos meson.build"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:593
-msgid "Resolved flatpak-builder compatibility issues"
-msgstr "Išspręstos flatpak-builder suderinamumo problemos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:594
-msgid "Enhanced URL validation for external link detection"
-msgstr "Pagerintas URL tikrinimas išorinių nuorodų aptikimui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:598
-msgid "Eliminated WebKit cache corruption affecting emoji rendering"
-msgstr "Pašalintas WebKit podėlio gadinimas, veikęs jaustukų atvaizdavimą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:599
-msgid "Streamlined font stack for consistent emoji appearance"
-msgstr "Supaprastintas šriftų rinkinys nuosekliai jaustukų išvaizdai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:600
-msgid "Enhanced 2D canvas acceleration for better graphics performance"
-msgstr "Pagerintas 2D drobės spartinimas geresniam grafikos našumui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:601
-msgid "Improved font loading stability and reduced race conditions"
-msgstr "Pagerintas šriftų įkėlimo stabilumas ir sumažintos lenktynių sąlygos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:602
-msgid "Better sandboxed environment compatibility"
-msgstr "Geresnis smėlio dėžės aplinkos suderinamumas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:603
-msgid "More reliable link opening mechanism"
-msgstr "Patikimesnis nuorodų atvėrimo mechanizmas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:604
-msgid "Enhanced logging for external link operations"
-msgstr "Pagerintas žurnalavimas išorinių nuorodų operacijoms"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:605
-msgid "Better build system compatibility with different environments"
-msgstr "Geresnis darinio sistemos suderinamumas su skirtingomis aplinkomis"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:606
-msgid "Enhanced CI/CD pipeline stability"
-msgstr "Pagerintas CI/CD konvejerio stabilumas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:607
-msgid "More robust dependency handling"
-msgstr "Tvirtesnis priklausomybių tvarkymas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:611
-msgid ""
-"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
-"only)"
-msgstr ""
-"Pašalintas nereikalingas mobilaus naudotojo agento perjungimas (WhatsApp Web"
-" skirta tik darbalaukiui)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:612
-msgid "Disabled problematic WebKit caches causing font corruption"
-msgstr "Išjungti probleminiai WebKit podėliai, sukėlę šriftų gadinimą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:613
-msgid "Simplified emoji font configuration to single high-quality source"
-msgstr ""
-"Supaprastinta jaustukų šriftų konfigūracija iki vieno aukštos kokybės "
-"šaltinio"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:614
-msgid "Restored Safari Linux user agent for native WebKit experience"
-msgstr "Atstatytas Safari Linux naudotojo agentas savaimajai WebKit patirčiai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:615
-msgid "Added subpixel font scaling and advanced rendering optimizations"
-msgstr ""
-"Pridėtas subpikselių šriftų mastelio keitimas ir pažangus atvaizdavimo "
-"optimizavimas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:616
-msgid "Implemented Flatpak portal system for external link handling"
-msgstr "Įgyvendinta Flatpak portalo sistema išorinių nuorodų tvarkymui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:622
-msgid "🔧 Code Refactoring and Architecture Improvements"
-msgstr "🔧 Kodo pertvarkymas ir architektūros patobulinimai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:625
-msgid "Converted template files to preprocessor directives for cleaner code"
-msgstr ""
-"Šablono failai konvertuoti į pirminio apdorojimo direktyvas švaresniam kodui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:626
-msgid "Eliminated .vala.in template substitution system"
-msgstr "Pašalinta .vala.in šablonų keitimo sistema"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:627
-msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
-msgstr ""
-"Pridėta kompiliavimo metu sąlyginė kompiliacija naudojant DEVELOPMENT "
-"vėliavą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:628
-msgid "Improved build system maintainability and type safety"
-msgstr "Pagerintas darinio sistemos priežiūros patogumas ir tipų saugumas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:629
-msgid "Added contributors Aman Das and Cameo to about dialog"
-msgstr "Pridėti talkininkai Aman Das ir Cameo į dialogą „Apie“"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:633
-msgid ""
-"Replaced window.vala.in and preferences.vala.in with direct .vala files"
-msgstr ""
-"Pakeisti window.vala.in ir preferences.vala.in tiesioginiais .vala failais"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:634
-msgid "Updated meson.build to use Vala preprocessor directives"
-msgstr "Atnaujinta meson.build naudoti Vala pirminio apdorojimo direktyvas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:635
-msgid "Simplified source file management in build system"
-msgstr "Supaprastintas pirminio kodo failų valdymas darinio sistemoje"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:641
-#: data/io.github.tobagin.karere.metainfo.xml.in:675
-msgid "🐛 Bug Fixes and Improvements"
-msgstr "🐛 Klaidų taisymai ir patobulinimai"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:644
-msgid "Fixed crash when handling invalid user input data"
-msgstr "Pataisyta strigtis tvarkant netinkamus naudotojo įvesties duomenis"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:645
-msgid "Resolved memory leak in notification cleanup"
-msgstr "Išspręstas atminties nutekėjimas pranešimų valyme"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:646
-msgid "Corrected accessibility focus handling"
-msgstr "Pataisytas pritaikymo neįgaliesiems fokuso tvarkymas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:650
-msgid "Better error handling for network timeouts"
-msgstr "Geresnis klaidų tvarkymas tinklo skirtiesiems laikams"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:651
-msgid "Enhanced stability for extended usage"
-msgstr "Pagerintas stabilumas ilgesniam naudojimui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:652
-msgid "Performance optimizations for scrolling"
-msgstr "Našumo optimizavimas slinkimui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:658
-msgid "🔧 Metadata and Standards Compliance"
-msgstr "🔧 Metaduomenų ir standartų atitikimas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:661
-msgid "Fixed duplicate provides tags in metainfo validation"
-msgstr "Pataisytos pasikartojančios provides žymos metainfo tikrinime"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:662
-msgid "Corrected AppStream metainfo format compliance"
-msgstr "Pataisytas AppStream metainfo formato atitikimas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:663
-msgid "Resolved invalid markup in release descriptions"
-msgstr "Išspręsta netinkama ženklinimo kalba laidų aprašymuose"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:667
-msgid "Updated all references from appdata to metainfo format"
-msgstr "Atnaujintos visos nuorodos iš appdata į metainfo formatą"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:668
-msgid "Enhanced Flathub compliance and validation"
-msgstr "Pagerintas Flathub atitikimas ir tikrinimas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:669
-msgid "Improved translation file consistency"
-msgstr "Pagerintas vertimo failų nuoseklumas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:678
-msgid "Fixed crash when handling invalid notification data"
-msgstr "Pataisyta strigtis tvarkant netinkamus pranešimų duomenis"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:679
-msgid "Resolved memory leak in WebKit manager cleanup"
-msgstr "Išspręstas atminties nutekėjimas WebKit tvarkytuvo valyme"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:680
-msgid "Corrected window state persistence on shutdown"
-msgstr "Pataisytas lango būsenos išliekamumas išjungiant"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:684
-msgid "Better error handling for network disconnections"
-msgstr "Geresnis klaidų tvarkymas tinklo atjungimams"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:685
-msgid "Enhanced stability during long sessions"
-msgstr "Pagerintas stabilumas ilgų seansų metu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:686
-msgid "Performance optimizations for faster startup"
-msgstr "Našumo optimizavimas greitesniam paleidimui"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:692
-msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
-msgstr "🚀 Pagrindinė architektūros migracija: iš Python į Vala/GTK4"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:693
-msgid ""
-"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
-"performance and integration."
-msgstr ""
-"ARDANTIS PAKEITIMAS: visiškas perrašymas iš Python į savaimąją Vala "
-"geresniam našumui ir integracijai."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:694
+#: data/io.github.tobagin.karere.metainfo.xml.in:813
 msgid ""
 "⚠️ Important: After upgrading, you will need to re-sync your mobile device "
 "with WhatsApp Web as this is a completely new application implementation."
@@ -2090,147 +2171,256 @@ msgstr ""
 "⚠️ Svarbu: po atnaujinimo jums reikės iš naujo sinchronizuoti mobilųjį "
 "įrenginį su WhatsApp Web, nes tai visiškai nauja programos realizacija."
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:697
-msgid "Native Vala/GTK4 implementation for optimal performance"
-msgstr "Savaiminė Vala/GTK4 realizacija optimaliam našumui"
+#: data/io.github.tobagin.karere.metainfo.xml.in:579
+msgid "⚡ Performance optimizations for startup and shutdown"
+msgstr "⚡ Našumo optimizavimas paleidimui ir išjungimui"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:698
-msgid "Modern LibAdwaita UI with Blueprint declarative interface"
-msgstr "Moderni LibAdwaita sąsaja su Blueprint deklaratyvia sąsaja"
+#: data/io.github.tobagin.karere.metainfo.xml.in:628
+msgid "✅ Fixed WhatsApp Web notification banner persistence"
+msgstr "✅ Pataisytas WhatsApp Web pranešimų juostos išliekamumas"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:699
-msgid "Enhanced WebKitGTK 6.0 integration"
-msgstr "Pagerinta WebKitGTK 6.0 integracija"
+#: data/io.github.tobagin.karere.metainfo.xml.in:629
+msgid "✅ Fixed notifications not working properly"
+msgstr "✅ Pataisyti pranešimai, tinkamai neveikę"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:700
-msgid "Advanced notification system with native desktop integration"
-msgstr "Pažangi pranešimų sistema su savaimine darbalaukio integracija"
+#: data/io.github.tobagin.karere.metainfo.xml.in:695
+msgid ""
+"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+msgstr ""
+"✨ Pagerintas jaustukų palaikymas, išorinių nuorodų tvarkymas ir darinio "
+"patobulinimai"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:701
-msgid "Comprehensive accessibility support"
-msgstr "Išsamus pritaikymo neįgaliesiems palaikymas"
+#: data/io.github.tobagin.karere.metainfo.xml.in:570
+msgid "🎉 Feature Release"
+msgstr "🎉 Funkcijų laida"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:702
-msgid "Professional logging and crash reporting system"
-msgstr "Profesionalus žurnalavimo ir strigčių pranešimų sistema"
+#: data/io.github.tobagin.karere.metainfo.xml.in:546
+msgid "🎉 Major Release 2.0.0"
+msgstr "🎉 Pagrindinė laida 2.0.0"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:704
-msgid "Multi-language spell checking support"
-msgstr "Daugiakalbis rašybos tikrinimo palaikymas"
+#: data/io.github.tobagin.karere.metainfo.xml.in:625
+msgid "🎉 Version 1.0.0 - Major Milestone Release"
+msgstr "🎉 Versija 1.0.0 — pagrindinė pasiekimo laida"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:705
-msgid "Granular privacy and notification controls"
-msgstr "Detalūs privatumo ir pranešimų valdikliai"
+#: data/io.github.tobagin.karere.metainfo.xml.in:573
+msgid "🎤 Microphone permission support for voice notes"
+msgstr "🎤 Mikrofono leidimo palaikymas balso žinutėms"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:706
-msgid "Hardware-accelerated rendering"
-msgstr "Aparatiškai spartinamas atvaizdavimas"
+#: data/io.github.tobagin.karere.metainfo.xml.in:560
+msgid "🐛 Bug Fix Release"
+msgstr "🐛 Klaidų taisymo laida"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:707
-msgid "Improved memory efficiency and startup performance"
-msgstr "Pagerintas atminties efektyvumas ir paleidimo našumas"
+#: data/io.github.tobagin.karere.metainfo.xml.in:760
+#: data/io.github.tobagin.karere.metainfo.xml.in:794
+msgid "🐛 Bug Fixes and Improvements"
+msgstr "🐛 Klaidų taisymai ir patobulinimai"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:709
-msgid "Technical Improvements:"
-msgstr "Techniniai patobulinimai:"
+#: data/io.github.tobagin.karere.metainfo.xml.in:677
+msgid "🐛 Runtime Update and Bug Fixes"
+msgstr "🐛 Vykdymo aplinkos naujinimas ir klaidų taisymai"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:711
-msgid "Migrated from Python 3 to native Vala compilation"
-msgstr "Migruota iš Python 3 į savaimąją Vala kompiliaciją"
+#: data/io.github.tobagin.karere.metainfo.xml.in:581
+msgid "📖 Added MPRIS workaround documentation"
+msgstr "📖 Pridėta MPRIS apėjimo dokumentacija"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:712
-msgid "Modern Meson build system with Blueprint UI compilation"
-msgstr "Moderni Meson darinio sistema su Blueprint sąsajos kompiliacija"
+#: data/io.github.tobagin.karere.metainfo.xml.in:670
+msgid "📚 Added spell checking configuration guide"
+msgstr "📚 Pridėtas rašybos tikrinimo konfigūravimo vadovas"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:713
-msgid "Comprehensive test suite with unit and integration tests"
-msgstr "Išsamus testų rinkinys su vienetų ir integracijos testais"
+#: data/io.github.tobagin.karere.metainfo.xml.in:669
+msgid "📚 Documented all keyboard shortcuts by category"
+msgstr "📚 Dokumentuoti visi spartieji klavišai pagal kategorijas"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:714
-msgid "Production-ready error handling and crash recovery"
-msgstr "Gamybai paruoštas klaidų tvarkymas ir strigčių atkūrimas"
+#: data/io.github.tobagin.karere.metainfo.xml.in:668
+msgid "📚 Enhanced README with accessibility features documentation"
+msgstr ""
+"📚 Pagerintas README su pritaikymo neįgaliesiems funkcijų dokumentacija"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:715
-msgid "Enhanced security with proper sandboxing"
-msgstr "Pagerintas saugumas su tinkama smėlio dėže"
+#: data/io.github.tobagin.karere.metainfo.xml.in:671
+msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+msgstr "📚 Pataisyti GitHub saugyklos URL (karere-vala → karere)"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:716
-msgid "Complete internationalization support"
-msgstr "Pilnas internacionalizavimo palaikymas"
+#: data/io.github.tobagin.karere.metainfo.xml.in:633
+msgid "📝 Added comprehensive spell checking system with auto-detection"
+msgstr "📝 Pridėta išsami rašybos tikrinimo sistema su automatiniu aptikimu"
 
-#: src/window.rs:303
+#: data/io.github.tobagin.karere.metainfo.xml.in:580
+msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+msgstr ""
+"📝 Asinchroninis žodynų įkėlimas sklandesnei rašybos tikrinimo "
+"inicializacijai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:603
+msgid "📝 Documentation and Metadata Update"
+msgstr "📝 Dokumentacijos ir metaduomenų atnaujinimas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:631
+msgid ""
+"📥 Implemented download manager with custom directory and toast notifications"
+msgstr ""
+"📥 Įgyvendinta atsiuntimų tvarkytuvė su pasirinktiniu katalogu ir "
+"iškylančiaisiais pranešimais"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:656
+msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+msgstr "📸 Ekrano nuotraukos reorganizuotos į data/screenshots/ katalogą"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:614
+msgid "📸 Screenshots and Documentation Update"
+msgstr "📸 Ekrano nuotraukų ir dokumentacijos atnaujinimas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:575
+msgid "🔄 Manual reload and auto-reload on network reconnection"
+msgstr ""
+"🔄 Rankinis įkėlimas iš naujo ir automatinis įkėlimas iš naujo prisijungus "
+"prie tinklo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:634
+msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+msgstr "🔤 Integruoti 80+ kalbų žodynai iš LibreOffice"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:741
+msgid "🔧 Code Refactoring and Architecture Improvements"
+msgstr "🔧 Kodo pertvarkymas ir architektūros patobulinimai"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:592
+msgid "🔧 Maintenance Release"
+msgstr "🔧 Priežiūros laida"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:777
+msgid "🔧 Metadata and Standards Compliance"
+msgstr "🔧 Metaduomenų ir standartų atitikimas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:630
+msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+msgstr "🖼️ Pridėtas paveikslo įklijavimo palaikymas per mainų sritį (Ctrl+V)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:652
+msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+msgstr "🗑️ Išvalyti pasenę testų failai ir nenaudojamos priklausomybės"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:651
+msgid ""
+"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+msgstr ""
+"🗑️ Pašalinta „Netrukdyti“ funkcija (tvarkoma sistemos pranešimų tarnybos)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:653
+msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+msgstr "🗑️ Pašalintos json-glib, gee ir libsoup priklausomybės"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:811
+msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+msgstr "🚀 Pagrindinė architektūros migracija: iš Python į Vala/GTK4"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:574
+msgid "🚀 Start in background option for autostart"
+msgstr "🚀 Paleidimo fone parinktis automatiniam paleidimui"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:654
+msgid "🧹 Centralized settings management with SettingsManager singleton"
+msgstr "🧹 Centralizuotas nustatymų valdymas su SettingsManager vieniniu"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:655
+msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+msgstr ""
+"🧹 Pašalintas DependencyContainer.vala (nenaudojamas priklausomybių "
+"įterpimas)"
+
+#: src/main.rs:42
+msgid "Karere starting"
+msgstr "Karere paleidžiama"
+
+#: src/window.rs:290
 msgid "Account"
 msgstr "Paskyra"
 
-#: src/window.rs:632
+#: src/window.rs:619
 msgid "Waiting for QR scan…"
 msgstr "Laukiama QR nuskaitymo…"
 
-#: src/window.rs:654
+#: src/window.rs:641
 msgid "degraded"
 msgstr "pablogėjusi"
 
-#: src/window.rs:670
+#: src/window.rs:657
 msgid "Unread messages"
 msgstr "Neperskaitytos žinutės"
 
-#: src/window.rs:678
+#: src/window.rs:668
+msgid "Notifications muted — click to unmute"
+msgstr ""
+
+#: src/window.rs:672
+#, fuzzy
+msgid "Mute notifications"
+msgstr "Pranešimai"
+
+#: src/window.rs:703
 msgid "Edit account"
 msgstr "Taisyti paskyrą"
 
-#: src/window.rs:694
+#: src/window.rs:719
 msgid "Remove account"
 msgstr "Pašalinti paskyrą"
 
-#: src/window.rs:696
+#: src/window.rs:721
 msgid "Can't remove the only account"
 msgstr "Negalima pašalinti vienintelės paskyros"
 
-#: src/window.rs:778
+#: src/window.rs:805
 msgid "Maximum of 9 accounts reached"
 msgstr "Pasiektas didžiausias 9 paskyrų skaičius"
 
-#: src/window.rs:804
+#: src/window.rs:831
 msgid "Label"
 msgstr "Etiketė"
 
-#: src/window.rs:818
+#: src/window.rs:846
 msgid "Name"
 msgstr "Vardas"
 
-#: src/window.rs:819
+#: src/window.rs:850
 msgid "WhatsApp ID"
 msgstr "WhatsApp ID"
 
-#: src/window.rs:821
+#: src/window.rs:854
 msgid "Avatar URL"
 msgstr "Avataro URL"
 
-#: src/window.rs:830 src/window.rs:919
+#: src/window.rs:863 src/window.rs:952
 msgid "Cancel"
 msgstr "Atsisakyti"
 
-#: src/window.rs:831
+#: src/window.rs:864
 msgid "Save"
 msgstr "Įrašyti"
 
-#: src/window.rs:840
+#: src/window.rs:873
 msgid "Add Account"
 msgstr "Pridėti paskyrą"
 
-#: src/window.rs:842
+#: src/window.rs:875
 msgid "Edit Account"
 msgstr "Taisyti paskyrą"
 
-#: src/window.rs:909
+#: src/window.rs:942
 msgid "Remove account?"
 msgstr "Pašalinti paskyrą?"
 
-#: src/window.rs:920
+#: src/window.rs:945
+msgid "This removes the local session for"
+msgstr "Tai pašalina vietinį seansą paskyrai"
+
+#: src/window.rs:948
+msgid "The device stays linked on your phone until you remove it there."
+msgstr "Įrenginys lieka susietas jūsų telefone, kol jo ten nepašalinsite."
+
+#: src/window.rs:953
 msgid "Remove"
 msgstr "Pašalinti"
 
-#: src/actions.rs:263
+#: src/actions.rs:267
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
 "seamless desktop integration with comprehensive logging and crash reporting "
@@ -2240,10 +2430,52 @@ msgstr ""
 "sklandžią darbalaukio integraciją su išsamiomis žurnalavimo ir strigčių "
 "pranešimų galimybėmis"
 
-#: src/actions.rs:282
+#: src/actions.rs:286
 msgid "Source"
 msgstr "Šaltinis"
 
-#: src/actions.rs:285
+#: src/actions.rs:289
 msgid "Special Thanks"
 msgstr "Ypatinga padėka"
+
+#. Translators: tray tooltip body; leading number is the unread count.
+#: src/tray.rs:68
+msgid "unread"
+msgstr "neperskaityta"
+
+#: src/tray.rs:93
+msgid "Hide Window"
+msgstr "Slėpti langą"
+
+#: src/tray.rs:95
+msgid "Show Window"
+msgstr "Rodyti langą"
+
+#: src/tray.rs:151
+msgid "About Karere"
+msgstr "Apie Karere"
+
+#: src/preferences.rs:90
+msgid "Restart Karere?"
+msgstr "Paleisti Karere iš naujo?"
+
+#: src/preferences.rs:91
+msgid "Later"
+msgstr "Vėliau"
+
+#: src/preferences.rs:92
+msgid "Restart Now"
+msgstr "Paleisti iš naujo"
+
+#: src/preferences.rs:290
+#, fuzzy
+msgid "GPU rendering takes effect after Karere restarts."
+msgstr "Kalbos pakeitimas įsigalios iš naujo paleidus Karere."
+
+#: src/preferences.rs:319
+msgid "System Default"
+msgstr "Sistemos numatytasis"
+
+#: src/preferences.rs:346
+msgid "The language change takes effect after Karere restarts."
+msgstr "Kalbos pakeitimas įsigalios iš naujo paleidus Karere."

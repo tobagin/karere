@@ -18,6 +18,7 @@
 /data/ui/*.ui
 /build-pot
 /po/*.pot~
+/po/*.po~
 .idea/
 .vscode/
 *.swp

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-07 11:42+0100\n"
+"POT-Creation-Date: 2026-08-17 16:58+0100\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,24 +18,2521 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/main.rs:37
+#: data/io.github.tobagin.karere.desktop.in:3
+#: data/io.github.tobagin.karere.metainfo.xml.in:15
+msgid "@APP_NAME@"
+msgstr "@APP_NAME@"
+
+#: data/ui/window.ui:265
+msgid "About"
+msgstr "Acerca de"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:53
+msgid "About dialog showing application information"
+msgstr "Diálogo Acerca de mostrando información de la aplicación"
+
+#: data/ui/preferences.ui:348
+msgid "Accessibility"
+msgstr "Accesibilidad"
+
+#: data/ui/preferences.ui:428
+msgid "Accessibility Shortcuts"
+msgstr "Atajos de accesibilidad"
+
+#: data/ui/preferences.ui:378
+msgid "Accessibility Zoom"
+msgstr "Zoom de accesibilidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:234
+msgid ""
+"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
+"browsing"
+msgstr ""
+"Preferencias de accesibilidad: reducir el movimiento, visibilidad del anillo "
+"de foco y navegación con cursor"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:230
+msgid ""
+"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+msgstr ""
+"Identidad de la cuenta (nombre + avatar) detectada automáticamente desde el "
+"Store interno de WhatsApp Web, con un método alternativo de extracción del "
+"DOM degradado señalado por una insignia"
+
+#: data/ui/keyboard-shortcuts.ui:38
+msgid "Accounts"
+msgstr "Cuentas"
+
+#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
+msgid "Add new account"
+msgstr "Agregar cuenta nueva"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:497
+msgid "Add new contributor Sabri Ünal to the About dialog"
+msgstr "Se agregó al nuevo colaborador Sabri Ünal al diálogo Acerca de"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:519
+msgid "Add xdg-config/autostart permission for autostart support"
+msgstr ""
+"Se agregó el permiso xdg-config/autostart para la compatibilidad con el "
+"inicio automático"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:537
+msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+msgstr ""
+"Se agregó el interruptor \"Ejecutar al iniciar sesión\" en las preferencias "
+"(predeterminado: desactivado)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:314
+msgid ""
+"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
+"handling"
+msgstr ""
+"Se agregaron variables de entorno de GStreamer/PipeWire al Flatpak de "
+"producción para un manejo eficiente de los medios"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:702
+msgid "Added WebKit cache control setting for improved rendering consistency"
+msgstr ""
+"Se agregó una opción de control de la caché de WebKit para una mejor "
+"consistencia del renderizado"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:376
+msgid ""
+"Added WebRTC permission handling in preparation for WhatsApp Web voice/video "
+"calls"
+msgstr ""
+"Se agregó el manejo de permisos de WebRTC en preparación para las llamadas "
+"de voz/video de WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:361
+msgid ""
+"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+msgstr ""
+"Se agregó compatibilidad con el zoom (Ctrl +/-/0) con persistencia y "
+"controles en las preferencias"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:195
+msgid ""
+"Added an experimental \"GPU Rendering\" option (Preferences → General → "
+"Experimental) that renders the chat view on the GPU via accelerated off-"
+"screen rendering for lower CPU and power use. Off by default and requires a "
+"restart; if the chat area is blank on your hardware, turn it off and restart"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:746
+msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+msgstr ""
+"Se agregó compilación condicional en tiempo de compilación usando la marca "
+"DEVELOPMENT"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:352
+msgid "Added complete multi-account support with sidebar and tray integration"
+msgstr ""
+"Se agregó compatibilidad completa con varias cuentas con barra lateral e "
+"integración con la bandeja"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:748
+msgid "Added contributors Aman Das and Cameo to about dialog"
+msgstr "Se agregaron los colaboradores Aman Das y Cameo al diálogo Acerca de"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:698
+msgid ""
+"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+msgstr ""
+"Se agregaron fuentes Noto Color Emoji de alta calidad (v2.047, "
+"compatibilidad con Unicode 16.0)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:462
+msgid "Added middle-click paste from primary selection (selected text)"
+msgstr ""
+"Se agregó el pegado con el botón central desde la selección primaria (texto "
+"seleccionado)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:471
+msgid "Added new application icons"
+msgstr "Se agregaron nuevos íconos de la aplicación"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:353
+msgid "Added per-account zoom settings and improved accessibility"
+msgstr "Se agregaron opciones de zoom por cuenta y se mejoró la accesibilidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:540
+msgid "Added striped symbolic icons for development version"
+msgstr "Se agregaron íconos simbólicos a rayas para la versión de desarrollo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:734
+msgid "Added subpixel font scaling and advanced rendering optimizations"
+msgstr ""
+"Se agregaron el escalado de fuentes por subpíxeles y optimizaciones "
+"avanzadas de renderizado"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:278
+msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+msgstr ""
+"Se agregó compatibilidad con llamadas de voz y video mediante WebKitGTK "
+"2.50.5 con WebRTC"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:252
+msgid ""
+"Added: account switcher uses a popover on desktop windows (bottom sheet "
+"preserved on mobile)"
+msgstr ""
+"Agregado: el selector de cuentas usa una ventana emergente en las ventanas "
+"de escritorio (se conserva la hoja inferior en móviles)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:250
+msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+msgstr ""
+"Agregado: fijar arriba del menú desplegable los idiomas favoritos del "
+"corrector ortográfico"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:251
+msgid ""
+"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
+"instead of locale codes"
+msgstr ""
+"Agregado: el menú desplegable del corrector muestra los nombres de los "
+"idiomas en lenguaje natural (\"Inglés (Reino Unido)\") en lugar de los "
+"códigos de localización"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:819
+msgid "Advanced notification system with native desktop integration"
+msgstr ""
+"Sistema de notificaciones avanzado con integración nativa con el escritorio"
+
+#: data/ui/preferences.ui:119
+msgid "Allow inspecting and debugging the WebView"
+msgstr "Permitir inspeccionar y depurar el WebView"
+
+#: data/ui/preferences.ui:177
+msgid "Animate the tray icon when a new message arrives"
+msgstr "Animar el ícono de la bandeja cuando llega un mensaje nuevo"
+
+#: data/ui/preferences.ui:68
+msgid "Appearance"
+msgstr "Apariencia"
+
+#: data/ui/keyboard-shortcuts.ui:142
+msgid "Application"
+msgstr "Aplicación"
+
+#: data/ui/preferences.ui:72
+msgid "Application language. Requires restart."
+msgstr "Idioma de la aplicación. Requiere reiniciar."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:57
+msgid "Application preferences and settings dialog"
+msgstr "Diálogo de preferencias y configuración de la aplicación"
+
+#: data/ui/preferences.ui:385
+msgid "Applied to all webviews"
+msgstr "Se aplica a todos los webviews"
+
+#: data/ui/preferences.ui:56 data/ui/preferences.ui:103
+msgid "Auto"
+msgstr "Automático"
+
+#: data/ui/preferences.ui:299
+msgid "Auto-Detect Language"
+msgstr "Detectar el idioma automáticamente"
+
+#: data/ui/preferences.ui:52
+msgid "Auto: shown when a system tray is available"
+msgstr "Automático: se muestra cuando hay una bandeja del sistema disponible"
+
+#: data/ui/preferences.ui:306
+msgid "Automatically fix common spelling mistakes"
+msgstr "Corregir automáticamente los errores ortográficos comunes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:812
+msgid ""
+"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+"performance and integration."
+msgstr ""
+"CAMBIO IMPORTANTE: reescritura completa de Python a Vala nativo para un "
+"mejor rendimiento e integración."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:724
+msgid "Better build system compatibility with different environments"
+msgstr "Mejor compatibilidad del sistema de compilación con distintos entornos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:803
+msgid "Better error handling for network disconnections"
+msgstr "Mejor manejo de errores para las desconexiones de red"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:769
+msgid "Better error handling for network timeouts"
+msgstr "Mejor manejo de errores para los tiempos de espera de la red"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:721
+msgid "Better sandboxed environment compatibility"
+msgstr "Mejor compatibilidad con entornos aislados"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:682
+msgid "Better support for modern desktop environments"
+msgstr "Mejor compatibilidad con los entornos de escritorio modernos"
+
+#: data/ui/preferences.ui:93
+msgid "Blend the window and header bar with WhatsApp Web's background"
+msgstr ""
+
+#: data/ui/preferences.ui:274
+msgid "Both"
+msgstr "Ambas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:525
+msgid "Bug Fix Release"
+msgstr "Versión de corrección de errores"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:583
+#: data/io.github.tobagin.karere.metainfo.xml.in:637
+#: data/io.github.tobagin.karere.metainfo.xml.in:685
+#: data/io.github.tobagin.karere.metainfo.xml.in:705
+#: data/io.github.tobagin.karere.metainfo.xml.in:761
+#: data/io.github.tobagin.karere.metainfo.xml.in:778
+#: data/io.github.tobagin.karere.metainfo.xml.in:795
+msgid "Bug Fixes:"
+msgstr "Corrección de errores:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:257
+msgid ""
+"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+"dependencies to latest compatible versions"
+msgstr ""
+"Se actualizó WebKitGTK a 2.52.3, los diccionarios de LibreOffice a 26.2.3.2 "
+"y las dependencias de Rust a las últimas versiones compatibles"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:703
+msgid "Cache disabled by default to prevent emoji rendering issues"
+msgstr ""
+"Caché desactivada de forma predeterminada para evitar problemas de "
+"renderizado de emojis"
+
+#: data/ui/preferences.ui:176
+msgid "Change Tray Icon on Message"
+msgstr "Cambiar el ícono de la bandeja al recibir un mensaje"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:526
+#: data/io.github.tobagin.karere.metainfo.xml.in:535
+msgid "Changes:"
+msgstr "Cambios:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:16
+msgid "Chat on WhatsApp"
+msgstr "Chateá en WhatsApp"
+
+#: data/ui/preferences.ui:294
+msgid "Check spelling as you type"
+msgstr "Revisar la ortografía mientras escribís"
+
+#: data/ui/preferences.ui:78
+msgid "Choose the application color scheme"
+msgstr "Elegí el esquema de color de la aplicación"
+
+#: data/ui/preferences.ui:241
+msgid "Choose…"
+msgstr "Elegir…"
+
+#: data/ui/preferences.ui:335
+msgid "Clear All"
+msgstr "Borrar todo"
+
+#: data/ui/window.ui:184
+msgid "Close Developer Tools"
+msgstr "Cerrar herramientas de desarrollo"
+
+#: data/ui/keyboard-shortcuts.ui:81
+msgid "Close Window"
+msgstr "Cerrar ventana"
+
+#: data/ui/keyboard-shortcuts.ui:82
+msgid "Close the window"
+msgstr "Cerrar la ventana"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:646
+msgid "Code Quality Improvements:"
+msgstr "Mejoras de la calidad del código:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:835
+msgid "Complete internationalization support"
+msgstr "Compatibilidad completa con la internacionalización"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:820
+msgid "Comprehensive accessibility support"
+msgstr "Compatibilidad completa con la accesibilidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:832
+msgid "Comprehensive test suite with unit and integration tests"
+msgstr "Conjunto de pruebas completo con pruebas unitarias y de integración"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:661
+msgid "Connected show_notification signal handler for WebKit notifications"
+msgstr ""
+"Se conectó el controlador de la señal show_notification para las "
+"notificaciones de WebKit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:744
+msgid "Converted template files to preprocessor directives for cleaner code"
+msgstr ""
+"Se convirtieron los archivos de plantilla a directivas del preprocesador "
+"para un código más limpio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:781
+msgid "Corrected AppStream metainfo format compliance"
+msgstr "Se corrigió el cumplimiento del formato de metainfo de AppStream"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:765
+msgid "Corrected accessibility focus handling"
+msgstr "Se corrigió el manejo del foco de accesibilidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:711
+msgid "Corrected dependency version specifications in meson.build"
+msgstr ""
+"Se corrigieron las especificaciones de versión de las dependencias en "
+"meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:472
+msgid "Corrected metadata description references"
+msgstr "Se corrigieron las referencias de la descripción de los metadatos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:799
+msgid "Corrected window state persistence on shutdown"
+msgstr "Se corrigió la persistencia del estado de la ventana al cerrar"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:435
+msgid "Ctrl+N keyboard shortcut for opening a new chat"
+msgstr "Atajo de teclado Ctrl+N para abrir un chat nuevo"
+
+#: data/ui/preferences.ui:84
+msgid "Dark"
+msgstr "Oscuro"
+
+#: data/ui/keyboard-shortcuts.ui:101
+msgid "Decrease the zoom level"
+msgstr "Disminuir el nivel de zoom"
+
+#: data/ui/preferences.ui:238
+msgid "Default (Downloads)"
+msgstr "Predeterminada (Descargas)"
+
+#: data/ui/preferences.ui:300
+msgid "Detect the writing language automatically"
+msgstr "Detectar el idioma de escritura de forma automática"
+
+#: data/ui/keyboard-shortcuts.ui:123
+msgid "Developer"
+msgstr "Desarrollo"
+
+#: data/ui/preferences.ui:434
+msgid "Developer Shortcuts"
+msgstr "Atajos de desarrollo"
+
+#: data/ui/window.ui:173 data/ui/preferences.ui:115 data/ui/preferences.ui:124
+#: data/ui/keyboard-shortcuts.ui:126
+msgid "Developer Tools"
+msgstr "Herramientas de desarrollo"
+
+#: data/ui/preferences.ui:58 data/ui/preferences.ui:105
+msgid "Disabled"
+msgstr "Desactivado"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:731
+msgid "Disabled problematic WebKit caches causing font corruption"
+msgstr ""
+"Se desactivaron las cachés problemáticas de WebKit que causaban corrupción "
+"de fuentes"
+
+#: data/ui/preferences.ui:195
+msgid "Display message content in notifications"
+msgstr "Mostrar el contenido del mensaje en las notificaciones"
+
+#: data/ui/preferences.ui:189
+msgid "Display the contact name in notifications"
+msgstr "Mostrar el nombre del contacto en las notificaciones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:666
+msgid "Documentation:"
+msgstr "Documentación:"
+
+#: data/ui/preferences.ui:237
+msgid "Download Directory"
+msgstr "Carpeta de descargas"
+
+#: data/ui/preferences.ui:261
+msgid "Download Notifications"
+msgstr "Notificaciones de descarga"
+
+#: data/ui/preferences.ui:230
+msgid "Downloads"
+msgstr "Descargas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:745
+msgid "Eliminated .vala.in template substitution system"
+msgstr "Se eliminó el sistema de sustitución de plantillas .vala.in"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:717
+msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+msgstr ""
+"Se eliminó la corrupción de la caché de WebKit que afectaba el renderizado "
+"de emojis"
+
+#: data/ui/preferences.ui:305
+msgid "Enable Auto-Correct"
+msgstr "Activar la autocorrección"
+
+#: data/ui/preferences.ui:118
+msgid "Enable Developer Tools"
+msgstr "Activar herramientas de desarrollo"
+
+#: data/ui/preferences.ui:159
+msgid "Enable Notifications"
+msgstr "Activar notificaciones"
+
+#: data/ui/preferences.ui:293
+msgid "Enable Spell Checking"
+msgstr "Activar la corrección ortográfica"
+
+#: data/ui/preferences.ui:423
+msgid "Enable keyboard shortcuts for common actions"
+msgstr "Activar atajos de teclado para acciones comunes"
+
+#: data/ui/preferences.ui:429
+msgid "Enable shortcuts for accessibility features"
+msgstr "Activar atajos para las funciones de accesibilidad"
+
+#: data/ui/preferences.ui:435
+msgid "Enable shortcuts for developer tools"
+msgstr "Activar atajos para las herramientas de desarrollo"
+
+#: data/ui/preferences.ui:441
+msgid "Enable shortcuts for notification actions"
+msgstr "Activar atajos para las acciones de notificación"
+
+#: data/ui/preferences.ui:57 data/ui/preferences.ui:104
+msgid "Enabled"
+msgstr "Activado"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:719
+msgid "Enhanced 2D canvas acceleration for better graphics performance"
+msgstr ""
+"Se mejoró la aceleración del lienzo 2D para un mejor rendimiento gráfico"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:725
+msgid "Enhanced CI/CD pipeline stability"
+msgstr "Se mejoró la estabilidad del flujo de CI/CD"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:787
+msgid "Enhanced Flathub compliance and validation"
+msgstr "Se mejoraron el cumplimiento y la validación de Flathub"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:713
+msgid "Enhanced URL validation for external link detection"
+msgstr "Se mejoró la validación de URL para la detección de enlaces externos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:699
+msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+msgstr ""
+"Se mejoró el renderizado de WebKit con la máxima aceleración por hardware"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:818
+msgid "Enhanced WebKitGTK 6.0 integration"
+msgstr "Integración mejorada con WebKitGTK 6.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:461
+msgid ""
+"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+"compatibility"
+msgstr ""
+"Se mejoró el pegado de imágenes con codificación Base64 para una "
+"compatibilidad confiable con WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:723
+msgid "Enhanced logging for external link operations"
+msgstr "Se mejoró el registro de las operaciones de enlaces externos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:596
+msgid "Enhanced packaging for better compatibility"
+msgstr "Se mejoró el empaquetado para una mejor compatibilidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:554
+msgid "Enhanced performance and stability"
+msgstr "Rendimiento y estabilidad mejorados"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:834
+msgid "Enhanced security with proper sandboxing"
+msgstr "Seguridad mejorada con un aislamiento adecuado"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:683
+msgid "Enhanced stability and performance optimizations"
+msgstr "Se mejoraron la estabilidad y las optimizaciones de rendimiento"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:804
+msgid "Enhanced stability during long sessions"
+msgstr "Estabilidad mejorada durante las sesiones largas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:770
+msgid "Enhanced stability for extended usage"
+msgstr "Estabilidad mejorada para el uso prolongado"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:619
+msgid "Enhanced visual documentation for users"
+msgstr "Se mejoró la documentación visual para los usuarios"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:564
+msgid "Ensure application starts properly in the background without delay"
+msgstr ""
+"Garantizar que la aplicación inicie correctamente en segundo plano sin demora"
+
+#: data/ui/preferences.ui:139
+msgid "Experimental"
+msgstr ""
+
+#: data/ui/keyboard-shortcuts.ui:29
+msgid "Find in Page"
+msgstr "Buscar en la página"
+
+#: data/ui/window.ui:111
+msgid "Find in page"
+msgstr "Buscar en la página"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:135
+msgid ""
+"Fixed \"Start in background\" being ignored when the tray icon is disabled; "
+"the setting is now honored and relaunching the app brings the window up. "
+"(#170)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:426
+msgid "Fixed \"Too many open files\" crash by reusing notification resources"
+msgstr ""
+"Se corrigió el fallo \"Demasiados archivos abiertos\" reutilizando los "
+"recursos de notificación"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:639
+msgid ""
+"Fixed Ctrl+V paste for text content - now works for both text and images"
+msgstr ""
+"Se corrigió el pegado con Ctrl+V para el contenido de texto: ahora funciona "
+"tanto para texto como para imágenes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:482
+msgid "Fixed Dead Key/composition input issues"
+msgstr "Se corrigieron los problemas de entrada de teclas muertas/composición"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:419
+msgid "Fixed Flatpak build failure by correcting config"
+msgstr ""
+"Se corrigió el fallo de compilación de Flatpak corrigiendo la configuración"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:290
+msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+msgstr ""
+"Se corrigió el fallo de compilación de Flatpak causado por los cambios de la "
+"API de ashpd 0.13"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:481
+msgid "Fixed Open action for downloaded files"
+msgstr "Se corrigió la acción Abrir para los archivos descargados"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:642
+msgid "Fixed WebView zoom being enabled by default (now disabled)"
+msgstr ""
+"Se corrigió el zoom del WebView que estaba activado de forma predeterminada "
+"(ahora está desactivado)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:108
+msgid ""
+"Fixed WhatsApp loading in mobile layout on HiDPI displays until resized; the "
+"prewarm viewport is now sized in physical pixels (#176)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:640
+msgid "Fixed WhatsApp notification permission not persisting across sessions"
+msgstr ""
+"Se corrigió el permiso de notificación de WhatsApp que no persistía entre "
+"sesiones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:136
+msgid ""
+"Fixed a black chat area on NVIDIA drivers by falling back to software "
+"rendering where the accelerated path cannot deliver frames. (#167)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:150
+msgid ""
+"Fixed a black/blank window on GNOME OS and other newer Wayland setups by "
+"switching to GTK's GL renderer, which presents the CEF browser view "
+"correctly where the default Vulkan renderer could not. (#164)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:586
+msgid "Fixed application freeze during lifecycle events"
+msgstr ""
+"Se corrigió el congelamiento de la aplicación durante los eventos del ciclo "
+"de vida"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:401
+msgid ""
+"Fixed application freezing on resume by reverting aggressive cache "
+"optimization"
+msgstr ""
+"Se corrigió el congelamiento de la aplicación al reanudar revirtiendo una "
+"optimización agresiva de la caché"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:538
+msgid "Fixed autostart toggle pathing for Flatpak environments"
+msgstr ""
+"Se corrigió la ruta del interruptor de inicio automático para entornos "
+"Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:412
+msgid "Fixed background notifications reliability"
+msgstr "Se corrigió la confiabilidad de las notificaciones en segundo plano"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:402
+msgid "Fixed background validation to ensure app starts correctly"
+msgstr ""
+"Se corrigió la validación en segundo plano para garantizar que la app inicie "
+"correctamente"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:299
+msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+msgstr ""
+"Se corrigieron las descargas de URL de blob (por ejemplo, Guardar imagen "
+"desde el visor de medios)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:643
+msgid "Fixed clipboard manager intercepting all paste events"
+msgstr ""
+"Se corrigió el gestor del portapapeles que interceptaba todos los eventos de "
+"pegado"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:311
+msgid "Fixed crash on launch due to memory pressure threshold ordering"
+msgstr ""
+"Se corrigió un fallo al iniciar debido al orden del umbral de presión de "
+"memoria"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:797
+msgid "Fixed crash when handling invalid notification data"
+msgstr "Se corrigió un fallo al manejar datos de notificación inválidos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:763
+msgid "Fixed crash when handling invalid user input data"
+msgstr "Se corrigió un fallo al manejar datos de entrada del usuario inválidos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:563
+msgid ""
+"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+"activation"
+msgstr ""
+"Se corrigió el congelamiento crítico al iniciar (rueda giratoria) "
+"implementando la activación por D-Bus"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:313
+msgid "Fixed dead key composition for first character in input fields"
+msgstr ""
+"Se corrigió la composición de teclas muertas para el primer carácter en los "
+"campos de entrada"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:134
+msgid ""
+"Fixed dead-key accents (e.g. US Intl) intermittently typing the plain letter "
+"after sending a message; the input method is re-focused on the next "
+"keypress. (#154)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:463
+msgid "Fixed double-paste issue with middle-click"
+msgstr "Se corrigió el problema de doble pegado con el botón central"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:312
+msgid "Fixed download destination and context menu issues"
+msgstr ""
+"Se corrigieron problemas con el destino de las descargas y el menú contextual"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:321
+msgid "Fixed download destination handling"
+msgstr "Se corrigió el manejo del destino de las descargas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:279
+msgid "Fixed download filenames now use WhatsApp's original filename"
+msgstr ""
+"Se corrigieron los nombres de los archivos descargados, que ahora usan el "
+"nombre original de WhatsApp"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:280
+msgid "Fixed duplicate downloads auto-increment instead of failing"
+msgstr ""
+"Se corrigieron las descargas duplicadas, que ahora se autoincrementan en "
+"lugar de fallar"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:780
+msgid "Fixed duplicate provides tags in metainfo validation"
+msgstr ""
+"Se corrigieron las etiquetas provides duplicadas en la validación de metainfo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:707
+msgid ""
+"Fixed external links not opening in default browser when running in Flatpak"
+msgstr ""
+"Se corrigieron los enlaces externos que no se abrían en el navegador "
+"predeterminado al ejecutar en Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:310
+msgid "Fixed freezes when viewing media galleries"
+msgstr "Se corrigieron los bloqueos al ver galerías de medios"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:710
+msgid "Fixed invalid meson version requirement preventing builds"
+msgstr ""
+"Se corrigió un requisito de versión de meson inválido que impedía las "
+"compilaciones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:470
+msgid "Fixed missing GSettings schema in Flatpak builds"
+msgstr ""
+"Se corrigió el esquema de GSettings faltante en las compilaciones de Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:585
+msgid "Fixed missing dictionaries on startup"
+msgstr "Se corrigió la falta de diccionarios al iniciar"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:528
+msgid ""
+"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
+msgstr ""
+"Se corrigió la falta del ícono en la bandeja en GNOME agregando el permiso "
+"StatusNotifierWatcher"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:282
+msgid "Fixed notification sounds now respect GNOME volume controls"
+msgstr ""
+"Se corrigieron los sonidos de notificación, que ahora respetan los controles "
+"de volumen de GNOME"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:641
+msgid "Fixed notifications banner appearing on every app launch"
+msgstr ""
+"Se corrigió el banner de notificaciones que aparecía en cada inicio de la app"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:298
+msgid ""
+"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+"Linux environments"
+msgstr ""
+"Se corrigió el teclado en pantalla, que no aparecía de forma confiable en "
+"Phosh y entornos Linux táctiles"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:688
+msgid "Fixed potential rendering inconsistencies"
+msgstr "Se corrigieron posibles inconsistencias de renderizado"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:709
+msgid "Fixed random emoji display issues and blank emoji problems"
+msgstr ""
+"Se corrigieron problemas aleatorios de visualización de emojis y emojis en "
+"blanco"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:354
+msgid "Fixed startup race conditions and resource usage issues"
+msgstr ""
+"Se corrigieron las condiciones de carrera al iniciar y los problemas de uso "
+"de recursos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:143
+msgid ""
+"Fixed the GNOME OS / Wayland black window for real (#164): CEF was racing to "
+"the X11 Ozone backend and failing to present onto the Wayland view; Karere "
+"now forces CEF's Ozone backend to match the display server, so it no longer "
+"intermittently starts black."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:151
+msgid ""
+"Fixed the mobile layout dropping the message box focus when pressing Enter "
+"on a computer; focus is now kept on non-touch devices while phones still "
+"hide the keyboard after sending."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:133
+msgid ""
+"Fixed touchpad scrolling being ~5x too slow with a delay before it started; "
+"deltas are now scaled the same way Chromium's own Wayland backend scales "
+"them. (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:126
+msgid ""
+"Fixed touchpad scrolling sometimes needing a click in a pane before it "
+"responded; scrolling now targets the pane under the pointer like every other "
+"app. (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:539
+msgid "Fixed tray icon quit behavior"
+msgstr "Se corrigió el comportamiento de salida del ícono de la bandeja"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:392
+msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+msgstr ""
+"Se corrigieron los íconos de la bandeja en KDE/GNOME (visibles tanto en "
+"temas claros como oscuros)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:107
+msgid ""
+"Fixed tray “Quit” doing nothing while the window is hidden (e.g. Start in "
+"background) (#175)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:264
+msgid ""
+"Fixed voice and video calls in production Flatpak (Flathub linter-compatible "
+"pre-built plugin)"
+msgstr ""
+"Se corrigieron las llamadas de voz y video en el Flatpak de producción "
+"(complemento precompilado compatible con el linter de Flathub)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:271
+msgid ""
+"Fixed voice and video calls not working in the production build (missing "
+"noise suppression plugin)"
+msgstr ""
+"Se corrigieron las llamadas de voz y video que no funcionaban en la "
+"compilación de producción (faltaba el complemento de supresión de ruido)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:297
+msgid ""
+"Fixed voice and video calls showing \"Your browser doesn't support calling\""
+msgstr ""
+"Se corrigieron las llamadas de voz y video que mostraban \"Tu navegador no "
+"admite llamadas\""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:281
+msgid ""
+"Fixed window now properly unminimizes when activated from launcher or tray"
+msgstr ""
+"Se corrigió la ventana, que ahora se desminimiza correctamente al activarla "
+"desde el lanzador o la bandeja"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:411
+msgid "Fixed window resize behavior to prevent excessive reloading"
+msgstr ""
+"Se corrigió el comportamiento del redimensionamiento de la ventana para "
+"evitar recargas excesivas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:362
+msgid "Fixed window size increasing on every restart"
+msgstr "Se corrigió el tamaño de la ventana, que aumentaba en cada reinicio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:427
+msgid "Fixed zombie process accumulation"
+msgstr "Se corrigió la acumulación de procesos zombi"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:110
+msgid ""
+"Fixed “Match WhatsApp Colors” applying only after restart; it now updates "
+"live when toggled (#168)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:561
+msgid "Fixed:"
+msgstr "Corregido:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:384
+msgid ""
+"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+"(silences sounds)"
+msgstr ""
+"Corregido: la app ahora respeta la configuración \"No molestar\" del sistema "
+"en GNOME (silencia los sonidos)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:329
+msgid "Fixed: Download destination path handling regression"
+msgstr ""
+"Corregido: regresión en el manejo de la ruta de destino de las descargas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:343
+msgid ""
+"Fixed: Handle WebKit web process crashes with auto-reload and user "
+"notification"
+msgstr ""
+"Corregido: manejo de los fallos del proceso web de WebKit con recarga "
+"automática y notificación al usuario"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:344
+msgid "Fixed: JS injection and path traversal vulnerabilities"
+msgstr ""
+"Corregido: vulnerabilidades de inyección de JS y de salto de directorio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:336
+msgid ""
+"Fixed: JS injection and path traversal vulnerabilities in download handling"
+msgstr ""
+"Corregido: vulnerabilidades de inyección de JS y de salto de directorio en "
+"el manejo de descargas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:385
+msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+msgstr ""
+"Corregido: las notificaciones evitan los avisos visuales de No molestar "
+"(prioridad reducida a Normal)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:345
+msgid "Fixed: Panic in notification handling"
+msgstr "Corregido: pánico en el manejo de notificaciones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:369
+msgid ""
+"Fixed: Resolved webview reload loop on startup due to incorrect window size "
+"detection"
+msgstr ""
+"Corregido: se resolvió el bucle de recarga del webview al iniciar debido a "
+"una detección incorrecta del tamaño de la ventana"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:218
+msgid ""
+"Fixed: accented characters from dead keys (e.g. the US-International layout) "
+"now compose correctly instead of inserting the base letter — input is routed "
+"through the system input method (#154)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:253
+msgid ""
+"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
+"43, CachyOS, Bazzite, postmarketOS)"
+msgstr ""
+"Corregido: fallo de la app al iniciar en sistemas con GNOME 50 / glibc 2.42+ "
+"(Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:243
+msgid ""
+"Fixed: blank-window race when autostarted before the network/portal stack is "
+"ready (auto-retry with exponential backoff)"
+msgstr ""
+"Corregido: condición de carrera de ventana en blanco al iniciar "
+"automáticamente antes de que la red/los portales estén listos (reintento "
+"automático con retroceso exponencial)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:256
+msgid ""
+"Fixed: downloaded files with duplicate names silently overwriting each other "
+"(now appends (1), (2), ...)"
+msgstr ""
+"Corregido: archivos descargados con nombres duplicados que se sobrescribían "
+"entre sí en silencio (ahora se agrega (1), (2), ...)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:173
+msgid ""
+"Fixed: input-method candidate popups (e.g. ibus-libpinyin) appeared in the "
+"top-left corner; they now show by the chat input where you click (#163)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:242
+msgid ""
+"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
+"clear behavior removed upstream — Karere now dismisses notifications "
+"explicitly)"
+msgstr ""
+"Corregido: insignias/banners de notificación persistentes tras enfocar en "
+"GNOME 50 (el borrado automático se eliminó del upstream — ahora Karere "
+"descarta las notificaciones de forma explícita)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:254
+msgid ""
+"Fixed: locale-dependent crash that required manually setting "
+"LC_ALL=en_GB.UTF-8"
+msgstr ""
+"Corregido: fallo dependiente de la localización que requería configurar "
+"manualmente LC_ALL=en_GB.UTF-8"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:255
+msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+msgstr ""
+"Corregido: diseño móvil roto por cambios recientes en el DOM de WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:165
+msgid ""
+"Fixed: on Phosh / GNOME Mobile the on-screen keyboard stayed open all the "
+"time; it now follows the focused WhatsApp text field, appearing when you tap "
+"a message or search box and hiding otherwise"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:172
+msgid ""
+"Fixed: sluggish touchpad scrolling — disabled Chromium's smooth-scroll "
+"animation for instant, responsive scrolling (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:180
+msgid ""
+"Fixed: the ARM64 (aarch64) build, which had been failing since 4.0.4 due to "
+"a type error in the GPU-rendering code — so this is the first release to "
+"reach ARM64 (Phosh / mobile) users with the recent fixes, including touch "
+"scrolling (#162)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:202
+msgid ""
+"Fixed: the selected theme is now applied from startup, including when the "
+"app launches into the background at login — the window no longer opens light "
+"when dark is selected. WhatsApp Web content also follows the theme now (when "
+"WhatsApp's own theme is set to System default) (#160)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:210
+msgid ""
+"Fixed: the web view is now crisp under fractional/HiDPI display scaling "
+"(e.g. 150%/200% on GNOME Wayland) — the page is rendered to match the "
+"window's pixel buffer exactly instead of being upscaled, while staying at "
+"the correct size (#158)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:188
+msgid ""
+"Fixed: touch scrolling and tapping in the chat view on touchscreens (e.g. "
+"Phosh / mobile Linux) — touch input is now forwarded to the web view as "
+"native touch events (#162)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:203
+msgid ""
+"Fixed: typing in the narrow/mobile layout no longer inserts a stray space "
+"after the first letter (#159)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:211
+msgid ""
+"Fixed: typing the first letter of a message no longer inserts a stray space "
+"after it (a 4.0.1 input regression) (#154)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:219
+msgid ""
+"Fixed: web content is now sized correctly under fractional display scaling "
+"such as 150%; the view and input use logical coordinates with the fractional "
+"scale applied for crisp rendering (#155, #156)"
+msgstr ""
+
+#: data/ui/preferences.ui:361
+msgid "Focus Indicators"
+msgstr "Indicadores de foco"
+
+#: data/ui/preferences.ui:82
+msgid "Follow System"
+msgstr "Seguir el sistema"
+
+#: data/ui/keyboard-shortcuts.ui:22
+msgid "Force Reload"
+msgstr "Forzar recarga"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:549
+msgid "Full rewrite in Rust! 🦀"
+msgstr "¡Reescritura completa en Rust! 🦀"
+
+#: data/ui/keyboard-shortcuts.ui:67
+msgid "Fullscreen"
+msgstr "Pantalla completa"
+
+#: data/ui/preferences.ui:142
+msgid "GPU Rendering"
+msgstr ""
+
+#: data/ui/window.ui:24
+msgid "GTK4 WhatsApp Web Client"
+msgstr "Cliente de WhatsApp Web para GTK4"
+
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:156
+msgid "General"
+msgstr "General"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:498
+msgid "General improvements and versioning updates"
+msgstr "Mejoras generales y actualizaciones de versiones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:824
+msgid "Granular privacy and notification controls"
+msgstr "Controles granulares de privacidad y notificaciones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:825
+msgid "Hardware-accelerated rendering"
+msgstr "Renderizado acelerado por hardware"
+
+#: data/ui/preferences.ui:311
+msgid "Header Bar Language Control"
+msgstr "Control del idioma en la barra de cabecera"
+
+#: data/ui/preferences.ui:400
+msgid "Header Bar Zoom Controls"
+msgstr "Controles de zoom en la barra de cabecera"
+
+#: data/ui/preferences.ui:367
+msgid "High Contrast Mode"
+msgstr "Modo de alto contraste"
+
+#: data/ui/preferences.ui:268
+msgid "How download notifications are displayed"
+msgstr "Cómo se muestran las notificaciones de descarga"
+
+#: data/ui/preferences.ui:201
+msgid "How much of the message to show"
+msgstr "Cuánto del mensaje se muestra"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:735
+msgid "Implemented Flatpak portal system for external link handling"
+msgstr ""
+"Se implementó el sistema de portales de Flatpak para el manejo de enlaces "
+"externos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:660
+msgid "Implemented UserScript injection for Notification.permission state"
+msgstr ""
+"Se implementó la inyección de UserScript para el estado de "
+"Notification.permission"
+
+#: data/ui/preferences.ui:412
+msgid "Improve compatibility with assistive technologies — restart required"
+msgstr ""
+"Mejorar la compatibilidad con tecnologías de asistencia — requiere reiniciar"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:109
+msgid ""
+"Improved NVIDIA detection via the live GL context so hybrid GPUs keep "
+"accelerated rendering, hardened the fallback for background starts, and "
+"raised the off-screen frame rate from 30 to 60 fps for smoother scroll/"
+"typing (#173)."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:747
+msgid "Improved build system maintainability and type safety"
+msgstr ""
+"Se mejoraron la mantenibilidad del sistema de compilación y la seguridad de "
+"tipos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:664
+msgid "Improved build system with cleaner dependency management"
+msgstr ""
+"Se mejoró el sistema de compilación con una gestión de dependencias más "
+"limpia"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:700
+msgid "Improved emoji consistency with bundled font system"
+msgstr ""
+"Se mejoró la consistencia de los emojis con el sistema de fuentes incluido"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:689
+msgid "Improved error handling and recovery mechanisms"
+msgstr "Se mejoraron el manejo de errores y los mecanismos de recuperación"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:708
+msgid "Improved external link handling with proper Flatpak portal support"
+msgstr ""
+"Se mejoró el manejo de enlaces externos con la compatibilidad adecuada con "
+"los portales de Flatpak"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:720
+msgid "Improved font loading stability and reduced race conditions"
+msgstr ""
+"Se mejoró la estabilidad de la carga de fuentes y se redujeron las "
+"condiciones de carrera"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:394
+msgid "Improved icon compatibility across desktop environments"
+msgstr ""
+"Se mejoró la compatibilidad de los íconos en los distintos entornos de "
+"escritorio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:404
+msgid "Improved icon rendering (symbolic icons now use currentColor)"
+msgstr ""
+"Se mejoró el renderizado de los íconos (los íconos simbólicos ahora usan "
+"currentColor)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:826
+msgid "Improved memory efficiency and startup performance"
+msgstr "Eficiencia de memoria mejorada y mejor rendimiento al iniciar"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:377
+msgid "Improved mobile UI resizing consistency"
+msgstr "Se mejoró la consistencia del redimensionamiento de la interfaz móvil"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:428
+msgid "Improved overall stability"
+msgstr "Se mejoró la estabilidad general"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:681
+msgid "Improved system integration with latest platform libraries"
+msgstr ""
+"Se mejoró la integración con el sistema con las últimas bibliotecas de la "
+"plataforma"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:788
+msgid "Improved translation file consistency"
+msgstr "Se mejoró la consistencia de los archivos de traducción"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:181
+msgid ""
+"Improved: smoother scrolling, especially with a touchpad — fine scroll "
+"deltas are no longer dropped, and wheel vs touchpad input is scaled "
+"appropriately (#161)"
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:577
+#: data/io.github.tobagin.karere.metainfo.xml.in:593
+#: data/io.github.tobagin.karere.metainfo.xml.in:604
+#: data/io.github.tobagin.karere.metainfo.xml.in:615
+#: data/io.github.tobagin.karere.metainfo.xml.in:678
+#: data/io.github.tobagin.karere.metainfo.xml.in:715
+#: data/io.github.tobagin.karere.metainfo.xml.in:742
+#: data/io.github.tobagin.karere.metainfo.xml.in:767
+#: data/io.github.tobagin.karere.metainfo.xml.in:784
+#: data/io.github.tobagin.karere.metainfo.xml.in:801
+msgid "Improvements:"
+msgstr "Mejoras:"
+
+#: data/ui/preferences.ui:272
+msgid "In-app Toast"
+msgstr "Aviso dentro de la app"
+
+#: data/ui/preferences.ui:368
+msgid "Increase contrast for better readability"
+msgstr "Aumentar el contraste para una mejor legibilidad"
+
+#: data/ui/keyboard-shortcuts.ui:94
+msgid "Increase the zoom level"
+msgstr "Aumentar el nivel de zoom"
+
+#: data/ui/keyboard-shortcuts.ui:133
+msgid "Inspect Element"
+msgstr "Inspeccionar elemento"
+
+#: data/ui/keyboard-shortcuts.ui:56
+msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
+msgstr "Ir a la cuenta 1–9 (Alt+1 … Alt+9)"
+
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:262 src/tray.rs:43
+#: src/tray.rs:66 src/tray.rs:73
+msgid "Karere"
+msgstr "Karere"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:225
+msgid ""
+"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+"Existing accounts must be re-linked — there is no migration from v3."
+msgstr ""
+"Karere 4.0 es una bifurcación dura que reconstruye la app sobre CEF/Chromium "
+"148. Las cuentas existentes deben volver a vincularse — no hay migración "
+"desde la v3."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:24
+msgid ""
+"Karere brings WhatsApp to your Linux desktop with a native look and feel. It "
+"integrates seamlessly with your environment, offering a clean, modern "
+"interface that respects your system's theme and workflow. By wrapping "
+"WhatsApp Web, it ensures you have access to all the latest features while "
+"adding powerful desktop-specific capabilities."
+msgstr ""
+"Karere lleva WhatsApp al escritorio de Linux con un aspecto y comportamiento "
+"nativos. Se integra a la perfección con tu entorno y ofrece una interfaz "
+"limpia y moderna que respeta el tema y el flujo de trabajo de tu sistema. Al "
+"envolver WhatsApp Web, te garantiza el acceso a todas las funciones más "
+"recientes a la vez que suma potentes capacidades específicas del escritorio."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:30
+msgid "Key features include:"
+msgstr "Las funciones principales incluyen:"
+
+#: data/ui/window.ui:261 data/ui/preferences.ui:422
+#: data/ui/keyboard-shortcuts.ui:152 src/tray.rs:145
+msgid "Keyboard Shortcuts"
+msgstr "Atajos de teclado"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:61
+#: data/io.github.tobagin.karere.metainfo.xml.in:822
+msgid "Keyboard shortcuts and productivity features"
+msgstr "Atajos de teclado y funciones de productividad"
+
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:317
+msgid "Language"
+msgstr "Idioma"
+
+#: data/ui/preferences.ui:21
+msgid "Launch Karere automatically when you log in"
+msgstr "Iniciar Karere automáticamente al iniciar sesión"
+
+#: data/ui/preferences.ui:83
+msgid "Light"
+msgstr "Claro"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:235
+msgid ""
+"Live spell-check language switching and a separately installable Debug "
+"symbol extension for symbolicated crash reports"
+msgstr ""
+"Cambio del idioma del corrector ortográfico en vivo y una extensión de "
+"símbolos de depuración instalable por separado para informes de fallos "
+"simbolizados"
+
+#: data/ui/preferences.ui:234
+msgid "Location"
+msgstr "Ubicación"
+
+#: data/ui/preferences.ui:207
+msgid "Long"
+msgstr "Larga"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:49
+msgid "Main application window with WhatsApp Web integration"
+msgstr "Ventana principal de la aplicación con la integración de WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:226
+msgid "Major changes:"
+msgstr "Cambios principales:"
+
+#: data/ui/preferences.ui:160
+msgid "Master toggle for all notifications"
+msgstr "Interruptor maestro de todas las notificaciones"
+
+#: data/ui/preferences.ui:92
+#, fuzzy
+msgid "Match WhatsApp Colors"
+msgstr "Cliente de WhatsApp"
+
+#: data/ui/preferences.ui:206
+msgid "Medium"
+msgstr "Media"
+
+#: data/ui/window.ui:77
+msgid "Menu"
+msgstr "Menú"
+
+#: data/ui/preferences.ui:170
+msgid "Message Notifications"
+msgstr "Notificaciones de mensajes"
+
+#: data/ui/preferences.ui:184
+msgid "Message Preview"
+msgstr "Vista previa del mensaje"
+
+#: data/ui/preferences.ui:167
+msgid "Messages"
+msgstr "Mensajes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:483
+msgid "Migrated Flatpak build logic to meson.build"
+msgstr "Se migró la lógica de compilación de Flatpak a meson.build"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:830
+msgid "Migrated from Python 3 to native Vala compilation"
+msgstr "Se migró de Python 3 a la compilación nativa en Vala"
+
+#: data/ui/keyboard-shortcuts.ui:74
+msgid "Minimize Window"
+msgstr "Minimizar ventana"
+
+#: data/ui/preferences.ui:356
+msgid "Minimize animations and transitions"
+msgstr "Minimizar las animaciones y transiciones"
+
+#: data/ui/keyboard-shortcuts.ui:75
+msgid "Minimize the window"
+msgstr "Minimizar la ventana"
+
+#: data/ui/preferences.ui:384
+msgid "Minimum Zoom Level"
+msgstr "Nivel de zoom mínimo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:608
+msgid "Minor README corrections"
+msgstr "Correcciones menores del README"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:597
+msgid "Minor bug fixes and stability improvements"
+msgstr "Correcciones menores de errores y mejoras de estabilidad"
+
+#: data/ui/preferences.ui:98
+msgid "Mobile Layout"
+msgstr "Diseño móvil"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:439
+msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+msgstr ""
+"La opción de diseño móvil se cambió a un menú desplegable (automático/"
+"activado/desactivado)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:436
+msgid ""
+"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+"Lomiri"
+msgstr ""
+"Compatibilidad con el diseño móvil con detección automática para Phosh, "
+"Plasma Mobile y Lomiri"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:233
+msgid ""
+"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+"popover for the off-screen-rendered web view"
+msgstr ""
+"Diseño adaptable para móviles, pantalla completa por JavaScript y una "
+"ventana emergente de menú contextual OSR para la vista web renderizada fuera "
+"de pantalla"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:817
+msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+msgstr "Interfaz moderna de LibAdwaita con la interfaz declarativa Blueprint"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:831
+msgid "Modern Meson build system with Blueprint UI compilation"
+msgstr ""
+"Sistema de compilación moderno Meson con compilación de la interfaz Blueprint"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:722
+msgid "More reliable link opening mechanism"
+msgstr "Mecanismo de apertura de enlaces más confiable"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:726
+msgid "More robust dependency handling"
+msgstr "Manejo de dependencias más robusto"
+
+#: data/ui/preferences.ui:352
+msgid "Motion and Focus"
+msgstr "Movimiento y foco"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:229
+msgid ""
+"Multi-account support: each account runs in an isolated CEF RequestContext "
+"with its own cookies and storage; accounts are ordered most-recently-used"
+msgstr ""
+"Compatibilidad con varias cuentas: cada cuenta se ejecuta en un "
+"RequestContext de CEF aislado con sus propias cookies y almacenamiento; las "
+"cuentas se ordenan por uso más reciente"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:823
+msgid "Multi-language spell checking support"
+msgstr "Compatibilidad con la corrección ortográfica en varios idiomas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:816
+msgid "Native Vala/GTK4 implementation for optimal performance"
+msgstr "Implementación nativa en Vala/GTK4 para un rendimiento óptimo"
+
+#: data/io.github.tobagin.karere.desktop.in:5
+msgid "Native WhatsApp Web client for Linux desktop"
+msgstr "Cliente nativo de WhatsApp Web para el escritorio de Linux"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:32
+msgid "Native system notifications and tray icon support"
+msgstr ""
+"Notificaciones nativas del sistema y compatibilidad con el ícono de la "
+"bandeja"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:232
+msgid ""
+"Native system tray (StatusNotifierItem), desktop notifications, download "
+"manager, and image/text paste reimplemented on the CEF stack"
+msgstr ""
+"Bandeja del sistema nativa (StatusNotifierItem), notificaciones de "
+"escritorio, gestor de descargas y pegado de imágenes/texto reimplementados "
+"sobre la base de CEF"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:547
+#: data/io.github.tobagin.karere.metainfo.xml.in:571
+#: data/io.github.tobagin.karere.metainfo.xml.in:626
+#: data/io.github.tobagin.karere.metainfo.xml.in:696
+#: data/io.github.tobagin.karere.metainfo.xml.in:814
+msgid "New Features:"
+msgstr "Nuevas funciones:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:550
+msgid "New System Tray Icon support"
+msgstr "Nueva compatibilidad con el ícono de la bandeja del sistema"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:117
+msgid ""
+"New opt-in \"Match WhatsApp Colors\" appearance setting: tints the window "
+"and header bar with WhatsApp Web's own background colors so the app blends "
+"with the page. Follows the light/dark theme and applies instantly. (#168)"
+msgstr ""
+
+#: data/ui/keyboard-shortcuts.ui:41
+msgid "Next Account"
+msgstr "Cuenta siguiente"
+
+#: data/ui/window.ui:137
+msgid "Next match"
+msgstr "Coincidencia siguiente"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:283
+msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+msgstr ""
+"Nota: es necesario volver a vincular las cuentas de WhatsApp después de esta "
+"actualización"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:453
+msgid ""
+"Notification Chat Linking: Clicking a notification now opens the specific "
+"chat in Karere."
+msgstr ""
+"Vinculación de chats desde la notificación: al hacer clic en una "
+"notificación ahora se abre el chat específico en Karere."
+
+#: data/ui/preferences.ui:440
+msgid "Notification Shortcuts"
+msgstr "Atajos de notificaciones"
+
+#: data/ui/preferences.ui:220
+msgid "Notification Sounds"
+msgstr "Sonidos de notificación"
+
+#: data/ui/preferences.ui:267
+msgid "Notification Type"
+msgstr "Tipo de notificación"
+
+#: data/ui/preferences.ui:152 data/ui/preferences.ui:258
+msgid "Notifications"
+msgstr "Notificaciones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:551
+msgid "Notifications fully working with persistence fixes"
+msgstr ""
+"Notificaciones funcionando por completo con correcciones de persistencia"
+
+#: data/ui/preferences.ui:262
+msgid "Notify when a file download completes"
+msgstr "Avisar cuando termina la descarga de un archivo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+#, fuzzy
+msgid ""
+"Now built on CEF/Chromium 150. Karere 4.0 replaces the WebKitGTK backend "
+"with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
+msgstr ""
+"Ahora construido sobre CEF/Chromium 148. Karere 4.0 reemplaza el backend de "
+"WebKitGTK por el Chromium Embedded Framework, lo que brinda reproducción "
+"completa de adjuntos de video (H.264/AAC), compatibilidad con varias cuentas "
+"con sesiones aisladas, zoom por cuenta y un motor de renderizado más rápido "
+"y compatible, manteniendo el mismo entorno nativo de GTK4/libadwaita."
+
+#: data/ui/preferences.ui:129
+msgid "Open"
+msgstr "Abrir"
+
+#: data/ui/keyboard-shortcuts.ui:146
+msgid "Open preferences"
+msgstr "Abrir preferencias"
+
+#: data/ui/keyboard-shortcuts.ui:127
+msgid "Open the developer tools"
+msgstr "Abrir las herramientas de desarrollo"
+
+#: data/ui/preferences.ui:125
+msgid "Open the developer tools for the current page"
+msgstr "Abrir las herramientas de desarrollo para la página actual"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:701
+msgid "Optimized font loading to eliminate display conflicts"
+msgstr ""
+"Se optimizó la carga de fuentes para eliminar los conflictos de visualización"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:403
+msgid "Optimized memory usage in mobile responsive scripts"
+msgstr "Se optimizó el uso de memoria en los scripts adaptables para móviles"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:231
+msgid ""
+"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
+"accessibility minimum-zoom floor"
+msgstr ""
+"Zoom por cuenta (Ctrl +/-/0) con controles de zoom opcionales en la barra de "
+"cabecera y un piso de zoom mínimo de accesibilidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:805
+msgid "Performance optimizations for faster startup"
+msgstr "Optimizaciones de rendimiento para un inicio más rápido"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:771
+msgid "Performance optimizations for scrolling"
+msgstr "Optimizaciones de rendimiento para el desplazamiento"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:33
+msgid ""
+"Persistent login sessions so you don't need to scan the QR code every time"
+msgstr ""
+"Sesiones persistentes para que no tengas que escanear el código QR cada vez"
+
+#: data/ui/keyboard-shortcuts.ui:134
+msgid "Pick an element to inspect"
+msgstr "Elegí un elemento para inspeccionar"
+
+#: data/ui/preferences.ui:221
+msgid "Play WhatsApp's notification sound for new messages"
+msgstr ""
+"Reproducir el sonido de notificación de WhatsApp para los mensajes nuevos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:552
+msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+msgstr "Portado de Vala a Rust/GTK4/Libadwaita nativos"
+
+#: data/ui/window.ui:255 data/ui/preferences.ui:10
+#: data/ui/keyboard-shortcuts.ui:145 src/tray.rs:139
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: data/ui/preferences.ui:200
+msgid "Preview Length"
+msgstr "Longitud de la vista previa"
+
+#: data/ui/keyboard-shortcuts.ui:48
+msgid "Previous Account"
+msgstr "Cuenta anterior"
+
+#: data/ui/window.ui:131
+msgid "Previous match"
+msgstr "Coincidencia anterior"
+
+#: data/ui/preferences.ui:327
+msgid "Privacy"
+msgstr "Privacidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:34
+msgid "Privacy controls and comprehensive spell-checking settings"
+msgstr "Controles de privacidad y opciones completas de corrección ortográfica"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:833
+msgid "Production-ready error handling and crash recovery"
+msgstr "Manejo de errores y recuperación de fallos listos para producción"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:821
+msgid "Professional logging and crash reporting system"
+msgstr "Sistema profesional de registro e informe de fallos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:36
+msgid "Proper clipboard integration for text and images"
+msgstr "Integración adecuada del portapapeles para texto e imágenes"
+
+#: data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159 src/tray.rs:158
+msgid "Quit"
+msgstr "Salir"
+
+#: data/ui/preferences.ui:43
+msgid "Quit Application"
+msgstr "Salir de la aplicación"
+
+#: data/ui/keyboard-shortcuts.ui:160
+msgid "Quit Karere"
+msgstr "Salir de Karere"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:300
+msgid "Redesigned application icons for stable and development variants"
+msgstr ""
+"Se rediseñaron los íconos de la aplicación para las variantes estable y de "
+"desarrollo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:553
+msgid "Redesigned/streamlined preferences dialog"
+msgstr "Diálogo de preferencias rediseñado y simplificado"
+
+#: data/ui/preferences.ui:355
+msgid "Reduce Motion"
+msgstr "Reducir el movimiento"
+
+#: data/ui/window.ui:251
+msgid "Refresh WhatsApp Web"
+msgstr "Recargar WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:618
+msgid "Refreshed About dialog screenshot"
+msgstr "Se actualizó la captura de pantalla del diálogo Acerca de"
+
+#: data/ui/keyboard-shortcuts.ui:15
+msgid "Reload WhatsApp Web"
+msgstr "Recargar WhatsApp Web"
+
+#: data/ui/keyboard-shortcuts.ui:16
+msgid "Reload the current page"
+msgstr "Recargar la página actual"
+
+#: data/ui/keyboard-shortcuts.ui:23
+msgid "Reload, bypassing the cache"
+msgstr "Recargar omitiendo la caché"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:480
+msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+msgstr ""
+"Se eliminaron los permisos directos de notificación de D-Bus para un "
+"manifiesto más limpio"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:512
+msgid "Remove unnecessary autostart permission to satisfy linter"
+msgstr ""
+"Se eliminó el permiso de inicio automático innecesario para satisfacer al "
+"linter"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:303
+msgid "Removed ffmpeg-full extension (no longer required)"
+msgstr "Se eliminó la extensión ffmpeg-full (ya no es necesaria)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:644
+msgid ""
+"Removed hardcoded blueprint compiler paths for cross-architecture support"
+msgstr ""
+"Se eliminaron las rutas codificadas del compilador de blueprint para la "
+"compatibilidad entre arquitecturas"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:730
+msgid ""
+"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+"only)"
+msgstr ""
+"Se eliminó el cambio innecesario del agente de usuario móvil (WhatsApp Web "
+"es solo para escritorio)"
+
+#: data/ui/preferences.ui:143
+msgid ""
+"Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
+"drivers. If the chat area is blank, turn this off and restart."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:752
+msgid "Replaced window.vala.in and preferences.vala.in with direct .vala files"
+msgstr ""
+"Se reemplazaron window.vala.in y preferences.vala.in por archivos .vala "
+"directos"
+
+#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
+msgid "Reset Zoom"
+msgstr "Restablecer zoom"
+
+#: data/ui/preferences.ui:249
+msgid "Reset to default"
+msgstr "Restablecer al valor predeterminado"
+
+#: data/ui/keyboard-shortcuts.ui:108
+msgid "Reset zoom to 100%"
+msgstr "Restablecer el zoom al 100%"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:322
+msgid "Resolved WebKit crashes on media-heavy pages"
+msgstr "Se resolvieron los fallos de WebKit en páginas con muchos medios"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:687
+msgid "Resolved compatibility issues with newer GNOME environments"
+msgstr ""
+"Se resolvieron problemas de compatibilidad con los entornos GNOME más "
+"recientes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:712
+msgid "Resolved flatpak-builder compatibility issues"
+msgstr "Se resolvieron problemas de compatibilidad con flatpak-builder"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:782
+msgid "Resolved invalid markup in release descriptions"
+msgstr "Se resolvió el marcado inválido en las descripciones de las versiones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:798
+msgid "Resolved memory leak in WebKit manager cleanup"
+msgstr "Se resolvió una fuga de memoria en la limpieza del gestor de WebKit"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:764
+msgid "Resolved memory leak in notification cleanup"
+msgstr "Se resolvió una fuga de memoria en la limpieza de notificaciones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:505
+msgid "Restore autostart permission for improved compatibility"
+msgstr ""
+"Se restauró el permiso de inicio automático para una mejor compatibilidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:733
+msgid "Restored Safari Linux user agent for native WebKit experience"
+msgstr ""
+"Se restauró el agente de usuario de Safari Linux para una experiencia WebKit "
+"nativa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:393
+msgid "Restored correct app icons and transparent backgrounds"
+msgstr ""
+"Se restauraron los íconos correctos de la app y los fondos transparentes"
+
+#: data/ui/preferences.ui:42
+msgid "Run in Background"
+msgstr "Ejecutar en segundo plano"
+
+#: data/ui/preferences.ui:20
+msgid "Run on Startup"
+msgstr "Ejecutar al iniciar sesión"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:118
+msgid ""
+"Safer avatar processing for notifications (community contribution). (#172)"
+msgstr ""
+
+#: data/ui/preferences.ui:411
+msgid "Screen Reader Optimizations"
+msgstr "Optimizaciones para lectores de pantalla"
+
+#: data/ui/preferences.ui:408
+msgid "Screen Reader Support"
+msgstr "Compatibilidad con lectores de pantalla"
+
+#: data/ui/keyboard-shortcuts.ui:30
+msgid "Search the current page"
+msgstr "Buscar en la página actual"
+
+#: data/ui/preferences.ui:379
+msgid "Set a minimum zoom level for all accounts"
+msgstr "Establecer un nivel de zoom mínimo para todas las cuentas"
+
+#: data/ui/preferences.ui:205
+msgid "Short"
+msgstr "Corta"
+
+#: data/ui/preferences.ui:419
+msgid "Shortcuts"
+msgstr "Atajos"
+
+#: data/ui/preferences.ui:194
+msgid "Show Message Text"
+msgstr "Mostrar el texto del mensaje"
+
+#: data/ui/preferences.ui:188
+msgid "Show Sender Name"
+msgstr "Mostrar el nombre del remitente"
+
+#: data/ui/preferences.ui:171
+msgid "Show notifications for incoming messages"
+msgstr "Mostrar notificaciones de mensajes entrantes"
+
+#: data/ui/keyboard-shortcuts.ui:115
+msgid "Show or hide the zoom buttons"
+msgstr "Mostrar u ocultar los botones de zoom"
+
+#: data/ui/preferences.ui:312
+msgid "Show the spell-check language dropdown in the header bar"
+msgstr ""
+"Mostrar el menú desplegable de idioma del corrector en la barra de cabecera"
+
+#: data/ui/keyboard-shortcuts.ui:153
+msgid "Show this shortcuts dialog"
+msgstr "Mostrar este diálogo de atajos"
+
+#: data/ui/preferences.ui:362
+msgid "Show visible outlines around focused elements"
+msgstr "Mostrar contornos visibles alrededor de los elementos enfocados"
+
+#: data/ui/preferences.ui:401
+msgid "Show zoom buttons in the header bar"
+msgstr "Mostrar los botones de zoom en la barra de cabecera"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:732
+msgid "Simplified emoji font configuration to single high-quality source"
+msgstr ""
+"Se simplificó la configuración de la fuente de emojis a una única fuente de "
+"alta calidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:754
+msgid "Simplified source file management in build system"
+msgstr ""
+"Se simplificó la gestión de archivos fuente en el sistema de compilación"
+
+#: data/ui/preferences.ui:99
+msgid ""
+"Single-pane layout. Auto: on mobile shells or narrow windows; Enabled/"
+"Disabled: force on or off at any size"
+msgstr ""
+"Diseño de un solo panel. Automático: en entornos móviles o ventanas "
+"angostas; Activado/Desactivado: forzarlo en cualquier tamaño"
+
+#: data/ui/preferences.ui:331
+msgid "Site Permissions"
+msgstr "Permisos de los sitios"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:35
+msgid "Smooth performance with hardware acceleration"
+msgstr "Rendimiento fluido con aceleración por hardware"
+
+#: data/ui/preferences.ui:185
+msgid "Some settings only apply when Karere controls the popup"
+msgstr ""
+"Algunas opciones solo se aplican cuando Karere controla la ventana emergente"
+
+#: data/ui/preferences.ui:217
+msgid "Sounds"
+msgstr "Sonidos"
+
+#: data/ui/preferences.ui:290
+msgid "Spell Checking"
+msgstr "Corrección ortográfica"
+
+#: data/ui/window.ui:70
+msgid "Spell Checking Language"
+msgstr "Idioma del corrector ortográfico"
+
+#: data/ui/preferences.ui:286
+msgid "Spellcheck"
+msgstr "Corrector ortográfico"
+
+#: data/ui/preferences.ui:318
+msgid "Star a language to pin it to the top"
+msgstr "Marcá un idioma con una estrella para fijarlo arriba"
+
+#: data/ui/preferences.ui:26
+msgid "Start in Background"
+msgstr "Iniciar en segundo plano"
+
+#: data/ui/preferences.ui:27
+msgid "Start minimized without showing the window"
+msgstr "Iniciar minimizado sin mostrar la ventana"
+
+#: data/ui/preferences.ui:17
+msgid "Startup"
+msgstr "Inicio"
+
+#: data/ui/preferences.ui:332
+msgid "Stored allow/deny decisions for websites"
+msgstr "Decisiones de permitir o denegar guardadas para los sitios web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:718
+msgid "Streamlined font stack for consistent emoji appearance"
+msgstr ""
+"Se simplificó la pila de fuentes para una apariencia consistente de los "
+"emojis"
+
+#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
+msgid "Switch Account"
+msgstr "Cambiar de cuenta"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:490
+msgid ""
+"Switch to XDG Background Portal for autostart (improves security and "
+"compatibility)"
+msgstr ""
+"Cambio al portal de segundo plano XDG para el inicio automático (mejora la "
+"seguridad y la compatibilidad)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:479
+msgid "Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+msgstr ""
+"Cambio al portal de notificaciones XDG (ashpd) para una mejor compatibilidad "
+"con el aislamiento"
+
+#: data/ui/keyboard-shortcuts.ui:42
+msgid "Switch to the next account"
+msgstr "Cambiar a la cuenta siguiente"
+
+#: data/ui/keyboard-shortcuts.ui:49
+msgid "Switch to the previous account"
+msgstr "Cambiar a la cuenta anterior"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:228
+msgid ""
+"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+"proprietary-codec builds for H.264/AAC video attachment playback"
+msgstr ""
+"Se cambió el backend de renderizado de WebKitGTK a CEF/Chromium 148, con "
+"compilaciones de códecs propietarios para la reproducción de adjuntos de "
+"video H.264/AAC"
+
+#: data/ui/preferences.ui:273
+msgid "System Notification"
+msgstr "Notificación del sistema"
+
+#: data/ui/preferences.ui:51
+msgid "System Tray Icon"
+msgstr "Ícono en la bandeja del sistema"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:658
+#: data/io.github.tobagin.karere.metainfo.xml.in:728
+#: data/io.github.tobagin.karere.metainfo.xml.in:750
+msgid "Technical Changes:"
+msgstr "Cambios técnicos:"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:828
+msgid "Technical Improvements:"
+msgstr "Mejoras técnicas:"
+
+#: data/ui/preferences.ui:77
+msgid "Theme"
+msgstr "Tema"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:74
+msgid "Thiago Fernandes"
+msgstr "Thiago Fernandes"
+
+#: data/ui/keyboard-shortcuts.ui:114
+msgid "Toggle Header Bar Zoom Controls"
+msgstr "Alternar los controles de zoom de la barra de cabecera"
+
+#: data/ui/keyboard-shortcuts.ui:68
+msgid "Toggle fullscreen mode"
+msgstr "Alternar el modo de pantalla completa"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:437
+msgid "Tray icon click now toggles window visibility"
+msgstr ""
+"Al hacer clic en el ícono de la bandeja ahora se alterna la visibilidad de "
+"la ventana"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:534
+msgid "Update and Bug Fix Release"
+msgstr "Versión de actualización y corrección de errores"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:680
+msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+msgstr ""
+"Se actualizó el runtime de GNOME a la versión 49 para una mejor "
+"compatibilidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:663
+msgid "Updated SettingsManager to be the default for all settings access"
+msgstr ""
+"Se actualizó SettingsManager para que sea el predeterminado en todos los "
+"accesos a la configuración"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:606
+msgid "Updated about dialog screenshot"
+msgstr "Se actualizó la captura de pantalla del diálogo Acerca de"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:301
+msgid "Updated all Rust dependencies to latest versions"
+msgstr "Se actualizaron todas las dependencias de Rust a las últimas versiones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:786
+msgid "Updated all references from appdata to metainfo format"
+msgstr ""
+"Se actualizaron todas las referencias del formato appdata al formato metainfo"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:607
+msgid "Updated application screenshots"
+msgstr "Se actualizaron las capturas de pantalla de la aplicación"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:617
+msgid "Updated application screenshots with current UI appearance"
+msgstr ""
+"Se actualizaron las capturas de pantalla de la aplicación con la apariencia "
+"actual de la interfaz"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:446
+msgid ""
+"Updated application summary and description for better AppStream compliance"
+msgstr ""
+"Se actualizaron el resumen y la descripción de la aplicación para un mejor "
+"cumplimiento de AppStream"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:595
+msgid "Updated build configuration and dependencies"
+msgstr "Se actualizaron la configuración de compilación y las dependencias"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:753
+msgid "Updated meson.build to use Vala preprocessor directives"
+msgstr ""
+"Se actualizó meson.build para usar las directivas del preprocesador de Vala"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:158
+msgid ""
+"Updated the bundled browser engine to CEF 149 (Chromium 149), up from CEF "
+"148, picking up the latest Chromium security and rendering fixes. "
+"Proprietary codecs stay enabled so WhatsApp calls and video playback keep "
+"working."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:125
+msgid ""
+"Upgraded the browser engine to CEF 150 / Chromium 150 for current security "
+"fixes; video attachments (H.264/AAC) keep playing in-app."
+msgstr ""
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:302
+msgid "Upgraded to GNOME Platform 50"
+msgstr "Se actualizó a la plataforma GNOME 50"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:662
+msgid "WebKitGTK 6.0 storage persistence verified and documented"
+msgstr ""
+"Se verificó y documentó la persistencia del almacenamiento de WebKitGTK 6.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:454
+msgid ""
+"Webcam Support: Added support for using the webcam (Status updates, Video "
+"calls) with a new permission dialog."
+msgstr ""
+"Compatibilidad con cámara web: se agregó soporte para usar la cámara web "
+"(estados, videollamadas) con un nuevo diálogo de permisos."
+
+#: data/ui/preferences.ui:38
+msgid "What happens when you close the window"
+msgstr "Qué sucede cuando cerrás la ventana"
+
+#: data/ui/keyboard-shortcuts.ui:12
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: data/io.github.tobagin.karere.desktop.in:4
+msgid "WhatsApp Client"
+msgstr "Cliente de WhatsApp"
+
+#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
+msgid "Window"
+msgstr "Ventana"
+
+#: data/ui/preferences.ui:37
+msgid "Window Close Behavior"
+msgstr "Comportamiento al cerrar la ventana"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:438
+msgid "Window size is saved and restored when hiding/showing"
+msgstr "El tamaño de la ventana se guarda y se restaura al ocultarla/mostrarla"
+
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
+msgid "Zoom"
+msgstr "Zoom"
+
+#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
+msgid "Zoom In"
+msgstr "Acercar"
+
+#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
+msgid "Zoom Out"
+msgstr "Alejar"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:95
+msgid "chat"
+msgstr "chat"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:98
+msgid "communication"
+msgstr "comunicación"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:96
+msgid "messaging"
+msgstr "mensajería"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:97
+msgid "web"
+msgstr "web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:94
+msgid "whatsapp"
+msgstr "whatsapp"
+
+#: data/io.github.tobagin.karere.desktop.in:10
+msgid "whatsapp;chat;messaging;web;communication;"
+msgstr "whatsapp;chat;mensajeria;web;comunicacion;"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:635
+msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+msgstr "⌨️ Se agregó el diálogo de atajos de teclado usando AdwShortcutsDialog"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:648
+msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+msgstr ""
+"♻️ Refactorización principal: se reorganizó el código con nombres de archivo "
+"en PascalCase"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:649
+msgid "♻️ Refactored Window.vala into specialized manager components"
+msgstr "♻️ Se refactorizó Window.vala en componentes de gestión especializados"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:650
+msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+msgstr ""
+"♻️ Se eliminaron el registro personalizado y el informe de fallos (usar "
+"journalctl del sistema)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:632
+msgid ""
+"♿ Enhanced accessibility with screen reader optimization and keyboard "
+"navigation"
+msgstr ""
+"♿ Se mejoró la accesibilidad con la optimización para lectores de pantalla "
+"y la navegación por teclado"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:813
+msgid ""
+"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+"with WhatsApp Web as this is a completely new application implementation."
+msgstr ""
+"⚠️ Importante: después de actualizar, vas a tener que volver a sincronizar tu "
+"dispositivo móvil con WhatsApp Web, ya que esta es una implementación de "
+"aplicación completamente nueva."
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:579
+msgid "⚡ Performance optimizations for startup and shutdown"
+msgstr "⚡ Optimizaciones de rendimiento para el inicio y el cierre"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:628
+msgid "✅ Fixed WhatsApp Web notification banner persistence"
+msgstr ""
+"✅ Se corrigió la persistencia del banner de notificación de WhatsApp Web"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:629
+msgid "✅ Fixed notifications not working properly"
+msgstr "✅ Se corrigieron las notificaciones que no funcionaban correctamente"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:695
+msgid ""
+"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+msgstr ""
+"✨ Mejor compatibilidad con emojis, manejo de enlaces externos y mejoras de "
+"compilación"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:570
+msgid "🎉 Feature Release"
+msgstr "🎉 Versión con nuevas funciones"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:546
+msgid "🎉 Major Release 2.0.0"
+msgstr "🎉 Versión principal 2.0.0"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:625
+msgid "🎉 Version 1.0.0 - Major Milestone Release"
+msgstr "🎉 Versión 1.0.0 - Hito principal"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:573
+msgid "🎤 Microphone permission support for voice notes"
+msgstr "🎤 Compatibilidad con el permiso de micrófono para las notas de voz"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:560
+msgid "🐛 Bug Fix Release"
+msgstr "🐛 Versión de corrección de errores"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:760
+#: data/io.github.tobagin.karere.metainfo.xml.in:794
+msgid "🐛 Bug Fixes and Improvements"
+msgstr "🐛 Correcciones de errores y mejoras"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:677
+msgid "🐛 Runtime Update and Bug Fixes"
+msgstr "🐛 Actualización del runtime y correcciones de errores"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:581
+msgid "📖 Added MPRIS workaround documentation"
+msgstr "📖 Se agregó documentación del rodeo para MPRIS"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:670
+msgid "📚 Added spell checking configuration guide"
+msgstr "📚 Se agregó una guía de configuración de la corrección ortográfica"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:669
+msgid "📚 Documented all keyboard shortcuts by category"
+msgstr "📚 Se documentaron todos los atajos de teclado por categoría"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:668
+msgid "📚 Enhanced README with accessibility features documentation"
+msgstr ""
+"📚 Se mejoró el README con la documentación de las funciones de accesibilidad"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:671
+msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+msgstr ""
+"📚 Se corrigieron las URL del repositorio de GitHub (karere-vala → karere)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:633
+msgid "📝 Added comprehensive spell checking system with auto-detection"
+msgstr ""
+"📝 Se agregó un sistema completo de corrección ortográfica con detección "
+"automática"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:580
+msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+msgstr ""
+"📝 Carga asíncrona de diccionarios para una inicialización más fluida del "
+"corrector ortográfico"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:603
+msgid "📝 Documentation and Metadata Update"
+msgstr "📝 Actualización de documentación y metadatos"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:631
+msgid ""
+"📥 Implemented download manager with custom directory and toast notifications"
+msgstr ""
+"📥 Se implementó un gestor de descargas con carpeta personalizada y "
+"notificaciones emergentes"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:656
+msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+msgstr ""
+"📸 Se reorganizaron las capturas de pantalla en la carpeta data/screenshots/"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:614
+msgid "📸 Screenshots and Documentation Update"
+msgstr "📸 Actualización de capturas de pantalla y documentación"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:575
+msgid "🔄 Manual reload and auto-reload on network reconnection"
+msgstr "🔄 Recarga manual y automática al reconectarse a la red"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:634
+msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+msgstr "🔤 Se integraron más de 80 diccionarios de idiomas de LibreOffice"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:741
+msgid "🔧 Code Refactoring and Architecture Improvements"
+msgstr "🔧 Refactorización del código y mejoras de la arquitectura"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:592
+msgid "🔧 Maintenance Release"
+msgstr "🔧 Versión de mantenimiento"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:777
+msgid "🔧 Metadata and Standards Compliance"
+msgstr "🔧 Cumplimiento de metadatos y estándares"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:630
+msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+msgstr ""
+"🖼️ Se agregó compatibilidad para pegar imágenes desde el portapapeles (Ctrl+V)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:652
+msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+msgstr "🗑️ Se limpiaron archivos de prueba obsoletos y dependencias sin usar"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:651
+msgid ""
+"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+msgstr ""
+"🗑️ Se eliminó la función No molestar (la gestiona el daemon de notificaciones "
+"del sistema)"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:653
+msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+msgstr "🗑️ Se eliminaron las dependencias json-glib, gee y libsoup"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:811
+msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+msgstr "🚀 Migración importante de la arquitectura: de Python a Vala/GTK4"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:574
+msgid "🚀 Start in background option for autostart"
+msgstr "🚀 Opción de iniciar en segundo plano para el inicio automático"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:654
+msgid "🧹 Centralized settings management with SettingsManager singleton"
+msgstr ""
+"🧹 Se centralizó la gestión de la configuración con el singleton "
+"SettingsManager"
+
+#: data/io.github.tobagin.karere.metainfo.xml.in:655
+msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+msgstr ""
+"🧹 Se eliminó DependencyContainer.vala (inyección de dependencias sin usar)"
+
+#: src/main.rs:42
 msgid "Karere starting"
 msgstr "Iniciando Karere"
 
-#: src/window.rs:912
+#: src/window.rs:290
+msgid "Account"
+msgstr "Cuenta"
+
+#: src/window.rs:619
+msgid "Waiting for QR scan…"
+msgstr "Esperando el escaneo del QR…"
+
+#: src/window.rs:641
+msgid "degraded"
+msgstr "degradada"
+
+#: src/window.rs:657
+msgid "Unread messages"
+msgstr "Mensajes sin leer"
+
+#: src/window.rs:668
+msgid "Notifications muted — click to unmute"
+msgstr ""
+
+#: src/window.rs:672
+#, fuzzy
+msgid "Mute notifications"
+msgstr "Notificaciones"
+
+#: src/window.rs:703
+msgid "Edit account"
+msgstr "Editar cuenta"
+
+#: src/window.rs:719
+msgid "Remove account"
+msgstr "Eliminar cuenta"
+
+#: src/window.rs:721
+msgid "Can't remove the only account"
+msgstr "No se puede eliminar la única cuenta"
+
+#: src/window.rs:805
+msgid "Maximum of 9 accounts reached"
+msgstr "Se alcanzó el máximo de 9 cuentas"
+
+#: src/window.rs:831
+msgid "Label"
+msgstr "Etiqueta"
+
+#: src/window.rs:846
+msgid "Name"
+msgstr "Nombre"
+
+#: src/window.rs:850
+msgid "WhatsApp ID"
+msgstr "ID de WhatsApp"
+
+#: src/window.rs:854
+msgid "Avatar URL"
+msgstr "URL del avatar"
+
+#: src/window.rs:863 src/window.rs:952
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: src/window.rs:864
+msgid "Save"
+msgstr "Guardar"
+
+#: src/window.rs:873
+msgid "Add Account"
+msgstr "Agregar cuenta"
+
+#: src/window.rs:875
+msgid "Edit Account"
+msgstr "Editar cuenta"
+
+#: src/window.rs:942
+msgid "Remove account?"
+msgstr "¿Eliminar cuenta?"
+
+#: src/window.rs:945
 msgid "This removes the local session for"
 msgstr "Esto elimina la sesión local de"
 
-#: src/window.rs:915
+#: src/window.rs:948
 msgid "The device stays linked on your phone until you remove it there."
 msgstr ""
 "El dispositivo sigue vinculado en tu teléfono hasta que lo elimines desde "
 "ahí."
 
-#: src/tray.rs:43 src/tray.rs:66 src/tray.rs:73 data/ui/window.ui:12
-#: data/ui/window.ui:23 src/actions.rs:258
-msgid "Karere"
-msgstr "Karere"
+#: src/window.rs:953
+msgid "Remove"
+msgstr "Eliminar"
+
+#: src/actions.rs:267
+msgid ""
+"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
+"seamless desktop integration with comprehensive logging and crash reporting "
+"capabilities"
+msgstr ""
+"Un envoltorio moderno y nativo de GTK4/LibAdwaita para WhatsApp Web que "
+"ofrece una integración fluida con el escritorio con capacidades completas de "
+"registro e informe de fallos"
+
+#: src/actions.rs:286
+msgid "Source"
+msgstr "Código fuente"
+
+#: src/actions.rs:289
+msgid "Special Thanks"
+msgstr "Agradecimientos especiales"
 
 #. Translators: tray tooltip body; leading number is the unread count.
 #: src/tray.rs:68
@@ -50,2308 +2547,31 @@ msgstr "Ocultar ventana"
 msgid "Show Window"
 msgstr "Mostrar ventana"
 
-#: src/tray.rs:139 data/ui/window.ui:255 data/ui/preferences.ui:10
-#: data/ui/keyboard-shortcuts.ui:145
-msgid "Preferences"
-msgstr "Preferencias"
-
-#: src/tray.rs:145 data/ui/window.ui:261 data/ui/preferences.ui:405
-#: data/ui/keyboard-shortcuts.ui:152
-msgid "Keyboard Shortcuts"
-msgstr "Atajos de teclado"
-
 #: src/tray.rs:151
 msgid "About Karere"
 msgstr "Acerca de Karere"
 
-#: src/tray.rs:158 data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159
-msgid "Quit"
-msgstr "Salir"
-
-#: src/preferences.rs:92
+#: src/preferences.rs:90
 msgid "Restart Karere?"
 msgstr "¿Reiniciar Karere?"
 
-#: src/preferences.rs:94
-msgid "The language change takes effect after Karere restarts."
-msgstr "El cambio de idioma se aplica después de reiniciar Karere."
-
-#: src/preferences.rs:97
+#: src/preferences.rs:91
 msgid "Later"
 msgstr "Más tarde"
 
-#: src/preferences.rs:98
+#: src/preferences.rs:92
 msgid "Restart Now"
 msgstr "Reiniciar ahora"
 
-#: src/preferences.rs:316
+#: src/preferences.rs:290
+#, fuzzy
+msgid "GPU rendering takes effect after Karere restarts."
+msgstr "El cambio de idioma se aplica después de reiniciar Karere."
+
+#: src/preferences.rs:319
 msgid "System Default"
 msgstr "Predeterminado del sistema"
 
-#: data/ui/window.ui:24
-msgid "GTK4 WhatsApp Web Client"
-msgstr "Cliente de WhatsApp Web para GTK4"
-
-#: data/ui/window.ui:40 data/ui/keyboard-shortcuts.ui:100
-msgid "Zoom Out"
-msgstr "Alejar"
-
-#: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
-msgid "Reset Zoom"
-msgstr "Restablecer zoom"
-
-#: data/ui/window.ui:59 data/ui/keyboard-shortcuts.ui:93
-msgid "Zoom In"
-msgstr "Acercar"
-
-#: data/ui/window.ui:70
-msgid "Spell Checking Language"
-msgstr "Idioma del corrector ortográfico"
-
-#: data/ui/window.ui:77
-msgid "Menu"
-msgstr "Menú"
-
-#: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
-msgid "Switch Account"
-msgstr "Cambiar de cuenta"
-
-#: data/ui/window.ui:111
-msgid "Find in page"
-msgstr "Buscar en la página"
-
-#: data/ui/window.ui:131
-msgid "Previous match"
-msgstr "Coincidencia anterior"
-
-#: data/ui/window.ui:137
-msgid "Next match"
-msgstr "Coincidencia siguiente"
-
-#: data/ui/window.ui:173 data/ui/preferences.ui:109 data/ui/preferences.ui:118
-#: data/ui/keyboard-shortcuts.ui:126
-msgid "Developer Tools"
-msgstr "Herramientas de desarrollo"
-
-#: data/ui/window.ui:184
-msgid "Close Developer Tools"
-msgstr "Cerrar herramientas de desarrollo"
-
-#: data/ui/window.ui:237 data/ui/account_switcher.ui:48
-msgid "Add new account"
-msgstr "Agregar cuenta nueva"
-
-#: data/ui/window.ui:251
-msgid "Refresh WhatsApp Web"
-msgstr "Recargar WhatsApp Web"
-
-#: data/ui/window.ui:265
-msgid "About"
-msgstr "Acerca de"
-
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:139
-msgid "General"
-msgstr "General"
-
-#: data/ui/preferences.ui:17
-msgid "Startup"
-msgstr "Inicio"
-
-#: data/ui/preferences.ui:20
-msgid "Run on Startup"
-msgstr "Ejecutar al iniciar sesión"
-
-#: data/ui/preferences.ui:21
-msgid "Launch Karere automatically when you log in"
-msgstr "Iniciar Karere automáticamente al iniciar sesión"
-
-#: data/ui/preferences.ui:26
-msgid "Start in Background"
-msgstr "Iniciar en segundo plano"
-
-#: data/ui/preferences.ui:27
-msgid "Start minimized without showing the window"
-msgstr "Iniciar minimizado sin mostrar la ventana"
-
-#: data/ui/preferences.ui:34 data/ui/keyboard-shortcuts.ui:64
-msgid "Window"
-msgstr "Ventana"
-
-#: data/ui/preferences.ui:37
-msgid "Window Close Behavior"
-msgstr "Comportamiento al cerrar la ventana"
-
-#: data/ui/preferences.ui:38
-msgid "What happens when you close the window"
-msgstr "Qué sucede cuando cerrás la ventana"
-
-#: data/ui/preferences.ui:42
-msgid "Run in Background"
-msgstr "Ejecutar en segundo plano"
-
-#: data/ui/preferences.ui:43
-msgid "Quit Application"
-msgstr "Salir de la aplicación"
-
-#: data/ui/preferences.ui:51
-msgid "System Tray Icon"
-msgstr "Ícono en la bandeja del sistema"
-
-#: data/ui/preferences.ui:52
-msgid "Auto: shown when a system tray is available"
-msgstr "Automático: se muestra cuando hay una bandeja del sistema disponible"
-
-#: data/ui/preferences.ui:56 data/ui/preferences.ui:97
-msgid "Auto"
-msgstr "Automático"
-
-#: data/ui/preferences.ui:57 data/ui/preferences.ui:98
-msgid "Enabled"
-msgstr "Activado"
-
-#: data/ui/preferences.ui:58 data/ui/preferences.ui:99
-msgid "Disabled"
-msgstr "Desactivado"
-
-#: data/ui/preferences.ui:68
-msgid "Appearance"
-msgstr "Apariencia"
-
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:300
-msgid "Language"
-msgstr "Idioma"
-
-#: data/ui/preferences.ui:72
-msgid "Application language. Requires restart."
-msgstr "Idioma de la aplicación. Requiere reiniciar."
-
-#: data/ui/preferences.ui:77
-msgid "Theme"
-msgstr "Tema"
-
-#: data/ui/preferences.ui:78
-msgid "Choose the application color scheme"
-msgstr "Elegí el esquema de color de la aplicación"
-
-#: data/ui/preferences.ui:82
-msgid "Follow System"
-msgstr "Seguir el sistema"
-
-#: data/ui/preferences.ui:83
-msgid "Light"
-msgstr "Claro"
-
-#: data/ui/preferences.ui:84
-msgid "Dark"
-msgstr "Oscuro"
-
-#: data/ui/preferences.ui:92
-msgid "Mobile Layout"
-msgstr "Diseño móvil"
-
-#: data/ui/preferences.ui:93
-msgid ""
-"Single-pane layout. Auto: on mobile shells or narrow windows; "
-"Enabled/Disabled: force on or off at any size"
-msgstr ""
-"Diseño de un solo panel. Automático: en entornos móviles o ventanas "
-"angostas; Activado/Desactivado: forzarlo en cualquier tamaño"
-
-#: data/ui/preferences.ui:112
-msgid "Enable Developer Tools"
-msgstr "Activar herramientas de desarrollo"
-
-#: data/ui/preferences.ui:113
-msgid "Allow inspecting and debugging the WebView"
-msgstr "Permitir inspeccionar y depurar el WebView"
-
-#: data/ui/preferences.ui:119
-msgid "Open the developer tools for the current page"
-msgstr "Abrir las herramientas de desarrollo para la página actual"
-
-#: data/ui/preferences.ui:123
-msgid "Open"
-msgstr "Abrir"
-
-#: data/ui/preferences.ui:135 data/ui/preferences.ui:241
-msgid "Notifications"
-msgstr "Notificaciones"
-
-#: data/ui/preferences.ui:142
-msgid "Enable Notifications"
-msgstr "Activar notificaciones"
-
-#: data/ui/preferences.ui:143
-msgid "Master toggle for all notifications"
-msgstr "Interruptor maestro de todas las notificaciones"
-
-#: data/ui/preferences.ui:150
-msgid "Messages"
-msgstr "Mensajes"
-
-#: data/ui/preferences.ui:153
-msgid "Message Notifications"
-msgstr "Notificaciones de mensajes"
-
-#: data/ui/preferences.ui:154
-msgid "Show notifications for incoming messages"
-msgstr "Mostrar notificaciones de mensajes entrantes"
-
-#: data/ui/preferences.ui:159
-msgid "Change Tray Icon on Message"
-msgstr "Cambiar el ícono de la bandeja al recibir un mensaje"
-
-#: data/ui/preferences.ui:160
-msgid "Animate the tray icon when a new message arrives"
-msgstr "Animar el ícono de la bandeja cuando llega un mensaje nuevo"
-
-#: data/ui/preferences.ui:167
-msgid "Message Preview"
-msgstr "Vista previa del mensaje"
-
-#: data/ui/preferences.ui:168
-msgid "Some settings only apply when Karere controls the popup"
-msgstr ""
-"Algunas opciones solo se aplican cuando Karere controla la ventana emergente"
-
-#: data/ui/preferences.ui:171
-msgid "Show Sender Name"
-msgstr "Mostrar el nombre del remitente"
-
-#: data/ui/preferences.ui:172
-msgid "Display the contact name in notifications"
-msgstr "Mostrar el nombre del contacto en las notificaciones"
-
-#: data/ui/preferences.ui:177
-msgid "Show Message Text"
-msgstr "Mostrar el texto del mensaje"
-
-#: data/ui/preferences.ui:178
-msgid "Display message content in notifications"
-msgstr "Mostrar el contenido del mensaje en las notificaciones"
-
-#: data/ui/preferences.ui:183
-msgid "Preview Length"
-msgstr "Longitud de la vista previa"
-
-#: data/ui/preferences.ui:184
-msgid "How much of the message to show"
-msgstr "Cuánto del mensaje se muestra"
-
-#: data/ui/preferences.ui:188
-msgid "Short"
-msgstr "Corta"
-
-#: data/ui/preferences.ui:189
-msgid "Medium"
-msgstr "Media"
-
-#: data/ui/preferences.ui:190
-msgid "Long"
-msgstr "Larga"
-
-#: data/ui/preferences.ui:200
-msgid "Sounds"
-msgstr "Sonidos"
-
-#: data/ui/preferences.ui:203
-msgid "Notification Sounds"
-msgstr "Sonidos de notificación"
-
-#: data/ui/preferences.ui:204
-msgid "Play WhatsApp's notification sound for new messages"
-msgstr ""
-"Reproducir el sonido de notificación de WhatsApp para los mensajes nuevos"
-
-#: data/ui/preferences.ui:213
-msgid "Downloads"
-msgstr "Descargas"
-
-#: data/ui/preferences.ui:217
-msgid "Location"
-msgstr "Ubicación"
-
-#: data/ui/preferences.ui:220
-msgid "Download Directory"
-msgstr "Carpeta de descargas"
-
-#: data/ui/preferences.ui:221
-msgid "Default (Downloads)"
-msgstr "Predeterminada (Descargas)"
-
-#: data/ui/preferences.ui:224
-msgid "Choose…"
-msgstr "Elegir…"
-
-#: data/ui/preferences.ui:232
-msgid "Reset to default"
-msgstr "Restablecer al valor predeterminado"
-
-#: data/ui/preferences.ui:244
-msgid "Download Notifications"
-msgstr "Notificaciones de descarga"
-
-#: data/ui/preferences.ui:245
-msgid "Notify when a file download completes"
-msgstr "Avisar cuando termina la descarga de un archivo"
-
-#: data/ui/preferences.ui:250
-msgid "Notification Type"
-msgstr "Tipo de notificación"
-
-#: data/ui/preferences.ui:251
-msgid "How download notifications are displayed"
-msgstr "Cómo se muestran las notificaciones de descarga"
-
-#: data/ui/preferences.ui:255
-msgid "In-app Toast"
-msgstr "Aviso dentro de la app"
-
-#: data/ui/preferences.ui:256
-msgid "System Notification"
-msgstr "Notificación del sistema"
-
-#: data/ui/preferences.ui:257
-msgid "Both"
-msgstr "Ambas"
-
-#: data/ui/preferences.ui:269
-msgid "Spellcheck"
-msgstr "Corrector ortográfico"
-
-#: data/ui/preferences.ui:273
-msgid "Spell Checking"
-msgstr "Corrección ortográfica"
-
-#: data/ui/preferences.ui:276
-msgid "Enable Spell Checking"
-msgstr "Activar la corrección ortográfica"
-
-#: data/ui/preferences.ui:277
-msgid "Check spelling as you type"
-msgstr "Revisar la ortografía mientras escribís"
-
-#: data/ui/preferences.ui:282
-msgid "Auto-Detect Language"
-msgstr "Detectar el idioma automáticamente"
-
-#: data/ui/preferences.ui:283
-msgid "Detect the writing language automatically"
-msgstr "Detectar el idioma de escritura de forma automática"
-
-#: data/ui/preferences.ui:288
-msgid "Enable Auto-Correct"
-msgstr "Activar la autocorrección"
-
-#: data/ui/preferences.ui:289
-msgid "Automatically fix common spelling mistakes"
-msgstr "Corregir automáticamente los errores ortográficos comunes"
-
-#: data/ui/preferences.ui:294
-msgid "Header Bar Language Control"
-msgstr "Control del idioma en la barra de cabecera"
-
-#: data/ui/preferences.ui:295
-msgid "Show the spell-check language dropdown in the header bar"
-msgstr ""
-"Mostrar el menú desplegable de idioma del corrector en la barra de cabecera"
-
-#: data/ui/preferences.ui:301
-msgid "Star a language to pin it to the top"
-msgstr "Marcá un idioma con una estrella para fijarlo arriba"
-
-#: data/ui/preferences.ui:310
-msgid "Privacy"
-msgstr "Privacidad"
-
-#: data/ui/preferences.ui:314
-msgid "Site Permissions"
-msgstr "Permisos de los sitios"
-
-#: data/ui/preferences.ui:315
-msgid "Stored allow/deny decisions for websites"
-msgstr "Decisiones de permitir o denegar guardadas para los sitios web"
-
-#: data/ui/preferences.ui:318
-msgid "Clear All"
-msgstr "Borrar todo"
-
-#: data/ui/preferences.ui:331
-msgid "Accessibility"
-msgstr "Accesibilidad"
-
-#: data/ui/preferences.ui:335
-msgid "Motion and Focus"
-msgstr "Movimiento y foco"
-
-#: data/ui/preferences.ui:338
-msgid "Reduce Motion"
-msgstr "Reducir el movimiento"
-
-#: data/ui/preferences.ui:339
-msgid "Minimize animations and transitions"
-msgstr "Minimizar las animaciones y transiciones"
-
-#: data/ui/preferences.ui:344
-msgid "Focus Indicators"
-msgstr "Indicadores de foco"
-
-#: data/ui/preferences.ui:345
-msgid "Show visible outlines around focused elements"
-msgstr "Mostrar contornos visibles alrededor de los elementos enfocados"
-
-#: data/ui/preferences.ui:350
-msgid "High Contrast Mode"
-msgstr "Modo de alto contraste"
-
-#: data/ui/preferences.ui:351
-msgid "Increase contrast for better readability"
-msgstr "Aumentar el contraste para una mejor legibilidad"
-
-#: data/ui/preferences.ui:358 data/ui/keyboard-shortcuts.ui:90
-msgid "Zoom"
-msgstr "Zoom"
-
-#: data/ui/preferences.ui:361
-msgid "Accessibility Zoom"
-msgstr "Zoom de accesibilidad"
-
-#: data/ui/preferences.ui:362
-msgid "Set a minimum zoom level for all accounts"
-msgstr "Establecer un nivel de zoom mínimo para todas las cuentas"
-
-#: data/ui/preferences.ui:367
-msgid "Minimum Zoom Level"
-msgstr "Nivel de zoom mínimo"
-
-#: data/ui/preferences.ui:368
-msgid "Applied to all webviews"
-msgstr "Se aplica a todos los webviews"
-
-#: data/ui/preferences.ui:383
-msgid "Header Bar Zoom Controls"
-msgstr "Controles de zoom en la barra de cabecera"
-
-#: data/ui/preferences.ui:384
-msgid "Show zoom buttons in the header bar"
-msgstr "Mostrar los botones de zoom en la barra de cabecera"
-
-#: data/ui/preferences.ui:391
-msgid "Screen Reader Support"
-msgstr "Compatibilidad con lectores de pantalla"
-
-#: data/ui/preferences.ui:394
-msgid "Screen Reader Optimizations"
-msgstr "Optimizaciones para lectores de pantalla"
-
-#: data/ui/preferences.ui:395
-msgid "Improve compatibility with assistive technologies — restart required"
-msgstr ""
-"Mejorar la compatibilidad con tecnologías de asistencia — requiere reiniciar"
-
-#: data/ui/preferences.ui:402
-msgid "Shortcuts"
-msgstr "Atajos"
-
-#: data/ui/preferences.ui:406
-msgid "Enable keyboard shortcuts for common actions"
-msgstr "Activar atajos de teclado para acciones comunes"
-
-#: data/ui/preferences.ui:411
-msgid "Accessibility Shortcuts"
-msgstr "Atajos de accesibilidad"
-
-#: data/ui/preferences.ui:412
-msgid "Enable shortcuts for accessibility features"
-msgstr "Activar atajos para las funciones de accesibilidad"
-
-#: data/ui/preferences.ui:417
-msgid "Developer Shortcuts"
-msgstr "Atajos de desarrollo"
-
-#: data/ui/preferences.ui:418
-msgid "Enable shortcuts for developer tools"
-msgstr "Activar atajos para las herramientas de desarrollo"
-
-#: data/ui/preferences.ui:423
-msgid "Notification Shortcuts"
-msgstr "Atajos de notificaciones"
-
-#: data/ui/preferences.ui:424
-msgid "Enable shortcuts for notification actions"
-msgstr "Activar atajos para las acciones de notificación"
-
-#: data/ui/keyboard-shortcuts.ui:12
-msgid "WhatsApp"
-msgstr "WhatsApp"
-
-#: data/ui/keyboard-shortcuts.ui:15
-msgid "Reload WhatsApp Web"
-msgstr "Recargar WhatsApp Web"
-
-#: data/ui/keyboard-shortcuts.ui:16
-msgid "Reload the current page"
-msgstr "Recargar la página actual"
-
-#: data/ui/keyboard-shortcuts.ui:22
-msgid "Force Reload"
-msgstr "Forzar recarga"
-
-#: data/ui/keyboard-shortcuts.ui:23
-msgid "Reload, bypassing the cache"
-msgstr "Recargar omitiendo la caché"
-
-#: data/ui/keyboard-shortcuts.ui:29
-msgid "Find in Page"
-msgstr "Buscar en la página"
-
-#: data/ui/keyboard-shortcuts.ui:30
-msgid "Search the current page"
-msgstr "Buscar en la página actual"
-
-#: data/ui/keyboard-shortcuts.ui:38
-msgid "Accounts"
-msgstr "Cuentas"
-
-#: data/ui/keyboard-shortcuts.ui:41
-msgid "Next Account"
-msgstr "Cuenta siguiente"
-
-#: data/ui/keyboard-shortcuts.ui:42
-msgid "Switch to the next account"
-msgstr "Cambiar a la cuenta siguiente"
-
-#: data/ui/keyboard-shortcuts.ui:48
-msgid "Previous Account"
-msgstr "Cuenta anterior"
-
-#: data/ui/keyboard-shortcuts.ui:49
-msgid "Switch to the previous account"
-msgstr "Cambiar a la cuenta anterior"
-
-#: data/ui/keyboard-shortcuts.ui:56
-msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
-msgstr "Ir a la cuenta 1–9 (Alt+1 … Alt+9)"
-
-#: data/ui/keyboard-shortcuts.ui:67
-msgid "Fullscreen"
-msgstr "Pantalla completa"
-
-#: data/ui/keyboard-shortcuts.ui:68
-msgid "Toggle fullscreen mode"
-msgstr "Alternar el modo de pantalla completa"
-
-#: data/ui/keyboard-shortcuts.ui:74
-msgid "Minimize Window"
-msgstr "Minimizar ventana"
-
-#: data/ui/keyboard-shortcuts.ui:75
-msgid "Minimize the window"
-msgstr "Minimizar la ventana"
-
-#: data/ui/keyboard-shortcuts.ui:81
-msgid "Close Window"
-msgstr "Cerrar ventana"
-
-#: data/ui/keyboard-shortcuts.ui:82
-msgid "Close the window"
-msgstr "Cerrar la ventana"
-
-#: data/ui/keyboard-shortcuts.ui:94
-msgid "Increase the zoom level"
-msgstr "Aumentar el nivel de zoom"
-
-#: data/ui/keyboard-shortcuts.ui:101
-msgid "Decrease the zoom level"
-msgstr "Disminuir el nivel de zoom"
-
-#: data/ui/keyboard-shortcuts.ui:108
-msgid "Reset zoom to 100%"
-msgstr "Restablecer el zoom al 100%"
-
-#: data/ui/keyboard-shortcuts.ui:114
-msgid "Toggle Header Bar Zoom Controls"
-msgstr "Alternar los controles de zoom de la barra de cabecera"
-
-#: data/ui/keyboard-shortcuts.ui:115
-msgid "Show or hide the zoom buttons"
-msgstr "Mostrar u ocultar los botones de zoom"
-
-#: data/ui/keyboard-shortcuts.ui:123
-msgid "Developer"
-msgstr "Desarrollo"
-
-#: data/ui/keyboard-shortcuts.ui:127
-msgid "Open the developer tools"
-msgstr "Abrir las herramientas de desarrollo"
-
-#: data/ui/keyboard-shortcuts.ui:133
-msgid "Inspect Element"
-msgstr "Inspeccionar elemento"
-
-#: data/ui/keyboard-shortcuts.ui:134
-msgid "Pick an element to inspect"
-msgstr "Elegí un elemento para inspeccionar"
-
-#: data/ui/keyboard-shortcuts.ui:142
-msgid "Application"
-msgstr "Aplicación"
-
-#: data/ui/keyboard-shortcuts.ui:146
-msgid "Open preferences"
-msgstr "Abrir preferencias"
-
-#: data/ui/keyboard-shortcuts.ui:153
-msgid "Show this shortcuts dialog"
-msgstr "Mostrar este diálogo de atajos"
-
-#: data/ui/keyboard-shortcuts.ui:160
-msgid "Quit Karere"
-msgstr "Salir de Karere"
-
-#: data/io.github.tobagin.karere.desktop.in:3
-#: data/io.github.tobagin.karere.metainfo.xml.in:15
-msgid "@APP_NAME@"
-msgstr "@APP_NAME@"
-
-#: data/io.github.tobagin.karere.desktop.in:4
-msgid "WhatsApp Client"
-msgstr "Cliente de WhatsApp"
-
-#: data/io.github.tobagin.karere.desktop.in:5
-msgid "Native WhatsApp Web client for Linux desktop"
-msgstr "Cliente nativo de WhatsApp Web para el escritorio de Linux"
-
-#: data/io.github.tobagin.karere.desktop.in:10
-msgid "whatsapp;chat;messaging;web;communication;"
-msgstr "whatsapp;chat;mensajeria;web;comunicacion;"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:16
-msgid "Chat on WhatsApp"
-msgstr "Chateá en WhatsApp"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:24
-msgid ""
-"Karere brings WhatsApp to your Linux desktop with a native look and feel. It"
-" integrates seamlessly with your environment, offering a clean, modern "
-"interface that respects your system's theme and workflow. By wrapping "
-"WhatsApp Web, it ensures you have access to all the latest features while "
-"adding powerful desktop-specific capabilities."
-msgstr ""
-"Karere lleva WhatsApp al escritorio de Linux con un aspecto y comportamiento"
-" nativos. Se integra a la perfección con tu entorno y ofrece una interfaz "
-"limpia y moderna que respeta el tema y el flujo de trabajo de tu sistema. Al"
-" envolver WhatsApp Web, te garantiza el acceso a todas las funciones más "
-"recientes a la vez que suma potentes capacidades específicas del escritorio."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:30
-msgid "Key features include:"
-msgstr "Las funciones principales incluyen:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:32
-msgid "Native system notifications and tray icon support"
-msgstr ""
-"Notificaciones nativas del sistema y compatibilidad con el ícono de la "
-"bandeja"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:33
-msgid ""
-"Persistent login sessions so you don't need to scan the QR code every time"
-msgstr ""
-"Sesiones persistentes para que no tengas que escanear el código QR cada vez"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:34
-msgid "Privacy controls and comprehensive spell-checking settings"
-msgstr ""
-"Controles de privacidad y opciones completas de corrección ortográfica"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:35
-msgid "Smooth performance with hardware acceleration"
-msgstr "Rendimiento fluido con aceleración por hardware"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:36
-msgid "Proper clipboard integration for text and images"
-msgstr "Integración adecuada del portapapeles para texto e imágenes"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:38
-msgid ""
-"Now built on CEF/Chromium 148. Karere 4.0 replaces the WebKitGTK backend "
-"with the Chromium Embedded Framework, bringing full video attachment "
-"playback (H.264/AAC), multi-account support with isolated sessions, per-"
-"account zoom, and a faster, more compatible rendering engine while keeping "
-"the same native GTK4/libadwaita shell."
-msgstr ""
-"Ahora construido sobre CEF/Chromium 148. Karere 4.0 reemplaza el backend de "
-"WebKitGTK por el Chromium Embedded Framework, lo que brinda reproducción "
-"completa de adjuntos de video (H.264/AAC), compatibilidad con varias cuentas"
-" con sesiones aisladas, zoom por cuenta y un motor de renderizado más rápido"
-" y compatible, manteniendo el mismo entorno nativo de GTK4/libadwaita."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:49
-msgid "Main application window with WhatsApp Web integration"
-msgstr "Ventana principal de la aplicación con la integración de WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:53
-msgid "About dialog showing application information"
-msgstr "Diálogo Acerca de mostrando información de la aplicación"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:57
-msgid "Application preferences and settings dialog"
-msgstr "Diálogo de preferencias y configuración de la aplicación"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:61
-#: data/io.github.tobagin.karere.metainfo.xml.in:703
-msgid "Keyboard shortcuts and productivity features"
-msgstr "Atajos de teclado y funciones de productividad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:74
-msgid "Thiago Fernandes"
-msgstr "Thiago Fernandes"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:94
-msgid "whatsapp"
-msgstr "whatsapp"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:95
-msgid "chat"
-msgstr "chat"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:96
-msgid "messaging"
-msgstr "mensajería"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:97
-msgid "web"
-msgstr "web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:98
-msgid "communication"
-msgstr "comunicación"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:106
-msgid ""
-"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
-"Existing accounts must be re-linked — there is no migration from v3."
-msgstr ""
-"Karere 4.0 es una bifurcación dura que reconstruye la app sobre CEF/Chromium"
-" 148. Las cuentas existentes deben volver a vincularse — no hay migración "
-"desde la v3."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:107
-msgid "Major changes:"
-msgstr "Cambios principales:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:109
-msgid ""
-"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
-"proprietary-codec builds for H.264/AAC video attachment playback"
-msgstr ""
-"Se cambió el backend de renderizado de WebKitGTK a CEF/Chromium 148, con "
-"compilaciones de códecs propietarios para la reproducción de adjuntos de "
-"video H.264/AAC"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:110
-msgid ""
-"Multi-account support: each account runs in an isolated CEF RequestContext "
-"with its own cookies and storage; accounts are ordered most-recently-used"
-msgstr ""
-"Compatibilidad con varias cuentas: cada cuenta se ejecuta en un "
-"RequestContext de CEF aislado con sus propias cookies y almacenamiento; las "
-"cuentas se ordenan por uso más reciente"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:111
-msgid ""
-"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
-"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
-msgstr ""
-"Identidad de la cuenta (nombre + avatar) detectada automáticamente desde el "
-"Store interno de WhatsApp Web, con un método alternativo de extracción del "
-"DOM degradado señalado por una insignia"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:112
-msgid ""
-"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
-"accessibility minimum-zoom floor"
-msgstr ""
-"Zoom por cuenta (Ctrl +/-/0) con controles de zoom opcionales en la barra de"
-" cabecera y un piso de zoom mínimo de accesibilidad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:113
-msgid ""
-"Native system tray (StatusNotifierItem), desktop notifications, download "
-"manager, and image/text paste reimplemented on the CEF stack"
-msgstr ""
-"Bandeja del sistema nativa (StatusNotifierItem), notificaciones de "
-"escritorio, gestor de descargas y pegado de imágenes/texto reimplementados "
-"sobre la base de CEF"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:114
-msgid ""
-"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
-"popover for the off-screen-rendered web view"
-msgstr ""
-"Diseño adaptable para móviles, pantalla completa por JavaScript y una "
-"ventana emergente de menú contextual OSR para la vista web renderizada fuera"
-" de pantalla"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:115
-msgid ""
-"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
-"browsing"
-msgstr ""
-"Preferencias de accesibilidad: reducir el movimiento, visibilidad del anillo"
-" de foco y navegación con cursor"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:116
-msgid ""
-"Live spell-check language switching and a separately installable Debug "
-"symbol extension for symbolicated crash reports"
-msgstr ""
-"Cambio del idioma del corrector ortográfico en vivo y una extensión de "
-"símbolos de depuración instalable por separado para informes de fallos "
-"simbolizados"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:123
-msgid ""
-"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
-"clear behavior removed upstream — Karere now dismisses notifications "
-"explicitly)"
-msgstr ""
-"Corregido: insignias/banners de notificación persistentes tras enfocar en "
-"GNOME 50 (el borrado automático se eliminó del upstream — ahora Karere "
-"descarta las notificaciones de forma explícita)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:124
-msgid ""
-"Fixed: blank-window race when autostarted before the network/portal stack is"
-" ready (auto-retry with exponential backoff)"
-msgstr ""
-"Corregido: condición de carrera de ventana en blanco al iniciar "
-"automáticamente antes de que la red/los portales estén listos (reintento "
-"automático con retroceso exponencial)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:131
-msgid "Added: pin favorite spell-check languages to the top of the dropdown"
-msgstr ""
-"Agregado: fijar arriba del menú desplegable los idiomas favoritos del "
-"corrector ortográfico"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:132
-msgid ""
-"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
-"instead of locale codes"
-msgstr ""
-"Agregado: el menú desplegable del corrector muestra los nombres de los "
-"idiomas en lenguaje natural (\"Inglés (Reino Unido)\") en lugar de los "
-"códigos de localización"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:133
-msgid ""
-"Added: account switcher uses a popover on desktop windows (bottom sheet "
-"preserved on mobile)"
-msgstr ""
-"Agregado: el selector de cuentas usa una ventana emergente en las ventanas "
-"de escritorio (se conserva la hoja inferior en móviles)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:134
-msgid ""
-"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
-"43, CachyOS, Bazzite, postmarketOS)"
-msgstr ""
-"Corregido: fallo de la app al iniciar en sistemas con GNOME 50 / glibc 2.42+"
-" (Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:135
-msgid ""
-"Fixed: locale-dependent crash that required manually setting "
-"LC_ALL=en_GB.UTF-8"
-msgstr ""
-"Corregido: fallo dependiente de la localización que requería configurar "
-"manualmente LC_ALL=en_GB.UTF-8"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:136
-msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
-msgstr ""
-"Corregido: diseño móvil roto por cambios recientes en el DOM de WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:137
-msgid ""
-"Fixed: downloaded files with duplicate names silently overwriting each other"
-" (now appends (1), (2), ...)"
-msgstr ""
-"Corregido: archivos descargados con nombres duplicados que se sobrescribían "
-"entre sí en silencio (ahora se agrega (1), (2), ...)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:138
-msgid ""
-"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
-"dependencies to latest compatible versions"
-msgstr ""
-"Se actualizó WebKitGTK a 2.52.3, los diccionarios de LibreOffice a 26.2.3.2 "
-"y las dependencias de Rust a las últimas versiones compatibles"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:145
-msgid ""
-"Fixed voice and video calls in production Flatpak (Flathub linter-compatible"
-" pre-built plugin)"
-msgstr ""
-"Se corrigieron las llamadas de voz y video en el Flatpak de producción "
-"(complemento precompilado compatible con el linter de Flathub)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:152
-msgid ""
-"Fixed voice and video calls not working in the production build (missing "
-"noise suppression plugin)"
-msgstr ""
-"Se corrigieron las llamadas de voz y video que no funcionaban en la "
-"compilación de producción (faltaba el complemento de supresión de ruido)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:159
-msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
-msgstr ""
-"Se agregó compatibilidad con llamadas de voz y video mediante WebKitGTK "
-"2.50.5 con WebRTC"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:160
-msgid "Fixed download filenames now use WhatsApp's original filename"
-msgstr ""
-"Se corrigieron los nombres de los archivos descargados, que ahora usan el "
-"nombre original de WhatsApp"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:161
-msgid "Fixed duplicate downloads auto-increment instead of failing"
-msgstr ""
-"Se corrigieron las descargas duplicadas, que ahora se autoincrementan en "
-"lugar de fallar"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:162
-msgid ""
-"Fixed window now properly unminimizes when activated from launcher or tray"
-msgstr ""
-"Se corrigió la ventana, que ahora se desminimiza correctamente al activarla "
-"desde el lanzador o la bandeja"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:163
-msgid "Fixed notification sounds now respect GNOME volume controls"
-msgstr ""
-"Se corrigieron los sonidos de notificación, que ahora respetan los controles"
-" de volumen de GNOME"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:164
-msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
-msgstr ""
-"Nota: es necesario volver a vincular las cuentas de WhatsApp después de esta"
-" actualización"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:171
-msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
-msgstr ""
-"Se corrigió el fallo de compilación de Flatpak causado por los cambios de la"
-" API de ashpd 0.13"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:178
-msgid ""
-"Fixed voice and video calls showing \"Your browser doesn't support calling\""
-msgstr ""
-"Se corrigieron las llamadas de voz y video que mostraban \"Tu navegador no "
-"admite llamadas\""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:179
-msgid ""
-"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
-"Linux environments"
-msgstr ""
-"Se corrigió el teclado en pantalla, que no aparecía de forma confiable en "
-"Phosh y entornos Linux táctiles"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:180
-msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
-msgstr ""
-"Se corrigieron las descargas de URL de blob (por ejemplo, Guardar imagen "
-"desde el visor de medios)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:181
-msgid "Redesigned application icons for stable and development variants"
-msgstr ""
-"Se rediseñaron los íconos de la aplicación para las variantes estable y de "
-"desarrollo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:182
-msgid "Updated all Rust dependencies to latest versions"
-msgstr ""
-"Se actualizaron todas las dependencias de Rust a las últimas versiones"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:183
-msgid "Upgraded to GNOME Platform 50"
-msgstr "Se actualizó a la plataforma GNOME 50"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:184
-msgid "Removed ffmpeg-full extension (no longer required)"
-msgstr "Se eliminó la extensión ffmpeg-full (ya no es necesaria)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:191
-msgid "Fixed freezes when viewing media galleries"
-msgstr "Se corrigieron los bloqueos al ver galerías de medios"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:192
-msgid "Fixed crash on launch due to memory pressure threshold ordering"
-msgstr ""
-"Se corrigió un fallo al iniciar debido al orden del umbral de presión de "
-"memoria"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:193
-msgid "Fixed download destination and context menu issues"
-msgstr ""
-"Se corrigieron problemas con el destino de las descargas y el menú "
-"contextual"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:194
-msgid "Fixed dead key composition for first character in input fields"
-msgstr ""
-"Se corrigió la composición de teclas muertas para el primer carácter en los "
-"campos de entrada"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:195
-msgid ""
-"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
-"handling"
-msgstr ""
-"Se agregaron variables de entorno de GStreamer/PipeWire al Flatpak de "
-"producción para un manejo eficiente de los medios"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:202
-msgid "Fixed download destination handling"
-msgstr "Se corrigió el manejo del destino de las descargas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:203
-msgid "Resolved WebKit crashes on media-heavy pages"
-msgstr "Se resolvieron los fallos de WebKit en páginas con muchos medios"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:210
-msgid "Fixed: Download destination path handling regression"
-msgstr ""
-"Corregido: regresión en el manejo de la ruta de destino de las descargas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:217
-msgid ""
-"Fixed: JS injection and path traversal vulnerabilities in download handling"
-msgstr ""
-"Corregido: vulnerabilidades de inyección de JS y de salto de directorio en "
-"el manejo de descargas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:224
-msgid ""
-"Fixed: Handle WebKit web process crashes with auto-reload and user "
-"notification"
-msgstr ""
-"Corregido: manejo de los fallos del proceso web de WebKit con recarga "
-"automática y notificación al usuario"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:225
-msgid "Fixed: JS injection and path traversal vulnerabilities"
-msgstr ""
-"Corregido: vulnerabilidades de inyección de JS y de salto de directorio"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:226
-msgid "Fixed: Panic in notification handling"
-msgstr "Corregido: pánico en el manejo de notificaciones"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:233
-msgid "Added complete multi-account support with sidebar and tray integration"
-msgstr ""
-"Se agregó compatibilidad completa con varias cuentas con barra lateral e "
-"integración con la bandeja"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:234
-msgid "Added per-account zoom settings and improved accessibility"
-msgstr "Se agregaron opciones de zoom por cuenta y se mejoró la accesibilidad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:235
-msgid "Fixed startup race conditions and resource usage issues"
-msgstr ""
-"Se corrigieron las condiciones de carrera al iniciar y los problemas de uso "
-"de recursos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:242
-msgid ""
-"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
-msgstr ""
-"Se agregó compatibilidad con el zoom (Ctrl +/-/0) con persistencia y "
-"controles en las preferencias"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:243
-msgid "Fixed window size increasing on every restart"
-msgstr "Se corrigió el tamaño de la ventana, que aumentaba en cada reinicio"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:250
-msgid ""
-"Fixed: Resolved webview reload loop on startup due to incorrect window size "
-"detection"
-msgstr ""
-"Corregido: se resolvió el bucle de recarga del webview al iniciar debido a "
-"una detección incorrecta del tamaño de la ventana"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:257
-msgid ""
-"Added WebRTC permission handling in preparation for WhatsApp Web voice/video"
-" calls"
-msgstr ""
-"Se agregó el manejo de permisos de WebRTC en preparación para las llamadas "
-"de voz/video de WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:258
-msgid "Improved mobile UI resizing consistency"
-msgstr "Se mejoró la consistencia del redimensionamiento de la interfaz móvil"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:265
-msgid ""
-"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
-"(silences sounds)"
-msgstr ""
-"Corregido: la app ahora respeta la configuración \"No molestar\" del sistema"
-" en GNOME (silencia los sonidos)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:266
-msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
-msgstr ""
-"Corregido: las notificaciones evitan los avisos visuales de No molestar "
-"(prioridad reducida a Normal)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:273
-msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
-msgstr ""
-"Se corrigieron los íconos de la bandeja en KDE/GNOME (visibles tanto en "
-"temas claros como oscuros)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:274
-msgid "Restored correct app icons and transparent backgrounds"
-msgstr ""
-"Se restauraron los íconos correctos de la app y los fondos transparentes"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:275
-msgid "Improved icon compatibility across desktop environments"
-msgstr ""
-"Se mejoró la compatibilidad de los íconos en los distintos entornos de "
-"escritorio"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:282
-msgid ""
-"Fixed application freezing on resume by reverting aggressive cache "
-"optimization"
-msgstr ""
-"Se corrigió el congelamiento de la aplicación al reanudar revirtiendo una "
-"optimización agresiva de la caché"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:283
-msgid "Fixed background validation to ensure app starts correctly"
-msgstr ""
-"Se corrigió la validación en segundo plano para garantizar que la app inicie"
-" correctamente"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:284
-msgid "Optimized memory usage in mobile responsive scripts"
-msgstr "Se optimizó el uso de memoria en los scripts adaptables para móviles"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:285
-msgid "Improved icon rendering (symbolic icons now use currentColor)"
-msgstr ""
-"Se mejoró el renderizado de los íconos (los íconos simbólicos ahora usan "
-"currentColor)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:292
-msgid "Fixed window resize behavior to prevent excessive reloading"
-msgstr ""
-"Se corrigió el comportamiento del redimensionamiento de la ventana para "
-"evitar recargas excesivas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:293
-msgid "Fixed background notifications reliability"
-msgstr "Se corrigió la confiabilidad de las notificaciones en segundo plano"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:300
-msgid "Fixed Flatpak build failure by correcting config"
-msgstr ""
-"Se corrigió el fallo de compilación de Flatpak corrigiendo la configuración"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:307
-msgid "Fixed \"Too many open files\" crash by reusing notification resources"
-msgstr ""
-"Se corrigió el fallo \"Demasiados archivos abiertos\" reutilizando los "
-"recursos de notificación"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:308
-msgid "Fixed zombie process accumulation"
-msgstr "Se corrigió la acumulación de procesos zombi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:309
-msgid "Improved overall stability"
-msgstr "Se mejoró la estabilidad general"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:316
-msgid "Ctrl+N keyboard shortcut for opening a new chat"
-msgstr "Atajo de teclado Ctrl+N para abrir un chat nuevo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:317
-msgid ""
-"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
-"Lomiri"
-msgstr ""
-"Compatibilidad con el diseño móvil con detección automática para Phosh, "
-"Plasma Mobile y Lomiri"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:318
-msgid "Tray icon click now toggles window visibility"
-msgstr ""
-"Al hacer clic en el ícono de la bandeja ahora se alterna la visibilidad de "
-"la ventana"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:319
-msgid "Window size is saved and restored when hiding/showing"
-msgstr ""
-"El tamaño de la ventana se guarda y se restaura al ocultarla/mostrarla"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:320
-msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
-msgstr ""
-"La opción de diseño móvil se cambió a un menú desplegable "
-"(automático/activado/desactivado)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:327
-msgid ""
-"Updated application summary and description for better AppStream compliance"
-msgstr ""
-"Se actualizaron el resumen y la descripción de la aplicación para un mejor "
-"cumplimiento de AppStream"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:334
-msgid ""
-"Notification Chat Linking: Clicking a notification now opens the specific "
-"chat in Karere."
-msgstr ""
-"Vinculación de chats desde la notificación: al hacer clic en una "
-"notificación ahora se abre el chat específico en Karere."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:335
-msgid ""
-"Webcam Support: Added support for using the webcam (Status updates, Video "
-"calls) with a new permission dialog."
-msgstr ""
-"Compatibilidad con cámara web: se agregó soporte para usar la cámara web "
-"(estados, videollamadas) con un nuevo diálogo de permisos."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:342
-msgid ""
-"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
-"compatibility"
-msgstr ""
-"Se mejoró el pegado de imágenes con codificación Base64 para una "
-"compatibilidad confiable con WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:343
-msgid "Added middle-click paste from primary selection (selected text)"
-msgstr ""
-"Se agregó el pegado con el botón central desde la selección primaria (texto "
-"seleccionado)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:344
-msgid "Fixed double-paste issue with middle-click"
-msgstr "Se corrigió el problema de doble pegado con el botón central"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:351
-msgid "Fixed missing GSettings schema in Flatpak builds"
-msgstr ""
-"Se corrigió el esquema de GSettings faltante en las compilaciones de Flatpak"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:352
-msgid "Added new application icons"
-msgstr "Se agregaron nuevos íconos de la aplicación"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:353
-msgid "Corrected metadata description references"
-msgstr "Se corrigieron las referencias de la descripción de los metadatos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:360
-msgid ""
-"Switch to XDG Notification Portal (ashpd) for better sandboxing support"
-msgstr ""
-"Cambio al portal de notificaciones XDG (ashpd) para una mejor compatibilidad"
-" con el aislamiento"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:361
-msgid "Remove direct D-Bus notification permissions for cleaner manifest"
-msgstr ""
-"Se eliminaron los permisos directos de notificación de D-Bus para un "
-"manifiesto más limpio"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:362
-msgid "Fixed Open action for downloaded files"
-msgstr "Se corrigió la acción Abrir para los archivos descargados"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:363
-msgid "Fixed Dead Key/composition input issues"
-msgstr "Se corrigieron los problemas de entrada de teclas muertas/composición"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:364
-msgid "Migrated Flatpak build logic to meson.build"
-msgstr "Se migró la lógica de compilación de Flatpak a meson.build"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:371
-msgid ""
-"Switch to XDG Background Portal for autostart (improves security and "
-"compatibility)"
-msgstr ""
-"Cambio al portal de segundo plano XDG para el inicio automático (mejora la "
-"seguridad y la compatibilidad)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:378
-msgid "Add new contributor Sabri Ünal to the About dialog"
-msgstr "Se agregó al nuevo colaborador Sabri Ünal al diálogo Acerca de"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:379
-msgid "General improvements and versioning updates"
-msgstr "Mejoras generales y actualizaciones de versiones"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:386
-msgid "Restore autostart permission for improved compatibility"
-msgstr ""
-"Se restauró el permiso de inicio automático para una mejor compatibilidad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:393
-msgid "Remove unnecessary autostart permission to satisfy linter"
-msgstr ""
-"Se eliminó el permiso de inicio automático innecesario para satisfacer al "
-"linter"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:400
-msgid "Add xdg-config/autostart permission for autostart support"
-msgstr ""
-"Se agregó el permiso xdg-config/autostart para la compatibilidad con el "
-"inicio automático"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:406
-msgid "Bug Fix Release"
-msgstr "Versión de corrección de errores"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:407
-#: data/io.github.tobagin.karere.metainfo.xml.in:416
-msgid "Changes:"
-msgstr "Cambios:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:409
-msgid ""
-"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
-msgstr ""
-"Se corrigió la falta del ícono en la bandeja en GNOME agregando el permiso "
-"StatusNotifierWatcher"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:415
-msgid "Update and Bug Fix Release"
-msgstr "Versión de actualización y corrección de errores"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:418
-msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
-msgstr ""
-"Se agregó el interruptor \"Ejecutar al iniciar sesión\" en las preferencias "
-"(predeterminado: desactivado)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:419
-msgid "Fixed autostart toggle pathing for Flatpak environments"
-msgstr ""
-"Se corrigió la ruta del interruptor de inicio automático para entornos "
-"Flatpak"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:420
-msgid "Fixed tray icon quit behavior"
-msgstr "Se corrigió el comportamiento de salida del ícono de la bandeja"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:421
-msgid "Added striped symbolic icons for development version"
-msgstr "Se agregaron íconos simbólicos a rayas para la versión de desarrollo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:427
-msgid "🎉 Major Release 2.0.0"
-msgstr "🎉 Versión principal 2.0.0"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:428
-#: data/io.github.tobagin.karere.metainfo.xml.in:452
-#: data/io.github.tobagin.karere.metainfo.xml.in:507
-#: data/io.github.tobagin.karere.metainfo.xml.in:577
-#: data/io.github.tobagin.karere.metainfo.xml.in:695
-msgid "New Features:"
-msgstr "Nuevas funciones:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:430
-msgid "Full rewrite in Rust! 🦀"
-msgstr "¡Reescritura completa en Rust! 🦀"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:431
-msgid "New System Tray Icon support"
-msgstr "Nueva compatibilidad con el ícono de la bandeja del sistema"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:432
-msgid "Notifications fully working with persistence fixes"
-msgstr ""
-"Notificaciones funcionando por completo con correcciones de persistencia"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:433
-msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
-msgstr "Portado de Vala a Rust/GTK4/Libadwaita nativos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:434
-msgid "Redesigned/streamlined preferences dialog"
-msgstr "Diálogo de preferencias rediseñado y simplificado"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:435
-msgid "Enhanced performance and stability"
-msgstr "Rendimiento y estabilidad mejorados"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:441
-msgid "🐛 Bug Fix Release"
-msgstr "🐛 Versión de corrección de errores"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:442
-msgid "Fixed:"
-msgstr "Corregido:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:444
-msgid ""
-"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
-"activation"
-msgstr ""
-"Se corrigió el congelamiento crítico al iniciar (rueda giratoria) "
-"implementando la activación por D-Bus"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:445
-msgid "Ensure application starts properly in the background without delay"
-msgstr ""
-"Garantizar que la aplicación inicie correctamente en segundo plano sin "
-"demora"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:451
-msgid "🎉 Feature Release"
-msgstr "🎉 Versión con nuevas funciones"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:454
-msgid "🎤 Microphone permission support for voice notes"
-msgstr "🎤 Compatibilidad con el permiso de micrófono para las notas de voz"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:455
-msgid "🚀 Start in background option for autostart"
-msgstr "🚀 Opción de iniciar en segundo plano para el inicio automático"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:456
-msgid "🔄 Manual reload and auto-reload on network reconnection"
-msgstr "🔄 Recarga manual y automática al reconectarse a la red"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:458
-#: data/io.github.tobagin.karere.metainfo.xml.in:474
-#: data/io.github.tobagin.karere.metainfo.xml.in:485
-#: data/io.github.tobagin.karere.metainfo.xml.in:496
-#: data/io.github.tobagin.karere.metainfo.xml.in:559
-#: data/io.github.tobagin.karere.metainfo.xml.in:596
-#: data/io.github.tobagin.karere.metainfo.xml.in:623
-#: data/io.github.tobagin.karere.metainfo.xml.in:648
-#: data/io.github.tobagin.karere.metainfo.xml.in:665
-#: data/io.github.tobagin.karere.metainfo.xml.in:682
-msgid "Improvements:"
-msgstr "Mejoras:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:460
-msgid "⚡ Performance optimizations for startup and shutdown"
-msgstr "⚡ Optimizaciones de rendimiento para el inicio y el cierre"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:461
-msgid "📝 Async dictionary loading for smoother Spell Check initialization"
-msgstr ""
-"📝 Carga asíncrona de diccionarios para una inicialización más fluida del "
-"corrector ortográfico"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:462
-msgid "📖 Added MPRIS workaround documentation"
-msgstr "📖 Se agregó documentación del rodeo para MPRIS"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:464
-#: data/io.github.tobagin.karere.metainfo.xml.in:518
-#: data/io.github.tobagin.karere.metainfo.xml.in:566
-#: data/io.github.tobagin.karere.metainfo.xml.in:586
-#: data/io.github.tobagin.karere.metainfo.xml.in:642
-#: data/io.github.tobagin.karere.metainfo.xml.in:659
-#: data/io.github.tobagin.karere.metainfo.xml.in:676
-msgid "Bug Fixes:"
-msgstr "Corrección de errores:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:466
-msgid "Fixed missing dictionaries on startup"
-msgstr "Se corrigió la falta de diccionarios al iniciar"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:467
-msgid "Fixed application freeze during lifecycle events"
-msgstr ""
-"Se corrigió el congelamiento de la aplicación durante los eventos del ciclo "
-"de vida"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:473
-msgid "🔧 Maintenance Release"
-msgstr "🔧 Versión de mantenimiento"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:476
-msgid "Updated build configuration and dependencies"
-msgstr "Se actualizaron la configuración de compilación y las dependencias"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:477
-msgid "Enhanced packaging for better compatibility"
-msgstr "Se mejoró el empaquetado para una mejor compatibilidad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:478
-msgid "Minor bug fixes and stability improvements"
-msgstr "Correcciones menores de errores y mejoras de estabilidad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:484
-msgid "📝 Documentation and Metadata Update"
-msgstr "📝 Actualización de documentación y metadatos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:487
-msgid "Updated about dialog screenshot"
-msgstr "Se actualizó la captura de pantalla del diálogo Acerca de"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:488
-msgid "Updated application screenshots"
-msgstr "Se actualizaron las capturas de pantalla de la aplicación"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:489
-msgid "Minor README corrections"
-msgstr "Correcciones menores del README"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:495
-msgid "📸 Screenshots and Documentation Update"
-msgstr "📸 Actualización de capturas de pantalla y documentación"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:498
-msgid "Updated application screenshots with current UI appearance"
-msgstr ""
-"Se actualizaron las capturas de pantalla de la aplicación con la apariencia "
-"actual de la interfaz"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:499
-msgid "Refreshed About dialog screenshot"
-msgstr "Se actualizó la captura de pantalla del diálogo Acerca de"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:500
-msgid "Enhanced visual documentation for users"
-msgstr "Se mejoró la documentación visual para los usuarios"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:506
-msgid "🎉 Version 1.0.0 - Major Milestone Release"
-msgstr "🎉 Versión 1.0.0 - Hito principal"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:509
-msgid "✅ Fixed WhatsApp Web notification banner persistence"
-msgstr ""
-"✅ Se corrigió la persistencia del banner de notificación de WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:510
-msgid "✅ Fixed notifications not working properly"
-msgstr "✅ Se corrigieron las notificaciones que no funcionaban correctamente"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:511
-msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
-msgstr ""
-"🖼️ Se agregó compatibilidad para pegar imágenes desde el portapapeles "
-"(Ctrl+V)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:512
-msgid ""
-"📥 Implemented download manager with custom directory and toast notifications"
-msgstr ""
-"📥 Se implementó un gestor de descargas con carpeta personalizada y "
-"notificaciones emergentes"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:513
-msgid ""
-"♿ Enhanced accessibility with screen reader optimization and keyboard "
-"navigation"
-msgstr ""
-"♿ Se mejoró la accesibilidad con la optimización para lectores de pantalla y"
-" la navegación por teclado"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:514
-msgid "📝 Added comprehensive spell checking system with auto-detection"
-msgstr ""
-"📝 Se agregó un sistema completo de corrección ortográfica con detección "
-"automática"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:515
-msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
-msgstr "🔤 Se integraron más de 80 diccionarios de idiomas de LibreOffice"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:516
-msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
-msgstr ""
-"⌨️ Se agregó el diálogo de atajos de teclado usando AdwShortcutsDialog"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:520
-msgid ""
-"Fixed Ctrl+V paste for text content - now works for both text and images"
-msgstr ""
-"Se corrigió el pegado con Ctrl+V para el contenido de texto: ahora funciona "
-"tanto para texto como para imágenes"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:521
-msgid "Fixed WhatsApp notification permission not persisting across sessions"
-msgstr ""
-"Se corrigió el permiso de notificación de WhatsApp que no persistía entre "
-"sesiones"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:522
-msgid "Fixed notifications banner appearing on every app launch"
-msgstr ""
-"Se corrigió el banner de notificaciones que aparecía en cada inicio de la "
-"app"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:523
-msgid "Fixed WebView zoom being enabled by default (now disabled)"
-msgstr ""
-"Se corrigió el zoom del WebView que estaba activado de forma predeterminada "
-"(ahora está desactivado)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:524
-msgid "Fixed clipboard manager intercepting all paste events"
-msgstr ""
-"Se corrigió el gestor del portapapeles que interceptaba todos los eventos de"
-" pegado"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:525
-msgid ""
-"Removed hardcoded blueprint compiler paths for cross-architecture support"
-msgstr ""
-"Se eliminaron las rutas codificadas del compilador de blueprint para la "
-"compatibilidad entre arquitecturas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:527
-msgid "Code Quality Improvements:"
-msgstr "Mejoras de la calidad del código:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:529
-msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
-msgstr ""
-"♻️ Refactorización principal: se reorganizó el código con nombres de archivo"
-" en PascalCase"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:530
-msgid "♻️ Refactored Window.vala into specialized manager components"
-msgstr ""
-"♻️ Se refactorizó Window.vala en componentes de gestión especializados"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:531
-msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
-msgstr ""
-"♻️ Se eliminaron el registro personalizado y el informe de fallos (usar "
-"journalctl del sistema)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:532
-msgid ""
-"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
-msgstr ""
-"🗑️ Se eliminó la función No molestar (la gestiona el daemon de "
-"notificaciones del sistema)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:533
-msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
-msgstr "🗑️ Se limpiaron archivos de prueba obsoletos y dependencias sin usar"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:534
-msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
-msgstr "🗑️ Se eliminaron las dependencias json-glib, gee y libsoup"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:535
-msgid "🧹 Centralized settings management with SettingsManager singleton"
-msgstr ""
-"🧹 Se centralizó la gestión de la configuración con el singleton "
-"SettingsManager"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:536
-msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
-msgstr ""
-"🧹 Se eliminó DependencyContainer.vala (inyección de dependencias sin usar)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:537
-msgid "📸 Reorganized screenshots into data/screenshots/ directory"
-msgstr ""
-"📸 Se reorganizaron las capturas de pantalla en la carpeta data/screenshots/"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:539
-#: data/io.github.tobagin.karere.metainfo.xml.in:609
-#: data/io.github.tobagin.karere.metainfo.xml.in:631
-msgid "Technical Changes:"
-msgstr "Cambios técnicos:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:541
-msgid "Implemented UserScript injection for Notification.permission state"
-msgstr ""
-"Se implementó la inyección de UserScript para el estado de "
-"Notification.permission"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:542
-msgid "Connected show_notification signal handler for WebKit notifications"
-msgstr ""
-"Se conectó el controlador de la señal show_notification para las "
-"notificaciones de WebKit"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:543
-msgid "WebKitGTK 6.0 storage persistence verified and documented"
-msgstr ""
-"Se verificó y documentó la persistencia del almacenamiento de WebKitGTK 6.0"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:544
-msgid "Updated SettingsManager to be the default for all settings access"
-msgstr ""
-"Se actualizó SettingsManager para que sea el predeterminado en todos los "
-"accesos a la configuración"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:545
-msgid "Improved build system with cleaner dependency management"
-msgstr ""
-"Se mejoró el sistema de compilación con una gestión de dependencias más "
-"limpia"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:547
-msgid "Documentation:"
-msgstr "Documentación:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:549
-msgid "📚 Enhanced README with accessibility features documentation"
-msgstr ""
-"📚 Se mejoró el README con la documentación de las funciones de accesibilidad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:550
-msgid "📚 Documented all keyboard shortcuts by category"
-msgstr "📚 Se documentaron todos los atajos de teclado por categoría"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:551
-msgid "📚 Added spell checking configuration guide"
-msgstr "📚 Se agregó una guía de configuración de la corrección ortográfica"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:552
-msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
-msgstr ""
-"📚 Se corrigieron las URL del repositorio de GitHub (karere-vala → karere)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:558
-msgid "🐛 Runtime Update and Bug Fixes"
-msgstr "🐛 Actualización del runtime y correcciones de errores"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:561
-msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
-msgstr ""
-"Se actualizó el runtime de GNOME a la versión 49 para una mejor "
-"compatibilidad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:562
-msgid "Improved system integration with latest platform libraries"
-msgstr ""
-"Se mejoró la integración con el sistema con las últimas bibliotecas de la "
-"plataforma"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:563
-msgid "Better support for modern desktop environments"
-msgstr "Mejor compatibilidad con los entornos de escritorio modernos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:564
-msgid "Enhanced stability and performance optimizations"
-msgstr "Se mejoraron la estabilidad y las optimizaciones de rendimiento"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:568
-msgid "Resolved compatibility issues with newer GNOME environments"
-msgstr ""
-"Se resolvieron problemas de compatibilidad con los entornos GNOME más "
-"recientes"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:569
-msgid "Fixed potential rendering inconsistencies"
-msgstr "Se corrigieron posibles inconsistencias de renderizado"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:570
-msgid "Improved error handling and recovery mechanisms"
-msgstr "Se mejoraron el manejo de errores y los mecanismos de recuperación"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:576
-msgid ""
-"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
-msgstr ""
-"✨ Mejor compatibilidad con emojis, manejo de enlaces externos y mejoras de "
-"compilación"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:579
-msgid ""
-"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
-msgstr ""
-"Se agregaron fuentes Noto Color Emoji de alta calidad (v2.047, "
-"compatibilidad con Unicode 16.0)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:580
-msgid "Enhanced WebKit rendering with maximum hardware acceleration"
-msgstr ""
-"Se mejoró el renderizado de WebKit con la máxima aceleración por hardware"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:581
-msgid "Improved emoji consistency with bundled font system"
-msgstr ""
-"Se mejoró la consistencia de los emojis con el sistema de fuentes incluido"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:582
-msgid "Optimized font loading to eliminate display conflicts"
-msgstr ""
-"Se optimizó la carga de fuentes para eliminar los conflictos de "
-"visualización"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:583
-msgid "Added WebKit cache control setting for improved rendering consistency"
-msgstr ""
-"Se agregó una opción de control de la caché de WebKit para una mejor "
-"consistencia del renderizado"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:584
-msgid "Cache disabled by default to prevent emoji rendering issues"
-msgstr ""
-"Caché desactivada de forma predeterminada para evitar problemas de "
-"renderizado de emojis"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:588
-msgid ""
-"Fixed external links not opening in default browser when running in Flatpak"
-msgstr ""
-"Se corrigieron los enlaces externos que no se abrían en el navegador "
-"predeterminado al ejecutar en Flatpak"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:589
-msgid "Improved external link handling with proper Flatpak portal support"
-msgstr ""
-"Se mejoró el manejo de enlaces externos con la compatibilidad adecuada con "
-"los portales de Flatpak"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:590
-msgid "Fixed random emoji display issues and blank emoji problems"
-msgstr ""
-"Se corrigieron problemas aleatorios de visualización de emojis y emojis en "
-"blanco"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:591
-msgid "Fixed invalid meson version requirement preventing builds"
-msgstr ""
-"Se corrigió un requisito de versión de meson inválido que impedía las "
-"compilaciones"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:592
-msgid "Corrected dependency version specifications in meson.build"
-msgstr ""
-"Se corrigieron las especificaciones de versión de las dependencias en "
-"meson.build"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:593
-msgid "Resolved flatpak-builder compatibility issues"
-msgstr "Se resolvieron problemas de compatibilidad con flatpak-builder"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:594
-msgid "Enhanced URL validation for external link detection"
-msgstr "Se mejoró la validación de URL para la detección de enlaces externos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:598
-msgid "Eliminated WebKit cache corruption affecting emoji rendering"
-msgstr ""
-"Se eliminó la corrupción de la caché de WebKit que afectaba el renderizado "
-"de emojis"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:599
-msgid "Streamlined font stack for consistent emoji appearance"
-msgstr ""
-"Se simplificó la pila de fuentes para una apariencia consistente de los "
-"emojis"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:600
-msgid "Enhanced 2D canvas acceleration for better graphics performance"
-msgstr ""
-"Se mejoró la aceleración del lienzo 2D para un mejor rendimiento gráfico"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:601
-msgid "Improved font loading stability and reduced race conditions"
-msgstr ""
-"Se mejoró la estabilidad de la carga de fuentes y se redujeron las "
-"condiciones de carrera"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:602
-msgid "Better sandboxed environment compatibility"
-msgstr "Mejor compatibilidad con entornos aislados"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:603
-msgid "More reliable link opening mechanism"
-msgstr "Mecanismo de apertura de enlaces más confiable"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:604
-msgid "Enhanced logging for external link operations"
-msgstr "Se mejoró el registro de las operaciones de enlaces externos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:605
-msgid "Better build system compatibility with different environments"
-msgstr ""
-"Mejor compatibilidad del sistema de compilación con distintos entornos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:606
-msgid "Enhanced CI/CD pipeline stability"
-msgstr "Se mejoró la estabilidad del flujo de CI/CD"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:607
-msgid "More robust dependency handling"
-msgstr "Manejo de dependencias más robusto"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:611
-msgid ""
-"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
-"only)"
-msgstr ""
-"Se eliminó el cambio innecesario del agente de usuario móvil (WhatsApp Web "
-"es solo para escritorio)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:612
-msgid "Disabled problematic WebKit caches causing font corruption"
-msgstr ""
-"Se desactivaron las cachés problemáticas de WebKit que causaban corrupción "
-"de fuentes"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:613
-msgid "Simplified emoji font configuration to single high-quality source"
-msgstr ""
-"Se simplificó la configuración de la fuente de emojis a una única fuente de "
-"alta calidad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:614
-msgid "Restored Safari Linux user agent for native WebKit experience"
-msgstr ""
-"Se restauró el agente de usuario de Safari Linux para una experiencia WebKit"
-" nativa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:615
-msgid "Added subpixel font scaling and advanced rendering optimizations"
-msgstr ""
-"Se agregaron el escalado de fuentes por subpíxeles y optimizaciones "
-"avanzadas de renderizado"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:616
-msgid "Implemented Flatpak portal system for external link handling"
-msgstr ""
-"Se implementó el sistema de portales de Flatpak para el manejo de enlaces "
-"externos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:622
-msgid "🔧 Code Refactoring and Architecture Improvements"
-msgstr "🔧 Refactorización del código y mejoras de la arquitectura"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:625
-msgid "Converted template files to preprocessor directives for cleaner code"
-msgstr ""
-"Se convirtieron los archivos de plantilla a directivas del preprocesador "
-"para un código más limpio"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:626
-msgid "Eliminated .vala.in template substitution system"
-msgstr "Se eliminó el sistema de sustitución de plantillas .vala.in"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:627
-msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
-msgstr ""
-"Se agregó compilación condicional en tiempo de compilación usando la marca "
-"DEVELOPMENT"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:628
-msgid "Improved build system maintainability and type safety"
-msgstr ""
-"Se mejoraron la mantenibilidad del sistema de compilación y la seguridad de "
-"tipos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:629
-msgid "Added contributors Aman Das and Cameo to about dialog"
-msgstr "Se agregaron los colaboradores Aman Das y Cameo al diálogo Acerca de"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:633
-msgid ""
-"Replaced window.vala.in and preferences.vala.in with direct .vala files"
-msgstr ""
-"Se reemplazaron window.vala.in y preferences.vala.in por archivos .vala "
-"directos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:634
-msgid "Updated meson.build to use Vala preprocessor directives"
-msgstr ""
-"Se actualizó meson.build para usar las directivas del preprocesador de Vala"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:635
-msgid "Simplified source file management in build system"
-msgstr ""
-"Se simplificó la gestión de archivos fuente en el sistema de compilación"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:641
-#: data/io.github.tobagin.karere.metainfo.xml.in:675
-msgid "🐛 Bug Fixes and Improvements"
-msgstr "🐛 Correcciones de errores y mejoras"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:644
-msgid "Fixed crash when handling invalid user input data"
-msgstr ""
-"Se corrigió un fallo al manejar datos de entrada del usuario inválidos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:645
-msgid "Resolved memory leak in notification cleanup"
-msgstr "Se resolvió una fuga de memoria en la limpieza de notificaciones"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:646
-msgid "Corrected accessibility focus handling"
-msgstr "Se corrigió el manejo del foco de accesibilidad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:650
-msgid "Better error handling for network timeouts"
-msgstr "Mejor manejo de errores para los tiempos de espera de la red"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:651
-msgid "Enhanced stability for extended usage"
-msgstr "Estabilidad mejorada para el uso prolongado"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:652
-msgid "Performance optimizations for scrolling"
-msgstr "Optimizaciones de rendimiento para el desplazamiento"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:658
-msgid "🔧 Metadata and Standards Compliance"
-msgstr "🔧 Cumplimiento de metadatos y estándares"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:661
-msgid "Fixed duplicate provides tags in metainfo validation"
-msgstr ""
-"Se corrigieron las etiquetas provides duplicadas en la validación de "
-"metainfo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:662
-msgid "Corrected AppStream metainfo format compliance"
-msgstr "Se corrigió el cumplimiento del formato de metainfo de AppStream"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:663
-msgid "Resolved invalid markup in release descriptions"
-msgstr "Se resolvió el marcado inválido en las descripciones de las versiones"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:667
-msgid "Updated all references from appdata to metainfo format"
-msgstr ""
-"Se actualizaron todas las referencias del formato appdata al formato "
-"metainfo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:668
-msgid "Enhanced Flathub compliance and validation"
-msgstr "Se mejoraron el cumplimiento y la validación de Flathub"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:669
-msgid "Improved translation file consistency"
-msgstr "Se mejoró la consistencia de los archivos de traducción"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:678
-msgid "Fixed crash when handling invalid notification data"
-msgstr "Se corrigió un fallo al manejar datos de notificación inválidos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:679
-msgid "Resolved memory leak in WebKit manager cleanup"
-msgstr "Se resolvió una fuga de memoria en la limpieza del gestor de WebKit"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:680
-msgid "Corrected window state persistence on shutdown"
-msgstr "Se corrigió la persistencia del estado de la ventana al cerrar"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:684
-msgid "Better error handling for network disconnections"
-msgstr "Mejor manejo de errores para las desconexiones de red"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:685
-msgid "Enhanced stability during long sessions"
-msgstr "Estabilidad mejorada durante las sesiones largas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:686
-msgid "Performance optimizations for faster startup"
-msgstr "Optimizaciones de rendimiento para un inicio más rápido"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:692
-msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
-msgstr "🚀 Migración importante de la arquitectura: de Python a Vala/GTK4"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:693
-msgid ""
-"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
-"performance and integration."
-msgstr ""
-"CAMBIO IMPORTANTE: reescritura completa de Python a Vala nativo para un "
-"mejor rendimiento e integración."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:694
-msgid ""
-"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
-"with WhatsApp Web as this is a completely new application implementation."
-msgstr ""
-"⚠️ Importante: después de actualizar, vas a tener que volver a sincronizar "
-"tu dispositivo móvil con WhatsApp Web, ya que esta es una implementación de "
-"aplicación completamente nueva."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:697
-msgid "Native Vala/GTK4 implementation for optimal performance"
-msgstr "Implementación nativa en Vala/GTK4 para un rendimiento óptimo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:698
-msgid "Modern LibAdwaita UI with Blueprint declarative interface"
-msgstr "Interfaz moderna de LibAdwaita con la interfaz declarativa Blueprint"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:699
-msgid "Enhanced WebKitGTK 6.0 integration"
-msgstr "Integración mejorada con WebKitGTK 6.0"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:700
-msgid "Advanced notification system with native desktop integration"
-msgstr ""
-"Sistema de notificaciones avanzado con integración nativa con el escritorio"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:701
-msgid "Comprehensive accessibility support"
-msgstr "Compatibilidad completa con la accesibilidad"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:702
-msgid "Professional logging and crash reporting system"
-msgstr "Sistema profesional de registro e informe de fallos"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:704
-msgid "Multi-language spell checking support"
-msgstr "Compatibilidad con la corrección ortográfica en varios idiomas"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:705
-msgid "Granular privacy and notification controls"
-msgstr "Controles granulares de privacidad y notificaciones"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:706
-msgid "Hardware-accelerated rendering"
-msgstr "Renderizado acelerado por hardware"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:707
-msgid "Improved memory efficiency and startup performance"
-msgstr "Eficiencia de memoria mejorada y mejor rendimiento al iniciar"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:709
-msgid "Technical Improvements:"
-msgstr "Mejoras técnicas:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:711
-msgid "Migrated from Python 3 to native Vala compilation"
-msgstr "Se migró de Python 3 a la compilación nativa en Vala"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:712
-msgid "Modern Meson build system with Blueprint UI compilation"
-msgstr ""
-"Sistema de compilación moderno Meson con compilación de la interfaz "
-"Blueprint"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:713
-msgid "Comprehensive test suite with unit and integration tests"
-msgstr "Conjunto de pruebas completo con pruebas unitarias y de integración"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:714
-msgid "Production-ready error handling and crash recovery"
-msgstr "Manejo de errores y recuperación de fallos listos para producción"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:715
-msgid "Enhanced security with proper sandboxing"
-msgstr "Seguridad mejorada con un aislamiento adecuado"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:716
-msgid "Complete internationalization support"
-msgstr "Compatibilidad completa con la internacionalización"
-
-#: src/window.rs:303
-msgid "Account"
-msgstr "Cuenta"
-
-#: src/window.rs:632
-msgid "Waiting for QR scan…"
-msgstr "Esperando el escaneo del QR…"
-
-#: src/window.rs:654
-msgid "degraded"
-msgstr "degradada"
-
-#: src/window.rs:670
-msgid "Unread messages"
-msgstr "Mensajes sin leer"
-
-#: src/window.rs:678
-msgid "Edit account"
-msgstr "Editar cuenta"
-
-#: src/window.rs:694
-msgid "Remove account"
-msgstr "Eliminar cuenta"
-
-#: src/window.rs:696
-msgid "Can't remove the only account"
-msgstr "No se puede eliminar la única cuenta"
-
-#: src/window.rs:778
-msgid "Maximum of 9 accounts reached"
-msgstr "Se alcanzó el máximo de 9 cuentas"
-
-#: src/window.rs:804
-msgid "Label"
-msgstr "Etiqueta"
-
-#: src/window.rs:818
-msgid "Name"
-msgstr "Nombre"
-
-#: src/window.rs:819
-msgid "WhatsApp ID"
-msgstr "ID de WhatsApp"
-
-#: src/window.rs:821
-msgid "Avatar URL"
-msgstr "URL del avatar"
-
-#: src/window.rs:830 src/window.rs:919
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: src/window.rs:831
-msgid "Save"
-msgstr "Guardar"
-
-#: src/window.rs:840
-msgid "Add Account"
-msgstr "Agregar cuenta"
-
-#: src/window.rs:842
-msgid "Edit Account"
-msgstr "Editar cuenta"
-
-#: src/window.rs:909
-msgid "Remove account?"
-msgstr "¿Eliminar cuenta?"
-
-#: src/window.rs:920
-msgid "Remove"
-msgstr "Eliminar"
-
-#: src/actions.rs:263
-msgid ""
-"A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
-"seamless desktop integration with comprehensive logging and crash reporting "
-"capabilities"
-msgstr ""
-"Un envoltorio moderno y nativo de GTK4/LibAdwaita para WhatsApp Web que "
-"ofrece una integración fluida con el escritorio con capacidades completas de"
-" registro e informe de fallos"
-
-#: src/actions.rs:282
-msgid "Source"
-msgstr "Código fuente"
-
-#: src/actions.rs:285
-msgid "Special Thanks"
-msgstr "Agradecimientos especiales"
+#: src/preferences.rs:346
+msgid "The language change takes effect after Karere restarts."
+msgstr "El cambio de idioma se aplica después de reiniciar Karere."
