@@ -49,6 +49,8 @@ flatpak-builder --user --install --force-clean build packaging/io.github.tobagin
 flatpak run io.github.tobagin.karere.Devel
 ```
 
+The repo wrapper `./build.sh --dev` is equivalent to the `flatpak-builder` line above (see `build.sh --help`; use `FLATPAK_BUILDER_EXTRA_ARGS="--disable-rofiles-fuse"` on hosts where rofiles-fuse cannot mount).
+
 ### Local Development
 
 For quick iteration (requires `cargo`, `gtk4-devel`, `libadwaita-devel` on host):
