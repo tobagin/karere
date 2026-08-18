@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2030,SC2031,SC2086,SC2034
 # KARE-016 Step 2 + KARE-018 H7 — Xvfb + GDK_SCALE + xdotool + CDP-title readback harness.
 # Matrix (KARE-016): {GDK_SCALE=1@1280x800, GDK_SCALE=2@2560x1600} × {cpu-osr, gpu-osr}
 #   + KARE-018 narrow rows: {GDK_SCALE=1@720x900} × {cpu-osr, gpu-osr} (<768px mobile gate)
@@ -12,14 +13,20 @@
 #   125%/150% matrix requires an operator Wayland session that drives Mutter
 #   DisplayConfig monitor scales (KARE-020) — this harness cannot, so it records
 #   honest SKIP rows instead of a fake PASS.
+# + Operator-driven fractional Wayland (KARE-020): --fractional-wayland (or env
+#   KARERE_FRACTIONAL_WAYLAND=1) delegates the 1.25/1.5 logical-scale verification
+#   to tests/wayland_fractional_verify.sh on a live Mutter Wayland session
+#   (transient ApplyMonitorsConfig with trap restore); without the gate or on an
+#   unqualified host it emits honest SKIP rows (CI-safe default).
 # + Real-page opt-in (KARE-018): when KARERE_H7_REAL_PAGE=1 loads live WhatsApp
 #   snapshot (KARERE_H7_REAL_PAGE_URL or https://web.whatsapp.com/) with CDP-injected
 #   probe and same calibration protocol; when unset prints SKIP line and runs the
 #   offline chrome-mimic fixture (never attempts login).
 #
 # Usage:
-#   tests/coordinate_probe.sh [--bin /path/to/karere] [--chrome] [--fractional] [--negative] [--help]
+#   tests/coordinate_probe.sh [--bin /path/to/karere] [--chrome] [--fractional] [--fractional-wayland] [--negative] [--help]
 #   KARERE_H7_REAL_PAGE=1 tests/coordinate_probe.sh --chrome   # operator-authorized real-page snapshot
+#   KARERE_FRACTIONAL_WAYLAND=1 tests/coordinate_probe.sh --fractional-wayland  # operator Wayland session
 #   GDK_SCALE override via env is ignored — matrix drives scale explicitly.
 #   KARERE_BIN env can point at "flatpak run ... io.github.tobagin.karere.Devel"
 #   but native cargo binary is the CI default (target/debug/karere).
@@ -44,6 +51,8 @@ KARERE_BIN="${KARERE_BIN:-}"
 NEGATIVE_MODE=0
 CHROME_MODE=0
 FRACTIONAL_MODE=0
+FRACTIONAL_WAYLAND=0
+if [[ "${KARERE_FRACTIONAL_WAYLAND:-}" == "1" ]]; then FRACTIONAL_WAYLAND=1; fi
 HELP=0
 
 while [[ $# -gt 0 ]]; do
@@ -52,6 +61,7 @@ while [[ $# -gt 0 ]]; do
     --negative) NEGATIVE_MODE=1; shift;;
     --chrome) CHROME_MODE=1; shift;;
     --fractional) FRACTIONAL_MODE=1; shift;;
+    --fractional-wayland) FRACTIONAL_WAYLAND=1; shift;;
     --help|-h) HELP=1; shift;;
     *) echo "Unknown arg: $1" >&2; exit 2;;
   esac
@@ -59,7 +69,7 @@ done
 
 if [[ $HELP -eq 1 ]]; then
   cat <<'EOF'
-Usage: tests/coordinate_probe.sh [--bin /path/to/karere] [--chrome] [--fractional] [--negative]
+Usage: tests/coordinate_probe.sh [--bin /path/to/karere] [--chrome] [--fractional] [--fractional-wayland] [--negative]
 
 Matrix (KARE-016): GDK_SCALE=1@1280x800 and GDK_SCALE=2@2560x1600 × {cpu-osr, gpu-osr}
   + KARE-018 narrow rows GDK_SCALE=1@720x900 (<768px mobile gate) × {cpu-osr, gpu-osr}
@@ -73,6 +83,10 @@ Matrix (KARE-016): GDK_SCALE=1@1280x800 and GDK_SCALE=2@2560x1600 × {cpu-osr, g
           (fractional unverified on this host). The harness cannot drive Mutter
           DisplayConfig monitor scales itself — a true 125/150% matrix requires an
           operator Wayland session (KARE-020); rows record SKIP until then.
+--fractional-wayland: also run fractional 1.25/1.5 logical-scale verification via
+          tests/wayland_fractional_verify.sh (requires KARERE_FRACTIONAL_WAYLAND=1 or this flag plus a live
+          Mutter Wayland session with scale-monitor-framebuffer/xwayland-native-scaling; otherwise emits SKIP).
+          Env KARERE_FRACTIONAL_WAYLAND=1 is equivalent to --fractional-wayland.
 --negative: run single config asserting wrong scale expectation; harness must FAIL (proves detection).
           Compose: --chrome --negative asserts wrong origin/scale and must FAIL.
 Real-page opt-in: KARERE_H7_REAL_PAGE=1 enables live WhatsApp snapshot mode with same calibration
@@ -161,6 +175,20 @@ check_fractional_available() {
   echo "SKIP: fractional unverified on this host — missing Mutter experimental-features (need scale-monitor-framebuffer or xwayland-native-scaling)" >&2
   printf '{"fractional":"SKIP","reason":"fractional unverified on this host"}\n'
   return 1
+}
+
+# Fractional Wayland host gate (KARE-020) — mirrors wayland_fractional_verify.sh
+# gates but never mutates display state; returns 0 if a live Mutter session with
+# a driveable DisplayConfig and fractional features is available, 1 otherwise.
+check_fractional_wayland_host() {
+  if [[ "${XDG_SESSION_TYPE:-}" != "wayland" ]]; then return 1; fi
+  if [[ -z "${WAYLAND_DISPLAY:-}" ]]; then return 1; fi
+  if ! command -v gdbus >/dev/null 2>&1; then return 1; fi
+  if ! gdbus call --session --dest org.gnome.Mutter.DisplayConfig --object-path /org/gnome/Mutter/DisplayConfig --method org.gnome.Mutter.DisplayConfig.GetCurrentState >/dev/null 2>&1; then return 1; fi
+  local feats
+  feats="$(gsettings get org.gnome.mutter experimental-features 2>/dev/null || echo "@as []")"
+  if [[ "$feats" != *"scale-monitor-framebuffer"* && "$feats" != *"xwayland-native-scaling"* ]]; then return 1; fi
+  return 0
 }
 
 need_schemas() {
@@ -391,6 +419,7 @@ run_config() {
   local pid=""
   set +e
   if [[ $is_flatpak -eq 1 ]]; then
+    # shellcheck disable=SC2086
     env GDK_BACKEND=x11 GSK_RENDERER=gl GDK_SCALE="$gdk_scale" KARERE_GPU_OSR="$gpu_osr" \
       flatpak run --env=GDK_SCALE="$gdk_scale" --env=KARERE_GPU_OSR="$gpu_osr" --env=GDK_BACKEND=x11 --env=GSK_RENDERER=gl \
       ${KARERE_BIN#flatpak run } --url "$target_url" --debug --debuglevel=debug >"$stderr_log" 2>&1 &
@@ -861,6 +890,47 @@ else
   else
     echo "MATRIX RESULT: all synthetic configs passed (no sustained >1px error)" >&2
   fi
+fi
+
+# Fractional Wayland verification (KARE-020) — operator-gated, CI-safe default is SKIP.
+# scale-monitor-framebuffer is fractional framebuffer scaling; xwayland-native-scaling
+# is XWayland native scale. The harness handles whichever the host exposes and does
+# not assume both. Delegates to tests/wayland_fractional_verify.sh with transient
+# method 1 when gated and available; otherwise emits honest SKIP rows.
+echo "--- Fractional Wayland scales 1.25 / 1.5 ---" >&2
+if [[ $FRACTIONAL_WAYLAND -eq 1 ]]; then
+  if check_fractional_wayland_host; then
+    echo "Fractional gate OPEN and host available — delegating to wayland_fractional_verify.sh" >&2
+    set +e
+    frac_out="$(KARERE_FRACTIONAL_WAYLAND=1 bash "$SCRIPT_DIR/wayland_fractional_verify.sh" --bin "$KARERE_BIN" 2>&1)"
+    frac_rc=$?
+    set -e
+    echo "$frac_out"
+    if [[ $frac_rc -ne 0 ]]; then
+      echo "Fractional Wayland verification FAILED (worst_error_px >1 or restore mismatch)" >&2
+      exit $frac_rc
+    fi
+  else
+    reason="needs operator Wayland session"
+    if [[ "${XDG_SESSION_TYPE:-}" != "wayland" ]]; then reason="not-wayland";
+    elif [[ -z "${WAYLAND_DISPLAY:-}" ]]; then reason="not-wayland";
+    elif ! command -v gdbus >/dev/null 2>&1; then reason="no-gdbus";
+    else
+      feats="$(gsettings get org.gnome.mutter experimental-features 2>/dev/null || echo "@as []")"
+      if [[ "$feats" != *"scale-monitor-framebuffer"* && "$feats" != *"xwayland-native-scaling"* ]]; then reason="missing-feature"; fi
+    fi
+    echo "SKIP fractional Wayland requires operator Wayland session with scale-monitor-framebuffer/xwayland-native-scaling — run with KARERE_FRACTIONAL_WAYLAND=1 on a live Mutter Wayland session (see TESTING.md)" >&2
+    for sc in "1.25" "1.5"; do
+      python3 -c 'import json,sys; print(json.dumps({"config":f"fractional scale={sys.argv[1]}","scale":float(sys.argv[1]),"passed":None,"worst_error_px":None,"fractional":{"available":False,"reason":sys.argv[2],"required_features":["scale-monitor-framebuffer","xwayland-native-scaling"]},"message":"needs operator Wayland session"}))' "$sc" "$reason"
+    done
+    python3 -c 'import json; print(json.dumps({"fractional":{"available":False,"reason":sys.argv[1],"required_features":["scale-monitor-framebuffer","xwayland-native-scaling"]}}))' "$reason" >&2
+  fi
+else
+  echo "SKIP fractional Wayland requires operator Wayland session with scale-monitor-framebuffer/xwayland-native-scaling — run with KARERE_FRACTIONAL_WAYLAND=1 on a live Mutter Wayland session (see TESTING.md)" >&2
+  for sc in "1.25" "1.5"; do
+    python3 -c 'import json,sys; print(json.dumps({"config":f"fractional scale={sys.argv[1]}","scale":float(sys.argv[1]),"passed":None,"worst_error_px":None,"fractional":{"available":False,"reason":"not-opted-in","required_features":["scale-monitor-framebuffer","xwayland-native-scaling"]},"message":"needs operator Wayland session"}))' "$sc"
+  done
+  python3 -c 'import json; print(json.dumps({"fractional":{"available":False,"reason":"not-opted-in","required_features":["scale-monitor-framebuffer","xwayland-native-scaling"]}}))' >&2
 fi
 
 exit 0

@@ -120,6 +120,40 @@ dbus-run-session -- tests/coordinate_probe.sh --chrome --negative
 KARERE_H7_REAL_PAGE=1 dbus-run-session -- tests/coordinate_probe.sh --chrome
 ```
 
+### Fractional Wayland — operator-driven verification (KARE-020)
+
+Why fractional needs a live Mutter session: `Xvfb` has no compositor fractional scale — it only supports integer `GDK_SCALE` (1×/2×). Fractional 125%/150% logical scales are driven by Mutter's `scale-monitor-framebuffer` (fractional framebuffer) and/or `xwayland-native-scaling` (XWayland native scale) experimental features. The harness handles whichever the host exposes and does not assume both. Under `GDK_SCALE` the integer matrix stays correct; logical 1.25/1.5 must be driven via the compositor's `org.gnome.Mutter.DisplayConfig` `ApplyMonitorsConfig` on a real Wayland session.
+
+Default (CI-safe) behavior: `bash tests/coordinate_probe.sh` runs the integer matrix and emits honest SKIP rows for 1.25/1.5 with machine-parseable `{"fractional":{"available":false,"reason":"not-opted-in","required_features":["scale-monitor-framebuffer","xwayland-native-scaling"]}}` and a human message `needs operator Wayland session`. No display mutation occurs without opt-in.
+
+Operator-gated PASS:
+
+```sh
+# Verify host prerequisites
+echo $XDG_SESSION_TYPE  # must be wayland
+echo $WAYLAND_DISPLAY   # must be non-empty (e.g. wayland-0)
+gsettings get org.gnome.mutter experimental-features  # must contain scale-monitor-framebuffer and/or xwayland-native-scaling
+gdbus introspect --session --dest org.gnome.Mutter.DisplayConfig --object-path /org/gnome/Mutter/DisplayConfig | grep ApplyMonitorsConfig
+gsettings get org.gnome.desktop.interface scaling-factor
+
+# Transient verification — mutates live session transiently, restores on EXIT/INT/TERM
+KARERE_FRACTIONAL_WAYLAND=1 bash tests/wayland_fractional_verify.sh [--bin target/debug/karere]
+# or via harness
+KARERE_FRACTIONAL_WAYLAND=1 bash tests/coordinate_probe.sh --fractional-wayland
+# also: bash tests/coordinate_probe.sh --fractional-wayland  (flag equivalent to env)
+```
+
+What it does: saves current `GetCurrentState` (serial + logical_monitors), installs `trap restore EXIT INT TERM` (idempotent, re-fetches fresh serial before restore), calls `gdbus org.gnome.Mutter.DisplayConfig ApplyMonitorsConfig` with method 1 (temporary, never persistent method 0) to set the primary logical monitor to 1.25 then 1.5 (other monitors unchanged, preserving `transform`/`primary`/`position`, with fresh serial per apply), sleeps ≥1s for compositor settle, re-runs the synthetic (8×5 grid) probe for both CPU OSR (`KARERE_GPU_OSR=0`) and GPU OSR (`KARERE_GPU_OSR=1`) and, when `tests/fixtures/coord-probe-whatsapp.html` exists, the chrome-mimic probe likewise for both paint paths (otherwise emits a `chrome-mimic pending KARE-018` SKIP row rather than a synthetic duplicate) through the production `GDK→GTK→CEF→page` path at that logical scale (via `xdotool` + title/CDP readback), validates `|clientX-expected|<=1px` per axis (`worst_error_px<=1`), and restores the original monitor configuration even on failure (gating exit code on `restore.equal`). Output is one JSON object per scale plus `restore:{before,after,equal}` and `summary` with `passed:true` per scale when `worst_error_px<=1`.
+
+Prerequisites: `gdbus`, `gsettings`, `python3` (with `gi`/`Gio`), `xdotool`, `curl` (CDP fallback), a GNOME/Mutter Wayland session, and **CDP port 9333 free** — the app's devtools port is a fixed constant (`src/devtools.rs`), so close any running Karere started with `--debug` first; otherwise the probe's readback would target the wrong process and the wrapper SKIPs with reason `cdp-port-held`. Refuses when `XDG_SESSION_TYPE!=wayland`, `WAYLAND_DISPLAY` empty, `gdbus` missing, `GetCurrentState` fails, `ApplyMonitorsConfigAllowed` false, or neither experimental feature is enabled — emitting structured SKIP JSON with `reason` enum (`not-wayland`, `xvfb`, `no-gdbus`, `no-displayconfig`, `missing-feature`, `permission-denied`, `not-opted-in`, `cdp-port-held`) and exit 0. Never mutates display without the opt-in flag and without passing all gates; refuses to run as root. Verify restore via post-run `gdbus call GetCurrentState` equals pre-run scale.
+
+`--help` for each harness prints the flag and env contract:
+
+```sh
+bash tests/coordinate_probe.sh --help
+bash tests/wayland_fractional_verify.sh --help
+```
+
 ### Text selection automation
 
 - [ ] `cargo test` — unit and headless integration coverage, including ordered raw mouse drag lifecycle, click counts, touch-emulation suppression, HiDPI coordinates, CEF Copy command classification, IPC, clipboard sanitization/caps, and clean SIGTERM exit.
