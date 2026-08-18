@@ -111,15 +111,17 @@ pub struct SharedState {
     /// share this `SharedState`/widget; only the foreground's paint is uploaded
     /// to the GL texture. `0` = no pool wired yet (startup) → all paints pass.
     pub foreground_browser_id: i32,
-    /// Widget origin in physical screen pixels for `RenderHandler::screen_point`
-    /// (`screen = view + origin`). Currently always `(0, 0)` on every backend
-    /// so `screen==view` (degenerate, correct fallback). On Wayland global
-    /// position is compositor-private and must stay `(0,0)`; on X11 a real
-    /// origin needs a `gdk4-x11` query not yet wired — see follow-up task.
-    /// Before the widget is realized the value is also `(0,0)`. Updated by
-    /// `KarereWebView::size_allocate` / `refresh_screen_scale` on the main
-    /// thread (currently storing the fallback `(0,0)`); read by `screen_point`
-    /// on the CEF UI thread (= main thread under external_message_pump). (KARE-017)
+    /// Widget screen origin in physical pixels for `RenderHandler::screen_point`
+    /// (`screen = view + origin` via saturating add). On Wayland the value is
+    /// always `(0,0)` because global position is compositor-private and must
+    /// stay `(0,0)`. On X11 the value is the cached root-relative origin
+    /// queried via `gdk4_x11::X11Surface` in `window_origin_for` (see
+    /// `src/web_view.rs`), converted to physical pixels (xlib physical results
+    /// passed through clamped; only logical/DIP results are scaled via
+    /// `widget.scale_factor()`). Before realize or after unrealize the value
+    /// is `(0,0)`. Updated on the GTK main thread by `size_allocate` /
+    /// `refresh_screen_scale`; read by `screen_point` on the CEF UI thread
+    /// (main thread under `external_message_pump`). (KARE-019)
     pub window_origin: (i32, i32),
 }
 

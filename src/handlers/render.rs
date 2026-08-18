@@ -84,12 +84,12 @@ wrap_render_handler! {
         /// `view → screen` in physical pixels: `screen = view + window_origin`
         /// via saturating `i32` add. `view` coords are already physical
         /// (pin-`device_scale=1.0` model); no scale is re-applied.
-        /// `window_origin` is `SharedState::window_origin`, currently always
-        /// `(0,0)` on every backend so `screen==view` (degenerate transform).
-        /// On Wayland global position is compositor-private and must stay
-        /// `(0,0)`; on X11 a real origin requires a `gdk4-x11` query not yet
-        /// wired (follow-up task). Returns `1` if at least one out-param was
-        /// written, `0` only when both are `None` (CEF treats `0` as failure).
+        /// Wayland fallback is `origin = (0,0)` so `screen==view`; on X11
+        /// origin is the cached physical window origin queried via `gdk4-x11`
+        /// (see `window_origin_for` in `src/web_view.rs`; xlib path returns
+        /// physical pixels and is not re-scaled). Returns `1` if at least one
+        /// out-param was written, `0` only when both are `None` (CEF treats
+        /// `0` as failure).
         fn screen_point(
             &self,
             _browser: Option<&mut Browser>,

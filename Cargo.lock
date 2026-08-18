@@ -1451,6 +1451,7 @@ dependencies = [
  "env_logger",
  "epoxy",
  "gdk-pixbuf",
+ "gdk4-x11",
  "gettext-rs",
  "gio",
  "gl",
@@ -1468,6 +1469,7 @@ dependencies = [
  "tokio",
  "toml 0.8.23",
  "uuid",
+ "x11-dl",
  "zbus",
 ]
 

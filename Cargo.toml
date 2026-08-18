@@ -22,6 +22,17 @@ path = "src/main.rs"
 
 [dependencies]
 gtk = { package = "gtk4", version = "0.11", features = ["v4_12"] }
+# X11 window origin for RenderHandler::screen_point (KARE-019):
+# - Standalone gdk4-x11 0.11 crate aligned to gtk4 0.11 (not gdk4 "x11" feature).
+# - "xlib" feature required: GTK4 0.11 has no root GdkSurface to
+#   translate against and gdk4-x11-sys 0.11 binds only get_xid/get_group;
+#   the viable physical-origin path is XTranslateCoordinates via XDisplay.
+#   That API returns X-server physical pixels already (GDK_SCALE physical
+#   sizing under X11), so the result is passed through clamped without
+#   re-scaling. Translating would need logical→physical scaling which is
+#   not used here.
+gdk4-x11 = { version = "0.11", features = ["xlib"] }
+x11 = { package = "x11-dl", version = "2.21" }
 libadwaita = { version = "0.9", features = ["v1_6"] }
 glib = "0.22"
 gio = "0.22"

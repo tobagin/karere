@@ -2678,21 +2678,73 @@ mod imp {
     }
 
     /// Widget screen origin in physical pixels for `RenderHandler::screen_point`.
-    /// Currently returns `(0,0)` on all backends so `screen==view` (degenerate
-    /// transform). On Wayland global position is compositor-private and must
-    /// stay `(0,0)`; on X11 a real origin requires `gdk4-x11` / X11Surface
-    /// query not yet wired (see follow-up task). Guarded against
-    /// post-`unrealize` (no native/surface) and never panics. Uses the same
-    /// `native`/`surface` primitives as `pointer_pos_physical` to keep the
-    /// call site main-thread-safe. (KARE-017)
+    ///
+    /// - On Wayland returns `(0,0)` — global position is compositor-private and
+    ///   must stay `(0,0)` so `screen==view` (correct Wayland fallback).
+    /// - On X11 downcasts the native `GdkSurface` to `gdk4_x11::X11Surface` and
+    ///   queries the root-relative position via `XTranslateCoordinates` (xlib).
+    ///   `XTranslateCoordinates` returns X-server **physical** pixels already
+    ///   (GDK creates X11 windows at physical size under `GDK_SCALE=2`,
+    ///   `scale_factor()==2`), so the result is passed through clamped without
+    ///   re-scaling — do NOT multiply by `widget.scale_factor()` (would double-
+    ///   count and break `GetScreenPoint`/popup anchoring at 2×). (KARE-019)
+    /// - Before realize or after unrealize (`native` or `surface` is `None`)
+    ///   returns `(0,0)` without panicking; any query failure also falls back
+    ///   to `(0,0)` at `debug` level. Main-thread only (callers are
+    ///   `size_allocate` / `refresh_screen_scale`).
+    ///
+    /// Verified: no root `GdkSurface` exists in gdk4 0.11 to translate against,
+    /// so the `translate_coordinates`/`compute_bounds` logical path would always
+    /// return `false` — the shipped path is the xlib physical path.
     fn window_origin_for(widget: &super::KarereWebView) -> (i32, i32) {
-        // Keep a best-effort native/surface probe so the call remains on the
-        // GTK main thread and does not regress after unrealize, but do not
-        // claim an X11 position — currently always (0,0) on every backend.
-        // Future: on X11 downcast to X11Surface via gdk4-x11 and query
-        // root-relative position when the dependency is added.
-        let _ = widget.native().and_then(|n| n.surface());
-        (0, 0)
+        // Post-unrealize guard: no native/surface → (0,0), never panic.
+        let Some(native) = widget.native() else {
+            return (0, 0);
+        };
+        let Some(surface) = native.surface() else {
+            return (0, 0);
+        };
+        // Try X11 downcast; Wayland/Broadway/missing X11 backend → (0,0)
+        // Wayland fallback must stay (0,0) by design, not a partial value.
+        let x11_surface = match surface.downcast_ref::<gdk4_x11::X11Surface>() {
+            Some(s) => s,
+            None => return (0, 0),
+        };
+        // X11 path — XTranslateCoordinates returns physical pixels — do not scale; already in screen physical space.
+        let display = surface.display();
+        let Some(x11_display) = display.downcast_ref::<gdk4_x11::X11Display>() else {
+            log::debug!("window_origin_for: display is not X11");
+            return (0, 0);
+        };
+        let xid = x11_surface.xid();
+        // SAFETY: xdisplay is valid on the GTK main thread while the widget
+        // is realized; we guard null and the Xlib call is main-thread-only.
+        let xdisplay = unsafe { x11_display.xdisplay() };
+        if xdisplay.is_null() {
+            log::debug!("window_origin_for: xdisplay is null");
+            return (0, 0);
+        }
+        let root = x11_display.xrootwindow();
+        let mut rx: ::std::os::raw::c_int = 0;
+        let mut ry: ::std::os::raw::c_int = 0;
+        let mut child: ::std::os::raw::c_ulong = 0;
+        // x11-dl loads libX11 dynamically; opening can fail without libX11.
+        let xlib = match x11::xlib::Xlib::open() {
+            Ok(lib) => lib,
+            Err(_) => {
+                log::debug!("window_origin_for: Xlib::open failed");
+                return (0, 0);
+            }
+        };
+        let ok = unsafe {
+            (xlib.XTranslateCoordinates)(xdisplay as *mut x11::xlib::Display, xid, root, 0, 0, &mut rx, &mut ry, &mut child)
+        };
+        if ok == 0 {
+            log::debug!("window_origin_for: XTranslateCoordinates failed");
+            return (0, 0);
+        }
+        // XTranslateCoordinates returns physical pixels — do not scale; already in screen physical space.
+        (rx, ry)
     }
 
     pub(super) fn physical_mouse_coordinates(x: f64, y: f64, scale: i32) -> (i32, i32) {

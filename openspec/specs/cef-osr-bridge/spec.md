@@ -88,7 +88,7 @@ The shell SHALL provide a CEF `RenderHandler` (constructed by `wrap_render_handl
 
 - returns the stored size from `view_rect`
 - populates `screen_info` with `device_scale_factor = 1.0` (pinned; physical view rect + compensating `host_zoom_level`)
-- implements `screen_point(view_x, view_y, &mut sx, &mut sy)` as `sx = view_x + origin_x`, `sy = view_y + origin_y` via saturating `i32` add in physical pixels (no scale re-applied), where `origin` is `SharedState.window_origin` (widget screen origin; currently always `(0,0)` on every backend so `screen==view` — degenerate transform; on Wayland global position is compositor-private and must stay `(0,0)`, on X11 a real origin requires a `gdk4-x11` query not yet wired); returns `1` on success (at least one out-param written) and `0` only when both out-params are null; logs `screen_point view=(..) origin=(..) screen=(..)` at debug level
+- implements `screen_point(view_x, view_y, &mut sx, &mut sy)` as `sx = view_x + origin_x`, `sy = view_y + origin_y` via saturating `i32` add in physical pixels (no scale re-applied), where `origin` is `SharedState.window_origin` — Wayland `(0,0)` fallback so `screen==view`; on X11 origin is the `gdk4-x11` `X11Surface` root-relative position in physical pixels (xlib results are physical and not re-scaled; logical results would be scaled); returns `1` on success (at least one out-param written) and `0` only when both out-params are null; logs `screen_point view=(..) origin=(..) screen=(..)` at debug level
 - in `on_paint` copies the incoming buffer into `SharedState.frame.pixels`, records width / height, sets `dirty = true`, and logs `on_paint <w>x<h>` at debug level
 
 #### Scenario: on_paint stores the buffer and marks the frame dirty
@@ -103,13 +103,13 @@ The shell SHALL provide a CEF `RenderHandler` (constructed by `wrap_render_handl
 
 #### Scenario: screen_point maps view to screen with seeded origin (unit-tested helper)
 
-- **WHEN** CEF invokes `screen_point(10, 20, &mut sx, &mut sy)` with `SharedState.window_origin = (50, 80)` (seeded in tests to exercise the `view+origin` math)
-- **THEN** `sx == 60`, `sy == 100` and the return value is `1`; in production `window_origin` is currently always `(0,0)` on every backend so `screen==view` until the X11 query is wired (follow-up task)
+- **WHEN** CEF invokes `screen_point(10, 20, &mut sx, &mut sy)` with `SharedState.window_origin = (50, 80)` (seeded in tests to exercise the `view+origin` math; now also valid on X11 production, not just tests)
+- **THEN** `sx == 60`, `sy == 100` and the return value is `1`
 
 #### Scenario: screen_point Wayland fallback and null out-params
 
-- **WHEN** CEF invokes `screen_point` with `window_origin = (0, 0)` (current production value on all backends; Wayland fallback) and both out-params present
-- **THEN** `screen == view` and return is `1`; when both out-params are null return is `0`; when only one is present only that one is written and return is `1`
+- **WHEN** CEF invokes `screen_point` with `window_origin = (0, 0)` (Wayland and post-unrealize production value) and both out-params present
+- **THEN** `screen == view` and return is `1`; when both out-params are null return is `0`; when only one is present only that one is written and return is `1` (Wayland `origin=(0,0)` scenario; X11 real-origin scenario is the preceding one)
 
 ### Requirement: Tick callback re-renders when SharedState.frame is dirty
 
