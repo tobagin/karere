@@ -87,8 +87,8 @@ On allocation the widget SHALL compute the physical pixel size by multiplying th
 The shell SHALL provide a CEF `RenderHandler` (constructed by `wrap_render_handler!` as `ShellRenderHandlerBuilder`) that:
 
 - returns the stored size from `view_rect`
-- populates `screen_info` with the stored device scale factor
-- returns `(0, 0)` from `screen_point`
+- populates `screen_info` with `device_scale_factor = 1.0` (pinned; physical view rect + compensating `host_zoom_level`)
+- implements `screen_point(view_x, view_y, &mut sx, &mut sy)` as `sx = view_x + origin_x`, `sy = view_y + origin_y` via saturating `i32` add in physical pixels (no scale re-applied), where `origin` is `SharedState.window_origin` (widget screen origin; currently always `(0,0)` on every backend so `screen==view` — degenerate transform; on Wayland global position is compositor-private and must stay `(0,0)`, on X11 a real origin requires a `gdk4-x11` query not yet wired); returns `1` on success (at least one out-param written) and `0` only when both out-params are null; logs `screen_point view=(..) origin=(..) screen=(..)` at debug level
 - in `on_paint` copies the incoming buffer into `SharedState.frame.pixels`, records width / height, sets `dirty = true`, and logs `on_paint <w>x<h>` at debug level
 
 #### Scenario: on_paint stores the buffer and marks the frame dirty
@@ -96,10 +96,20 @@ The shell SHALL provide a CEF `RenderHandler` (constructed by `wrap_render_handl
 - **WHEN** CEF invokes `on_paint(type, dirty_rects, buffer, width, height)`
 - **THEN** the bytes are copied into `SharedState.frame.pixels`, `frame.width` / `frame.height` are updated, `frame.dirty` is set to `true`, and a `debug!` line `on_paint <w>x<h>` is emitted
 
-#### Scenario: screen_info reports the widget scale factor
+#### Scenario: screen_info reports pinned device scale factor
 
 - **WHEN** CEF requests `screen_info`
-- **THEN** the returned struct carries `device_scale_factor = SharedState.scale_factor`
+- **THEN** the returned struct carries `device_scale_factor = 1.0` (pinned)
+
+#### Scenario: screen_point maps view to screen with seeded origin (unit-tested helper)
+
+- **WHEN** CEF invokes `screen_point(10, 20, &mut sx, &mut sy)` with `SharedState.window_origin = (50, 80)` (seeded in tests to exercise the `view+origin` math)
+- **THEN** `sx == 60`, `sy == 100` and the return value is `1`; in production `window_origin` is currently always `(0,0)` on every backend so `screen==view` until the X11 query is wired (follow-up task)
+
+#### Scenario: screen_point Wayland fallback and null out-params
+
+- **WHEN** CEF invokes `screen_point` with `window_origin = (0, 0)` (current production value on all backends; Wayland fallback) and both out-params present
+- **THEN** `screen == view` and return is `1`; when both out-params are null return is `0`; when only one is present only that one is written and return is `1`
 
 ### Requirement: Tick callback re-renders when SharedState.frame is dirty
 
@@ -117,7 +127,7 @@ Because `GLArea` cannot expose a `Send + Sync` weak reference, the widget MUST N
 
 ### Requirement: SharedState aggregates frame buffer, size, scale, title and loading flag
 
-The shell SHALL define `SharedState { frame: FrameBuffer, size: (i32, i32), scale_factor: f32, title: String, is_loading: bool }` and `SharedRef = Arc<Mutex<SharedState>>` with a `new_shared(size, scale)` constructor. All CEF handlers — render, lifespan, display, load — MUST hold a `SharedRef` and update only their respective fields.
+The shell SHALL define `SharedState { frame: FrameBuffer, size: (i32, i32), scale_factor: f32, window_origin: (i32, i32), title: String, is_loading: bool }` and `SharedRef = Arc<Mutex<SharedState>>` with a `new_shared(size, scale)` constructor (`window_origin` defaults to `(0,0)`). All CEF handlers — render, lifespan, display, load — MUST hold a `SharedRef` and update only their respective fields; `KarereWebView::size_allocate` / `refresh_screen_scale` keep `window_origin` in sync (best-effort, `(0,0)` on Wayland).
 
 #### Scenario: new_shared seeds the initial state
 

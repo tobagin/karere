@@ -111,6 +111,16 @@ pub struct SharedState {
     /// share this `SharedState`/widget; only the foreground's paint is uploaded
     /// to the GL texture. `0` = no pool wired yet (startup) → all paints pass.
     pub foreground_browser_id: i32,
+    /// Widget origin in physical screen pixels for `RenderHandler::screen_point`
+    /// (`screen = view + origin`). Currently always `(0, 0)` on every backend
+    /// so `screen==view` (degenerate, correct fallback). On Wayland global
+    /// position is compositor-private and must stay `(0,0)`; on X11 a real
+    /// origin needs a `gdk4-x11` query not yet wired — see follow-up task.
+    /// Before the widget is realized the value is also `(0,0)`. Updated by
+    /// `KarereWebView::size_allocate` / `refresh_screen_scale` on the main
+    /// thread (currently storing the fallback `(0,0)`); read by `screen_point`
+    /// on the CEF UI thread (= main thread under external_message_pump). (KARE-017)
+    pub window_origin: (i32, i32),
 }
 
 pub type SharedRef = Arc<Mutex<SharedState>>;

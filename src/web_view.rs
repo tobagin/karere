@@ -807,6 +807,7 @@ mod imp {
                 let mut s = shared.lock();
                 s.size = (phys_w, phys_h);
                 s.scale_factor = scale as f32;
+                s.window_origin = window_origin_for(&self.obj());
             }
             log::info!(
                 "coord: J1 size_allocate logical={}x{} scale={:.3} physical={}x{} old_scale={:.3} new_scale={:.3} old_physical={}x{}",
@@ -986,6 +987,7 @@ mod imp {
                 if lw > 0 && lh > 0 {
                     s.size = new_phys;
                 }
+                s.window_origin = window_origin_for(&widget);
             }
             log::info!(
                 "coord: J6 refresh_scale logical={}x{} scale={:.3} physical={}x{} old_scale={:.3} new_scale={:.3} old_physical={}x{}",
@@ -2673,6 +2675,24 @@ mod imp {
 
     fn paint_scale(widget: &super::KarereWebView) -> f64 {
         widget.scale_factor().max(1) as f64
+    }
+
+    /// Widget screen origin in physical pixels for `RenderHandler::screen_point`.
+    /// Currently returns `(0,0)` on all backends so `screen==view` (degenerate
+    /// transform). On Wayland global position is compositor-private and must
+    /// stay `(0,0)`; on X11 a real origin requires `gdk4-x11` / X11Surface
+    /// query not yet wired (see follow-up task). Guarded against
+    /// post-`unrealize` (no native/surface) and never panics. Uses the same
+    /// `native`/`surface` primitives as `pointer_pos_physical` to keep the
+    /// call site main-thread-safe. (KARE-017)
+    fn window_origin_for(widget: &super::KarereWebView) -> (i32, i32) {
+        // Keep a best-effort native/surface probe so the call remains on the
+        // GTK main thread and does not regress after unrealize, but do not
+        // claim an X11 position — currently always (0,0) on every backend.
+        // Future: on X11 downcast to X11Surface via gdk4-x11 and query
+        // root-relative position when the dependency is added.
+        let _ = widget.native().and_then(|n| n.surface());
+        (0, 0)
     }
 
     pub(super) fn physical_mouse_coordinates(x: f64, y: f64, scale: i32) -> (i32, i32) {

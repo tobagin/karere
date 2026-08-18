@@ -81,15 +81,39 @@ wrap_render_handler! {
             1
         }
 
+        /// `view → screen` in physical pixels: `screen = view + window_origin`
+        /// via saturating `i32` add. `view` coords are already physical
+        /// (pin-`device_scale=1.0` model); no scale is re-applied.
+        /// `window_origin` is `SharedState::window_origin`, currently always
+        /// `(0,0)` on every backend so `screen==view` (degenerate transform).
+        /// On Wayland global position is compositor-private and must stay
+        /// `(0,0)`; on X11 a real origin requires a `gdk4-x11` query not yet
+        /// wired (follow-up task). Returns `1` if at least one out-param was
+        /// written, `0` only when both are `None` (CEF treats `0` as failure).
         fn screen_point(
             &self,
             _browser: Option<&mut Browser>,
-            _view_x: ::std::os::raw::c_int,
-            _view_y: ::std::os::raw::c_int,
-            _screen_x: Option<&mut ::std::os::raw::c_int>,
-            _screen_y: Option<&mut ::std::os::raw::c_int>,
+            view_x: ::std::os::raw::c_int,
+            view_y: ::std::os::raw::c_int,
+            screen_x: Option<&mut ::std::os::raw::c_int>,
+            screen_y: Option<&mut ::std::os::raw::c_int>,
         ) -> ::std::os::raw::c_int {
-            0
+            if screen_x.is_none() && screen_y.is_none() {
+                return 0;
+            }
+            let origin = self.handler.shared.lock().window_origin;
+            let (sx, sy) = view_to_screen(view_x, view_y, origin.0, origin.1);
+            if let Some(out) = screen_x {
+                *out = sx;
+            }
+            if let Some(out) = screen_y {
+                *out = sy;
+            }
+            log::debug!(
+                "screen_point view=({},{}) origin=({},{}) screen=({},{})",
+                view_x, view_y, origin.0, origin.1, sx, sy
+            );
+            1
         }
 
         fn on_paint(
@@ -238,6 +262,15 @@ impl ShellRenderHandlerBuilder {
     }
 }
 
+/// Pure `view → screen` in physical pixels. Saturating `i32` add so
+/// `i32::MAX + 1 == MAX` rather than wrapping. No `scale_factor` is
+/// applied — view coords are already physical via `size_allocate` and
+/// `physical_mouse_coordinates`. Wayland fallback is `origin=(0,0)` so
+/// `screen==view`. (KARE-017)
+pub(crate) fn view_to_screen(view_x: i32, view_y: i32, origin_x: i32, origin_y: i32) -> (i32, i32) {
+    (view_x.saturating_add(origin_x), view_y.saturating_add(origin_y))
+}
+
 /// Exercise the exact CEF `RenderHandler::on_paint` callback implementation in
 /// production-shaped renderer tests without manufacturing a CEF `Browser`.
 #[cfg(test)]
@@ -260,4 +293,115 @@ pub(crate) fn dispatch_cpu_paint_for_test(
         width,
         height,
     );
+}
+
+/// Exercise `ImplRenderHandler::screen_point` without a real `Browser`,
+/// mirroring `dispatch_cpu_paint_for_test`. Returns CEF's `1`/`0` and writes
+/// through present out-params.
+#[cfg(test)]
+pub(crate) fn dispatch_screen_point_for_test(
+    shared: &SharedRef,
+    view_x: i32,
+    view_y: i32,
+    screen_x: Option<&mut i32>,
+    screen_y: Option<&mut i32>,
+) -> i32 {
+    let handler = ShellRenderHandlerBuilder {
+        handler: ShellRenderHandler::new(shared.clone()),
+        cef_object: std::ptr::null_mut(),
+    };
+    ImplRenderHandler::screen_point(&handler, None, view_x, view_y, screen_x, screen_y)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::handlers::new_shared;
+
+    #[test]
+    fn view_to_screen_basic() {
+        assert_eq!(view_to_screen(10, 20, 100, 200), (110, 220));
+    }
+
+    #[test]
+    fn view_to_screen_zero() {
+        assert_eq!(view_to_screen(0, 0, 0, 0), (0, 0));
+    }
+
+    #[test]
+    fn view_to_screen_negative() {
+        assert_eq!(view_to_screen(-5, -5, 10, 10), (5, 5));
+    }
+
+    #[test]
+    fn view_to_screen_saturating() {
+        assert_eq!(view_to_screen(i32::MAX, 0, 1, 0), (i32::MAX, 0));
+        assert_eq!(view_to_screen(i32::MIN, 0, -1, 0), (i32::MIN, 0));
+        assert_eq!(view_to_screen(0, i32::MAX, 0, 1), (0, i32::MAX));
+    }
+
+    #[test]
+    fn view_to_screen_wayland_fallback() {
+        assert_eq!(view_to_screen(10, 20, 0, 0), (10, 20));
+    }
+
+    #[test]
+    fn screen_point_both_present() {
+        let shared = new_shared((800, 600), 1.0);
+        shared.lock().window_origin = (50, 80);
+        let mut sx = 0;
+        let mut sy = 0;
+        let rc = dispatch_screen_point_for_test(&shared, 10, 20, Some(&mut sx), Some(&mut sy));
+        assert_eq!(rc, 1);
+        assert_eq!((sx, sy), (60, 100));
+    }
+
+    #[test]
+    fn screen_point_only_x() {
+        let shared = new_shared((800, 600), 1.0);
+        shared.lock().window_origin = (50, 80);
+        let mut sx = 0;
+        let rc = dispatch_screen_point_for_test(&shared, 10, 20, Some(&mut sx), None);
+        assert_eq!(rc, 1);
+        assert_eq!(sx, 60);
+    }
+
+    #[test]
+    fn screen_point_only_y() {
+        let shared = new_shared((800, 600), 1.0);
+        shared.lock().window_origin = (50, 80);
+        let mut sy = 0;
+        let rc = dispatch_screen_point_for_test(&shared, 10, 20, None, Some(&mut sy));
+        assert_eq!(rc, 1);
+        assert_eq!(sy, 100);
+    }
+
+    #[test]
+    fn screen_point_both_null() {
+        let shared = new_shared((800, 600), 1.0);
+        let rc = dispatch_screen_point_for_test(&shared, 10, 20, None, None);
+        assert_eq!(rc, 0);
+    }
+
+    #[test]
+    fn screen_point_wayland_fallback() {
+        let shared = new_shared((800, 600), 1.0);
+        shared.lock().window_origin = (0, 0);
+        let mut sx = 0;
+        let mut sy = 0;
+        let rc = dispatch_screen_point_for_test(&shared, 10, 20, Some(&mut sx), Some(&mut sy));
+        assert_eq!(rc, 1);
+        assert_eq!((sx, sy), (10, 20));
+    }
+
+    #[test]
+    fn screen_point_ignores_scale() {
+        let shared = new_shared((800, 600), 2.0);
+        shared.lock().window_origin = (10, 10);
+        let mut sx = 0;
+        let mut sy = 0;
+        let rc = dispatch_screen_point_for_test(&shared, 10, 10, Some(&mut sx), Some(&mut sy));
+        assert_eq!(rc, 1);
+        assert_eq!((sx, sy), (20, 20)); // +origin only, not ×scale
+    }
 }
