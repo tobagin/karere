@@ -96,6 +96,30 @@ dbus-run-session -- bash tests/coordinate_probe.sh --bin "flatpak run io.github.
 
 Requirements: `Xvfb` (`xvfb-run`), `xdotool`, `python3`, `gsettings`/`glib-compile-schemas`, `curl` (optional for CDP fallback). Run under `dbus-run-session --` to isolate from any host Karere instance (host instance causes secondary-instance forwarding and `window not found` failures). Flatpak tests **must** target `io.github.tobagin.karere.Devel` (the local `--dev` build); `io.github.tobagin.karere` is the prod/stable Flatpak and is not rebuilt from this tree. The harness auto-resolves the effective `APP_ID`/`GSettings` schema from `KARERE_BIN` so Devel uses its own `io.github.tobagin.karere.Devel` schema. The matrix exits 0 and `SUMMARY` lines are consumed by CI; each row's `passed`/`worst_error_px` indicates whether the config reproduced the reporter's sustained `>1px` symptom. No real account or chat content is ever loaded (synthetic probe only, CEO privacy constraint).
 
+### Pointer-alignment H7 probe (chrome + fractional) — KARE-018
+
+Extends the synthetic probe with a chrome-mimicking fixture and fractional Wayland matrix.
+
+- **Chrome-mimic fixture:** `tests/fixtures/coord-probe.html` gains `?chrome=1` / `?h7=1` / `window.__forceH7` mode that wraps the 8×5 grid in a fixed header (60 px) + side panel (360 px) and a scrolled/transformed container (`transform: translate(10px,20px)` + `scrollTop 80`). The harness injects `window.__forceH7=1` into the data URL so `location.search` detection works without a server. The title JSON is extended with `originX/originY/gridLeft/gridTop/scrollX/scrollY/visualViewport` diagnostics so calibration can compute `contentOrigin`.
+- **Origin-calibrated harness:** `tests/coordinate_probe.sh --chrome` loads the fixture in chrome mode, performs a one-probe calibration click to derive `contentOrigin` via `getBoundingClientRect`/`visualViewport`/`scrollX/Y`, then runs remaining cell-center clicks asserting calibrated `|clientX−expectedCalibrated| ≤1px` per axis. Default (no `--chrome`) preserves KARE-016 synthetic behavior bit-identical.
+- **Fractional Wayland:** `tests/coordinate_probe.sh --fractional` queries `gsettings get org.gnome.mutter experimental-features`; if neither `scale-monitor-framebuffer` nor `xwayland-native-scaling` is enabled, it prints `SKIP: fractional unverified on this host — missing Mutter experimental-features` and emits `SKIP` JSON rows. When the features are enabled but the host is Xvfb/non-Wayland, the harness still emits explicit `SKIP` rows (`transient scale set not implemented … needs operator Wayland session`) rather than a fake PASS — a true 125/150 % matrix requires an operator Wayland session that can drive `org.gnome.Mutter.DisplayConfig ApplyMonitorsConfig` with trap-restore; integer `GDK_SCALE=1/2` matrix still runs deterministically under Xvfb and findings record host session type and whether fractional was actually exercised.
+- **Real-page opt-in (privacy gate):** `KARERE_H7_REAL_PAGE=1 tests/coordinate_probe.sh --chrome` (or `KARERE_H7_REAL_PAGE_URL=<snapshot-file-url>` for an offline mirror) loads the live WhatsApp snapshot with a CDP-injected `window.__karereProbe` recorder and the same origin-calibrated protocol; when unset the harness prints `SKIP: real-page gated — set KARERE_H7_REAL_PAGE=1 for operator-authorized run`, does not attempt login, and runs the offline chrome-mimic fixture instead. No real account is used by default in CI.
+- **Flags / env:** `--chrome`, `--fractional`, `--negative` (composes as `--chrome --negative` which must FAIL), `KARERE_H7_REAL_PAGE=1`, `KARERE_GPU_OSR`, `KARERE_BIN`/`KARERE_APP_ID`, `GDK_SCALE` matrix.
+- **JSON results:** synthetic rows → `coord-probe-results.json`, H7 chrome/fractional rows → `coord-probe-h7-results.json` (both git-ignored, kept for diffing; also appended to disk as each row is printed). Each row includes `expected` vs `observed` vs `originCorrected`/`expectedCalibrated` vs `error`/`calibrated_error` plus viewport metrics and joint `coord:` logs.
+
+```sh
+# Synthetic only (default)
+dbus-run-session -- tests/coordinate_probe.sh
+# Chrome-mimicked H7 probe (header+panel+transform+scroll, calibrated)
+dbus-run-session -- tests/coordinate_probe.sh --chrome
+# Fractional Wayland (SKIP on Xvfb; requires operator Mutter Wayland for 125/150% PASS)
+dbus-run-session -- tests/coordinate_probe.sh --chrome --fractional
+# Negative control must FAIL (proves detection)
+dbus-run-session -- tests/coordinate_probe.sh --chrome --negative
+# Real-page opt-in (operator-authorized only, never in CI)
+KARERE_H7_REAL_PAGE=1 dbus-run-session -- tests/coordinate_probe.sh --chrome
+```
+
 ### Text selection automation
 
 - [ ] `cargo test` — unit and headless integration coverage, including ordered raw mouse drag lifecycle, click counts, touch-emulation suppression, HiDPI coordinates, CEF Copy command classification, IPC, clipboard sanitization/caps, and clean SIGTERM exit.

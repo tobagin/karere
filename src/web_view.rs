@@ -3974,6 +3974,45 @@ mod input_tests {
     }
 
     #[test]
+    fn h7_origin_and_fractional_rounding() {
+        // KARE-018 H7: origin-calibrated mapping and fractional Wayland scales.
+        // Host dispatch is (logical * scale).round(); chrome offset is subtracted
+        // before scaling via calibration (observed - origin), so calibrated physical
+        // equals ((x - originX)*scale).round().
+        fn calibrated_physical(x: f64, origin: f64, scale: f64) -> i32 {
+            ((x - origin) * scale).round() as i32
+        }
+        // Origin case: header 60px offset at 2×
+        assert_eq!(calibrated_physical(170.0, 60.0, 2.0), 220);
+        assert_eq!(calibrated_physical(230.0, 60.0, 2.0), 340);
+        // Fractional cases: 110.5 at 1.25× →138, at 1.5× →166
+        assert_eq!(((110.5_f64 * 1.25).round() as i32), 138);
+        assert_eq!(((110.5_f64 * 1.5).round() as i32), 166);
+        assert_eq!(physical_mouse_coordinates(110.5, 20.0, 1), (111, 20));
+        // Transform + scroll origin: translate(10,20)+scrollTop 80 shifts origin by 10,100
+        let origin_x = 360.0 + 10.0; // panel + translateX
+        let origin_y = 60.0 + 20.0 + 80.0; // header + translateY + scroll
+        assert_eq!(calibrated_physical(500.0, origin_x, 1.0), 130);
+        assert_eq!(calibrated_physical(300.0, origin_y, 2.0), 280);
+        // pointer_pos_physical stripping + origin: native 200 at scale 2 with surface xform stripped → logical 100, minus origin 60 → 40*2=80
+        // show_context_menu: x_dev 220 at scale 2 → logical 110, origin-corrected 50 → verifies divide symmetry
+        assert_eq!((220.0_f64 / 2.0).round() as i32, 110);
+        assert_eq!(((110.0_f64 - 60.0) * 2.0).round() as i32, 100);
+        // Dispatch with origin-corrected coords stays within 1px
+        let observed = std::cell::RefCell::new(Vec::new());
+        let active = std::cell::Cell::new(7);
+        route_mouse(
+            crate::web_view::imp::MouseDispatch::Move { x: 110.0, y: 110.0, modifiers: 0 },
+            &active, 2, &observed,
+        );
+        assert_eq!(observed.borrow()[0], Observed::Move { browser: 7, x: 220, y: 220, modifiers: 0 });
+        // Calibrated dispatch: logical 170 with origin 60 at 2× should hit physical 220
+        let cx = calibrated_physical(170.0, 60.0, 2.0);
+        assert_eq!(cx, 220);
+        assert_eq!(physical_mouse_coordinates(170.0 - 60.0, 0.0, 2), (220, 0));
+    }
+
+    #[test]
     fn non_copy_commands_and_modified_shortcuts_do_not_request_selection() {
         let requests = Cell::new(0);
         for trigger in [

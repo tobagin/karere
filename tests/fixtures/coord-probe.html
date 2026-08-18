@@ -9,11 +9,34 @@
   .cell:nth-child(even){background:#0f172a}
   .cell span{pointer-events:none}
   #hud{padding:8px 10px;font:12px/1.4 ui-monospace,monospace;color:#94a3b8}
+  /* H7 chrome-mimic: fixed header 60px + side panel 360px + scrolled/transformed container */
+  body.h7 #chrome-header{position:fixed;top:0;left:0;right:0;height:60px;background:#1a1f2e;border-bottom:2px solid #334155;z-index:10;display:flex;align-items:center;padding-left:12px;color:#94a3b8;font-weight:600}
+  body.h7 #chrome-panel{position:fixed;top:60px;left:0;width:360px;bottom:0;background:#0f172a;border-right:2px solid #334155;z-index:9}
+  body.h7 #chrome-main{margin-left:360px;margin-top:60px;overflow:auto;height:calc(100vh - 60px);transform:translate(10px,20px)}
+  body.h7 #grid{border-color:#475569}
 </style>
-<div id="grid"></div>
+<div id="chrome-header" style="display:none">WhatsApp header mimic (60px)</div>
+<div id="chrome-panel" style="display:none"></div>
+<div id="chrome-main"><div id="grid"></div></div>
 <div id="hud">coord-probe ready — click any cell</div>
 <script>
 (function(){
+  const params = new URLSearchParams(location.search);
+  const h7 = params.has('chrome') || params.has('h7') || params.get('mode')==='chrome' || !!window.__forceH7;
+  const HEADER_H = 60, PANEL_W = 360, TX = 10, TY = 20, SCROLL_TOP = 80;
+  if(h7){
+    document.body.classList.add('h7');
+    document.getElementById('chrome-header').style.display='flex';
+    document.getElementById('chrome-panel').style.display='block';
+    // Spacer (h7-only, so synthetic mode stays bit-identical) makes the grid
+    // overflow #chrome-main vertically so scrollTop actually applies instead of
+    // clamping to 0 (grid alone is 500px < container's 100vh-60px).
+    const spacer=document.createElement('div');
+    spacer.style.height='600px';
+    document.getElementById('chrome-main').appendChild(spacer);
+    // Apply scrolled state after layout so getBoundingClientRect reflects it.
+    requestAnimationFrame(()=>{ const m=document.getElementById('chrome-main'); m.scrollTop=SCROLL_TOP; });
+  }
   const grid = document.getElementById('grid');
   const hud = document.getElementById('hud');
   const cols = 8, rows = 5, cell = 100;
@@ -24,24 +47,27 @@
       d.dataset.col=c; d.dataset.row=r;
       const x=c*cell, y=r*cell;
       d.innerHTML='<span>'+c+','+r+'<br>'+x+','+y+'</span>';
-      // store CSS rect for reference (top-left of cell)
       d.title='css rect '+x+','+y+' '+(x+cell)+'x'+(y+cell);
       grid.appendChild(d);
     }
   }
 
-  // Last-event recorder: clientX/clientY rounded + viewport metrics.
-  // Title is kept ≤ ~100 chars as compact JSON (last event wins) so both
-  // xdotool getwindowname and CDP/title polling can read it. Also mirrored
-  // on window.__karereProbe for CDP Runtime.evaluate.
+  // Last-event recorder: clientX/clientY rounded + viewport metrics + H7 diagnostics.
   window.__karereProbe = {
     last: null,
     history: [],
     cellSize: cell,
-    cols, rows
+    cols, rows,
+    h7,
+    headerH: HEADER_H,
+    panelW: PANEL_W,
+    tx: TX, ty: TY,
+    scrollTop: SCROLL_TOP
   };
 
   function record(e){
+    const gridRect = grid.getBoundingClientRect();
+    const vp = window.visualViewport;
     const payload = {
       x: Math.round(e.clientX),
       y: Math.round(e.clientY),
@@ -49,9 +75,31 @@
       innerH: innerHeight,
       dpr: devicePixelRatio,
       clientW: document.documentElement.clientWidth,
-      clientH: document.documentElement.clientHeight
+      clientH: document.documentElement.clientHeight,
+      originX: Math.round(gridRect.left),
+      originY: Math.round(gridRect.top),
+      gridLeft: Math.round(gridRect.left),
+      gridTop: Math.round(gridRect.top),
+      scrollX: Math.round(window.scrollX),
+      scrollY: Math.round(window.scrollY),
+      scrollTop: Math.round((document.getElementById('chrome-main')||{scrollTop:0}).scrollTop),
+      vpX: vp ? Math.round(vp.offsetLeft) : 0,
+      vpY: vp ? Math.round(vp.offsetTop) : 0,
+      vpW: vp ? Math.round(vp.width) : innerWidth,
+      vpH: vp ? Math.round(vp.height) : innerHeight,
+      h7: h7 ? 1 : 0
     };
-    // Compact JSON keeps title ≤ ~100 chars for X property limits.
+    // Hit cell lookup via elementFromPoint for diagnostic.
+    try{
+      const el=document.elementFromPoint(e.clientX, e.clientY);
+      const cell2=el && el.closest && el.closest('.cell');
+      if(cell2){
+        const r2=cell2.getBoundingClientRect();
+        payload.hitCol=parseInt(cell2.dataset.col,10);
+        payload.hitRow=parseInt(cell2.dataset.row,10);
+        payload.hitRect={left:Math.round(r2.left),top:Math.round(r2.top),width:Math.round(r2.width),height:Math.round(r2.height)};
+      }
+    }catch(_e){}
     const json = JSON.stringify(payload);
     document.title = json;
     window.__karereProbe.last = payload;
@@ -59,28 +107,33 @@
     window.__karereProbe.history.push(payload);
     if(window.__karereProbe.history.length>20) window.__karereProbe.history.shift();
     hud.textContent = json + '  css@'+payload.x+','+payload.y+'  cell='+
-      (Math.floor(payload.x/cell))+','+(Math.floor(payload.y/cell));
+      (Math.floor((payload.x-payload.originX)/cell))+','+(Math.floor((payload.y-payload.originY)/cell))+' origin='+payload.originX+','+payload.originY;
   }
 
-  // Full-document capture so xdotool clicks anywhere in the viewport record.
   document.addEventListener('click', record, true);
   document.addEventListener('auxclick', record, true);
 
-  // Self-test helper for CDP: synthesize a click at given client coords.
   window.__karereProbe.synth = function(cx, cy){
     const ev = new MouseEvent('click', {clientX: cx, clientY: cy, bubbles:true, cancelable:true});
-    document.elementFromPoint(cx, cy) && document.elementFromPoint(cx, cy).dispatchEvent(ev);
-    // if no element, dispatch on document
-    document.dispatchEvent(ev);
+    const t=document.elementFromPoint(cx, cy);
+    if(t) t.dispatchEvent(ev); else document.dispatchEvent(ev);
   };
 
-  // Seed title so harness can detect readiness even before first synthetic click.
+  // Calibration helper: returns known origin delta for harness.
+  window.__karereProbe.getOrigin = function(){
+    const r=grid.getBoundingClientRect();
+    const vp=window.visualViewport;
+    const m=document.getElementById('chrome-main');
+    return {originX:Math.round(r.left),originY:Math.round(r.top),scrollX:Math.round(scrollX),scrollY:Math.round(scrollY),scrollTop:m?Math.round(m.scrollTop):0,vpX:vp?Math.round(vp.offsetLeft):0,vpY:vp?Math.round(vp.offsetTop):0,headerH:HEADER_H,panelW:PANEL_W,tx:TX,ty:TY,h7:h7?1:0};
+  };
+
+  const seedRect = grid.getBoundingClientRect();
+  const vp0 = window.visualViewport;
   const seed = {x:0,y:0,innerW:innerWidth,innerH:innerHeight,dpr:devicePixelRatio,
-                clientW:document.documentElement.clientWidth,clientH:document.documentElement.clientHeight};
+                clientW:document.documentElement.clientWidth,clientH:document.documentElement.clientHeight,
+                originX:Math.round(seedRect.left),originY:Math.round(seedRect.top),scrollX:0,scrollY:0,
+                vpX:vp0?Math.round(vp0.offsetLeft):0,vpY:vp0?Math.round(vp0.offsetTop):0,h7:h7?1:0};
   document.title = JSON.stringify(seed);
   window.__karereProbe.seed = seed;
-
-  // Data-URL note: this file is loaded via --url 'data:text/html,…' with the
-  // content URI-encoded (no server, no filesystem needed under Flatpak).
 })();
 </script>

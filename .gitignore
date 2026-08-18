@@ -23,3 +23,6 @@
 .vscode/
 *.swp
 cef-out/
+coord-probe-results.json
+coord-probe-h7-results.json
+coord-probe-*.json
