@@ -333,6 +333,11 @@ pub(crate) fn apply_notif_sound_from_settings(browser: &cef::Browser) {
 pub(crate) fn apply_zoom_from_account(browser: &cef::Browser, display_scale: f64) {
     use cef::{ImplBrowser, ImplBrowserHost};
     let Some(id) = crate::accounts::account_for_browser(browser.identifier()) else {
+        log::info!(
+            "coord: J7 apply_zoom account=none browser_id={} display_scale={:.3} (uncompensated)",
+            browser.identifier(),
+            display_scale
+        );
         return;
     };
     let persisted = crate::accounts::manager()
@@ -340,8 +345,13 @@ pub(crate) fn apply_zoom_from_account(browser: &cef::Browser, display_scale: f64
         .map(|a| a.zoom_level)
         .unwrap_or(1.0);
     let effective = persisted.max(zoom_floor());
+    let cef_level = host_zoom_level(effective, display_scale);
+    log::info!(
+        "coord: J7 apply_zoom account={} user_linear={:.3} display_scale={:.3} cef_level={:.3}",
+        id, effective, display_scale, cef_level
+    );
     if let Some(host) = browser.host() {
-        host.set_zoom_level(host_zoom_level(effective, display_scale));
+        host.set_zoom_level(cef_level);
     }
     if (effective - persisted).abs() >= f64::EPSILON {
         crate::accounts::manager().set_zoom(&id, effective);
@@ -784,17 +794,36 @@ mod imp {
             let phys_w = (width as f64 * scale).round() as i32;
             let phys_h = (height as f64 * scale).round() as i32;
 
+            let (old_size, old_scale) = self
+                .shared
+                .lock()
+                .as_ref()
+                .map(|sh| {
+                    let s = sh.lock();
+                    (s.size, s.scale_factor as f64)
+                })
+                .unwrap_or(((0, 0), 1.0));
             if let Some(shared) = self.shared.lock().as_ref() {
                 let mut s = shared.lock();
                 s.size = (phys_w, phys_h);
                 s.scale_factor = scale as f32;
             }
+            log::info!(
+                "coord: J1 size_allocate logical={}x{} scale={:.3} physical={}x{} old_scale={:.3} new_scale={:.3} old_physical={}x{}",
+                width, height, scale, phys_w, phys_h, old_scale, scale, old_size.0, old_size.1
+            );
 
             if let Some(browser) = resolved_browser(self)
                 && let Some(host) = browser.host()
             {
                 host.notify_screen_info_changed();
                 host.was_resized();
+                // If the integer scale changed since the last allocation (e.g.
+                // stale prewarm seed #176 or monitor move), re-sync the zoom so
+                // the physical buffer and input transform stay coupled (#158).
+                if (scale - old_scale).abs() > f64::EPSILON {
+                    super::apply_zoom_from_account(&browser, scale);
+                }
             }
 
             // M21: gate the mobile single-pane layout on logical width. The v3
@@ -937,16 +966,31 @@ mod imp {
             let widget = self.obj();
             let scale = paint_scale(&widget);
             let (lw, lh) = (widget.width(), widget.height());
+            let (old_size, old_scale) = self
+                .shared
+                .lock()
+                .as_ref()
+                .map(|sh| {
+                    let s = sh.lock();
+                    (s.size, s.scale_factor as f64)
+                })
+                .unwrap_or(((0, 0), 1.0));
+            let new_phys = if lw > 0 && lh > 0 {
+                ((lw as f64 * scale).round() as i32, (lh as f64 * scale).round() as i32)
+            } else {
+                old_size
+            };
             if let Some(shared) = self.shared.lock().as_ref() {
                 let mut s = shared.lock();
                 s.scale_factor = scale as f32;
                 if lw > 0 && lh > 0 {
-                    s.size = (
-                        (lw as f64 * scale).round() as i32,
-                        (lh as f64 * scale).round() as i32,
-                    );
+                    s.size = new_phys;
                 }
             }
+            log::info!(
+                "coord: J6 refresh_scale logical={}x{} scale={:.3} physical={}x{} old_scale={:.3} new_scale={:.3} old_physical={}x{}",
+                lw, lh, scale, new_phys.0, new_phys.1, old_scale, scale, old_size.0, old_size.1
+            );
             if let Some(browser) = resolved_browser(self)
                 && let Some(host) = browser.host()
             {
@@ -994,8 +1038,13 @@ mod imp {
             // CEF reports the cursor in view coords = physical pixels (view_rect
             // is physical, #158); GTK widget coords are logical, so divide by the
             // integer scale to anchor the popover at the cursor.
-            let s = obj.scale_factor().max(1);
-            let rect = gtk::gdk::Rectangle::new(x_dev / s, y_dev / s, 1, 1);
+            let s = obj.scale_factor().max(1) as f64;
+            let rect = gtk::gdk::Rectangle::new(
+                (x_dev as f64 / s).round() as i32,
+                (y_dev as f64 / s).round() as i32,
+                1,
+                1,
+            );
             popover.set_pointing_to(Some(&rect));
 
             // Resolve the callback AFTER popdown (webview re-focused): dispatch the
@@ -1056,10 +1105,23 @@ mod imp {
         /// scale is added on top (page-zoom HiDPI emulation, #158). CEF UI thread
         /// only. (M18)
         pub fn set_zoom_linear(&self, linear: f64) {
-            if let Some(browser) = self.browser.lock().as_ref().cloned()
-                && let Some(host) = browser.host()
-            {
-                host.set_zoom_level(super::host_zoom_level(linear, self.display_scale()));
+            let display_scale = self.display_scale();
+            let cef_level = super::host_zoom_level(linear, display_scale);
+            if let Some(browser) = self.browser.lock().as_ref().cloned() {
+                let acct = crate::accounts::account_for_browser(browser.identifier())
+                    .unwrap_or_else(|| "none".to_string());
+                log::info!(
+                    "coord: J7 set_zoom_linear account={} user_linear={:.3} display_scale={:.3} cef_level={:.3}",
+                    acct, linear, display_scale, cef_level
+                );
+                if let Some(host) = browser.host() {
+                    host.set_zoom_level(cef_level);
+                }
+            } else {
+                log::info!(
+                    "coord: J7 set_zoom_linear account=none user_linear={:.3} display_scale={:.3} cef_level={:.3} (no browser)",
+                    linear, display_scale, cef_level
+                );
             }
         }
 
@@ -1121,6 +1183,9 @@ mod imp {
                 if visible {
                     host.was_hidden(0);
                     host.was_resized();
+                    // Window re-shown after prewarm/tray: stale seed may have
+                    // sized the buffer wrong (#176); ensure zoom tracks scale.
+                    super::apply_zoom_from_account(b, self.display_scale());
                     host.invalidate(cef::PaintElementType::VIEW);
                 } else {
                     host.was_hidden(1);
@@ -1440,6 +1505,10 @@ mod imp {
                     host.was_hidden(0);
                     host.notify_screen_info_changed();
                     host.was_resized();
+                    // Re-sync the HiDPI zoom for the newly-visible browser so a
+                    // scale change or stale prewarm seed does not leave its
+                    // layout/paint offset from input (#158/#176).
+                    super::apply_zoom_from_account(&browser, self.display_scale());
                     // Force a fresh paint even if CEF thinks visibility is
                     // unchanged, so the new foreground immediately overwrites any
                     // stale texture.
@@ -1685,6 +1754,22 @@ mod imp {
                 }
 
                 let use_accel = s.accel.is_some() && self.imported.borrow().is_some();
+                // J4 instrumentation: capture widget-physical size for draw logging.
+                let dbg_widget = self.obj();
+                let dbg_scale = paint_scale(&dbg_widget);
+                let dbg_phys_w = (dbg_widget.width() as f64 * dbg_scale).round() as i32;
+                let dbg_phys_h = (dbg_widget.height() as f64 * dbg_scale).round() as i32;
+                if use_accel {
+                    let (aw, ah) = s
+                        .accel
+                        .as_ref()
+                        .map(|a| (a.width, a.height))
+                        .unwrap_or((0, 0));
+                    log::debug!(
+                        "coord: J4 draw frame={}x{} tex={}x{} widget_physical={}x{} accel=true scale={:.3}",
+                        aw, ah, aw, ah, dbg_phys_w, dbg_phys_h, dbg_scale
+                    );
+                }
                 let (tex, bgra) = if use_accel {
                     (atex, 0_i32)
                 } else {
@@ -1694,7 +1779,13 @@ mod imp {
                     let tw = self.tex_w.load(Ordering::Relaxed);
                     let th = self.tex_h.load(Ordering::Relaxed);
                     match super::cpu_upload(&s.frame, (tw, th)) {
-                        super::CpuUpload::Empty => return,
+                        super::CpuUpload::Empty => {
+                            log::debug!(
+                                "coord: J4 draw empty frame={}x{} tex={}x{} widget_physical={}x{} accel=false scale={:.3}",
+                                s.frame.width, s.frame.height, tw, th, dbg_phys_w, dbg_phys_h, dbg_scale
+                            );
+                            return;
+                        },
                         super::CpuUpload::Allocate => {
                             gl::BindTexture(gl::TEXTURE_2D, tex);
                             gl::TexImage2D(
@@ -1731,6 +1822,14 @@ mod imp {
                     }
                     (tex, 1_i32)
                 };
+                if !use_accel {
+                    let tw2 = self.tex_w.load(Ordering::Relaxed);
+                    let th2 = self.tex_h.load(Ordering::Relaxed);
+                    log::debug!(
+                        "coord: J4 draw frame={}x{} tex={}x{} widget_physical={}x{} accel=false scale={:.3}",
+                        s.frame.width, s.frame.height, tw2, th2, dbg_phys_w, dbg_phys_h, dbg_scale
+                    );
+                }
                 drop(s);
 
                 let prog = self.program.load(Ordering::Relaxed);
@@ -2577,7 +2676,8 @@ mod imp {
     }
 
     pub(super) fn physical_mouse_coordinates(x: f64, y: f64, scale: i32) -> (i32, i32) {
-        (x as i32 * scale.max(1), y as i32 * scale.max(1))
+        let s = scale.max(1) as f64;
+        ((x * s).round() as i32, (y * s).round() as i32)
     }
 
     /// CEF mouse-host operations. Production implements this on BrowserHost;
@@ -2620,6 +2720,10 @@ mod imp {
     ) {
         // CEF view coords are physical pixels (view_rect is physical, #158).
         let (px, py) = physical_mouse_coordinates(x, y, scale);
+        log::debug!(
+            "coord: J1/J6 move logical={:.1},{:.1} physical={},{} scale={} leave={}",
+            x, y, px, py, scale, leave
+        );
         if !leave {
             update_position(px, py);
         }
@@ -2662,7 +2766,12 @@ mod imp {
             3 => MouseButtonType::RIGHT,
             _ => return,
         };
-        let (x, y) = physical_mouse_coordinates(x, y, scale);
+        let (px, py) = physical_mouse_coordinates(x, y, scale);
+        log::debug!(
+            "coord: J1/J6 click logical={:.1},{:.1} physical={},{} scale={} button={} down={} count={}",
+            x, y, px, py, scale, button, down, n_press
+        );
+        let (x, y) = (px, py);
         let event = MouseEvent { x, y, modifiers };
         with_resolved(resolve, |mut sink| {
             sink.send_mouse_click(&event, btn, !down, n_press.max(1));
@@ -2700,8 +2809,8 @@ mod imp {
             widget,
             &gtk::graphene::Point::new((sx - tx) as f32, (sy - ty) as f32),
         )?;
-        let s = widget.scale_factor().max(1);
-        Some((p.x() as i32 * s, p.y() as i32 * s))
+        let s = widget.scale_factor().max(1) as f64;
+        Some(((p.x() as f64 * s).round() as i32, (p.y() as f64 * s).round() as i32))
     }
 
     fn send_wheel(widget: &super::KarereWebView, dx: f64, dy: f64, modifiers: u32, precise: bool) {
@@ -3780,8 +3889,16 @@ mod input_tests {
         assert!(!should_forward_mouse(true));
         for width in [600.0, 1280.0] {
             let x = width - 10.1;
-            assert_eq!(physical_mouse_coordinates(x, 7.1, 1), (x as i32, 7));
-            assert_eq!(physical_mouse_coordinates(x, 7.1, 2), (x as i32 * 2, 14));
+            // physical_mouse_coordinates now rounds (x*scale).round() to avoid
+            // truncation bias at HiDPI (bounded fix #158/#176).
+            assert_eq!(
+                physical_mouse_coordinates(x, 7.1, 1),
+                ((x * 1.0).round() as i32, 7)
+            );
+            assert_eq!(
+                physical_mouse_coordinates(x, 7.1, 2),
+                ((x * 2.0).round() as i32, 14)
+            );
         }
 
         let mut adapter = MouseButtonTracker::default();
@@ -3795,6 +3912,45 @@ mod input_tests {
         let cancelled = adapter.handle(MouseInput::Cancel { x: 9.0, y: 8.0 });
         assert_eq!(cancelled.len(), 2);
         assert_eq!(adapter.active_modifiers(), 0);
+    }
+
+    #[test]
+    fn hidpi_physical_coordinates_round_instead_of_truncating() {
+        // Truncation at HiDPI could bias by up to scale-1 px (e.g. 10.9*2=20 vs 22).
+        // Bounded fix #158 rounds to nearest, keeping error ≤0.5 px.
+        assert_eq!(physical_mouse_coordinates(10.9, 20.9, 1), (11, 21));
+        assert_eq!(physical_mouse_coordinates(10.9, 20.9, 2), (22, 42));
+        assert_eq!(physical_mouse_coordinates(10.1, 20.1, 2), (20, 40));
+        assert_eq!(physical_mouse_coordinates(0.5, 0.5, 2), (1, 1));
+        // Send path uses same helper, so dispatch stays within 1 px of expected
+        // physical after rounding, even for fractional GTK gesture coords.
+        let observed = std::cell::RefCell::new(Vec::new());
+        let active = std::cell::Cell::new(99);
+        route_mouse(
+            crate::web_view::imp::MouseDispatch::Click {
+                x: 10.9,
+                y: 20.9,
+                button: 1,
+                down: true,
+                count: 1,
+                modifiers: 0,
+            },
+            &active,
+            2,
+            &observed,
+        );
+        assert_eq!(
+            observed.borrow()[0],
+            Observed::Click {
+                browser: 99,
+                x: 22,
+                y: 42,
+                button: 1,
+                down: true,
+                count: 1,
+                modifiers: 0
+            }
+        );
     }
 
     #[test]

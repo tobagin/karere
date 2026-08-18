@@ -1,0 +1,86 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Karere coord probe</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html,body{margin:0;padding:0;background:#0f1115;color:#cbd5e1;font:13px/1 system-ui,sans-serif}
+  #grid{display:grid;grid-template-columns:repeat(8,100px);grid-template-rows:repeat(5,100px);width:800px;height:500px;gap:0;border:2px solid #334155}
+  .cell{display:flex;align-items:center;justify-content:center;border:1px solid #1e293b;background:#1e293b;color:#e2e8f0;font-weight:600;user-select:none}
+  .cell:nth-child(even){background:#0f172a}
+  .cell span{pointer-events:none}
+  #hud{padding:8px 10px;font:12px/1.4 ui-monospace,monospace;color:#94a3b8}
+</style>
+<div id="grid"></div>
+<div id="hud">coord-probe ready — click any cell</div>
+<script>
+(function(){
+  const grid = document.getElementById('grid');
+  const hud = document.getElementById('hud');
+  const cols = 8, rows = 5, cell = 100;
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const d=document.createElement('div');
+      d.className='cell';
+      d.dataset.col=c; d.dataset.row=r;
+      const x=c*cell, y=r*cell;
+      d.innerHTML='<span>'+c+','+r+'<br>'+x+','+y+'</span>';
+      // store CSS rect for reference (top-left of cell)
+      d.title='css rect '+x+','+y+' '+(x+cell)+'x'+(y+cell);
+      grid.appendChild(d);
+    }
+  }
+
+  // Last-event recorder: clientX/clientY rounded + viewport metrics.
+  // Title is kept ≤ ~100 chars as compact JSON (last event wins) so both
+  // xdotool getwindowname and CDP/title polling can read it. Also mirrored
+  // on window.__karereProbe for CDP Runtime.evaluate.
+  window.__karereProbe = {
+    last: null,
+    history: [],
+    cellSize: cell,
+    cols, rows
+  };
+
+  function record(e){
+    const payload = {
+      x: Math.round(e.clientX),
+      y: Math.round(e.clientY),
+      innerW: innerWidth,
+      innerH: innerHeight,
+      dpr: devicePixelRatio,
+      clientW: document.documentElement.clientWidth,
+      clientH: document.documentElement.clientHeight
+    };
+    // Compact JSON keeps title ≤ ~100 chars for X property limits.
+    const json = JSON.stringify(payload);
+    document.title = json;
+    window.__karereProbe.last = payload;
+    window.__karereProbe.last.json = json;
+    window.__karereProbe.history.push(payload);
+    if(window.__karereProbe.history.length>20) window.__karereProbe.history.shift();
+    hud.textContent = json + '  css@'+payload.x+','+payload.y+'  cell='+
+      (Math.floor(payload.x/cell))+','+(Math.floor(payload.y/cell));
+  }
+
+  // Full-document capture so xdotool clicks anywhere in the viewport record.
+  document.addEventListener('click', record, true);
+  document.addEventListener('auxclick', record, true);
+
+  // Self-test helper for CDP: synthesize a click at given client coords.
+  window.__karereProbe.synth = function(cx, cy){
+    const ev = new MouseEvent('click', {clientX: cx, clientY: cy, bubbles:true, cancelable:true});
+    document.elementFromPoint(cx, cy) && document.elementFromPoint(cx, cy).dispatchEvent(ev);
+    // if no element, dispatch on document
+    document.dispatchEvent(ev);
+  };
+
+  // Seed title so harness can detect readiness even before first synthetic click.
+  const seed = {x:0,y:0,innerW:innerWidth,innerH:innerHeight,dpr:devicePixelRatio,
+                clientW:document.documentElement.clientWidth,clientH:document.documentElement.clientHeight};
+  document.title = JSON.stringify(seed);
+  window.__karereProbe.seed = seed;
+
+  // Data-URL note: this file is loaded via --url 'data:text/html,…' with the
+  // content URI-encoded (no server, no filesystem needed under Flatpak).
+})();
+</script>

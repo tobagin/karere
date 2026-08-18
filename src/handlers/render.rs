@@ -38,10 +38,20 @@ wrap_render_handler! {
             // consistent for when it switches in.
             let s = self.handler.shared.lock();
             let (w, h) = s.size;
+            let scale = s.scale_factor;
             rect.x = 0;
             rect.y = 0;
             rect.width = w.max(1);
             rect.height = h.max(1);
+            log::info!(
+                "coord: J2 view_rect browser={} rect={}x{} scale={:.3} expected_physical={}x{}",
+                browser.as_ref().map(|b| b.identifier()).unwrap_or(0),
+                rect.width,
+                rect.height,
+                scale,
+                w,
+                h
+            );
         }
 
         fn screen_info(
@@ -52,6 +62,7 @@ wrap_render_handler! {
             let Some(info) = screen_info else { return 0 };
             let s = self.handler.shared.lock();
             let (w, h) = s.size;
+            let scale = s.scale_factor;
             // device_scale_factor is pinned to 1: this CEF build ignores it for
             // OSR sizing anyway, and the HiDPI buffer is produced by a physical
             // view rect + a compensating page zoom instead (#158). Pinning it
@@ -63,6 +74,10 @@ wrap_render_handler! {
             let rect = Rect { x: 0, y: 0, width: w.max(1), height: h.max(1) };
             info.rect = rect.clone();
             info.available_rect = rect;
+            log::info!(
+                "coord: J2 screen_info size={}x{} scale={:.3} device_scale_factor={:.1} rect={}x{}",
+                w, h, scale, info.device_scale_factor, info.rect.width, info.rect.height
+            );
             1
         }
 
@@ -105,6 +120,8 @@ wrap_render_handler! {
             let slice = unsafe { std::slice::from_raw_parts(buffer, len) };
 
             let mut s = self.handler.shared.lock();
+            let expected = s.size;
+            let scale = s.scale_factor;
             if s.frame.pixels.len() != len {
                 s.frame.pixels.resize(len, 0);
             }
@@ -112,7 +129,10 @@ wrap_render_handler! {
             s.frame.width = width;
             s.frame.height = height;
             s.frame.dirty = true;
-            log::debug!("on_paint {}x{}", width, height);
+            log::debug!(
+                "coord: J2 on_paint delivered={}x{} expected_physical={}x{} scale={:.3}",
+                width, height, expected.0, expected.1, scale
+            );
         }
 
         // GPU path: when shared-texture OSR is enabled, CEF delivers a DMA-BUF
@@ -164,6 +184,8 @@ wrap_render_handler! {
                 return;
             }
             let mut s = self.handler.shared.lock();
+            let expected = s.size;
+            let scale = s.scale_factor;
             s.accel = Some(crate::gl_dmabuf::AccelFrame {
                 width: w,
                 height: h,
@@ -172,7 +194,10 @@ wrap_render_handler! {
                 planes,
                 dirty: true,
             });
-            log::debug!("on_accelerated_paint {w}x{h} fourcc={fourcc:#x} mod={:#x}", info.modifier);
+            log::debug!(
+                "coord: J2 on_accelerated_paint delivered={}x{} expected_physical={}x{} scale={:.3} fourcc={fourcc:#x} mod={:#x}",
+                w, h, expected.0, expected.1, scale, info.modifier
+            );
         }
 
         // Fires when a page editable gains/loses focus. Drives two things: the IM

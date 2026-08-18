@@ -102,6 +102,12 @@ wrap_load_handler! {
                 // M18 4.1: restore this account's persisted zoom (floor-lifted),
                 // scaled up by the display scale to fill the physical buffer.
                 crate::web_view::apply_zoom_from_account(browser, display_scale);
+                log::info!(
+                    "coord: J7 load_end browser_id={} display_scale={:.3} width_logical={}",
+                    browser.identifier(),
+                    display_scale,
+                    width_logical
+                );
                 // M21: inject the mobile-responsive script when the layout is
                 // mobile for the current window width. Mirrors v3's inject-on-load.
                 crate::web_view::apply_mobile_layout(browser, width_logical);

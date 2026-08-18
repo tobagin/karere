@@ -74,6 +74,28 @@ On a PinePhone running Mobian 13 under Phosh:
 4. Enable **Start in Background**, restart, then present Karere from the app launcher/tray and confirm the prewarmed browser appears rather than a blank GLArea.
 5. Quit and confirm no Karere/CEF process remains. Capture a screenshot and terminal log as release evidence.
 
+### Coordinate probe — pointer alignment (#158 / KARE-016)
+
+Synthetic fixture `tests/fixtures/coord-probe.html` is an 8×5 labeled grid (each cell 100×100, total 800×500) with full-document click capture. Each click writes compact JSON into `document.title` (`{x:clientX,y:clientY,innerW,innerH,dpr,clientW,clientH}`, last event wins, ≤ ~100 chars) and mirrors it on `window.__karereProbe.last` for CDP `Runtime.evaluate`. The page is loaded via `--url 'data:text/html,…'` (URI-encoded, no server, no sandbox filesystem needed) so both native and Flatpak runs work.
+
+Harness `tests/coordinate_probe.sh` drives the real input path under `xvfb-run` for the matrix `{GDK_SCALE=1@1280x800, GDK_SCALE=2@2560x1600} × {cpu-osr (KARERE_GPU_OSR=0), gpu-osr (KARERE_GPU_OSR=1)}`. For each config it: launches the target with `--debug` (CDP on `127.0.0.1:9333` only in this disposable run — release gating in `src/cef_runtime.rs` is unchanged), deterministically positions the window (`xdotool search/getwindowgeometry/windowmove` to 0,0), calibrates the content origin with one probe click (derives header/border offset from observed vs screen coords), synthesizes clicks at 4 known cell centers via `xdotool mousemove --sync` + `click 1`, and polls the recorded coords via `xdotool getwindowname` (title) with a CDP `/json/list` fallback. One JSON row per config is printed to stdout with `expected` vs `observed` `clientX/Y`, per-axis error, viewport metrics, and a capped `joint_logs_tail` from stderr (scale/zoom/paint joints). Inline and standalone negative controls verify detection (intentionally wrong expectation must produce `error >1px` and be flagged). `GSK_RENDERER=gl` and Mesa llvmpipe fixture (`MESA_GL_VERSION_OVERRIDE=2.1`, `MESA_GLES_VERSION_OVERRIDE=3.2`) are preserved.
+
+```sh
+# Full matrix (native binary default — build first)
+cargo build --bin karere
+# Isolated session avoids host Karere instance stealing the new window (else
+# secondary-instance forwarding → "window not found"; use dbus-run-session)
+dbus-run-session -- bash tests/coordinate_probe.sh
+# Single negative control (proves harness can detect misalignment)
+dbus-run-session -- bash tests/coordinate_probe.sh --negative
+# Flatpak Devel build — always use the Devel app-id (io.github.tobagin.karere.Devel),
+# never the prod id (io.github.tobagin.karere); prod is the shipped release, Devel
+# is the local build under test (build with: FLATPAK_BUILDER_EXTRA_ARGS=--disable-rofiles-fuse ./build.sh --dev)
+dbus-run-session -- bash tests/coordinate_probe.sh --bin "flatpak run io.github.tobagin.karere.Devel"
+```
+
+Requirements: `Xvfb` (`xvfb-run`), `xdotool`, `python3`, `gsettings`/`glib-compile-schemas`, `curl` (optional for CDP fallback). Run under `dbus-run-session --` to isolate from any host Karere instance (host instance causes secondary-instance forwarding and `window not found` failures). Flatpak tests **must** target `io.github.tobagin.karere.Devel` (the local `--dev` build); `io.github.tobagin.karere` is the prod/stable Flatpak and is not rebuilt from this tree. The harness auto-resolves the effective `APP_ID`/`GSettings` schema from `KARERE_BIN` so Devel uses its own `io.github.tobagin.karere.Devel` schema. The matrix exits 0 and `SUMMARY` lines are consumed by CI; each row's `passed`/`worst_error_px` indicates whether the config reproduced the reporter's sustained `>1px` symptom. No real account or chat content is ever loaded (synthetic probe only, CEO privacy constraint).
+
 ### Text selection automation
 
 - [ ] `cargo test` — unit and headless integration coverage, including ordered raw mouse drag lifecycle, click counts, touch-emulation suppression, HiDPI coordinates, CEF Copy command classification, IPC, clipboard sanitization/caps, and clean SIGTERM exit.
