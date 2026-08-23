@@ -28,7 +28,20 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.2.2
+### 🆕 What's New in 4.2.3
+
+- **HiDPI pointer accuracy (#158)**: clicks, scrolling, and context menus are now pixel-accurate on
+  scaled / mixed-DPI monitors (rounded input transforms + re-synced page zoom), verified by an
+  automated coordinate probe.
+- **Correct popup anchoring on X11 (#158)**: engine popups now use the real window position on
+  multi-monitor setups instead of a degenerate origin.
+- **PinePhone / GLES-only startup (#177)**: fixed blank view on GLES-only devices; software rendering
+  resumes automatically when accelerated frames are unavailable.
+- **Reliable text selection & copy (#178)**: drag-select, immediate Ctrl+C, and right-click → Copy no
+  longer race the PRIMARY clipboard.
+- **Translation refresh**: catalogs regenerated against the current UI strings.
+
+### Also in 4.2.2
 
 - **Smoother scrolling (#173)**: off-screen frame rate raised to 60 fps for fluid scroll/typing with no idle cost.
 - **Hybrid NVIDIA handling (#173)**: detection now uses the live GL context, so hybrid GPUs keep acceleration; fallback remains for background starts.
@@ -36,16 +49,8 @@ proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 - **HiDPI mobile layout (#176)**: fixed WhatsApp starting in mobile layout on mixed-scale monitors until resized.
 - **Match WhatsApp Colors live (#168)**: the Appearance toggle now applies instantly without a restart.
 
-### Also in 4.2.1
-
-- **"Match WhatsApp Colors" (#168)**: new opt-in Appearance setting that tints the window and
-  header bar with WhatsApp Web's own background colors, so the app chrome blends with the page.
-  Follows the light/dark theme and applies live. Thanks @pakovm-git for the prototype!
-- **Safer avatar processing (#172)**: notification avatar rounding dropped its `unsafe` pixel
-  access. Thanks @loxoron218!
-
-Recent in the 4.2 line: the browser engine moved to **CEF/Chromium 150** and touchpad scrolling
-no longer needs a click in the pane first.
+Recent in the 4.2 line: the "Match WhatsApp Colors" appearance toggle and the browser engine move
+to **CEF/Chromium 150**; touchpad scrolling no longer needs a click in the pane first.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the

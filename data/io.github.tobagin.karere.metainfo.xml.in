@@ -101,6 +101,17 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.2.3" date="2026-08-23">
+      <description>
+        <ul>
+          <li>Fixed pointer misalignment on HiDPI / mixed-scale desktops: clicks, scrolling and context menus are now pixel-accurate, and the page zoom re-syncs when moving windows between monitors with different scales (#158).</li>
+          <li>Fixed engine-drawn popups being anchored to a degenerate window origin on X11 multi-monitor setups; the real window position is now used (#158).</li>
+          <li>Fixed blank view on GLES-only devices such as the PinePhone: the render area now negotiates its required GLES 3.0 context and software rendering resumes automatically when accelerated frames are unavailable (#177).</li>
+          <li>Fixed chat text selection and copying: drag-select, immediate Ctrl+C and right-click → Copy now read the live selection without racing the PRIMARY clipboard (#178).</li>
+          <li>Translation catalogs regenerated against the current UI strings.</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.2.2" date="2026-08-10">
       <description>
         <ul>

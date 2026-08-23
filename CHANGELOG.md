@@ -5,7 +5,7 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [4.2.3] - 2026-08-23
 
 ### Fixed
 - **Flathub beta manifest realigned with stable (v4.2.2 / CEF 150.0.10)** — the beta channel manifest (`packaging/flathub-beta/`) was still pinned to the finished v4.0.0 beta cycle (CEF 148.0.10 "151fix", archive.json 148.0.8, missing `GSK_RENDERER=gl`). It now mirrors the shipping stable release (v4.2.2, CEF/Chromium 150.0.10, `GSK_RENDERER=gl`) so beta-channel testers no longer receive an older build between beta cycles. Enforced by `tests/flathub_beta_cef_policy.sh`.
@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Chat text selection and copying (#178)**: dragging across message text now preserves the complete mouse press/move/release sequence. Immediate Ctrl+C and the context-menu Copy command read the live page selection, so they no longer race Linux PRIMARY clipboard synchronization.
 - **Meson `karere-pot` was Rust-incomplete (KARE-015)**: the `po/meson.build` `i18n.gettext` single-pass `xgettext` dropped 23 Rust `gettextrs::gettext` msgids (490 vs canonical 513). Pot generation now has one canonical path — `tools/update-po.sh` (two-pass `xgettext` + `msgmerge -U --backup=none`) — with `po/meson.build` hand-rolled so `meson compile karere-pot` / `karere-update-po` invoke the script and LINGUAS-driven per-locale `.mo` targets (`karere-gmo`, `install_tag: 'i18n'`) remain byte-layout-identical for Flathub (`share/locale/<lang>/LC_MESSAGES/karere.mo`). Meson floor raised 0.59.0 → 0.60.0 for `install_tag`.
 - **Pointer alignment on HiDPI / mixed-scale desktops (KARE-016 / #158)**: mouse click/move/wheel and context-menu coordinates were truncated toward zero (`as i32 * scale`) instead of rounded, biasing HiDPI positions by up to `scale` px (verified via `tests/coordinate_probe.sh` matrix GDK_SCALE=1@1280x800 / 2@2560x1600 × cpu-osr/gpu-osr → `worst_error_px=0` after fix). Stale prewarm/tray seeds could also desync the HiDPI page zoom from the physical buffer; zoom is now re-synced on `size_allocate` scale changes, window re-show, and foreground account switches so buffer sizing and input transform stay coupled. Instrumentation at J1/J2/J4/J6/J7 (`coord:` log) preserved behind `debug` level. Guards #176/#161/#162 retained and regression-tested.
+- **Engine popups anchored to a degenerate origin on X11 (KARE-017/KARE-019 / #158)**: Chromium's view-to-screen mapping (`RenderHandler::screen_point`) reported the window origin as always `(0,0)`, so engine-drawn UI positioned in screen coordinates could land misplaced on X11 multi-monitor setups. The real root-relative window origin is now queried via gdk4-x11 (already physical pixels — no double scaling at 2×), with a safe `(0,0)` fallback retained on Wayland, pre-realize, and query failure.
 
 ## [4.2.2] - 2026-08-10
 
