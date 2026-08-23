@@ -11,6 +11,14 @@ pub struct FrameBuffer {
     pub width: i32,
     pub height: i32,
     pub dirty: bool,
+    /// Region changed since the last GL upload, as `(x, y, w, h)` in frame
+    /// pixels — the union of CEF's dirty rects across every `on_paint` the
+    /// draw hasn't consumed yet. `None` means "assume the whole frame"
+    /// (first paint, resize, or damage CEF didn't describe). Uploading only
+    /// this region keeps a keystroke from re-sending the entire window to the
+    /// GPU every frame, which is most of the CPU-OSR cost on integrated
+    /// graphics (#179/#180).
+    pub damage: Option<(i32, i32, i32, i32)>,
 }
 
 #[derive(Clone)]
@@ -120,7 +128,7 @@ wrap_render_handler! {
             &self,
             browser: Option<&mut Browser>,
             _type_: PaintElementType,
-            _dirty_rects: Option<&[Rect]>,
+            dirty_rects: Option<&[Rect]>,
             buffer: *const u8,
             width: ::std::os::raw::c_int,
             height: ::std::os::raw::c_int,
@@ -146,10 +154,31 @@ wrap_render_handler! {
             let mut s = self.handler.shared.lock();
             let expected = s.size;
             let scale = s.scale_factor;
-            if s.frame.pixels.len() != len {
+            // A resized frame invalidates every cached pixel: take the whole
+            // buffer and let draw() reallocate the texture.
+            let resized =
+                s.frame.pixels.len() != len || (s.frame.width, s.frame.height) != (width, height);
+            if resized {
                 s.frame.pixels.resize(len, 0);
+                s.frame.pixels.copy_from_slice(slice);
+                s.frame.damage = None;
+            } else {
+                match union_dirty(dirty_rects, width, height) {
+                    Some(r) => {
+                        copy_region(&mut s.frame.pixels, slice, width, r);
+                        // `dirty` still set = the draw hasn't consumed the last
+                        // damage yet, so keep accumulating into it.
+                        s.frame.damage =
+                            if s.frame.dirty { merge_damage(s.frame.damage, r) } else { Some(r) };
+                    }
+                    // CEF didn't describe the damage (or it covers everything):
+                    // fall back to the full copy this path always did.
+                    None => {
+                        s.frame.pixels.copy_from_slice(slice);
+                        s.frame.damage = None;
+                    }
+                }
             }
-            s.frame.pixels.copy_from_slice(slice);
             s.frame.width = width;
             s.frame.height = height;
             s.frame.dirty = true;
@@ -262,6 +291,75 @@ impl ShellRenderHandlerBuilder {
     }
 }
 
+/// Union of CEF's dirty rects, clamped to the frame, as `(x, y, w, h)`.
+/// `None` when there is nothing usable to narrow the upload with — no rects, an
+/// empty list, a degenerate rect, or damage that already covers the whole frame
+/// — in which case callers take the full-frame path. (#179/#180)
+pub(crate) fn union_dirty(
+    rects: Option<&[Rect]>,
+    width: i32,
+    height: i32,
+) -> Option<(i32, i32, i32, i32)> {
+    let rects = rects?;
+    if rects.is_empty() {
+        return None;
+    }
+    let (mut x0, mut y0, mut x1, mut y1) = (i32::MAX, i32::MAX, i32::MIN, i32::MIN);
+    for r in rects {
+        // Clamp: a rect outside the frame would index past the buffer.
+        let rx0 = r.x.clamp(0, width);
+        let ry0 = r.y.clamp(0, height);
+        let rx1 = r.x.saturating_add(r.width).clamp(0, width);
+        let ry1 = r.y.saturating_add(r.height).clamp(0, height);
+        if rx1 <= rx0 || ry1 <= ry0 {
+            continue;
+        }
+        x0 = x0.min(rx0);
+        y0 = y0.min(ry0);
+        x1 = x1.max(rx1);
+        y1 = y1.max(ry1);
+    }
+    if x1 <= x0 || y1 <= y0 {
+        return None;
+    }
+    if (x0, y0, x1, y1) == (0, 0, width, height) {
+        return None; // whole frame — the full path is cheaper than row slicing
+    }
+    Some((x0, y0, x1 - x0, y1 - y0))
+}
+
+/// Merge new damage into what the draw hasn't uploaded yet. `None` on either
+/// side means "whole frame" and stays that way.
+pub(crate) fn merge_damage(
+    existing: Option<(i32, i32, i32, i32)>,
+    new: (i32, i32, i32, i32),
+) -> Option<(i32, i32, i32, i32)> {
+    let (ex, ey, ew, eh) = existing?;
+    let (nx, ny, nw, nh) = new;
+    let x0 = ex.min(nx);
+    let y0 = ey.min(ny);
+    let x1 = (ex + ew).max(nx + nw);
+    let y1 = (ey + eh).max(ny + nh);
+    Some((x0, y0, x1 - x0, y1 - y0))
+}
+
+/// Copy just `(x, y, w, h)` of `src` into the cached full-frame `dst`, row by
+/// row. Both buffers are BGRA8 with the same stride (`width * 4`).
+pub(crate) fn copy_region(dst: &mut [u8], src: &[u8], width: i32, rect: (i32, i32, i32, i32)) {
+    let (x, y, w, h) = rect;
+    let stride = width as usize * 4;
+    let x0 = x as usize * 4;
+    let run = w as usize * 4;
+    for row in y as usize..(y + h) as usize {
+        let start = row * stride + x0;
+        let end = start + run;
+        if end > dst.len() || end > src.len() {
+            return;
+        }
+        dst[start..end].copy_from_slice(&src[start..end]);
+    }
+}
+
 /// Pure `view → screen` in physical pixels. Saturating `i32` add so
 /// `i32::MAX + 1 == MAX` rather than wrapping. No `scale_factor` is
 /// applied — view coords are already physical via `size_allocate` and
@@ -317,6 +415,66 @@ pub(crate) fn dispatch_screen_point_for_test(
 mod tests {
     use super::*;
     use crate::handlers::new_shared;
+
+    fn rect(x: i32, y: i32, w: i32, h: i32) -> Rect {
+        Rect { x, y, width: w, height: h }
+    }
+
+    #[test]
+    fn union_dirty_narrows_to_the_changed_region() {
+        assert_eq!(union_dirty(Some(&[rect(10, 20, 5, 5)]), 100, 100), Some((10, 20, 5, 5)));
+        assert_eq!(
+            union_dirty(Some(&[rect(10, 20, 5, 5), rect(50, 10, 10, 40)]), 100, 100),
+            Some((10, 10, 50, 40))
+        );
+    }
+
+    #[test]
+    fn union_dirty_falls_back_to_full_frame() {
+        assert_eq!(union_dirty(None, 100, 100), None);
+        assert_eq!(union_dirty(Some(&[]), 100, 100), None);
+        assert_eq!(union_dirty(Some(&[rect(0, 0, 100, 100)]), 100, 100), None);
+        assert_eq!(union_dirty(Some(&[rect(0, 0, 0, 0)]), 100, 100), None);
+    }
+
+    #[test]
+    fn union_dirty_clamps_out_of_frame_rects() {
+        // Would otherwise index past the buffer.
+        assert_eq!(union_dirty(Some(&[rect(-10, -10, 30, 30)]), 100, 100), Some((0, 0, 20, 20)));
+        assert_eq!(union_dirty(Some(&[rect(90, 90, 50, 50)]), 100, 100), Some((90, 90, 10, 10)));
+        assert_eq!(union_dirty(Some(&[rect(200, 200, 10, 10)]), 100, 100), None);
+        assert_eq!(union_dirty(Some(&[rect(0, 0, i32::MAX, i32::MAX)]), 100, 100), None);
+    }
+
+    #[test]
+    fn merge_damage_accumulates_until_the_draw_consumes_it() {
+        assert_eq!(merge_damage(Some((10, 10, 5, 5)), (20, 30, 5, 5)), Some((10, 10, 15, 25)));
+        // "whole frame" is absorbing.
+        assert_eq!(merge_damage(None, (20, 30, 5, 5)), None);
+    }
+
+    #[test]
+    fn copy_region_touches_only_the_damaged_rows() {
+        let width = 4;
+        let src = vec![9u8; width * 3 * 4];
+        let mut dst = vec![0u8; width * 3 * 4];
+        copy_region(&mut dst, &src, width as i32, (1, 1, 2, 1));
+        // Row 1, pixels 1..3 only.
+        let stride = width * 4;
+        assert_eq!(&dst[..stride], &[0u8; 16]);
+        assert_eq!(&dst[stride..stride + 4], &[0u8; 4]);
+        assert_eq!(&dst[stride + 4..stride + 12], &[9u8; 8]);
+        assert_eq!(&dst[stride + 12..stride + 16], &[0u8; 4]);
+        assert_eq!(&dst[stride * 2..], &[0u8; 16]);
+    }
+
+    #[test]
+    fn copy_region_refuses_to_run_past_either_buffer() {
+        let mut dst = vec![0u8; 16];
+        let src = vec![9u8; 16];
+        copy_region(&mut dst, &src, 4, (0, 0, 4, 99));
+        assert_eq!(dst, vec![9u8; 16]); // first row copied, then stopped
+    }
 
     #[test]
     fn view_to_screen_basic() {

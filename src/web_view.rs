@@ -1807,17 +1807,35 @@ mod imp {
                         }
                         super::CpuUpload::Update => {
                             gl::BindTexture(gl::TEXTURE_2D, tex);
+                            // Upload only what CEF reported as damaged. Typing
+                            // dirties a caret-sized rect; re-sending the whole
+                            // window every frame is what makes CPU OSR stutter
+                            // on integrated GPUs (#179/#180). GLES 3.0 gives us
+                            // the UNPACK_* row addressing to do it in one call.
+                            let (x, y, w, h) = s
+                                .frame
+                                .damage
+                                .unwrap_or((0, 0, s.frame.width, s.frame.height));
+                            if (x, y, w, h) != (0, 0, s.frame.width, s.frame.height) {
+                                gl::PixelStorei(gl::UNPACK_ROW_LENGTH, s.frame.width);
+                                gl::PixelStorei(gl::UNPACK_SKIP_PIXELS, x);
+                                gl::PixelStorei(gl::UNPACK_SKIP_ROWS, y);
+                            }
                             gl::TexSubImage2D(
                                 gl::TEXTURE_2D,
                                 0,
-                                0,
-                                0,
-                                s.frame.width,
-                                s.frame.height,
+                                x,
+                                y,
+                                w,
+                                h,
                                 gl::RGBA,
                                 gl::UNSIGNED_BYTE,
                                 s.frame.pixels.as_ptr() as *const c_void,
                             );
+                            // Leave the unpack state as every other caller expects.
+                            gl::PixelStorei(gl::UNPACK_ROW_LENGTH, 0);
+                            gl::PixelStorei(gl::UNPACK_SKIP_PIXELS, 0);
+                            gl::PixelStorei(gl::UNPACK_SKIP_ROWS, 0);
                             s.frame.dirty = false;
                         }
                         super::CpuUpload::Reuse => {}
@@ -2295,6 +2313,15 @@ mod imp {
                 // Not text: deliver the raw key-down so the page sees Enter,
                 // arrows, Ctrl-combos, F-keys, etc.
                 send_key_raw(&widget, keyval, keycode, state, true);
+                // A declined printable key means no `commit` is coming, and a
+                // RAWKEYDOWN alone inserts nothing — the character is silently
+                // dropped. Happens when the IM is momentarily not focused: the
+                // page's editable-focus signal focuses it out on composer
+                // re-renders, and re-focusing an async IM (ibus) can land after
+                // this key. Synthesize the CHAR ourselves. (#180)
+                if let Some(unit) = printable_char(keyval, state) {
+                    send_char(&widget, unit, modifiers_from_state(state));
+                }
                 // Let accelerator combos (Ctrl/Alt/Super+key, F5/F11) bubble to
                 // window/app shortcuts; consume the rest so typing stays in the webview.
                 if is_accelerator_key(keyval, state) {
@@ -2443,6 +2470,30 @@ mod imp {
         };
         if requested {
             request();
+        }
+    }
+
+    /// UTF-16 unit to synthesize as a CEF `CHAR` for a key the IM declined, or
+    /// `None` when the key is not text. Ctrl/Alt/Super combos are shortcuts, and
+    /// C0/DEL keyvals (Enter, Tab, Backspace, Escape) keep their raw-key-only
+    /// handling — the page acts on those from the key-down. (#180)
+    pub(super) fn printable_char(keyval: gtk::gdk::Key, state: gtk::gdk::ModifierType) -> Option<u16> {
+        use gtk::gdk::ModifierType;
+        if state.intersects(
+            ModifierType::CONTROL_MASK | ModifierType::ALT_MASK | ModifierType::SUPER_MASK,
+        ) {
+            return None;
+        }
+        let ch = keyval.to_unicode()?;
+        if (ch as u32) < 0x20 || ch == '\u{7f}' {
+            return None;
+        }
+        let mut buf = [0u16; 2];
+        match ch.encode_utf16(&mut buf) {
+            [unit] => Some(*unit),
+            // Astral-plane keyvals can't be expressed as one UTF-16 unit; the IM
+            // commit path handles those (no physical key produces them directly).
+            _ => None,
         }
     }
 
@@ -3619,8 +3670,8 @@ mod input_tests {
     use super::imp::{
         ExplicitCopyTrigger, MouseButtonTracker, MouseDispatch, MouseEventSink, MouseInput,
         RendererMessageSink, dispatch_explicit_copy, dispatch_mouse_with,
-        physical_mouse_coordinates, request_live_selection_with, send_click_with, send_move_with,
-        should_forward_mouse,
+        physical_mouse_coordinates, printable_char, request_live_selection_with, send_click_with,
+        send_move_with, should_forward_mouse,
     };
     use crate::handlers::{
         client::dispatch_renderer_message_with,
@@ -3996,6 +4047,39 @@ mod input_tests {
         let cancelled = adapter.handle(MouseInput::Cancel { x: 9.0, y: 8.0 });
         assert_eq!(cancelled.len(), 2);
         assert_eq!(adapter.active_modifiers(), 0);
+    }
+
+    /// A key the IM declines must still insert text: RAWKEYDOWN alone inserts
+    /// nothing, which is the dropped-character path in #180.
+    #[test]
+    fn declined_printable_keys_synthesize_a_char() {
+        use gtk::gdk::{Key, ModifierType};
+        let none = ModifierType::empty();
+        assert_eq!(printable_char(Key::a, none), Some(u16::from(b'a')));
+        assert_eq!(printable_char(Key::A, none), Some(u16::from(b'A')));
+        assert_eq!(printable_char(Key::_1, none), Some(u16::from(b'1')));
+        assert_eq!(printable_char(Key::space, none), Some(0x20));
+        assert_eq!(printable_char(Key::eacute, none), Some(0xe9));
+        assert_eq!(printable_char(Key::a, ModifierType::SHIFT_MASK), Some(u16::from(b'a')));
+    }
+
+    /// Shortcuts and control keys keep their raw-key-only handling — a
+    /// synthesized CHAR there would type text the user never asked for.
+    #[test]
+    fn non_text_keys_synthesize_nothing() {
+        use gtk::gdk::{Key, ModifierType};
+        let none = ModifierType::empty();
+        assert_eq!(printable_char(Key::a, ModifierType::CONTROL_MASK), None);
+        assert_eq!(printable_char(Key::a, ModifierType::ALT_MASK), None);
+        assert_eq!(printable_char(Key::a, ModifierType::SUPER_MASK), None);
+        assert_eq!(printable_char(Key::Return, none), None);
+        assert_eq!(printable_char(Key::Tab, none), None);
+        assert_eq!(printable_char(Key::BackSpace, none), None);
+        assert_eq!(printable_char(Key::Escape, none), None);
+        assert_eq!(printable_char(Key::Delete, none), None);
+        assert_eq!(printable_char(Key::Left, none), None);
+        assert_eq!(printable_char(Key::F5, none), None);
+        assert_eq!(printable_char(Key::Shift_L, none), None);
     }
 
     #[test]
