@@ -28,7 +28,15 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.2.4
+### 🆕 What's New in 4.2.5
+
+- **No more dropped keystrokes (#180)**: a key the input method declined reached the engine without a
+  character event and inserted nothing; declined printable keys now carry their own character.
+- **Cheaper software rendering (#179)**: each frame uploads only the region that actually changed
+  instead of the whole window — less CPU and memory bandwidth per frame, most noticeable on
+  integrated graphics.
+
+### Also in 4.2.4
 
 - **Clicks land where you click**: 4.2.3 fed CEF raw surface-relative event coordinates, offsetting
   every click by the header bar and window shadow (hover was unaffected, so targets highlighted but

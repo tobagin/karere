@@ -5,6 +5,14 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.5] - 2026-08-23
+
+### Fixed
+- **Occasionally dropped characters while typing (#180)**: a keystroke the input method declined reached CEF as a raw key-down with no character event, so it inserted nothing. The input method can be momentarily unfocused mid-typing — WhatsApp's composer re-renders emit an editable-focus change, and re-focusing an asynchronous IM (ibus) can land after the next key — and every key that fell into that window was silently lost. Declined printable keys now synthesize their own `CHAR` event; shortcuts and control keys (Enter, Tab, Backspace, arrows) keep their raw-key-only handling.
+
+### Changed
+- **Software off-screen rendering only uploads what changed (#179/#180)**: every CEF paint copied and re-uploaded the entire window to the GPU — roughly 5 MB per frame at 1280x950, four times that on a HiDPI display, up to 60 times a second even when a single character changed. The renderer now tracks CEF's dirty rectangles and copies/uploads just that region, which cuts per-frame CPU and memory-bandwidth cost — most noticeable on integrated graphics, where that traffic competes with everything else on the shared memory bus. Full-frame uploads still happen on resize and when CEF reports damage covering the whole view.
+
 ## [4.2.4] - 2026-08-23
 
 ### Fixed

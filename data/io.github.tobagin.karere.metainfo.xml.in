@@ -101,6 +101,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.2.5" date="2026-08-23">
+      <description>
+        <ul>
+          <li>Fixed characters occasionally being dropped while typing (#180).</li>
+          <li>Software rendering now redraws only the part of the window that changed, reducing CPU and memory bandwidth per frame — most noticeable on integrated graphics (#179).</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.2.4" date="2026-08-23">
       <description>
         <ul>
