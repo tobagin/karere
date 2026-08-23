@@ -2167,7 +2167,12 @@ mod imp {
                     return glib::Propagation::Proceed;
                 };
                 let button = button_event.button();
-                let Some((x, y)) = event.position() else {
+                // EventControllerLegacy hands out raw surface coords; CEF needs
+                // widget coords (GestureClick used to do this mapping; KARE-002 regression).
+                let Some((x, y)) = event
+                    .position()
+                    .and_then(|(sx, sy)| surface_to_widget(&widget, sx, sy))
+                else {
                     return glib::Propagation::Proceed;
                 };
                 let modifiers = modifiers_from_state(event.modifier_state());
@@ -2872,17 +2877,24 @@ mod imp {
     /// touchpad scrolls arrive without motion events, so cached coords go stale. (#161)
     fn pointer_pos_physical(widget: &super::KarereWebView) -> Option<(i32, i32)> {
         let pointer = widget.display().default_seat()?.pointer()?;
+        let (sx, sy, _) = widget.native()?.surface()?.device_position(&pointer)?;
+        let (x, y) = surface_to_widget(widget, sx, sy)?;
+        let s = widget.scale_factor().max(1) as f64;
+        Some(((x * s).round() as i32, (y * s).round() as i32))
+    }
+
+    /// Surface → widget coords: strip the native's window-decoration offset, then
+    /// map through the widget tree. Raw `GdkEvent` positions (and
+    /// `device_position`) are surface-relative — feeding them to CEF unmapped
+    /// offsets every click by the header-bar height (KARE-002 regression).
+    fn surface_to_widget(widget: &super::KarereWebView, sx: f64, sy: f64) -> Option<(f64, f64)> {
         let native = widget.native()?;
-        let (sx, sy, _) = native.surface()?.device_position(&pointer)?;
-        // Surface → widget coords: strip the native's window-decoration offset,
-        // then map through the widget tree.
         let (tx, ty) = native.surface_transform();
         let p = native.compute_point(
             widget,
             &gtk::graphene::Point::new((sx - tx) as f32, (sy - ty) as f32),
         )?;
-        let s = widget.scale_factor().max(1) as f64;
-        Some(((p.x() as f64 * s).round() as i32, (p.y() as f64 * s).round() as i32))
+        Some((p.x() as f64, p.y() as f64))
     }
 
     fn send_wheel(widget: &super::KarereWebView, dx: f64, dy: f64, modifiers: u32, precise: bool) {
