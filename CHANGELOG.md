@@ -5,6 +5,11 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.4] - 2026-08-23
+
+### Fixed
+- **Clicks landing above/left of the pointer**: 4.2.3 moved mouse buttons from GTK gestures to a raw event controller (KARE-002) and passed the event position straight to CEF. `GdkEvent` positions are **surface**-relative, not widget-relative, so every click was offset by the header bar and window-shadow inset (measured 14 px x / 59 px y with a GNOME header bar) while hover — still on the motion controller, which reports widget coords — stayed correct. Button press/release positions are now mapped surface → widget (the same transform the wheel hit-test already used) before being scaled to physical pixels.
+
 ## [4.2.3] - 2026-08-23
 
 ### Fixed
