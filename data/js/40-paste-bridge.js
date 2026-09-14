@@ -15,6 +15,11 @@
 (function () {
   "use strict";
 
+  // CEF may recreate/inject the bundle more than once for the same Window.
+  // Keep exactly one paste listener, otherwise one Ctrl+V inserts text twice.
+  if (window.__karerePasteBridgeInstalled) return;
+  window.__karerePasteBridgeInstalled = true;
+
   function ack(tempfilePath) {
     try {
       if (typeof window.karere_send === "function") {
