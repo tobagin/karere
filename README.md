@@ -119,6 +119,8 @@ flatpak run io.github.tobagin.karere.Devel
 
 **Build dependency**: the UI is authored in [Blueprint](https://gnome.pages.gitlab.gnome.org/blueprint-compiler/) (`data/ui/*.blp`, including `preferences.blp` and `keyboard-shortcuts.blp`) and compiled to `.ui` at build time. `blueprint-compiler` must be on `PATH` for a local `cargo build`; the Flatpak SDK (`org.gnome.Sdk//50`) already ships it, so the Flatpak build needs no manifest change.
 
+**Running outside Flatpak**: a local `cargo run` enables Chromium's own sandbox (it is only disabled inside the Flatpak sandbox). This requires unprivileged user namespaces; on kernels or distributions that disable them, CEF will refuse to start. Enable them with `sysctl kernel.unprivileged_userns_clone=1` (Debian-style) or `sysctl user.max_user_namespaces=10000` (some hardened configs). Non-Flatpak packaging remains unsupported.
+
 **Note**: After installation, you'll need to scan the QR code with your mobile WhatsApp to connect.
 
 ## Usage
