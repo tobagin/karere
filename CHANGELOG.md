@@ -5,6 +5,12 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Right-click Paste ignored text copied from other applications (#189)**: the context menu's Paste ran CEF's windowless paste, which only sees Chromium's internal clipboard, so anything copied outside Karere pasted nothing while Ctrl+V (host-bridged) worked. Menu Paste now goes through the same host clipboard path as Ctrl+V, including images and files.
+- **WhatsApp's own message menu "Copy" never reached the system clipboard (#178)**: that menu copies through the async Clipboard API, which in off-screen rendering lands only in Chromium's internal clipboard. Those writes are now mirrored to the host clipboard like Ctrl+C and text selection already were.
+
 ## [4.2.5] - 2026-08-23
 
 ### Fixed

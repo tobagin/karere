@@ -96,6 +96,11 @@ pub(crate) fn is_copy_command(command_id: i32) -> bool {
     command_id == cef::sys::cef_menu_id_t::MENU_ID_COPY as i32
 }
 
+/// Classify Chromium's Paste command by stable CEF command id.
+pub(crate) fn is_paste_command(command_id: i32) -> bool {
+    command_id == cef::sys::cef_menu_id_t::MENU_ID_PASTE as i32
+}
+
 #[derive(Clone, Default)]
 pub struct ShellContextMenuHandler;
 
@@ -233,7 +238,7 @@ fn normalize_separators(types: &[MenuItemType], remove: &mut [bool]) {
 
 #[cfg(test)]
 mod tests {
-    use super::is_copy_command;
+    use super::{is_copy_command, is_paste_command};
 
     #[test]
     fn copy_is_classified_by_cef_command_id_not_label() {
@@ -242,5 +247,7 @@ mod tests {
         assert!(is_copy_command(copy));
         assert!(!is_copy_command(paste));
         assert!(!is_copy_command(0));
+        assert!(is_paste_command(paste));
+        assert!(!is_paste_command(copy));
     }
 }

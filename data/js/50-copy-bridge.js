@@ -4,6 +4,8 @@
 // never reaches the GDK clipboard / PRIMARY. Report selections to the host
 // (SetClipboard), which writes them out:
 //   * `copy` event   → regular clipboard (Ctrl+C / context-menu copy)
+//   * `navigator.clipboard.writeText/write` → regular clipboard (WhatsApp's
+//     own message menu "Copy")
 //   * `selectionchange` (debounced) → PRIMARY selection (Linux middle-click)
 //
 // Wrapped in try/catch so a throw never takes down the renderer.
@@ -32,6 +34,39 @@
       } catch (_) {}
     }
     window.addEventListener("karere:copy-selection", copyLiveSelection, false);
+
+    // WhatsApp's own message context menu ("Copy") writes through the async
+    // Clipboard API, which in OSR only reaches Chromium's internal clipboard.
+    // Mirror those writes to the host as well. (#178)
+    var cb = typeof navigator !== "undefined" ? navigator.clipboard : null;
+    if (cb && typeof cb.writeText === "function") {
+      var origWriteText = cb.writeText;
+      cb.writeText = function (text) {
+        if (typeof text === "string" && text) {
+          send("SetClipboard", { text: text, primary: false });
+        }
+        return origWriteText.apply(cb, arguments);
+      };
+    }
+    if (cb && typeof cb.write === "function") {
+      var origWrite = cb.write;
+      cb.write = function (items) {
+        try {
+          Array.prototype.forEach.call(items || [], function (item) {
+            if (item && item.types && item.types.indexOf("text/plain") !== -1) {
+              item
+                .getType("text/plain")
+                .then(function (blob) { return blob.text(); })
+                .then(function (text) {
+                  if (text) send("SetClipboard", { text: text, primary: false });
+                })
+                .catch(function () {});
+            }
+          });
+        } catch (_) {}
+        return origWrite.apply(cb, arguments);
+      };
+    }
 
     // Keep listening for page-originated Copy operations. Host Ctrl+C/menu actions
     // dispatch the private host event above because OSR does not reliably emit

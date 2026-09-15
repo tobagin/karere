@@ -10,6 +10,7 @@ const fixture = fs.readFileSync("tests/fixtures/text-selection.html", "utf8");
 const listeners = new Map();
 const hostListeners = new Map();
 const sent = [];
+const nativeWrites = [];
 let selection = { text: "", collapsed: true };
 let pendingTimer = null;
 
@@ -31,6 +32,18 @@ const context = {
   document: {
     addEventListener(name, callback) {
       listeners.set(name, callback);
+    },
+  },
+  navigator: {
+    clipboard: {
+      writeText(text) {
+        nativeWrites.push(text);
+        return Promise.resolve();
+      },
+      write(items) {
+        nativeWrites.push(items);
+        return Promise.resolve();
+      },
     },
   },
   console: { log() {}, error() {} },
@@ -93,3 +106,34 @@ assert.deepEqual(sent.pop(), {
 });
 
 console.log("copy bridge regression: ok");
+
+// WhatsApp's own message-menu "Copy" goes through the async Clipboard API;
+// it must mirror to the host CLIPBOARD and still reach the native writer.
+sent.length = 0;
+nativeWrites.length = 0;
+context.navigator.clipboard.writeText("menu copy 🙂");
+assert.deepEqual(sent.pop(), {
+  name: "SetClipboard",
+  payload: { text: "menu copy 🙂", primary: false },
+});
+assert.deepEqual(nativeWrites, ["menu copy 🙂"]);
+
+// Empty writeText mirrors nothing (existing host clipboard preserved).
+sent.length = 0;
+context.navigator.clipboard.writeText("");
+assert.equal(sent.length, 0);
+
+// ClipboardItem write: text/plain items mirror asynchronously; the promise
+// chain resolves on the microtask queue, so await it.
+const item = {
+  types: ["text/plain"],
+  getType: () => Promise.resolve({ text: () => Promise.resolve("item copy") }),
+};
+context.navigator.clipboard.write([item]);
+setImmediate(() => {
+  assert.deepEqual(sent.pop(), {
+    name: "SetClipboard",
+    payload: { text: "item copy", primary: false },
+  });
+  console.log("copy bridge clipboard api: ok");
+});

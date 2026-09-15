@@ -1077,6 +1077,17 @@ mod imp {
                         // act on the focused frame's selection).
                         set_focus(&obj, true);
                         match cmd {
+                            // CEF's windowless Paste only sees Chromium's internal
+                            // clipboard, never GDK's. Route it through the same host
+                            // paste path as Ctrl+V; cancel so CEF doesn't paste
+                            // stale internal content on top. (#189)
+                            Some(id)
+                                if crate::handlers::context_menu::is_paste_command(id)
+                                    && try_intercept_paste(&obj) =>
+                            {
+                                log::debug!("context menu: host paste, cancel(id={id})");
+                                cb.cancel();
+                            }
                             Some(id) => {
                                 log::debug!("context menu: cont(id={id})");
                                 dispatch_explicit_copy(
