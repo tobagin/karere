@@ -625,6 +625,12 @@ mod imp {
         /// no follow-up), which kills dead-key composition; the key handler uses
         /// this to re-focus the IM on the next physical keypress. (#154)
         pub im_focused: std::cell::Cell<bool>,
+        /// Ticks left before a pending focus-out is actually applied, or 0 when
+        /// none is queued. A composer re-render emits editable-focus false then
+        /// true; applying the false immediately unfocused the IM mid-typing and
+        /// dropped the next key (#180). Deferring it lets the paired true cancel
+        /// it, while a genuine blur still settles. See `im_focus_step`.
+        pub im_focus_out_pending: std::cell::Cell<u8>,
     }
 
     #[glib::object_subclass]
@@ -701,16 +707,25 @@ mod imp {
                     w.set_cursor_from_name(Some(name));
                 }
                 // Editable focus changed in the page → focus the IM context so the
-                // on-screen keyboard shows only for real text fields.
-                if let Some(focused) = keyboard_request
-                    && let Some(im) = imp.im_context.borrow().as_ref()
-                {
-                    if focused {
-                        im.focus_in();
-                    } else {
-                        im.focus_out();
+                // on-screen keyboard shows only for real text fields. Focus-out is
+                // debounced so a composer re-render's false/true pair never leaves
+                // the IM unfocused across the next keystroke (#180).
+                if let Some(im) = imp.im_context.borrow().as_ref() {
+                    let mut pending = imp.im_focus_out_pending.get();
+                    let action =
+                        im_focus_step(keyboard_request, imp.im_focused.get(), &mut pending);
+                    imp.im_focus_out_pending.set(pending);
+                    match action {
+                        ImFocusAction::FocusIn => {
+                            im.focus_in();
+                            imp.im_focused.set(true);
+                        }
+                        ImFocusAction::FocusOut => {
+                            im.focus_out();
+                            imp.im_focused.set(false);
+                        }
+                        ImFocusAction::Idle => {}
                     }
-                    imp.im_focused.set(focused);
                 }
                 glib::ControlFlow::Continue
             });
@@ -2086,8 +2101,14 @@ mod imp {
             #[weak]
             widget,
             move |_im, text| {
+                // CEF's `character` field is UTF-16. `ch as u16` truncated anything
+                // above the BMP — an emoji committed by the IM (U+1F600) arrived as
+                // U+F600 — so encode properly and send each surrogate in turn.
+                let mut buf = [0u16; 2];
                 for ch in text.chars() {
-                    send_char(&widget, ch as u16, 0);
+                    for unit in ch.encode_utf16(&mut buf) {
+                        send_char(&widget, *unit, 0);
+                    }
                 }
             }
         ));
@@ -2296,6 +2317,9 @@ mod imp {
                 // editable-focus signal left the IM focused-out (post-send input
                 // re-render), dead keys silently stop composing. Re-focus first. (#154)
                 let imp = widget.imp();
+                // A keystroke means the field is live: drop any focus-out the page
+                // queued, so the debounce window can't expire mid-word (#180).
+                imp.im_focus_out_pending.set(0);
                 if !imp.im_focused.get() {
                     im.focus_in();
                     imp.im_focused.set(true);
@@ -2470,6 +2494,68 @@ mod imp {
         };
         if requested {
             request();
+        }
+    }
+
+    /// Ticks a focus-out waits before it is applied. The drain runs every 16 ms,
+    /// so this is ~64 ms — longer than the gap between the editable-focus false
+    /// and true a composer re-render emits, and short enough that a real blur
+    /// still hides an on-screen keyboard promptly. (#180)
+    pub(super) const IM_FOCUS_OUT_DEBOUNCE_TICKS: u8 = 4;
+
+    /// What one drain tick should do to the IM context's focus.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    pub(super) enum ImFocusAction {
+        /// Leave the IM as it is.
+        Idle,
+        /// Call `focus_in` and mark the IM focused.
+        FocusIn,
+        /// Call `focus_out` and mark the IM unfocused.
+        FocusOut,
+    }
+
+    /// Decide one tick of the IM focus debounce.
+    ///
+    /// `request` is the editable-focus value drained from CEF this tick (`None`
+    /// when the page said nothing), `focused` mirrors `im_focused`, and `pending`
+    /// is the focus-out countdown, updated in place.
+    ///
+    /// A `true` wins immediately and cancels any queued focus-out — that pairing
+    /// is what a composer re-render produces, and acting on its `false` is what
+    /// dropped keys in #180. A `false` only arms the countdown; the focus-out
+    /// lands on a later tick if nothing re-focuses first.
+    pub(super) fn im_focus_step(
+        request: Option<bool>,
+        focused: bool,
+        pending: &mut u8,
+    ) -> ImFocusAction {
+        match request {
+            Some(true) => {
+                *pending = 0;
+                if focused {
+                    ImFocusAction::Idle
+                } else {
+                    ImFocusAction::FocusIn
+                }
+            }
+            Some(false) => {
+                // Nothing to defer if the IM is already out.
+                if focused && *pending == 0 {
+                    *pending = IM_FOCUS_OUT_DEBOUNCE_TICKS;
+                }
+                ImFocusAction::Idle
+            }
+            None => {
+                if *pending == 0 {
+                    return ImFocusAction::Idle;
+                }
+                *pending -= 1;
+                if *pending == 0 && focused {
+                    ImFocusAction::FocusOut
+                } else {
+                    ImFocusAction::Idle
+                }
+            }
         }
     }
 
@@ -3668,10 +3754,10 @@ mod tests {
 #[cfg(test)]
 mod input_tests {
     use super::imp::{
-        ExplicitCopyTrigger, MouseButtonTracker, MouseDispatch, MouseEventSink, MouseInput,
-        RendererMessageSink, dispatch_explicit_copy, dispatch_mouse_with,
-        physical_mouse_coordinates, printable_char, request_live_selection_with, send_click_with,
-        send_move_with, should_forward_mouse,
+        ExplicitCopyTrigger, IM_FOCUS_OUT_DEBOUNCE_TICKS, ImFocusAction, MouseButtonTracker,
+        MouseDispatch, MouseEventSink, MouseInput, RendererMessageSink, dispatch_explicit_copy,
+        dispatch_mouse_with, im_focus_step, physical_mouse_coordinates, printable_char,
+        request_live_selection_with, send_click_with, send_move_with, should_forward_mouse,
     };
     use crate::handlers::{
         client::dispatch_renderer_message_with,
@@ -4047,6 +4133,88 @@ mod input_tests {
         let cancelled = adapter.handle(MouseInput::Cancel { x: 9.0, y: 8.0 });
         assert_eq!(cancelled.len(), 2);
         assert_eq!(adapter.active_modifiers(), 0);
+    }
+
+    /// Drive the debounce over a tick sequence, returning every action it takes.
+    fn run_im_focus(start_focused: bool, requests: &[Option<bool>]) -> Vec<ImFocusAction> {
+        let mut focused = start_focused;
+        let mut pending = 0u8;
+        let mut actions = Vec::new();
+        for req in requests {
+            let action = im_focus_step(*req, focused, &mut pending);
+            match action {
+                ImFocusAction::FocusIn => focused = true,
+                ImFocusAction::FocusOut => focused = false,
+                ImFocusAction::Idle => {}
+            }
+            actions.push(action);
+        }
+        actions
+    }
+
+    /// The #180 regression: a composer re-render emits editable-focus false then
+    /// true. Acting on that false unfocused the IM, and the next keystroke raced
+    /// an async ibus `focus_in` — `filter_keypress` consumed it, no `commit` came,
+    /// and the character vanished. The pair must be a no-op.
+    #[test]
+    fn composer_rerender_never_unfocuses_the_im() {
+        let actions = run_im_focus(
+            true,
+            &[Some(false), None, Some(true), None, None, None, None],
+        );
+        assert!(
+            actions.iter().all(|a| *a == ImFocusAction::Idle),
+            "re-render pair disturbed IM focus: {actions:?}"
+        );
+    }
+
+    /// A real blur — clicking out of the composer, no follow-up focus — must
+    /// still reach the IM so an on-screen keyboard hides.
+    #[test]
+    fn genuine_blur_still_focuses_out() {
+        let mut requests = vec![Some(false)];
+        requests.extend(std::iter::repeat_n(
+            None,
+            usize::from(IM_FOCUS_OUT_DEBOUNCE_TICKS),
+        ));
+        let actions = run_im_focus(true, &requests);
+        assert_eq!(
+            actions
+                .iter()
+                .filter(|a| **a == ImFocusAction::FocusOut)
+                .count(),
+            1,
+            "expected exactly one focus-out: {actions:?}"
+        );
+        assert_eq!(*actions.last().unwrap(), ImFocusAction::FocusOut);
+    }
+
+    /// Focusing a text field when the IM is out must focus in at once — the
+    /// debounce only ever delays going *out*.
+    #[test]
+    fn editable_focus_focuses_in_immediately() {
+        assert_eq!(
+            run_im_focus(false, &[Some(true)]),
+            vec![ImFocusAction::FocusIn]
+        );
+        // Already focused: nothing to do.
+        assert_eq!(run_im_focus(true, &[Some(true)]), vec![ImFocusAction::Idle]);
+    }
+
+    /// An unfocused IM receiving another false must not arm a countdown that
+    /// later fires a focus-out against an already-unfocused context.
+    #[test]
+    fn redundant_focus_out_is_inert() {
+        let mut requests = vec![Some(false)];
+        requests.extend(std::iter::repeat_n(
+            None,
+            usize::from(IM_FOCUS_OUT_DEBOUNCE_TICKS) + 2,
+        ));
+        let actions = run_im_focus(false, &requests);
+        assert!(
+            actions.iter().all(|a| *a == ImFocusAction::Idle),
+            "focus-out fired on an unfocused IM: {actions:?}"
+        );
     }
 
     /// A key the IM declines must still insert text: RAWKEYDOWN alone inserts
