@@ -69,6 +69,12 @@ pub fn ui_locales() -> Vec<(String, String)> {
 /// locale. Schema-guarded: returns `None` rather than aborting if the GSchema
 /// is not installed (can happen very early in `main` on uninstalled dev runs).
 pub fn override_locale() -> Option<String> {
+    // CEF zygotes must remain single-threaded before forking. Reading the
+    // GSettings below can start GLib/GIO worker threads in subprocesses.
+    if std::env::args_os().any(|arg| arg.to_string_lossy().starts_with("--type=")) {
+        return None;
+    }
+
     let source = gio::SettingsSchemaSource::default()?;
     source.lookup(APP_ID, true)?;
     let value = gio::Settings::new(APP_ID).string("app-language");

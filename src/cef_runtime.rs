@@ -147,10 +147,11 @@ wrap_app! {
             cmd.append_switch(Some(&"no-startup-window".into()));
             cmd.append_switch(Some(&"noerrdialogs".into()));
             cmd.append_switch(Some(&"hide-crash-restore-bubble".into()));
-            // Single-webview app: zygote fork-sharing wins are negligible.
-            // Disabling keeps a flat, debuggable process tree (forked renderers
-            // are otherwise mislabeled --type=zygote).
-            cmd.append_switch(Some(&"no-zygote".into()));
+            // Keep the flat process tree only in Flatpak, where the CEF
+            // sandbox is disabled. Native sandboxing requires zygote.
+            if std::env::var_os("FLATPAK_ID").is_some() {
+                cmd.append_switch(Some(&"no-zygote".into()));
+            }
             // Memory: turn off the site-isolation field trials too (the
             // disable-features list above only covers the static features), so
             // WhatsApp's cross-origin frames don't each fork their own renderer.
@@ -347,7 +348,11 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
     let settings = Settings {
         windowless_rendering_enabled: 1,
         external_message_pump: 1,
-        no_sandbox: 1,
+        no_sandbox: if std::env::var_os("FLATPAK_ID").is_some() {
+            1
+        } else {
+            0
+        },
         root_cache_path: cef::CefString::from(root_cache.to_string_lossy().as_ref()),
         locale: cef::CefString::from(cef_locale.as_str()),
         accept_language_list: cef::CefString::from(accept_lang.as_str()),
