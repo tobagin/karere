@@ -17,7 +17,7 @@ wrap_permission_handler! {
     impl PermissionHandler {
         fn on_request_media_access_permission(
             &self,
-            _browser: Option<&mut Browser>,
+            browser: Option<&mut Browser>,
             _frame: Option<&mut Frame>,
             requesting_origin: Option<&CefString>,
             requested_permissions: u32,
@@ -29,13 +29,17 @@ wrap_permission_handler! {
             let mask = requested_permissions;
             let Some(cb) = callback else { return 0 };
 
+            let browser = browser.map(|b| b.clone());
+
             // Remembered decision short-circuits the dialog.
             match permissions_store::get(&origin, mask) {
                 Decision::Allow => {
+                    mirror_media_content_setting(browser.as_ref(), &origin, mask, true);
                     cb.cont(mask);
                     return 1;
                 }
                 Decision::Deny => {
+                    mirror_media_content_setting(browser.as_ref(), &origin, mask, false);
                     cb.cont(0);
                     return 1;
                 }
@@ -49,6 +53,7 @@ wrap_permission_handler! {
             glib::MainContext::default().spawn_local(async move {
                 let allow = prompt_user(&origin, mask).await;
                 persist(&origin, mask, allow);
+                mirror_media_content_setting(browser.as_ref(), &origin, mask, allow);
                 cb_clone.cont(if allow { mask } else { 0 });
             });
             1
@@ -109,6 +114,54 @@ impl ShellPermissionHandlerBuilder {
     pub fn build() -> PermissionHandler {
         Self::new(ShellPermissionHandler)
     }
+}
+
+/// Mirror a mic/camera decision into Chromium's content settings for `origin`.
+///
+/// CEF answers media access through this handler, so Chromium's own
+/// HostContentSettingsMap never learns the outcome and
+/// `navigator.permissions.query({name:"microphone"})` stays "prompt" forever.
+/// WhatsApp's in-call unmute preflight (WAWebVoipRecoverMicrophone) re-queries
+/// that state after a successful getUserMedia and bails with "permission
+/// remains prompt" — the mic can never be unmuted in a call (#182). Writing the
+/// setting makes the query report granted/denied like a normal browser.
+fn mirror_media_content_setting(browser: Option<&Browser>, origin: &str, mask: u32, allow: bool) {
+    use cef::{
+        ContentSettingTypes, ContentSettingValues, ImplBrowser, ImplBrowserHost, ImplRequestContext,
+    };
+
+    let Some(ctx) = browser
+        .and_then(|b| b.host())
+        .and_then(|h| h.request_context())
+    else {
+        log::warn!("permission: no request context to mirror media setting for {origin}");
+        return;
+    };
+    let value = if allow {
+        ContentSettingValues::ALLOW
+    } else {
+        ContentSettingValues::BLOCK
+    };
+    let url = CefString::from(origin);
+    if requests_microphone(mask) {
+        ctx.set_content_setting(
+            Some(&url),
+            Some(&url),
+            ContentSettingTypes::MEDIASTREAM_MIC,
+            value,
+        );
+    }
+    if requests_camera(mask) {
+        ctx.set_content_setting(
+            Some(&url),
+            Some(&url),
+            ContentSettingTypes::MEDIASTREAM_CAMERA,
+            value,
+        );
+    }
+    log::info!(
+        "permission: mirrored media content setting for {origin} mask={mask:#x} allow={allow}"
+    );
 }
 
 /// Record the user's choice. Always remembered (browser-style), so the prompt
