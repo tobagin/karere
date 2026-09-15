@@ -135,9 +135,14 @@ fn install_panic_hook() {
 }
 
 fn init_gettext() {
-    if setlocale(LocaleCategory::LcAll, "").is_none() {
-        log::warn!("setlocale(LC_ALL, \"\") failed — falling back to C.UTF-8");
-        let _ = setlocale(LocaleCategory::LcAll, "C.UTF-8");
+    // SAFETY: gettext-rs 0.8 marks `setlocale` unsafe because concurrent calls
+    // can corrupt the process locale. `init_gettext` runs at the top of `main`,
+    // before CEF or GTK spawn any thread, so this is the only thread alive.
+    unsafe {
+        if setlocale(LocaleCategory::LcAll, "").is_none() {
+            log::warn!("setlocale(LC_ALL, \"\") failed — falling back to C.UTF-8");
+            let _ = setlocale(LocaleCategory::LcAll, "C.UTF-8");
+        }
     }
 
     // UI-language override: export LANGUAGE before textdomain so gettext picks

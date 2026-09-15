@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Right-click Paste ignored text copied from other applications (#189)**: the context menu's Paste ran CEF's windowless paste, which only sees Chromium's internal clipboard, so anything copied outside Karere pasted nothing while Ctrl+V (host-bridged) worked. Menu Paste now goes through the same host clipboard path as Ctrl+V, including images and files.
 - **WhatsApp's own message menu "Copy" never reached the system clipboard (#178)**: that menu copies through the async Clipboard API, which in off-screen rendering lands only in Chromium's internal clipboard. Those writes are now mirrored to the host clipboard like Ctrl+C and text selection already were.
 
+### Changed
+- **Dependency refresh**: every crate dependency brought to its latest release. Semver-compatible — gtk4 0.11.3 → 0.11.4, libadwaita 0.9.1 → 0.9.2, the glib/gio/gdk/pango/cairo 0.22 stack → 0.22.9, zbus 5.15 → 5.19, tokio 1.52 → 1.53, ashpd 0.13.11 → 0.13.13, ksni 0.3.4 → 0.3.6, uuid 1.23 → 1.26, plus serde/serde_json/anyhow/log/env_logger patch releases. Note that a plain `cargo update` cannot re-resolve this tree: `epoxy` 0.1.0 pulls `gl_generator` 0.9, which requires `xml-rs` ^0.7.0, and both 0.7.0 and 0.7.1 are yanked — so updates have to go through `cargo update -p <crate>`.
+- **Major dependency upgrades**: `gettext-rs` 0.7.7 → 0.8.0 (with `gettext-sys` 0.26 → 0.27) — 0.8 marks `setlocale` `unsafe` because concurrent calls can corrupt the process locale, so the call in `init_gettext` is now an `unsafe` block documenting that it runs single-threaded at the top of `main`; `base64` 0.22.1 → 0.23.1; `libloading` 0.8 → 0.9, which also de-duplicates it — the `cef` crate already pulled 0.9 in, so the tree carried two copies. Only `setlocale` needed a call-site change.
+- **Dropped the unused `toml` dependency**: nothing in the crate referenced it, and removing it takes `toml`, `toml_edit`, `toml_datetime`, `toml_write`, `serde_spanned` and `winnow` out of the vendored Flatpak sources.
+
 ## [4.2.5] - 2026-08-23
 
 ### Fixed
