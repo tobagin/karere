@@ -3,7 +3,8 @@ use cef::{
     ScreenInfo, TextInputMode, WrapRenderHandler, rc::Rc, wrap_render_handler,
 };
 
-use super::SharedRef;
+use super::{SharedRef, SharedState};
+use gtk::prelude::GLAreaExt;
 
 #[derive(Default)]
 pub struct FrameBuffer {
@@ -186,6 +187,7 @@ wrap_render_handler! {
                 "coord: J2 on_paint delivered={}x{} expected_physical={}x{} scale={:.3}",
                 width, height, expected.0, expected.1, scale
             );
+            request_redraw(s);
         }
 
         // GPU path: when shared-texture OSR is enabled, CEF delivers a DMA-BUF
@@ -251,6 +253,7 @@ wrap_render_handler! {
                 "coord: J2 on_accelerated_paint delivered={}x{} expected_physical={}x{} scale={:.3} fourcc={fourcc:#x} mod={:#x}",
                 w, h, expected.0, expected.1, scale, info.modifier
             );
+            request_redraw(s);
         }
 
         // Fires when a page editable gains/loses focus. Drives two things: the IM
@@ -288,6 +291,17 @@ wrap_render_handler! {
 impl ShellRenderHandlerBuilder {
     pub fn build(handler: ShellRenderHandler) -> RenderHandler {
         Self::new(handler)
+    }
+}
+
+/// Ask the GLArea to draw the frame just stored in `shared`. Takes the guard so
+/// the lock is released before GTK runs (queue_render is cheap and coalesces
+/// within a frame, so a paint burst never over-schedules).
+fn request_redraw(s: parking_lot::MutexGuard<'_, SharedState>) {
+    let redraw = s.redraw.clone();
+    drop(s);
+    if let Some(area) = redraw.and_then(|w| w.upgrade()) {
+        area.queue_render();
     }
 }
 

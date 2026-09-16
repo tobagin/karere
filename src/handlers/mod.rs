@@ -123,6 +123,13 @@ pub struct SharedState {
     /// `refresh_screen_scale`; read by `screen_point` on the CEF UI thread
     /// (main thread under `external_message_pump`). (KARE-019)
     pub window_origin: (i32, i32),
+    /// The presenting `GtkGLArea`, so a paint can queue its own render instead
+    /// of waiting for the widget's 16 ms poll timer. On_paint runs on the main
+    /// thread (external_message_pump), so the upgrade is always legal; the
+    /// `SendWeakRef` only satisfies the `Arc<Mutex<_>>` bounds. Going through
+    /// the timer added 0–16 ms per frame and beat against the 60 Hz paint
+    /// stream, dropping and doubling frames — the "stutter" in #173/#179.
+    pub redraw: Option<gtk::glib::SendWeakRef<gtk::GLArea>>,
 }
 
 pub type SharedRef = Arc<Mutex<SharedState>>;

@@ -673,10 +673,12 @@ mod imp {
             // injected the mobile layout (#176).
             let shared = new_shared(((1280.0 * scale) as i32, (800.0 * scale) as i32), scale);
             *self.shared.lock() = Some(shared.clone());
+            shared.lock().redraw = Some(widget.upcast_ref::<gtk::GLArea>().downgrade().into());
 
-            // CEF on_paint runs on the glib main thread (external_message_pump);
-            // poll the dirty flag and queue a render when a frame arrives. Uses a
-            // 60 Hz WALL-CLOCK timer, NOT add_tick_callback: a tick callback is
+            // Paints queue their own render (`request_redraw` in the render
+            // handler); this 60 Hz WALL-CLOCK timer is the backstop for a dirty
+            // frame nobody queued (foreground switch, resize) and drains the
+            // cursor/IM requests. NOT add_tick_callback: a tick callback is
             // paced by the widget frame clock, which free-runs (pinning a core)
             // when vsync is unreliable — e.g. software/non-conformant Vulkan
             // (issue #151). A timeout is bounded, and idle ticks are a cheap
