@@ -348,7 +348,10 @@ pub(crate) fn apply_zoom_from_account(browser: &cef::Browser, display_scale: f64
     let cef_level = host_zoom_level(effective, display_scale);
     log::info!(
         "coord: J7 apply_zoom account={} user_linear={:.3} display_scale={:.3} cef_level={:.3}",
-        id, effective, display_scale, cef_level
+        id,
+        effective,
+        display_scale,
+        cef_level
     );
     if let Some(host) = browser.host() {
         host.set_zoom_level(cef_level);
@@ -828,7 +831,15 @@ mod imp {
             }
             log::info!(
                 "coord: J1 size_allocate logical={}x{} scale={:.3} physical={}x{} old_scale={:.3} new_scale={:.3} old_physical={}x{}",
-                width, height, scale, phys_w, phys_h, old_scale, scale, old_size.0, old_size.1
+                width,
+                height,
+                scale,
+                phys_w,
+                phys_h,
+                old_scale,
+                scale,
+                old_size.0,
+                old_size.1
             );
 
             if let Some(browser) = resolved_browser(self)
@@ -994,7 +1005,10 @@ mod imp {
                 })
                 .unwrap_or(((0, 0), 1.0));
             let new_phys = if lw > 0 && lh > 0 {
-                ((lw as f64 * scale).round() as i32, (lh as f64 * scale).round() as i32)
+                (
+                    (lw as f64 * scale).round() as i32,
+                    (lh as f64 * scale).round() as i32,
+                )
             } else {
                 old_size
             };
@@ -1008,7 +1022,15 @@ mod imp {
             }
             log::info!(
                 "coord: J6 refresh_scale logical={}x{} scale={:.3} physical={}x{} old_scale={:.3} new_scale={:.3} old_physical={}x{}",
-                lw, lh, scale, new_phys.0, new_phys.1, old_scale, scale, old_size.0, old_size.1
+                lw,
+                lh,
+                scale,
+                new_phys.0,
+                new_phys.1,
+                old_scale,
+                scale,
+                old_size.0,
+                old_size.1
             );
             if let Some(browser) = resolved_browser(self)
                 && let Some(host) = browser.host()
@@ -1142,7 +1164,10 @@ mod imp {
                     .unwrap_or_else(|| "none".to_string());
                 log::info!(
                     "coord: J7 set_zoom_linear account={} user_linear={:.3} display_scale={:.3} cef_level={:.3}",
-                    acct, linear, display_scale, cef_level
+                    acct,
+                    linear,
+                    display_scale,
+                    cef_level
                 );
                 if let Some(host) = browser.host() {
                     host.set_zoom_level(cef_level);
@@ -1150,7 +1175,9 @@ mod imp {
             } else {
                 log::info!(
                     "coord: J7 set_zoom_linear account=none user_linear={:.3} display_scale={:.3} cef_level={:.3} (no browser)",
-                    linear, display_scale, cef_level
+                    linear,
+                    display_scale,
+                    cef_level
                 );
             }
         }
@@ -1797,7 +1824,13 @@ mod imp {
                         .unwrap_or((0, 0));
                     log::debug!(
                         "coord: J4 draw frame={}x{} tex={}x{} widget_physical={}x{} accel=true scale={:.3}",
-                        aw, ah, aw, ah, dbg_phys_w, dbg_phys_h, dbg_scale
+                        aw,
+                        ah,
+                        aw,
+                        ah,
+                        dbg_phys_w,
+                        dbg_phys_h,
+                        dbg_scale
                     );
                 }
                 let (tex, bgra) = if use_accel {
@@ -1812,10 +1845,16 @@ mod imp {
                         super::CpuUpload::Empty => {
                             log::debug!(
                                 "coord: J4 draw empty frame={}x{} tex={}x{} widget_physical={}x{} accel=false scale={:.3}",
-                                s.frame.width, s.frame.height, tw, th, dbg_phys_w, dbg_phys_h, dbg_scale
+                                s.frame.width,
+                                s.frame.height,
+                                tw,
+                                th,
+                                dbg_phys_w,
+                                dbg_phys_h,
+                                dbg_scale
                             );
                             return;
-                        },
+                        }
                         super::CpuUpload::Allocate => {
                             gl::BindTexture(gl::TEXTURE_2D, tex);
                             gl::TexImage2D(
@@ -1840,10 +1879,10 @@ mod imp {
                             // window every frame is what makes CPU OSR stutter
                             // on integrated GPUs (#179/#180). GLES 3.0 gives us
                             // the UNPACK_* row addressing to do it in one call.
-                            let (x, y, w, h) = s
-                                .frame
-                                .damage
-                                .unwrap_or((0, 0, s.frame.width, s.frame.height));
+                            let (x, y, w, h) =
+                                s.frame
+                                    .damage
+                                    .unwrap_or((0, 0, s.frame.width, s.frame.height));
                             if (x, y, w, h) != (0, 0, s.frame.width, s.frame.height) {
                                 gl::PixelStorei(gl::UNPACK_ROW_LENGTH, s.frame.width);
                                 gl::PixelStorei(gl::UNPACK_SKIP_PIXELS, x);
@@ -1875,7 +1914,13 @@ mod imp {
                     let th2 = self.tex_h.load(Ordering::Relaxed);
                     log::debug!(
                         "coord: J4 draw frame={}x{} tex={}x{} widget_physical={}x{} accel=false scale={:.3}",
-                        s.frame.width, s.frame.height, tw2, th2, dbg_phys_w, dbg_phys_h, dbg_scale
+                        s.frame.width,
+                        s.frame.height,
+                        tw2,
+                        th2,
+                        dbg_phys_w,
+                        dbg_phys_h,
+                        dbg_scale
                     );
                 }
                 drop(s);
@@ -1926,9 +1971,21 @@ mod imp {
             double_distance: f64,
             modifiers: u32,
         },
-        Motion { x: f64, y: f64, modifiers: u32 },
-        Release { button: u32, x: f64, y: f64, modifiers: u32 },
-        Cancel { x: f64, y: f64 },
+        Motion {
+            x: f64,
+            y: f64,
+            modifiers: u32,
+        },
+        Release {
+            button: u32,
+            x: f64,
+            y: f64,
+            modifiers: u32,
+        },
+        Cancel {
+            x: f64,
+            y: f64,
+        },
     }
 
     #[derive(Debug, Clone, Copy, PartialEq)]
@@ -1941,7 +1998,11 @@ mod imp {
             count: i32,
             modifiers: u32,
         },
-        Move { x: f64, y: f64, modifiers: u32 },
+        Move {
+            x: f64,
+            y: f64,
+            modifiers: u32,
+        },
     }
 
     impl MouseButtonTracker {
@@ -1972,7 +2033,12 @@ mod imp {
                     y,
                     modifiers: modifiers | self.active_modifiers(),
                 }],
-                MouseInput::Release { button, x, y, modifiers } => self
+                MouseInput::Release {
+                    button,
+                    x,
+                    y,
+                    modifiers,
+                } => self
                     .release(button)
                     .map(|count| MouseDispatch::Click {
                         x,
@@ -2023,7 +2089,13 @@ mod imp {
                 .map_or(1, |last| (last.count % 3) + 1);
             self.pressed |= mask;
             self.press_counts[(button - 1) as usize] = count;
-            self.last_click = Some(ClickHistory { button, x, y, time, count });
+            self.last_click = Some(ClickHistory {
+                button,
+                x,
+                y,
+                time,
+                count,
+            });
             Some(count)
         }
 
@@ -2174,24 +2246,29 @@ mod imp {
 
         let motion = gtk::EventControllerMotion::new();
         motion.connect_motion(glib::clone!(
-            #[weak] widget,
-            #[strong] mouse_buttons,
+            #[weak]
+            widget,
+            #[strong]
+            mouse_buttons,
             move |ctrl, x, y| {
                 if !should_forward_mouse(is_pointer_emulated(ctrl)) {
                     return; // touch handled above; don't double-feed as mouse
                 }
                 let modifiers = modifiers_from_state(ctrl.current_event_state());
-                for event in mouse_buttons
-                    .borrow_mut()
-                    .handle(MouseInput::Motion { x, y, modifiers })
+                for event in
+                    mouse_buttons
+                        .borrow_mut()
+                        .handle(MouseInput::Motion { x, y, modifiers })
                 {
                     dispatch_mouse(&widget, event);
                 }
             }
         ));
         motion.connect_leave(glib::clone!(
-            #[weak] widget,
-            #[strong] mouse_buttons,
+            #[weak]
+            widget,
+            #[strong]
+            mouse_buttons,
             move |ctrl| {
                 let modifiers = modifiers_from_state(ctrl.current_event_state())
                     | mouse_buttons.borrow().active_modifiers();
@@ -2202,10 +2279,14 @@ mod imp {
 
         let buttons = gtk::EventControllerLegacy::new();
         buttons.connect_event(glib::clone!(
-            #[weak] widget,
-            #[strong] im,
-            #[strong] mouse_buttons,
-            #[upgrade_or] glib::Propagation::Proceed,
+            #[weak]
+            widget,
+            #[strong]
+            im,
+            #[strong]
+            mouse_buttons,
+            #[upgrade_or]
+            glib::Propagation::Proceed,
             move |_ctrl, event| {
                 use gtk::gdk::{ButtonEvent, EventType};
                 if !should_forward_mouse(event.is_pointer_emulated()) {
@@ -2233,9 +2314,7 @@ mod imp {
                         let settings = widget.settings();
                         widget.grab_focus();
                         set_focus(&widget, true);
-                        im.set_cursor_location(&gtk::gdk::Rectangle::new(
-                            x as i32, y as i32, 1, 1,
-                        ));
+                        im.set_cursor_location(&gtk::gdk::Rectangle::new(x as i32, y as i32, 1, 1));
                         let events = mouse_buttons.borrow_mut().handle(MouseInput::Press {
                             button,
                             x,
@@ -2272,7 +2351,8 @@ mod imp {
         // A cancelled device grab or widget teardown must not strand CEF in a
         // button-down state. Normal releases have already removed their bit.
         widget.connect_unrealize(glib::clone!(
-            #[strong] mouse_buttons,
+            #[strong]
+            mouse_buttons,
             move |widget| release_stuck_mouse_buttons(widget, &mouse_buttons)
         ));
 
@@ -2322,10 +2402,9 @@ mod imp {
                 // OSR's native copy has no platform clipboard. Ask the renderer
                 // for the current selection now, without racing the 50 ms PRIMARY
                 // mirror. The key still forwards so page copy behavior is preserved.
-                dispatch_explicit_copy(
-                    ExplicitCopyTrigger::Keyboard { keyval, state },
-                    || request_live_selection(&widget),
-                );
+                dispatch_explicit_copy(ExplicitCopyTrigger::Keyboard { keyval, state }, || {
+                    request_live_selection(&widget)
+                });
                 // A physical keypress means the user is typing — if the page's
                 // editable-focus signal left the IM focused-out (post-send input
                 // re-render), dead keys silently stop composing. Re-focus first. (#154)
@@ -2473,10 +2552,7 @@ mod imp {
         let _ = gdk::ModifierType::SHIFT_MASK; // suppress unused-import warning
     }
 
-    pub(super) fn is_copy_shortcut(
-        keyval: gtk::gdk::Key,
-        state: gtk::gdk::ModifierType,
-    ) -> bool {
+    pub(super) fn is_copy_shortcut(keyval: gtk::gdk::Key, state: gtk::gdk::ModifierType) -> bool {
         use gtk::gdk::{Key, ModifierType};
         state.contains(ModifierType::CONTROL_MASK)
             && !state.intersects(ModifierType::ALT_MASK | ModifierType::SUPER_MASK)
@@ -2495,10 +2571,7 @@ mod imp {
     /// Shared production trigger used by both the installed key controller and
     /// the CEF context-menu callback. The request sink is injectable so tests
     /// cover command dispatch, not just shortcut/command classification.
-    pub(super) fn dispatch_explicit_copy(
-        trigger: ExplicitCopyTrigger,
-        request: impl FnOnce(),
-    ) {
+    pub(super) fn dispatch_explicit_copy(trigger: ExplicitCopyTrigger, request: impl FnOnce()) {
         let requested = match trigger {
             ExplicitCopyTrigger::Keyboard { keyval, state } => is_copy_shortcut(keyval, state),
             ExplicitCopyTrigger::ContextMenu(command_id) => {
@@ -2576,7 +2649,10 @@ mod imp {
     /// `None` when the key is not text. Ctrl/Alt/Super combos are shortcuts, and
     /// C0/DEL keyvals (Enter, Tab, Backspace, Escape) keep their raw-key-only
     /// handling — the page acts on those from the key-down. (#180)
-    pub(super) fn printable_char(keyval: gtk::gdk::Key, state: gtk::gdk::ModifierType) -> Option<u16> {
+    pub(super) fn printable_char(
+        keyval: gtk::gdk::Key,
+        state: gtk::gdk::ModifierType,
+    ) -> Option<u16> {
         use gtk::gdk::ModifierType;
         if state.intersects(
             ModifierType::CONTROL_MASK | ModifierType::ALT_MASK | ModifierType::SUPER_MASK,
@@ -2892,7 +2968,16 @@ mod imp {
             }
         };
         let ok = unsafe {
-            (xlib.XTranslateCoordinates)(xdisplay as *mut x11::xlib::Display, xid, root, 0, 0, &mut rx, &mut ry, &mut child)
+            (xlib.XTranslateCoordinates)(
+                xdisplay as *mut x11::xlib::Display,
+                xid,
+                root,
+                0,
+                0,
+                &mut rx,
+                &mut ry,
+                &mut child,
+            )
         };
         if ok == 0 {
             log::debug!("window_origin_for: XTranslateCoordinates failed");
@@ -2949,7 +3034,12 @@ mod imp {
         let (px, py) = physical_mouse_coordinates(x, y, scale);
         log::debug!(
             "coord: J1/J6 move logical={:.1},{:.1} physical={},{} scale={} leave={}",
-            x, y, px, py, scale, leave
+            x,
+            y,
+            px,
+            py,
+            scale,
+            leave
         );
         if !leave {
             update_position(px, py);
@@ -2996,7 +3086,14 @@ mod imp {
         let (px, py) = physical_mouse_coordinates(x, y, scale);
         log::debug!(
             "coord: J1/J6 click logical={:.1},{:.1} physical={},{} scale={} button={} down={} count={}",
-            x, y, px, py, scale, button, down, n_press
+            x,
+            y,
+            px,
+            py,
+            scale,
+            button,
+            down,
+            n_press
         );
         let (x, y) = (px, py);
         let event = MouseEvent { x, y, modifiers };
@@ -4241,7 +4338,10 @@ mod input_tests {
         assert_eq!(printable_char(Key::_1, none), Some(u16::from(b'1')));
         assert_eq!(printable_char(Key::space, none), Some(0x20));
         assert_eq!(printable_char(Key::eacute, none), Some(0xe9));
-        assert_eq!(printable_char(Key::a, ModifierType::SHIFT_MASK), Some(u16::from(b'a')));
+        assert_eq!(
+            printable_char(Key::a, ModifierType::SHIFT_MASK),
+            Some(u16::from(b'a'))
+        );
     }
 
     /// Shortcuts and control keys keep their raw-key-only handling — a
@@ -4331,10 +4431,24 @@ mod input_tests {
         let observed = std::cell::RefCell::new(Vec::new());
         let active = std::cell::Cell::new(7);
         route_mouse(
-            crate::web_view::imp::MouseDispatch::Move { x: 110.0, y: 110.0, modifiers: 0 },
-            &active, 2, &observed,
+            crate::web_view::imp::MouseDispatch::Move {
+                x: 110.0,
+                y: 110.0,
+                modifiers: 0,
+            },
+            &active,
+            2,
+            &observed,
         );
-        assert_eq!(observed.borrow()[0], Observed::Move { browser: 7, x: 220, y: 220, modifiers: 0 });
+        assert_eq!(
+            observed.borrow()[0],
+            Observed::Move {
+                browser: 7,
+                x: 220,
+                y: 220,
+                modifiers: 0
+            }
+        );
         // Calibrated dispatch: logical 170 with origin 60 at 2× should hit physical 220
         let cx = calibrated_physical(170.0, 60.0, 2.0);
         assert_eq!(cx, 220);
@@ -4363,7 +4477,7 @@ mod input_tests {
 
 #[cfg(test)]
 mod zoom_tests {
-    use super::{cef_to_linear, linear_to_cef, ZOOM_MAX};
+    use super::{ZOOM_MAX, cef_to_linear, linear_to_cef};
 
     /// linear → CEF → linear round-trips within 1e-9 across the range.
     #[test]

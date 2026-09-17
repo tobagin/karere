@@ -380,7 +380,10 @@ pub(crate) fn copy_region(dst: &mut [u8], src: &[u8], width: i32, rect: (i32, i3
 /// `physical_mouse_coordinates`. Wayland fallback is `origin=(0,0)` so
 /// `screen==view`. (KARE-017)
 pub(crate) fn view_to_screen(view_x: i32, view_y: i32, origin_x: i32, origin_y: i32) -> (i32, i32) {
-    (view_x.saturating_add(origin_x), view_y.saturating_add(origin_y))
+    (
+        view_x.saturating_add(origin_x),
+        view_y.saturating_add(origin_y),
+    )
 }
 
 /// Exercise the exact CEF `RenderHandler::on_paint` callback implementation in
@@ -431,12 +434,20 @@ mod tests {
     use crate::handlers::new_shared;
 
     fn rect(x: i32, y: i32, w: i32, h: i32) -> Rect {
-        Rect { x, y, width: w, height: h }
+        Rect {
+            x,
+            y,
+            width: w,
+            height: h,
+        }
     }
 
     #[test]
     fn union_dirty_narrows_to_the_changed_region() {
-        assert_eq!(union_dirty(Some(&[rect(10, 20, 5, 5)]), 100, 100), Some((10, 20, 5, 5)));
+        assert_eq!(
+            union_dirty(Some(&[rect(10, 20, 5, 5)]), 100, 100),
+            Some((10, 20, 5, 5))
+        );
         assert_eq!(
             union_dirty(Some(&[rect(10, 20, 5, 5), rect(50, 10, 10, 40)]), 100, 100),
             Some((10, 10, 50, 40))
@@ -454,15 +465,27 @@ mod tests {
     #[test]
     fn union_dirty_clamps_out_of_frame_rects() {
         // Would otherwise index past the buffer.
-        assert_eq!(union_dirty(Some(&[rect(-10, -10, 30, 30)]), 100, 100), Some((0, 0, 20, 20)));
-        assert_eq!(union_dirty(Some(&[rect(90, 90, 50, 50)]), 100, 100), Some((90, 90, 10, 10)));
+        assert_eq!(
+            union_dirty(Some(&[rect(-10, -10, 30, 30)]), 100, 100),
+            Some((0, 0, 20, 20))
+        );
+        assert_eq!(
+            union_dirty(Some(&[rect(90, 90, 50, 50)]), 100, 100),
+            Some((90, 90, 10, 10))
+        );
         assert_eq!(union_dirty(Some(&[rect(200, 200, 10, 10)]), 100, 100), None);
-        assert_eq!(union_dirty(Some(&[rect(0, 0, i32::MAX, i32::MAX)]), 100, 100), None);
+        assert_eq!(
+            union_dirty(Some(&[rect(0, 0, i32::MAX, i32::MAX)]), 100, 100),
+            None
+        );
     }
 
     #[test]
     fn merge_damage_accumulates_until_the_draw_consumes_it() {
-        assert_eq!(merge_damage(Some((10, 10, 5, 5)), (20, 30, 5, 5)), Some((10, 10, 15, 25)));
+        assert_eq!(
+            merge_damage(Some((10, 10, 5, 5)), (20, 30, 5, 5)),
+            Some((10, 10, 15, 25))
+        );
         // "whole frame" is absorbing.
         assert_eq!(merge_damage(None, (20, 30, 5, 5)), None);
     }
