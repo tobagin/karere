@@ -9,12 +9,12 @@ links against and how that distribution is exposed to cargo via `CEF_PATH`.
 
 ### Requirement: Developer script to fetch CEF binaries
 The repository SHALL ship `download-cef.sh` which fetches the upstream CEF
-150 minimal distribution into `cef-binaries/` and exposes it via the
+152 minimal distribution into `cef-binaries/` and exposes it via the
 `cef-binaries/current` symlink for `CEF_PATH` consumers.
 
 #### Scenario: Script downloads and links the expected CEF version
 - **WHEN** a contributor runs `./download-cef.sh` from the repository root
-- **THEN** the CEF 150.0.10+g8042e43+chromium-150.0.7871.101 minimal tarball is downloaded and extracted under `cef-binaries/`, and `cef-binaries/current` is updated to symlink the freshly extracted directory
+- **THEN** the CEF 152.0.6+g708dc14+chromium-152.0.7977.83 minimal tarball is downloaded and extracted under `cef-binaries/`, and `cef-binaries/current` is updated to symlink the freshly extracted directory
 
 ### Requirement: Build consumes CEF via `CEF_PATH`
 The build SHALL link against the CEF distribution pointed to by the

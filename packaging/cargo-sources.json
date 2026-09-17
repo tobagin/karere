@@ -483,27 +483,27 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/cef/cef-150.0.0+150.0.10.crate",
-        "sha256": "8dd6aaa08e30ced80c7c18445807984243a06b7f4004c264922302b7e05d5c41",
-        "dest": "cargo/vendor/cef-150.0.0+150.0.10"
+        "url": "https://static.crates.io/crates/cef/cef-152.3.0+152.0.6.crate",
+        "sha256": "785012b485c1a2685876b1f924722a047309900b88f15fc3581869caabdce3d8",
+        "dest": "cargo/vendor/cef-152.3.0+152.0.6"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"8dd6aaa08e30ced80c7c18445807984243a06b7f4004c264922302b7e05d5c41\", \"files\": {}}",
-        "dest": "cargo/vendor/cef-150.0.0+150.0.10",
+        "contents": "{\"package\": \"785012b485c1a2685876b1f924722a047309900b88f15fc3581869caabdce3d8\", \"files\": {}}",
+        "dest": "cargo/vendor/cef-152.3.0+152.0.6",
         "dest-filename": ".cargo-checksum.json"
     },
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/cef-dll-sys/cef-dll-sys-150.0.0+150.0.10.crate",
-        "sha256": "d0ec349898441a7e9f91add53716d9c40f6fc381c9b41818241e4f63fb73f0b8",
-        "dest": "cargo/vendor/cef-dll-sys-150.0.0+150.0.10"
+        "url": "https://static.crates.io/crates/cef-dll-sys/cef-dll-sys-152.3.0+152.0.6.crate",
+        "sha256": "ced5c6a0f46744561b50e283f9134c21bdd95a2e991695b0fc7399ad79765bbd",
+        "dest": "cargo/vendor/cef-dll-sys-152.3.0+152.0.6"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"d0ec349898441a7e9f91add53716d9c40f6fc381c9b41818241e4f63fb73f0b8\", \"files\": {}}",
-        "dest": "cargo/vendor/cef-dll-sys-150.0.0+150.0.10",
+        "contents": "{\"package\": \"ced5c6a0f46744561b50e283f9134c21bdd95a2e991695b0fc7399ad79765bbd\", \"files\": {}}",
+        "dest": "cargo/vendor/cef-dll-sys-152.3.0+152.0.6",
         "dest-filename": ".cargo-checksum.json"
     },
     {
@@ -730,14 +730,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/download-cef/download-cef-2.3.2.crate",
-        "sha256": "c169adf067a787e1f1c58ed62906a557de85388bee4b54fb878b722ff606b113",
-        "dest": "cargo/vendor/download-cef-2.3.2"
+        "url": "https://static.crates.io/crates/download-cef/download-cef-3.0.0.crate",
+        "sha256": "05ee509499d14dc47da5f824e4bb1bd558ceb259adc5475956265d48787a80da",
+        "dest": "cargo/vendor/download-cef-3.0.0"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"c169adf067a787e1f1c58ed62906a557de85388bee4b54fb878b722ff606b113\", \"files\": {}}",
-        "dest": "cargo/vendor/download-cef-2.3.2",
+        "contents": "{\"package\": \"05ee509499d14dc47da5f824e4bb1bd558ceb259adc5475956265d48787a80da\", \"files\": {}}",
+        "dest": "cargo/vendor/download-cef-3.0.0",
         "dest-filename": ".cargo-checksum.json"
     },
     {

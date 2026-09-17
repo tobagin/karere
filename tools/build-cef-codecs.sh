@@ -8,7 +8,7 @@
 # carries patent-licensing obligations, falling on whoever hosts the tarball.
 #
 # Usage: CEF_BRANCH=<n> tools/build-cef-codecs.sh [download-dir]
-#   CEF_BRANCH MUST match Karere's Chromium 150 line (chromium-150.0.7871.101); wrong
+#   CEF_BRANCH MUST match Karere's Chromium 152 line (chromium-152.0.7977.83); wrong
 #   branch wastes the whole build, so the script refuses to start without it.
 #
 set -euo pipefail
@@ -17,8 +17,8 @@ if [[ -z "${CEF_BRANCH:-}" ]]; then
   cat >&2 <<'EOF'
 error: CEF_BRANCH is required.
 
-  Set it to the CEF branch number for Chromium 150 (the line Karere targets,
-  chromium-150.0.7871.101). Look it up at:
+  Set it to the CEF branch number for Chromium 152 (the line Karere targets,
+  chromium-152.0.7977.83). Look it up at:
     https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding
 
   Then re-run, e.g.:
@@ -45,7 +45,7 @@ FORCE_CLEAN_FLAG=""
 # Extra automate-git.py flags (e.g. --no-chromium-history in throwaway containers).
 AUTOMATE_EXTRA="${AUTOMATE_EXTRA:-}"
 
-# Pin the exact CEF commit (e.g. 8042e43 from "150.0.10+g8042e43+…") instead of
+# Pin the exact CEF commit (e.g. 708dc14 from "152.0.6+g708dc14+…") instead of
 # branch tip — the produced binaries must match the Rust cef crate's pinned
 # version, and branch tip can be a release ahead.
 CHECKOUT_FLAG=""
@@ -166,8 +166,31 @@ else
   echo ">> no patches found in $PATCH_DIR"
 fi
 
-# 4c. Build + package a minimal distribution (Release only, skip cefclient sample).
-#     --no-update keeps the patched tree as-is (no re-sync, no clean).
+# 4c. Build. automate-git's own build phase shells out to `autoninja` with no -j
+#     and prepends depot_tools to PATH (so a PATH shim can't cap it); siso then
+#     runs one local job per core, which on a 16-core/30 GB box swaps hard and
+#     gets build children SIGKILLed. Drive ninja ourselves: CEF_NINJA_JOBS caps
+#     parallelism (unset = one job per core), and the loop retries because siso
+#     resumes exactly where it died — a killed step costs seconds, not a re-sync.
+#     gclient_hook.py (gn gen) already ran via runhooks; rerunning is a cheap no-op.
+OUT_DIR="out/Release_GN_${CEF_ARCH:-x64}"
+JOBS_FLAG=""
+[[ -n "${CEF_NINJA_JOBS:-}" ]] && JOBS_FLAG="-j $CEF_NINJA_JOBS"
+( cd "$CHROMIUM_SRC/cef" && python3 tools/gclient_hook.py )
+attempt=0
+until ( cd "$CHROMIUM_SRC" && autoninja -C "$OUT_DIR" $JOBS_FLAG cefsimple chrome_sandbox ); do
+  attempt=$((attempt + 1))
+  if (( attempt > ${CEF_NINJA_RETRIES:-500} )); then
+    echo "error: ninja failed $attempt times, giving up" >&2
+    exit 1
+  fi
+  echo ">> ninja attempt $attempt failed — retrying in 10 s"
+  sleep 10
+done
+
+# 4d. Package a minimal distribution from the tree built above.
+#     --no-update keeps the patched tree as-is; --no-build skips automate's
+#     uncapped autoninja (targets are already up to date).
 python3 "$AUTOMATE" \
   --download-dir="$DOWNLOAD_DIR" \
   --branch="$CEF_BRANCH" \
@@ -178,7 +201,7 @@ python3 "$AUTOMATE" \
   $CHECKOUT_FLAG \
   $AUTOMATE_EXTRA \
   --no-update \
-  --force-build \
+  --no-build \
   --force-distrib
 
 # 5. Locate the tarball + print sha256.

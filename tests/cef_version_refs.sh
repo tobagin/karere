@@ -35,7 +35,7 @@ decode_manifest_tag() {
         echo ""
         return
     fi
-    # url like cef_binary_150.0.10%2Bg8042e43%2Bchromium-150.0.7871.101_linux64_minimal.zip
+    # url like cef_binary_152.0.6%2Bg708dc14%2Bchromium-152.0.7977.83_linux64_minimal.zip
     local decoded
     decoded="$(echo "$url" | sed 's/%2B/+/g')"
     # Strip prefix cef_binary_ and suffix _linux*_minimal.zip
@@ -80,7 +80,7 @@ if [[ -n "$TAG_YML" && -n "$TAG_DEVEL" && "$TAG_YML" != "$TAG_DEVEL" ]]; then
 fi
 
 # 3) Cargo.lock cef build metadata vs first three dot-components of default
-# Cargo.lock: version = "150.0.0+150.0.10" after name = "cef"
+# Cargo.lock: version = "152.3.0+152.0.6" after name = "cef"
 LOCK_VERSION="$(grep -A1 '^name = "cef"$' Cargo.lock | grep 'version' | sed -n 's/.*version = "\([^"]*\)".*/\1/p' | head -n 1)"
 if [[ -z "$LOCK_VERSION" ]]; then
     fail "could not extract cef version from Cargo.lock"
@@ -110,10 +110,10 @@ if [[ -n "$CEF_DEFAULT" ]]; then
 fi
 
 # 5) Metainfo current description says 150, not 148
-if grep -Fq "Now built on CEF/Chromium 150." data/io.github.tobagin.karere.metainfo.xml.in; then
-    pass "metainfo current description contains CEF/Chromium 150"
+if grep -Fq "Now built on CEF/Chromium 152." data/io.github.tobagin.karere.metainfo.xml.in; then
+    pass "metainfo current description contains CEF/Chromium 152"
 else
-    fail "metainfo current description missing 'Now built on CEF/Chromium 150.'"
+    fail "metainfo current description missing 'Now built on CEF/Chromium 152.'"
 fi
 if grep -Fq "Now built on CEF/Chromium 148" data/io.github.tobagin.karere.metainfo.xml.in; then
     # Count occurrences: only historical release entries should contain 148, not the current paragraph.

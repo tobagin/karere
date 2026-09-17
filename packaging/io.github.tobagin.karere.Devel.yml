@@ -52,21 +52,21 @@ modules:
     sources:
       - type: archive
         only-arches: [x86_64]
-        url: https://github.com/tobagin/karere/releases/download/cef-150.0.10-proprietary-codecs/cef_binary_150.0.10%2Bg8042e43%2Bchromium-150.0.7871.101_linux64_minimal.zip
-        sha256: 3bbe298368c4d87c19ad9b7ed4e8449ea91b32ffa3cefc8672791a1b96c9c3b9
+        url: https://github.com/tobagin/karere/releases/download/cef-152.0.6-proprietary-codecs/cef_binary_152.0.6%2Bg708dc14%2Bchromium-152.0.7977.83_linux64_minimal.zip
+        sha256: 3d64f6fac8911a368ffa415e3ee53d002cbd792866f08ed6578dae1e252cbac8
       - type: archive
         only-arches: [aarch64]
-        url: https://github.com/tobagin/karere/releases/download/cef-150.0.10-proprietary-codecs/cef_binary_150.0.10%2Bg8042e43%2Bchromium-150.0.7871.101_linuxarm64_minimal.zip
-        sha256: 543bc10ce854fc39b0493ff8b369c47d65fa43f2fb974b734252eea805bffc53
+        url: https://github.com/tobagin/karere/releases/download/cef-152.0.6-proprietary-codecs/cef_binary_152.0.6%2Bg708dc14%2Bchromium-152.0.7977.83_linuxarm64_minimal.zip
+        sha256: fcf2ca3fd37dbd89f8a1dc58cec2f374164eb9a7e76baa96409013368dcaa42a
       - type: inline
         only-arches: [x86_64]
         contents: |
-          {"type":"minimal","name":"cef_binary_150.0.10+g8042e43+chromium-150.0.7871.101_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
+          {"type":"minimal","name":"cef_binary_152.0.6+g708dc14+chromium-152.0.7977.83_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
       - type: inline
         only-arches: [aarch64]
         contents: |
-          {"type":"minimal","name":"cef_binary_150.0.10+g8042e43+chromium-150.0.7871.101_linuxarm64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
+          {"type":"minimal","name":"cef_binary_152.0.6+g708dc14+chromium-152.0.7977.83_linuxarm64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
 
   - name: karere
