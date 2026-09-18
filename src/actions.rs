@@ -251,6 +251,8 @@ fn register_about(app: &KarereApplication) {
                 "Muhammed Al-Basha https://github.com/mu7basha",
                 "Jimmy Scionti https://github.com/amivaleo",
                 "AnmiTaliDev https://github.com/AnmiTaliDev",
+                "Riccardo Marotti https://github.com/riccardomarotti",
+                "LeoXia https://github.com/hz-xiaxz",
             ];
             let designers = ["Thiago Fernandes https://github.com/tobagin"];
             let artists = [
