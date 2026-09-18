@@ -101,6 +101,19 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.3.0" date="2026-09-18">
+      <description>
+        <ul>
+          <li>Browser engine upgraded to CEF 152 / Chromium 152 for current security and rendering fixes; video attachments still play in-app.</li>
+          <li>Fixed stuttery scrolling and typing lag: frames no longer wait on a poll timer and are no longer dropped, on software and GPU rendering alike (#173, #179).</li>
+          <li>Fixed the microphone staying muted in calls (#182).</li>
+          <li>Fixed right-click Paste ignoring text, images and files copied from other applications (#189).</li>
+          <li>Fixed the message menu "Copy" not reaching the system clipboard (#178).</li>
+          <li>Fixed characters being dropped right after sending a message (#180).</li>
+          <li>All dependencies updated to their latest releases.</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.2.5" date="2026-08-23">
       <description>
         <ul>

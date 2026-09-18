@@ -1,5 +1,5 @@
 project('karere', 'rust',
-          version: '4.2.5',
+          version: '4.3.0',
     meson_version: '>= 0.60.0', # custom_target install_tag requires 0.60.0
   default_options: [ 'warning_level=2', 'werror=false', ],
 )

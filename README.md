@@ -15,7 +15,7 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 4.2 — CEF/Chromium 152
+## 🎉 Version 4.3 — CEF/Chromium 152
 
 **Karere 4.0** is a ground-up rewrite that swaps the rendering backend from WebKitGTK to the
 **Chromium Embedded Framework (CEF/Chromium 152)** while keeping the same native
@@ -28,42 +28,22 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.2.5
+### 🆕 What's New in 4.3.0
 
-- **No more dropped keystrokes (#180)**: a key the input method declined reached the engine without a
-  character event and inserted nothing; declined printable keys now carry their own character.
-- **Cheaper software rendering (#179)**: each frame uploads only the region that actually changed
-  instead of the whole window — less CPU and memory bandwidth per frame, most noticeable on
-  integrated graphics.
-
-### Also in 4.2.4
-
-- **Clicks land where you click**: 4.2.3 fed CEF raw surface-relative event coordinates, offsetting
-  every click by the header bar and window shadow (hover was unaffected, so targets highlighted but
-  did not activate). Button positions are now mapped to widget coordinates before dispatch.
-
-### Also in 4.2.3
-
-- **HiDPI pointer accuracy (#158)**: clicks, scrolling, and context menus are now pixel-accurate on
-  scaled / mixed-DPI monitors (rounded input transforms + re-synced page zoom), verified by an
-  automated coordinate probe.
-- **Correct popup anchoring on X11 (#158)**: engine popups now use the real window position on
-  multi-monitor setups instead of a degenerate origin.
-- **PinePhone / GLES-only startup (#177)**: fixed blank view on GLES-only devices; software rendering
-  resumes automatically when accelerated frames are unavailable.
-- **Reliable text selection & copy (#178)**: drag-select, immediate Ctrl+C, and right-click → Copy no
-  longer race the PRIMARY clipboard.
-
-### Also in 4.2.2
-
-- **Smoother scrolling (#173)**: off-screen frame rate raised to 60 fps for fluid scroll/typing with no idle cost.
-- **Hybrid NVIDIA handling (#173)**: detection now uses the live GL context, so hybrid GPUs keep acceleration; fallback remains for background starts.
-- **Tray Quit while hidden (#175)**: tray "Quit" now works even when the window was never shown (start-in-background).
-- **HiDPI mobile layout (#176)**: fixed WhatsApp starting in mobile layout on mixed-scale monitors until resized.
-- **Match WhatsApp Colors live (#168)**: the Appearance toggle now applies instantly without a restart.
-
-Recent in the 4.2 line: the "Match WhatsApp Colors" appearance toggle and the browser engine move
-to **CEF/Chromium 150**; touchpad scrolling no longer needs a click in the pane first.
+- **Chromium 152**: the browser engine moves to CEF 152.0.6 / Chromium 152.0.7977.83 for current
+  security and rendering fixes. Video attachments still play in-app (H.264/AAC) and the idle-CPU
+  fix (#151) is carried over.
+- **Smooth scrolling and typing on every GPU (#173/#179)**: frames used to wait for a 16 ms poll
+  timer and about one in seven was dropped; paints now queue their own redraw (paint-to-draw
+  latency 8.6 ms → 0.3 ms median). Applies to software and GPU rendering alike.
+- **Calls can unmute (#182)**: microphone/camera decisions are mirrored into the engine's content
+  settings, so WhatsApp's in-call permission check no longer fails.
+- **Right-click Paste works with other apps (#189)**: the context-menu Paste now reads the host
+  clipboard like Ctrl+V does, including images and files.
+- **Message-menu "Copy" reaches the system clipboard (#178)**.
+- **No dropped keys after sending**: the input method's focus-out is debounced across composer
+  re-renders.
+- **Dependency refresh**: every crate brought to its latest release; unused `toml` dropped.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
