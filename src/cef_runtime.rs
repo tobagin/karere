@@ -147,6 +147,11 @@ wrap_app! {
             cmd.append_switch(Some(&"no-startup-window".into()));
             cmd.append_switch(Some(&"noerrdialogs".into()));
             cmd.append_switch(Some(&"hide-crash-restore-bubble".into()));
+            // Chromium 152 defaults `eula_required` to true on Linux and gates
+            // a fresh user-data-dir on a Views EULA dialog that never shows in
+            // CEF, so CefInitialize fails with CHROME_RESULT_CODE_EULA_REFUSED
+            // (28) on every first start. Skip first-run handling entirely.
+            cmd.append_switch(Some(&"no-first-run".into()));
             // Keep the flat process tree only in Flatpak, where the CEF
             // sandbox is disabled. Native sandboxing requires zygote.
             if std::env::var_os("FLATPAK_ID").is_some() {
