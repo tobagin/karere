@@ -584,6 +584,10 @@ mod imp {
         #[allow(dead_code)]
         pub window_visible: AtomicBool,
         program: AtomicU32,
+        /// No usable GL context, so frames are presented through GTK's normal
+        /// (software) render path instead of the GLArea framebuffer. See
+        /// `snapshot`. (#177)
+        pub(super) software_present: AtomicBool,
         vao: AtomicU32,
         vbo: AtomicU32,
         texture: AtomicU32,
@@ -753,14 +757,60 @@ mod imp {
     }
 
     impl WidgetImpl for KarereWebView {
+        /// Present the CEF frame without GL when `realize` could not get a
+        /// context (#177). GTK has already fallen back to its software renderer
+        /// in that situation, so handing it a memory texture is all that is
+        /// left to do; on every normal machine this defers to `GtkGLArea`,
+        /// which drives `render` -> `draw` as before.
+        fn snapshot(&self, snapshot: &gtk::Snapshot) {
+            if !self.software_present.load(Ordering::Relaxed) {
+                self.parent_snapshot(snapshot);
+                return;
+            }
+            let Some(shared) = self.shared.lock().as_ref().cloned() else {
+                return;
+            };
+            let mut s = shared.lock();
+            if s.frame.width <= 0 || s.frame.height <= 0 || s.frame.pixels.is_empty() {
+                return;
+            }
+            // CEF hands back premultiplied BGRA, which is a GdkMemoryTexture
+            // format verbatim -- no conversion, just the one copy Bytes makes.
+            let texture = gtk::gdk::MemoryTexture::new(
+                s.frame.width,
+                s.frame.height,
+                gtk::gdk::MemoryFormat::B8g8r8a8Premultiplied,
+                &glib::Bytes::from(&s.frame.pixels[..]),
+                (s.frame.width * 4) as usize,
+            );
+            s.frame.dirty = false;
+            drop(s);
+            // Frame is physical pixels, widget bounds are logical: letting the
+            // rect scale it is the same fit the GL path gets from the viewport.
+            let widget = self.obj();
+            snapshot.append_texture(
+                &texture,
+                &gtk::graphene::Rect::new(0.0, 0.0, widget.width() as f32, widget.height() as f32),
+            );
+        }
+
         fn realize(&self) {
             self.parent_realize();
             let widget = self.obj();
             widget.make_current();
             if let Some(err) = widget.error() {
-                // Fence all GL setup and browser creation behind a valid current
-                // context. Keep GTK's original error intact for diagnostics.
-                log::error!("GLArea realize error: {err}");
+                // No GL context. GDK cannot produce one below GLES 3.0, which is
+                // all a Mali-400 (PinePhone, lima) offers, so this is terminal for
+                // the GL path -- but not for the app: CEF's software OSR still
+                // hands us BGRA frames, and `snapshot` can present them through
+                // GTK's own renderer. Clear GTK's error so the GLArea shows our
+                // frames rather than its built-in error label, and carry on to
+                // the browser bootstrap. (#177)
+                log::warn!("no GL context ({err}) — presenting frames in software");
+                widget.set_error(None);
+                self.software_present.store(true, Ordering::Relaxed);
+                NO_GL.store(true, Ordering::Relaxed);
+                self.bootstrap_pool();
                 return;
             }
             if let Some(context) = widget.context() {
@@ -2835,6 +2885,10 @@ mod imp {
     /// downscales the result to the 1.5× surface — a single high-quality downscale,
     /// the same path every GTK GLArea takes on a fractional display. View rect and
     /// mouse/wheel coords stay in DIP (CEF maps them via device_scale_factor). (#155, #158)
+    /// Set once `realize` gives up on GL (#177). Process-global to reach
+    /// `accel_osr_enabled`, whose answer is fixed for the browser's lifetime.
+    pub(super) static NO_GL: AtomicBool = AtomicBool::new(false);
+
     /// GPU-accelerated OSR opt-in: env `KARERE_GPU_OSR=1` (or its setting) AND
     /// EGL dma-buf import must be available on the current GL context. Cached on
     /// first call; a prewarm before realization safely resolves to CPU OSR.
@@ -2843,6 +2897,13 @@ mod imp {
         use std::sync::OnceLock;
         static EN: OnceLock<bool> = OnceLock::new();
         *EN.get_or_init(|| {
+            // Nothing can import a shared texture without a GL context, and
+            // asking for one stops CEF ever calling CPU on_paint -- which is
+            // the only thing the software present path has to draw. (#177)
+            if NO_GL.load(Ordering::Relaxed) {
+                log::info!("accel_osr: no GL context — software frames only");
+                return false;
+            }
             // Read once — the shared-texture flag is fixed for the browser's
             // lifetime, so this is restart-required. Env wins as a dev override /
             // kill-switch; otherwise the experimental `gpu-rendering` GSetting.
@@ -3729,10 +3790,18 @@ mod tests {
             );
         }
 
-        // Force GTK's production create-context signal to fail. The subclass
-        // realize implementation must preserve that error and must not cross
-        // the browser-bootstrap fence.
+        // Force GTK's production create-context signal to fail. GDK cannot
+        // produce a context below GLES 3.0, which is all a PinePhone's Mali-400
+        // offers, so realize must fall back to software presentation rather
+        // than leave the user with GTK's error label (#177): it clears the
+        // error, flips `software_present`, and still bootstraps the browser,
+        // because CEF's CPU on_paint frames are what `snapshot` then draws.
         let failed = KarereWebView::new();
+        use std::sync::atomic::Ordering as AtomicOrdering;
+        failed
+            .imp()
+            .suppress_browser_creation
+            .store(true, AtomicOrdering::Release);
         failed.connect_create_context(|area| {
             let error =
                 gtk::glib::Error::new(gtk::gio::IOErrorEnum::Failed, "injected GL context failure");
@@ -3747,13 +3816,25 @@ mod tests {
         window.present();
         while gtk::glib::MainContext::default().iteration(false) {}
 
-        let error = failed
-            .error()
-            .expect("injected context failure must remain observable");
-        assert!(error.message().contains("injected GL context failure"));
-        assert!(failed.imp().browser.lock().is_none());
-        assert!(failed.imp().browsers.lock().is_empty());
-        assert!(failed.imp().pending_contexts.lock().is_empty());
+        assert!(
+            failed.error().is_none(),
+            "the GLArea error label must not be left covering a usable software path"
+        );
+        assert!(failed.imp().software_present.load(AtomicOrdering::Relaxed));
+        assert!(
+            failed
+                .imp()
+                .fallback_test_events
+                .borrow()
+                .iter()
+                .any(|(kind, _)| *kind == "create"),
+            "software presentation still needs a browser to produce frames"
+        );
+        // Shared textures are unimportable without a context, and asking for
+        // them stops CEF ever sending the CPU frames the fallback draws.
+        // Assert the flag, not accel_osr_enabled(): that caches in a
+        // process-wide OnceLock whichever test reaches it first.
+        assert!(super::imp::NO_GL.load(AtomicOrdering::Relaxed));
         window.destroy();
 
         assert_rejected_accelerated_frame_restarts_pool_then_renders_cpu_callback();
