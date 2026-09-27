@@ -309,6 +309,17 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
             .recursive(true)
             .create(&root_cache);
     }
+    // #190: root_cache doubles as Chromium's user-data dir, so ProcessSingleton
+    // guards it with a SingletonLock symlink naming <hostname>-<pid>. It refuses
+    // to start when that name is another host -- and GNOME OS regenerates the
+    // hostname every boot, so the lock from the previous run NEVER matches and
+    // cef::initialize dies with exit code 21 forever. main.rs already arbitrated
+    // single-instance through GApplication before calling us, so a lock still
+    // sitting here belongs to a run that is gone: drop it. remove_file unlinks
+    // the symlink itself rather than following it.
+    for stale in ["SingletonLock", "SingletonCookie", "SingletonSocket"] {
+        let _ = std::fs::remove_file(root_cache.join(stale));
+    }
     // Match Chromium's own UI (context menus, error pages) to the UI-language
     // override by mapping it onto the nearest shipped `.pak` locale. Empty =
     // Chromium default (system).
