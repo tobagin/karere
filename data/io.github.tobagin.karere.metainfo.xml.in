@@ -101,6 +101,15 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.3.1" date="2026-09-27">
+      <description>
+        <ul>
+          <li>Fixed scrolling still stalling with software rendering: frames were held up by the browser engine's event loop and only released by a fallback timer, redrawing the window about 10 times a second instead of 60 (#173, #179).</li>
+          <li>Fixed Karere refusing to start on systems whose hostname changes between boots, such as GNOME OS Nightly (#190).</li>
+          <li>Fixed Karere failing to start on hardware without OpenGL ES 3.0, such as the PinePhone; frames are now drawn in software instead (#177).</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.3.0" date="2026-09-18">
       <description>
         <ul>

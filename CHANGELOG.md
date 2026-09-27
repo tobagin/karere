@@ -5,6 +5,17 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.1] - 2026-09-27
+
+### Fixed
+- **Scrolling still stalled on software rendering (#173/#179)**: 4.3.0 fixed one layer of this — paints now queue their own redraw — but frames were still being held up earlier, inside the CEF event-loop integration. CEF processes queued work in 10 ms slices; when a slice ran out with work still pending it stopped without asking to be called back, and Chromium's own bookkeeping already assumed a call was coming, so it stopped asking too. Nothing then moved until Karere's 100 ms fallback timer fired. Rendering the window in software exhausts that slice on almost every pass, so the page animated at ~60 updates/s while the window redrew ~10 times/s, with delays landing exactly on the 100 ms timer. Karere now requests another main-context turn after each delivered frame. Measured on the real chat list: 10.07 → 59.53 redraws/s, worst-case pump delay (p95) 100.14 ms → 9.85 ms, idle CPU unchanged. Because the window genuinely redraws ~6x more often, CPU use while actively scrolling rises. This is the software rendering path, which is also where NVIDIA users sit permanently since GPU rendering is disabled for them (#167) — it does not make GPU acceleration work on NVIDIA. Diagnosis, fix and measurements by @sknowledge1 (#191).
+- **Refuses to start when the machine's hostname changes between boots (#190)**: Chromium guards its profile with a `SingletonLock` symlink named `<hostname>-<pid>` and refuses to open the profile when that hostname is not the current machine, assuming the profile is on a share in use elsewhere. Distributions that regenerate the hostname every boot (GNOME OS Nightly) therefore never match the previous run's lock, and start-up failed with engine exit code 21 on every launch. Karere already arbitrates single-instance through GApplication before CEF starts, so a lock still present is always stale; it is now cleared during start-up.
+- **Will not start on hardware without OpenGL ES 3.0 (#177)**: the PinePhone's Mali-400 only supports ES 2.0 and the window failed with "Unable to create a GL context". Porting the renderer to ES 2.0 cannot help — GTK itself has required ES 3.0 since 4.14 and will not create an ES 2.0 context regardless of what the application asks for. Instead, when no context can be created, Karere now presents CEF's software frames through GTK's own renderer rather than failing. Verified by capping Mesa at GLES 2.0, which reproduces the reported error exactly. Performance on such hardware is untested.
+
+### Changed
+- **Bundled CEF carries a patch for the work-slice bug above**: `MessagePumpExternal::Run` discards the flag telling it immediate work remains, so it cannot repost its own continuation. The patch returns that flag and reposts, fixing the cause for cases the application cannot anticipate. It takes effect on the next engine build and changes nothing in this release.
+- **Added `tools/scrolling-probe/`**: the reproducible measurement harness behind the #173 diagnosis, contributed by @sknowledge1. Developer diagnostics only — not built into or shipped with the application.
+
 ## [4.3.0] - 2026-09-18
 
 ### Fixed

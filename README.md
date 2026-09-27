@@ -28,22 +28,22 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.3.0
+### 🆕 What's New in 4.3.1
 
-- **Chromium 152**: the browser engine moves to CEF 152.0.6 / Chromium 152.0.7977.83 for current
-  security and rendering fixes. Video attachments still play in-app (H.264/AAC) and the idle-CPU
-  fix (#151) is carried over.
-- **Smooth scrolling and typing on every GPU (#173/#179)**: frames used to wait for a 16 ms poll
-  timer and about one in seven was dropped; paints now queue their own redraw (paint-to-draw
-  latency 8.6 ms → 0.3 ms median). Applies to software and GPU rendering alike.
-- **Calls can unmute (#182)**: microphone/camera decisions are mirrored into the engine's content
-  settings, so WhatsApp's in-call permission check no longer fails.
-- **Right-click Paste works with other apps (#189)**: the context-menu Paste now reads the host
-  clipboard like Ctrl+V does, including images and files.
-- **Message-menu "Copy" reaches the system clipboard (#178)**.
-- **No dropped keys after sending**: the input method's focus-out is debounced across composer
-  re-renders.
-- **Dependency refresh**: every crate brought to its latest release; unused `toml` dropped.
+- **Scrolling is fixed on software rendering (#173/#179)**: 4.3.0 addressed one layer of this, but
+  frames were still stalling inside the browser engine's event loop, which stopped asking to be
+  called back when its 10 ms work slice ran out. The window then waited on a 100 ms fallback timer,
+  redrawing about 10 times a second while the page updated 60 times a second. Measured on the real
+  chat list: 10.07 → 59.53 redraws/s. Diagnosis, fix and measurements by
+  [@sknowledge1](https://github.com/sknowledge1). CPU use while actively scrolling rises, since the
+  window now genuinely draws the frames it was dropping. This does not make GPU acceleration work
+  on NVIDIA, which remains disabled (#167).
+- **Starts on systems with a changing hostname (#190)**: Chromium locks its profile with a file
+  named after the machine, so distributions that pick a new hostname each boot (GNOME OS Nightly)
+  failed to start every time. The stale lock is now cleared at start-up.
+- **Runs without OpenGL ES 3.0 (#177)**: on hardware like the PinePhone's Mali-400, Karere failed
+  with "Unable to create a GL context". Frames are now drawn through GTK's software renderer when
+  no GL context is available. Performance on such hardware is untested.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
