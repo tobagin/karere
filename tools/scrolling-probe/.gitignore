@@ -1,0 +1,4 @@
+.build/
+results/
+__pycache__/
+phase.txt

@@ -1,0 +1,327 @@
+[
+  {
+    "file": "automatic_cpu_default.jsonl",
+    "configuration": {
+      "settings": {
+        "gpu-rendering": "false",
+        "start-in-background": "false",
+        "window-width": "800",
+        "window-height": "600",
+        "is-maximized": "true",
+        "zoom-level": "1.0",
+        "reduce-motion": "false"
+      },
+      "fast_backstop": false,
+      "synthetic_gpu": false,
+      "chat_list": null,
+      "gsk_renderer": null,
+      "schedule_probe": true
+    },
+    "page": {
+      "start_epoch_ms": 1790513791991.2998,
+      "end_epoch_ms": 1790513806991.2998,
+      "duration_ms": 15000,
+      "raf_frames": 883,
+      "raf_median_ms": 16.69999999999891,
+      "raf_p95_ms": 16.799999999999272,
+      "raf_max_ms": 66.60000000000036,
+      "raf_gaps_over_33ms": 3,
+      "inner_width": 2021,
+      "inner_height": 1173,
+      "device_pixel_ratio": 2,
+      "visibility": "visible"
+    },
+    "rendering_callbacks_logged": true,
+    "paint_callbacks": 300,
+    "draw_callbacks": 152,
+    "paint_callbacks_per_second": 20.0,
+    "draw_callbacks_per_second": 10.13,
+    "cef_pump": {
+      "calls": 163,
+      "gap_median_ms": 100.114,
+      "gap_p95_ms": 100.198,
+      "gap_max_ms": 100.358,
+      "duration_p95_ms": 19.637,
+      "duration_max_ms": 21.142,
+      "gaps_over_50ms": 148,
+      "long_gaps_without_between_pump_requests": 148
+    },
+    "schedule_requests": {
+      "count": 12,
+      "delay_ms_counts": {
+        "0": 12
+      },
+      "new_timers": 12,
+      "immediate_request_to_next_pump_p95_ms": 8.159,
+      "immediate_request_to_next_pump_max_ms": 8.223315,
+      "urgent_postponed_events": 0
+    },
+    "average_process_cpu_percent": 70.3,
+    "cpu_percent_by_role": {
+      "main": 23.5,
+      "renderer": 22.5,
+      "gpu-process": 24.3
+    },
+    "note": "100% CPU is one core. Callback rates are not display FPS. Active-window alignment uses page epoch timestamps and host log receipt times."
+  },
+  {
+    "file": "automatic_cpu_fast.jsonl",
+    "configuration": {
+      "settings": {
+        "gpu-rendering": "false",
+        "start-in-background": "false",
+        "window-width": "800",
+        "window-height": "600",
+        "is-maximized": "true",
+        "zoom-level": "1.0",
+        "reduce-motion": "false"
+      },
+      "fast_backstop": true,
+      "synthetic_gpu": false,
+      "chat_list": null,
+      "gsk_renderer": null,
+      "schedule_probe": true
+    },
+    "page": {
+      "start_epoch_ms": 1790513968267.7,
+      "end_epoch_ms": 1790513983267.7,
+      "duration_ms": 15000,
+      "raf_frames": 892,
+      "raf_median_ms": 16.69999999999891,
+      "raf_p95_ms": 16.700000000000728,
+      "raf_max_ms": 50.099999999999454,
+      "raf_gaps_over_33ms": 4,
+      "inner_width": 2021,
+      "inner_height": 1173,
+      "device_pixel_ratio": 2,
+      "visibility": "visible"
+    },
+    "rendering_callbacks_logged": true,
+    "paint_callbacks": 889,
+    "draw_callbacks": 583,
+    "paint_callbacks_per_second": 59.27,
+    "draw_callbacks_per_second": 38.87,
+    "cef_pump": {
+      "calls": 2168,
+      "gap_median_ms": 8.037,
+      "gap_p95_ms": 15.783,
+      "gap_max_ms": 32.782,
+      "duration_p95_ms": 15.693,
+      "duration_max_ms": 32.417,
+      "gaps_over_50ms": 0,
+      "long_gaps_without_between_pump_requests": 0
+    },
+    "schedule_requests": {
+      "count": 714,
+      "delay_ms_counts": {
+        "0": 714
+      },
+      "new_timers": 700,
+      "immediate_request_to_next_pump_p95_ms": 7.949,
+      "immediate_request_to_next_pump_max_ms": 17.938545,
+      "urgent_postponed_events": 0
+    },
+    "average_process_cpu_percent": 134.6,
+    "cpu_percent_by_role": {
+      "main": 70.6,
+      "renderer": 23.5,
+      "gpu-process": 40.5
+    },
+    "note": "100% CPU is one core. Callback rates are not display FPS. Active-window alignment uses page epoch timestamps and host log receipt times."
+  },
+  {
+    "file": "automatic_cpu_reverted.jsonl",
+    "configuration": {
+      "settings": {
+        "gpu-rendering": "false",
+        "start-in-background": "false",
+        "window-width": "800",
+        "window-height": "600",
+        "is-maximized": "true",
+        "zoom-level": "1.0",
+        "reduce-motion": "false"
+      },
+      "fast_backstop": false,
+      "synthetic_gpu": false,
+      "chat_list": null,
+      "gsk_renderer": null,
+      "schedule_probe": true
+    },
+    "page": {
+      "start_epoch_ms": 1790514052847.6,
+      "end_epoch_ms": 1790514067847.6,
+      "duration_ms": 15000,
+      "raf_frames": 882,
+      "raf_median_ms": 16.69999999999891,
+      "raf_p95_ms": 16.799999999999272,
+      "raf_max_ms": 50,
+      "raf_gaps_over_33ms": 5,
+      "inner_width": 2021,
+      "inner_height": 1173,
+      "device_pixel_ratio": 2,
+      "visibility": "visible"
+    },
+    "rendering_callbacks_logged": true,
+    "paint_callbacks": 294,
+    "draw_callbacks": 150,
+    "paint_callbacks_per_second": 19.6,
+    "draw_callbacks_per_second": 10.0,
+    "cef_pump": {
+      "calls": 160,
+      "gap_median_ms": 100.112,
+      "gap_p95_ms": 100.328,
+      "gap_max_ms": 100.439,
+      "duration_p95_ms": 20.222,
+      "duration_max_ms": 20.625,
+      "gaps_over_50ms": 148,
+      "long_gaps_without_between_pump_requests": 148
+    },
+    "schedule_requests": {
+      "count": 11,
+      "delay_ms_counts": {
+        "0": 11
+      },
+      "new_timers": 8,
+      "immediate_request_to_next_pump_p95_ms": 8.117,
+      "immediate_request_to_next_pump_max_ms": 8.154847,
+      "urgent_postponed_events": 0
+    },
+    "average_process_cpu_percent": 67.6,
+    "cpu_percent_by_role": {
+      "main": 22.2,
+      "renderer": 21.8,
+      "gpu-process": 23.6
+    },
+    "note": "100% CPU is one core. Callback rates are not display FPS. Active-window alignment uses page epoch timestamps and host log receipt times."
+  },
+  {
+    "file": "automatic_gpu_default.jsonl",
+    "configuration": {
+      "settings": {
+        "gpu-rendering": "false",
+        "start-in-background": "false",
+        "window-width": "800",
+        "window-height": "600",
+        "is-maximized": "true",
+        "zoom-level": "1.0",
+        "reduce-motion": "false"
+      },
+      "fast_backstop": false,
+      "synthetic_gpu": true,
+      "chat_list": null,
+      "gsk_renderer": null,
+      "schedule_probe": true
+    },
+    "page": {
+      "start_epoch_ms": 1790514164526.4001,
+      "end_epoch_ms": 1790514179526.4001,
+      "duration_ms": 15000,
+      "raf_frames": 900,
+      "raf_median_ms": 16.69999999999891,
+      "raf_p95_ms": 16.700000000000728,
+      "raf_max_ms": 16.80000000000291,
+      "raf_gaps_over_33ms": 0,
+      "inner_width": 2021,
+      "inner_height": 1173,
+      "device_pixel_ratio": 2,
+      "visibility": "visible"
+    },
+    "rendering_callbacks_logged": true,
+    "paint_callbacks": 899,
+    "draw_callbacks": 896,
+    "paint_callbacks_per_second": 59.93,
+    "draw_callbacks_per_second": 59.73,
+    "cef_pump": {
+      "calls": 1184,
+      "gap_median_ms": 15.581,
+      "gap_p95_ms": 17.186,
+      "gap_max_ms": 36.748,
+      "duration_p95_ms": 0.456,
+      "duration_max_ms": 10.305,
+      "gaps_over_50ms": 0,
+      "long_gaps_without_between_pump_requests": 0
+    },
+    "schedule_requests": {
+      "count": 1102,
+      "delay_ms_counts": {
+        "0": 1102
+      },
+      "new_timers": 1034,
+      "immediate_request_to_next_pump_p95_ms": 9.041,
+      "immediate_request_to_next_pump_max_ms": 13.06629,
+      "urgent_postponed_events": 0
+    },
+    "average_process_cpu_percent": 56.1,
+    "cpu_percent_by_role": {
+      "main": 16.0,
+      "renderer": 22.0,
+      "gpu-process": 18.1
+    },
+    "note": "100% CPU is one core. Callback rates are not display FPS. Active-window alignment uses page epoch timestamps and host log receipt times."
+  },
+  {
+    "file": "automatic_gpu_fast.jsonl",
+    "configuration": {
+      "settings": {
+        "gpu-rendering": "false",
+        "start-in-background": "false",
+        "window-width": "800",
+        "window-height": "600",
+        "is-maximized": "true",
+        "zoom-level": "1.0",
+        "reduce-motion": "false"
+      },
+      "fast_backstop": true,
+      "synthetic_gpu": true,
+      "chat_list": null,
+      "gsk_renderer": null,
+      "schedule_probe": true
+    },
+    "page": {
+      "start_epoch_ms": 1790514110445.3,
+      "end_epoch_ms": 1790514125445.3,
+      "duration_ms": 15000,
+      "raf_frames": 900,
+      "raf_median_ms": 16.69999999999891,
+      "raf_p95_ms": 16.700000000000728,
+      "raf_max_ms": 16.80000000000291,
+      "raf_gaps_over_33ms": 0,
+      "inner_width": 2021,
+      "inner_height": 1173,
+      "device_pixel_ratio": 2,
+      "visibility": "visible"
+    },
+    "rendering_callbacks_logged": true,
+    "paint_callbacks": 899,
+    "draw_callbacks": 895,
+    "paint_callbacks_per_second": 59.93,
+    "draw_callbacks_per_second": 59.67,
+    "cef_pump": {
+      "calls": 2829,
+      "gap_median_ms": 6.049,
+      "gap_p95_ms": 8.63,
+      "gap_max_ms": 19.763,
+      "duration_p95_ms": 0.327,
+      "duration_max_ms": 10.532,
+      "gaps_over_50ms": 0,
+      "long_gaps_without_between_pump_requests": 0
+    },
+    "schedule_requests": {
+      "count": 1736,
+      "delay_ms_counts": {
+        "0": 1736
+      },
+      "new_timers": 1029,
+      "immediate_request_to_next_pump_p95_ms": 7.814,
+      "immediate_request_to_next_pump_max_ms": 14.526073,
+      "urgent_postponed_events": 0
+    },
+    "average_process_cpu_percent": 58.0,
+    "cpu_percent_by_role": {
+      "main": 17.0,
+      "renderer": 22.8,
+      "gpu-process": 18.2
+    },
+    "note": "100% CPU is one core. Callback rates are not display FPS. Active-window alignment uses page epoch timestamps and host log receipt times."
+  }
+]

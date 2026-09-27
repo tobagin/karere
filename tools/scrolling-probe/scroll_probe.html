@@ -1,0 +1,57 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Karere automatic scrolling measurement</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #111b21; color: #e9edef; font: 16px sans-serif; }
+  #list { width: 400px; height: 100vh; overflow-y: scroll; background: #202c33; }
+  .row { height: 72px; border-bottom: 1px solid #34454f; padding: 13px 20px; }
+  .row:nth-child(2n) { background: #233239; }
+  .detail { color: #9dafb8; margin-top: 7px; font-size: 14px; }
+  #status { position: fixed; left: 440px; top: 70px; max-width: 620px; line-height: 1.7; }
+</style>
+<div id="list"></div>
+<div id="status"><h1>Automatic scrolling measurement</h1>
+  <p>This temporary page contains generated rows. It runs a fixed scrolling workload and closes automatically.</p>
+  <p id="phase">Warming up…</p>
+</div>
+<script>
+const pane = document.getElementById('list');
+const phase = document.getElementById('phase');
+for (let i = 0; i < 600; i++) {
+  const row = document.createElement('div'); row.className = 'row';
+  row.textContent = 'Generated conversation ' + i;
+  const detail = document.createElement('div'); detail.className = 'detail';
+  detail.textContent = 'Synthetic text for repeatable scrolling measurements';
+  row.appendChild(detail); pane.appendChild(row);
+}
+const warmup = 5000, duration = 15000;
+let start, last, intervals = [], changes = 0;
+function frame(t) {
+  if (start === undefined) start = t;
+  const age = t - start;
+  if (age >= warmup && age < warmup + duration) {
+    if (last !== undefined) intervals.push(t - last);
+    last = t;
+    phase.textContent = 'Measuring a fixed 15-second scrolling workload…';
+    const leg = ((age - warmup) / 3000) % 2;
+    pane.scrollTop = (leg <= 1 ? leg : 2 - leg) * 8000;
+    changes++;
+  }
+  if (age < warmup + duration) { requestAnimationFrame(frame); return; }
+  const sorted = [...intervals].sort((a,b) => a-b);
+  const q = p => sorted[Math.floor((sorted.length-1)*p)] || 0;
+  const report = {
+    start_epoch_ms: performance.timeOrigin + start + warmup,
+    end_epoch_ms: performance.timeOrigin + start + warmup + duration,
+    duration_ms: duration, raf_frames: changes, raf_median_ms: q(.5),
+    raf_p95_ms: q(.95), raf_max_ms: Math.max(...intervals, 0),
+    raf_gaps_over_33ms: intervals.filter(x => x > 33.4).length,
+    inner_width: innerWidth, inner_height: innerHeight,
+    device_pixel_ratio: devicePixelRatio, visibility: document.visibilityState
+  };
+  phase.textContent = 'Measurement complete.';
+  document.title = 'KARERE_PERF:' + JSON.stringify(report);
+}
+requestAnimationFrame(frame);
+</script>
