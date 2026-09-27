@@ -1,0 +1,80 @@
+Karere #173 — repost the continuation when CEF's external pump runs out of time slice.
+
+MessagePumpExternal is built with max_time_slice_ = 0.01f. Run() loops over
+DirectRunWork() and breaks as soon as 10ms of wall time has passed — but when it
+breaks while DoWork() still reported immediate work, it never calls
+ScheduleWork(), so the host is never told to pump again.
+
+Chromium cannot recover from that on its own: DoWork() already returned an
+immediate NextWorkInfo, so WorkDeduplicator sits in kDoWorkPending and suppresses
+every later ScheduleWork() until a DoWork actually runs. Both sides wait for the
+other, and the browser only moves again when the embedder happens to pump on a
+fallback timer.
+
+Karere hits this on the software off-screen rendering path, where a full-window
+blit overruns the slice on nearly every pump: the page animated at ~60 updates/s
+while GTK received ~10 draws/s, with a 100ms p95 pump gap matching Karere's
+fallback timer exactly. The GPU (DMA-BUF) path keeps pumps near 0.65ms p95, never
+overruns the slice, and does not stall.
+
+DirectRunWork() already computes the flag; it just discards it. next_run_time
+cannot substitute for it, since it is left null both when immediate work remains
+and when there is no work at all. Return it and repost before breaking.
+
+Karere works around this in the embedder: src/cef_pump.rs requests another
+main-context turn after each delivered frame, so it does not depend on this
+patch. That only covers continuations the app can see coming, though -- a slice
+overrun with no frame behind it still strands the pump. Fixing it where the
+flag is computed covers every case, and belongs upstream.
+
+Apply from the Chromium src root: patch -p1 < karere-173-pump-continuation.patch
+
+diff --git a/cef/libcef/browser/browser_message_loop.cc b/cef/libcef/browser/browser_message_loop.cc
+index 072a176cc..9d1e4a2b7 100644
+--- a/cef/libcef/browser/browser_message_loop.cc
++++ b/cef/libcef/browser/browser_message_loop.cc
+@@ -34,7 +34,7 @@ class MessagePumpExternal : public base::MessagePumpForUI {
+ #endif
+ 
+       base::TimeTicks next_run_time;  // is_null()
+-      DirectRunWork(delegate, &next_run_time);
++      const bool more_immediate_work = DirectRunWork(delegate, &next_run_time);
+ 
+       if (next_run_time.is_null()) {
+         // We have more work that should run immediately.
+@@ -43,6 +43,14 @@ class MessagePumpExternal : public base::MessagePumpForUI {
+ 
+       const base::TimeDelta& delta = next_run_time - start;
+       if (delta.InSecondsF() > max_time_slice_) {
++        // KARERE #173: giving up mid-slice with immediate work still queued
++        // strands the embedder. DoWork() already returned an immediate
++        // NextWorkInfo, so WorkDeduplicator is in kDoWorkPending and will
++        // suppress every later ScheduleWork() until a DoWork runs — which only
++        // happens once the host pumps again. Ask for that pump ourselves.
++        if (more_immediate_work) {
++          ScheduleWork();
++        }
+         break;
+       }
+     }
+@@ -60,8 +68,9 @@ class MessagePumpExternal : public base::MessagePumpForUI {
+   }
+ 
+  private:
+-  static void DirectRunWork(Delegate* delegate,
+-                            base::TimeTicks* next_run_time) {
++  // Returns true if DoWork() reported work that is ready to run right away.
++  static bool DirectRunWork(Delegate* delegate,
++                            base::TimeTicks* next_run_time) {
+     bool more_immediate_work = false;
+     bool more_delayed_work = false;
+ 
+@@ -82,6 +91,8 @@ class MessagePumpExternal : public base::MessagePumpForUI {
+     if (!more_immediate_work && !more_delayed_work) {
+       delegate->DoIdleWork();
+     }
++
++    return more_immediate_work;
+   }
+ 
+   const float max_time_slice_;
