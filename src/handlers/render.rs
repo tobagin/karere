@@ -303,6 +303,10 @@ fn request_redraw(s: parking_lot::MutexGuard<'_, SharedState>) {
     if let Some(area) = redraw.and_then(|w| w.upgrade()) {
         area.queue_render();
     }
+    // Frame delivery can consume CEF's external pump time slice without another
+    // scheduling callback. Resume after GTK can draw, so remaining frame/IPC
+    // work does not wait 100 ms. Both CPU and accelerated frames need this.
+    crate::cef_pump::schedule(0);
 }
 
 /// Union of CEF's dirty rects, clamped to the frame, as `(x, y, w, h)`.

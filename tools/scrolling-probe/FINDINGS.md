@@ -1,5 +1,8 @@
 **Karere 4.3.0: confirmed CPU-rendering frame-delivery stall**
 
+This is the original investigation record. The subsequent application fix and
+compiled-build comparisons are documented in [FIX_VALIDATION.md](FIX_VALIDATION.md).
+
 27 September 2026. The controlled tests identify a bottleneck in Karere's CPU off-screen rendering and CEF event-loop integration. The WhatsApp chat list updates at about 60 times per second inside the page, but Karere draws it only about 10 times per second. Enabling the existing GPU Rendering preference on this notebook's AMD GPU raises drawing to about 59 times per second. Reverting the preference reproduces the original bottleneck.
 
 This establishes a cause of slow chat-list display. It does not establish that all perceived wheel/touchpad or native-menu lag has the same cause. The earlier manual comparisons were inconclusive and remain recorded below.

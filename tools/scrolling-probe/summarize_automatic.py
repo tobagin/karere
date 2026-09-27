@@ -62,7 +62,7 @@ def summarize(path):
     draw = sum('J4 draw frame=' in m for m in messages)
     rendering_logged = any('J4 draw ' in row.get('message', '') for row in rows)
     seconds = (end - start)
-    return {
+    result = {
         'file': path.name,
         'configuration': {key: rows[0].get(key) for key in ('settings', 'fast_backstop', 'synthetic_gpu', 'chat_list', 'gsk_renderer', 'schedule_probe')},
         'page': {key: value for key, value in report.items() if key not in ('kind', 't', 'wall', 'phase')},
@@ -75,9 +75,9 @@ def summarize(path):
             'calls': len(selected),
             'gap_median_ms': percentile([p['gap_ms'] for p in selected], .5),
             'gap_p95_ms': percentile([p['gap_ms'] for p in selected], .95),
-            'gap_max_ms': max(p['gap_ms'] for p in selected),
+            'gap_max_ms': max((p['gap_ms'] for p in selected), default=None),
             'duration_p95_ms': percentile([p['duration_ms'] for p in selected], .95),
-            'duration_max_ms': max(p['duration_ms'] for p in selected),
+            'duration_max_ms': max((p['duration_ms'] for p in selected), default=None),
             'gaps_over_50ms': len(long_gaps),
             'long_gaps_without_between_pump_requests': sum(g['requests_between_pumps'] == 0 for g in long_gaps),
         },
@@ -96,6 +96,21 @@ def summarize(path):
         } if samples else {},
         'note': '100% CPU is one core. Callback rates are not display FPS. Active-window alignment uses page epoch timestamps and host log receipt times.'
     }
+    if rows[0].get('binary_sha256'):
+        result['configuration']['binary_sha256'] = rows[0]['binary_sha256']
+    idle = next((row for row in rows if row['kind'] == 'idle_result'), None)
+    if idle:
+        idle_start, idle_end = idle['start_epoch_ms'] / 1000, idle['end_epoch_ms'] / 1000
+        idle_samples = [row for row in rows if row['kind'] == 'sample' and idle_start <= row['wall'] < idle_end]
+        result['idle'] = {
+            'requested_window_state': idle.get('requested_window_state', 'minimized' if idle.get('minimized') else 'visible'),
+            'page_visibility': idle.get('page_visibility'),
+            'duration_seconds': round(idle_end - idle_start, 3),
+            'average_process_cpu_percent': round(statistics.mean(s['cpu_pct'] for s in idle_samples), 1) if idle_samples else None,
+            'pump_calls_per_second': round(sum(idle_start <= p['wall'] < idle_end for p in pumps) / (idle_end - idle_start), 2),
+            'samples': len(idle_samples),
+        }
+    return result
 
 
 if __name__ == '__main__':

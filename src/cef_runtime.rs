@@ -8,12 +8,6 @@ use cef::{
 use crate::handlers::render_process::ShellRenderProcessHandlerBuilder;
 use parking_lot::Mutex;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::time::Duration;
-
-/// Process-global message-pump coalescing flag (browser process only): true
-/// while a single do_message_loop_work() is already scheduled but not yet run.
-static PUMP_SCHEDULED: AtomicBool = AtomicBool::new(false);
 
 /// True when launched with `--debug` / `--debuglevel=…`. Gates developer-only
 /// surfaces that widen the attack surface (the F12 DevTools CDP port). Release
@@ -283,31 +277,11 @@ wrap_browser_process_handler! {
             log::info!("CEF context initialized");
         }
 
-        // On-demand pump driver (external_message_pump): CEF calls this from any
-        // thread when it next needs do_message_loop_work() in delay_ms. Schedule
-        // one pump on the GLOBAL default GLib main context (glib::timeout_add_once
-        // targets it regardless of calling thread), so the closure runs on the
-        // main thread. Idle => CEF schedules far out => near-zero idle CPU,
-        // replacing the old fixed 125 Hz busy-poll.
+        // CEF may call from any thread. The process-wide scheduler marshals
+        // work to GTK's main context and lets an urgent request bring an
+        // existing timer forward, while keeping only one source pending.
         fn on_schedule_message_pump_work(&self, delay_ms: i64) {
-            // Floor at 8ms: under continuous work CEF reschedules with delay 0,
-            // and a 0ms timeout would fire every main-loop iteration → 100% spin.
-            // 8ms caps the busy rate at ~125 Hz while still letting CEF's larger
-            // idle delays through for low idle CPU.
-            let delay = u64::try_from(delay_ms).unwrap_or(0).max(8);
-            // Coalesce to a SINGLE pending pump, PROCESS-GLOBAL: CEF can hand out
-            // fresh handler instances, so a per-handler flag may not dedupe.
-            // Without coalescing CEF's high-frequency schedule calls each queue
-            // another glib timeout, the backlog fires together, re-triggers work,
-            // and pins a core (#151). Clear before do_message_loop_work() so a
-            // pump scheduled *during* that work registers the next single timeout.
-            if PUMP_SCHEDULED.swap(true, Ordering::AcqRel) {
-                return;
-            }
-            glib::timeout_add_once(Duration::from_millis(delay), move || {
-                PUMP_SCHEDULED.store(false, Ordering::Release);
-                cef::do_message_loop_work();
-            });
+            crate::cef_pump::schedule(delay_ms);
         }
     }
 }
@@ -376,13 +350,8 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
     }
     log::info!("CEF initialized");
 
-    // Backstop only: on_schedule_message_pump_work drives normal pumping. This
-    // slow tick guards against a missed schedule (e.g. early init) without the
-    // old 8ms (125 Hz) busy-poll that pinned idle CPU.
-    glib::timeout_add_local(Duration::from_millis(100), || {
-        cef::do_message_loop_work();
-        glib::ControlFlow::Continue
-    });
+    // The scheduler includes a slow idle backstop and paint-driven continuation.
+    crate::cef_pump::schedule(0);
 
     Ok(())
 }

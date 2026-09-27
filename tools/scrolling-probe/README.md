@@ -1,6 +1,6 @@
 # Scrolling and CEF pump diagnostics
 
-These optional tools reproduce the software off-screen rendering stall described in [issue #173](https://github.com/tobagin/karere/issues/173). The [findings](FINDINGS.md) document controlled CPU → GPU → CPU comparisons on Karere 4.3.0, including an independent generated page and the actual WhatsApp chat list. This contribution supplies the reproducer and evidence; a production scheduling fix still needs validation.
+These optional tools reproduce the CPU-buffer off-screen rendering stall described in [issue #173](https://github.com/tobagin/karere/issues/173). The [original findings](FINDINGS.md) document controlled CPU → GPU → CPU comparisons on Karere 4.3.0. The [fix validation](FIX_VALIDATION.md) describes the paint-driven CEF scheduler and compares the compiled application against the original Flatpak.
 
 The probes were tested with the stable `io.github.tobagin.karere` Flatpak, CEF `152.0.6+g708dc14`, on **Linux x86-64**. They rely on that CEF ABI. They are developer diagnostics and are not included in the application build or installed as persistent overrides.
 
@@ -30,6 +30,37 @@ python3 tools/scrolling-probe/karere_probe.py gpu --synthetic --synthetic-gpu --
 Keep the diagnostic window visible and avoid interacting with it. Use new labels for subsequent runs. CPU → fast CPU → reverted CPU isolates the fallback interval. CPU → GPU compares the presentation paths while retaining the original interval. Confirm the same viewport/DPR and the actual accelerated backend in the result logs; a preference alone is insufficient.
 
 `--fast-backstop` changes only the first main-thread 100 ms GLib timer registered after CEF initializes to 8 ms for that launch. This is an experimental control: the measurements show increased active CPU use and incomplete drawing recovery on the CPU path. It is not a recommended permanent setting.
+
+## Validate a compiled fix
+
+`--binary` launches a locally compiled executable inside the installed Flatpak,
+using its CEF library, resources, GTK runtime and graphics permissions. Compile
+against a compatible CEF version first. The tool records the executable's SHA-256
+and grants its parent directory read access for that launch. It does not replace
+the installed executable.
+
+```sh
+python3 tools/scrolling-probe/karere_probe.py fixed_cpu --synthetic --schedule-probe --binary target/release/karere --idle-seconds 30
+python3 tools/scrolling-probe/karere_probe.py fixed_chat --chat-list --binary target/release/karere --idle-seconds 30
+python3 tools/scrolling-probe/karere_probe.py fixed_background --synthetic --schedule-probe --binary target/release/karere --idle-seconds 30 --idle-window background
+```
+
+`--idle-seconds` waits five seconds after the active measurement, then captures a
+separate settled idle interval before quitting. `--idle-window minimized` requests
+minimization through the fresh window's GTK D-Bus action; `--idle-window background`
+uses the isolated profile's close-to-background action and verifies the page
+becomes hidden. Both additionally require `gdbus`; background testing requires
+`--synthetic` so it cannot change the normal profile's close-button preference.
+Wayland minimization does not necessarily change CEF page visibility. Run the
+same options without `--binary` for the installed-app control.
+
+The fixed scheduler uses `g_timeout_source_new` and can defer source creation
+until the current pump returns. The original interposer's `new_timers` and
+`urgent_postponed_events` counters only observe `g_timeout_add_full` calls inside
+CEF's scheduling callback; they do not describe the new scheduler. Use actual
+pump entry times, gap distributions, paint/draw rates and idle CPU to compare it.
+The original `--fast-backstop` experiment likewise only applies to the original
+timer implementation.
 
 ## Optional test of the real chat list
 

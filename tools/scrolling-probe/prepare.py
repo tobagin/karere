@@ -42,7 +42,7 @@ def main():
         (directory / f"{APP}.gschema.xml").write_bytes(schema)
         (directory / "99-perf.gschema.override").write_text(
             f"[{APP}]\nis-maximized=true\ngpu-rendering={str(gpu).lower()}\n"
-            "start-in-background=false\nrun-on-startup=false\n"
+            "start-in-background=false\nrun-on-startup=false\nclose-button-action='background'\n"
         )
         subprocess.run(["glib-compile-schemas", "--strict", str(directory)], check=True)
     print(f"Prepared probes and memory-backend schemas in {build}")

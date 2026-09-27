@@ -10,6 +10,7 @@ mod accounts;
 mod actions;
 mod application;
 mod cdp;
+mod cef_pump;
 mod cef_runtime;
 mod devtools;
 mod gl_dmabuf;
@@ -102,6 +103,7 @@ fn main() -> Result<()> {
     let code = i32::from(app.run().get());
 
     if is_primary {
+        cef_pump::stop();
         cef::shutdown();
     }
     std::process::exit(code);

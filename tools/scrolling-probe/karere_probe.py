@@ -2,6 +2,7 @@
 """Capture allowlisted rendering logs and resource counters, never page contents."""
 import argparse
 import atexit
+import hashlib
 import html
 import json
 import os
@@ -121,6 +122,21 @@ def device_info(pid):
     return {"devices": sorted(devices), "graphics_libraries": sorted(libs)}
 
 
+def synthetic_visibility():
+    """Read only the generated page's visibility state for the background check."""
+    from cdp_local import Client
+    with urllib.request.urlopen('http://127.0.0.1:9333/json/list', timeout=2) as response:
+        targets = json.load(response)
+    for target in targets:
+        if target.get('type') == 'page' and target.get('url', '').startswith('data:'):
+            client = Client(target['webSocketDebuggerUrl'])
+            try:
+                return client.evaluate('document.visibilityState')
+            finally:
+                client.close()
+    raise RuntimeError('Generated page unavailable for the background visibility check')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("label")
@@ -132,13 +148,32 @@ def main():
     parser.add_argument("--synthetic-gpu", action="store_true")
     parser.add_argument("--chat-list", action="store_true")
     parser.add_argument("--gsk-renderer", choices=["gl", "vulkan"])
+    parser.add_argument("--binary", type=Path, help="Test a compiled Karere inside the installed Flatpak runtime")
+    parser.add_argument("--idle-seconds", type=float, default=0,
+                        help="After scrolling and 5 seconds settling, measure this many idle seconds")
+    parser.add_argument("--idle-window", choices=['visible', 'minimized', 'background'], default='visible',
+                        help="Window action before idle measurement; background requires --synthetic")
     args = parser.parse_args()
+    if not 0 <= args.idle_seconds <= 300:
+        parser.error('--idle-seconds must be between 0 and 300')
+    if args.idle_seconds and not (args.synthetic or args.chat_list):
+        parser.error('--idle-seconds requires an automatic workload')
+    if args.idle_window != 'visible' and not args.idle_seconds:
+        parser.error('--idle-window requires --idle-seconds')
+    if args.idle_window == 'background' and not args.synthetic:
+        parser.error('Background mode requires the isolated --synthetic profile')
     if args.synthetic_gpu and not args.synthetic:
         parser.error('--synthetic-gpu requires --synthetic')
     if args.chat_list:
         if args.synthetic:
             parser.error('--chat-list and --synthetic are separate workloads')
         args.schedule_probe = True
+    binary_hash = None
+    if args.binary:
+        args.binary = args.binary.resolve(strict=True)
+        if not args.binary.is_file() or not os.access(args.binary, os.X_OK):
+            parser.error('--binary must be an executable file')
+        binary_hash = hashlib.sha256(args.binary.read_bytes()).hexdigest()
     if not re.fullmatch(r"[a-zA-Z0-9_-]+", args.label):
         parser.error("label must contain only letters, numbers, underscores, or hyphens")
     os.umask(0o077)
@@ -177,7 +212,11 @@ def main():
                    f"--env=XDG_DATA_HOME=/tmp/karere-perf-{args.label}/data",
                    f"--env=XDG_CONFIG_HOME=/tmp/karere-perf-{args.label}/config",
                    f"--env=XDG_CACHE_HOME=/tmp/karere-perf-{args.label}/cache"]
+    if args.binary:
+        launch += [f"--filesystem={args.binary.parent}:ro", f"--command={args.binary}"]
     launch.append(APP)
+    if args.binary:
+        launch += ['--resources-dir-path=/app/lib/cef', '--locales-dir-path=/app/lib/cef/locales']
     if args.synthetic:
         page = 'data:text/html;charset=utf-8,' + urllib.parse.quote((ROOT / 'scroll_probe.html').read_text())
         launch += ['--debuglevel=error', '--url', page]
@@ -203,20 +242,36 @@ def main():
     phase = "startup"
     count = 0
     metrics_received = False
+    idle_start = idle_end = idle_epoch = None
+    idle_visibility = None
     synthetic_debug_reported = False
     print(json.dumps({"capture": str(output), "launcher_pid": child.pid, "settings": settings}), flush=True)
     with output.open("x", buffering=1) as stream:
         def emit(kind, **values):
             stream.write(json.dumps({"t": time.monotonic() - start, "wall": time.time(), "kind": kind, "phase": phase, **values}) + "\n")
-        emit("start", label=args.label, settings=settings, launcher_pid=child.pid, normal_logging=args.normal_logging, pump_probe=args.pump_probe, fast_backstop=args.fast_backstop, schedule_probe=args.schedule_probe, synthetic=args.synthetic, synthetic_gpu=args.synthetic_gpu, chat_list=args.chat_list, gsk_renderer=args.gsk_renderer)
+        def finish_measurement(success):
+            nonlocal metrics_received, idle_start, idle_end
+            metrics_received = True
+            if success and args.idle_seconds:
+                if args.idle_window != 'visible':
+                    subprocess.run([
+                        'gdbus', 'call', '--session', '--dest', APP,
+                        '--object-path', '/io/github/tobagin/karere/window/1',
+                        '--method', 'org.gtk.Actions.Activate',
+                        'close' if args.idle_window == 'background' else 'minimize', '[]', '{}',
+                    ], check=True, stdout=subprocess.DEVNULL)
+                idle_start = time.monotonic() + 5
+                idle_end = idle_start + args.idle_seconds
+            else:
+                subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
+        emit("start", label=args.label, settings=settings, launcher_pid=child.pid, normal_logging=args.normal_logging, pump_probe=args.pump_probe, fast_backstop=args.fast_backstop, schedule_probe=args.schedule_probe, synthetic=args.synthetic, synthetic_gpu=args.synthetic_gpu, chat_list=args.chat_list, gsk_renderer=args.gsk_renderer, binary_sha256=binary_hash)
         while True:
             while not live_results.empty():
                 kind, report = live_results.get_nowait()
                 emit(kind, **report)
                 print(json.dumps({kind: report}), flush=True)
                 if kind in ('chat_list_result', 'chat_list_error'):
-                    metrics_received = True
-                    subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
+                    finish_measurement(kind == 'chat_list_result')
             for key, _ in selector.select(timeout=0.1):
                 chunk = os.read(key.fileobj.fileno(), 65536)
                 if not chunk:
@@ -229,6 +284,18 @@ def main():
                         emit("render", message=text)
                         count += 1
             now = time.monotonic()
+            if idle_start is not None and now >= idle_start and idle_epoch is None:
+                if args.synthetic:
+                    idle_visibility = synthetic_visibility()
+                    if args.idle_window == 'background' and idle_visibility != 'hidden':
+                        raise RuntimeError('Background action did not hide the generated page')
+                idle_epoch = time.time() * 1000
+                emit('idle_start', start_epoch_ms=idle_epoch)
+            if idle_end is not None and now >= idle_end:
+                emit('idle_result', start_epoch_ms=idle_epoch, end_epoch_ms=time.time() * 1000,
+                     requested_window_state=args.idle_window, page_visibility=idle_visibility)
+                idle_end = None
+                subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
             if now - last_sample >= 1:
                 new_phase = read(ROOT / "phase.txt") or "unmarked"
                 if new_phase != phase:
@@ -263,8 +330,7 @@ def main():
                                 report = json.loads(title.removeprefix('KARERE_PERF:'))
                                 emit('synthetic_result', **report)
                                 print(json.dumps({'synthetic_result': report}), flush=True)
-                                metrics_received = True
-                                subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
+                                finish_measurement(True)
                                 break
                     except (OSError, ValueError):
                         pass
@@ -274,7 +340,7 @@ def main():
                         metrics_received = True
                         subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
                 last_sample = now
-            if args.chat_list and now - start > 130 and not metrics_received:
+            if args.chat_list and now - start > 150 and not metrics_received:
                 emit('chat_list_error', reason='capture timeout')
                 metrics_received = True
                 subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
