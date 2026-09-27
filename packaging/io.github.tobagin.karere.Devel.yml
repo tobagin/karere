@@ -34,6 +34,17 @@ finish-args:
   - --socket=pulseaudio
   - --device=all
   - --filesystem=xdg-download
+  # Attachments are read straight from the dropped/pasted path -- a drop hands
+  # over a real path with no portal involved, unlike the file chooser. Without
+  # read access the read fails and the file silently never attaches (#192).
+  # Read-only, and the common user directories only: --filesystem=home trips
+  # flatpak-builder-lint's home-filesystem rule, which this app-id has no
+  # exception for. Revisit if that exception is granted.
+  - --filesystem=xdg-documents:ro
+  - --filesystem=xdg-pictures:ro
+  - --filesystem=xdg-videos:ro
+  - --filesystem=xdg-music:ro
+  - --filesystem=xdg-desktop:ro
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
   - --env=LD_LIBRARY_PATH=/app/lib/cef
