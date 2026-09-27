@@ -101,6 +101,14 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.3.2" date="2026-09-27">
+      <description>
+        <ul>
+          <li>Updated the application platform to GNOME 51 for current platform security and rendering updates.</li>
+          <li>Also includes the 4.3.1 fixes, which were never published: stalled scrolling with software rendering (#173, #179), start-up failing on systems whose hostname changes between boots (#190), and start-up failing on hardware without OpenGL ES 3.0 (#177).</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.3.1" date="2026-09-27">
       <description>
         <ul>

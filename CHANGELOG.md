@@ -5,6 +5,13 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.2] - 2026-09-27
+
+### Changed
+- **Flatpak runtime moved to GNOME 51** (from GNOME 50), which brings GTK 4.24 and the current platform security updates. Verified against the bundled CEF 152 build: the GLES 3.2 context and DMA-BUF accelerated off-screen rendering still negotiate, the software presentation path added in 4.3.1 still renders, scrolling holds about 57 redraws/s on the software path, and idle CPU stays under 1.5% of a core.
+
+> 4.3.1 was tagged but never published to Flathub, so if you are updating from 4.3.0 this release also contains everything listed under 4.3.1 below.
+
 ## [4.3.1] - 2026-09-27
 
 ### Fixed

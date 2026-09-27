@@ -28,7 +28,12 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.3.1
+### 🆕 What's New in 4.3.2
+
+- **GNOME 51 platform**: the Flatpak runtime moves from GNOME 50 to GNOME 51 (GTK 4.24), picking up
+  current platform security and rendering updates.
+
+4.3.1 was tagged but never published, so updating from 4.3.0 also brings:
 
 - **Scrolling is fixed on software rendering (#173/#179)**: 4.3.0 addressed one layer of this, but
   frames were still stalling inside the browser engine's event loop, which stopped asking to be
