@@ -5,6 +5,11 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.3] - 2026-09-27
+
+### Fixed
+- **Files dragged into the window did not attach (#192)**: the drop overlay appeared but nothing was added. A drop hands over a real filesystem path with no portal involved, unlike the file chooser, and the sandbox only granted `xdg-download` — so reading the file failed for anything outside `~/Downloads`, and the failure was only logged, never shown. The attach-file button kept working precisely because it goes through the file chooser portal, which returns a path the sandbox can read. Karere now has read-only access to the directories files are realistically dragged from: Documents, Pictures, Videos, Music and Desktop. Anywhere else, including removable drives, is still reachable through the attach button. `--filesystem=home` would cover every path but trips flatpak-builder-lint's `finish-args-home-filesystem-access` rule, which this app-id has no exception for. The same failure affected pasting a file copied in a file manager, which shares the same code path, and is fixed by the same change.
+
 ## [4.3.2] - 2026-09-27
 
 ### Changed

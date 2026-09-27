@@ -28,27 +28,14 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.3.2
+### 🆕 What's New in 4.3.3
 
-- **GNOME 51 platform**: the Flatpak runtime moves from GNOME 50 to GNOME 51 (GTK 4.24), picking up
-  current platform security and rendering updates.
-
-4.3.1 was tagged but never published, so updating from 4.3.0 also brings:
-
-- **Scrolling is fixed on software rendering (#173/#179)**: 4.3.0 addressed one layer of this, but
-  frames were still stalling inside the browser engine's event loop, which stopped asking to be
-  called back when its 10 ms work slice ran out. The window then waited on a 100 ms fallback timer,
-  redrawing about 10 times a second while the page updated 60 times a second. Measured on the real
-  chat list: 10.07 → 59.53 redraws/s. Diagnosis, fix and measurements by
-  [@sknowledge1](https://github.com/sknowledge1). CPU use while actively scrolling rises, since the
-  window now genuinely draws the frames it was dropping. This does not make GPU acceleration work
-  on NVIDIA, which remains disabled (#167).
-- **Starts on systems with a changing hostname (#190)**: Chromium locks its profile with a file
-  named after the machine, so distributions that pick a new hostname each boot (GNOME OS Nightly)
-  failed to start every time. The stale lock is now cleared at start-up.
-- **Runs without OpenGL ES 3.0 (#177)**: on hardware like the PinePhone's Mali-400, Karere failed
-  with "Unable to create a GL context". Frames are now drawn through GTK's software renderer when
-  no GL context is available. Performance on such hardware is untested.
+- **Dragging files into the window works again (#192)**: the drop overlay appeared but no file was
+  attached. A drop passes a real filesystem path rather than going through the file chooser portal,
+  and the sandbox could only read `~/Downloads`, so the file could not be opened and the failure was
+  never shown. Karere now has read-only access to Documents, Pictures, Videos, Music and Desktop;
+  anywhere else, including removable drives, remains reachable through the attach button. Pasting a
+  file copied in a file manager was affected the same way and is fixed too.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
