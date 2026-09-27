@@ -96,8 +96,8 @@ fn compile_blueprints() {
             "blueprint-compiler not found on PATH. Install with one of:\n  \
              dnf install blueprint-compiler\n  \
              apt install blueprint-compiler\n  \
-             flatpak run --command=blueprint-compiler org.gnome.Sdk//50\n\
-             (the GNOME 50 SDK extension already ships blueprint-compiler for flatpak builds), \
+             flatpak run --command=blueprint-compiler org.gnome.Sdk//51\n\
+             (the GNOME 51 SDK extension already ships blueprint-compiler for flatpak builds), \
              then rerun cargo build."
         );
     }

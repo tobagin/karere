@@ -97,7 +97,7 @@ flatpak run io.github.tobagin.karere.Devel
 
 `./build.sh --dev` builds the working tree via `packaging/io.github.tobagin.karere.Devel.yml` (`-Dprofile=development`); plain `./build.sh` builds the production manifest (`packaging/io.github.tobagin.karere.yml`, pinned to tag v4.2.2) — not the checkout. After any `Cargo.toml`/`Cargo.lock` change run `./build.sh --regen-sources` (or `--dev --regen-sources`) to refresh vendored sources.
 
-**Build dependency**: the UI is authored in [Blueprint](https://gnome.pages.gitlab.gnome.org/blueprint-compiler/) (`data/ui/*.blp`, including `preferences.blp` and `keyboard-shortcuts.blp`) and compiled to `.ui` at build time. `blueprint-compiler` must be on `PATH` for a local `cargo build`; the Flatpak SDK (`org.gnome.Sdk//50`) already ships it, so the Flatpak build needs no manifest change.
+**Build dependency**: the UI is authored in [Blueprint](https://gnome.pages.gitlab.gnome.org/blueprint-compiler/) (`data/ui/*.blp`, including `preferences.blp` and `keyboard-shortcuts.blp`) and compiled to `.ui` at build time. `blueprint-compiler` must be on `PATH` for a local `cargo build`; the Flatpak SDK (`org.gnome.Sdk//51`) already ships it, so the Flatpak build needs no manifest change.
 
 **Running outside Flatpak**: a local `cargo run` enables Chromium's own sandbox (it is only disabled inside the Flatpak sandbox). This requires unprivileged user namespaces; on kernels or distributions that disable them, CEF will refuse to start. Enable them with `sysctl kernel.unprivileged_userns_clone=1` (Debian-style) or `sysctl user.max_user_namespaces=10000` (some hardened configs). Non-Flatpak packaging remains unsupported.
 
