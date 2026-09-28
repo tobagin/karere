@@ -18,7 +18,7 @@ endif
 
 dependency('glib-2.0', version: '>= 2.66')
 dependency('gio-2.0', version: '>= 2.66')
-dependency('gtk4', version: '>= 4.12')
+dependency('gtk4', version: '>= 4.16')
 dependency('libadwaita-1', version: '>= 1.6')
 
 cargo = find_program('cargo', required: true)

@@ -56,6 +56,11 @@ pub struct DownloadFailed {
 #[derive(Default)]
 pub struct SharedState {
     pub frame: FrameBuffer,
+    pub popup: FrameBuffer,
+    pub popup_visible: bool,
+    pub popup_rect: (i32, i32, i32, i32),
+    pub snapshot_present: bool,
+    pub frame_serial: u64,
     /// Pending GPU-accelerated frame (DMA-BUF) from `on_accelerated_paint`, when
     /// shared-texture OSR is enabled; consumed + imported to a GL texture in
     /// `draw`. `None` on the software (`on_paint`) path. (gpu-osr)
@@ -129,7 +134,7 @@ pub struct SharedState {
     /// `SendWeakRef` only satisfies the `Arc<Mutex<_>>` bounds. Going through
     /// the timer added 0–16 ms per frame and beat against the 60 Hz paint
     /// stream, dropping and doubling frames — the "stutter" in #173/#179.
-    pub redraw: Option<gtk::glib::SendWeakRef<gtk::GLArea>>,
+    pub redraw: Option<gtk::glib::SendWeakRef<crate::web_view::KarereWebView>>,
 }
 
 pub type SharedRef = Arc<Mutex<SharedState>>;

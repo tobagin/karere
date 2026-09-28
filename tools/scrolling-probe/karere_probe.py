@@ -21,8 +21,8 @@ ROOT = Path(__file__).resolve().parent
 BUILD = ROOT / ".build"
 RESULTS = ROOT / "results"
 APP = "io.github.tobagin.karere"
-LOG_FILTER = "warn,karere::web_view=debug,karere::handlers::render=debug,karere::gl_dmabuf=info"
-ALLOW = re.compile(r"accel_osr:|GLArea (context ready|realize error)|coord: J1 size_allocate|coord: J2 (on_paint|on_accelerated_paint|screen_info|view_rect)|coord: J4 draw|accelerated OSR (import failed|disabled)|gl_dmabuf:|^pump-probe ")
+LOG_FILTER = "warn,karere::web_view=debug,karere::handlers::render=debug,karere::gl_dmabuf=info,karere::graphics=info,karere::presenter=info,karere::vulkan_frame=info"
+ALLOW = re.compile(r"graphics:|render cadence:|accel_osr:|GLArea (context ready|realize error)|coord: J1 size_allocate|coord: J2 (on_paint|on_accelerated_paint|screen_info|view_rect)|coord: J4 draw|accelerated OSR (import failed|disabled)|gl_dmabuf:|^pump-probe ")
 KEYS = ["gpu-rendering", "start-in-background", "window-width", "window-height", "is-maximized", "zoom-level", "reduce-motion"]
 
 
@@ -122,6 +122,16 @@ def device_info(pid):
     return {"devices": sorted(devices), "graphics_libraries": sorted(libs)}
 
 
+def configure_presentation_probe(parser, args):
+    """Select a validated app ID and restrict sizing to isolated fixtures."""
+    global APP
+    APP = args.app_id
+    if not re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)+", APP):
+        parser.error("Invalid Flatpak application ID")
+    if args.windowed and not args.synthetic:
+        parser.error("--windowed requires an isolated --synthetic fixture")
+
+
 def synthetic_visibility():
     """Read only the generated page's visibility state for the background check."""
     from cdp_local import Client
@@ -148,6 +158,9 @@ def main():
     parser.add_argument("--synthetic-gpu", action="store_true")
     parser.add_argument("--chat-list", action="store_true")
     parser.add_argument("--gsk-renderer", choices=["gl", "vulkan"])
+    parser.add_argument("--app-id", default=APP)
+    parser.add_argument("--windowed", action="store_true", help="Windowed isolated fixture")
+    parser.add_argument("--wayland-timing", action="store_true", help="Collect allowlisted compositor feedback")
     parser.add_argument("--binary", type=Path, help="Test a compiled Karere inside the installed Flatpak runtime")
     parser.add_argument("--idle-seconds", type=float, default=0,
                         help="After scrolling and 5 seconds settling, measure this many idle seconds")
@@ -174,6 +187,7 @@ def main():
         if not args.binary.is_file() or not os.access(args.binary, os.X_OK):
             parser.error('--binary must be an executable file')
         binary_hash = hashlib.sha256(args.binary.read_bytes()).hexdigest()
+    configure_presentation_probe(parser, args)
     if not re.fullmatch(r"[a-zA-Z0-9_-]+", args.label):
         parser.error("label must contain only letters, numbers, underscores, or hyphens")
     os.umask(0o077)
@@ -184,7 +198,7 @@ def main():
     rows = subprocess.check_output(["flatpak", "ps", "--columns=application"], text=True).splitlines()
     if APP in [r.strip() for r in rows]:
         parser.error("Karere is already running; quit normally before launching a capture")
-    if args.synthetic or args.chat_list:
+    if args.synthetic or args.chat_list or os.environ.get("KARERE_PROBE_CDP"):
         with socket.socket() as check:
             check.settimeout(.2)
             if check.connect_ex(('127.0.0.1', 9333)) == 0:
@@ -199,12 +213,14 @@ def main():
         launch += [f"--filesystem={ROOT}:ro", f"--env=LD_PRELOAD={BUILD / library}"]
     if args.fast_backstop:
         launch += ["--env=KARERE_PROBE_BACKSTOP_MS=8"]
-    if args.chat_list:
+    if args.chat_list or os.environ.get("KARERE_PROBE_CDP"):
         launch += ["--env=KARERE_PROBE_CDP=1"]
+    if args.wayland_timing:
+        launch += ["--env=WAYLAND_DEBUG=client"]
     if args.gsk_renderer:
         launch += [f"--env=GSK_RENDERER={args.gsk_renderer}"]
     if args.synthetic:
-        schema_dir = BUILD / ('schemas_gpu' if args.synthetic_gpu else 'schemas')
+        schema_dir = BUILD / (('schemas_windowed' if args.windowed else 'schemas') + ('_gpu' if args.synthetic_gpu else ''))
         if not (schema_dir / 'gschemas.compiled').is_file():
             parser.error('Isolated schemas not built; run prepare.py first')
         launch += [f"--filesystem={ROOT}:ro", "--env=GSETTINGS_BACKEND=memory",
@@ -264,7 +280,7 @@ def main():
                 idle_end = idle_start + args.idle_seconds
             else:
                 subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
-        emit("start", label=args.label, settings=settings, launcher_pid=child.pid, normal_logging=args.normal_logging, pump_probe=args.pump_probe, fast_backstop=args.fast_backstop, schedule_probe=args.schedule_probe, synthetic=args.synthetic, synthetic_gpu=args.synthetic_gpu, chat_list=args.chat_list, gsk_renderer=args.gsk_renderer, binary_sha256=binary_hash)
+        emit("start", label=args.label, settings=settings, launcher_pid=child.pid, normal_logging=args.normal_logging, pump_probe=args.pump_probe, fast_backstop=args.fast_backstop, schedule_probe=args.schedule_probe, synthetic=args.synthetic, synthetic_gpu=args.synthetic_gpu, chat_list=args.chat_list, gsk_renderer=args.gsk_renderer, binary_sha256=binary_hash, windowed=args.windowed, wayland_timing=args.wayland_timing)
         while True:
             while not live_results.empty():
                 kind, report = live_results.get_nowait()
@@ -280,6 +296,8 @@ def main():
                 while b"\n" in buffer:
                     line, buffer = buffer.split(b"\n", 1)
                     text = line.decode(errors="replace")
+                    if args.wayland_timing and re.search(r"wp_presentation|wl_surface#\d+\.(?:commit|frame)|wl_callback#\d+\.done", text):
+                        emit("wayland", message=text)
                     if ALLOW.search(text):
                         emit("render", message=text)
                         count += 1

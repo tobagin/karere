@@ -51,6 +51,11 @@ impl RunningApp {
             .env("MESA_GLES_VERSION_OVERRIDE", "3.2")
             .env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
             .env("KARERE_GPU_OSR", "0")
+            // The harness asserts diagnostic markers. A shell's RUST_LOG=warn
+            // must not silently override --debuglevel and hide those markers.
+            .env("RUST_LOG", "debug")
+            // This deliberately tests GL recovery, not preferred Vulkan selection.
+            .env("KARERE_CEF_GRAPHICS", "gl")
             .env("GSETTINGS_BACKEND", "keyfile")
             .env("GSETTINGS_SCHEMA_DIR", fixture.join("schemas"))
             .env("XDG_CONFIG_HOME", fixture.join("config"))
@@ -84,11 +89,14 @@ impl RunningApp {
     }
 
     fn wait_for_context_failure(&mut self) {
-        self.wait_for_output(&["GLArea realize error"], true);
-        assert!(
-            !self.output.contains("browser spawned"),
-            "legacy desktop-GL context failure crossed the browser fence:\n{}",
-            self.output
+        self.wait_for_output(
+            &[
+                "no GL context",
+                "browser spawned",
+                "on_paint delivered=",
+                "J4 draw frame=",
+            ],
+            true,
         );
     }
 
@@ -260,7 +268,7 @@ fn real_binary_starts_with_software_gles_for_visible_and_prewarmed_windows() {
     let fixture = fixture();
 
     // Prove the fixture models the pre-fix boundary with the actual production
-    // binary/widget: its debug-only legacy desktop-GL contract fails before CEF.
+    // binary/widget: a rejected desktop-GL context must still display CPU frames.
     set_background(&fixture, false);
     let mut legacy = RunningApp::spawn(&fixture, true);
     legacy.wait_for_context_failure();
@@ -291,12 +299,10 @@ fn stable_and_devel_flatpak_graphics_policy_stays_synchronized() {
     let devel =
         fs::read_to_string(root.join("packaging/io.github.tobagin.karere.Devel.yml")).unwrap();
 
-    for policy in [
-        "--socket=wayland",
-        "--socket=fallback-x11",
-        "--env=GSK_RENDERER=gl",
-    ] {
+    for policy in ["--socket=wayland", "--socket=fallback-x11"] {
         assert_eq!(stable.matches(policy).count(), 1, "stable policy: {policy}");
         assert_eq!(devel.matches(policy).count(), 1, "Devel policy: {policy}");
     }
+    assert!(!stable.contains("--env=GSK_RENDERER="));
+    assert!(!devel.contains("--env=GSK_RENDERER="));
 }

@@ -57,4 +57,4 @@ bumped to the final `vX.Y.Z`. `master` publishes to the `flathub` (stable) remot
 
 ## Between beta cycles
 
-Between beta cycles the manifest **mirrors the current stable release** (same `tag`/`commit`, CEF binaries, `archive.json` names, and `GSK_RENDERER=gl`) so beta-channel testers do not receive an older build. The next beta cycle re-pins it to the new `vX.Y.Z-betaN` tag. This invariant is enforced by `tests/flathub_beta_cef_policy.sh` (offline, no network).
+Between beta cycles the manifest **mirrors the current stable release** (same `tag`/`commit`, CEF binaries, `archive.json` names, and automatic Vulkan-first GTK renderer policy) so beta-channel testers do not receive an older build. The next beta cycle re-pins it to the new `vX.Y.Z-betaN` tag. This invariant is enforced by `tests/flathub_beta_cef_policy.sh` (offline, no network).

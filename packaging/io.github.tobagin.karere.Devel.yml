@@ -48,7 +48,6 @@ finish-args:
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
   - --env=LD_LIBRARY_PATH=/app/lib/cef
-  - --env=GSK_RENDERER=gl
 
 modules:
   - name: cef-binaries

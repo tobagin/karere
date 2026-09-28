@@ -21,7 +21,7 @@ name = "karere"
 path = "src/main.rs"
 
 [dependencies]
-gtk = { package = "gtk4", version = "0.11", features = ["v4_12"] }
+gtk = { package = "gtk4", version = "0.11", features = ["v4_16"] }
 # X11 window origin for RenderHandler::screen_point (KARE-019):
 # - Standalone gdk4-x11 0.11 crate aligned to gtk4 0.11 (not gdk4 "x11" feature).
 # - "xlib" feature required: GTK4 0.11 has no root GdkSurface to
@@ -41,6 +41,8 @@ cef = { version = "152.3", features = ["build-util"] }
 epoxy = "0.1"
 gl = "0.14"
 libloading = "0.9"
+ash = "0.38"
+libc = "0.2"
 anyhow = "1"
 log = "0.4"
 env_logger = "0.11"

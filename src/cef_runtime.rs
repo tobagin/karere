@@ -6,6 +6,7 @@ use cef::{
 };
 
 use crate::handlers::render_process::ShellRenderProcessHandlerBuilder;
+use gtk::prelude::SettingsExt;
 use parking_lot::Mutex;
 use std::sync::Arc;
 
@@ -116,24 +117,23 @@ wrap_app! {
             // `ozone-platform-hint=auto` let CEF resolve to X11/Xwayland (the
             // --socket=fallback-x11 path), which can't present onto the Wayland
             // GTK GLArea — a startup race that paints the window black on GNOME OS
-            // (#164). CEF inits before GTK opens its display, so detect from the
-            // env the same way GDK4 picks its backend.
-            let gdk_x11 = std::env::var("GDK_BACKEND")
-                .map(|b| b.split(',').next() == Some("x11"))
-                .unwrap_or(false);
-            let ozone = if gdk_x11 {
-                "x11"
-            } else if std::env::var_os("WAYLAND_DISPLAY").is_some() {
-                "wayland"
-            } else {
-                "x11"
-            };
-            cmd.append_switch_with_value(
-                Some(&"ozone-platform".into()),
-                Some(&ozone.into()),
-            );
+            // (#164). GTK has opened the working display before CEF initializes;
+            // children inherit that actual selection from the browser process.
+            let ozone = crate::graphics::display_backend();
+            if is_browser_process || cmd.has_switch(Some(&"ozone-platform".into())) == 0 {
+                cmd.append_switch_with_value(
+                    Some(&"ozone-platform".into()),
+                    Some(&ozone.into()),
+                );
+            }
             cmd.append_switch(Some(&"enable-webrtc-vea-vda".into()));
-            cmd.append_switch(Some(&"disable-smooth-scrolling".into()));
+            if is_browser_process
+                && gtk::gio::Settings::new(crate::application::APP_ID)
+                    .boolean("reduce-motion")
+            {
+                cmd.append_switch(Some(&"disable-smooth-scrolling".into()));
+            }
+            crate::graphics::configure_cef(cmd);
             // M17 paste bridge: lets the renderer fetch tempfile payloads over
             // file:// (blocked from non-file origins by default). Reach is scoped
             // to $XDG_RUNTIME_DIR/karere/ by the resource request handler.

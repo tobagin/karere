@@ -564,6 +564,15 @@ mod imp {
 
         fn bind_accessibility(&self, settings: &gio::Settings) {
             bind_switch(settings, "reduce-motion", &self.row_motion);
+            let dialog_weak = self.obj().downgrade();
+            settings.connect_changed(Some("reduce-motion"), move |_, _| {
+                if let Some(dialog) = dialog_weak.upgrade() {
+                    prompt_restart(
+                        dialog.upcast(),
+                        &gettext("Scrolling animation changes take effect after Karere restarts."),
+                    );
+                }
+            });
             bind_switch(settings, "focus-indicators", &self.row_focus);
             bind_switch(settings, "high-contrast", &self.row_contrast);
             bind_switch(settings, "webview-zoom", &self.row_zoom);

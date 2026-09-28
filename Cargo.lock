@@ -74,6 +74,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
+name = "ash"
+version = "0.38.0+1.3.281"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0bb44936d800fea8f016d7f2311c6a4f97aebd5dc86f09906139ec848cf3a46f"
+dependencies = [
+ "libloading 0.8.9",
+]
+
+[[package]]
 name = "ashpd"
 version = "0.13.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -381,7 +390,7 @@ dependencies = [
  "cargo_metadata",
  "cef-dll-sys",
  "clap",
- "libloading",
+ "libloading 0.9.0",
  "objc2",
  "plist",
  "semver",
@@ -1447,6 +1456,7 @@ name = "karere"
 version = "4.3.3"
 dependencies = [
  "anyhow",
+ "ash",
  "ashpd",
  "base64 0.23.1",
  "cef",
@@ -1462,7 +1472,8 @@ dependencies = [
  "gtk4",
  "ksni",
  "libadwaita",
- "libloading",
+ "libc",
+ "libloading 0.9.0",
  "log",
  "once_cell",
  "parking_lot",
@@ -1552,6 +1563,16 @@ name = "libc"
 version = "0.2.186"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
+
+[[package]]
+name = "libloading"
+version = "0.8.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d7c4b02199fee7c5d21a5ae7d8cfa79a6ef5bb2fc834d6e9058e89c825efdc55"
+dependencies = [
+ "cfg-if",
+ "windows-link",
+]
 
 [[package]]
 name = "libloading"
