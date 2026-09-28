@@ -188,8 +188,15 @@ int main(int argc, char **argv) {
     settings.log_severity = LOGSEVERITY_VERBOSE;
     string(profile, &settings.root_cache_path);
     string(profile, &settings.cache_path);
-    string("/app/lib/cef", &settings.resources_dir_path);
-    string("/app/lib/cef/locales", &settings.locales_dir_path);
+    const char *cef_dir = getenv("KARERE_FRAME_PROBE_CEF_DIR");
+    if (!cef_dir) cef_dir = "/app/lib/cef";
+    size_t locales_length = strlen(cef_dir) + sizeof("/locales");
+    char *locales = malloc(locales_length);
+    if (!locales) abort();
+    snprintf(locales, locales_length, "%s/locales", cef_dir);
+    string(cef_dir, &settings.resources_dir_path);
+    string(locales, &settings.locales_dir_path);
+    free(locales);
     add_ref(&app->base);
     if (!cef_initialize(&args, &settings, app, NULL)) {
         fprintf(stderr, "CEF initialization failed: %d\n", cef_get_exit_code());

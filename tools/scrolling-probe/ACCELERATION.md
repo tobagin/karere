@@ -45,6 +45,22 @@ producer acceptance samples. The media runner uses a private FIFO to request
 orderly CEF shutdown, then checks the process exit and listener removal before
 the next run. It does not terminate the Flatpak D-Bus proxy to close a browser.
 
+To isolate a rebuilt engine before installing it, expand the Devel manifest with
+`flatpak-builder --show-manifest`, then run `tools/cef-container/stage-local.py`
+with the rebuilt archive, `--manifest` pointing to that JSON, `--source` pointing
+to the chosen application checkout, and a new `--output` directory. The helper
+records archive/library hashes and stages matching resources under `cef/` plus a
+local `manifest.json`. It changes no installed application or production manifest;
+the stage is x64 only and does not assert that a patch or acceleration works.
+
+Run the producer with that directory available inside the sandbox and both
+`--env=LD_LIBRARY_PATH=/path/to/stage/cef` and
+`--env=KARERE_FRAME_PROBE_CEF_DIR=/path/to/stage/cef` before the app ID. The latter
+selects the matching CEF resources/locales; the API hash check still applies.
+After producer validation, the staged manifest can build the separate Devel
+bundle with `flatpak-builder --arch=x86_64`. ARM archive sources remain unchanged
+and unvalidated. Use fresh labels for each control and retain original hashes.
+
 ## Media capabilities and generated loopback
 
 Compile `media_capabilities.c` against `libva` and `libva-drm` inside the SDK,
@@ -75,6 +91,10 @@ python3 media_probe.py /path/to/new-playback.json \
 ```
 
 Each run defaults to three 30-second samples with five seconds warmup per sample.
+`--cef-directory /path/to/stage/cef` selects an isolated rebuilt engine and records
+its library hash. `--transfer accelerated` requests producer GPU callbacks;
+the default remains CPU transfer for comparison with the original media series.
+Neither producer path presents a GTK window, so neither establishes display FPS.
 Use identical generated files, codec, dimensions and bitrate for controls.
 Stop compilation and other test workloads during measurements. Video callbacks
 are judged against source cadence; they are not compositor presentation proof.
@@ -98,6 +118,20 @@ WebRTC encoding remained **OpenH264 software** in every run, even when
 the unverified encoder feature. H.264 is the measured codec; other codecs, actual
 screen-capture transport and other driver/GPU combinations remain unverified.
 
+The pinned Chromium Linux encoder factory selects VA-API or V4L2, with no NVENC
+backend. This NVIDIA VA-API driver exposes no encoder entrypoints, so the current
+CEF/NVIDIA combination cannot gain hardware encoding from the feature flag alone.
+Adding a supported encoder requires engine work beyond enabling a switch; the
+working FFmpeg NVENC control is not substituted for CEF/WebRTC evidence. See the
+[pinned encoder factory](https://chromium.googlesource.com/chromium/src/+/79460ebecaa5625e57a5fb679a735659e73dc687/media/gpu/gpu_video_encode_accelerator_factory.cc).
+
+PipeWire desktop capture is already enabled in the pinned engine. Its WebRTC
+DMA-BUF import path ends in `GlReadPixels` into CPU storage, so DMA-BUF negotiation
+alone does not establish capture-to-encoder transport without readback. That
+transport has not been replaced or validated in this change; no desktop capture
+or real call was initiated by these generated tests. See the
+[matching WebRTC implementation](https://webrtc.googlesource.com/src/+/6f37672d358475cd17544121a12494da454d85fb/modules/desktop_capture/linux/wayland/egl_dmabuf.cc).
+
 Separate generated playback checks compared 16×9 RGBA grids at presented media
 timestamps 1, 12 and 25 seconds: software and hardware results matched exactly
 at both resolutions. These checks wait for frame delivery after seeking and run
@@ -119,6 +153,14 @@ CEF `gl`, `vulkan` or `software` for diagnostics. `KARERE_CPU_PRESENTER` (`gl` o
 `snapshot`) and `KARERE_FRAME_TRANSFER` (`gl` or `vulkan`) independently select
 presentation/transfer trials. Defaults are candidates pending matched results,
 not a claim that the fastest configuration has been established.
+
+The existing `karere_probe.py` runner exposes these independent controls as
+`--gsk-renderer`, `--cef-graphics`, `--cpu-presenter` and `--frame-transfer` and
+records their requested values. `--cef-directory` loads a staged matching engine,
+including resources/locales, and records its library SHA-256. Combined with
+`--binary`, this compares application and engine changes in the same Flatpak
+runtime without replacing installed packages. Backend logs and CDP device data
+must still confirm the effective path; the recorded options alone do not.
 
 Both GPU transfer paths copy borrowed CEF resources before callback return.
 The Vulkan pool is bounded to three images and waits for GTK release plus GPU

@@ -158,10 +158,14 @@ def main():
     parser.add_argument("--synthetic-gpu", action="store_true")
     parser.add_argument("--chat-list", action="store_true")
     parser.add_argument("--gsk-renderer", choices=["gl", "vulkan"])
+    parser.add_argument("--cef-graphics", choices=["gl", "vulkan", "software"])
+    parser.add_argument("--frame-transfer", choices=["gl", "vulkan"])
+    parser.add_argument("--cpu-presenter", choices=["gl", "snapshot"])
     parser.add_argument("--app-id", default=APP)
     parser.add_argument("--windowed", action="store_true", help="Windowed isolated fixture")
     parser.add_argument("--wayland-timing", action="store_true", help="Collect allowlisted compositor feedback")
     parser.add_argument("--binary", type=Path, help="Test a compiled Karere inside the installed Flatpak runtime")
+    parser.add_argument("--cef-directory", type=Path, help="Matching CEF library/resources for an engine control")
     parser.add_argument("--idle-seconds", type=float, default=0,
                         help="After scrolling and 5 seconds settling, measure this many idle seconds")
     parser.add_argument("--idle-window", choices=['visible', 'minimized', 'background'], default='visible',
@@ -187,6 +191,16 @@ def main():
         if not args.binary.is_file() or not os.access(args.binary, os.X_OK):
             parser.error('--binary must be an executable file')
         binary_hash = hashlib.sha256(args.binary.read_bytes()).hexdigest()
+    cef_hash = None
+    if args.cef_directory:
+        args.cef_directory = args.cef_directory.resolve(strict=True)
+        if not all((args.cef_directory / item).exists() for item in ("libcef.so", "icudtl.dat", "locales")):
+            parser.error("--cef-directory requires matching library, resources and locales")
+        with (args.cef_directory / "libcef.so").open("rb") as library:
+            digest = hashlib.sha256()
+            for block in iter(lambda: library.read(1024 * 1024), b""):
+                digest.update(block)
+            cef_hash = digest.hexdigest()
     configure_presentation_probe(parser, args)
     if not re.fullmatch(r"[a-zA-Z0-9_-]+", args.label):
         parser.error("label must contain only letters, numbers, underscores, or hyphens")
@@ -219,6 +233,11 @@ def main():
         launch += ["--env=WAYLAND_DEBUG=client"]
     if args.gsk_renderer:
         launch += [f"--env=GSK_RENDERER={args.gsk_renderer}"]
+    for value, name in ((args.cef_graphics, "KARERE_CEF_GRAPHICS"),
+                        (args.frame_transfer, "KARERE_FRAME_TRANSFER"),
+                        (args.cpu_presenter, "KARERE_CPU_PRESENTER")):
+        if value:
+            launch.append(f"--env={name}={value}")
     if args.synthetic:
         schema_dir = BUILD / (('schemas_windowed' if args.windowed else 'schemas') + ('_gpu' if args.synthetic_gpu else ''))
         if not (schema_dir / 'gschemas.compiled').is_file():
@@ -230,9 +249,12 @@ def main():
                    f"--env=XDG_CACHE_HOME=/tmp/karere-perf-{args.label}/cache"]
     if args.binary:
         launch += [f"--filesystem={args.binary.parent}:ro", f"--command={args.binary}"]
+    if args.cef_directory:
+        launch += [f"--filesystem={args.cef_directory}:ro", f"--env=LD_LIBRARY_PATH={args.cef_directory}"]
     launch.append(APP)
-    if args.binary:
-        launch += ['--resources-dir-path=/app/lib/cef', '--locales-dir-path=/app/lib/cef/locales']
+    if args.binary or args.cef_directory:
+        cef_directory = args.cef_directory or Path('/app/lib/cef')
+        launch += [f'--resources-dir-path={cef_directory}', f'--locales-dir-path={cef_directory / "locales"}']
     if args.synthetic:
         page = 'data:text/html;charset=utf-8,' + urllib.parse.quote((ROOT / 'scroll_probe.html').read_text())
         launch += ['--debuglevel=error', '--url', page]
@@ -283,7 +305,7 @@ def main():
                 idle_end = idle_start + args.idle_seconds
             else:
                 subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
-        emit("start", label=args.label, settings=settings, launcher_pid=child.pid, normal_logging=args.normal_logging, pump_probe=args.pump_probe, fast_backstop=args.fast_backstop, schedule_probe=args.schedule_probe, synthetic=args.synthetic, synthetic_gpu=args.synthetic_gpu, chat_list=args.chat_list, gsk_renderer=args.gsk_renderer, binary_sha256=binary_hash, windowed=args.windowed, wayland_timing=args.wayland_timing)
+        emit("start", label=args.label, settings=settings, launcher_pid=child.pid, normal_logging=args.normal_logging, pump_probe=args.pump_probe, fast_backstop=args.fast_backstop, schedule_probe=args.schedule_probe, synthetic=args.synthetic, synthetic_gpu=args.synthetic_gpu, chat_list=args.chat_list, gsk_renderer=args.gsk_renderer, cef_graphics=args.cef_graphics, frame_transfer=args.frame_transfer, cpu_presenter=args.cpu_presenter, binary_sha256=binary_hash, cef_library_sha256=cef_hash, windowed=args.windowed, wayland_timing=args.wayland_timing)
         while True:
             while not live_results.empty():
                 kind, report = live_results.get_nowait()

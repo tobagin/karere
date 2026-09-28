@@ -6,6 +6,7 @@ checks fixture identity, closes the listener and leaves account profiles alone.
 """
 import argparse
 import functools
+import hashlib
 import http.server
 import json
 import os
@@ -109,6 +110,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output", type=Path)
     parser.add_argument("--probe", required=True, type=Path)
+    parser.add_argument("--cef-directory", type=Path, help="Matching library/resources for an isolated engine control")
+    parser.add_argument("--transfer", choices=["cpu", "accelerated"], default="cpu")
     parser.add_argument("--kind", choices=["webrtc", "playback"], default="webrtc")
     parser.add_argument("--video", type=Path)
     parser.add_argument("--width", type=int, default=1280)
@@ -123,15 +126,22 @@ def main():
     parser.add_argument("--samples", type=int, default=3)
     parser.add_argument("--graphics-check", action="store_true", help="Verify generated WebGL/WebGPU output after timing")
     args = parser.parse_args()
-    if args.output.exists():
+    if args.output.exists() or args.output.with_suffix(".log").exists():
         parser.error("refusing to overwrite evidence")
     if args.kind == "playback" and not args.video:
         parser.error("playback needs a generated --video fixture")
     if diagnostic_listener_present():
         parser.error("diagnostic port already has a listener")
+    if args.cef_directory:
+        args.cef_directory = args.cef_directory.resolve(strict=True)
+        if not all((args.cef_directory / item).exists() for item in ("libcef.so", "icudtl.dat", "locales")):
+            parser.error("CEF directory must include matching library, resources and locales")
     process = client = browser = server = None
     report = {"kind": args.kind, "configuration": {k: str(v) if isinstance(v, Path) else v for k,v in vars(args).items()},
               "presentation_verified": False, "samples": []}
+    if args.cef_directory:
+        with (args.cef_directory / "libcef.so").open("rb") as stream:
+            report["override_libcef_sha256"] = hashlib.file_digest(stream, "sha256").hexdigest()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="karere-media-fixture-") as directory:
         directory = Path(directory)
@@ -149,10 +159,17 @@ def main():
         lifetime = max(60, (args.duration + 5) * args.samples + 40)
         command = ["flatpak", "run", f"--filesystem={args.probe.resolve().parent}:ro",
                    f"--filesystem={directory}:ro", f"--env=KARERE_FRAME_PROBE_CONTROL={control}",
-                   "--env=KARERE_FRAME_PROBE_CPU=1", f"--env=KARERE_FRAME_PROBE_URL={url}",
+                   f"--env=KARERE_FRAME_PROBE_URL={url}",
                    f"--env=KARERE_FRAME_PROBE_DURATION={lifetime}",
                    f"--env=KARERE_FRAME_PROBE_WIDTH={args.width}", f"--env=KARERE_FRAME_PROBE_HEIGHT={args.height}",
-                   f"--command={args.probe.resolve()}", args.app_id, "--no-first-run", "--no-zygote", "--no-sandbox",
+                   f"--command={args.probe.resolve()}"]
+        if args.transfer == "cpu":
+            command.append("--env=KARERE_FRAME_PROBE_CPU=1")
+        if args.cef_directory:
+            command += [f"--filesystem={args.cef_directory}:ro",
+                        f"--env=LD_LIBRARY_PATH={args.cef_directory}",
+                        f"--env=KARERE_FRAME_PROBE_CEF_DIR={args.cef_directory}"]
+        command += [args.app_id, "--no-first-run", "--no-zygote", "--no-sandbox",
                    "--ozone-platform=wayland", "--use-gl=angle", f"--use-angle={args.angle}",
                    "--remote-debugging-port=9333", "--autoplay-policy=no-user-gesture-required",
                    "--enable-webrtc-vea-vda", "--disable-features=PersistentHistograms",
@@ -161,7 +178,7 @@ def main():
         if args.features:
             command.append(f"--enable-features={args.features}")
         try:
-            with args.output.with_suffix(".log").open("w") as log:
+            with args.output.with_suffix(".log").open("x") as log:
                 process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
                 deadline = time.monotonic() + 30
                 while time.monotonic() < deadline:
@@ -236,6 +253,10 @@ def main():
                 time.sleep(.1)
             report["shutdown"] = {"exit_code": process.returncode if process else None,
                                   "listener_closed": not diagnostic_listener_present()}
+            log_path = args.output.with_suffix(".log")
+            if log_path.exists():
+                report["producer_records"] = [json.loads(line) for line in log_path.read_text().splitlines()
+                                              if line.startswith('{"kind":')]
             server.shutdown(); server.server_close()
             report["decoder_properties"] = client.properties if client else {}
             args.output.write_text(json.dumps(report, indent=2) + "\n")
