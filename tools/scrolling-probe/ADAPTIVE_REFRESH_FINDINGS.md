@@ -1,5 +1,10 @@
 # Karere 4.3.3: adaptive refresh and Vulkan experiment
 
+This records the prototype at `29342bc`, before the default-on follow-up.
+For the current defaults, producer repair and media diagnostics, see
+[ACCELERATION.md](ACCELERATION.md). Historical measurements retain their original
+builds, settings and limitations.
+
 **Lower ceiling measured. The implementation is experimental and the performance
 work remains incomplete. No workload verified 240 fresh content presentations/s.**
 The new Vulkan snapshot path currently presents less frequently than the old GL

@@ -24,6 +24,7 @@ struct Instance {
 }
 impl Drop for Instance {
     fn drop(&mut self) {
+        let _deadline = crate::gpu_recovery::Deadline::arm();
         unsafe { self.instance.destroy_instance(None) }
     }
 }
@@ -38,8 +39,10 @@ struct Device {
 }
 impl Drop for Device {
     fn drop(&mut self) {
+        let _deadline = crate::gpu_recovery::Deadline::arm();
         unsafe {
-            let _ = self.device.device_wait_idle();
+            // All submissions complete synchronously. Unknown completion exits
+            // the worker without dropping anything; no idle wait is necessary.
             self.device.destroy_command_pool(self.pool, None);
             self.device.destroy_device(None);
         }
@@ -53,6 +56,7 @@ struct Image {
 }
 impl Drop for Image {
     fn drop(&mut self) {
+        let _deadline = crate::gpu_recovery::Deadline::arm();
         unsafe {
             self.device.device.destroy_image(self.image, None);
             self.device.device.free_memory(self.memory, None);
@@ -522,15 +526,20 @@ impl Copier {
                 );
                 device.end_command_buffer(command)?;
                 let fence = device.create_fence(&vk::FenceCreateInfo::default(), None)?;
+                let _deadline = crate::gpu_recovery::Deadline::arm();
                 let submission = device.queue_submit(
                     self.device.queue,
                     &[vk::SubmitInfo::default().command_buffers(&[command])],
                     fence,
                 );
-                let waited =
-                    submission.and_then(|_| device.wait_for_fences(&[fence], true, u64::MAX));
+                if submission.is_err()
+                    || device
+                        .wait_for_fences(&[fence], true, crate::gpu_recovery::FENCE_TIMEOUT_NS)
+                        .is_err()
+                {
+                    crate::gpu_recovery::completion_unknown("Vulkan copy submission/fence failed");
+                }
                 device.destroy_fence(fence, None);
-                waited?;
                 Ok(())
             })();
             device.free_command_buffers(self.device.pool, &[command]);
@@ -671,7 +680,12 @@ impl Copier {
                 &[vk::SubmitInfo::default().command_buffers(&[command])],
                 fence,
             )?;
-            device.wait_for_fences(&[fence], true, u64::MAX)?;
+            if device
+                .wait_for_fences(&[fence], true, crate::gpu_recovery::FENCE_TIMEOUT_NS)
+                .is_err()
+            {
+                crate::gpu_recovery::completion_unknown("Vulkan fixture fence failed");
+            }
             device.destroy_fence(fence, None);
             device.free_command_buffers(self.device.pool, &[command]);
             frame
@@ -685,6 +699,7 @@ impl Copier {
 /// Called from the serialized real-widget test so GTK stays on its owning thread.
 #[cfg(test)]
 pub fn verify_hardware_ownership(display: &gtk::gdk::Display) {
+    use gtk::prelude::*;
     let producer = match Copier::new() {
         Ok(copier) => copier,
         Err(error) => {
@@ -712,6 +727,19 @@ pub fn verify_hardware_ownership(display: &gtk::gdk::Display) {
     let mut consumer = Copier::new().unwrap();
     let first = consumer.copy(&info).unwrap().unwrap();
     let texture = crate::presenter::texture_from_vulkan(display, first.clone()).unwrap();
+    // The retained GL alternative has the same borrowed-frame ownership rule.
+    // Verify actual EGL import/copy rather than only exercising its error path.
+    crate::load_gl();
+    let gl_window = gtk::Window::new();
+    gtk::prelude::WidgetExt::realize(&gl_window);
+    let mut gl_consumer = crate::presenter::Presenter::default();
+    let gl_texture = gl_consumer.gl_fixture(&gl_window, &info).unwrap().unwrap();
+    let gl_second = gl_consumer.gl_fixture(&gl_window, &info).unwrap().unwrap();
+    let gl_third = gl_consumer.gl_fixture(&gl_window, &info).unwrap().unwrap();
+    assert!(
+        gl_consumer.gl_fixture(&gl_window, &info).unwrap().is_none(),
+        "GL allocation must stop at three retained textures"
+    );
     // Simulate immediate producer reuse after the callback; its copied image must
     // remain red even after the producer overwrites the original allocation blue.
     producer
@@ -719,6 +747,8 @@ pub fn verify_hardware_ownership(display: &gtk::gdk::Display) {
         .unwrap();
     let mut downloader = gtk::gdk::TextureDownloader::new(&texture);
     downloader.set_format(gtk::gdk::MemoryFormat::B8g8r8a8Premultiplied);
+    assert_eq!(&downloader.download_bytes().0[..4], &[0, 0, 255, 255]);
+    downloader.set_texture(&gl_texture);
     assert_eq!(&downloader.download_bytes().0[..4], &[0, 0, 255, 255]);
     let second = consumer.copy(&info).unwrap().unwrap();
     let third = consumer.copy(&info).unwrap().unwrap();
@@ -745,6 +775,15 @@ pub fn verify_hardware_ownership(display: &gtk::gdk::Display) {
     info.planes[0].offset = u64::from(resized_source.offset);
     info.planes[0].stride = resized_source.stride;
     assert!(
+        gl_consumer.gl_fixture(&gl_window, &info).unwrap().is_none(),
+        "GL resize must honor retained old-size textures"
+    );
+    drop(gl_second);
+    let gl_resized = gl_consumer.gl_fixture(&gl_window, &info).unwrap().unwrap();
+    downloader.set_texture(&gl_resized);
+    assert_eq!(&downloader.download_bytes().0[..4], &[0, 255, 0, 255]);
+    assert_eq!((gl_resized.width(), gl_resized.height()), (48, 24));
+    assert!(
         consumer.copy(&info).unwrap().is_none(),
         "resize must honor retained old-size buffers"
     );
@@ -758,6 +797,8 @@ pub fn verify_hardware_ownership(display: &gtk::gdk::Display) {
     downloader.set_texture(&texture);
     assert_eq!(&downloader.download_bytes().0[..4], &[0, 0, 255, 255]);
     eprintln!(
-        "PASS Vulkan owned-copy, producer-reuse, GTK import, resize and bounded-buffer fixture"
+        "PASS Vulkan and GL owned-copy, producer-reuse, GTK import, resize and bounded-buffer fixture"
     );
+    drop(gl_third);
+    gl_window.destroy();
 }

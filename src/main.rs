@@ -15,6 +15,7 @@ mod cef_runtime;
 mod cpu_frame;
 mod devtools;
 mod gl_dmabuf;
+mod gpu_recovery;
 mod graphics;
 mod handlers;
 mod i18n;
@@ -35,6 +36,9 @@ mod window;
 use application::KarereApplication;
 
 fn main() -> Result<()> {
+    if let Some(code) = gpu_recovery::supervise()? {
+        std::process::exit(code);
+    }
     graphics::startup_environment();
     // `--debuglevel=LEVEL` sets the log level (`--debug` = debug alias; default
     // INFO; --debuglevel wins). RUST_LOG still overrides.

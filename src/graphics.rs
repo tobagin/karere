@@ -5,7 +5,6 @@ use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
 
 static DISPLAY: AtomicU8 = AtomicU8::new(0);
 static RESTART: AtomicBool = AtomicBool::new(false);
-static CEF_VULKAN_AVAILABLE: AtomicBool = AtomicBool::new(true);
 
 pub fn startup_environment() {
     // Called before GTK/CEF create threads. Explicit recovery overrides win.
@@ -13,12 +12,8 @@ pub fn startup_environment() {
         if std::env::var_os("GDK_BACKEND").is_none() {
             std::env::set_var("GDK_BACKEND", "wayland,x11");
         }
-        // GSK tries this renderer before its backend default, then falls back
-        // normally if realization fails. The X11 default otherwise prefers GL
-        // even when hardware Vulkan works. Respect an explicit recovery choice.
-        if std::env::var_os("GSK_RENDERER").is_none() {
-            std::env::set_var("GSK_RENDERER", "vulkan");
-        }
+        // Leave GSK's platform selection intact. Performance comparisons can
+        // explicitly select GL or Vulkan; neither is a mandatory preference.
     }
 }
 
@@ -48,10 +43,10 @@ pub fn initialize_display() -> anyhow::Result<()> {
         // fails. A missing-frame watchdog cannot detect that case. Check basic
         // hardware initialization before requesting ANGLE, so GL gets a chance.
         // This is a capability check, not proof of ANGLE's eventual backend.
-        CEF_VULKAN_AVAILABLE.store(false, Ordering::Release);
         log::warn!(
             "graphics: CEF hardware Vulkan initialization unavailable: {error:#}; trying ANGLE GL"
         );
+        crate::gpu_recovery::restart_cef("gl");
     }
     Ok(())
 }
@@ -116,11 +111,7 @@ pub fn display_backend() -> &'static str {
 }
 
 pub fn cef_vulkan() -> bool {
-    CEF_VULKAN_AVAILABLE.load(Ordering::Acquire)
-        && !matches!(
-            std::env::var("KARERE_CEF_GRAPHICS").as_deref(),
-            Ok("gl") | Ok("software")
-        )
+    std::env::var("KARERE_CEF_GRAPHICS").as_deref() == Ok("vulkan")
 }
 
 pub fn configure_cef(cmd: &mut CommandLine) {
@@ -134,7 +125,7 @@ pub fn configure_cef(cmd: &mut CommandLine) {
         return;
     }
     cmd.append_switch_with_value(Some(&"use-gl".into()), Some(&"angle".into()));
-    let angle = if cef_vulkan() { "vulkan" } else { "gl" };
+    let angle = if cef_vulkan() { "vulkan" } else { "gl-egl" };
     cmd.append_switch_with_value(Some(&"use-angle".into()), Some(&angle.into()));
     log::info!("graphics: requesting CEF ANGLE {angle}; actual delivery must be verified");
 }
@@ -148,7 +139,7 @@ pub fn retry_cef_after_frame_failure() {
     }
     log::error!(
         "graphics: visible CEF browser delivered no initial frame; retrying {}",
-        if cef_vulkan() { "GL" } else { "software" }
+        next_cef_backend()
     );
     if let Some(app) = gtk::gio::Application::default() {
         app.quit();
@@ -157,17 +148,15 @@ pub fn retry_cef_after_frame_failure() {
 
 pub fn restart_if_requested() -> anyhow::Result<()> {
     if RESTART.load(Ordering::Acquire) {
-        use std::os::unix::process::CommandExt;
-        // Replace this process after CEF shutdown, releasing the old D-Bus
-        // connection before registration. Spawning races the old primary.
-        let error = std::process::Command::new(std::env::current_exe()?)
-            .args(std::env::args_os().skip(1))
-            .env(
-                "KARERE_CEF_GRAPHICS",
-                if cef_vulkan() { "gl" } else { "software" },
-            )
-            .exec();
-        return Err(error.into());
+        // The supervisor waits for exit before restarting, so the old D-Bus
+        // connection and CEF children are gone. It retains the tried backends.
+        crate::gpu_recovery::restart_cef(next_cef_backend());
     }
     Ok(())
+}
+
+fn next_cef_backend() -> &'static str {
+    // An explicitly selected Vulkan trial can fall back to GL. The supervisor
+    // skips any backend already attempted in this launch, preventing loops.
+    if cef_vulkan() { "gl" } else { "vulkan" }
 }

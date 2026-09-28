@@ -218,7 +218,13 @@ enum CpuUpload {
 /// Keeping this decision independent from raw GL calls makes empty/resize/reuse
 /// behavior explicit while the actual upload remains in `KarereWebView::draw`.
 fn cpu_upload(frame: &crate::handlers::FrameBuffer, texture_size: (i32, i32)) -> CpuUpload {
-    if frame.width <= 0 || frame.height <= 0 || frame.pixels.is_empty() {
+    let bytes = usize::try_from(frame.width)
+        .ok()
+        .and_then(|width| usize::try_from(frame.height).ok()?.checked_mul(width))
+        .and_then(|pixels| pixels.checked_mul(4));
+    // Accelerated frames can change reported dimensions while an older CPU
+    // allocation remains. Never let recovery upload beyond that allocation.
+    if frame.width <= 0 || frame.height <= 0 || bytes != Some(frame.pixels.len()) {
         CpuUpload::Empty
     } else if texture_size != (frame.width, frame.height) {
         CpuUpload::Allocate
@@ -227,10 +233,6 @@ fn cpu_upload(frame: &crate::handlers::FrameBuffer, texture_size: (i32, i32)) ->
     } else {
         CpuUpload::Reuse
     }
-}
-
-fn discard_failed_accel<T>(pending: &mut Option<T>) {
-    pending.take();
 }
 
 /// CEF `BrowserHost` zoom level to apply for a user zoom factor at a given
@@ -634,8 +636,6 @@ mod imp {
         tex_h: AtomicI32,
         /// GPU-OSR: dedicated texture the imported DMA-BUF EGLImage binds to, and
         /// the live EGLImage kept alive while that texture is sampled. (gpu-osr)
-        accel_tex: AtomicU32,
-        imported: RefCell<Option<crate::gl_dmabuf::ImportedImage>>,
         /// Last pointer position (logical px) so wheel events hit the element
         /// under the cursor, not the top-left corner.
         last_mouse_x: AtomicI32,
@@ -724,7 +724,7 @@ mod imp {
                 };
                 let (cursor_name, keyboard_request) = {
                     let mut s = shared.lock();
-                    if s.frame.dirty || s.accel.as_ref().is_some_and(|a| a.dirty) {
+                    if s.frame.dirty {
                         w.queue_render();
                     }
                     let cursor = if s.cursor_dirty {
@@ -796,6 +796,7 @@ mod imp {
         fn snapshot(&self, snapshot: &gtk::Snapshot) {
             let widget = self.obj();
             if !self.software_present.load(Ordering::Relaxed)
+                && !self.gpu_frame.get()
                 && let Some(area) = self.gl_area.borrow().as_ref()
             {
                 widget.snapshot_child(area, snapshot);
@@ -859,13 +860,13 @@ mod imp {
             let force_gl = self.force_gl.get();
             #[cfg(not(test))]
             let force_gl = false;
+            let presenter = std::env::var("KARERE_CPU_PRESENTER").unwrap_or_default();
             if force_gl
-                || name.contains("GLRenderer")
+                || presenter == "gl"
+                || (presenter != "snapshot" && name.contains("GLRenderer"))
                 || std::env::var_os("KARERE_TEST_FORCE_DESKTOP_GL").is_some()
             {
-                log::warn!(
-                    "graphics: hardware Vulkan presentation unavailable or explicitly overridden; using GL presenter"
-                );
+                log::warn!("graphics: using GL presenter for CPU frames (GTK renderer={name})");
                 self.setup_gl_presenter();
             } else {
                 self.bootstrap_pool();
@@ -1078,7 +1079,12 @@ mod imp {
                     self.obj().queue_render();
                 }
                 Ok(false) => {
-                    log::debug!("graphics: all owned transfer buffers are in use; coalescing frame")
+                    log::debug!(
+                        "graphics: all owned transfer buffers are in use; coalescing frame"
+                    );
+                    // Let GSK finish/release retained frames without advancing
+                    // the content serial. This never creates an idle timer.
+                    self.obj().queue_render();
                 }
                 Err(error) => {
                     log::warn!("graphics: accelerated transfer failed: {error:#}");
@@ -1724,7 +1730,7 @@ mod imp {
             let window_info = WindowInfo {
                 windowless_rendering_enabled: 1,
                 // GPU-accelerated OSR: hand us a DMA-BUF via on_accelerated_paint
-                // instead of a CPU buffer, when supported + opted in. (gpu-osr)
+                // instead of a CPU buffer, when supported and not opted out.
                 shared_texture_enabled: self.shared_texture_enabled_for_browser() as i32,
                 ..Default::default()
             };
@@ -2048,42 +2054,14 @@ mod imp {
             self.texture.store(tex, Ordering::Relaxed);
             self.tex_w.store(0, Ordering::Relaxed);
             self.tex_h.store(0, Ordering::Relaxed);
-
-            // GPU-OSR: a second texture the imported DMA-BUF EGLImage targets.
-            let mut atex = 0;
-            unsafe {
-                gl::GenTextures(1, &mut atex);
-                gl::BindTexture(gl::TEXTURE_2D, atex);
-                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint);
-                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
-                gl::TexParameteri(
-                    gl::TEXTURE_2D,
-                    gl::TEXTURE_WRAP_S,
-                    gl::CLAMP_TO_EDGE as GLint,
-                );
-                gl::TexParameteri(
-                    gl::TEXTURE_2D,
-                    gl::TEXTURE_WRAP_T,
-                    gl::CLAMP_TO_EDGE as GLint,
-                );
-                gl::BindTexture(gl::TEXTURE_2D, 0);
-            }
-            self.accel_tex.store(atex, Ordering::Relaxed);
         }
 
         unsafe fn teardown_gl(&self) {
-            // Release the live EGLImage while the GL context is still current.
-            *self.imported.borrow_mut() = None;
             unsafe {
                 let tex = self.texture.load(Ordering::Relaxed);
                 if tex != 0 {
                     gl::DeleteTextures(1, &tex);
                     self.texture.store(0, Ordering::Relaxed);
-                }
-                let atex = self.accel_tex.load(Ordering::Relaxed);
-                if atex != 0 {
-                    gl::DeleteTextures(1, &atex);
-                    self.accel_tex.store(0, Ordering::Relaxed);
                 }
                 let vbo = self.vbo.load(Ordering::Relaxed);
                 if vbo != 0 {
@@ -2114,67 +2092,12 @@ mod imp {
                 gl::ClearColor(0.0, 0.0, 0.0, 1.0);
                 gl::Clear(gl::COLOR_BUFFER_BIT);
 
-                // GPU path: import the pending DMA-BUF to the accel texture. (gpu-osr)
-                let atex = self.accel_tex.load(Ordering::Relaxed);
-                let mut accel_failed = false;
-                if let Some(af) = s.accel.as_mut()
-                    && af.dirty
-                {
-                    if let Some(img) = crate::gl_dmabuf::import_to_texture(
-                        atex,
-                        af.width,
-                        af.height,
-                        af.fourcc,
-                        af.modifier,
-                        &af.planes,
-                    ) {
-                        // Keep the EGLImage alive while the texture is sampled;
-                        // dropping the previous one releases it.
-                        *self.imported.borrow_mut() = Some(img);
-                        af.dirty = false;
-                    } else {
-                        accel_failed = true;
-                    }
-                }
-                if accel_failed {
-                    // A rejected DMA-BUF must not pin draw() to a permanently
-                    // blank/stale accelerated branch. Drop it so an existing or
-                    // subsequent CEF CPU on_paint frame can become visible.
-                    log::warn!("accelerated OSR import failed; falling back to CPU paint");
-                    super::discard_failed_accel(&mut s.accel);
-                    *self.imported.borrow_mut() = None;
-                    // CEF's shared-texture choice is fixed at browser creation.
-                    // Recreate the pool after this render callback so subsequent
-                    // callbacks are CPU on_paint rather than more unusable DMA-BUFs.
-                    self.schedule_software_osr_fallback();
-                }
-
-                let use_accel = s.accel.is_some() && self.imported.borrow().is_some();
                 // J4 instrumentation: capture widget-physical size for draw logging.
                 let dbg_widget = self.obj();
                 let dbg_scale = paint_scale(&dbg_widget);
                 let dbg_phys_w = (dbg_widget.width() as f64 * dbg_scale).round() as i32;
                 let dbg_phys_h = (dbg_widget.height() as f64 * dbg_scale).round() as i32;
-                if use_accel {
-                    let (aw, ah) = s
-                        .accel
-                        .as_ref()
-                        .map(|a| (a.width, a.height))
-                        .unwrap_or((0, 0));
-                    log::debug!(
-                        "coord: J4 draw frame={}x{} tex={}x{} widget_physical={}x{} accel=true scale={:.3}",
-                        aw,
-                        ah,
-                        aw,
-                        ah,
-                        dbg_phys_w,
-                        dbg_phys_h,
-                        dbg_scale
-                    );
-                }
-                let (tex, bgra) = if use_accel {
-                    (atex, 0_i32)
-                } else {
+                let (tex, bgra) = {
                     // Software path: upload CEF's CPU BGRA buffer through the
                     // valid GLES context (software OSR does not eliminate GLArea).
                     let tex = self.texture.load(Ordering::Relaxed);
@@ -2248,7 +2171,7 @@ mod imp {
                     }
                     (tex, 1_i32)
                 };
-                if !use_accel {
+                {
                     let tw2 = self.tex_w.load(Ordering::Relaxed);
                     let th2 = self.tex_h.load(Ordering::Relaxed);
                     log::debug!(
@@ -3994,6 +3917,20 @@ mod tests {
             return;
         }
 
+        let settings = gtk::gio::Settings::new(crate::application::APP_ID);
+        assert!(settings.user_value("gpu-rendering").is_none());
+        assert!(
+            settings.boolean("gpu-rendering"),
+            "fresh profile defaults on"
+        );
+        settings.set_boolean("gpu-rendering", false).unwrap();
+        assert!(
+            !gtk::gio::Settings::new(crate::application::APP_ID).boolean("gpu-rendering"),
+            "an explicit saved opt-out survives another settings instance"
+        );
+        settings.reset("gpu-rendering");
+        assert!(settings.boolean("gpu-rendering"));
+
         crate::presenter::verify_cpu_texture_ownership();
         crate::presenter::verify_fractional_tiles();
         crate::vulkan_frame::verify_hardware_ownership(&gtk::gdk::Display::default().unwrap());
@@ -4077,6 +4014,10 @@ mod tests {
         frame.width = 1;
         frame.height = 2;
         assert_eq!(cpu_upload(&frame, (2, 1)), CpuUpload::Allocate);
+
+        // A resized accelerated frame may precede CPU recovery's first paint.
+        frame.width = 100;
+        assert_eq!(cpu_upload(&frame, (2, 1)), CpuUpload::Empty);
     }
 
     fn assert_texture_transfer_rejection_recovers_once() {
@@ -4124,7 +4065,7 @@ mod tests {
     }
 
     fn assert_rejected_accelerated_frame_restarts_pool_then_renders_cpu_callback() {
-        use std::os::fd::OwnedFd;
+        use std::os::fd::AsRawFd;
         use std::sync::atomic::Ordering;
 
         crate::load_gl();
@@ -4149,31 +4090,23 @@ mod tests {
         );
         imp.fallback_test_events.borrow_mut().clear();
 
-        // An invalid DMA-BUF reaches the real import call from draw() and must be
-        // rejected deterministically by EGL. /dev/null supplies an owned, valid fd
-        // while fourcc=0 is intentionally not a DRM pixel format.
-        let fd: OwnedFd = std::fs::File::open("/dev/null").unwrap().into();
+        // Send an invalid external allocation through the same owned-copy
+        // presenter used by the CEF callback. Both imports must reject /dev/null.
+        let fd = std::fs::File::open("/dev/null").unwrap();
         let shared = imp.shared.lock().as_ref().unwrap().clone();
-        shared.lock().accel = Some(crate::gl_dmabuf::AccelFrame {
-            width: 1,
-            height: 1,
-            fourcc: 0,
-            modifier: 0,
-            planes: vec![crate::gl_dmabuf::Plane {
-                fd,
-                offset: 0,
-                stride: 4,
-            }],
-            dirty: true,
-        });
-        unsafe { imp.draw() };
-        assert!(
-            shared.lock().accel.is_none(),
-            "draw must discard rejected DMA-BUF"
-        );
+        let mut info = cef::AcceleratedPaintInfo {
+            plane_count: 1,
+            format: cef::ColorType::BGRA_8888,
+            ..Default::default()
+        };
+        info.extra.coded_size.width = 1;
+        info.extra.coded_size.height = 1;
+        info.planes[0].fd = fd.as_raw_fd();
+        info.planes[0].stride = 4;
+        imp.accept_accelerated(&info, false);
         assert!(imp.software_osr_forced.load(Ordering::Acquire));
 
-        // draw() schedules, rather than recursively performs, browser teardown.
+        // The callback schedules browser teardown after returning to CEF.
         assert!(imp.fallback_test_events.borrow().is_empty());
         while gtk::glib::MainContext::default().iteration(false) {}
         assert_eq!(

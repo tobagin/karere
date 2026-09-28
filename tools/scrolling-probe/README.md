@@ -1,9 +1,9 @@
 # Scrolling and CEF pump diagnostics
 
-The experimental Vulkan presenter and monitor-rate work is documented in
-[ADAPTIVE_REFRESH_FINDINGS.md](ADAPTIVE_REFRESH_FINDINGS.md). Its 240 Hz target
-is **not met**. That document distinguishes fresh-content presentation from
-page callbacks and the existing historical measurements below.
+Current default-on acceleration work and reproducible producer/media controls
+are documented in [ACCELERATION.md](ACCELERATION.md). Its 240 Hz target remains
+**unverified**. [ADAPTIVE_REFRESH_FINDINGS.md](ADAPTIVE_REFRESH_FINDINGS.md) retains
+the earlier prototype's lower-ceiling measurements and original backend policy.
 
 These optional tools reproduce the CPU-buffer off-screen rendering stall described in [issue #173](https://github.com/tobagin/karere/issues/173). The [original findings](FINDINGS.md) document controlled CPU → GPU → CPU comparisons on Karere 4.3.0. The [fix validation](FIX_VALIDATION.md) describes the paint-driven CEF scheduler and compares the compiled application against the original Flatpak.
 
@@ -77,7 +77,7 @@ python3 tools/scrolling-probe/karere_probe.py chat_cpu --chat-list
 
 The controller waits for a visible WhatsApp chat list, settles for 20 seconds, warms up for 5 seconds, and moves `scrollTop` through a 900 CSS-pixel range for 15 seconds. It restores the starting offset and quits. It does not click, type, read messages/contacts/cookies, or send messages. Keep Karere untouched during the measurement.
 
-For CPU → GPU → CPU comparisons, change GPU Rendering in Preferences and fully quit between runs. Restore the original preference afterwards. The accelerated workaround in the historical results was verified on AMD. The experimental presenter restores NVIDIA opt-in with a missing-frame recovery path; the NVIDIA run described in the adaptive-refresh findings fell back to CPU transfer.
+For CPU → GPU → CPU comparisons, change GPU Rendering in Preferences and fully quit between runs. Restore the original preference afterwards. The accelerated workaround in the historical results was verified on AMD. Earlier NVIDIA presenter experiments were opt-in and fell back to CPU transfer; current default-on policy and recovery validation are documented in [ACCELERATION.md](ACCELERATION.md).
 
 The real-page probe temporarily enables CEF's loopback CDP port through its initialization field, preserving normal origin/private-network security flags. It does not pass Karere's `--debug` option. The small CDP client only accepts `127.0.0.1:9333`. The generated-page mode uses Karere's debug option in its isolated profile. Both reject an already occupied diagnostic port. Quitting the diagnostic instance removes the probe and listener; relaunch Karere normally afterwards.
 

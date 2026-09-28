@@ -117,7 +117,7 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
 
       Adw.SwitchRow row_gpu_render {
         title: _("GPU Rendering");
-        subtitle: _("Transfer chat frames on the GPU. Requires a restart. Experimental on NVIDIA. If the chat area is blank, turn this off and restart.");
+        subtitle: _("Transfer chat frames on the GPU when supported, with automatic recovery if unavailable. Enabled by default. Requires a restart.");
       }
     }
   }

@@ -2,6 +2,10 @@
 use anyhow::{Context, Result, bail};
 use gtk::{gdk, prelude::*};
 use std::os::fd::{AsRawFd, BorrowedFd};
+use std::sync::{
+    Arc,
+    atomic::{AtomicUsize, Ordering},
+};
 
 type CpuTile = (crate::cpu_frame::Rect, crate::cpu_frame::Rect, gdk::Texture);
 
@@ -15,28 +19,52 @@ pub struct Presenter {
     vulkan_failed: bool,
     gl_context: Option<gdk::GLContext>,
     gl_failed: bool,
+    gl_frames: Arc<AtomicUsize>,
 }
 
 impl Presenter {
+    fn order(widget: &impl IsA<gtk::Widget>) -> [bool; 2] {
+        let gl_first = match std::env::var("KARERE_FRAME_TRANSFER").as_deref() {
+            Ok("gl") => true,
+            Ok("vulkan") => false,
+            _ => widget
+                .native()
+                .and_then(|native| native.renderer())
+                .is_some_and(|renderer| renderer.type_().name().contains("GLRenderer")),
+        };
+        // Match the actual GTK renderer to avoid an API-crossing readback. The
+        // diagnostic override isolates transfer performance from GSK selection.
+        [gl_first, !gl_first]
+    }
+
     pub fn supports_acceleration(&mut self, widget: &impl IsA<gtk::Widget>) -> bool {
-        if !self.vulkan_failed {
-            if self.copier.is_some() {
-                return true;
-            }
-            match crate::vulkan_frame::Copier::new() {
-                Ok(copier) => {
-                    self.copier = Some(copier);
+        let _deadline = crate::gpu_recovery::Deadline::arm();
+        for gl in Self::order(widget) {
+            if gl && !self.gl_failed {
+                match self.ensure_gl(widget) {
+                    Ok(()) => return true,
+                    Err(error) => {
+                        self.gl_failed = true;
+                        log::warn!("graphics: GL transfer unavailable: {error:#}");
+                    }
+                }
+            } else if !gl && !self.vulkan_failed {
+                if self.copier.is_some() {
                     return true;
                 }
-                Err(error) => {
-                    self.vulkan_failed = true;
-                    log::warn!(
-                        "graphics: Vulkan transfer unavailable: {error:#}; checking GL transfer"
-                    );
+                match crate::vulkan_frame::Copier::new() {
+                    Ok(copier) => {
+                        self.copier = Some(copier);
+                        return true;
+                    }
+                    Err(error) => {
+                        self.vulkan_failed = true;
+                        log::warn!("graphics: Vulkan transfer unavailable: {error:#}");
+                    }
                 }
             }
         }
-        self.ensure_gl(widget).is_ok()
+        false
     }
 
     pub fn cpu(&mut self, frame: &mut crate::handlers::FrameBuffer) {
@@ -114,39 +142,43 @@ impl Presenter {
         widget: &impl IsA<gtk::Widget>,
         info: &cef::AcceleratedPaintInfo,
     ) -> Result<bool> {
+        let _deadline = crate::gpu_recovery::Deadline::arm();
         let crop = visible_crop(info)?;
-        if !self.vulkan_failed {
-            match self.vulkan(&widget.display(), info) {
-                Ok(result) => {
-                    if result {
+        for gl in Self::order(widget) {
+            if gl && !self.gl_failed {
+                match self.gl(widget, info) {
+                    Ok(Some(texture)) => {
+                        self.texture = Some(texture);
                         self.gpu_crop = crop;
+                        return Ok(true);
                     }
-                    return Ok(result);
+                    Ok(None) => return Ok(false),
+                    Err(error) => {
+                        self.gl_failed = true;
+                        log::warn!(
+                            "graphics: GL frame transfer failed: {error:#}; trying remaining transfer backend"
+                        );
+                    }
                 }
-                Err(error) => {
-                    self.vulkan_failed = true;
-                    self.copier = None;
-                    log::warn!(
-                        "graphics: Vulkan frame import/copy/export failed: {error:#}; trying GL transfer"
-                    );
+            } else if !gl && !self.vulkan_failed {
+                match self.vulkan(&widget.display(), info) {
+                    Ok(result) => {
+                        if result {
+                            self.gpu_crop = crop;
+                        }
+                        return Ok(result);
+                    }
+                    Err(error) => {
+                        self.vulkan_failed = true;
+                        self.copier = None;
+                        log::warn!(
+                            "graphics: Vulkan frame transfer failed: {error:#}; trying remaining transfer backend"
+                        );
+                    }
                 }
             }
         }
-        if self.gl_failed {
-            bail!("Vulkan and GL accelerated transfer unavailable");
-        }
-        match self.gl(widget, info) {
-            Ok(texture) => {
-                self.texture = Some(texture);
-                self.gpu_crop = crop;
-                Ok(true)
-            }
-            Err(error) => {
-                self.gl_failed = true;
-                log::warn!("graphics: GL frame transfer failed: {error:#}; CPU frames required");
-                Err(error)
-            }
-        }
+        bail!("all eligible accelerated transfer backends failed; CPU frames required")
     }
 
     fn vulkan(&mut self, display: &gdk::Display, info: &cef::AcceleratedPaintInfo) -> Result<bool> {
@@ -170,8 +202,27 @@ impl Presenter {
             context.set_allowed_apis(gdk::GLAPI::GLES);
             context.set_required_version(3, 0);
             context.realize()?;
+            let previous = gdk::GLContext::current();
+            context.make_current();
+            let supported = crate::gl_dmabuf::is_supported();
+            let renderer = unsafe {
+                let value = gl::GetString(gl::RENDERER);
+                if value.is_null() {
+                    "unavailable".to_owned()
+                } else {
+                    std::ffi::CStr::from_ptr(value.cast())
+                        .to_string_lossy()
+                        .into_owned()
+                }
+            };
+            if let Some(previous) = previous {
+                previous.make_current();
+            } else {
+                gdk::GLContext::clear_current();
+            }
+            anyhow::ensure!(supported, "GL display lacks DMA-BUF import support");
             self.gl_context = Some(context);
-            log::info!("graphics: using GL copy for accelerated frames");
+            log::info!("graphics: using GL copy for accelerated frames; renderer={renderer}");
         }
         Ok(())
     }
@@ -180,18 +231,34 @@ impl Presenter {
         &mut self,
         widget: &impl IsA<gtk::Widget>,
         info: &cef::AcceleratedPaintInfo,
-    ) -> Result<gdk::Texture> {
+    ) -> Result<Option<gdk::Texture>> {
+        if self.gl_frames.load(Ordering::Acquire) >= 3 {
+            return Ok(None);
+        }
         self.ensure_gl(widget)?;
         let context = self.gl_context.as_ref().unwrap();
         let previous = gdk::GLContext::current();
         context.make_current();
-        let result = unsafe { copy_gl_frame(context, info) };
+        self.gl_frames.fetch_add(1, Ordering::AcqRel);
+        let result = unsafe { copy_gl_frame(context, info, self.gl_frames.clone()) };
+        if result.is_err() {
+            self.gl_frames.fetch_sub(1, Ordering::AcqRel);
+        }
         if let Some(previous) = previous {
             previous.make_current();
         } else {
             gdk::GLContext::clear_current();
         }
-        result
+        result.map(Some)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn gl_fixture(
+        &mut self,
+        widget: &impl IsA<gtk::Widget>,
+        info: &cef::AcceleratedPaintInfo,
+    ) -> Result<Option<gdk::Texture>> {
+        self.gl(widget, info)
     }
 }
 
@@ -239,7 +306,9 @@ pub(crate) fn texture_from_vulkan(
 unsafe fn copy_gl_frame(
     context: &gdk::GLContext,
     info: &cef::AcceleratedPaintInfo,
+    live_frames: Arc<AtomicUsize>,
 ) -> Result<gdk::Texture> {
+    let _deadline = crate::gpu_recovery::Deadline::arm();
     unsafe {
         let (width, height) = (info.extra.coded_size.width, info.extra.coded_size.height);
         anyhow::ensure!(
@@ -291,12 +360,27 @@ unsafe fn copy_gl_frame(
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
             gl::CopyTexImage2D(gl::TEXTURE_2D, 0, gl::RGBA, 0, 0, width, height, 0);
-            gl::Finish(); // CEF may immediately reuse its image after this callback.
+            // CEF may immediately reuse its image after this callback. A finite
+            // fence timeout requires process recovery, never an unsafe return.
+            let fence = gl::FenceSync(gl::SYNC_GPU_COMMANDS_COMPLETE, 0);
+            if fence.is_null() {
+                crate::gpu_recovery::completion_unknown("GL copy fence creation failed");
+            }
+            let status = gl::ClientWaitSync(
+                fence,
+                gl::SYNC_FLUSH_COMMANDS_BIT,
+                crate::gpu_recovery::FENCE_TIMEOUT_NS,
+            );
+            if status != gl::ALREADY_SIGNALED && status != gl::CONDITION_SATISFIED {
+                crate::gpu_recovery::completion_unknown("GL copy fence failed or timed out");
+            }
+            gl::DeleteSync(fence);
             anyhow::ensure!(gl::GetError() == gl::NO_ERROR, "GL frame copy failed");
             let id = owned_texture;
             let owner = context.clone();
             let texture =
                 gdk::GLTexture::with_release_func(context, id, width, height, move || {
+                    let _deadline = crate::gpu_recovery::Deadline::arm();
                     let previous = gdk::GLContext::current();
                     owner.make_current();
                     gl::DeleteTextures(1, &id);
@@ -305,6 +389,7 @@ unsafe fn copy_gl_frame(
                     } else {
                         gdk::GLContext::clear_current();
                     }
+                    live_frames.fetch_sub(1, Ordering::AcqRel);
                 });
             owned_texture = 0;
             Ok(texture.upcast())

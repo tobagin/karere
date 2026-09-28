@@ -61,10 +61,6 @@ pub struct SharedState {
     pub popup_rect: (i32, i32, i32, i32),
     pub snapshot_present: bool,
     pub frame_serial: u64,
-    /// Pending GPU-accelerated frame (DMA-BUF) from `on_accelerated_paint`, when
-    /// shared-texture OSR is enabled; consumed + imported to a GL texture in
-    /// `draw`. `None` on the software (`on_paint`) path. (gpu-osr)
-    pub accel: Option<crate::gl_dmabuf::AccelFrame>,
     /// Logical (DIP) viewport size — CEF's GetViewRect and GetScreenInfo rect.
     /// With non-empty screen rects Chromium honours device_scale_factor, so the
     /// physical paint buffer = this × `scale_factor` = the GLArea framebuffer

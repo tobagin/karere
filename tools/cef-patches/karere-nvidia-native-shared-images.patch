@@ -1,0 +1,249 @@
+NVIDIA shared-texture OSR: export native-handle SharedImages without CPU mapping.
+
+Backport CEF PR #4238 (cafbf7f24971aa2526381e8e1978e11d1838ae64),
+by Kristof Imeri, and its required Chromium CL 8220427
+(9522ea8ad0bed3c3fd1b4f570ed9792dec8176d5), also by Kristof Imeri.
+Upstream references:
+https://github.com/chromiumembedded/cef/pull/4238
+https://chromium-review.googlesource.com/c/chromium/src/+/8220427
+
+Both changes are required: merely selecting native handles in CEF leaves
+Chromium's capturer taking its CPU readback path and rejecting ARGB results.
+Keep the existing preference on non-Linux platforms. Apply from Chromium src.
+Target: CEF 708dc14 / Chromium 152.0.7977.83 before packaging.
+Remove this backport when both upstream changes are in the selected release.
+
+diff --git a/cef/libcef/browser/osr/video_consumer_osr.cc b/cef/libcef/browser/osr/video_consumer_osr.cc
+index 321bf9e51b..1ed745d57d 100644
+--- a/cef/libcef/browser/osr/video_consumer_osr.cc
++++ b/cef/libcef/browser/osr/video_consumer_osr.cc
+@@ -4,6 +4,7 @@
+ 
+ #include "cef/libcef/browser/osr/video_consumer_osr.h"
+ 
++#include "build/build_config.h"
+ #include "cef/libcef/browser/osr/render_widget_host_view_osr.h"
+ #include "media/base/video_frame_metadata.h"
+ #include "media/capture/mojom/video_capture_buffer.mojom.h"
+@@ -51,7 +52,12 @@ void CefVideoConsumerOSR::SetActive(bool active) {
+     video_capturer_->Start(
+         this,
+         use_shared_texture_
++#if BUILDFLAG(IS_LINUX)
++            ? viz::mojom::BufferFormatPreference::
++                  kPreferSharedImageWithNativeHandle
++#else
+             ? viz::mojom::BufferFormatPreference::kPreferMappableSharedImage
++#endif
+             : viz::mojom::BufferFormatPreference::kDefault);
+   } else {
+     video_capturer_->Stop();
+
+diff --git a/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.cc b/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.cc
+index 3e5d942..7e8152b 100644
+--- a/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.cc
++++ b/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.cc
+@@ -1122,25 +1122,34 @@
+   // TODO(crbug.com/346799708): The condition to check `pixel_format_` shouldn't
+   // be necessary but video capture is started with I420+mappable SI in tests.
+   // That still captures software I420 frames and not textures.
+-  const bool capture_texture_results =
++  const bool prefer_mappable_shared_image =
+       buffer_format_preference_ ==
+-          mojom::BufferFormatPreference::kPreferMappableSharedImage &&
+-      (pixel_format_ == media::PIXEL_FORMAT_NV12 ||
+-       pixel_format_ == media::PIXEL_FORMAT_ARGB ||
+-       pixel_format_ == media::PIXEL_FORMAT_RGBAF16);
++      mojom::BufferFormatPreference::kPreferMappableSharedImage;
++#if BUILDFLAG(IS_LINUX)
++  const bool prefer_shared_image =
++      prefer_mappable_shared_image ||
++      buffer_format_preference_ ==
++          mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle;
++#else
++  const bool prefer_shared_image = prefer_mappable_shared_image;
++#endif
++  const bool should_capture_texture_results =
++      prefer_shared_image && (pixel_format_ == media::PIXEL_FORMAT_NV12 ||
++                              pixel_format_ == media::PIXEL_FORMAT_ARGB ||
++                              pixel_format_ == media::PIXEL_FORMAT_RGBAF16);
+ 
+   std::optional<BlitRequest> blit_request;
+-  if (capture_texture_results) {
++  if (should_capture_texture_results) {
+     TRACE_EVENT("gpu.capture", "PopulateBlitRequest");
+ 
+     auto sync_token = frame_capture.frame->acquire_sync_token();
+ 
+     // TODO(crbug.com/41350322): change the capturer to only request the
+     // parts of the frame that have changed whenever possible.
+-    blit_request =
+-        BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
+-                    frame_capture.frame->shared_image(), sync_token,
+-                    /*populates_mappable_shared_image=*/true);
++    blit_request = BlitRequest(
++        content_rect.origin(), LetterboxingBehavior::kLetterbox,
++        frame_capture.frame->shared_image(), sync_token,
++        /*populates_mappable_shared_image=*/prefer_mappable_shared_image);
+ 
+     // We haven't captured the frame yet, but let's pretend that we did for
+     // the sake of blend information computation. We will be asking for an
+@@ -1170,7 +1179,7 @@
+   // Request a copy of the next frame from the frame sink.
+   auto request = std::make_unique<CopyOutputRequest>(
+       VideoPixelFormatToCopyOutputRequestFormat(pixel_format_),
+-      capture_texture_results
++      should_capture_texture_results
+           ? CopyOutputRequest::ResultDestination::kSharedImage
+           : CopyOutputRequest::ResultDestination::kSystemMemory,
+       base::BindOnce(&FrameSinkVideoCapturerImpl::DidCopyFrame,
+@@ -1350,8 +1359,16 @@
+         frame_capture.CaptureFailed(CaptureResult::kARGBReadbackFailed);
+       }
+     } else {
++#if BUILDFLAG(IS_LINUX)
++      CHECK(buffer_format_preference_ ==
++                mojom::BufferFormatPreference::kPreferMappableSharedImage ||
++            buffer_format_preference_ ==
++                mojom::BufferFormatPreference::
++                    kPreferSharedImageWithNativeHandle);
++#else
+       CHECK_EQ(buffer_format_preference_,
+                mojom::BufferFormatPreference::kPreferMappableSharedImage);
++#endif
+       // MappableSI ARGB results are written to the existing pool texture.
+       if (result->IsEmpty()) {
+         frame_capture.CaptureFailed(
+diff --git a/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl_unittest.cc b/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl_unittest.cc
+index 7c12017..a90674fd 100644
+--- a/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl_unittest.cc
++++ b/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl_unittest.cc
+@@ -24,6 +24,7 @@
+ #include "base/test/test_mock_time_task_runner.h"
+ #include "base/time/time.h"
+ #include "base/token.h"
++#include "build/build_config.h"
+ #include "cc/base/math_util.h"
+ #include "components/viz/common/frame_sinks/begin_frame_args.h"
+ #include "components/viz/common/frame_sinks/copy_output_request.h"
+@@ -464,6 +465,12 @@
+   void RequestCopyOfOutput(std::unique_ptr<PendingCopyOutputRequest>
+                                pending_copy_output_request) override {
+     auto& request = pending_copy_output_request->copy_output_request;
++    last_result_destination_ = request->result_destination();
++    last_blit_request_populates_mappable_shared_image_ =
++        request->has_blit_request()
++            ? std::make_optional(
++                  request->blit_request().populates_mappable_shared_image())
++            : std::nullopt;
+     EXPECT_NE(base::UnguessableToken(), request->source());
+     if (pending_copy_output_request->subtree_capture_id.is_valid()) {
+       EXPECT_EQ(capture_bounds_, request->area());
+@@ -551,6 +558,15 @@
+   // is done via |SendCopyOutputResult()|.
+   int num_copy_results() const { return results_.size(); }
+ 
++  std::optional<CopyOutputResult::Destination> last_result_destination() const {
++    return last_result_destination_;
++  }
++
++  std::optional<bool> last_blit_request_populates_mappable_shared_image()
++      const {
++    return last_blit_request_populates_mappable_shared_image_;
++  }
++
+   void SendCopyOutputResult(int offset) {
+     auto it = results_.begin() + offset;
+     std::move(*it).Run();
+@@ -572,6 +588,8 @@
+   SizeSet size_set_;
+   CompositorFrameMetadata metadata_;
+   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
++  std::optional<CopyOutputResult::Destination> last_result_destination_;
++  std::optional<bool> last_blit_request_populates_mappable_shared_image_;
+ 
+   mutable RegionCaptureCropId current_crop_id_;
+   mutable SubtreeCaptureId current_capture_id_;
+@@ -874,7 +892,9 @@
+ 
+   bool IsUsingGpuMemoryBuffer() {
+     return buffer_format_preference_ ==
+-           mojom::BufferFormatPreference::kPreferMappableSharedImage;
++               mojom::BufferFormatPreference::kPreferMappableSharedImage ||
++           buffer_format_preference_ == mojom::BufferFormatPreference::
++                                            kPreferSharedImageWithNativeHandle;
+   }
+ 
+   base::TimeTicks GetNextVsync() const {
+@@ -2355,19 +2375,60 @@
+   StopCapture();
+ }
+ 
++TEST_P(FrameSinkVideoCapturerTest, ConfiguresSharedImageBlitRequest) {
++  if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
++    GTEST_SKIP();
++  }
++
++  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
++      .WillRepeatedly(Return(&frame_sink_));
++  capturer_->ChangeTarget(kVideoCaptureTarget,
++                          /*sub_capture_target_version=*/0);
++
++  NiceMock<MockConsumer> consumer;
++  StartCapture(&consumer);
++
++  ASSERT_EQ(1, frame_sink_.num_copy_results());
++  ASSERT_TRUE(frame_sink_.last_result_destination().has_value());
++  EXPECT_EQ(CopyOutputResult::Destination::kSharedImage,
++            *frame_sink_.last_result_destination());
++
++  ASSERT_TRUE(frame_sink_.last_blit_request_populates_mappable_shared_image()
++                  .has_value());
++  const bool expect_mappable =
++      buffer_format_preference_ ==
++      mojom::BufferFormatPreference::kPreferMappableSharedImage;
++  EXPECT_EQ(expect_mappable,
++            *frame_sink_.last_blit_request_populates_mappable_shared_image());
++
++  StopCapture();
++}
++
++std::vector<std::tuple<mojom::BufferFormatPreference, media::VideoPixelFormat>>
++GetFrameSinkVideoCapturerTestParams() {
++  std::vector<
++      std::tuple<mojom::BufferFormatPreference, media::VideoPixelFormat>>
++      params = {
++          {mojom::BufferFormatPreference::kDefault, media::PIXEL_FORMAT_I420},
++          {mojom::BufferFormatPreference::kDefault, media::PIXEL_FORMAT_ARGB},
++          {mojom::BufferFormatPreference::kPreferMappableSharedImage,
++           media::PIXEL_FORMAT_NV12},
++          {mojom::BufferFormatPreference::kPreferMappableSharedImage,
++           media::PIXEL_FORMAT_ARGB},
++          {mojom::BufferFormatPreference::kPreferMappableSharedImage,
++           media::PIXEL_FORMAT_RGBAF16},
++      };
++#if BUILDFLAG(IS_LINUX)
++  params.emplace_back(
++      mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle,
++      media::PIXEL_FORMAT_ARGB);
++#endif
++  return params;
++}
++
+ INSTANTIATE_TEST_SUITE_P(
+     All,
+     FrameSinkVideoCapturerTest,
+-    testing::Values(
+-        std::tuple(mojom::BufferFormatPreference::kDefault,
+-                   media::PIXEL_FORMAT_I420),
+-        std::tuple(mojom::BufferFormatPreference::kDefault,
+-                   media::PIXEL_FORMAT_ARGB),
+-        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
+-                   media::PIXEL_FORMAT_NV12),
+-        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
+-                   media::PIXEL_FORMAT_ARGB),
+-        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
+-                   media::PIXEL_FORMAT_RGBAF16)));
++    testing::ValuesIn(GetFrameSinkVideoCapturerTestParams()));
+ 
+ }  // namespace viz
