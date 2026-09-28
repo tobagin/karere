@@ -121,27 +121,29 @@ they do not identify distinct web frames. Native UI updates can exceed page FPS.
 | Stock synthetic, maximized | 59.93 | 59.60–59.67 | 16.67 | 16.72–20.83 | 59.5–61.7 |
 | Stock text conversation, windowed | 40.73–41.13 | 40.13–40.47 | 25.00 | 29.10–29.17 | 137.3–148.3 |
 | Stock text conversation, maximized | 40.07–40.87 | 39.67–40.53 | 25.00 | 29.16–29.17 | 165.8–169.8 |
-| Stock list, windowed / maximized | 60.00 | 60.00 / 60.00–60.07 | 16.67 | 16.75–20.87 | 49.1–51.9 / 70.4–73.3 |
-| #193 synthetic, windowed / maximized | 60.00 / 59.87 | 59.93–61.67 / 59.73–61.53 | 16.67 | 20.75–20.84 | 37.6–38.4 / 58.6–59.7 |
+| Stock list, windowed / maximized | 60.00 | 60.00 / 60.00–60.07 | 16.67 | 16.76–20.87 | 49.1–51.9 / 70.4–73.3 |
+| #193 synthetic, windowed / maximized | 60.00 / 59.87 | 59.93–61.67 / 59.73–61.53 | 16.67 | 20.78–20.85 | 37.6–38.4 / 58.6–59.7 |
 | #193 text conversation, windowed | 60.00 | 59.93–60.07 | 16.67 | 20.83–20.86 | 50.4–50.8 |
 | #193 text conversation, maximized | 60.00 | 60.00 | 16.67 | 20.84 | 95.2–97.4 |
-| #193 list, windowed / maximized | 60.00 | 60.00 | 16.67 | 20.82–20.88 | 40.7–44.8 / 74.0–74.4 |
+| #193 list, windowed / maximized | 60.00 | 60.00 | 16.67 | 20.83–20.88 | 40.7–44.8 / 74.0–74.4 |
 
 Combined implementation with #193; **fresh content** below correlates CEF frame
 serials captured by GTK snapshots with committed Wayland presentation feedback.
 This requires one visible web view, no DevTools window, and an uninterrupted GTK
 connection. Repeated serials are deduplicated, discarded feedback is excluded,
-and ambiguous commit associations are not counted.
+and ambiguous commit associations are not counted. Medians average the two
+middle intervals when needed; p95 uses the empirical nearest rank. Interrupted,
+hidden or history-loading samples cannot receive a verified verdict.
 
 | Workload | VRR | Page FPS | CEF CPU paints/s | Fresh presentations/s | Median ms | p95 ms | CPU % |
 |---|---|---:|---:|---:|---:|---:|---:|
-| Synthetic windowed, GPU preference off | Automatic | 218.07–220.73 | 115.40–118.27 | **33.13–33.20** | 29.17 | 33.42–37.49 | 180.5–183.1 |
+| Synthetic windowed, GPU preference off | Automatic | 218.07–220.73 | 115.40–118.27 | **33.13–33.20** | 29.17 | 33.59–37.49 | 180.5–183.1 |
 | Synthetic maximized, GPU preference off | Automatic | 173.87–175.13 | 53.07–53.80 | **26.53–26.87** | 37.50 | 45.83 | 169.3–170.4 |
-| Text conversation windowed, recovered CPU | Never | 236.13–237.20 | 122.33–124.13 | **31.13–31.33** | 33.30–33.32 | 37.51–37.54 | 211.4–213.8 |
-| Text conversation maximized, recovered CPU | Never | 194.47–195.40 | 31.27–31.80 | **15.80–16.00** | 62.50 | 70.84–70.88 | 190.4–193.8 |
+| Text conversation windowed, recovered CPU | Never | 236.13–237.20 | 122.33–124.13 | **31.13–31.33** | 33.30–33.32 | 37.52–37.54 | 211.4–213.8 |
+| Text conversation maximized, recovered CPU | Never | 194.47–195.40 | 31.27–31.80 | **15.80–16.00** | 62.50 | 70.84–74.98 | 190.4–193.8 |
 | List windowed, recovered CPU | Never | 213.40–216.47 | 174.73–174.93 | **41.00–41.13** | 25.00 | 29.17–29.18 | 236.8–240.8 |
 | List maximized, recovered CPU | Never | 168.67–171.20 | 52.40–52.80 | **26.20–26.40** | 37.50 | 45.83 | 199.3–200.5 |
-| Media conversation windowed, recovered CPU | Never | 237.40–238.00 | 122.67–125.60 | **31.40–31.80** | 29.20–33.31 | 37.49–37.51 | 207.7–208.6 |
+| Media conversation windowed, recovered CPU | Never | 237.40–238.00 | 122.67–125.60 | **31.40–31.80** | 29.20–33.31 | 37.49–37.52 | 207.7–208.6 |
 | Media conversation maximized, recovered CPU | Never | 194.13–195.87 | 30.80–31.87 | **15.67–16.13** | 62.50 | 70.83–74.75 | 180.3–182.0 |
 
 The target is at least 235 fresh presentations/s, median near 4.17 ms and p95
@@ -249,7 +251,7 @@ was not reported, and stock/#193-only media comparisons remain unmeasured.
 Passed: release Devel Flatpak build/install, 98 Rust unit tests including real
 Vulkan ownership and texture tests, strict all-target Clippy, formatting,
 JavaScript copy-bridge tests, repository shell checks, #193's 33 Python probe
-regressions, 53 reused CEF browser checks, and three new presentation-correlation
+regressions, 53 reused CEF browser checks, and five presentation-analysis
 regressions. Texture checks
 compare colors, damage, tile seams and crop at 100%, 145% and 200% scale. Holding
 old exported frames across producer reuse/resize verifies owned storage and the

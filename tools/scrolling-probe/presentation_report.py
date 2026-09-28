@@ -6,15 +6,19 @@ and an uninterrupted GTK connection. It does not infer fresh content from FPS.
 """
 import argparse
 import json
+import math
 from pathlib import Path
 import re
 import statistics
 
 
 def percentile(values, fraction):
-    """Return a nearest-rank diagnostic percentile, or None for no samples."""
+    """Return the median or an empirical nearest-rank upper percentile."""
     ordered = sorted(values)
-    return round(ordered[int((len(ordered) - 1) * fraction)], 3) if ordered else None
+    if not ordered:
+        return None
+    value = statistics.median(ordered) if fraction == .5 else ordered[max(0, math.ceil(len(ordered) * fraction) - 1)]
+    return round(value, 3)
 
 
 def cadence(frames, seconds):
@@ -72,7 +76,8 @@ def feedback(rows):
 
 def report(capture, page=None, single_view=False):
     """Summarize a generated sample or one reused PR #193 conversation sample."""
-    rows = [json.loads(line) for line in Path(capture).open()]
+    with Path(capture).open() as stream:
+        rows = [json.loads(line) for line in stream]
     if page is None:
         page = next(row for row in rows if row['kind'] in ('synthetic_result', 'chat_list_result'))
     start, end = page['start_epoch_ms'] / 1000, page['end_epoch_ms'] / 1000
@@ -120,7 +125,10 @@ def report(capture, page=None, single_view=False):
         'note': 'Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.',
     }
     fresh_stats = result['fresh_content_presentation']
-    result['verdict'] = 'presentation unverified' if not fresh_stats else (
+    result['sample_valid'] = (page.get('status', 'complete') == 'complete'
+                              and page.get('scroll_height_changes', 0) == 0
+                              and page.get('visibility', 'visible') == 'visible')
+    result['verdict'] = 'presentation unverified' if not fresh_stats or not result['sample_valid'] else (
         '240 FPS verified' if fresh_stats['rate'] >= 235 and fresh_stats['p95_ms'] <= 8.33 else 'lower ceiling measured')
     return result
 

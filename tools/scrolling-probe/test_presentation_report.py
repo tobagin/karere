@@ -1,7 +1,10 @@
 """Regression checks for fresh-content/presentation correlation."""
 import unittest
+import json
+from pathlib import Path
+import tempfile
 
-from presentation_report import feedback
+from presentation_report import feedback, percentile, report
 
 
 def event(message, kind='wayland'):
@@ -49,6 +52,24 @@ class CorrelationTests(unittest.TestCase):
                 event('wp_presentation_feedback#10.presented(0, 1, 0, 4166666, 0, 1, 7)'),
                 {'kind': 'wayland', 'wall': 10.0, 'message': '[1234.555] wp_presentation_feedback#99.presented(0, 1, 0, 4166666, 0, 1, 7)'}]
         self.assertEqual(feedback(rows)[0], [])
+
+    def test_interval_statistics_do_not_hide_a_long_tail(self):
+        """Small captures must not understate their p95 or even-count median."""
+        self.assertEqual(percentile([4, 8, 12, 16], .5), 10)
+        self.assertEqual(percentile([4, 4, 12], .95), 12)
+
+    def test_unstable_samples_remain_unverified(self):
+        """History loading, interruption and hiding cannot satisfy acceptance."""
+        rows = [draw(1), request(10), event('wl_surface#47.commit()'),
+                event('wp_presentation_feedback#10.presented(0, 1, 0, 4166666, 0, 1, 7)')]
+        with tempfile.TemporaryDirectory() as directory:
+            capture = Path(directory) / 'capture.jsonl'
+            capture.write_text(''.join(json.dumps(row) + '\n' for row in rows))
+            for invalid in [{'scroll_height_changes': 1}, {'status': 'cancelled'}, {'visibility': 'hidden'}]:
+                page = dict(start_epoch_ms=9000, end_epoch_ms=11000, **invalid)
+                result = report(capture, page, single_view=True)
+                self.assertFalse(result['sample_valid'])
+                self.assertEqual(result['verdict'], 'presentation unverified')
 
 
 if __name__ == '__main__':

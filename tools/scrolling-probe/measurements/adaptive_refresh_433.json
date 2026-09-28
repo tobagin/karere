@@ -48,7 +48,7 @@
         "count": 899,
         "rate": 59.933,
         "median_ms": 16.668,
-        "p95_ms": 16.76,
+        "p95_ms": 16.761,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2692
       },
@@ -56,6 +56,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -95,6 +96,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -126,7 +128,7 @@
         "count": 899,
         "rate": 59.933,
         "median_ms": 16.665,
-        "p95_ms": 20.83,
+        "p95_ms": 20.831,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2689
       },
@@ -134,6 +136,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -173,6 +176,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -204,7 +208,7 @@
         "count": 895,
         "rate": 59.667,
         "median_ms": 16.667,
-        "p95_ms": 16.722,
+        "p95_ms": 16.723,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2682
       },
@@ -212,6 +216,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -243,7 +248,7 @@
         "count": 895,
         "rate": 59.667,
         "median_ms": 16.666,
-        "p95_ms": 20.831,
+        "p95_ms": 20.832,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2682
       },
@@ -251,6 +256,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -282,7 +288,7 @@
         "count": 899,
         "rate": 59.933,
         "median_ms": 16.667,
-        "p95_ms": 20.841,
+        "p95_ms": 20.843,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2689
       },
@@ -290,6 +296,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -321,7 +328,7 @@
         "count": 899,
         "rate": 59.933,
         "median_ms": 16.666,
-        "p95_ms": 20.755,
+        "p95_ms": 20.779,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2690
       },
@@ -329,6 +336,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -360,7 +368,7 @@
         "count": 925,
         "rate": 61.667,
         "median_ms": 16.666,
-        "p95_ms": 20.78,
+        "p95_ms": 20.791,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2662
       },
@@ -368,6 +376,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -399,7 +408,7 @@
         "count": 896,
         "rate": 59.733,
         "median_ms": 16.666,
-        "p95_ms": 20.84,
+        "p95_ms": 20.842,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2681
       },
@@ -407,6 +416,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -438,7 +448,7 @@
         "count": 923,
         "rate": 61.533,
         "median_ms": 16.666,
-        "p95_ms": 20.838,
+        "p95_ms": 20.839,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2658
       },
@@ -446,6 +456,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -477,7 +488,7 @@
         "count": 896,
         "rate": 59.733,
         "median_ms": 16.667,
-        "p95_ms": 20.845,
+        "p95_ms": 20.846,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2681
       },
@@ -485,6 +496,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -516,7 +528,7 @@
         "count": 498,
         "rate": 33.2,
         "median_ms": 29.17,
-        "p95_ms": 33.422,
+        "p95_ms": 33.588,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3083
       },
@@ -525,12 +537,13 @@
         "count": 498,
         "rate": 33.2,
         "median_ms": 29.17,
-        "p95_ms": 33.422,
+        "p95_ms": 33.588,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3083
       },
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "lower ceiling measured",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -562,7 +575,7 @@
         "count": 497,
         "rate": 33.133,
         "median_ms": 29.173,
-        "p95_ms": 37.474,
+        "p95_ms": 37.476,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3081
       },
@@ -571,12 +584,13 @@
         "count": 497,
         "rate": 33.133,
         "median_ms": 29.173,
-        "p95_ms": 37.474,
+        "p95_ms": 37.476,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3081
       },
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "lower ceiling measured",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -608,7 +622,7 @@
         "count": 497,
         "rate": 33.133,
         "median_ms": 29.171,
-        "p95_ms": 37.486,
+        "p95_ms": 37.487,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3088
       },
@@ -617,12 +631,13 @@
         "count": 497,
         "rate": 33.133,
         "median_ms": 29.171,
-        "p95_ms": 37.486,
+        "p95_ms": 37.487,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3088
       },
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "lower ceiling measured",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -654,7 +669,7 @@
         "count": 399,
         "rate": 26.6,
         "median_ms": 37.496,
-        "p95_ms": 45.83,
+        "p95_ms": 45.832,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3161
       },
@@ -663,12 +678,13 @@
         "count": 399,
         "rate": 26.6,
         "median_ms": 37.496,
-        "p95_ms": 45.83,
+        "p95_ms": 45.832,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3161
       },
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "lower ceiling measured",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -715,6 +731,7 @@
       },
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "lower ceiling measured",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -761,6 +778,7 @@
       },
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "lower ceiling measured",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -807,6 +825,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -853,6 +872,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -899,6 +919,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -945,6 +966,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -991,6 +1013,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1029,7 +1052,7 @@
         "count": 899,
         "rate": 59.933,
         "median_ms": 16.666,
-        "p95_ms": 20.855,
+        "p95_ms": 20.856,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2694
       },
@@ -1037,6 +1060,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1075,7 +1099,7 @@
         "count": 900,
         "rate": 60.0,
         "median_ms": 16.667,
-        "p95_ms": 20.825,
+        "p95_ms": 20.826,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2696
       },
@@ -1083,6 +1107,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1129,6 +1154,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1167,7 +1193,7 @@
         "count": 900,
         "rate": 60.0,
         "median_ms": 16.667,
-        "p95_ms": 20.853,
+        "p95_ms": 20.854,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2696
       },
@@ -1175,6 +1201,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1213,7 +1240,7 @@
         "count": 900,
         "rate": 60.0,
         "median_ms": 16.667,
-        "p95_ms": 20.879,
+        "p95_ms": 20.88,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2697
       },
@@ -1221,6 +1248,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1259,7 +1287,7 @@
         "count": 900,
         "rate": 60.0,
         "median_ms": 16.667,
-        "p95_ms": 20.826,
+        "p95_ms": 20.827,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2697
       },
@@ -1267,6 +1295,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1305,7 +1334,7 @@
         "count": 900,
         "rate": 60.0,
         "median_ms": 16.667,
-        "p95_ms": 20.838,
+        "p95_ms": 20.839,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2696
       },
@@ -1313,6 +1342,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1351,7 +1381,7 @@
         "count": 608,
         "rate": 40.533,
         "median_ms": 24.999,
-        "p95_ms": 29.162,
+        "p95_ms": 29.164,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2986
       },
@@ -1359,6 +1389,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1397,7 +1428,7 @@
         "count": 595,
         "rate": 39.667,
         "median_ms": 25.0,
-        "p95_ms": 29.167,
+        "p95_ms": 29.168,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3001
       },
@@ -1405,6 +1436,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1451,6 +1483,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1497,6 +1530,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1543,6 +1577,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1581,7 +1616,7 @@
         "count": 607,
         "rate": 40.467,
         "median_ms": 24.996,
-        "p95_ms": 29.102,
+        "p95_ms": 29.104,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2985
       },
@@ -1589,6 +1624,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1635,6 +1671,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1673,7 +1710,7 @@
         "count": 900,
         "rate": 60.0,
         "median_ms": 16.667,
-        "p95_ms": 20.842,
+        "p95_ms": 20.844,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2697
       },
@@ -1681,6 +1718,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1727,6 +1765,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1765,7 +1804,7 @@
         "count": 900,
         "rate": 60.0,
         "median_ms": 16.667,
-        "p95_ms": 16.757,
+        "p95_ms": 16.758,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2697
       },
@@ -1773,6 +1812,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1811,7 +1851,7 @@
         "count": 900,
         "rate": 60.0,
         "median_ms": 16.667,
-        "p95_ms": 16.755,
+        "p95_ms": 16.756,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2697
       },
@@ -1819,6 +1859,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1857,7 +1898,7 @@
         "count": 900,
         "rate": 60.0,
         "median_ms": 16.667,
-        "p95_ms": 20.856,
+        "p95_ms": 20.857,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2695
       },
@@ -1865,6 +1906,7 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
+      "sample_valid": true,
       "adaptive_sync": "Automatic"
     },
     {
@@ -1903,7 +1945,7 @@
         "count": 470,
         "rate": 31.333,
         "median_ms": 33.304,
-        "p95_ms": 37.524,
+        "p95_ms": 37.529,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3127
       },
@@ -1912,7 +1954,7 @@
         "count": 470,
         "rate": 31.333,
         "median_ms": 33.304,
-        "p95_ms": 37.524,
+        "p95_ms": 37.529,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3127
       },
@@ -1920,7 +1962,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_conversation_windowed_2",
@@ -1958,7 +2001,7 @@
         "count": 467,
         "rate": 31.133,
         "median_ms": 33.316,
-        "p95_ms": 37.541,
+        "p95_ms": 37.543,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3122
       },
@@ -1967,7 +2010,7 @@
         "count": 467,
         "rate": 31.133,
         "median_ms": 33.316,
-        "p95_ms": 37.541,
+        "p95_ms": 37.543,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3122
       },
@@ -1975,7 +2018,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_conversation_windowed_3",
@@ -2013,7 +2057,7 @@
         "count": 470,
         "rate": 31.333,
         "median_ms": 33.312,
-        "p95_ms": 37.513,
+        "p95_ms": 37.519,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3122
       },
@@ -2022,7 +2066,7 @@
         "count": 470,
         "rate": 31.333,
         "median_ms": 33.312,
-        "p95_ms": 37.513,
+        "p95_ms": 37.519,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3122
       },
@@ -2030,7 +2074,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_list_windowed_1",
@@ -2068,7 +2113,7 @@
         "count": 617,
         "rate": 41.133,
         "median_ms": 24.995,
-        "p95_ms": 29.174,
+        "p95_ms": 29.178,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2976
       },
@@ -2077,7 +2122,7 @@
         "count": 617,
         "rate": 41.133,
         "median_ms": 24.995,
-        "p95_ms": 29.174,
+        "p95_ms": 29.178,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2976
       },
@@ -2085,7 +2130,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_list_windowed_2",
@@ -2123,7 +2169,7 @@
         "count": 615,
         "rate": 41.0,
         "median_ms": 24.995,
-        "p95_ms": 29.177,
+        "p95_ms": 29.178,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2983
       },
@@ -2132,7 +2178,7 @@
         "count": 615,
         "rate": 41.0,
         "median_ms": 24.995,
-        "p95_ms": 29.177,
+        "p95_ms": 29.178,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 2983
       },
@@ -2140,7 +2186,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_list_windowed_3",
@@ -2195,7 +2242,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_conversation_maximized_1",
@@ -2233,7 +2281,7 @@
         "count": 240,
         "rate": 16.0,
         "median_ms": 62.498,
-        "p95_ms": 70.846,
+        "p95_ms": 70.853,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3352
       },
@@ -2242,7 +2290,7 @@
         "count": 240,
         "rate": 16.0,
         "median_ms": 62.498,
-        "p95_ms": 70.846,
+        "p95_ms": 70.853,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3352
       },
@@ -2250,7 +2298,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_conversation_maximized_2",
@@ -2288,7 +2337,7 @@
         "count": 237,
         "rate": 15.8,
         "median_ms": 62.499,
-        "p95_ms": 70.875,
+        "p95_ms": 74.98,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3338
       },
@@ -2297,7 +2346,7 @@
         "count": 237,
         "rate": 15.8,
         "median_ms": 62.499,
-        "p95_ms": 70.875,
+        "p95_ms": 74.98,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3338
       },
@@ -2305,7 +2354,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_conversation_maximized_3",
@@ -2343,7 +2393,7 @@
         "count": 239,
         "rate": 15.933,
         "median_ms": 62.497,
-        "p95_ms": 70.837,
+        "p95_ms": 70.838,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3334
       },
@@ -2352,7 +2402,7 @@
         "count": 239,
         "rate": 15.933,
         "median_ms": 62.497,
-        "p95_ms": 70.837,
+        "p95_ms": 70.838,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3334
       },
@@ -2360,7 +2410,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_list_maximized_1",
@@ -2398,7 +2449,7 @@
         "count": 396,
         "rate": 26.4,
         "median_ms": 37.5,
-        "p95_ms": 45.825,
+        "p95_ms": 45.831,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3198
       },
@@ -2407,7 +2458,7 @@
         "count": 396,
         "rate": 26.4,
         "median_ms": 37.5,
-        "p95_ms": 45.825,
+        "p95_ms": 45.831,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3198
       },
@@ -2415,7 +2466,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_list_maximized_2",
@@ -2453,7 +2505,7 @@
         "count": 396,
         "rate": 26.4,
         "median_ms": 37.5,
-        "p95_ms": 45.829,
+        "p95_ms": 45.83,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3202
       },
@@ -2462,7 +2514,7 @@
         "count": 396,
         "rate": 26.4,
         "median_ms": 37.5,
-        "p95_ms": 45.829,
+        "p95_ms": 45.83,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3202
       },
@@ -2470,7 +2522,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_list_maximized_3",
@@ -2508,7 +2561,7 @@
         "count": 393,
         "rate": 26.2,
         "median_ms": 37.502,
-        "p95_ms": 45.825,
+        "p95_ms": 45.826,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3203
       },
@@ -2517,7 +2570,7 @@
         "count": 393,
         "rate": 26.2,
         "median_ms": 37.502,
-        "p95_ms": 45.825,
+        "p95_ms": 45.826,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3203
       },
@@ -2525,7 +2578,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_media_maximized_1",
@@ -2580,7 +2634,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_media_maximized_2",
@@ -2618,7 +2673,7 @@
         "count": 236,
         "rate": 15.733,
         "median_ms": 62.499,
-        "p95_ms": 74.645,
+        "p95_ms": 74.751,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3337
       },
@@ -2627,7 +2682,7 @@
         "count": 235,
         "rate": 15.667,
         "median_ms": 62.5,
-        "p95_ms": 74.751,
+        "p95_ms": 74.977,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3338
       },
@@ -2635,7 +2690,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_media_maximized_3",
@@ -2673,7 +2729,7 @@
         "count": 238,
         "rate": 15.867,
         "median_ms": 62.499,
-        "p95_ms": 70.839,
+        "p95_ms": 70.844,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3351
       },
@@ -2682,7 +2738,7 @@
         "count": 238,
         "rate": 15.867,
         "median_ms": 62.499,
-        "p95_ms": 70.839,
+        "p95_ms": 70.844,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3351
       },
@@ -2690,7 +2746,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_media_windowed_1",
@@ -2728,7 +2785,7 @@
         "count": 471,
         "rate": 31.4,
         "median_ms": 33.308,
-        "p95_ms": 37.505,
+        "p95_ms": 37.516,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3120
       },
@@ -2737,7 +2794,7 @@
         "count": 471,
         "rate": 31.4,
         "median_ms": 33.308,
-        "p95_ms": 37.505,
+        "p95_ms": 37.516,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3120
       },
@@ -2745,7 +2802,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_media_windowed_2",
@@ -2782,8 +2840,8 @@
         "surface": 47,
         "count": 477,
         "rate": 31.8,
-        "median_ms": 29.288,
-        "p95_ms": 37.498,
+        "median_ms": 29.309,
+        "p95_ms": 37.5,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3121
       },
@@ -2791,8 +2849,8 @@
       "fresh_content_presentation": {
         "count": 477,
         "rate": 31.8,
-        "median_ms": 29.288,
-        "p95_ms": 37.498,
+        "median_ms": 29.309,
+        "p95_ms": 37.5,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3121
       },
@@ -2800,7 +2858,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     },
     {
       "label": "combined_never_media_windowed_3",
@@ -2837,8 +2896,8 @@
         "surface": 47,
         "count": 477,
         "rate": 31.8,
-        "median_ms": 29.195,
-        "p95_ms": 37.488,
+        "median_ms": 29.196,
+        "p95_ms": 37.491,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3116
       },
@@ -2846,8 +2905,8 @@
       "fresh_content_presentation": {
         "count": 477,
         "rate": 31.8,
-        "median_ms": 29.195,
-        "p95_ms": 37.488,
+        "median_ms": 29.196,
+        "p95_ms": 37.491,
         "refresh_ms": 4.166666,
         "unused_refresh_opportunities": 3116
       },
@@ -2855,7 +2914,8 @@
       "verdict": "lower ceiling measured",
       "adaptive_sync": "Never",
       "gpu_preference": true,
-      "actual_transfer": "CPU after no-frame recovery"
+      "actual_transfer": "CPU after no-frame recovery",
+      "sample_valid": true
     }
   ],
   "idle": [
@@ -2896,7 +2956,8 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
-      "page_visibility": "visible"
+      "page_visibility": "visible",
+      "sample_valid": true
     },
     {
       "label": "combined_never_idle_background",
@@ -2935,7 +2996,8 @@
       "fresh_content_presentation": null,
       "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
       "verdict": "presentation unverified",
-      "page_visibility": "hidden"
+      "page_visibility": "hidden",
+      "sample_valid": true
     }
   ],
   "startup_recovery_checks": [
@@ -3357,8 +3419,8 @@
       "surface": 47,
       "count": 489,
       "rate": 32.6,
-      "median_ms": 29.177,
-      "p95_ms": 33.487,
+      "median_ms": 29.178,
+      "p95_ms": 33.642,
       "refresh_ms": 4.166666,
       "unused_refresh_opportunities": 3099
     },
@@ -3366,12 +3428,13 @@
     "fresh_content_presentation": {
       "count": 489,
       "rate": 32.6,
-      "median_ms": 29.177,
-      "p95_ms": 33.487,
+      "median_ms": 29.178,
+      "p95_ms": 33.642,
       "refresh_ms": 4.166666,
       "unused_refresh_opportunities": 3099
     },
     "note": "Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+    "sample_valid": true,
     "verdict": "lower ceiling measured",
     "adaptive_sync": "Never",
     "gpu_preference": false
