@@ -801,4 +801,83 @@ pub fn verify_hardware_ownership(display: &gtk::gdk::Display) {
     );
     drop(gl_third);
     gl_window.destroy();
+    verify_live_buffer_reuse(display, &info);
+}
+
+/// Exercise GTK's real frame cleanup, not just explicit test-owned references.
+/// A bounded producer must keep circulating after the first three submissions.
+#[cfg(test)]
+fn verify_live_buffer_reuse(display: &gtk::gdk::Display, info: &cef::AcceleratedPaintInfo) {
+    use gtk::prelude::*;
+    use std::{cell::RefCell, rc::Rc, time::Duration};
+
+    for gl in [true, false] {
+        let picture = gtk::Picture::new();
+        let window = gtk::Window::builder()
+            .title("Karere generated buffer reuse check")
+            .default_width(128)
+            .default_height(96)
+            .child(&picture)
+            .build();
+        window.present();
+        let vk_consumer = RefCell::new(Copier::new().unwrap());
+        let gl_consumer = RefCell::new(crate::presenter::Presenter::default());
+        let state = Rc::new(RefCell::new((0_usize, 0_usize, None::<String>)));
+        let observed = state.clone();
+        let info = info.clone();
+        let display = display.clone();
+        let tick = picture.add_tick_callback(move |picture, _| {
+            let result = if gl {
+                gl_consumer.borrow_mut().gl_fixture(picture, &info)
+            } else {
+                vk_consumer.borrow_mut().copy(&info).and_then(|frame| {
+                    frame
+                        .map(|frame| crate::presenter::texture_from_vulkan(&display, frame))
+                        .transpose()
+                })
+            };
+            let mut state = observed.borrow_mut();
+            match result {
+                Ok(Some(texture)) => {
+                    picture.set_paintable(Some(&texture));
+                    state.0 += 1;
+                }
+                Ok(None) => {
+                    picture.queue_draw();
+                    state.1 += 1;
+                }
+                Err(error) => {
+                    state.2 = Some(format!("{error:#}"));
+                    return gtk::glib::ControlFlow::Break;
+                }
+            }
+            gtk::glib::ControlFlow::Continue
+        });
+        let context = gtk::glib::MainContext::default();
+        let deadline = std::time::Instant::now() + Duration::from_secs(2);
+        while std::time::Instant::now() < deadline && state.borrow().2.is_none() {
+            context.iteration(false);
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        tick.remove();
+        let renderer = window.renderer().unwrap().type_().name().to_owned();
+        picture.set_paintable(None::<&gtk::gdk::Texture>);
+        window.destroy();
+        while context.iteration(false) {}
+        let state = state.borrow();
+        let transfer = if gl { "GL" } else { "Vulkan" };
+        eprintln!(
+            "live buffer reuse: transfer={transfer} renderer={renderer} accepted={} full_pool={} error={:?}",
+            state.0, state.1, state.2
+        );
+        assert!(
+            state.2.is_none(),
+            "{transfer} transfer failed: {:?}",
+            state.2
+        );
+        assert!(
+            state.0 >= 12,
+            "{transfer} pool stopped circulating: {state:?}"
+        );
+    }
 }

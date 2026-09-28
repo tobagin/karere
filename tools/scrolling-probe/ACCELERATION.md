@@ -187,6 +187,14 @@ GTK itself still has indefinite driver waits; the application operation watchdog
 does not establish recovery from a hang wholly inside GTK's renderer. That device
 loss coverage remains outstanding.
 
+The hardware fixture also circulates generated GPU textures through a visible
+GTK window for two seconds per transfer path. Both GL and Vulkan copies passed
+with GSK GL and GSK Vulkan, without exhausting the three-buffer bound. This tests
+actual GTK release/reuse beyond manually dropping references. Run the serialized
+`gles_contract_is_shared_by_main_and_devtools_views` test separately with
+`GSK_RENDERER=gl` and `GSK_RENDERER=vulkan` on the hardware display. Its small
+generated texture and concurrent-build timing are not performance evidence.
+
 `presentation_report.py` reuses #193's captured epoch/monotonic clock pairs to
 select compositor timestamps inside each sample, instead of using delayed log
 arrival. Multiple feedback objects for one commit count as one presentation.
