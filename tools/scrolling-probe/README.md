@@ -81,6 +81,12 @@ For CPU → GPU → CPU comparisons, change GPU Rendering in Preferences and ful
 
 The real-page probe temporarily enables CEF's loopback CDP port through its initialization field, preserving normal origin/private-network security flags. It does not pass Karere's `--debug` option. The small CDP client only accepts `127.0.0.1:9333`. The generated-page mode uses Karere's debug option in its isolated profile. Both reject an already occupied diagnostic port. Quitting the diagnostic instance removes the probe and listener; relaunch Karere normally afterwards.
 
+The listener was verified with `ss -ltnp '( sport = :9333 )'` to bind to
+`127.0.0.1` in the tested Flatpak. Loopback is a destination restriction, not
+authentication: other local processes able to reach this port can use CDP.
+Keep the diagnostic session temporary and verify the listener disappears when
+it exits. The client does not add authentication or claim per-user isolation.
+
 To check whether application debug logging contributes to the pump pattern:
 
 ```sh
@@ -128,6 +134,13 @@ stays within loaded history, and restores the starting scroll position. Inspect
 `scroll_height_changes`; discard history-loading runs from steady-scroll claims.
 Use new labels because automatic samples reject existing output files.
 
+Conversation diagnostic commands accept `--target-id ID`. Without it, exactly
+one eligible visible page must exist; ambiguity reports only IDs, never titles
+or URLs. Comparisons and trace collectors pass their chosen ID to child probes
+instead of selecting a second page. A missing/hidden explicit target fails
+without falling back to another page. Reports include `target_id`, `run_id` and
+`status`; cancelled/incomplete runs are not successful samples.
+
 The matched comparison needs at least 4852.5 CSS pixels of loaded scroll range.
 `prepare_conversation.py` can position an open chat and load enough history;
 it does not open a chat unless explicitly given `--open-row N` (zero-based).
@@ -141,15 +154,32 @@ python3 tools/scrolling-probe/wallpaper_comparison.py cpu_repeat
 
 This runs original → background hint → background hint → original at a common
 3452.5 px bottom anchor, with three-second settling before each warmup. It refuses
-an ambiguous background match and restores the original inline property in a
-`finally` block. An interrupted diagnostic process can also be cleaned up with
-`wallpaper_probe.py off`; quitting the app removes the transient page changes.
+an ambiguous background match. It automatically toggles the compiled stylesheet
+when present, otherwise an inline hint on older binaries. It checks computed
+`will-change` (`auto` / `transform`) before and after every sample, including the
+experiment identity and whether the original element/stylesheet still exists.
+A conflicting inline declaration fails the comparison instead of pretending
+the hint was disabled. Each result records its checked `wallpaper_condition`;
+failed post-checks mark the owned result `invalid_condition` for exclusion from
+the aggregate.
 
 To test a binary containing `80-conversation-wallpaper.js`, use
-`wallpaper_comparison.py PREFIX --production`. This toggles only the compiled
-stylesheet, verifies the background's computed property, and restores the
-stylesheet's original enabled state. The inline-hint mode is for older binaries;
-it cannot disable an already active production stylesheet.
+`wallpaper_comparison.py PREFIX --production` to **require** that stylesheet.
+This remains compatible with the original explicit production procedure; the
+default now chooses it automatically when the stylesheet exists.
+
+The comparison restores the saved stylesheet enabled/disabled state and exact
+inline value/priority in a `finally` block. `wallpaper_probe.py on` and `off`
+deliberately leave their condition active; `wallpaper_probe.py restore` restores
+the original snapshot and ends that experiment. Off and restore are different
+operations. All three accept `--target-id ID`.
+
+On exceptions, Ctrl-C or SIGTERM, parent tools stop/reap their child, cancel only
+the matching page-side run, restore scroll/wallpaper state and close connections.
+Cancellation is idempotent, including before the first animation frame. Cleanup
+failure preserves the original error and asks the operator to close the
+diagnostic instance. SIGKILL, browser exit or a disconnected CDP socket cannot
+guarantee restoration; quit the diagnostic instance and relaunch normally.
 
 On supported hardware, close that capture and launch a separate GPU comparison
 with the transient `KARERE_GPU_OSR=1` environment override. Verify accelerated
@@ -181,8 +211,17 @@ python3 tools/scrolling-probe/summarize_conversation.py
 
 The analyzer joins page intervals with process CPU, CEF pump and optional stage
 timings. `results/conversation_summary.json` is the local combined output. Its
-monotonic/epoch alignment assumes no clock step or suspend during the captures.
-Only completed captures that contain the entire page sample are included.
+new capture rows include both `wall` and absolute `monotonic` time. Each result's
+`clock_offset_epoch_minus_monotonic` comes from its matched capture's start row,
+with `clock_alignment_source: capture_start`; analysis after a reboot/suspend
+does not change that offset. The former single top-level offset has been replaced
+by these per-run fields. Legacy rows without `monotonic` use the summary-time
+offset with `clock_alignment_source: summary_time_fallback` and an explicit
+warning; those older pump/stage results may be unreliable after suspend/reboot.
+Neither path makes clock steps or suspension **during** a capture valid. Only
+exited captures containing the entire page interval and completed page samples
+are included. Published historical aggregates are retained, not regenerated
+using a later machine clock.
 
 Additional probes:
 
@@ -192,21 +231,47 @@ Additional probes:
 - `manual_probe.py start LABEL` / `finish LABEL` observes genuine input for up to
   ten minutes. Keep the same real or generated page open until the user finishes;
   do not attach a delayed subjective reply to a different target. It restores
-  the original scroll position at completion.
+  the original scroll position at completion. Start records the selected target
+  and run ID; finish reconnects only to that target and requires the same run.
+  Legacy start records lacking those IDs must be replaced by a new capture.
 - `trace_conversation.py LABEL` records Chromium trace names/times while running
   one automatic sample. It removes trace arguments before storage. Inclusive
-  stage durations overlap and must not be summed as independent CPU work.
+  stage durations overlap and must not be summed as independent CPU work. Only
+  the trace client disables the normal 1,000,000-byte WebSocket frame cap, since
+  trace buckets can be larger; ordinary CDP clients retain that cap. The collector
+  ends and drains tracing through `tracingComplete` before writing a trace file.
+  Failure/interruption attempts the same shutdown but is reported as a failure.
 - `--synthetic --generated-file tools/scrolling-probe/conversation_probe.html
   --hold-synthetic` launches an isolated generated conversation and keeps it open
   for these controllers. This control **does not reproduce the WhatsApp mask
   slowdown**; it measures viewport/frame-transfer costs without account content.
 - `validate_wallpaper.py` evaluates the production wallpaper script on that
   isolated generated page: replacement chats/backgrounds, scope, geometry,
-  removed masks, narrow layouts and idempotent injection. It refuses a real
+  removed masks, narrow layouts and idempotent injection. It also checks diagnostic
+  toggling/restoration, replacement failures and owned cancellation. It refuses a real
   page. Direct evaluation is necessary because the existing identity hook's
   synchronous localStorage access stops the bundle on an opaque `data:` origin.
   Automatic bundle installation is checked separately in the real app. These
   fixture checks validate DOM behavior, not the WhatsApp raster bottleneck.
+
+Offline regressions need only Python's standard library:
+
+```sh
+python3 -m unittest discover -s tools/scrolling-probe -p 'test_*.py' -v
+```
+
+With the generated fixture running, use a fresh validation label followed by a
+fresh comparison prefix (the validation command installs the production script):
+
+```sh
+python3 tools/scrolling-probe/validate_wallpaper.py --label wallpaper_review_checks
+python3 tools/scrolling-probe/wallpaper_comparison.py wallpaper_review_abba
+```
+
+The regression checks cover delayed clock alignment, legacy captures, large and
+fragmented trace frames, trace completion, target selection, child interruption,
+manual ownership and condition invalidation. See [review validation](REVIEW_VALIDATION.md)
+for the recorded PR #193 follow-up checks.
 
 No diagnostic launch changes saved GPU preferences or installs a persistent
 Flatpak override. Quit the diagnostic instance and relaunch normally when done.

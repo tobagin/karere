@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Evaluate the production wallpaper script in CEF's isolated generated fixture."""
+import argparse
 import json
 from pathlib import Path
-from conversation_probe import connect
+
+from probe_common import connect, interrupt_cleanup, target_argument, validate_label
 
 ROOT = Path(__file__).resolve().parent
 
@@ -69,10 +71,22 @@ CHECKS = r"""(() => {
 
 
 def main():
-    client = connect()
+    """Validate production scope and probe recovery only on the generated fixture."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--label', default='wallpaper_scope_checks', help='Fresh result label')
+    target_argument(parser)
+    args = parser.parse_args()
+    validate_label(parser, args.label)
+    output = ROOT / 'results' / f'{args.label}.json'
+    output.parent.mkdir(exist_ok=True)
+    if output.exists():
+        parser.error('Validation output already exists; choose a fresh --label')
+    client = connect(args.target_id)
     try:
         if not client.evaluate("location.protocol === 'data:' && !!window.__generatedWallpaper"):
             raise SystemExit('Refusing to modify a real page; launch conversation_probe.html with --synthetic')
+        if client.evaluate('!!window.__karereConversationProbe?.active || !!window.__karereWallpaperProbe'):
+            raise SystemExit('Finish or restore the existing experiment before validation')
         source = (ROOT.parents[1] / 'data/js/80-conversation-wallpaper.js').read_text()
         # The existing identity hook reads localStorage synchronously, which
         # throws on an opaque data: origin before later bundle scripts execute.
@@ -84,7 +98,14 @@ def main():
         client.evaluate(source)
         results.append({'name': 'reinjection remains idempotent', 'passed': client.evaluate(
             "document.querySelectorAll('#karere-conversation-wallpaper').length === 1")})
-        (ROOT / 'results/wallpaper_scope_checks.json').write_text(json.dumps(results, indent=2) + '\n')
+        lifecycle = (ROOT / 'probe_lifecycle_checks.js').read_text()
+        wallpaper = (ROOT / 'wallpaper_probe.js').read_text()
+        conversation = (ROOT / 'conversation_probe.js').read_text()
+        results.extend(client.evaluate('(' + lifecycle + ')(' + json.dumps(wallpaper) + ',' +
+                                       json.dumps(conversation) + ')', await_promise=True))
+        with output.open('x') as stream:
+            json.dump(results, stream, indent=2)
+            stream.write('\n')
         print(json.dumps(results))
         if not all(check['passed'] for check in results):
             raise SystemExit('Wallpaper scope validation failed')
@@ -93,4 +114,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    with interrupt_cleanup():
+        main()

@@ -1,0 +1,324 @@
+{
+  "date": "2026-09-28",
+  "reviewed_commit": "cc69b2fff8ac09331a64db06b0a98dc0ed2c986d",
+  "purpose": "PR 193 diagnostic integrity regression validation; generated content is not a WhatsApp performance reproducer",
+  "application_binary_sha256": "c167ed65496eb85bfb1bfe3200502447b6e5dc39253b9cc1f925bd38c582b474",
+  "runtime": "GNOME Platform 51 / CEF 152.0.6; generated profile with memory-only settings",
+  "offline_tests": {
+    "passed": 30,
+    "runner": "Python standard-library unittest"
+  },
+  "static_checks": {
+    "ruff": "0.16.6 --isolated --target-version py39 --select E4,E7,E9,F,I",
+    "javascript": "Node 24.21.0 syntax checks",
+    "rust": "cargo fmt --all -- --check",
+    "documented_python_functions": 85,
+    "python_functions_checked": 85
+  },
+  "browser_checks": [
+    {
+      "name": "installed once",
+      "passed": true
+    },
+    {
+      "name": "generated decorative wallpaper is promoted",
+      "passed": true
+    },
+    {
+      "name": "scroll container is untouched",
+      "passed": true
+    },
+    {
+      "name": "message content is untouched",
+      "passed": true
+    },
+    {
+      "name": "replacement chat receives the hint automatically",
+      "passed": true
+    },
+    {
+      "name": "nonempty direct child is untouched",
+      "passed": true
+    },
+    {
+      "name": "nested masked media is untouched",
+      "passed": true
+    },
+    {
+      "name": "hint preserves background geometry",
+      "passed": true
+    },
+    {
+      "name": "hint preserves the original mask",
+      "passed": true
+    },
+    {
+      "name": "background color changes retain the hint",
+      "passed": true
+    },
+    {
+      "name": "unmasked custom background is not promoted",
+      "passed": true
+    },
+    {
+      "name": "removed mask is not promoted",
+      "passed": true
+    },
+    {
+      "name": "narrow layout keeps the mask and correct width",
+      "passed": true
+    },
+    {
+      "name": "replacement background receives the hint automatically",
+      "passed": true
+    },
+    {
+      "name": "mask outside the conversation is untouched",
+      "passed": true
+    },
+    {
+      "name": "reinjection remains idempotent",
+      "passed": true
+    },
+    {
+      "name": "production mode detected, originally disabled=false",
+      "passed": true
+    },
+    {
+      "name": "production condition false, originally disabled=false",
+      "passed": true
+    },
+    {
+      "name": "production condition true, originally disabled=false",
+      "passed": true
+    },
+    {
+      "name": "production condition true, originally disabled=false",
+      "passed": true
+    },
+    {
+      "name": "production condition false, originally disabled=false",
+      "passed": true
+    },
+    {
+      "name": "reinjection preserves the original snapshot",
+      "passed": true
+    },
+    {
+      "name": "production state restored, originally disabled=false",
+      "passed": true
+    },
+    {
+      "name": "production mode detected, originally disabled=true",
+      "passed": true
+    },
+    {
+      "name": "production condition false, originally disabled=true",
+      "passed": true
+    },
+    {
+      "name": "production condition true, originally disabled=true",
+      "passed": true
+    },
+    {
+      "name": "production condition true, originally disabled=true",
+      "passed": true
+    },
+    {
+      "name": "production condition false, originally disabled=true",
+      "passed": true
+    },
+    {
+      "name": "reinjection preserves the original snapshot",
+      "passed": true
+    },
+    {
+      "name": "production state restored, originally disabled=true",
+      "passed": true
+    },
+    {
+      "name": "conflicting production inline hint rejects off",
+      "passed": true
+    },
+    {
+      "name": "conflicting inline value and priority restored",
+      "passed": true
+    },
+    {
+      "name": "missing production stylesheet selects inline mode",
+      "passed": true
+    },
+    {
+      "name": "legacy inline hint turns on",
+      "passed": true
+    },
+    {
+      "name": "legacy inline hint turns off",
+      "passed": true
+    },
+    {
+      "name": "legacy inline priority restored",
+      "passed": true
+    },
+    {
+      "name": "replaced wallpaper invalidates condition",
+      "passed": true
+    },
+    {
+      "name": "reinjection keeps disconnected wallpaper cleanup state",
+      "passed": true
+    },
+    {
+      "name": "stylesheet restored after wallpaper replacement",
+      "passed": true
+    },
+    {
+      "name": "replaced stylesheet invalidates condition",
+      "passed": true
+    },
+    {
+      "name": "wrong wallpaper session rejected",
+      "passed": true
+    },
+    {
+      "name": "wrong owner cannot cancel sampling",
+      "passed": true
+    },
+    {
+      "name": "reinjection preserves active sampling",
+      "passed": true
+    },
+    {
+      "name": "second start rejected without replacing owner",
+      "passed": true
+    },
+    {
+      "name": "early cancellation produces no valid measurement",
+      "passed": true
+    },
+    {
+      "name": "early cancellation keeps finite timestamps",
+      "passed": true
+    },
+    {
+      "name": "early cancellation restores scroll position",
+      "passed": true
+    },
+    {
+      "name": "cancellation is idempotent",
+      "passed": true
+    },
+    {
+      "name": "setup failure restores position and stops probe",
+      "passed": true
+    },
+    {
+      "name": "wrong owner cannot finish manual capture",
+      "passed": true
+    },
+    {
+      "name": "manual finish keeps a valid owned sample",
+      "passed": true
+    },
+    {
+      "name": "cleanup preserves completed results",
+      "passed": true
+    },
+    {
+      "name": "replaced scroller aborts the measurement",
+      "passed": true
+    }
+  ],
+  "comparison_samples": [
+    {
+      "sample": "review193_abba_original_1",
+      "status": "complete",
+      "condition": {
+        "mode": "production",
+        "expected": "auto",
+        "before": "auto",
+        "after": "auto",
+        "verified": true
+      },
+      "seconds": 20.0,
+      "observed_frames": 1200,
+      "scroll_height_changes": 0,
+      "clock_alignment_source": "capture_start",
+      "pump_events": 2238
+    },
+    {
+      "sample": "review193_abba_layer_1",
+      "status": "complete",
+      "condition": {
+        "mode": "production",
+        "expected": "transform",
+        "before": "transform",
+        "after": "transform",
+        "verified": true
+      },
+      "seconds": 20.0,
+      "observed_frames": 1200,
+      "scroll_height_changes": 0,
+      "clock_alignment_source": "capture_start",
+      "pump_events": 2146
+    },
+    {
+      "sample": "review193_abba_layer_2",
+      "status": "complete",
+      "condition": {
+        "mode": "production",
+        "expected": "transform",
+        "before": "transform",
+        "after": "transform",
+        "verified": true
+      },
+      "seconds": 20.0,
+      "observed_frames": 1199,
+      "scroll_height_changes": 0,
+      "clock_alignment_source": "capture_start",
+      "pump_events": 2019
+    },
+    {
+      "sample": "review193_abba_original_2",
+      "status": "complete",
+      "condition": {
+        "mode": "production",
+        "expected": "auto",
+        "before": "auto",
+        "after": "auto",
+        "verified": true
+      },
+      "seconds": 20.0,
+      "observed_frames": 1200,
+      "scroll_height_changes": 0,
+      "clock_alignment_source": "capture_start",
+      "pump_events": 2178
+    }
+  ],
+  "all_samples_same_target": true,
+  "trace": {
+    "completed": true,
+    "events": 760812,
+    "sanitized_file_bytes": 106594307,
+    "trace_arguments_retained": false
+  },
+  "clock_pair_present_on_all_capture_rows": true,
+  "listener_bind_address": "127.0.0.1:9333",
+  "cleanup": {
+    "completed_comparison_restored": true,
+    "sigterm_comparison_exit": -2,
+    "sigterm_restored": true,
+    "active_probe_after_cleanup": false,
+    "interrupted_page_output_exists": false
+  },
+  "cli_checks": {
+    "manual_finish_complete": true,
+    "busy_fixture_rejected_without_interference": true,
+    "standalone_on_off_restore": true
+  },
+  "restoration": {
+    "normal_app_relaunched": true,
+    "saved_preferences_unchanged": true,
+    "diagnostic_listener_closed": true
+  }
+}

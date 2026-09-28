@@ -6,16 +6,16 @@ import hashlib
 import html
 import json
 import os
-from pathlib import Path
+import queue
 import re
 import selectors
 import socket
 import subprocess
-import queue
 import threading
 import time
 import urllib.parse
 import urllib.request
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 BUILD = ROOT / ".build"
@@ -68,6 +68,7 @@ def measure_chat_list(results):
 
 
 def read(path):
+    """Read an optional procfs/sysfs value, tolerating exited processes."""
     try:
         return Path(path).read_text().strip()
     except OSError:
@@ -75,6 +76,7 @@ def read(path):
 
 
 def descendants(root):
+    """Collect the process tree, including children created by worker threads."""
     found, pending = set(), [root]
     while pending:
         pid = pending.pop()
@@ -92,6 +94,7 @@ def descendants(root):
 
 
 def process(pid):
+    """Extract resource counters and the CEF role without retaining arguments."""
     stat = read(f"/proc/{pid}/stat")
     if not stat:
         return None
@@ -106,6 +109,7 @@ def process(pid):
 
 
 def device_info(pid):
+    """Report graphics device/library names without reading their contents."""
     devices = set()
     try:
         for fd in Path(f"/proc/{pid}/fd").iterdir():
@@ -138,6 +142,7 @@ def synthetic_visibility():
 
 
 def main():
+    """Launch one reversible diagnostic instance and capture allowlisted data."""
     parser = argparse.ArgumentParser()
     parser.add_argument("label")
     parser.add_argument("--normal-logging", action="store_true")
@@ -229,6 +234,7 @@ def main():
         launch += ['--debuglevel=error', '--url', page]
     child = subprocess.Popen(launch, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     def quit_on_exit():
+        """Ask this diagnostic instance to exit before terminating its launcher."""
         if child.poll() is None:
             try:
                 subprocess.run(['gapplication', 'action', APP, 'quit'],
@@ -255,8 +261,12 @@ def main():
     print(json.dumps({"capture": str(output), "launcher_pid": child.pid, "settings": settings}), flush=True)
     with output.open("x", buffering=1) as stream:
         def emit(kind, **values):
-            stream.write(json.dumps({"t": time.monotonic() - start, "wall": time.time(), "kind": kind, "phase": phase, **values}) + "\n")
+            """Record a capture-time clock pair for later cross-clock alignment."""
+            now = time.monotonic()
+            stream.write(json.dumps({"t": now - start, "wall": time.time(), "monotonic": now,
+                                     "kind": kind, "phase": phase, **values}) + "\n")
         def finish_measurement(success):
+            """Enter the requested idle phase or finish the diagnostic launch."""
             nonlocal metrics_received, idle_start, idle_end
             metrics_received = True
             if success and args.idle_seconds:

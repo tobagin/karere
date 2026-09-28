@@ -148,6 +148,15 @@ retained the same 2021 × 1173 CSS viewport, DPR 2, 8303 px loaded height,
 or ≥50 ms page Long Task during any of the eight active intervals. Build/check
 processes had finished before the performance measurements.
 
+These eight production measurements used the explicit `--production` comparison
+path, which already checked computed off/on conditions. The later review found
+that the default inline-hint path could not disable a compiled stylesheet; that
+does not describe the path used for this table. The default now detects the
+stylesheet automatically and uses the same checked conditions, with additional
+target pinning and restoration checks. Historical aggregates remain unchanged.
+Fresh diagnostic-tool regression results are recorded separately in
+[REVIEW_VALIDATION.md](REVIEW_VALIDATION.md).
+
 | Compiled stylesheet | Frame transfer | Page callbacks/s (two samples) | GTK draw callbacks/s (two samples) |
 | --- | --- | ---: | ---: |
 | Disabled | CPU buffer | 24.75 / 25.15 | 24.65 / 25.15 |

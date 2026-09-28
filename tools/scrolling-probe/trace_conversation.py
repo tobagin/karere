@@ -1,58 +1,128 @@
 #!/usr/bin/env python3
 """Collect Chrome stage names/times only; drop all trace arguments and page data."""
 import argparse
-from collections import Counter
 import json
-from pathlib import Path
-import subprocess
+import sys
 import urllib.request
-from cdp_local import Client
+import uuid
+from collections import Counter
+from contextlib import closing
+from pathlib import Path
 
-ROOT=Path(__file__).resolve().parent
+from cdp_local import Client
+from probe_common import (
+    cleanup,
+    connect,
+    interrupt_cleanup,
+    run_probe_child,
+    target_argument,
+    validate_label,
+)
+
+ROOT = Path(__file__).resolve().parent
+
 
 class TraceClient(Client):
-    def __init__(self,url):
-        super().__init__(url)
-        self.events=[]
-        self.finished=False
+    """Accept arbitrarily sized trace buckets while retaining only timing metadata."""
+
+    def __init__(self, url):
+        """Disable the frame cap only for this browser-wide trace connection."""
+        super().__init__(url, max_frame_bytes=None)
+        self.events = []
+        self.finished = False
+        self.started = False
+        self.end_sent = False
+
     def receive(self):
-        reply=super().receive()
-        if reply.get('method')=='Tracing.dataCollected':
-            for e in reply['params']['value']:
-                # Never retain args: these can contain URLs, DOM data and strings.
-                kept={k:e[k] for k in ['cat','name','ph','ts','dur','tdur','pid','tid'] if k in e}
-                if e.get('ph')=='M' and e.get('name') in ['process_name','thread_name']:
-                    name=e.get('args',{}).get('name','')
-                    if name in ['Browser','Renderer','Gpu','CrGpuMain','CrRendererMain','VizCompositorThread','Compositor'] or name.startswith('CompositorTileWorker'):
-                        kept['known_thread_name']=name
+        """Strip trace arguments immediately, including events received during calls."""
+        reply = super().receive()
+        if reply.get('method') == 'Tracing.dataCollected':
+            for event in reply['params']['value']:
+                kept = {key: event[key] for key in ['cat', 'name', 'ph', 'ts', 'dur', 'tdur', 'pid', 'tid']
+                        if key in event}
+                if event.get('ph') == 'M' and event.get('name') in ['process_name', 'thread_name']:
+                    name = event.get('args', {}).get('name', '')
+                    if name in ['Browser', 'Renderer', 'Gpu', 'CrGpuMain', 'CrRendererMain',
+                                'VizCompositorThread', 'Compositor'] or name.startswith('CompositorTileWorker'):
+                        kept['known_thread_name'] = name
                 self.events.append(kept)
-        elif reply.get('method')=='Tracing.tracingComplete':self.finished=True
+        elif reply.get('method') == 'Tracing.tracingComplete':
+            self.finished = True
         return reply
 
-def main():
-    p=argparse.ArgumentParser();p.add_argument('label');p.add_argument('--target',default='conversation',choices=['conversation','list'])
-    args=p.parse_args()
-    if not args.label.replace('_','').replace('-','').isalnum():p.error('Invalid label')
-    path=ROOT/'results'/f'{args.label}_trace.json'
-    path.parent.mkdir(exist_ok=True)
-    if path.exists() or (ROOT/'results'/f'{args.label}_page.json').exists():p.error('Output already exists')
-    with urllib.request.urlopen('http://127.0.0.1:9333/json/version') as r:version=json.load(r)
-    c=TraceClient(version['webSocketDebuggerUrl'])
-    try:
-        c.call('Tracing.start',{'categories':'devtools.timeline,cc,gpu,viz,blink,disabled-by-default-devtools.timeline,disabled-by-default-gpu.service',
-                               'options':'record-continuously','transferMode':'ReportEvents'})
-        run=subprocess.run(['python3',str(ROOT/'conversation_probe.py'),args.label,'--target',args.target])
-        c.call('Tracing.end',{})
-        while not c.finished:c.receive()
-        path.write_text(json.dumps(c.events))
-        totals=Counter();counts=Counter();metadata=[]
-        for e in c.events:
-            if e.get('ph')=='X' and e.get('dur'):
-                key=(e['pid'],e['tid'],e['name']);totals[key]+=e['dur'];counts[key]+=1
-            if 'known_thread_name' in e:metadata.append(e)
-        print(json.dumps({'trace':path.name,'events':len(c.events),'threads':metadata,
-            'top_inclusive_durations':[{'pid':k[0],'tid':k[1],'name':k[2],'total_ms':round(v/1000,1),'n':counts[k]} for k,v in totals.most_common(25)]}),flush=True)
-        if run.returncode:raise SystemExit(run.returncode)
-    finally:c.close()
+    def start(self):
+        """Begin a ReportEvents trace, claiming ownership only after success."""
+        self.call('Tracing.start', {
+            'categories': 'devtools.timeline,cc,gpu,viz,blink,disabled-by-default-devtools.timeline,disabled-by-default-gpu.service',
+            'options': 'record-continuously', 'transferMode': 'ReportEvents'})
+        self.started = True
 
-if __name__=='__main__':main()
+    def finish(self):
+        """End an owned trace once and drain until explicit completion."""
+        if not self.started or self.finished:
+            return
+        if not self.end_sent:
+            self.end_sent = True
+            self.call('Tracing.end', {})
+        while not self.finished:
+            self.receive()
+
+
+def write_trace(path, client):
+    """Write only a completed, sanitized trace and remove interrupted output."""
+    if not client.finished:
+        raise RuntimeError('Trace incomplete; refusing to write a successful capture')
+    with path.open('x') as stream:
+        try:
+            json.dump(client.events, stream)
+        except BaseException:
+            path.unlink()
+            raise
+
+
+def collect(client, page, command, path, run_id):
+    """Keep child sampling pinned and stop/drain tracing even when it fails."""
+    try:
+        client.start()
+        run_probe_child(command, page, run_id)
+        client.finish()
+        write_trace(path, client)
+    finally:
+        cleanup(client.finish, 'Trace shutdown')
+
+
+def main():
+    """Capture one selected pane and print inclusive durations with thread IDs."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('label')
+    parser.add_argument('--target', default='conversation', choices=['conversation', 'list'])
+    target_argument(parser)
+    args = parser.parse_args()
+    validate_label(parser, args.label)
+    path = ROOT / 'results' / f'{args.label}_trace.json'
+    path.parent.mkdir(exist_ok=True)
+    if path.exists() or (ROOT / 'results' / f'{args.label}_page.json').exists():
+        parser.error('Output already exists')
+    with closing(connect(args.target_id)) as page:
+        with urllib.request.urlopen('http://127.0.0.1:9333/json/version', timeout=3) as response:
+            version = json.load(response)
+        with closing(TraceClient(version['webSocketDebuggerUrl'])) as client:
+            command = [sys.executable, str(ROOT / 'conversation_probe.py'), args.label, '--target', args.target]
+            collect(client, page, command, path, uuid.uuid4().hex)
+            totals, counts, metadata = Counter(), Counter(), []
+            for event in client.events:
+                if event.get('ph') == 'X' and event.get('dur'):
+                    key = (event['pid'], event['tid'], event['name'])
+                    totals[key] += event['dur']
+                    counts[key] += 1
+                if 'known_thread_name' in event:
+                    metadata.append(event)
+            print(json.dumps({'trace': path.name, 'events': len(client.events), 'threads': metadata,
+                              'top_inclusive_durations': [
+                                  {'pid': k[0], 'tid': k[1], 'name': k[2], 'total_ms': round(v / 1000, 1),
+                                   'n': counts[k]} for k, v in totals.most_common(25)]}), flush=True)
+
+
+if __name__ == '__main__':
+    with interrupt_cleanup():
+        main()
