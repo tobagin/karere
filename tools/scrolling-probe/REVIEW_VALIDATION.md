@@ -85,11 +85,19 @@ total trace-file size does not establish individual WebSocket frame sizes.
 
 ## Interruption and restoration
 
-A live comparison was sent SIGTERM after its child began sampling. The parent
+A live comparison was sent SIGTERM using `subprocess.Popen.terminate()` after
+its child began sampling. The parent
 stopped and reaped the child, cancelled the owned page probe, restored the original
 wallpaper/scroll state and exited unsuccessfully, as expected. No successful page
 sample was written. Offline tests also cover nonzero child exits and unresponsive
 children requiring a bounded terminate/kill sequence.
+
+The validation record distinguishes the **signal sent** (SIGTERM, 15) from the
+**raw subprocess return code** (-2). `probe_common.interrupt_cleanup` translates
+SIGTERM into `KeyboardInterrupt` so that the existing `finally` blocks execute.
+The uncaught exception then gives this CPython process a SIGINT exit status.
+That exit status alone does not identify the signal originally sent; the record
+now includes the delivery method and handler behavior as capture provenance.
 
 Separate CLI smoke checks passed for manual start/finish and wallpaper
 `off` / `on` / `restore`. Validation refused an already active manual experiment
@@ -101,3 +109,25 @@ This is not authentication or proof of per-user isolation: local processes able
 to reach that port can use CDP. After the diagnostic instance exited, the listener
 was closed. The installed Karere was relaunched, and saved GPU, window, zoom and
 Reduce Motion settings matched the pre-test snapshot.
+
+## Follow-up review checks
+
+The review of `e607115` requested clearer signal provenance and an explicit error
+when conversation-pane discovery returns false. The controller now raises
+`Scrollable conversation pane unavailable` before reading pane state, while its
+`finally` block still closes the connection. Regression tests cover both that
+failure path and successful preparation of an available pane.
+
+The offline suite now passes **33 tests**. Its new subprocess check imports the
+production `interrupt_cleanup` handler, waits for an explicit readiness message,
+then sends SIGTERM via `Popen.terminate()`. On CPython 3.14.7 it observes cleanup,
+an uncaught `KeyboardInterrupt`, and raw return code **-2**, independently
+reproducing the distinction described above. Waiting for readiness avoids killing
+the subprocess before it installs the handler. The test requires unsuccessful
+exit and cleanup, without assuming identical exit-code handling on every Python
+version. The fresh observations are under `review_followup` in the JSON record.
+
+Ruff (`E4,E7,E9,F,I`, isolated Python 3.9 configuration) passes for both revised
+Python files, and all **89/89** checked Python functions have docstrings. The
+browser comparison and trace measurements above retain their original results;
+this follow-up used offline checks and did not restart the installed app.

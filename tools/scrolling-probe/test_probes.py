@@ -4,6 +4,8 @@ Run: python3 -m unittest discover -s tools/scrolling-probe -p 'test_*.py' -v
 """
 import io
 import json
+import selectors
+import signal
 import struct
 import subprocess
 import sys
@@ -15,6 +17,7 @@ from unittest.mock import Mock, patch
 
 import conversation_probe
 import manual_probe
+import prepare_conversation
 import probe_common
 import trace_conversation
 import wallpaper_comparison
@@ -22,6 +25,40 @@ import wallpaper_probe
 from cdp_local import Client
 from summarize_conversation import summarize
 from trace_conversation import TraceClient, write_trace
+
+
+def observe_sigterm_cleanup():
+    """Send real SIGTERM only after the production cleanup handler is installed."""
+    source = """
+import signal
+from probe_common import interrupt_cleanup
+
+with interrupt_cleanup():
+    try:
+        print('handler-ready', flush=True)
+        signal.pause()
+    finally:
+        print('cleanup-ran', flush=True)
+"""
+    with subprocess.Popen([sys.executable, '-c', source],
+                          cwd=Path(probe_common.__file__).resolve().parent,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as child:
+        try:
+            with selectors.DefaultSelector() as selector:
+                selector.register(child.stdout, selectors.EVENT_READ)
+                if not selector.select(timeout=5) or child.stdout.readline() != 'handler-ready\n':
+                    raise RuntimeError('Signal handler readiness was not confirmed')
+            child.terminate()
+            stdout, stderr = child.communicate(timeout=5)
+            return {'signal_sent': signal.SIGTERM.name, 'signal_number': int(signal.SIGTERM),
+                    'delivery_method': 'subprocess.Popen.terminate()', 'handler_ready': True,
+                    'raw_subprocess_returncode': child.returncode,
+                    'cleanup_ran': stdout == 'cleanup-ran\n',
+                    'keyboard_interrupt_reported': 'KeyboardInterrupt' in stderr}
+        finally:
+            if child.poll() is None:
+                child.kill()
+                child.communicate(timeout=5)
 
 
 def frame(payload, opcode=1, final=True):
@@ -258,6 +295,17 @@ class TargetTests(unittest.TestCase):
 class CleanupTests(unittest.TestCase):
     """Child and page cleanup must happen before the parent restores its state."""
 
+    @unittest.skipUnless(sys.platform.startswith('linux'), 'Linux diagnostic signal handling')
+    def test_real_sigterm_runs_cleanup_after_handler_is_ready(self):
+        """The sent signal and resulting exit code are distinct observations."""
+        observed = observe_sigterm_cleanup()
+        self.assertEqual(observed['signal_sent'], 'SIGTERM')
+        self.assertEqual(observed['signal_number'], signal.SIGTERM)
+        self.assertTrue(observed['handler_ready'])
+        self.assertTrue(observed['cleanup_ran'])
+        self.assertTrue(observed['keyboard_interrupt_reported'])
+        self.assertNotEqual(observed['raw_subprocess_returncode'], 0)
+
     def test_child_receives_target_and_run_identity(self):
         """The child receives the parent's target and a shared cancellation ID."""
         page = Mock(target_id='page-b')
@@ -403,6 +451,39 @@ class WallpaperTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 wallpaper_comparison.annotate(path, 'owned', 'invalid_condition', {})
             self.assertEqual(path.read_text(), original)
+
+
+class PreparationTests(unittest.TestCase):
+    """Conversation preparation must fail before accessing an unavailable pane."""
+
+    def test_missing_pane_reports_specific_error_and_closes(self):
+        """An open chat without a scroller must not trigger state reads or input."""
+        client = Mock(evaluate=Mock(side_effect=[True, False]))
+        with patch.object(prepare_conversation, 'connect', return_value=client) as connect, \
+                patch.object(prepare_conversation.time, 'sleep'), \
+                patch.object(sys, 'argv', ['prepare_conversation.py', '--target-id', 'page-a']), \
+                self.assertRaisesRegex(RuntimeError, '^Scrollable conversation pane unavailable$'):
+            prepare_conversation.main()
+        connect.assert_called_once_with('page-a')
+        self.assertEqual(client.evaluate.call_count, 2)
+        client.call.assert_not_called()
+        client.close.assert_called_once()
+
+    def test_available_pane_keeps_existing_preparation_flow(self):
+        """A discovered pane still reaches the loaded-history anchor and report."""
+        state = {'height': 1000, 'scroll_height': 8000, 'top': 2000}
+        report = dict(state, top=3547.5, images=0)
+        client = Mock(evaluate=Mock(side_effect=[True, True, state, True, report]))
+        with patch.object(prepare_conversation, 'connect', return_value=client), \
+                patch.object(prepare_conversation.time, 'sleep'), \
+                patch.object(sys, 'argv', ['prepare_conversation.py']), \
+                patch('prepare_conversation.print') as output:
+            prepare_conversation.main()
+        self.assertEqual(json.loads(output.call_args.args[0]), report)
+        self.assertIn('scrollHeight-window.__karerePane.clientHeight-3452.5',
+                      client.evaluate.call_args_list[3].args[0])
+        client.call.assert_not_called()
+        client.close.assert_called_once()
 
 
 class ManualTests(unittest.TestCase):

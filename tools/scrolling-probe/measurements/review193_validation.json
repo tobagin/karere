@@ -306,7 +306,14 @@
   "listener_bind_address": "127.0.0.1:9333",
   "cleanup": {
     "completed_comparison_restored": true,
-    "sigterm_comparison_exit": -2,
+    "interrupted_comparison": {
+      "signal_sent": "SIGTERM",
+      "signal_number": 15,
+      "delivery_method": "subprocess.Popen.terminate() after the child began sampling",
+      "handler": "probe_common.interrupt_cleanup converts SIGTERM to KeyboardInterrupt",
+      "raw_subprocess_returncode": -2,
+      "returncode_interpretation": "SIGINT process exit after unhandled KeyboardInterrupt; this is not the signal originally sent"
+    },
     "sigterm_restored": true,
     "active_probe_after_cleanup": false,
     "interrupted_page_output_exists": false
@@ -320,5 +327,25 @@
     "normal_app_relaunched": true,
     "saved_preferences_unchanged": true,
     "diagnostic_listener_closed": true
+  },
+  "review_followup": {
+    "reviewed_commit": "e607115109a580e4bc602be28cac31a87ba5b4c7",
+    "date": "2026-09-28",
+    "python_version": "3.14.7",
+    "offline_tests_passed": 33,
+    "documented_python_functions": 89,
+    "python_functions_checked": 89,
+    "missing_pane_error_and_connection_cleanup": true,
+    "available_pane_flow_preserved": true,
+    "sigterm_handler_subprocess_check": {
+      "signal_sent": "SIGTERM",
+      "signal_number": 15,
+      "delivery_method": "subprocess.Popen.terminate()",
+      "handler_ready": true,
+      "raw_subprocess_returncode": -2,
+      "cleanup_ran": true,
+      "keyboard_interrupt_reported": true
+    },
+    "scope": "Offline follow-up checks; preceding CEF comparison and trace measurements are retained from the original run"
   }
 }

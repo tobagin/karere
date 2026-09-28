@@ -40,9 +40,10 @@ def main():
                     dict(type=event, button="left", clickCount=1, **point),
                 )
         time.sleep(3)
-        c.evaluate(
+        if not c.evaluate(
             "window.__karerePane=[...document.querySelectorAll('#main *')].find(e=>e.clientHeight>100&&e.scrollHeight>e.clientHeight+300&&/auto|scroll/.test(getComputedStyle(e).overflowY));!!window.__karerePane"
-        )
+        ):
+            raise RuntimeError("Scrollable conversation pane unavailable")
         for _ in range(4):
             state = c.evaluate(
                 "(()=>{let e=window.__karerePane;return{height:e.clientHeight,scroll_height:e.scrollHeight,top:e.scrollTop}})()"
