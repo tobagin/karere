@@ -122,8 +122,13 @@ pub fn startup_environment() {
         if std::env::var_os("GDK_BACKEND").is_none() {
             std::env::set_var("GDK_BACKEND", "wayland,x11");
         }
-        // Leave GSK's platform selection intact. Performance comparisons can
-        // explicitly select GL or Vulkan; neither is a mandatory preference.
+        // Matched NVIDIA measurements favor GSK GL plus an owned GL texture:
+        // the native-handle CEF repair sustains the 240 Hz presentation target.
+        // GTK still tries its other renderers if GL cannot initialize, and the
+        // supervisor handles a renderer that stalls after initialization.
+        if std::env::var_os("GSK_RENDERER").is_none() {
+            std::env::set_var("GSK_RENDERER", "gl");
+        }
     }
 }
 

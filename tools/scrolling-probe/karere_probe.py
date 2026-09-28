@@ -91,6 +91,16 @@ def descendants(root):
     return found
 
 
+def cef_library_paths(root):
+    """Observe loaded engine paths in this launch, not requested linker flags."""
+    loaded = set()
+    for pid in descendants(root):
+        for line in (read(f"/proc/{pid}/maps") or "").splitlines():
+            if line.endswith("/libcef.so"):
+                loaded.add(line.split(None, 5)[5])
+    return sorted(loaded)
+
+
 def process(pid):
     stat = read(f"/proc/{pid}/stat")
     if not stat:
@@ -283,6 +293,7 @@ def main():
     idle_start = idle_end = idle_epoch = None
     idle_visibility = None
     synthetic_debug_reported = False
+    cef_paths_reported = False
     print(json.dumps({"capture": str(output), "launcher_pid": child.pid, "settings": settings}), flush=True)
     with output.open("x", buffering=1) as stream:
         def emit(kind, **values):
@@ -340,6 +351,16 @@ def main():
                 idle_end = None
                 subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
             if now - last_sample >= 1:
+                if not cef_paths_reported:
+                    paths = cef_library_paths(child.pid)
+                    if paths:
+                        expected = str(args.cef_directory / "libcef.so") if args.cef_directory else None
+                        emit("cef_library", observed_paths=paths, expected_path=expected)
+                        if expected and paths != [expected]:
+                            raise RuntimeError("requested CEF engine differs from the loaded library")
+                        cef_paths_reported = True
+                    elif args.cef_directory and now - start > 5:
+                        raise RuntimeError("could not verify the loaded CEF engine")
                 new_phase = read(ROOT / "phase.txt") or "unmarked"
                 if new_phase != phase:
                     phase = new_phase

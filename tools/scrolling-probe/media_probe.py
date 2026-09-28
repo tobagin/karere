@@ -21,7 +21,7 @@ import time
 import urllib.request
 
 from cdp_local import Client
-from karere_probe import descendants, process as read_process
+from karere_probe import cef_library_paths, descendants, process as read_process
 
 ROOT = Path(__file__).resolve().parent
 
@@ -203,6 +203,9 @@ def main():
                 gpu = browser.call("SystemInfo.getInfo", {})["gpu"]
                 report["gpu"] = {k: gpu.get(k) for k in ["devices", "featureStatus", "videoDecoding", "videoEncoding"]}
                 report["graphics"] = {k: v for k,v in gpu.get("auxAttributes", {}).items() if k in ["glRenderer", "glVendor", "glVersion", "displayType", "glImplementationParts"]}
+                report["observed_cef_library_paths"] = cef_library_paths(process.pid)
+                if args.cef_directory and report["observed_cef_library_paths"] != [str(args.cef_directory / "libcef.so")]:
+                    raise RuntimeError("requested CEF engine differs from the loaded library")
                 client.call("Media.enable", {})
                 options = {k: getattr(args, k) for k in ["kind", "width", "height", "fps", "bitrate", "codec"]}
                 report["ready"] = client.evaluate(f"startProbe({json.dumps(options)})", await_promise=True)

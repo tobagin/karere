@@ -3,10 +3,15 @@
 GPU frame transfer now defaults on, including NVIDIA, while explicit saved
 opt-outs and `KARERE_GPU_OSR=0` remain effective. A preference or visible chat is
 not proof of accelerated delivery. The original pinned NVIDIA CEF delivered
-zero accelerated callbacks in the standalone producer fixture; the native-handle
-CEF/Chromium backport must be built and verified before claiming the fix works.
-The [isolated backend controls](measurements/original_cef_producer_433.json)
-confirm this with both hardware ANGLE GL/EGL and ANGLE Vulkan. Vulkan CPU transfer
+zero accelerated callbacks in the standalone producer fixture. The rebuilt
+native-handle CEF/Chromium backport now delivers **3,600 accelerated callbacks in
+15 seconds** with both hardware ANGLE GL/EGL and ANGLE Vulkan on native Wayland.
+The [verified producer controls](measurements/native_cef_producer_433.json) check
+the loaded library, matching API, backend and orderly shutdown. Neither GPU run
+delivered CPU callbacks; the CPU control delivered 3,601 callbacks. These small
+generated producer fixtures establish frame production, not display FPS.
+The [original-engine backend controls](measurements/original_cef_producer_433.json)
+reproduce its failure with both hardware ANGLE GL/EGL and ANGLE Vulkan. Vulkan CPU transfer
 does produce frames. These generated checks ran during compilation and establish
 the failure/recovery behavior, not a presentation rate or performance comparison.
 
@@ -27,7 +32,7 @@ with the GNOME SDK and the headers matching the installed Devel library:
 ```sh
 cc -std=c11 -O2 -Wall -Wextra -Werror -Wno-unused-parameter \
   -I /path/to/cef cef_frame_probe.c -L /path/to/cef \
-  -Wl,-rpath,/app/lib/cef -lcef -o /path/to/probes/cef-frame-probe
+  -Wl,--enable-new-dtags,-rpath,/app/lib/cef -lcef -o /path/to/probes/cef-frame-probe
 flatpak run --filesystem=/path/to/probes:ro \
   --command=/path/to/probes/cef-frame-probe io.github.tobagin.karere.Devel \
   --no-first-run --no-zygote --no-sandbox --ozone-platform=wayland \
@@ -147,12 +152,17 @@ regression and fresh-presentation acceptance gates remain outstanding.
 
 ## Presentation and recovery
 
-Native Wayland remains preferred. GSK uses its platform default; explicit
+Native Wayland remains preferred. GSK now tries GL first unless explicitly
+overridden. The repaired-engine generated comparison measured 237.0–237.9 fresh
+presentations/s across all six windowed/maximized GL repeats, with p95 at most
+4.23 ms ([all path comparisons](measurements/native_presenter_screen_433.json)).
+This selects a measured default on the RTX 5090, not a universal GPU
+ranking or completed conversation acceptance. GTK retains initialization
+fallback and the supervisor bounds stalled-frame recovery. Explicit
 `GSK_RENDERER=gl`/`vulkan` controls isolate rendering. `KARERE_CEF_GRAPHICS` selects
 CEF `gl`, `vulkan` or `software` for diagnostics. `KARERE_CPU_PRESENTER` (`gl` or
 `snapshot`) and `KARERE_FRAME_TRANSFER` (`gl` or `vulkan`) independently select
-presentation/transfer trials. Defaults are candidates pending matched results,
-not a claim that the fastest configuration has been established.
+presentation/transfer trials. Full conversation acceptance remains incomplete.
 
 The existing `karere_probe.py` runner exposes these independent controls as
 `--gsk-renderer`, `--cef-graphics`, `--cpu-presenter` and `--frame-transfer` and
@@ -161,6 +171,16 @@ including resources/locales, and records its library SHA-256. Combined with
 `--binary`, this compares application and engine changes in the same Flatpak
 runtime without replacing installed packages. Backend logs and CDP device data
 must still confirm the effective path; the recorded options alone do not.
+The first post-build engine controls were excluded because the standalone
+probe's `DT_RPATH` still loaded installed CEF. Corrected controls use `DT_RUNPATH`
+and require observed process mappings to match the requested engine. Historical
+zero-frame results from original CEF remain valid; mislabeled engine trials are
+not evidence against the native-handle repair.
+
+The runners also check `/proc` mappings for the engine actually loaded. Compile
+the standalone producer with `--enable-new-dtags`: a legacy ELF `DT_RPATH` can
+override `LD_LIBRARY_PATH` and silently load the installed engine. A requested
+library hash alone is not evidence that the process used that library.
 
 Both GPU transfer paths copy borrowed CEF resources before callback return.
 The Vulkan pool is bounded to three images and waits for GTK release plus GPU
