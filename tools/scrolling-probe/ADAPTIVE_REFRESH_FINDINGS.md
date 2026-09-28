@@ -60,8 +60,8 @@ flatpak build-bundle --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
 ```
 
 The resulting app ID and profile are separate from stable Karere. Stable 4.3.2
-was not replaced during the measurements. The installed combined executable
-SHA-256 was `d9d844657bd1ffa756d06e9af897701f5232430ad32322535b8ea65eb49862b0`.
+was not replaced during the measurements. The repeated performance samples used combined executable
+SHA-256 `d9d844657bd1ffa756d06e9af897701f5232430ad32322535b8ea65eb49862b0`.
 The local bundle and raw diagnostics are excluded from this repository.
 
 After quitting Devel, use one-launch recovery for the failing layer:
@@ -141,6 +141,8 @@ and ambiguous commit associations are not counted.
 | Text conversation maximized, recovered CPU | Never | 194.47–195.40 | 31.27–31.80 | **15.80–16.00** | 62.50 | 70.84–70.88 | 190.4–193.8 |
 | List windowed, recovered CPU | Never | 213.40–216.47 | 174.73–174.93 | **41.00–41.13** | 25.00 | 29.17–29.18 | 236.8–240.8 |
 | List maximized, recovered CPU | Never | 168.67–171.20 | 52.40–52.80 | **26.20–26.40** | 37.50 | 45.83 | 199.3–200.5 |
+| Media conversation windowed, recovered CPU | Never | 237.40–238.00 | 122.67–125.60 | **31.40–31.80** | 29.20–33.31 | 37.49–37.51 | 207.7–208.6 |
+| Media conversation maximized, recovered CPU | Never | 194.13–195.87 | 30.80–31.87 | **15.67–16.13** | 62.50 | 70.83–74.75 | 180.3–182.0 |
 
 The target is at least 235 fresh presentations/s, median near 4.17 ms and p95
 no worse than 8.33 ms in every representative sample. **All measured combined
@@ -164,6 +166,49 @@ does establish a substantial regression in the new presentation path. #193's
 own controlled wallpaper comparisons remain the evidence for its optimization.
 `combined_recovered_*` samples around the VRR transition are excluded.
 
+## Startup recovery follow-up
+
+Fault injection exposed two startup-selection gaps: GTK's X11 default chose GL
+although Vulkan worked, and CEF silently chose software after Vulkan failed.
+The final build requests GTK Vulkan first (preserving explicit overrides) and
+checks basic hardware Vulkan device initialization before requesting ANGLE.
+An initialization failure selects ANGLE GL. GTK retains its own fallback order;
+[GSK documents](https://docs.gtk.org/gsk4/ctor.Renderer.new_for_surface.html) that
+an explicit renderer preference falls back to the backend default and Cairo.
+
+Fresh generated-fixture results on the corrected build:
+
+| Condition | Actual GTK | Actual CEF | Outcome |
+|---|---|---|---|
+| Missing Vulkan ICD | GL, Wayland | NVIDIA ANGLE OpenGL | Generated animation completed |
+| Missing Wayland, normal sandbox sockets | No display | Not initialized | One exit, status 1, one-launch X11 command printed |
+| One-launch X11 recovery | Vulkan, X11 | NVIDIA ANGLE Vulkan | Generated animation completed |
+| Missing Vulkan with explicit CEF GL | GL, Wayland | NVIDIA ANGLE OpenGL | Generated animation completed |
+| X11 with explicit GTK Vulkan | Vulkan, X11 | NVIDIA ANGLE Vulkan | Generated animation completed |
+| Default Wayland, GPU preference off | Vulkan, Wayland | NVIDIA ANGLE Vulkan | Generated animation completed |
+| Default Wayland, GPU preference on | Vulkan, Wayland | NVIDIA ANGLE Vulkan | Zero accelerated frames; CPU recovery after ten seconds, animation completed |
+
+The final default-path timing control measured 32.60 fresh presentations/s,
+median 29.18 ms, p95 33.49 ms and 181.6% CPU. It is one confirmation sample,
+not a new three-sample acceptance series. A preliminary GPU-labeled windowed
+capture actually selected a CPU schema and is excluded; the corrected run
+explicitly logged `shared_texture=1` before recovery to `shared_texture=0`.
+
+These runs used isolated generated profiles. The missing-ICD fixture set both
+`VK_DRIVER_FILES` and `VK_ICD_FILENAMES` to a nonexistent file; the missing-display
+fixture set `WAYLAND_DISPLAY` to a nonexistent socket inside the sandbox. None
+installed an override or changed display/account settings. Original failing
+observations remain separate from the corrected runs. Actual ANGLE backends
+were read through CDP, rather than inferred from per-process request logs.
+
+This basic device probe does not detect every ANGLE-specific initialization
+failure or later silent software downgrade. Runtime backend telemetry and
+GPU-hang/device-loss recovery remain open work. The follow-up changes startup
+selection only; the repeated performance measurements above used the earlier
+combined binary, with the same Wayland/Vulkan presentation implementation. The
+corrected executable SHA-256 is
+`0a68df7964bd2b96260d977af1f095751cafc4cff66c9ac05f546f82e8b54352`.
+
 ## Remaining bottleneck and ranked work
 
 1. **Fix the GTK/Vulkan presentation regression before release.** High page rates
@@ -181,8 +226,9 @@ own controlled wallpaper comparisons remain the evidence for its optimization.
    GPU hangs remain unverified; Vulkan fence completion currently waits without
    a finite timeout, and device teardown can wait too. Runtime GTK device-loss
    recovery is not implemented. Do not claim a bounded recovery guarantee for
-   a hung driver. Test missing Vulkan, unavailable Wayland, each independent
-   fallback, hardware popups, and accelerated release/reuse under sustained load.
+   a hung driver. The missing-Vulkan and unavailable-Wayland startup cases now pass their
+   generated checks. Hardware popups, runtime fallback and accelerated
+   release/reuse under sustained load still need validation.
 4. **Repeat the full matched acceptance matrix after those fixes.** Use unchanged
    VRR, viewport, loaded conversation range and media state, test physical input,
    account switching and physical 60/120/240 Hz monitor transitions. These
@@ -195,13 +241,16 @@ therefore implemented but demonstrably insufficient.
 
 ## Checks and reproducibility
 
-The substantial-media conversation test and physical wheel/touchpad report are
-pending user readiness. They are not included as passing coverage.
+Six samples of a user-selected substantial-media conversation completed without
+history loading; scroll base 502 and amplitude 900 CSS px were unchanged. Its
+scroll height was 8257 windowed / 8236 maximized. Physical wheel/touchpad behavior
+was not reported, and stock/#193-only media comparisons remain unmeasured.
 
 Passed: release Devel Flatpak build/install, 98 Rust unit tests including real
 Vulkan ownership and texture tests, strict all-target Clippy, formatting,
 JavaScript copy-bridge tests, repository shell checks, #193's 33 Python probe
-regressions, and three new presentation-correlation regressions. Texture checks
+regressions, 53 reused CEF browser checks, and three new presentation-correlation
+regressions. Texture checks
 compare colors, damage, tile seams and crop at 100%, 145% and 200% scale. Holding
 old exported frames across producer reuse/resize verifies owned storage and the
 three-buffer bound. Invalid DMA-BUF imports verified one CPU recovery request.
@@ -249,3 +298,8 @@ Historical measurements in the other findings documents keep their original
 versions and conditions. The installed v4.3.2 manifest's annotated tag object
 `952a12f3412cd35afa1606514f7d967a5b5447aa` peels to source commit
 `11dfc0e62d7279e5dd3b2e97dc096e521845dedb`; it is not an unavailable source commit.
+
+The diagnostic instances were closed and Devel was relaunched normally. Its
+external diagnostic port is closed, the user's GPU preference remains enabled,
+and temporary maximization was restored. Stable's installed commit is unchanged;
+the user's 4K/240 Hz, 145% scale and VRR Never settings were retained.

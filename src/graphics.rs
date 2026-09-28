@@ -5,12 +5,19 @@ use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
 
 static DISPLAY: AtomicU8 = AtomicU8::new(0);
 static RESTART: AtomicBool = AtomicBool::new(false);
+static CEF_VULKAN_AVAILABLE: AtomicBool = AtomicBool::new(true);
 
 pub fn startup_environment() {
     // Called before GTK/CEF create threads. Explicit recovery overrides win.
     unsafe {
         if std::env::var_os("GDK_BACKEND").is_none() {
             std::env::set_var("GDK_BACKEND", "wayland,x11");
+        }
+        // GSK tries this renderer before its backend default, then falls back
+        // normally if realization fails. The X11 default otherwise prefers GL
+        // even when hardware Vulkan works. Respect an explicit recovery choice.
+        if std::env::var_os("GSK_RENDERER").is_none() {
+            std::env::set_var("GSK_RENDERER", "vulkan");
         }
     }
 }
@@ -33,7 +40,69 @@ pub fn initialize_display() -> anyhow::Result<()> {
         "GTK could not open Wayland or X11: {error}. One-launch X11 recovery: flatpak run --nosocket=wayland --nosocket=fallback-x11 --socket=x11 --env=GDK_BACKEND=x11 {}",
         crate::application::APP_ID
     ))?;
-    record_display()
+    record_display()?;
+    if cef_vulkan()
+        && let Err(error) = check_hardware_vulkan()
+    {
+        // Chromium can silently deliver software frames after ANGLE Vulkan
+        // fails. A missing-frame watchdog cannot detect that case. Check basic
+        // hardware initialization before requesting ANGLE, so GL gets a chance.
+        // This is a capability check, not proof of ANGLE's eventual backend.
+        CEF_VULKAN_AVAILABLE.store(false, Ordering::Release);
+        log::warn!(
+            "graphics: CEF hardware Vulkan initialization unavailable: {error:#}; trying ANGLE GL"
+        );
+    }
+    Ok(())
+}
+
+fn check_hardware_vulkan() -> anyhow::Result<()> {
+    use ash::vk;
+    use std::ffi::CStr;
+
+    // No resources are submitted. Destroy each trial device before its instance
+    // and keep the dynamically loaded entry alive throughout the whole probe.
+    unsafe {
+        let entry = ash::Entry::load()?;
+        let instance = entry.create_instance(
+            &vk::InstanceCreateInfo::default()
+                .application_info(&vk::ApplicationInfo::default().api_version(vk::API_VERSION_1_1)),
+            None,
+        )?;
+        let result = (|| -> anyhow::Result<()> {
+            for physical in instance.enumerate_physical_devices()? {
+                let properties = instance.get_physical_device_properties(physical);
+                if properties.device_type == vk::PhysicalDeviceType::CPU {
+                    continue;
+                }
+                let queues = instance.get_physical_device_queue_family_properties(physical);
+                let Some(family) = queues.iter().position(|queue| {
+                    queue.queue_count > 0 && queue.queue_flags.contains(vk::QueueFlags::GRAPHICS)
+                }) else {
+                    continue;
+                };
+                let priority = [1.0];
+                let queues = [vk::DeviceQueueCreateInfo::default()
+                    .queue_family_index(family as u32)
+                    .queue_priorities(&priority)];
+                if let Ok(device) = instance.create_device(
+                    physical,
+                    &vk::DeviceCreateInfo::default().queue_create_infos(&queues),
+                    None,
+                ) {
+                    device.destroy_device(None);
+                    log::info!(
+                        "graphics: Vulkan capability probe initialized hardware device={}",
+                        CStr::from_ptr(properties.device_name.as_ptr()).to_string_lossy()
+                    );
+                    return Ok(());
+                }
+            }
+            anyhow::bail!("no hardware Vulkan graphics device initialized")
+        })();
+        instance.destroy_instance(None);
+        result
+    }
 }
 
 pub fn display_backend() -> &'static str {
@@ -47,10 +116,11 @@ pub fn display_backend() -> &'static str {
 }
 
 pub fn cef_vulkan() -> bool {
-    !matches!(
-        std::env::var("KARERE_CEF_GRAPHICS").as_deref(),
-        Ok("gl") | Ok("software")
-    )
+    CEF_VULKAN_AVAILABLE.load(Ordering::Acquire)
+        && !matches!(
+            std::env::var("KARERE_CEF_GRAPHICS").as_deref(),
+            Ok("gl") | Ok("software")
+        )
 }
 
 pub fn configure_cef(cmd: &mut CommandLine) {
