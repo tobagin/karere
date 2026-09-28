@@ -18,7 +18,13 @@ the failure/recovery behavior, not a presentation rate or performance comparison
 The normal accelerated path must meet the monitor rate. At 240 Hz every active
 sample must deliver at least 235 fresh presentations/s, median near 4.17 ms and
 p95 at most 8.33 ms. CPU transfer is measured recovery without the same FPS gate.
-Current performance remains incomplete. The older tables in
+The installed combined bundle independently passes all six generated repeats at
+237.067–237.800 fresh presentations/s with p95 4.185–4.221 ms and actual GPU
+transfer. No graphics backend overrides were supplied; the isolated schema
+requests the same true value as the installed default. Fresh-default and explicit
+opt-out semantics have separate regression coverage. All 53 #193 browser checks
+pass on this bundle. [Installed samples and hashes](measurements/native_installed_generated_433.json).
+Full real-conversation acceptance remains incomplete. The older tables in
 [ADAPTIVE_REFRESH_FINDINGS.md](ADAPTIVE_REFRESH_FINDINGS.md) retain their original
 build and default-off policy; they are not measurements of the new default.
 
@@ -80,6 +86,17 @@ never requests a real camera/microphone, links an account, or calls another user
 It records actual WebRTC encoder/decoder implementation, codec, dimensions,
 bitrate, source/output timing, CPU and playback decoder properties. It reuses
 the repository CDP transport; it does not replace #193's conversation tools.
+
+The optional `--port` selects an unused loopback CDP port (default 9333) so the
+generated fixture can leave an already-open diagnostic Devel window intact.
+Every connection and cleanup check uses that exact port; the transport still
+rejects remote hosts and other ports. Run performance workloads sequentially,
+even when listeners coexist. `KARERE_PROBE_CDP=1` on the Karere capture runner
+now automatically loads its matching schedule interposer; it cannot silently
+request CDP without enabling the port. The 47 existing combined diagnostic
+regressions still pass, with a separate added check rejecting wheel input during
+programmatic acceptance samples, and a live two-listener isolation check passed.
+
 
 ```sh
 python3 media_probe.py /path/to/new-webrtc.json \
@@ -233,3 +250,48 @@ acceptance unverified; saved historical reports are not rewritten. The separate
 CPU callbacks during the sample. A fast CPU recovery does not verify the normal
 GPU path. A complete matrix still requires all three repeats and every requested
 workload/window geometry; a single passing sample does not complete that matrix.
+
+## Combined conversation diagnostics
+
+The integration checkout applies the optional
+[amplitude argument patch](diagnostic-patches/pr193-scroll-amplitude.patch) to
+#193's existing Python runner. Its JavaScript already supports the parameter;
+no sampler or wallpaper code is duplicated. The default remains 900 CSS pixels.
+The tested maximized chat list has 1,265 pixels of loaded scroll range, less than
+that probe's 900 + 400 guard. `--amplitude 800` fits without loading data or
+relaxing frame-rate acceptance. Geometry, amplitude and range are recorded, and
+each sample restores its original position. Apply the patch after #193 until
+that branch merges; the production feature branch remains independent.
+
+The repaired installed bundle now passes all 24 requested scrolling samples:
+three per workload and window size for generated animation, chat list, long text
+and substantial-media conversations. Fresh presentations range from 237.067 to
+239.467/s, with p95 below 4.23 ms. See the numeric
+[generated](measurements/native_installed_generated_433.json) and
+[conversation](measurements/native_conversations_433.json) evidence. This does
+not complete the separate matched-control, recovery and media validation work.
+
+`--x11-recovery` exposes X11 only for an isolated generated launch; it installs
+no persistent overrides. Background diagnostics derive the D-Bus window path
+from `--app-id`, including Devel's suffix, instead of addressing the stable
+application's window path. The local Devel idle check exposed that path error.
+
+Repaired-engine X11 controls on the tested NVIDIA driver distinguish the CEF
+choices: GL/EGL crashes, native GL produces CPU frames but no accelerated frames,
+and Vulkan produces accelerated frames. A complete X11 generated window renders
+with CEF Vulkan, GSK GL and owned GL textures. The default CEF selection follows
+GTK's actual working display: GL/EGL on Wayland, Vulkan on X11, then native GL
+for X11 recovery. GTK's backend remains independent. The supervisor records
+failed CEF choices reported by the worker, so a display-dependent default cannot
+cause it to skip an untried backend or loop. X11 compositor presentation FPS and
+other GPU vendors remain unverified.
+
+The [repaired-engine media series](measurements/native_media_433.json) completes
+three 30-second H.264 samples per condition at 720p30 and 1080p60. At 1080p60,
+verified VA-API decoding reduces playback process CPU from 26.77% to 11.59% and
+local loopback CPU from 36.00% to 29.34%, sustaining source cadence. Sampled
+software/hardware output grids match at both resolutions. Encoding remains
+software OpenH264, including `AcceleratedVideoEncoder` trials; no NVIDIA CEF
+hardware-encoding claim or default is introduced. The 720p resource comparison
+is provisional because a separate linked Devel window was open. Other codecs
+and real capture/calls remain unverified.

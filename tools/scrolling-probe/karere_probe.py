@@ -174,6 +174,7 @@ def main():
     parser.add_argument("--app-id", default=APP)
     parser.add_argument("--windowed", action="store_true", help="Windowed isolated fixture")
     parser.add_argument("--wayland-timing", action="store_true", help="Collect allowlisted compositor feedback")
+    parser.add_argument("--x11-recovery", action="store_true", help="One-launch X11 sockets for an isolated fixture")
     parser.add_argument("--binary", type=Path, help="Test a compiled Karere inside the installed Flatpak runtime")
     parser.add_argument("--cef-directory", type=Path, help="Matching CEF library/resources for an engine control")
     parser.add_argument("--idle-seconds", type=float, default=0,
@@ -181,6 +182,8 @@ def main():
     parser.add_argument("--idle-window", choices=['visible', 'minimized', 'background'], default='visible',
                         help="Window action before idle measurement; background requires --synthetic")
     args = parser.parse_args()
+    if args.x11_recovery and not args.synthetic:
+        parser.error("--x11-recovery requires an isolated --synthetic fixture")
     if not 0 <= args.idle_seconds <= 300:
         parser.error('--idle-seconds must be between 0 and 300')
     if args.idle_seconds and not (args.synthetic or args.chat_list):
@@ -194,6 +197,9 @@ def main():
     if args.chat_list:
         if args.synthetic:
             parser.error('--chat-list and --synthetic are separate workloads')
+        args.schedule_probe = True
+    if os.environ.get("KARERE_PROBE_CDP"):
+        # The matching interposer enables CDP without loosening browser security.
         args.schedule_probe = True
     binary_hash = None
     if args.binary:
@@ -230,6 +236,8 @@ def main():
     prefs = subprocess.check_output(["flatpak", "run", "--command=sh", APP, "-c", 'for key in ' + ' '.join(KEYS) + '; do printf "%s=" "$key"; gsettings get ' + APP + ' "$key"; done'], text=True)
     settings = dict(line.split("=", 1) for line in prefs.splitlines() if "=" in line)
     launch = ["flatpak", "run", "--env=RUST_LOG=" + ("warn" if args.normal_logging else LOG_FILTER), "--env=RUST_LOG_STYLE=never"]
+    if args.x11_recovery:
+        launch += ["--nosocket=wayland", "--nosocket=fallback-x11", "--socket=x11", "--env=GDK_BACKEND=x11"]
     if args.pump_probe or args.fast_backstop or args.schedule_probe:
         library = 'schedule_probe.so' if args.schedule_probe else 'pump_probe.so'
         if not (BUILD / library).is_file():
@@ -308,7 +316,7 @@ def main():
                 if args.idle_window != 'visible':
                     subprocess.run([
                         'gdbus', 'call', '--session', '--dest', APP,
-                        '--object-path', '/io/github/tobagin/karere/window/1',
+                        '--object-path', '/' + APP.replace('.', '/') + '/window/1',
                         '--method', 'org.gtk.Actions.Activate',
                         'close' if args.idle_window == 'background' else 'minimize', '[]', '{}',
                     ], check=True, stdout=subprocess.DEVNULL)

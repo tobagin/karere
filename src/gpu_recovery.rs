@@ -38,8 +38,10 @@ pub fn supervise() -> std::io::Result<Option<i32>> {
 
 fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
     let mut recovered = false;
-    let initial = std::env::var("KARERE_CEF_GRAPHICS").unwrap_or_else(|_| "gl".into());
-    let mut backends = vec![initial];
+    // Only the worker knows which display GTK actually opened. Infer the
+    // failed CEF backend from its explicit retry request, not from a parent's
+    // guess made before Wayland/X11 selection.
+    let mut backends = Vec::new();
     let mut gtk_backends = Vec::new();
     loop {
         let mut child = command.process_group(0).spawn()?;
@@ -88,17 +90,21 @@ fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
         }
         if code == CEF_GL || code == CEF_VULKAN {
             let requested = if code == CEF_GL { "gl" } else { "vulkan" };
-            let next = if backends.iter().any(|tried| tried == requested) {
+            let failed = if code == CEF_GL { "vulkan" } else { "gl" };
+            if !backends.contains(&failed) {
+                backends.push(failed);
+            }
+            let next = if backends.contains(&requested) {
                 "software"
             } else {
                 requested
             };
-            if backends.iter().any(|tried| tried == next) {
+            if backends.contains(&next) {
                 return Ok(code);
             }
             eprintln!("karere: no initial CEF frame; retrying {next}");
             command.env("KARERE_CEF_GRAPHICS", next);
-            backends.push(next.into());
+            backends.push(next);
             continue;
         }
         if recovered || std::env::var("KARERE_GPU_OSR").as_deref() == Ok("0") {
@@ -238,6 +244,25 @@ mod tests {
             "-c", "case \"$KARERE_CEF_GRAPHICS\" in vulkan) exit 87;; software) exit 0;; *) exit 88;; esac",
         ]).env_remove("KARERE_CEF_GRAPHICS")).unwrap();
         assert_eq!(code, 0);
+    }
+
+    #[test]
+    fn display_selected_vulkan_can_try_gl_before_software() {
+        let code = run_supervised(
+            Command::new("sh")
+                .args([
+                    "-c",
+                    "case \"$KARERE_CEF_GRAPHICS\" in gl) exit 0;; software) exit 9;; *) exit 87;; esac",
+                ])
+                .env_remove("KARERE_CEF_GRAPHICS"),
+        )
+        .unwrap();
+        assert_eq!(
+            code, 0,
+            "do not skip GL based on a pre-display parent guess"
+        );
+        let code = run_supervised(Command::new("sh").args(["-c", "exit 87"])).unwrap();
+        assert_eq!(code, CEF_GL, "an ignored retry must still terminate");
     }
 
     #[test]

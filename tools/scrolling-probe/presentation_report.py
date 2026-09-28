@@ -169,6 +169,8 @@ def report(capture, page=None, single_view=False):
         invalid.append('page sample incomplete')
     if page.get('scroll_height_changes', 0):
         invalid.append('history or layout changed')
+    if page.get('input_mode') == 'programmatic' and page.get('wheels'):
+        invalid.append('wheel input interrupted programmatic workload')
     if page.get('visibility', 'visible') != 'visible':
         invalid.append('page not visible')
     if seconds < 14.999:

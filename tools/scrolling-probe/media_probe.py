@@ -26,16 +26,16 @@ from karere_probe import cef_library_paths, descendants, process as read_process
 ROOT = Path(__file__).resolve().parent
 
 
-def diagnostic_listener_present():
+def diagnostic_listener_present(port=9333):
     with socket.socket() as check:
         check.settimeout(.5)
-        return check.connect_ex(("127.0.0.1", 9333)) == 0
+        return check.connect_ex(("127.0.0.1", port)) == 0
 
 
 class MediaClient(Client):
-    def __init__(self, url):
+    def __init__(self, url, *, port=9333):
         self.properties = {}
-        super().__init__(url)
+        super().__init__(url, port=port)
         self.socket.settimeout(55)
 
     def receive(self):
@@ -122,6 +122,7 @@ def main():
     parser.add_argument("--features", default="")
     parser.add_argument("--angle", choices=["gl-egl", "vulkan"], default="gl-egl")
     parser.add_argument("--app-id", default="io.github.tobagin.karere.Devel")
+    parser.add_argument("--port", type=int, default=9333, help="Unused loopback CDP port for this generated fixture")
     parser.add_argument("--duration", type=int, default=30)
     parser.add_argument("--samples", type=int, default=3)
     parser.add_argument("--graphics-check", action="store_true", help="Verify generated WebGL/WebGPU output after timing")
@@ -130,7 +131,9 @@ def main():
         parser.error("refusing to overwrite evidence")
     if args.kind == "playback" and not args.video:
         parser.error("playback needs a generated --video fixture")
-    if diagnostic_listener_present():
+    if not 1024 <= args.port <= 65535:
+        parser.error("--port must be between 1024 and 65535")
+    if diagnostic_listener_present(args.port):
         parser.error("diagnostic port already has a listener")
     if args.cef_directory:
         args.cef_directory = args.cef_directory.resolve(strict=True)
@@ -171,7 +174,7 @@ def main():
                         f"--env=KARERE_FRAME_PROBE_CEF_DIR={args.cef_directory}"]
         command += [args.app_id, "--no-first-run", "--no-zygote", "--no-sandbox",
                    "--ozone-platform=wayland", "--use-gl=angle", f"--use-angle={args.angle}",
-                   "--remote-debugging-port=9333", "--autoplay-policy=no-user-gesture-required",
+                   f"--remote-debugging-port={args.port}", "--autoplay-policy=no-user-gesture-required",
                    "--enable-webrtc-vea-vda", "--disable-features=PersistentHistograms",
                    "--enable-media-stream", "--use-fake-ui-for-media-stream",
                    f"--use-fake-device-for-media-stream=fps={args.fps}"]
@@ -183,10 +186,10 @@ def main():
                 deadline = time.monotonic() + 30
                 while time.monotonic() < deadline:
                     try:
-                        with urllib.request.urlopen("http://127.0.0.1:9333/json/list", timeout=1) as reply:
+                        with urllib.request.urlopen(f"http://127.0.0.1:{args.port}/json/list", timeout=1) as reply:
                             targets = json.load(reply)
                         target = next(t for t in targets if t.get("type") == "page" and t.get("url") == url)
-                        client = MediaClient(target["webSocketDebuggerUrl"])
+                        client = MediaClient(target["webSocketDebuggerUrl"], port=args.port)
                         if client.evaluate("typeof startProbe === 'function'"):
                             break
                         client.close(); client = None
@@ -197,9 +200,9 @@ def main():
                     time.sleep(.2)
                 if client is None:
                     raise RuntimeError("generated CEF fixture unavailable")
-                with urllib.request.urlopen("http://127.0.0.1:9333/json/version", timeout=1) as reply:
+                with urllib.request.urlopen(f"http://127.0.0.1:{args.port}/json/version", timeout=1) as reply:
                     version = json.load(reply)
-                browser = Client(version["webSocketDebuggerUrl"])
+                browser = Client(version["webSocketDebuggerUrl"], port=args.port)
                 gpu = browser.call("SystemInfo.getInfo", {})["gpu"]
                 report["gpu"] = {k: gpu.get(k) for k in ["devices", "featureStatus", "videoDecoding", "videoEncoding"]}
                 report["graphics"] = {k: v for k,v in gpu.get("auxAttributes", {}).items() if k in ["glRenderer", "glVendor", "glVersion", "displayType", "glImplementationParts"]}
@@ -252,10 +255,10 @@ def main():
                         process.wait(timeout=5)
             os.close(control_fd)
             deadline = time.monotonic() + 5
-            while diagnostic_listener_present() and time.monotonic() < deadline:
+            while diagnostic_listener_present(args.port) and time.monotonic() < deadline:
                 time.sleep(.1)
             report["shutdown"] = {"exit_code": process.returncode if process else None,
-                                  "listener_closed": not diagnostic_listener_present()}
+                                  "listener_closed": not diagnostic_listener_present(args.port)}
             log_path = args.output.with_suffix(".log")
             if log_path.exists():
                 report["producer_records"] = [json.loads(line) for line in log_path.read_text().splitlines()

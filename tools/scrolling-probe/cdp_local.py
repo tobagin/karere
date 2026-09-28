@@ -9,15 +9,17 @@ from urllib.parse import urlparse
 
 
 class Client:
-    def __init__(self, url):
+    def __init__(self, url, *, port=9333):
+        if not 1024 <= port <= 65535:
+            raise ValueError("Invalid local diagnostic port")
         parsed = urlparse(url)
-        if parsed.scheme != 'ws' or parsed.hostname != '127.0.0.1' or parsed.port != 9333:
+        if parsed.scheme != 'ws' or parsed.hostname != '127.0.0.1' or parsed.port != port:
             raise ValueError('CDP endpoint must be the local diagnostic port')
-        self.socket = socket.create_connection(('127.0.0.1', 9333), timeout=35)
+        self.socket = socket.create_connection(('127.0.0.1', port), timeout=35)
         self.buffer = b''
         self.sequence = 0
         key = base64.b64encode(os.urandom(16)).decode()
-        request = (f'GET {parsed.path} HTTP/1.1\r\nHost: 127.0.0.1:9333\r\n'
+        request = (f'GET {parsed.path} HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\n'
                    f'Upgrade: websocket\r\nConnection: Upgrade\r\n'
                    f'Sec-WebSocket-Key: {key}\r\nSec-WebSocket-Version: 13\r\n\r\n')
         self.socket.sendall(request.encode())

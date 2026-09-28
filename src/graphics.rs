@@ -226,11 +226,44 @@ pub fn display_backend() -> &'static str {
 }
 
 pub fn cef_vulkan() -> bool {
-    std::env::var("KARERE_CEF_GRAPHICS").as_deref() == Ok("vulkan")
+    cef_backend() == "vulkan"
+}
+
+fn cef_backend() -> &'static str {
+    selected_cef_backend(
+        display_backend(),
+        std::env::var("KARERE_CEF_GRAPHICS").ok().as_deref(),
+    )
+}
+
+fn selected_cef_backend(display: &str, requested: Option<&str>) -> &'static str {
+    match requested {
+        Some("gl") => "gl",
+        Some("vulkan") => "vulkan",
+        Some("software") => "software",
+        // The repaired CEF produces accelerated frames with ANGLE Vulkan on
+        // X11. On the tested NVIDIA driver, GL/EGL crashes during startup and
+        // native GL produces no accelerated frames. Keep this choice local to
+        // CEF; GTK's working renderer and native Wayland preference survive.
+        _ if display == "x11" => "vulkan",
+        _ => "gl",
+    }
+}
+
+fn angle_backend(backend: &str, display: &str) -> &'static str {
+    if backend == "vulkan" {
+        "vulkan"
+    } else if display == "x11" {
+        // Native GL is a working CPU-transfer recovery on X11. Forcing the
+        // EGL path here instead crashes the tested NVIDIA GPU process.
+        "gl"
+    } else {
+        "gl-egl"
+    }
 }
 
 pub fn configure_cef(cmd: &mut CommandLine) {
-    if std::env::var("KARERE_CEF_GRAPHICS").as_deref() == Ok("software") {
+    if cef_backend() == "software" {
         cmd.append_switch(Some(&"disable-gpu".into()));
         log::warn!("graphics: CEF software recovery selected");
         return;
@@ -240,7 +273,7 @@ pub fn configure_cef(cmd: &mut CommandLine) {
         return;
     }
     cmd.append_switch_with_value(Some(&"use-gl".into()), Some(&"angle".into()));
-    let angle = if cef_vulkan() { "vulkan" } else { "gl-egl" };
+    let angle = angle_backend(cef_backend(), display_backend());
     cmd.append_switch_with_value(Some(&"use-angle".into()), Some(&angle.into()));
     log::info!("graphics: requesting CEF ANGLE {angle}; actual delivery must be verified");
 }
@@ -274,4 +307,24 @@ fn next_cef_backend() -> &'static str {
     // An explicitly selected Vulkan trial can fall back to GL. The supervisor
     // skips any backend already attempted in this launch, preventing loops.
     if cef_vulkan() { "gl" } else { "vulkan" }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{angle_backend, selected_cef_backend};
+
+    #[test]
+    fn cef_default_follows_the_working_display_and_keeps_overrides() {
+        assert_eq!(selected_cef_backend("wayland", None), "gl");
+        assert_eq!(selected_cef_backend("x11", None), "vulkan");
+        for display in ["wayland", "x11"] {
+            for requested in ["gl", "vulkan", "software"] {
+                assert_eq!(selected_cef_backend(display, Some(requested)), requested);
+            }
+        }
+        assert_eq!(angle_backend("gl", "wayland"), "gl-egl");
+        assert_eq!(angle_backend("gl", "x11"), "gl");
+        assert_eq!(angle_backend("vulkan", "wayland"), "vulkan");
+        assert_eq!(angle_backend("vulkan", "x11"), "vulkan");
+    }
 }

@@ -127,6 +127,16 @@ class CorrelationTests(unittest.TestCase):
         self.assertEqual(result['verdict'], 'lower ceiling measured')
         self.assertFalse(result['accelerated_sample_accepted'])
 
+    def test_wheel_input_invalidates_only_programmatic_samples(self):
+        """Unplanned input must not pass as the fixed scrolling workload."""
+        rows, page = sample()
+        page.update(input_mode='programmatic', wheels=[[1, 0, 120, 0, True]])
+        interrupted = summarize(rows, page)
+        self.assertFalse(interrupted['sample_valid'])
+        self.assertFalse(interrupted['accelerated_sample_accepted'])
+        page['input_mode'] = 'wheel'
+        self.assertTrue(summarize(rows, page)['accelerated_sample_accepted'])
+
     def test_unstable_samples_remain_unverified(self):
         """History loading, interruption and hiding cannot satisfy acceptance."""
         rows = [draw(1), request(10), event('wl_surface#47.commit()'),
