@@ -24,7 +24,11 @@ transfer. No graphics backend overrides were supplied; the isolated schema
 requests the same true value as the installed default. Fresh-default and explicit
 opt-out semantics have separate regression coverage. All 53 #193 browser checks
 pass on this bundle. [Installed samples and hashes](measurements/native_installed_generated_433.json).
-Full real-conversation acceptance remains incomplete. The older tables in
+All eighteen real chat-list/text/media samples also pass; the installed recovery
+successor passes six further normal-path generated repeats. Matched generated
+stock/#193 controls remain near 60 page updates/s. Public engine release/pins,
+matched real-conversation controls and wider hardware coverage remain pending.
+The older tables in
 [ADAPTIVE_REFRESH_FINDINGS.md](ADAPTIVE_REFRESH_FINDINGS.md) retain their original
 build and default-off policy; they are not measurements of the new default.
 
@@ -295,3 +299,35 @@ software OpenH264, including `AcceleratedVideoEncoder` trials; no NVIDIA CEF
 hardware-encoding claim or default is introduced. The 720p resource comparison
 is provisional because a separate linked Devel window was open. Other codecs
 and real capture/calls remain unverified.
+
+## Final recovery and baseline controls
+
+The [recovery successor](measurements/native_final_generated_433.json), source
+`5e26584`, passes six default-path repeats at 237.400–237.733 fresh presentations/s,
+with p95 at most 4.224 ms. Its normal Wayland rendering path is unchanged from
+the complete 24-sample bundle. Matched generated idle is 0.33% visible and 0.30%
+hidden, versus stock/#193's 0.37% and 0.27% (100% represents one CPU core).
+
+The [twelve stock/#193 controls](measurements/native_controls_433.json) retain
+their original binaries and CEF. Page/CEF rates remain near 60/s; their missing
+content serials leave fresh presentation unverified. This fixture has no masked
+wallpaper, so it does not measure #193's conversation-specific optimization.
+
+[Automatic recovery](measurements/native_recovery_433.json) passes X11 Vulkan,
+X11 native-GL/CPU after missing Vulkan and absent frames, Wayland acceleration
+without Vulkan, and `KARERE_GPU_OSR=0`. The missing-frame retry occurs after ten
+seconds without changing the saved preference. Normal `flatpak run` activation
+restores the same browser after twelve seconds hidden. Missing Wayland produces
+the documented one-launch X11 command without installing persistent overrides.
+The measured CPU recovery is 175.4 fresh presentations/s; it has no 235 FPS gate.
+
+The public manifests still require the repaired CEF release artifact and new
+pins before merge. The local Devel bundle contains that repair. Hardware CEF
+encoding on NVIDIA, physical device loss, other GPUs/codecs, physical 60/120 Hz
+modes and matched current real-conversation baseline controls are not claimed
+validated. Historical records keep their original artifact/display provenance.
+
+The repaired engine also passes actual [WebGL2 output and WebGPU compute](measurements/native_graphics_433.json)
+on the non-fallback NVIDIA adapter. Normal Devel launch and original window
+geometry were restored; temporary CDP listeners were closed and the display
+remained 4K/240 Hz, 145%, adaptive sync Never. Stable account data was untouched.
