@@ -1072,6 +1072,7 @@ mod imp {
                         let mut s = shared.lock();
                         s.frame_serial += 1;
                         if !popup {
+                            s.view_frame_serial += 1;
                             s.frame.width = info.extra.coded_size.width;
                             s.frame.height = info.extra.coded_size.height;
                         }
@@ -1895,7 +1896,7 @@ mod imp {
             let Some(shared) = self.shared.lock().clone() else {
                 return;
             };
-            let initial_serial = shared.lock().frame_serial;
+            let initial_serial = shared.lock().view_frame_serial;
             let watch = self.obj().downgrade();
             *self.first_frame_watch.borrow_mut() = Some(glib::timeout_add_local_once(
                 std::time::Duration::from_secs(10),
@@ -1907,7 +1908,8 @@ mod imp {
                     imp.first_frame_watch.borrow_mut().take();
                     let failed = imp.shared.lock().as_ref().is_some_and(|s| {
                         let s = s.lock();
-                        s.frame_serial == initial_serial && s.foreground_browser_id == browser_id
+                        s.view_frame_serial == initial_serial
+                            && s.foreground_browser_id == browser_id
                     });
                     if failed && imp.window_visible.load(Ordering::Relaxed) {
                         if imp.shared_texture_enabled_for_browser() {

@@ -61,6 +61,8 @@ pub struct SharedState {
     pub popup_rect: (i32, i32, i32, i32),
     pub snapshot_present: bool,
     pub frame_serial: u64,
+    /// Main-view delivery only: a popup must not satisfy the startup watchdog.
+    pub view_frame_serial: u64,
     /// Logical (DIP) viewport size — CEF's GetViewRect and GetScreenInfo rect.
     /// With non-empty screen rects Chromium honours device_scale_factor, so the
     /// physical paint buffer = this × `scale_factor` = the GLArea framebuffer

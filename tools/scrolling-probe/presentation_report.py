@@ -10,6 +10,7 @@ import math
 from pathlib import Path
 import re
 import statistics
+import time
 
 
 def percentile(values, fraction):
@@ -71,7 +72,36 @@ def feedback(rows):
             data = [int(part.strip()) for part in event[3].split(',')]
             item.update(ns=((data[0] << 32) + data[1]) * 10**9 + data[2], refresh_ns=data[3], flags=data[6])
             presented.append(item)
-    return presented, discarded, serial_logs
+    # The protocol permits multiple feedback requests for one submission. They
+    # are one presentation, even when the compositor sends several callbacks.
+    unique = {}
+    for item in presented:
+        key = item['surface'], item['ns']
+        if key in unique:
+            previous = unique[key]
+            if previous['snapshot'] != item['snapshot']:
+                previous['snapshot'] = None
+            previous['flags'] &= item['flags']
+        else:
+            unique[key] = item
+    return list(unique.values()), discarded, serial_logs
+
+
+def presentation_clock(rows, start, end):
+    """Use #193's captured clock pairs, never the time of later analysis."""
+    clocks = {
+        int(match[1]) for row in rows
+        if row.get('kind') == 'wayland'
+        and re.match(r'^\[\d\d:\d\d:\d\d\.', row.get('message', ''))
+        and (match := re.search(r'wp_presentation#\d+\.clock_id\((\d+)\)', row['message']))
+    }
+    pairs = [r['wall'] - r['monotonic'] for r in rows
+             if 'monotonic' in r and start - 1 <= r['wall'] <= end + 1]
+    if clocks != {time.CLOCK_MONOTONIC} or not pairs:
+        return None, 'missing captured monotonic clock alignment'
+    if max(pairs) - min(pairs) > .005:
+        return None, 'capture clock changed by more than 5 ms'
+    return statistics.median(pairs), None
 
 
 def report(capture, page=None, single_view=False):
@@ -82,6 +112,8 @@ def report(capture, page=None, single_view=False):
         page = next(row for row in rows if row['kind'] in ('synthetic_result', 'chat_list_result'))
     start, end = page['start_epoch_ms'] / 1000, page['end_epoch_ms'] / 1000
     seconds = end - start
+    if not math.isfinite(seconds) or seconds <= 0:
+        raise ValueError('sample must have a finite, positive duration')
     active = [r for r in rows if start <= r['wall'] < end]
     samples = [r for r in active if r['kind'] == 'sample']
     render = [r.get('message', '') for r in active if r['kind'] == 'render']
@@ -90,7 +122,12 @@ def report(capture, page=None, single_view=False):
     paint = [m for m in render if 'on_paint delivered=' in m]
     accelerated = [m for m in render if 'on_accelerated_paint delivered=' in m]
     frames, discards, serials = feedback(rows)
-    selected = [f for f in frames if start <= f['wall'] < end]
+    offset, clock_error = presentation_clock(rows, start, end)
+    def in_sample(frame):
+        """Arrival times are only a labelled fallback for legacy captures."""
+        stamp = frame['ns'] / 1e9 + offset if offset is not None else frame['wall']
+        return start <= stamp < end
+    selected = [f for f in frames if in_sample(f)]
     by_surface = {}
     for frame in selected:
         by_surface.setdefault(frame['surface'], []).append(frame)
@@ -101,7 +138,7 @@ def report(capture, page=None, single_view=False):
         if frame['surface'] != surface or snapshot is None or snapshot[0] <= 0 or snapshot[0] in seen:
             continue
         seen.add(snapshot[0])
-        if start <= frame['wall'] < end:
+        if in_sample(frame):
             fresh.append(frame)
     intervals = page.get('frame_intervals_ms', {})
     result = {
@@ -122,14 +159,34 @@ def report(capture, page=None, single_view=False):
         'window_presentation': dict(surface=surface, **cadence(window, seconds)),
         'discarded_feedbacks': sum(f['surface'] == surface and start <= f['wall'] < end for f in discards),
         'fresh_content_presentation': cadence(fresh, seconds) if single_view and serials and window else None,
-        'note': 'Compositor timestamps determine intervals; host receipt time selects boundaries. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.',
+        'presentation_clock': {'epoch_minus_monotonic': offset, 'error': clock_error},
+        'transfer_observed': 'mixed' if paint and accelerated else 'accelerated' if accelerated else 'cpu' if paint else 'unobserved',
+        'note': 'Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.',
     }
     fresh_stats = result['fresh_content_presentation']
-    result['sample_valid'] = (page.get('status', 'complete') == 'complete'
-                              and page.get('scroll_height_changes', 0) == 0
-                              and page.get('visibility', 'visible') == 'visible')
-    result['verdict'] = 'presentation unverified' if not fresh_stats or not result['sample_valid'] else (
-        '240 FPS verified' if fresh_stats['rate'] >= 235 and fresh_stats['p95_ms'] <= 8.33 else 'lower ceiling measured')
+    invalid = []
+    if page.get('status', 'complete') != 'complete':
+        invalid.append('page sample incomplete')
+    if page.get('scroll_height_changes', 0):
+        invalid.append('history or layout changed')
+    if page.get('visibility', 'visible') != 'visible':
+        invalid.append('page not visible')
+    if seconds < 14.999:
+        invalid.append('less than 15 seconds measured')
+    result['sample_invalid_reasons'] = invalid
+    result['sample_valid'] = not invalid
+    reliable = (fresh_stats and not clock_error and fresh
+                and all(f['flags'] & 7 == 7 for f in window)
+                and all(f['snapshot'] is not None for f in window))
+    target_met = (reliable and fresh_stats['rate'] >= 235
+                  and fresh_stats['median_ms'] is not None
+                  and abs(fresh_stats['median_ms'] - 1000 / 240) <= .25
+                  and abs(fresh_stats['refresh_ms'] - 1000 / 240) <= .25
+                  and fresh_stats['p95_ms'] <= 8.33)
+    result['verdict'] = 'presentation unverified' if not reliable or invalid else (
+        '240 FPS verified' if target_met else 'lower ceiling measured')
+    result['accelerated_sample_accepted'] = (
+        result['verdict'] == '240 FPS verified' and result['transfer_observed'] == 'accelerated')
     return result
 
 

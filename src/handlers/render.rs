@@ -181,6 +181,9 @@ wrap_render_handler! {
             frame.height = height;
             frame.dirty = true;
             s.frame_serial += 1;
+            if paint_type != PaintElementType::POPUP {
+                s.view_frame_serial += 1;
+            }
             if let Some(view) = s.redraw.as_ref().and_then(|w| w.upgrade()) {
                 view.accept_cpu(paint_type == PaintElementType::POPUP);
             }
@@ -416,6 +419,29 @@ pub(crate) fn dispatch_screen_point_for_test(
 mod tests {
     use super::*;
     use crate::handlers::new_shared;
+
+    #[test]
+    fn popup_paints_do_not_satisfy_main_view_delivery() {
+        let shared = new_shared((2, 1), 1.0);
+        let handler = ShellRenderHandlerBuilder {
+            handler: ShellRenderHandler::new(shared.clone()),
+            cef_object: std::ptr::null_mut(),
+        };
+        let pixels = [0_u8, 0, 255, 255, 255, 0, 0, 255];
+        for paint_type in [PaintElementType::POPUP, PaintElementType::VIEW] {
+            ImplRenderHandler::on_paint(&handler, None, paint_type, None, pixels.as_ptr(), 2, 1);
+            let state = shared.lock();
+            if paint_type == PaintElementType::POPUP {
+                assert_eq!(state.frame_serial, 1, "popup remains fresh content");
+                assert_eq!(state.view_frame_serial, 0, "main view is still blank");
+                assert_eq!(state.frame.width, 0);
+            } else {
+                assert_eq!(state.frame_serial, 2);
+                assert_eq!(state.view_frame_serial, 1);
+                assert_eq!(state.frame.width, 2);
+            }
+        }
+    }
 
     fn rect(x: i32, y: i32, w: i32, h: i32) -> Rect {
         Rect {

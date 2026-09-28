@@ -5,6 +5,10 @@ opt-outs and `KARERE_GPU_OSR=0` remain effective. A preference or visible chat i
 not proof of accelerated delivery. The original pinned NVIDIA CEF delivered
 zero accelerated callbacks in the standalone producer fixture; the native-handle
 CEF/Chromium backport must be built and verified before claiming the fix works.
+The [isolated backend controls](measurements/original_cef_producer_433.json)
+confirm this with both hardware ANGLE GL/EGL and ANGLE Vulkan. Vulkan CPU transfer
+does produce frames. These generated checks ran during compilation and establish
+the failure/recovery behavior, not a presentation rate or performance comparison.
 
 The normal accelerated path must meet the monitor rate. At 240 Hz every active
 sample must deliver at least 235 fresh presentations/s, median near 4.17 ms and
@@ -124,5 +128,31 @@ The old deferred borrowed-DMA-BUF draw path was removed. An uncertain completion
 terminates the worker without unwinding in-flight resources; a lightweight parent
 restarts once with CPU transfer and retains attempted CEF backends. No saved
 preference changes. A five-second operation watchdog sleeps while idle.
+The visible-startup watchdog counts only main-view frames; popup-only rendering
+cannot make a blank chat view appear healthy. Popup frames still advance the
+presentation content serial when their pixels change.
 Kernel/driver hangs that prevent process teardown remain a physical validation
 limit; fault-injection tests are not proof of recovery from every driver failure.
+
+The tested GTK 4.24 renderer retains imported texture references through its GPU
+frame fence, then releases the shader operations holding those references. The
+pool therefore waits for GTK's final texture release as well as completing its
+own copy before reuse. This is distinct from merely duplicating a borrowed CEF
+descriptor. See GTK's [texture retention](https://github.com/GNOME/gtk/blob/4.24.0/gsk/gpu/gskgpuimage.c),
+[Vulkan frame cleanup](https://github.com/GNOME/gtk/blob/4.24.0/gsk/gpu/gskvulkanframe.c)
+and [GL frame cleanup](https://github.com/GNOME/gtk/blob/4.24.0/gsk/gpu/gskglframe.c).
+GTK itself still has indefinite driver waits; the application operation watchdog
+does not establish recovery from a hang wholly inside GTK's renderer. That device
+loss coverage remains outstanding.
+
+`presentation_report.py` reuses #193's captured epoch/monotonic clock pairs to
+select compositor timestamps inside each sample, instead of using delayed log
+arrival. Multiple feedback objects for one commit count as one presentation.
+Acceptance requires an unambiguous content serial, hardware completion/timing
+and vsync feedback, a stable captured monotonic clock, and at least 15 seconds.
+Missing clock evidence in legacy captures leaves their rates diagnostic and their
+acceptance unverified; saved historical reports are not rewritten. The separate
+`accelerated_sample_accepted` field also requires accelerated callbacks without
+CPU callbacks during the sample. A fast CPU recovery does not verify the normal
+GPU path. A complete matrix still requires all three repeats and every requested
+workload/window geometry; a single passing sample does not complete that matrix.

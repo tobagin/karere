@@ -264,7 +264,10 @@ def main():
     print(json.dumps({"capture": str(output), "launcher_pid": child.pid, "settings": settings}), flush=True)
     with output.open("x", buffering=1) as stream:
         def emit(kind, **values):
-            stream.write(json.dumps({"t": time.monotonic() - start, "wall": time.time(), "kind": kind, "phase": phase, **values}) + "\n")
+            """Record a capture-time clock pair for later cross-clock alignment."""
+            now = time.monotonic()
+            stream.write(json.dumps({"t": now - start, "wall": time.time(), "monotonic": now,
+                                     "kind": kind, "phase": phase, **values}) + "\n")
         def finish_measurement(success):
             nonlocal metrics_received, idle_start, idle_end
             metrics_received = True
