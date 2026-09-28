@@ -1,0 +1,467 @@
+{
+  "base_commit": "fb0179f94c5bdb25aafca79b7661fec8f169bcaa",
+  "source_change": "data/js/80-conversation-wallpaper.js",
+  "application_version": "4.3.3",
+  "runtime": "Installed v4.3.2 Flatpak; GNOME Platform 51; CEF 152.0.6",
+  "binary_sha256": "c167ed65496eb85bfb1bfe3200502447b6e5dc39253b9cc1f925bd38c582b474",
+  "method": "compiled stylesheet disabled / enabled / enabled / disabled; 5 s warmup then 20 s active; no Rust stage instrumentation",
+  "runs": [
+    {
+      "sample": "production_cpu_layer_1",
+      "seconds": 20.0,
+      "geometry": {
+        "x": 670.296875,
+        "y": 64,
+        "width": 1350.703125,
+        "height": 1045,
+        "client_width": 1346,
+        "client_height": 1045,
+        "scroll_height": 8303,
+        "viewport_width": 2021,
+        "viewport_height": 1173,
+        "dpr": 2
+      },
+      "scroll_height_changes": 0,
+      "page_callbacks_s": 60.0,
+      "page_intervals_ms": {
+        "n": 1200,
+        "p50": 16.66500000000815,
+        "p95": 16.670000000012806,
+        "p99": 16.670000000012806,
+        "max": 16.670000000012806
+      },
+      "draw_callbacks_s": 56.1,
+      "cpu_by_role": {
+        "main": 84.9,
+        "renderer": 37.9,
+        "gpu-process": 51.3
+      },
+      "total_cpu": 174.1,
+      "pump_gap_ms": {
+        "n": 2310,
+        "p50": 8.931,
+        "p95": 15.026,
+        "p99": 19.348,
+        "max": 29.848
+      },
+      "page_long_tasks": 0,
+      "presentation_feedback_available": false
+    },
+    {
+      "sample": "production_cpu_layer_2",
+      "seconds": 20.0,
+      "geometry": {
+        "x": 670.296875,
+        "y": 64,
+        "width": 1350.703125,
+        "height": 1045,
+        "client_width": 1346,
+        "client_height": 1045,
+        "scroll_height": 8303,
+        "viewport_width": 2021,
+        "viewport_height": 1173,
+        "dpr": 2
+      },
+      "scroll_height_changes": 0,
+      "page_callbacks_s": 60.0,
+      "page_intervals_ms": {
+        "n": 1200,
+        "p50": 16.66500000000815,
+        "p95": 16.670000000012806,
+        "p99": 16.670000000012806,
+        "max": 16.670000000012806
+      },
+      "draw_callbacks_s": 55.9,
+      "cpu_by_role": {
+        "main": 84.5,
+        "renderer": 37.7,
+        "gpu-process": 51.0
+      },
+      "total_cpu": 173.3,
+      "pump_gap_ms": {
+        "n": 2366,
+        "p50": 8.571,
+        "p95": 14.976,
+        "p99": 19.783,
+        "max": 26.876
+      },
+      "page_long_tasks": 0,
+      "presentation_feedback_available": false
+    },
+    {
+      "sample": "production_cpu_original_1",
+      "seconds": 20.0,
+      "geometry": {
+        "x": 670.296875,
+        "y": 64,
+        "width": 1350.703125,
+        "height": 1045,
+        "client_width": 1346,
+        "client_height": 1045,
+        "scroll_height": 8303,
+        "viewport_width": 2021,
+        "viewport_height": 1173,
+        "dpr": 2
+      },
+      "scroll_height_changes": 0,
+      "page_callbacks_s": 24.75,
+      "page_intervals_ms": {
+        "n": 495,
+        "p50": 33.33499999999185,
+        "p95": 50,
+        "p99": 66.66000000000349,
+        "max": 66.6700000000128
+      },
+      "draw_callbacks_s": 24.65,
+      "cpu_by_role": {
+        "main": 40.8,
+        "renderer": 31.3,
+        "gpu-process": 125.4
+      },
+      "total_cpu": 197.6,
+      "pump_gap_ms": {
+        "n": 1340,
+        "p50": 14.809,
+        "p95": 28.382,
+        "p99": 32.784,
+        "max": 42.599
+      },
+      "page_long_tasks": 0,
+      "presentation_feedback_available": false
+    },
+    {
+      "sample": "production_cpu_original_2",
+      "seconds": 20.0,
+      "geometry": {
+        "x": 670.296875,
+        "y": 64,
+        "width": 1350.703125,
+        "height": 1045,
+        "client_width": 1346,
+        "client_height": 1045,
+        "scroll_height": 8303,
+        "viewport_width": 2021,
+        "viewport_height": 1173,
+        "dpr": 2
+      },
+      "scroll_height_changes": 0,
+      "page_callbacks_s": 25.15,
+      "page_intervals_ms": {
+        "n": 503,
+        "p50": 33.33499999999185,
+        "p95": 50,
+        "p99": 50.00500000000466,
+        "max": 66.6699999999837
+      },
+      "draw_callbacks_s": 25.15,
+      "cpu_by_role": {
+        "main": 38.5,
+        "renderer": 28.1,
+        "gpu-process": 126.7
+      },
+      "total_cpu": 193.4,
+      "pump_gap_ms": {
+        "n": 1316,
+        "p50": 14.546,
+        "p95": 27.809,
+        "p99": 30.303,
+        "max": 41.784
+      },
+      "page_long_tasks": 0,
+      "presentation_feedback_available": false
+    },
+    {
+      "sample": "production_gpu_layer_1",
+      "seconds": 20.0,
+      "geometry": {
+        "x": 670.296875,
+        "y": 64,
+        "width": 1350.703125,
+        "height": 1045,
+        "client_width": 1346,
+        "client_height": 1045,
+        "scroll_height": 8303,
+        "viewport_width": 2021,
+        "viewport_height": 1173,
+        "dpr": 2
+      },
+      "scroll_height_changes": 0,
+      "page_callbacks_s": 60.0,
+      "page_intervals_ms": {
+        "n": 1200,
+        "p50": 16.66500000000815,
+        "p95": 16.669999999998254,
+        "p99": 16.670000000012806,
+        "max": 16.670000000012806
+      },
+      "draw_callbacks_s": 59.9,
+      "cpu_by_role": {
+        "main": 20.7,
+        "renderer": 58.9,
+        "gpu-process": 31.5
+      },
+      "total_cpu": 111.2,
+      "pump_gap_ms": {
+        "n": 6602,
+        "p50": 1.191,
+        "p95": 8.735,
+        "p99": 9.484,
+        "max": 12.724
+      },
+      "page_long_tasks": 0,
+      "presentation_feedback_available": false
+    },
+    {
+      "sample": "production_gpu_layer_2",
+      "seconds": 20.0,
+      "geometry": {
+        "x": 670.296875,
+        "y": 64,
+        "width": 1350.703125,
+        "height": 1045,
+        "client_width": 1346,
+        "client_height": 1045,
+        "scroll_height": 8303,
+        "viewport_width": 2021,
+        "viewport_height": 1173,
+        "dpr": 2
+      },
+      "scroll_height_changes": 0,
+      "page_callbacks_s": 60.0,
+      "page_intervals_ms": {
+        "n": 1200,
+        "p50": 16.66500000000815,
+        "p95": 16.669999999998254,
+        "p99": 16.670000000012806,
+        "max": 16.670000000012806
+      },
+      "draw_callbacks_s": 59.85,
+      "cpu_by_role": {
+        "main": 21.7,
+        "renderer": 55.5,
+        "gpu-process": 31.6
+      },
+      "total_cpu": 108.8,
+      "pump_gap_ms": {
+        "n": 6515,
+        "p50": 1.102,
+        "p95": 8.895,
+        "p99": 9.979,
+        "max": 18.112
+      },
+      "page_long_tasks": 0,
+      "presentation_feedback_available": false
+    },
+    {
+      "sample": "production_gpu_original_1",
+      "seconds": 20.0,
+      "geometry": {
+        "x": 670.296875,
+        "y": 64,
+        "width": 1350.703125,
+        "height": 1045,
+        "client_width": 1346,
+        "client_height": 1045,
+        "scroll_height": 8303,
+        "viewport_width": 2021,
+        "viewport_height": 1173,
+        "dpr": 2
+      },
+      "scroll_height_changes": 0,
+      "page_callbacks_s": 26.1,
+      "page_intervals_ms": {
+        "n": 522,
+        "p50": 33.33499999999913,
+        "p95": 50,
+        "p99": 50,
+        "max": 50.00500000000466
+      },
+      "draw_callbacks_s": 26.0,
+      "cpu_by_role": {
+        "main": 8.4,
+        "renderer": 41.4,
+        "gpu-process": 108.3
+      },
+      "total_cpu": 158.3,
+      "pump_gap_ms": {
+        "n": 2902,
+        "p50": 1.053,
+        "p95": 34.368,
+        "p99": 40.188,
+        "max": 51.189
+      },
+      "page_long_tasks": 0,
+      "presentation_feedback_available": false
+    },
+    {
+      "sample": "production_gpu_original_2",
+      "seconds": 20.0,
+      "geometry": {
+        "x": 670.296875,
+        "y": 64,
+        "width": 1350.703125,
+        "height": 1045,
+        "client_width": 1346,
+        "client_height": 1045,
+        "scroll_height": 8303,
+        "viewport_width": 2021,
+        "viewport_height": 1173,
+        "dpr": 2
+      },
+      "scroll_height_changes": 0,
+      "page_callbacks_s": 25.8,
+      "page_intervals_ms": {
+        "n": 516,
+        "p50": 33.33499999999185,
+        "p95": 50,
+        "p99": 50.00500000000466,
+        "max": 66.66500000000815
+      },
+      "draw_callbacks_s": 25.65,
+      "cpu_by_role": {
+        "main": 8.2,
+        "renderer": 38.0,
+        "gpu-process": 108.3
+      },
+      "total_cpu": 154.6,
+      "pump_gap_ms": {
+        "n": 2882,
+        "p50": 1.029,
+        "p95": 35.021,
+        "p99": 40.068,
+        "max": 53.582
+      },
+      "page_long_tasks": 0,
+      "presentation_feedback_available": false
+    }
+  ],
+  "real_page_startup": {
+    "style_installed": true,
+    "sheet_rules": 1,
+    "background_will_change": "transform",
+    "empty": true,
+    "direct_child": true,
+    "geometry": {
+      "x": 670.296875,
+      "y": 0,
+      "w": 1350.703125,
+      "h": 1173,
+      "mask_is_svg": true,
+      "mask_repeat": "repeat",
+      "mask_size": "412.5px 749.25px",
+      "pointer_events": "auto"
+    },
+    "matching_elements": 1
+  },
+  "gpu": {
+    "devices": [
+      {
+        "vendorId": 4098,
+        "deviceId": 5761,
+        "vendorString": "",
+        "deviceString": "",
+        "driverVendor": "Mesa",
+        "driverVersion": "26.2.2"
+      },
+      {
+        "vendorId": 4318,
+        "deviceId": 9632,
+        "vendorString": "",
+        "deviceString": "",
+        "driverVendor": "",
+        "driverVersion": ""
+      }
+    ],
+    "attributes": {
+      "glRenderer": "ANGLE (AMD, AMD Radeon Graphics (radeonsi rembrandt ACO), OpenGL ES 3.2 Mesa 26.2.2)",
+      "glVendor": "Google Inc. (AMD)",
+      "displayType": "ANGLE_OPENGL",
+      "skiaBackendType": "GaneshGL"
+    },
+    "featureStatus": {
+      "2d_canvas": "enabled",
+      "direct_rendering_display_compositor": "disabled_off_ok",
+      "gpu_compositing": "enabled",
+      "multiple_raster_threads": "enabled_on",
+      "opengl": "enabled_on",
+      "rasterization": "enabled",
+      "raw_draw": "disabled_off_ok",
+      "skia_graphite": "disabled_off",
+      "trees_in_viz": "disabled_off",
+      "video_decode": "enabled",
+      "video_encode": "disabled_software",
+      "vulkan": "disabled_off",
+      "webgl": "enabled",
+      "webgpu": "enabled",
+      "webgpu_on_vk_via_gl_interop": "disabled_off",
+      "webnn": "disabled_off"
+    }
+  },
+  "fixture_mode": "Production script evaluated directly on isolated generated data: page; automatic bundle startup verified on real page",
+  "fixture_checks": [
+    {
+      "name": "installed once",
+      "passed": true
+    },
+    {
+      "name": "generated decorative wallpaper is promoted",
+      "passed": true
+    },
+    {
+      "name": "scroll container is untouched",
+      "passed": true
+    },
+    {
+      "name": "message content is untouched",
+      "passed": true
+    },
+    {
+      "name": "replacement chat receives the hint automatically",
+      "passed": true
+    },
+    {
+      "name": "nonempty direct child is untouched",
+      "passed": true
+    },
+    {
+      "name": "nested masked media is untouched",
+      "passed": true
+    },
+    {
+      "name": "hint preserves background geometry",
+      "passed": true
+    },
+    {
+      "name": "hint preserves the original mask",
+      "passed": true
+    },
+    {
+      "name": "background color changes retain the hint",
+      "passed": true
+    },
+    {
+      "name": "unmasked custom background is not promoted",
+      "passed": true
+    },
+    {
+      "name": "removed mask is not promoted",
+      "passed": true
+    },
+    {
+      "name": "narrow layout keeps the mask and correct width",
+      "passed": true
+    },
+    {
+      "name": "replacement background receives the hint automatically",
+      "passed": true
+    },
+    {
+      "name": "mask outside the conversation is untouched",
+      "passed": true
+    },
+    {
+      "name": "reinjection remains idempotent",
+      "passed": true
+    }
+  ]
+}
