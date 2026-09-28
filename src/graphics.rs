@@ -2,9 +2,119 @@
 use cef::{CommandLine, ImplCommandLine};
 use gtk::prelude::*;
 use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
+use std::{cell::RefCell, rc::Rc};
 
 static DISPLAY: AtomicU8 = AtomicU8::new(0);
 static RESTART: AtomicBool = AtomicBool::new(false);
+
+/// Bound GTK's own synchronous GPU waits as well as our frame-copy operations.
+/// Before/after-paint bracket actual drawing; settled or hidden windows have no
+/// armed deadline. Never use a timeout since the last frame: silence is valid.
+pub struct FrameWatch {
+    clock: gtk::gdk::FrameClock,
+    signals: Vec<glib::SignalHandlerId>,
+    active: Rc<RefCell<Option<crate::gpu_recovery::Deadline>>>,
+}
+
+impl FrameWatch {
+    pub fn for_widget(widget: &impl IsA<gtk::Widget>) -> Option<Self> {
+        let renderer = widget.native()?.renderer()?;
+        let name = renderer.type_().name();
+        let gl = name.contains("GLRenderer");
+        if !gl && !name.contains("VulkanRenderer") {
+            return None;
+        }
+        let clock = widget.frame_clock()?;
+        let active = Rc::new(RefCell::new(None));
+        let pending = active.clone();
+        let before = clock.connect_before_paint(move |_| {
+            let mut pending = pending.borrow_mut();
+            if pending.is_none() {
+                *pending = Some(crate::gpu_recovery::Deadline::gtk(gl));
+            }
+        });
+        let pending = active.clone();
+        let after = clock.connect_after_paint(move |_| {
+            pending.borrow_mut().take();
+        });
+        log::info!("graphics: GTK frame watchdog enabled for {name}");
+        Some(Self {
+            clock,
+            signals: vec![before, after],
+            active,
+        })
+    }
+}
+
+impl Drop for FrameWatch {
+    fn drop(&mut self) {
+        // Disconnect before releasing state, including an interrupted frame.
+        for signal in self.signals.drain(..) {
+            self.clock.disconnect(signal);
+        }
+        self.active.borrow_mut().take();
+    }
+}
+
+#[cfg(test)]
+pub fn verify_frame_watch_lifecycle() {
+    use std::{
+        cell::Cell,
+        time::{Duration, Instant},
+    };
+
+    let window = gtk::Window::builder()
+        .default_width(64)
+        .default_height(64)
+        .build();
+    window.present();
+    let Some(watch) = FrameWatch::for_widget(&window) else {
+        window.destroy();
+        eprintln!("SKIP GTK frame watchdog fixture: no hardware renderer");
+        return;
+    };
+    let active = watch.active.clone();
+    let in_paint = active.clone();
+    let paints = Rc::new(Cell::new(0));
+    let seen = paints.clone();
+    let clock = watch.clock.clone();
+    let observed = clock.connect_paint(move |_| {
+        assert!(
+            in_paint.borrow().is_some(),
+            "GPU paint must have a deadline"
+        );
+        seen.set(seen.get() + 1);
+    });
+    let tick = window.add_tick_callback(|window, _| {
+        window.queue_draw();
+        glib::ControlFlow::Continue
+    });
+    let deadline = Instant::now() + Duration::from_millis(150);
+    while Instant::now() < deadline {
+        glib::MainContext::default().iteration(false);
+        std::thread::sleep(Duration::from_millis(1));
+    }
+    tick.remove();
+    assert!(paints.get() > 0, "fixture must exercise real GTK painting");
+    assert!(
+        active.borrow().is_none(),
+        "completed frames disarm the watchdog"
+    );
+    clock.disconnect(observed);
+    drop(watch);
+    window.queue_draw();
+    let deadline = Instant::now() + Duration::from_millis(150);
+    while Instant::now() < deadline {
+        glib::MainContext::default().iteration(false);
+        std::thread::sleep(Duration::from_millis(1));
+    }
+    assert!(
+        active.borrow().is_none(),
+        "disposed watches disconnect their signals"
+    );
+    window.destroy();
+    eprintln!("PASS GTK frame deadline, completion and signal cleanup fixture");
+}
 
 pub fn startup_environment() {
     // Called before GTK/CEF create threads. Explicit recovery overrides win.

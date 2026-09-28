@@ -12,6 +12,8 @@ use std::{
 const GPU_FAILURE: i32 = 86;
 const CEF_GL: i32 = 87;
 const CEF_VULKAN: i32 = 88;
+const GTK_GL: i32 = 89;
+const GTK_VULKAN: i32 = 90;
 const WORKER: &str = "_KARERE_RENDER_WORKER";
 pub const FENCE_TIMEOUT_NS: u64 = 1_000_000_000;
 
@@ -38,12 +40,16 @@ fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
     let mut recovered = false;
     let initial = std::env::var("KARERE_CEF_GRAPHICS").unwrap_or_else(|_| "gl".into());
     let mut backends = vec![initial];
+    let mut gtk_backends = Vec::new();
     loop {
         let mut child = command.process_group(0).spawn()?;
         let group = child.id() as i32;
         let status = child.wait()?;
         let code = status.code().unwrap_or(128 + status.signal().unwrap_or(1));
-        if code != GPU_FAILURE && code != CEF_GL && code != CEF_VULKAN {
+        if !matches!(
+            code,
+            GPU_FAILURE | CEF_GL | CEF_VULKAN | GTK_GL | GTK_VULKAN
+        ) {
             return Ok(code);
         }
         // Kill only this worker's process group, never another application.
@@ -61,6 +67,24 @@ fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
             if result == 0 {
                 std::thread::sleep(Duration::from_millis(10));
             }
+        }
+        if code == GTK_GL || code == GTK_VULKAN {
+            let failed = if code == GTK_GL { "gl" } else { "vulkan" };
+            if gtk_backends.contains(&failed) {
+                // An override which GTK cannot honor must not restart forever.
+                return Ok(code);
+            }
+            gtk_backends.push(failed);
+            let alternative = if failed == "gl" { "vulkan" } else { "gl" };
+            let next = if gtk_backends.contains(&alternative) {
+                "cairo"
+            } else {
+                alternative
+            };
+            eprintln!("karere: GTK {failed} frame stalled; retrying GTK {next}");
+            command.env("GSK_RENDERER", next);
+            // CEF's working graphics backend and transfer preference survive.
+            continue;
         }
         if code == CEF_GL || code == CEF_VULKAN {
             let requested = if code == CEF_GL { "gl" } else { "vulkan" };
@@ -104,7 +128,7 @@ pub fn completion_unknown(reason: &str) -> ! {
 #[derive(Default)]
 struct Deadlines {
     next: u64,
-    active: BTreeMap<u64, Instant>,
+    active: BTreeMap<u64, (Instant, i32)>,
 }
 type Watch = Arc<(Mutex<Deadlines>, Condvar)>;
 static WATCH: OnceLock<Watch> = OnceLock::new();
@@ -117,6 +141,14 @@ pub struct Deadline {
 }
 impl Deadline {
     pub fn arm() -> Self {
+        Self::with_failure(GPU_FAILURE)
+    }
+
+    pub fn gtk(gl: bool) -> Self {
+        Self::with_failure(if gl { GTK_GL } else { GTK_VULKAN })
+    }
+
+    fn with_failure(failure: i32) -> Self {
         let watch = WATCH
             .get_or_init(|| {
                 let watch = Arc::new((Mutex::new(Deadlines::default()), Condvar::new()));
@@ -127,14 +159,16 @@ impl Deadline {
                         let (lock, changed) = &*thread_watch;
                         let mut state = lock.lock().unwrap();
                         loop {
-                            if let Some(deadline) = state.active.values().min().copied() {
+                            if let Some((deadline, failure)) =
+                                state.active.values().min_by_key(|(at, _)| at).copied()
+                            {
                                 let left = deadline.saturating_duration_since(Instant::now());
                                 if left.is_zero() {
                                     // Even stderr can block (for example a full
                                     // logging pipe). This last-resort deadline
                                     // must not acquire a lock or perform I/O.
                                     // The parent records the recovery reason.
-                                    unsafe { libc::_exit(GPU_FAILURE) }
+                                    unsafe { libc::_exit(failure) }
                                 }
                                 state = changed.wait_timeout(state, left).unwrap().0;
                             } else {
@@ -152,7 +186,7 @@ impl Deadline {
             let id = state.next;
             state
                 .active
-                .insert(id, Instant::now() + Duration::from_secs(5));
+                .insert(id, (Instant::now() + Duration::from_secs(5), failure));
             watch.1.notify_one();
             id
         };
@@ -204,6 +238,49 @@ mod tests {
             "-c", "case \"$KARERE_CEF_GRAPHICS\" in vulkan) exit 87;; software) exit 0;; *) exit 88;; esac",
         ]).env_remove("KARERE_CEF_GRAPHICS")).unwrap();
         assert_eq!(code, 0);
+    }
+
+    #[test]
+    fn gtk_fallback_preserves_cef_acceleration_and_terminates() {
+        let code = run_supervised(Command::new("sh").args([
+            "-c",
+            "test \"$KARERE_GPU_OSR\" = 1 && test \"$KARERE_CEF_GRAPHICS\" = gl || exit 9; case \"$GSK_RENDERER\" in gl) exit 89;; vulkan) exit 90;; cairo) exit 0;; *) exit 9;; esac",
+        ]).env("GSK_RENDERER", "vulkan").env("KARERE_GPU_OSR", "1").env("KARERE_CEF_GRAPHICS", "gl")).unwrap();
+        assert_eq!(code, 0);
+        let code = run_supervised(Command::new("sh").args(["-c", "exit 89"])).unwrap();
+        assert_eq!(code, GTK_GL, "a renderer ignoring the override cannot loop");
+    }
+
+    #[test]
+    fn gtk_deadline_retries_only_the_failed_layer() {
+        let start = Instant::now();
+        let code = run_supervised(
+            Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--ignored",
+                    "--exact",
+                    "gpu_recovery::tests::stalled_gtk_worker",
+                ])
+                .env("GSK_RENDERER", "vulkan")
+                .env("KARERE_GPU_OSR", "1")
+                .env("KARERE_CEF_GRAPHICS", "gl"),
+        )
+        .unwrap();
+        assert_eq!(code, 0);
+        assert!(start.elapsed() < Duration::from_secs(9));
+    }
+
+    #[test]
+    #[ignore = "subprocess fixture for the GTK frame watchdog"]
+    fn stalled_gtk_worker() {
+        assert_eq!(std::env::var("KARERE_GPU_OSR").as_deref(), Ok("1"));
+        assert_eq!(std::env::var("KARERE_CEF_GRAPHICS").as_deref(), Ok("gl"));
+        if std::env::var("GSK_RENDERER").as_deref() == Ok("gl") {
+            return;
+        }
+        let _deadline = Deadline::gtk(false);
+        std::thread::sleep(Duration::from_secs(10));
+        panic!("GTK watchdog did not terminate the stalled worker");
     }
 
     #[test]

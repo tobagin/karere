@@ -183,9 +183,16 @@ own copy before reuse. This is distinct from merely duplicating a borrowed CEF
 descriptor. See GTK's [texture retention](https://github.com/GNOME/gtk/blob/4.24.0/gsk/gpu/gskgpuimage.c),
 [Vulkan frame cleanup](https://github.com/GNOME/gtk/blob/4.24.0/gsk/gpu/gskvulkanframe.c)
 and [GL frame cleanup](https://github.com/GNOME/gtk/blob/4.24.0/gsk/gpu/gskglframe.c).
-GTK itself still has indefinite driver waits; the application operation watchdog
-does not establish recovery from a hang wholly inside GTK's renderer. That device
-loss coverage remains outstanding.
+GTK itself still has indefinite driver waits. A separate five-second deadline
+now brackets its actual before/after-paint phases, so a synchronous stall during
+drawing terminates the worker without unwinding GPU resources. The supervisor
+tries the other hardware GTK renderer once, then Cairo, preserving CEF's working
+backend and accelerated-transfer preference. A renderer which ignores the
+recovery override cannot create a restart loop. No deadline runs between frames;
+unrealizing a view disconnects its clock handlers. Tests cover bounded restart,
+layer isolation and real GL/Vulkan frame-phase cleanup. Physical device loss,
+hangs during initial GTK display/renderer creation, and a kernel refusing process
+teardown remain unverified; these fixtures do not simulate a failing driver.
 
 The hardware fixture also circulates generated GPU textures through a visible
 GTK window for two seconds per transfer path. Both GL and Vulkan copies passed

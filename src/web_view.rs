@@ -601,6 +601,7 @@ mod imp {
         pub gpu_frame: std::cell::Cell<bool>,
         pub popup_gpu_frame: std::cell::Cell<bool>,
         pub refresh_watch: RefCell<Option<crate::refresh_rate::Watch>>,
+        pub gtk_frame_watch: RefCell<Option<crate::graphics::FrameWatch>>,
         pub first_frame_watch: RefCell<Option<glib::SourceId>>,
         pub target_fps: std::cell::Cell<i32>,
         /// Set for the embedded DevTools view; selects the permissive client.
@@ -780,6 +781,7 @@ mod imp {
 
         fn dispose(&self) {
             self.refresh_watch.borrow_mut().take();
+            self.gtk_frame_watch.borrow_mut().take();
             if let Some(watch) = self.first_frame_watch.borrow_mut().take() {
                 watch.remove();
             }
@@ -856,6 +858,7 @@ mod imp {
                 .map(|r| r.type_().name())
                 .unwrap_or("unavailable");
             log::info!("graphics: GTK presenter renderer={name}");
+            *self.gtk_frame_watch.borrow_mut() = crate::graphics::FrameWatch::for_widget(&*widget);
             #[cfg(test)]
             let force_gl = self.force_gl.get();
             #[cfg(not(test))]
@@ -876,6 +879,7 @@ mod imp {
 
         fn unrealize(&self) {
             self.refresh_watch.borrow_mut().take();
+            self.gtk_frame_watch.borrow_mut().take();
             self.close_browser();
             self.presenter
                 .replace(crate::presenter::Presenter::default());
@@ -3936,6 +3940,7 @@ mod tests {
         crate::presenter::verify_cpu_texture_ownership();
         crate::presenter::verify_fractional_tiles();
         crate::vulkan_frame::verify_hardware_ownership(&gtk::gdk::Display::default().unwrap());
+        crate::graphics::verify_frame_watch_lifecycle();
 
         for view in [KarereWebView::new(), KarereWebView::new_devtools()] {
             assert!(!view.is_realized());
