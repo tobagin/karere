@@ -176,8 +176,9 @@
 
     var dt = new DataTransfer();
 
-    // Middle-click text paste: no File, just a text/plain entry.
-    if (kind === "paste" && detail.mime === "text/plain") {
+    // Middle-click text paste: no File, just a text/plain entry. A named
+    // payload is a pasted text *file*, which attaches like any other file.
+    if (kind === "paste" && detail.mime === "text/plain" && !detail.name) {
       var text = "";
       try {
         text = new TextDecoder().decode(base64ToBytes(detail.payload.data));

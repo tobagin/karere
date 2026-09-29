@@ -632,6 +632,9 @@ mod imp {
         /// no follow-up), which kills dead-key composition; the key handler uses
         /// this to re-focus the IM on the next physical keypress. (#154)
         pub im_focused: std::cell::Cell<bool>,
+        /// Set while the attach file chooser is up, so a drop of several
+        /// unreadable files opens it once rather than once per file. (#192)
+        pub attach_chooser_open: std::cell::Cell<bool>,
         /// Ticks left before a pending focus-out is actually applied, or 0 when
         /// none is queued. A composer re-render emits editable-focus false then
         /// true; applying the false immediately unfocused the IM mid-typing and
@@ -2546,26 +2549,49 @@ mod imp {
         // Drag-drop ----------------------------------------------------------
         // M17: accept file drops; surface each as a synthetic `drop` on the element
         // under the cursor (paste_bridge.js targets it via the envelope's coords).
-        let drop_target = gtk::DropTarget::new(gdk::FileList::static_type(), gdk::DragAction::COPY);
+        // Async target: the drop is read by hand so a portal transfer can be
+        // resolved here rather than by GTK's own conversion. (#192)
+        let drop_formats = gdk::ContentFormatsBuilder::new()
+            .add_mime_type(PORTAL_FILE_TRANSFER)
+            // Matched against the offer as mime types, so the plain-path form
+            // has to be named: the file list GType alone accepts nothing.
+            .add_mime_type("text/uri-list")
+            .add_type(gdk::FileList::static_type())
+            .build();
+        let drop_target = gtk::DropTargetAsync::new(Some(drop_formats), gdk::DragAction::COPY);
+        // Decide on the offered types alone. The default check also wants the
+        // drop's current action to be one of ours, but on entry that is whatever
+        // the compositor picked for the source (Hyprland + Nautilus: MOVE), so a
+        // COPY-only target refused every drag before it could ask for COPY.
+        drop_target.connect_accept(|_t, drop| {
+            let formats = drop.formats();
+            log::debug!(
+                "drag accept? actions={:?} offered {formats}",
+                drop.actions()
+            );
+            formats.contain_mime_type(PORTAL_FILE_TRANSFER)
+                || formats.contain_mime_type("text/uri-list")
+        });
         // Forward hover (enter/motion/leave) so the page's dropzone overlay mounts
         // DURING the hover — CEF only delivers the drop on release, too late to mount.
-        drop_target.connect_enter(glib::clone!(
+        drop_target.connect_drag_enter(glib::clone!(
             #[weak]
             widget,
             #[upgrade_or]
             gdk::DragAction::COPY,
-            move |_t, x, y| {
+            move |_t, drop, x, y| {
+                log::debug!("drag enter: offered {}", drop.formats());
                 send_drag_hover(&widget, "enter", x, y);
                 gdk::DragAction::COPY
             }
         ));
         let last_motion = std::cell::Cell::new(std::time::Instant::now());
-        drop_target.connect_motion(glib::clone!(
+        drop_target.connect_drag_motion(glib::clone!(
             #[weak]
             widget,
             #[upgrade_or]
             gdk::DragAction::COPY,
-            move |_t, x, y| {
+            move |_t, _drop, x, y| {
                 // Throttle to ~10/s: keeps the dropzone alive without flooding IPC.
                 let now = std::time::Instant::now();
                 if now.duration_since(last_motion.get()) >= std::time::Duration::from_millis(100) {
@@ -2575,26 +2601,67 @@ mod imp {
                 gdk::DragAction::COPY
             }
         ));
-        drop_target.connect_leave(glib::clone!(
+        drop_target.connect_drag_leave(glib::clone!(
             #[weak]
             widget,
-            move |_t| send_drag_hover(&widget, "leave", 0.0, 0.0)
+            move |_t, _drop| send_drag_hover(&widget, "leave", 0.0, 0.0)
         ));
         drop_target.connect_drop(glib::clone!(
             #[weak]
             widget,
             #[upgrade_or]
             false,
-            move |_target, value, x, y| {
-                match value.get::<gdk::FileList>() {
-                    Ok(list) => {
-                        for file in list.files() {
-                            load_and_send_file(&widget, file, "drop", Some((x, y)));
-                        }
-                        true
-                    }
-                    Err(_) => false,
+            move |_target, drop, x, y| {
+                let coords = Some((x, y));
+                if drop.formats().contain_mime_type(PORTAL_FILE_TRANSFER) {
+                    drop.read_async(
+                        &[PORTAL_FILE_TRANSFER],
+                        glib::Priority::DEFAULT,
+                        gtk::gio::Cancellable::NONE,
+                        glib::clone!(
+                            #[weak]
+                            widget,
+                            #[strong]
+                            drop,
+                            move |res| {
+                                match res {
+                                    Ok((stream, _mime)) => {
+                                        send_portal_files(&widget, stream, "drop", coords)
+                                    }
+                                    Err(err) => log::warn!("drop transfer read failed: {err}"),
+                                }
+                                drop.finish(gdk::DragAction::COPY);
+                            }
+                        ),
+                    );
+                } else {
+                    drop.read_value_async(
+                        gdk::FileList::static_type(),
+                        glib::Priority::DEFAULT,
+                        gtk::gio::Cancellable::NONE,
+                        glib::clone!(
+                            #[weak]
+                            widget,
+                            #[strong]
+                            drop,
+                            move |res| {
+                                match res.map(|value| value.get::<gdk::FileList>()) {
+                                    Ok(Ok(list)) => {
+                                        for file in list.files() {
+                                            load_and_send_file(&widget, file, "drop", coords, true);
+                                        }
+                                    }
+                                    Ok(Err(err)) => {
+                                        log::warn!("drop file list decode failed: {err}")
+                                    }
+                                    Err(err) => log::warn!("drop file read failed: {err}"),
+                                }
+                                drop.finish(gdk::DragAction::COPY);
+                            }
+                        ),
+                    );
                 }
+                true
             }
         ));
         widget.add_controller(drop_target);
@@ -3510,6 +3577,22 @@ mod imp {
     }
 
     fn read_clipboard_files(widget: &super::KarereWebView, clipboard: &gtk::gdk::Clipboard) {
+        if clipboard.formats().contain_mime_type(PORTAL_FILE_TRANSFER) {
+            clipboard.read_async(
+                &[PORTAL_FILE_TRANSFER],
+                glib::Priority::DEFAULT,
+                gtk::gio::Cancellable::NONE,
+                glib::clone!(
+                    #[weak]
+                    widget,
+                    move |res| match res {
+                        Ok((stream, _mime)) => send_portal_files(&widget, stream, "paste", None),
+                        Err(err) => log::warn!("clipboard transfer read failed: {err}"),
+                    }
+                ),
+            );
+            return;
+        }
         clipboard.read_value_async(
             gtk::gdk::FileList::static_type(),
             glib::Priority::DEFAULT,
@@ -3521,7 +3604,7 @@ mod imp {
                     Ok(value) => match value.get::<gtk::gdk::FileList>() {
                         Ok(list) => {
                             for file in list.files() {
-                                load_and_send_file(&widget, file, "paste", None);
+                                load_and_send_file(&widget, file, "paste", None, true);
                             }
                         }
                         Err(err) => log::warn!("clipboard file list decode failed: {err}"),
@@ -3532,12 +3615,75 @@ mod imp {
         );
     }
 
+    /// Offered by a source that registered its files with the document portal.
+    /// The payload is a key; the portal trades it for paths the sandbox can read.
+    const PORTAL_FILE_TRANSFER: &str = "application/vnd.portal.filetransfer";
+
+    /// Resolve a portal file transfer and dispatch each file as a paste/drop.
+    /// This is what lets a drop attach without any filesystem permission. (#192)
+    fn send_portal_files(
+        widget: &super::KarereWebView,
+        stream: gtk::gio::InputStream,
+        kind: &'static str,
+        coords: Option<(f64, f64)>,
+    ) {
+        let widget = widget.downgrade();
+        glib::spawn_future_local(async move {
+            let files = match retrieve_portal_files(stream).await {
+                Ok(files) => files,
+                Err(err) => return log::warn!("portal file transfer failed: {err}"),
+            };
+            let Some(widget) = widget.upgrade() else {
+                return;
+            };
+            for path in files {
+                load_and_send_file(&widget, gtk::gio::File::for_path(path), kind, coords, true);
+            }
+        });
+    }
+
+    async fn retrieve_portal_files(
+        stream: gtk::gio::InputStream,
+    ) -> Result<Vec<String>, glib::Error> {
+        let out = gtk::gio::MemoryOutputStream::new_resizable();
+        out.splice_future(
+            &stream,
+            gtk::gio::OutputStreamSpliceFlags::CLOSE_SOURCE
+                | gtk::gio::OutputStreamSpliceFlags::CLOSE_TARGET,
+            glib::Priority::DEFAULT,
+        )
+        .await?;
+        let key = String::from_utf8_lossy(&out.steal_as_bytes())
+            .trim_matches(|c: char| c == '\0' || c.is_whitespace())
+            .to_owned();
+
+        let bus = gtk::gio::bus_get_future(gtk::gio::BusType::Session).await?;
+        let options = glib::VariantDict::new(None).end();
+        let reply = bus
+            .call_future(
+                Some("org.freedesktop.portal.Documents"),
+                "/org/freedesktop/portal/documents",
+                "org.freedesktop.portal.FileTransfer",
+                "RetrieveFiles",
+                Some(&glib::Variant::tuple_from_iter([key.to_variant(), options])),
+                Some(glib::VariantTy::new("(as)").expect("valid variant type")),
+                gtk::gio::DBusCallFlags::NONE,
+                -1,
+            )
+            .await?;
+        Ok(reply
+            .get::<(Vec<String>,)>()
+            .map(|(files,)| files)
+            .unwrap_or_default())
+    }
+
     /// Load one file's contents asynchronously and dispatch it as a paste/drop.
     fn load_and_send_file(
         widget: &super::KarereWebView,
         file: gtk::gio::File,
         kind: &'static str,
         coords: Option<(f64, f64)>,
+        offer_chooser: bool,
     ) {
         let name = file.basename().map(|p| p.to_string_lossy().into_owned());
         file.load_contents_async(
@@ -3545,15 +3691,92 @@ mod imp {
             glib::clone!(
                 #[weak]
                 widget,
+                #[strong]
+                file,
                 move |res| match res {
                     Ok((bytes, _etag)) => {
                         let mime = guess_mime(name.as_deref(), &bytes);
                         send_blob_paste(&widget, mime, kind, &bytes, name, coords);
                     }
-                    Err(err) => log::warn!("read dropped/pasted file failed: {err}"),
+                    Err(err) => {
+                        log::warn!("read dropped/pasted file failed: {err}");
+                        if offer_chooser {
+                            choose_unreadable_file(&widget, &file, kind, coords);
+                        }
+                    }
                 }
             ),
         );
+    }
+
+    /// A drop, or a paste of a file copied in a file manager, hands over a plain
+    /// path with no portal involved, and the sandbox cannot read most of those.
+    /// Only the file chooser portal can grant access, so say why nothing was
+    /// attached and offer the chooser, opened in the file's folder. (#192)
+    fn choose_unreadable_file(
+        widget: &super::KarereWebView,
+        file: &gtk::gio::File,
+        kind: &'static str,
+        coords: Option<(f64, f64)>,
+    ) {
+        let Some(window) = widget.root().and_downcast::<crate::window::KarereWindow>() else {
+            return;
+        };
+        if widget.imp().attach_chooser_open.replace(true) {
+            return;
+        }
+        let toast = libadwaita::Toast::new(&gettextrs::gettext(
+            "Karere cannot read files from this folder",
+        ));
+        toast.set_button_label(Some(&gettextrs::gettext("Choose File…")));
+        toast.set_timeout(8);
+
+        let chosen = std::rc::Rc::new(std::cell::Cell::new(false));
+        toast.connect_button_clicked(glib::clone!(
+            #[weak]
+            widget,
+            #[weak]
+            window,
+            #[strong]
+            file,
+            #[strong]
+            chosen,
+            move |_| {
+                chosen.set(true);
+                let dialog = gtk::FileDialog::builder()
+                    .title(gettextrs::gettext("Select the File to Attach"))
+                    .accept_label(gettextrs::gettext("Attach"))
+                    .modal(true)
+                    .build();
+                dialog.set_initial_folder(file.parent().as_ref());
+                dialog.open_multiple(
+                    Some(&window),
+                    gtk::gio::Cancellable::NONE,
+                    glib::clone!(
+                        #[weak]
+                        widget,
+                        move |res| {
+                            widget.imp().attach_chooser_open.set(false);
+                            // An error here is the user dismissing the chooser.
+                            let Ok(files) = res else { return };
+                            for file in files.iter::<gtk::gio::File>().flatten() {
+                                load_and_send_file(&widget, file, kind, coords, false);
+                            }
+                        }
+                    ),
+                );
+            }
+        ));
+        toast.connect_dismissed(glib::clone!(
+            #[weak]
+            widget,
+            move |_| {
+                if !chosen.get() {
+                    widget.imp().attach_chooser_open.set(false);
+                }
+            }
+        ));
+        window.imp().toast_overlay.add_toast(toast);
     }
 
     /// Best-effort MIME from filename + leading bytes; defaults to octet-stream.
