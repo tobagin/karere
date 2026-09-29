@@ -83,11 +83,11 @@ impl RunningApp {
         self.wait_for_output(expected, false);
     }
 
-    fn wait_for_context_failure(&mut self) {
-        self.wait_for_output(&["GLArea realize error"], true);
+    fn wait_for_software_fallback(&mut self) {
+        self.wait_for_output(&["presenting frames in software", "browser spawned"], true);
         assert!(
-            !self.output.contains("browser spawned"),
-            "legacy desktop-GL context failure crossed the browser fence:\n{}",
+            !self.output.contains("GLArea realize error"),
+            "legacy desktop-GL context failure stopped at the GL fence:\n{}",
             self.output
         );
     }
@@ -259,11 +259,12 @@ fn present_background_app(fixture: &Path) {
 fn real_binary_starts_with_software_gles_for_visible_and_prewarmed_windows() {
     let fixture = fixture();
 
-    // Prove the fixture models the pre-fix boundary with the actual production
-    // binary/widget: its debug-only legacy desktop-GL contract fails before CEF.
+    // The fixture's debug-only legacy desktop-GL contract still gets no GL
+    // context from the production widget; that must not stop the app, which
+    // presents frames in software and carries on to spawn the browser. (#177)
     set_background(&fixture, false);
     let mut legacy = RunningApp::spawn(&fixture, true);
-    legacy.wait_for_context_failure();
+    legacy.wait_for_software_fallback();
     legacy.quit_after_expected_context_failure(&fixture);
 
     set_background(&fixture, false);
