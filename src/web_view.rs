@@ -2428,10 +2428,8 @@ mod imp {
         widget.add_controller(scroll);
 
         // Keyboard -----------------------------------------------------------
-        // Filter each key through the IM first; if it consumes the key, the
-        // `commit` is the only source of text — don't also send a raw key/keyval.
-        // Only keys the IM doesn't consume (Enter, arrows, Ctrl-combos) get a raw
-        // key event. (#154)
+        // Every press sends its raw key-down first, then goes through the IM,
+        // whose `commit` is the only source of text for a key it consumes. (#154)
         let keys = gtk::EventControllerKey::new();
         keys.connect_key_pressed(glib::clone!(
             #[weak]
@@ -2469,9 +2467,15 @@ mod imp {
                     im.focus_in();
                     imp.im_focused.set(true);
                 }
-                // IM gets first crack. A consumed key is text (a letter, or a
-                // dead-key composition still buffering) — the `commit` handler
-                // emits the CHAR, so we send nothing else and swallow the key.
+                // The key-down goes first, for text keys too. Chromium drops the
+                // CHAR that follows a key-down the page handled, and only the next
+                // key-down lifts that; a letter sent as a bare CHAR while Backspace
+                // or an arrow was still held was therefore swallowed. It carries no
+                // character, so it inserts nothing by itself. (#180)
+                send_key_raw(&widget, keyval, keycode, state, true);
+                // A consumed key is text (a letter, or a dead-key composition
+                // still buffering) — the `commit` handler emits the CHAR, which
+                // runs inside this call, so nothing else is sent.
                 let consumed = ctrl
                     .current_event()
                     .map(|e| im.filter_keypress(&e))
@@ -2479,9 +2483,6 @@ mod imp {
                 if consumed {
                     return glib::Propagation::Stop;
                 }
-                // Not text: deliver the raw key-down so the page sees Enter,
-                // arrows, Ctrl-combos, F-keys, etc.
-                send_key_raw(&widget, keyval, keycode, state, true);
                 // A declined printable key means no `commit` is coming, and a
                 // RAWKEYDOWN alone inserts nothing — the character is silently
                 // dropped. Happens when the IM is momentarily not focused: the
