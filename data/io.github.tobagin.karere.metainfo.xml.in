@@ -101,6 +101,19 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.3.4" date="2026-09-29">
+      <description>
+        <ul>
+          <li>Dragged and pasted files now attach through the file transfer portal, from any folder, without filesystem access (#192).</li>
+          <li>Fixed drags being refused as they entered the window on some desktops.</li>
+          <li>Fixed letters being dropped when a key was pressed while Backspace, Enter or an arrow key was still held (#180).</li>
+          <li>Fixed pasting a text file inserting nothing.</li>
+          <li>Smoother scrolling inside conversations on large HiDPI windows (#173).</li>
+          <li>A file that cannot be read now shows a notice offering the file chooser instead of failing silently.</li>
+          <li>Removed read-only access to Documents, Pictures, Videos, Music and Desktop.</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.3.3" date="2026-09-27">
       <description>
         <ul>
