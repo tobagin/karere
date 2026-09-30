@@ -1,0 +1,764 @@
+{
+  "scope": "Installed recovery successor; normal graphics defaults",
+  "samples": [
+    {
+      "label": "native_final_windowed_1",
+      "capture": "native_final_windowed_1.jsonl",
+      "geometry": {
+        "width": 1859,
+        "height": 944,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 240.067,
+      "page_median_ms": 4.199999999998909,
+      "page_p95_ms": 4.299999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 0.0,
+      "accelerated_callbacks_s": 240.0,
+      "gtk_snapshots_s": 237.867,
+      "cpu_percent": 68.4,
+      "cpu_by_role": {
+        "main": 33.6,
+        "renderer": 19.5,
+        "gpu-process": 15.3
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 3566,
+        "rate": 237.733,
+        "median_ms": 4.168,
+        "p95_ms": 4.223,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 31
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": {
+        "count": 3566,
+        "rate": 237.733,
+        "median_ms": 4.168,
+        "p95_ms": 4.223,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 31
+      },
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321174,
+        "error": null
+      },
+      "transfer_observed": "accelerated",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "240 FPS verified",
+      "accelerated_sample_accepted": true,
+      "configuration": [
+        "--synthetic-gpu",
+        "--windowed",
+        "--idle-seconds",
+        "30",
+        "--idle-window",
+        "visible"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL_EGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [
+        "[2026-09-28T21:41:51Z INFO  karere::graphics] graphics: GTK display=GdkWaylandDisplay CEF ozone=wayland",
+        "[2026-09-28T21:41:51Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified",
+        "[2026-09-28T21:41:52Z INFO  karere::web_view::imp] graphics: GTK presenter renderer=GskGLRenderer",
+        "[2026-09-28T21:41:52Z INFO  karere::graphics] graphics: GTK frame watchdog enabled for GskGLRenderer",
+        "[2026-09-28T21:41:52Z WARN  karere::web_view::imp] graphics: using GL presenter for CPU frames (GTK renderer=GskGLRenderer)",
+        "[2026-09-28T21:41:52Z INFO  karere::web_view::imp] render cadence: monitor mode target=240 FPS",
+        "[2026-09-28T21:41:52Z INFO  karere::presenter] graphics: using GL copy for accelerated frames; renderer=NVIDIA GeForce RTX 5090/PCIe/SSE2",
+        "[2026-09-28T21:41:52Z INFO  karere::web_view::imp] render cadence: CEF requested=240 effective=240 shared_texture=1",
+        "[2026-09-28T21:41:52Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified"
+      ],
+      "application_sha256": null,
+      "cef_library_sha256": null,
+      "cef_library_observed": [
+        {
+          "t": 1.0109281750046648,
+          "wall": 1790631712.7501602,
+          "monotonic": 36694.018042146,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "/app/lib/cef/libcef.so"
+          ],
+          "expected_path": null
+        }
+      ]
+    },
+    {
+      "label": "native_final_windowed_2",
+      "capture": "native_final_windowed_2.jsonl",
+      "geometry": {
+        "width": 1859,
+        "height": 944,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 240.067,
+      "page_median_ms": 4.199999999998909,
+      "page_p95_ms": 4.200000000000728,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 0.0,
+      "accelerated_callbacks_s": 240.0,
+      "gtk_snapshots_s": 237.533,
+      "cpu_percent": 68.6,
+      "cpu_by_role": {
+        "main": 34.1,
+        "renderer": 19.4,
+        "gpu-process": 15.1
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 3561,
+        "rate": 237.4,
+        "median_ms": 4.167,
+        "p95_ms": 4.223,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 35
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": {
+        "count": 3561,
+        "rate": 237.4,
+        "median_ms": 4.167,
+        "p95_ms": 4.223,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 35
+      },
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321174,
+        "error": null
+      },
+      "transfer_observed": "accelerated",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "240 FPS verified",
+      "accelerated_sample_accepted": true,
+      "configuration": [
+        "--synthetic-gpu",
+        "--windowed"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL_EGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [
+        "[2026-09-28T21:42:48Z INFO  karere::graphics] graphics: GTK display=GdkWaylandDisplay CEF ozone=wayland",
+        "[2026-09-28T21:42:48Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified",
+        "[2026-09-28T21:42:49Z INFO  karere::web_view::imp] graphics: GTK presenter renderer=GskGLRenderer",
+        "[2026-09-28T21:42:49Z INFO  karere::graphics] graphics: GTK frame watchdog enabled for GskGLRenderer",
+        "[2026-09-28T21:42:49Z WARN  karere::web_view::imp] graphics: using GL presenter for CPU frames (GTK renderer=GskGLRenderer)",
+        "[2026-09-28T21:42:49Z INFO  karere::web_view::imp] render cadence: monitor mode target=240 FPS",
+        "[2026-09-28T21:42:49Z INFO  karere::presenter] graphics: using GL copy for accelerated frames; renderer=NVIDIA GeForce RTX 5090/PCIe/SSE2",
+        "[2026-09-28T21:42:49Z INFO  karere::web_view::imp] render cadence: CEF requested=240 effective=240 shared_texture=1",
+        "[2026-09-28T21:42:49Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified"
+      ],
+      "application_sha256": null,
+      "cef_library_sha256": null,
+      "cef_library_observed": [
+        {
+          "t": 1.1057773579959758,
+          "wall": 1790631769.8538883,
+          "monotonic": 36751.121770494,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "/app/lib/cef/libcef.so"
+          ],
+          "expected_path": null
+        }
+      ]
+    },
+    {
+      "label": "native_final_windowed_3",
+      "capture": "native_final_windowed_3.jsonl",
+      "geometry": {
+        "width": 1859,
+        "height": 944,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 240.067,
+      "page_median_ms": 4.199999999998909,
+      "page_p95_ms": 4.200000000000728,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 0.0,
+      "accelerated_callbacks_s": 240.0,
+      "gtk_snapshots_s": 237.8,
+      "cpu_percent": 65.1,
+      "cpu_by_role": {
+        "main": 32.8,
+        "renderer": 18.0,
+        "gpu-process": 14.3
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 3565,
+        "rate": 237.667,
+        "median_ms": 4.169,
+        "p95_ms": 4.224,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 32
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": {
+        "count": 3565,
+        "rate": 237.667,
+        "median_ms": 4.169,
+        "p95_ms": 4.224,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 32
+      },
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321174,
+        "error": null
+      },
+      "transfer_observed": "accelerated",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "240 FPS verified",
+      "accelerated_sample_accepted": true,
+      "configuration": [
+        "--synthetic-gpu",
+        "--windowed"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL_EGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [
+        "[2026-09-28T21:43:10Z INFO  karere::graphics] graphics: GTK display=GdkWaylandDisplay CEF ozone=wayland",
+        "[2026-09-28T21:43:10Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified",
+        "[2026-09-28T21:43:11Z INFO  karere::web_view::imp] graphics: GTK presenter renderer=GskGLRenderer",
+        "[2026-09-28T21:43:11Z INFO  karere::graphics] graphics: GTK frame watchdog enabled for GskGLRenderer",
+        "[2026-09-28T21:43:11Z WARN  karere::web_view::imp] graphics: using GL presenter for CPU frames (GTK renderer=GskGLRenderer)",
+        "[2026-09-28T21:43:11Z INFO  karere::web_view::imp] render cadence: monitor mode target=240 FPS",
+        "[2026-09-28T21:43:11Z INFO  karere::presenter] graphics: using GL copy for accelerated frames; renderer=NVIDIA GeForce RTX 5090/PCIe/SSE2",
+        "[2026-09-28T21:43:11Z INFO  karere::web_view::imp] render cadence: CEF requested=240 effective=240 shared_texture=1",
+        "[2026-09-28T21:43:11Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified"
+      ],
+      "application_sha256": null,
+      "cef_library_sha256": null,
+      "cef_library_observed": [
+        {
+          "t": 1.0107292369939387,
+          "wall": 1790631791.7324667,
+          "monotonic": 36773.000348899,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "/app/lib/cef/libcef.so"
+          ],
+          "expected_path": null
+        }
+      ]
+    },
+    {
+      "label": "native_final_maximized_1",
+      "capture": "native_final_maximized_1.jsonl",
+      "geometry": {
+        "width": 2648,
+        "height": 1398,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 240.067,
+      "page_median_ms": 4.199999999998909,
+      "page_p95_ms": 4.299999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 0.0,
+      "accelerated_callbacks_s": 239.933,
+      "gtk_snapshots_s": 237.8,
+      "cpu_percent": 65.2,
+      "cpu_by_role": {
+        "main": 30.3,
+        "renderer": 20.0,
+        "gpu-process": 14.9
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 3565,
+        "rate": 237.667,
+        "median_ms": 4.167,
+        "p95_ms": 4.187,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 32
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": {
+        "count": 3565,
+        "rate": 237.667,
+        "median_ms": 4.167,
+        "p95_ms": 4.187,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 32
+      },
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321174,
+        "error": null
+      },
+      "transfer_observed": "accelerated",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "240 FPS verified",
+      "accelerated_sample_accepted": true,
+      "configuration": [
+        "--synthetic-gpu",
+        "--idle-seconds",
+        "30",
+        "--idle-window",
+        "background"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL_EGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [
+        "[2026-09-28T21:43:32Z INFO  karere::graphics] graphics: GTK display=GdkWaylandDisplay CEF ozone=wayland",
+        "[2026-09-28T21:43:32Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified",
+        "[2026-09-28T21:43:33Z INFO  karere::web_view::imp] graphics: GTK presenter renderer=GskGLRenderer",
+        "[2026-09-28T21:43:33Z INFO  karere::graphics] graphics: GTK frame watchdog enabled for GskGLRenderer",
+        "[2026-09-28T21:43:33Z WARN  karere::web_view::imp] graphics: using GL presenter for CPU frames (GTK renderer=GskGLRenderer)",
+        "[2026-09-28T21:43:33Z INFO  karere::web_view::imp] render cadence: monitor mode target=240 FPS",
+        "[2026-09-28T21:43:33Z INFO  karere::presenter] graphics: using GL copy for accelerated frames; renderer=NVIDIA GeForce RTX 5090/PCIe/SSE2",
+        "[2026-09-28T21:43:33Z INFO  karere::web_view::imp] render cadence: CEF requested=240 effective=240 shared_texture=1",
+        "[2026-09-28T21:43:33Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified"
+      ],
+      "application_sha256": null,
+      "cef_library_sha256": null,
+      "cef_library_observed": [
+        {
+          "t": 1.0120763449958758,
+          "wall": 1790631813.5911465,
+          "monotonic": 36794.859028349,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "/app/lib/cef/libcef.so"
+          ],
+          "expected_path": null
+        }
+      ]
+    },
+    {
+      "label": "native_final_maximized_2",
+      "capture": "native_final_maximized_2.jsonl",
+      "geometry": {
+        "width": 2648,
+        "height": 1398,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 240.0,
+      "page_median_ms": 4.199999999998909,
+      "page_p95_ms": 4.299999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 0.0,
+      "accelerated_callbacks_s": 239.933,
+      "gtk_snapshots_s": 237.6,
+      "cpu_percent": 63.7,
+      "cpu_by_role": {
+        "main": 30.2,
+        "renderer": 19.1,
+        "gpu-process": 14.4
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 3562,
+        "rate": 237.467,
+        "median_ms": 4.167,
+        "p95_ms": 4.185,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 34
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": {
+        "count": 3562,
+        "rate": 237.467,
+        "median_ms": 4.167,
+        "p95_ms": 4.185,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 34
+      },
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321174,
+        "error": null
+      },
+      "transfer_observed": "accelerated",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "240 FPS verified",
+      "accelerated_sample_accepted": true,
+      "configuration": [
+        "--synthetic-gpu"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL_EGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [
+        "[2026-09-28T21:44:29Z INFO  karere::graphics] graphics: GTK display=GdkWaylandDisplay CEF ozone=wayland",
+        "[2026-09-28T21:44:29Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified",
+        "[2026-09-28T21:44:30Z INFO  karere::web_view::imp] graphics: GTK presenter renderer=GskGLRenderer",
+        "[2026-09-28T21:44:30Z INFO  karere::graphics] graphics: GTK frame watchdog enabled for GskGLRenderer",
+        "[2026-09-28T21:44:30Z WARN  karere::web_view::imp] graphics: using GL presenter for CPU frames (GTK renderer=GskGLRenderer)",
+        "[2026-09-28T21:44:30Z INFO  karere::web_view::imp] render cadence: monitor mode target=240 FPS",
+        "[2026-09-28T21:44:30Z INFO  karere::presenter] graphics: using GL copy for accelerated frames; renderer=NVIDIA GeForce RTX 5090/PCIe/SSE2",
+        "[2026-09-28T21:44:30Z INFO  karere::web_view::imp] render cadence: CEF requested=240 effective=240 shared_texture=1",
+        "[2026-09-28T21:44:30Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified"
+      ],
+      "application_sha256": null,
+      "cef_library_sha256": null,
+      "cef_library_observed": [
+        {
+          "t": 1.0415279219960212,
+          "wall": 1790631870.6107314,
+          "monotonic": 36851.878612725,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "/app/lib/cef/libcef.so"
+          ],
+          "expected_path": null
+        }
+      ]
+    },
+    {
+      "label": "native_final_maximized_3",
+      "capture": "native_final_maximized_3.jsonl",
+      "geometry": {
+        "width": 2648,
+        "height": 1398,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 240.067,
+      "page_median_ms": 4.199999999998909,
+      "page_p95_ms": 4.200000000000728,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 0.0,
+      "accelerated_callbacks_s": 239.933,
+      "gtk_snapshots_s": 237.667,
+      "cpu_percent": 65.9,
+      "cpu_by_role": {
+        "main": 30.7,
+        "renderer": 20.1,
+        "gpu-process": 15.1
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 3563,
+        "rate": 237.533,
+        "median_ms": 4.167,
+        "p95_ms": 4.189,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 34
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": {
+        "count": 3563,
+        "rate": 237.533,
+        "median_ms": 4.167,
+        "p95_ms": 4.189,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 34
+      },
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321174,
+        "error": null
+      },
+      "transfer_observed": "accelerated",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "240 FPS verified",
+      "accelerated_sample_accepted": true,
+      "configuration": [
+        "--synthetic-gpu"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL_EGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [
+        "[2026-09-28T21:44:51Z INFO  karere::graphics] graphics: GTK display=GdkWaylandDisplay CEF ozone=wayland",
+        "[2026-09-28T21:44:51Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified",
+        "[2026-09-28T21:44:51Z INFO  karere::web_view::imp] graphics: GTK presenter renderer=GskGLRenderer",
+        "[2026-09-28T21:44:51Z INFO  karere::graphics] graphics: GTK frame watchdog enabled for GskGLRenderer",
+        "[2026-09-28T21:44:51Z WARN  karere::web_view::imp] graphics: using GL presenter for CPU frames (GTK renderer=GskGLRenderer)",
+        "[2026-09-28T21:44:52Z INFO  karere::web_view::imp] render cadence: monitor mode target=240 FPS",
+        "[2026-09-28T21:44:52Z INFO  karere::presenter] graphics: using GL copy for accelerated frames; renderer=NVIDIA GeForce RTX 5090/PCIe/SSE2",
+        "[2026-09-28T21:44:52Z INFO  karere::web_view::imp] render cadence: CEF requested=240 effective=240 shared_texture=1",
+        "[2026-09-28T21:44:52Z INFO  karere::graphics] graphics: requesting CEF ANGLE gl-egl; actual delivery must be verified"
+      ],
+      "application_sha256": null,
+      "cef_library_sha256": null,
+      "cef_library_observed": [
+        {
+          "t": 1.0105253590008942,
+          "wall": 1790631892.470231,
+          "monotonic": 36873.738112917,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "/app/lib/cef/libcef.so"
+          ],
+          "expected_path": null
+        }
+      ]
+    }
+  ],
+  "idle": [
+    {
+      "label": "native_final_windowed_1",
+      "window_state": "visible",
+      "page_visibility": "visible",
+      "duration": 30.014419317245483,
+      "cpu_percent": 0.33206654595428264,
+      "resource_samples": 30
+    },
+    {
+      "label": "native_final_maximized_1",
+      "window_state": "background",
+      "page_visibility": "hidden",
+      "duration": 30.012665271759033,
+      "cpu_percent": 0.29889796719994854,
+      "resource_samples": 30
+    }
+  ],
+  "complete": true,
+  "artifact": {
+    "bundle": "karere-native-recovery-devel.flatpak",
+    "bundle_sha256": "e79889e13e77e97b4d12529c756664b903508dc88ee08219a42c7e0719283895",
+    "binary_sha256": "769b0f1812a61b63db154606635593f041f4a402d314b8405180291dca0cb175",
+    "installed_libcef_sha256": "99ecea06ca889d5a3bc44fbea4d217b7306c6de21a3ee3551a5a3ace5db7d0f7",
+    "source_commit": "5e26584fbc5f3db4118189a5311122bdfa44cebc",
+    "integration_pr193_commit": "7cc4615cbfe1707c3a7cd4f424d8d4a7239dba3c",
+    "commit": "0f2950efb388b00a13c378ab28b5b7976b12b4b6dca245bed600c333f5dc4a4d"
+  }
+}

@@ -1,0 +1,3 @@
+# Unified-diff context lines contain a required leading space even when empty.
+# Validate these files by applying them to the pinned CEF/Chromium tree.
+tools/cef-patches/*.patch -whitespace

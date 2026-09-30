@@ -4,11 +4,11 @@ use cef::{
 };
 
 use super::{SharedRef, SharedState};
-use gtk::prelude::GLAreaExt;
 
 #[derive(Default)]
 pub struct FrameBuffer {
     pub pixels: Vec<u8>, // BGRA8
+    pub tiles: crate::cpu_frame::Frame,
     pub width: i32,
     pub height: i32,
     pub dirty: bool,
@@ -128,7 +128,7 @@ wrap_render_handler! {
         fn on_paint(
             &self,
             browser: Option<&mut Browser>,
-            _type_: PaintElementType,
+            paint_type: PaintElementType,
             dirty_rects: Option<&[Rect]>,
             buffer: *const u8,
             width: ::std::os::raw::c_int,
@@ -155,34 +155,38 @@ wrap_render_handler! {
             let mut s = self.handler.shared.lock();
             let expected = s.size;
             let scale = s.scale_factor;
-            // A resized frame invalidates every cached pixel: take the whole
-            // buffer and let draw() reallocate the texture.
-            let resized =
-                s.frame.pixels.len() != len || (s.frame.width, s.frame.height) != (width, height);
-            if resized {
-                s.frame.pixels.resize(len, 0);
-                s.frame.pixels.copy_from_slice(slice);
-                s.frame.damage = None;
+            let snapshot = s.snapshot_present || paint_type == PaintElementType::POPUP;
+            let frame = if paint_type == PaintElementType::POPUP { &mut s.popup } else { &mut s.frame };
+            let resized = (frame.width, frame.height) != (width, height);
+            let damage = union_dirty(dirty_rects, width, height);
+            if snapshot {
+                // Copy changed tiles while CEF's buffer is valid. Unchanged tiles
+                // keep their texture identity and need no new GPU upload.
+                frame.tiles.update(slice, width, height, scale, damage);
+                frame.damage = if resized { None } else if frame.dirty {
+                    damage.and_then(|r| merge_damage(frame.damage, r))
+                } else { damage };
+            } else if resized || frame.pixels.len() != len {
+                frame.pixels.resize(len, 0);
+                frame.pixels.copy_from_slice(slice);
+                frame.damage = None;
+            } else if let Some(r) = damage {
+                copy_region(&mut frame.pixels, slice, width, r);
+                frame.damage = if frame.dirty { merge_damage(frame.damage, r) } else { Some(r) };
             } else {
-                match union_dirty(dirty_rects, width, height) {
-                    Some(r) => {
-                        copy_region(&mut s.frame.pixels, slice, width, r);
-                        // `dirty` still set = the draw hasn't consumed the last
-                        // damage yet, so keep accumulating into it.
-                        s.frame.damage =
-                            if s.frame.dirty { merge_damage(s.frame.damage, r) } else { Some(r) };
-                    }
-                    // CEF didn't describe the damage (or it covers everything):
-                    // fall back to the full copy this path always did.
-                    None => {
-                        s.frame.pixels.copy_from_slice(slice);
-                        s.frame.damage = None;
-                    }
-                }
+                frame.pixels.copy_from_slice(slice);
+                frame.damage = None;
             }
-            s.frame.width = width;
-            s.frame.height = height;
-            s.frame.dirty = true;
+            frame.width = width;
+            frame.height = height;
+            frame.dirty = true;
+            s.frame_serial += 1;
+            if paint_type != PaintElementType::POPUP {
+                s.view_frame_serial += 1;
+            }
+            if let Some(view) = s.redraw.as_ref().and_then(|w| w.upgrade()) {
+                view.accept_cpu(paint_type == PaintElementType::POPUP);
+            }
             log::debug!(
                 "coord: J2 on_paint delivered={}x{} expected_physical={}x{} scale={:.3}",
                 width, height, expected.0, expected.1, scale
@@ -190,70 +194,49 @@ wrap_render_handler! {
             request_redraw(s);
         }
 
-        // GPU path: when shared-texture OSR is enabled, CEF delivers a DMA-BUF
-        // handle here instead of a CPU buffer via on_paint. Dup the plane fds and
-        // stash the frame for `draw` to import via EGL. (gpu-osr)
+        fn on_popup_show(&self, browser: Option<&mut Browser>, show: i32) {
+            let mut s = self.handler.shared.lock();
+            if s.foreground_browser_id != 0 && browser.as_ref().map(|b| b.identifier()).unwrap_or(0) != s.foreground_browser_id { return; }
+            s.popup_visible = show != 0;
+            if show == 0 {
+                s.popup = FrameBuffer::default();
+                if let Some(view) = s.redraw.as_ref().and_then(|w| w.upgrade()) {
+                    view.clear_popup_texture();
+                }
+            }
+            request_redraw(s);
+        }
+
+        fn on_popup_size(&self, browser: Option<&mut Browser>, rect: Option<&Rect>) {
+            let mut s = self.handler.shared.lock();
+            if s.foreground_browser_id != 0 && browser.as_ref().map(|b| b.identifier()).unwrap_or(0) != s.foreground_browser_id { return; }
+            if let Some(rect) = rect {
+                s.popup_rect = (rect.x, rect.y, rect.width, rect.height);
+                request_redraw(s);
+            }
+        }
+
         fn on_accelerated_paint(
             &self,
             browser: Option<&mut Browser>,
-            _type_: PaintElementType,
+            paint_type: PaintElementType,
             _dirty_rects: Option<&[Rect]>,
             info: Option<&cef::AcceleratedPaintInfo>,
         ) {
-            let Some(info) = info else { return };
-            // Same foreground gating as on_paint.
-            {
-                let fg = self.handler.shared.lock().foreground_browser_id;
-                if fg != 0 {
-                    let painting = browser.as_ref().map(|b| b.identifier()).unwrap_or(0);
-                    if painting != fg {
-                        return;
-                    }
-                }
-            }
-            let (w, h) = (info.extra.coded_size.width, info.extra.coded_size.height);
-            if w <= 0 || h <= 0 {
-                return;
-            }
-            let Some(fourcc) = crate::gl_dmabuf::cef_format_to_fourcc(info.format) else {
-                log::warn!("on_accelerated_paint: unsupported color format");
-                return;
+            let Some(info) = info else { return; };
+            let redraw = {
+                let s = self.handler.shared.lock();
+                let painting = browser.as_ref().map(|b| b.identifier()).unwrap_or(0);
+                if s.foreground_browser_id != 0 && painting != s.foreground_browser_id { return; }
+                s.redraw.clone()
             };
-            // Dup each plane fd (CEF's are valid only for this call) into an OwnedFd.
-            let mut planes = Vec::with_capacity(info.plane_count as usize);
-            for p in info.planes.iter().take(info.plane_count.max(0) as usize) {
-                let owned = unsafe { std::os::fd::BorrowedFd::borrow_raw(p.fd) }.try_clone_to_owned();
-                match owned {
-                    Ok(fd) => planes.push(crate::gl_dmabuf::Plane {
-                        fd,
-                        offset: p.offset,
-                        stride: p.stride,
-                    }),
-                    Err(e) => {
-                        log::warn!("on_accelerated_paint: dup plane fd failed: {e}");
-                        return;
-                    }
-                }
+            // All transfer work finishes before this callback returns. Holding
+            // duplicate CEF descriptors until GTK's next frame is not ownership.
+            if let Some(view) = redraw.and_then(|w| w.upgrade()) {
+                view.accept_accelerated(info, paint_type == PaintElementType::POPUP);
+                log::debug!("coord: J2 on_accelerated_paint delivered={}x{}", info.extra.coded_size.width, info.extra.coded_size.height);
             }
-            if planes.is_empty() {
-                return;
-            }
-            let mut s = self.handler.shared.lock();
-            let expected = s.size;
-            let scale = s.scale_factor;
-            s.accel = Some(crate::gl_dmabuf::AccelFrame {
-                width: w,
-                height: h,
-                fourcc,
-                modifier: info.modifier,
-                planes,
-                dirty: true,
-            });
-            log::debug!(
-                "coord: J2 on_accelerated_paint delivered={}x{} expected_physical={}x{} scale={:.3} fourcc={fourcc:#x} mod={:#x}",
-                w, h, expected.0, expected.1, scale, info.modifier
-            );
-            request_redraw(s);
+            crate::cef_pump::schedule(0);
         }
 
         // Fires when a page editable gains/loses focus. Drives two things: the IM
@@ -436,6 +419,29 @@ pub(crate) fn dispatch_screen_point_for_test(
 mod tests {
     use super::*;
     use crate::handlers::new_shared;
+
+    #[test]
+    fn popup_paints_do_not_satisfy_main_view_delivery() {
+        let shared = new_shared((2, 1), 1.0);
+        let handler = ShellRenderHandlerBuilder {
+            handler: ShellRenderHandler::new(shared.clone()),
+            cef_object: std::ptr::null_mut(),
+        };
+        let pixels = [0_u8, 0, 255, 255, 255, 0, 0, 255];
+        for paint_type in [PaintElementType::POPUP, PaintElementType::VIEW] {
+            ImplRenderHandler::on_paint(&handler, None, paint_type, None, pixels.as_ptr(), 2, 1);
+            let state = shared.lock();
+            if paint_type == PaintElementType::POPUP {
+                assert_eq!(state.frame_serial, 1, "popup remains fresh content");
+                assert_eq!(state.view_frame_serial, 0, "main view is still blank");
+                assert_eq!(state.frame.width, 0);
+            } else {
+                assert_eq!(state.frame_serial, 2);
+                assert_eq!(state.view_frame_serial, 1);
+                assert_eq!(state.frame.width, 2);
+            }
+        }
+    }
 
     fn rect(x: i32, y: i32, w: i32, h: i32) -> Rect {
         Rect {

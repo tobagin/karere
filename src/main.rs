@@ -12,8 +12,11 @@ mod application;
 mod cdp;
 mod cef_pump;
 mod cef_runtime;
+mod cpu_frame;
 mod devtools;
 mod gl_dmabuf;
+mod gpu_recovery;
+mod graphics;
 mod handlers;
 mod i18n;
 mod ipc;
@@ -21,15 +24,22 @@ mod notifications;
 mod paste;
 mod permissions_store;
 mod preferences;
+mod presenter;
+mod refresh_rate;
 mod spellcheck;
 mod spellcheck_ui;
 mod tray;
+mod vulkan_frame;
 mod web_view;
 mod window;
 
 use application::KarereApplication;
 
 fn main() -> Result<()> {
+    if let Some(code) = gpu_recovery::supervise()? {
+        std::process::exit(code);
+    }
+    graphics::startup_environment();
     // `--debuglevel=LEVEL` sets the log level (`--debug` = debug alias; default
     // INFO; --debuglevel wins). RUST_LOG still overrides.
     env_logger::Builder::from_env(
@@ -74,6 +84,7 @@ fn main() -> Result<()> {
 
     gio::resources_register_include!("karere.gresource").expect("failed to register gresource");
 
+    graphics::initialize_display()?;
     let app = KarereApplication::new();
 
     app.connect_command_line(move |app, _cmd| {
@@ -105,6 +116,7 @@ fn main() -> Result<()> {
     if is_primary {
         cef_pump::stop();
         cef::shutdown();
+        graphics::restart_if_requested()?;
     }
     std::process::exit(code);
 }

@@ -1,0 +1,193 @@
+{
+  "engine": "152.0.6+g708dc14+chromium-152.0.7977.83 (original library)",
+  "libcef_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+  "runtime": "org.gnome.Platform/x86_64/51",
+  "compiler_active": true,
+  "presentation_verified": false,
+  "purpose": "Reproduce accelerated allocation failure independently of GTK; CPU recovery is a functional control, not performance acceptance.",
+  "runs": [
+    {
+      "angle_requested": "gl-egl",
+      "cpu_requested": false,
+      "presentation_verified": false,
+      "gpu": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL_EGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "exit_code": 0,
+      "producer_records": [
+        {
+          "kind": "producer_result",
+          "shared_texture": 1,
+          "effective_fps": 240,
+          "warmup_seconds": 5,
+          "requested_sample_seconds": 15,
+          "sample_seconds": 15.0,
+          "sample_complete": true,
+          "cpu_frames": 0,
+          "accelerated_frames": 0,
+          "sample_cpu_frames": 0,
+          "sample_accelerated_frames": 0,
+          "first_frame_ms": -1.0
+        }
+      ],
+      "listener_closed": true
+    },
+    {
+      "angle_requested": "vulkan",
+      "cpu_requested": false,
+      "presentation_verified": false,
+      "gpu": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA)",
+            "deviceString": "ANGLE (NVIDIA, Vulkan 1.4.351 (NVIDIA NVIDIA GeForce RTX 5090 (0x00002B85)), NVIDIA-615.71.9.0)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.9.0"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_VULKAN",
+          "glImplementationParts": "(gl=egl-angle,angle=vulkan)",
+          "glRenderer": "ANGLE (NVIDIA, Vulkan 1.4.351 (NVIDIA NVIDIA GeForce RTX 5090 (0x00002B85)), NVIDIA-615.71.9.0)",
+          "glVendor": "Google Inc. (NVIDIA)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "exit_code": 0,
+      "producer_records": [
+        {
+          "kind": "producer_result",
+          "shared_texture": 1,
+          "effective_fps": 240,
+          "warmup_seconds": 5,
+          "requested_sample_seconds": 15,
+          "sample_seconds": 15.0,
+          "sample_complete": true,
+          "cpu_frames": 0,
+          "accelerated_frames": 0,
+          "sample_cpu_frames": 0,
+          "sample_accelerated_frames": 0,
+          "first_frame_ms": -1.0
+        }
+      ],
+      "listener_closed": true
+    },
+    {
+      "angle_requested": "vulkan",
+      "cpu_requested": true,
+      "presentation_verified": false,
+      "gpu": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA)",
+            "deviceString": "ANGLE (NVIDIA, Vulkan 1.4.351 (NVIDIA NVIDIA GeForce RTX 5090 (0x00002B85)), NVIDIA-615.71.9.0)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.9.0"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_VULKAN",
+          "glImplementationParts": "(gl=egl-angle,angle=vulkan)",
+          "glRenderer": "ANGLE (NVIDIA, Vulkan 1.4.351 (NVIDIA NVIDIA GeForce RTX 5090 (0x00002B85)), NVIDIA-615.71.9.0)",
+          "glVendor": "Google Inc. (NVIDIA)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "exit_code": 0,
+      "producer_records": [
+        {
+          "kind": "producer_result",
+          "shared_texture": 0,
+          "effective_fps": 240,
+          "warmup_seconds": 5,
+          "requested_sample_seconds": 15,
+          "sample_seconds": 15.0,
+          "sample_complete": true,
+          "cpu_frames": 4675,
+          "accelerated_frames": 0,
+          "sample_cpu_frames": 3601,
+          "sample_accelerated_frames": 0,
+          "first_frame_ms": 531.287
+        }
+      ],
+      "listener_closed": true
+    }
+  ]
+}

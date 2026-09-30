@@ -64,6 +64,11 @@ if [[ ! -d "$DEPOT_TOOLS_DIR" ]]; then
     "$DEPOT_TOOLS_DIR"
 fi
 export PATH="$DEPOT_TOOLS_DIR:$PATH"
+# Pinned/offline-update builds still need depot_tools' Python bootstrap. In a
+# fresh container DEPOT_TOOLS_UPDATE=0 otherwise leaves gn unable to start.
+if [[ ! -f "$DEPOT_TOOLS_DIR/python3_bin_reldir.txt" ]]; then
+  "$DEPOT_TOOLS_DIR/ensure_bootstrap"
+fi
 
 # 2. automate-git.py
 AUTOMATE="$DOWNLOAD_DIR/automate-git.py"

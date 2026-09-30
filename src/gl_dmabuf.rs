@@ -2,9 +2,9 @@
 //! texture via EGL (`EGL_EXT_image_dma_buf_import`), avoiding the per-frame CPU
 //! readback + `glTexImage2D` upload of the software `on_paint` path.
 //!
-//! The CEF crate ships a Vulkan/wgpu importer; Karere renders through a GTK
-//! `GLArea` (OpenGL/epoxy), so we do the EGL→GL import ourselves. All calls run
-//! on the glib main thread with the GLArea's GL context current (from `draw`).
+//! Used only while copying into application-owned presentation textures. All
+//! calls run on the GTK main thread with the copying GL context current; no
+//! borrowed CEF allocation is queued for a later draw callback.
 
 use std::ffi::{CStr, c_void};
 use std::os::raw::{c_char, c_int, c_uint};
@@ -116,7 +116,7 @@ fn egl() -> Option<&'static Egl> {
 }
 
 /// True when EGL + the dma-buf import extension are present on the current
-/// display. Must be called with the GLArea GL context current (so EGL has a
+/// display. Must be called with the copying GL context current (so EGL has a
 /// current display). Cached after the first successful query. (gpu-osr)
 #[allow(dead_code)]
 pub fn is_supported() -> bool {
@@ -174,20 +174,9 @@ pub struct Plane {
     pub stride: u32,
 }
 
-/// One pending accelerated frame handed off from `on_accelerated_paint` (CEF UI
-/// thread) to `draw` (GL context current). Owns the dup'd plane fds. (gpu-osr)
-pub struct AccelFrame {
-    pub width: i32,
-    pub height: i32,
-    pub fourcc: u32,
-    pub modifier: u64,
-    pub planes: Vec<Plane>,
-    pub dirty: bool,
-}
-
 /// Import a DMA-BUF described by `planes`/`modifier`/`fourcc` and bind it to
 /// `texture` (a `GL_TEXTURE_2D`). Returns the EGLImage wrapper to keep alive
-/// until the next frame replaces it. Context must be current. (gpu-osr)
+/// until the owned copy completes. Context must be current. (gpu-osr)
 pub fn import_to_texture(
     texture: c_uint,
     width: i32,

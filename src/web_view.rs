@@ -3,7 +3,7 @@ use gtk::subclass::prelude::*;
 
 glib::wrapper! {
     pub struct KarereWebView(ObjectSubclass<imp::KarereWebView>)
-        @extends gtk::GLArea, gtk::Widget,
+        @extends gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
@@ -25,6 +25,33 @@ impl KarereWebView {
             .devtools
             .store(true, std::sync::atomic::Ordering::Relaxed);
         obj
+    }
+
+    pub fn queue_render(&self) {
+        use gtk::prelude::*;
+        self.queue_draw();
+        if let Some(area) = self.imp().gl_area.borrow().as_ref() {
+            area.queue_render();
+        }
+    }
+
+    pub(crate) fn accept_accelerated(&self, info: &cef::AcceleratedPaintInfo, popup: bool) {
+        self.imp().accept_accelerated(info, popup);
+    }
+
+    pub(crate) fn accept_cpu(&self, popup: bool) {
+        if popup {
+            self.imp().popup_gpu_frame.set(false);
+        } else {
+            self.imp().gpu_frame.set(false);
+        }
+    }
+
+    pub(crate) fn clear_popup_texture(&self) {
+        self.imp().popup_gpu_frame.set(false);
+        self.imp()
+            .popup_presenter
+            .replace(crate::presenter::Presenter::default());
     }
 
     pub fn load_url(&self, url: &str) {
@@ -191,7 +218,13 @@ enum CpuUpload {
 /// Keeping this decision independent from raw GL calls makes empty/resize/reuse
 /// behavior explicit while the actual upload remains in `KarereWebView::draw`.
 fn cpu_upload(frame: &crate::handlers::FrameBuffer, texture_size: (i32, i32)) -> CpuUpload {
-    if frame.width <= 0 || frame.height <= 0 || frame.pixels.is_empty() {
+    let bytes = usize::try_from(frame.width)
+        .ok()
+        .and_then(|width| usize::try_from(frame.height).ok()?.checked_mul(width))
+        .and_then(|pixels| pixels.checked_mul(4));
+    // Accelerated frames can change reported dimensions while an older CPU
+    // allocation remains. Never let recovery upload beyond that allocation.
+    if frame.width <= 0 || frame.height <= 0 || bytes != Some(frame.pixels.len()) {
         CpuUpload::Empty
     } else if texture_size != (frame.width, frame.height) {
         CpuUpload::Allocate
@@ -200,10 +233,6 @@ fn cpu_upload(frame: &crate::handlers::FrameBuffer, texture_size: (i32, i32)) ->
     } else {
         CpuUpload::Reuse
     }
-}
-
-fn discard_failed_accel<T>(pending: &mut Option<T>) {
-    pending.take();
 }
 
 /// CEF `BrowserHost` zoom level to apply for a user zoom factor at a given
@@ -566,6 +595,15 @@ mod imp {
         pub foreground: Mutex<Option<String>>,
         pub life_span: Mutex<Option<ShellLifeSpanHandler>>,
         pub pending_url: Mutex<Option<String>>,
+        pub gl_area: RefCell<Option<gtk::GLArea>>,
+        pub presenter: RefCell<crate::presenter::Presenter>,
+        pub popup_presenter: RefCell<crate::presenter::Presenter>,
+        pub gpu_frame: std::cell::Cell<bool>,
+        pub popup_gpu_frame: std::cell::Cell<bool>,
+        pub refresh_watch: RefCell<Option<crate::refresh_rate::Watch>>,
+        pub gtk_frame_watch: RefCell<Option<crate::graphics::FrameWatch>>,
+        pub first_frame_watch: RefCell<Option<glib::SourceId>>,
+        pub target_fps: std::cell::Cell<i32>,
         /// Set for the embedded DevTools view; selects the permissive client.
         pub devtools: AtomicBool,
         /// One-way runtime kill switch for this widget's accelerated OSR browsers.
@@ -580,6 +618,10 @@ mod imp {
         pub fallback_test_events: RefCell<Vec<(&'static str, Option<bool>)>>,
         #[cfg(test)]
         pub suppress_browser_creation: AtomicBool,
+        #[cfg(test)]
+        pub force_gl: std::cell::Cell<bool>,
+        #[cfg(test)]
+        pub reject_gl_context: std::cell::Cell<bool>,
         /// Last chrome-window visibility (recorded; sound gating no longer uses it).
         #[allow(dead_code)]
         pub window_visible: AtomicBool,
@@ -595,8 +637,6 @@ mod imp {
         tex_h: AtomicI32,
         /// GPU-OSR: dedicated texture the imported DMA-BUF EGLImage binds to, and
         /// the live EGLImage kept alive while that texture is sampled. (gpu-osr)
-        accel_tex: AtomicU32,
-        imported: RefCell<Option<crate::gl_dmabuf::ImportedImage>>,
         /// Last pointer position (logical px) so wheel events hit the element
         /// under the cursor, not the top-left corner.
         last_mouse_x: AtomicI32,
@@ -644,32 +684,15 @@ mod imp {
     impl ObjectSubclass for KarereWebView {
         const NAME: &'static str = "KarereWebView";
         type Type = super::KarereWebView;
-        type ParentType = gtk::GLArea;
+        type ParentType = gtk::Widget;
     }
 
     impl ObjectImpl for KarereWebView {
         fn constructed(&self) {
             self.parent_constructed();
             let widget = self.obj();
-            // The production shaders are GLSL ES 3.00. Negotiate that exact API
-            // before realization instead of letting GtkGLArea prefer desktop GL;
-            // GLES-only Mesa stacks (including PinePhone) otherwise fail context
-            // creation before either the CPU or DMA-BUF OSR path can present.
-            #[cfg(debug_assertions)]
-            let allowed_api = if std::env::var_os("KARERE_TEST_FORCE_DESKTOP_GL").is_some() {
-                // Integration-test-only reproduction of the pre-fix contract. The
-                // Mesa fixture rejects desktop GL while retaining GLES 3.x.
-                gtk::gdk::GLAPI::GL
-            } else {
-                gtk::gdk::GLAPI::GLES
-            };
-            #[cfg(not(debug_assertions))]
-            let allowed_api = gtk::gdk::GLAPI::GLES;
-            widget.set_allowed_apis(allowed_api);
-            widget.set_required_version(3, 0);
-            widget.set_has_depth_buffer(false);
-            widget.set_has_stencil_buffer(false);
-            widget.set_auto_render(false);
+            // The preferred presenter has no GL context or GLArea dependency.
+            self.software_present.store(true, Ordering::Relaxed);
 
             let scale = widget.scale_factor() as f32;
             // Default viewport so prewarm browsers (created before sizing) lay out
@@ -680,7 +703,8 @@ mod imp {
             // injected the mobile layout (#176).
             let shared = new_shared(((1280.0 * scale) as i32, (800.0 * scale) as i32), scale);
             *self.shared.lock() = Some(shared.clone());
-            shared.lock().redraw = Some(widget.upcast_ref::<gtk::GLArea>().downgrade().into());
+            shared.lock().redraw = Some(widget.downgrade().into());
+            shared.lock().snapshot_present = true;
 
             // Paints queue their own render (`request_redraw` in the render
             // handler); this 60 Hz WALL-CLOCK timer is the backstop for a dirty
@@ -701,7 +725,7 @@ mod imp {
                 };
                 let (cursor_name, keyboard_request) = {
                     let mut s = shared.lock();
-                    if s.frame.dirty || s.accel.as_ref().is_some_and(|a| a.dirty) {
+                    if s.frame.dirty {
                         w.queue_render();
                     }
                     let cursor = if s.cursor_dirty {
@@ -754,106 +778,125 @@ mod imp {
             });
             SIGNALS.as_ref()
         }
+
+        fn dispose(&self) {
+            self.refresh_watch.borrow_mut().take();
+            self.gtk_frame_watch.borrow_mut().take();
+            if let Some(watch) = self.first_frame_watch.borrow_mut().take() {
+                watch.remove();
+            }
+            if let Some(popover) = self.context_popover.borrow_mut().take() {
+                popover.unparent();
+            }
+            if let Some(area) = self.gl_area.borrow_mut().take() {
+                area.unparent();
+            }
+        }
     }
 
     impl WidgetImpl for KarereWebView {
-        /// Present the CEF frame without GL when `realize` could not get a
-        /// context (#177). GTK has already fallen back to its software renderer
-        /// in that situation, so handing it a memory texture is all that is
-        /// left to do; on every normal machine this defers to `GtkGLArea`,
-        /// which drives `render` -> `draw` as before.
         fn snapshot(&self, snapshot: &gtk::Snapshot) {
-            if !self.software_present.load(Ordering::Relaxed) {
-                self.parent_snapshot(snapshot);
-                return;
+            let widget = self.obj();
+            if !self.software_present.load(Ordering::Relaxed)
+                && !self.gpu_frame.get()
+                && let Some(area) = self.gl_area.borrow().as_ref()
+            {
+                widget.snapshot_child(area, snapshot);
             }
             let Some(shared) = self.shared.lock().as_ref().cloned() else {
                 return;
             };
             let mut s = shared.lock();
-            if s.frame.width <= 0 || s.frame.height <= 0 || s.frame.pixels.is_empty() {
-                return;
+            let mut presenter = self.presenter.borrow_mut();
+            if self.software_present.load(Ordering::Relaxed) && !self.gpu_frame.get() {
+                presenter.cpu(&mut s.frame);
             }
-            // CEF hands back premultiplied BGRA, which is a GdkMemoryTexture
-            // format verbatim -- no conversion, just the one copy Bytes makes.
-            let texture = gtk::gdk::MemoryTexture::new(
-                s.frame.width,
-                s.frame.height,
-                gtk::gdk::MemoryFormat::B8g8r8a8Premultiplied,
-                &glib::Bytes::from(&s.frame.pixels[..]),
-                (s.frame.width * 4) as usize,
-            );
-            s.frame.dirty = false;
-            drop(s);
-            // Frame is physical pixels, widget bounds are logical: letting the
-            // rect scale it is the same fit the GL path gets from the viewport.
-            let widget = self.obj();
-            snapshot.append_texture(
-                &texture,
+            presenter.snapshot(
+                snapshot,
                 &gtk::graphene::Rect::new(0.0, 0.0, widget.width() as f32, widget.height() as f32),
             );
+            if s.popup_visible {
+                let mut popup = self.popup_presenter.borrow_mut();
+                if !self.popup_gpu_frame.get() {
+                    popup.cpu(&mut s.popup);
+                }
+                let (x, y, w, h) = s.popup_rect;
+                let scale = paint_scale(&widget) as f32;
+                popup.snapshot(
+                    snapshot,
+                    &gtk::graphene::Rect::new(
+                        x as f32 / scale,
+                        y as f32 / scale,
+                        w as f32 / scale,
+                        h as f32 / scale,
+                    ),
+                );
+            }
+            log::debug!(
+                "coord: J4 draw frame={}x{} serial={} clock_frame={}",
+                s.frame.width,
+                s.frame.height,
+                s.frame_serial,
+                widget
+                    .frame_clock()
+                    .map(|clock| clock.frame_counter())
+                    .unwrap_or(-1)
+            );
+            drop(presenter);
+            drop(s);
+            if let Some(popover) = self.context_popover.borrow().as_ref() {
+                widget.snapshot_child(popover, snapshot);
+            }
         }
 
         fn realize(&self) {
             self.parent_realize();
             let widget = self.obj();
-            widget.make_current();
-            if let Some(err) = widget.error() {
-                // No GL context. GDK cannot produce one below GLES 3.0, which is
-                // all a Mali-400 (PinePhone, lima) offers, so this is terminal for
-                // the GL path -- but not for the app: CEF's software OSR still
-                // hands us BGRA frames, and `snapshot` can present them through
-                // GTK's own renderer. Clear GTK's error so the GLArea shows our
-                // frames rather than its built-in error label, and carry on to
-                // the browser bootstrap. (#177)
-                log::warn!("no GL context ({err}) — presenting frames in software");
-                widget.set_error(None);
-                self.software_present.store(true, Ordering::Relaxed);
-                NO_GL.store(true, Ordering::Relaxed);
-                self.bootstrap_pool();
-                return;
-            }
-            if let Some(context) = widget.context() {
-                let (major, minor) = context.version();
-                log::info!(
-                    "GLArea context ready: api={:?} version={major}.{minor}",
-                    widget.api()
-                );
+            let renderer = widget.native().and_then(|n| n.renderer());
+            let name = renderer
+                .as_ref()
+                .map(|r| r.type_().name())
+                .unwrap_or("unavailable");
+            log::info!("graphics: GTK presenter renderer={name}");
+            *self.gtk_frame_watch.borrow_mut() = crate::graphics::FrameWatch::for_widget(&*widget);
+            #[cfg(test)]
+            let force_gl = self.force_gl.get();
+            #[cfg(not(test))]
+            let force_gl = false;
+            let presenter = std::env::var("KARERE_CPU_PRESENTER").unwrap_or_default();
+            if force_gl
+                || presenter == "gl"
+                || (presenter != "snapshot" && name.contains("GLRenderer"))
+                || std::env::var_os("KARERE_TEST_FORCE_DESKTOP_GL").is_some()
+            {
+                log::warn!("graphics: using GL presenter for CPU frames (GTK renderer={name})");
+                self.setup_gl_presenter();
             } else {
-                // A successful make_current() should always expose its context.
-                // Do not continue into raw GL or CEF bootstrap if GTK does not.
-                log::error!("GLArea realize error: no context after make_current");
-                return;
+                self.bootstrap_pool();
             }
-            unsafe {
-                self.init_gl();
-            }
-            self.bootstrap_pool();
-
-            // Follow scale changes (e.g. dragging between monitors of different
-            // scale) so device_scale_factor / paint buffer track. The surface
-            // `scale` notify fires across the integer boundaries the OSR buffer
-            // cares about; a pure fractional change leaves the integer paint
-            // scale unchanged, so refresh_screen_scale is then a cheap no-op. (#155, #158)
-            if let Some(surface) = widget.native().and_then(|n| n.surface()) {
-                surface.connect_scale_notify(glib::clone!(
-                    #[weak]
-                    widget,
-                    move |_s| widget.imp().refresh_screen_scale()
-                ));
-            }
+            self.watch_refresh_rate();
         }
 
         fn unrealize(&self) {
+            self.refresh_watch.borrow_mut().take();
+            self.gtk_frame_watch.borrow_mut().take();
             self.close_browser();
-            unsafe {
-                self.teardown_gl();
-            }
+            self.presenter
+                .replace(crate::presenter::Presenter::default());
+            self.popup_presenter
+                .replace(crate::presenter::Presenter::default());
             self.parent_unrealize();
         }
 
         fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
             self.parent_size_allocate(width, height, baseline);
+            if let Some(area) = self.gl_area.borrow().as_ref() {
+                area.allocate(width, height, baseline, None);
+            }
+            if let Some(popover) = self.context_popover.borrow().as_ref() {
+                popover.present();
+            }
+            self.refresh_frame_rate();
             // This CEF build ignores device_scale_factor for OSR: on_paint always
             // matches GetViewRect exactly. So the view rect must be PHYSICAL
             // (logical × integer GLArea scale) to fill the framebuffer 1:1 and stay
@@ -924,18 +967,181 @@ mod imp {
         }
     }
 
-    impl GLAreaImpl for KarereWebView {
-        fn render(&self, _ctx: &gtk::gdk::GLContext) -> glib::Propagation {
-            unsafe {
-                self.draw();
-            }
-            glib::Propagation::Stop
-        }
-    }
-
     // ---- public-from-parent helpers ------------------------------------
 
     impl KarereWebView {
+        fn setup_gl_presenter(&self) {
+            if self.gl_area.borrow().is_some() {
+                return;
+            }
+            let widget = self.obj();
+            let area = gtk::GLArea::new();
+            #[cfg(test)]
+            if self.reject_gl_context.get() {
+                area.connect_create_context(|area| {
+                    area.set_error(Some(&glib::Error::new(
+                        gtk::gio::IOErrorEnum::Failed,
+                        "injected GL context failure",
+                    )));
+                    None
+                });
+            }
+            let api = if cfg!(debug_assertions)
+                && std::env::var_os("KARERE_TEST_FORCE_DESKTOP_GL").is_some()
+            {
+                gtk::gdk::GLAPI::GL
+            } else {
+                gtk::gdk::GLAPI::GLES
+            };
+            area.set_allowed_apis(api);
+            area.set_required_version(3, 0);
+            area.set_auto_render(false);
+            area.set_can_target(false);
+            area.connect_realize(glib::clone!(
+                #[weak]
+                widget,
+                move |area| {
+                    area.make_current();
+                    let imp = widget.imp();
+                    if let Some(error) = area.error() {
+                        log::warn!(
+                            "no GL context ({error}) — presenting frames through GTK textures"
+                        );
+                        NO_GL.store(true, Ordering::Relaxed);
+                        area.set_error(None);
+                    } else {
+                        imp.software_present.store(false, Ordering::Relaxed);
+                        if let Some(shared) = imp.shared.lock().as_ref() {
+                            shared.lock().snapshot_present = false;
+                        }
+                        if let Some(context) = area.context() {
+                            let (major, minor) = context.version();
+                            log::info!(
+                                "GLArea context ready: api={:?} version={major}.{minor}",
+                                area.api()
+                            );
+                        }
+                        unsafe {
+                            imp.init_gl();
+                        }
+                    }
+                    imp.bootstrap_pool();
+                }
+            ));
+            area.connect_render(glib::clone!(
+                #[weak]
+                widget,
+                #[upgrade_or]
+                glib::Propagation::Stop,
+                move |_, _| {
+                    unsafe {
+                        widget.imp().draw();
+                    }
+                    glib::Propagation::Stop
+                }
+            ));
+            area.connect_unrealize(glib::clone!(
+                #[weak]
+                widget,
+                move |area| {
+                    area.make_current();
+                    if area.error().is_none() {
+                        unsafe {
+                            widget.imp().teardown_gl();
+                        }
+                    }
+                }
+            ));
+            *self.gl_area.borrow_mut() = Some(area.clone());
+            area.set_parent(&*widget);
+            area.realize();
+        }
+
+        pub(super) fn accept_accelerated(&self, info: &cef::AcceleratedPaintInfo, popup: bool) {
+            let result = if popup {
+                self.popup_presenter
+                    .borrow_mut()
+                    .accelerated(&*self.obj(), info)
+            } else {
+                self.presenter.borrow_mut().accelerated(&*self.obj(), info)
+            };
+            match result {
+                Ok(true) => {
+                    if popup {
+                        self.popup_gpu_frame.set(true);
+                    } else {
+                        self.gpu_frame.set(true);
+                    }
+                    if let Some(shared) = self.shared.lock().as_ref() {
+                        let mut s = shared.lock();
+                        s.frame_serial += 1;
+                        if !popup {
+                            s.view_frame_serial += 1;
+                            s.frame.width = info.extra.coded_size.width;
+                            s.frame.height = info.extra.coded_size.height;
+                        }
+                    }
+                    self.obj().queue_render();
+                }
+                Ok(false) => {
+                    log::debug!(
+                        "graphics: all owned transfer buffers are in use; coalescing frame"
+                    );
+                    // Let GSK finish/release retained frames without advancing
+                    // the content serial. This never creates an idle timer.
+                    self.obj().queue_render();
+                }
+                Err(error) => {
+                    log::warn!("graphics: accelerated transfer failed: {error:#}");
+                    self.gpu_frame.set(false);
+                    self.popup_gpu_frame.set(false);
+                    self.schedule_software_osr_fallback();
+                }
+            }
+        }
+
+        fn watch_refresh_rate(&self) {
+            self.refresh_watch.borrow_mut().take();
+            if let Some(surface) = self.obj().native().and_then(|n| n.surface()) {
+                let weak = self.obj().downgrade();
+                let scale_weak = weak.clone();
+                *self.refresh_watch.borrow_mut() = Some(crate::refresh_rate::Watch::new(
+                    &surface,
+                    move || {
+                        if let Some(view) = weak.upgrade() {
+                            // Hotplug can replace the monitor list. Reconnect as well as
+                            // reselecting the monitor with the greatest surface overlap.
+                            view.imp().watch_refresh_rate();
+                        }
+                    },
+                    move || {
+                        if let Some(view) = scale_weak.upgrade() {
+                            view.imp().refresh_screen_scale();
+                        }
+                    },
+                ));
+            }
+            self.refresh_frame_rate();
+        }
+
+        fn refresh_frame_rate(&self) {
+            let fps = crate::refresh_rate::for_widget(&*self.obj());
+            if self.target_fps.replace(fps) == fps {
+                return;
+            }
+            log::info!("render cadence: monitor mode target={fps} FPS");
+            for browser in self.browsers.lock().values() {
+                if let Some(host) = browser.host() {
+                    host.set_windowless_frame_rate(fps);
+                }
+            }
+            if let Some(browser) = self.browser.lock().as_ref()
+                && let Some(host) = browser.host()
+            {
+                host.set_windowless_frame_rate(fps);
+            }
+        }
+
         pub fn load_url(&self, url: &str) {
             if let Some(browser) = self.browser.lock().as_ref()
                 && let Some(frame) = browser.main_frame()
@@ -958,6 +1164,9 @@ mod imp {
         }
 
         pub fn close_browser(&self) {
+            if let Some(watch) = self.first_frame_watch.borrow_mut().take() {
+                watch.remove();
+            }
             #[cfg(test)]
             if self.suppress_browser_creation.load(Ordering::Acquire) {
                 self.fallback_test_events.borrow_mut().push(("close", None));
@@ -1001,6 +1210,23 @@ mod imp {
         /// `shared_texture_enabled` is immutable after browser creation, so dropping
         /// only the failed accelerated frame cannot restore CPU `on_paint` delivery.
         fn restart_with_software_osr(&self) {
+            // Keep a generated page, custom URL or DevTools frontend on recovery.
+            // Recreating the pool must not silently replace it with WhatsApp.
+            if let Some(url) = self
+                .browser
+                .lock()
+                .as_ref()
+                .and_then(|browser| browser.main_frame())
+                .map(|frame| CefString::from(&frame.url()).to_string())
+                .filter(|url| !url.is_empty())
+            {
+                *self.pending_url.lock() = Some(url);
+            }
+            self.gpu_frame.set(false);
+            self.popup_gpu_frame.set(false);
+            self.presenter
+                .replace(crate::presenter::Presenter::default());
+            self.obj().clear_popup_texture();
             log::warn!("accelerated OSR disabled for this view; recreating browsers for CPU paint");
             let is_devtools = self.devtools.load(Ordering::Relaxed);
             // Keep account contexts that were already initializing. Their callbacks
@@ -1035,7 +1261,23 @@ mod imp {
         }
 
         pub(super) fn shared_texture_enabled_for_browser(&self) -> bool {
-            !self.software_osr_forced.load(Ordering::Acquire) && accel_osr_enabled()
+            if self.software_osr_forced.load(Ordering::Acquire)
+                || std::env::var("KARERE_CEF_GRAPHICS").as_deref() == Ok("software")
+            {
+                return false;
+            }
+            let requested = match std::env::var("KARERE_GPU_OSR").as_deref() {
+                Ok("1" | "true") => true,
+                Ok("0" | "false") => false,
+                _ => gtk::gio::Settings::new(crate::application::APP_ID).boolean("gpu-rendering"),
+            };
+            // No NVIDIA vendor veto. Each transfer backend must actually support
+            // the exported format; failure returns to CPU OSR once per view.
+            requested
+                && self
+                    .presenter
+                    .borrow_mut()
+                    .supports_acceleration(&*self.obj())
         }
 
         /// Recompute the physical paint size + scale for a live scale change
@@ -1279,7 +1521,11 @@ mod imp {
 
         /// Record window visibility (kept for callers; sound gating uses the JS hook now).
         pub fn set_window_visible(&self, visible: bool) {
+            if visible {
+                self.watch_refresh_rate();
+            }
             self.window_visible.store(visible, Ordering::Relaxed);
+            self.watch_first_frame(self.browser_id.load(Ordering::Relaxed));
             // Gate the foreground browser's compositing on real window
             // visibility. Without this CEF keeps compositing WhatsApp's
             // animations while the window is hidden (tray/minimized/
@@ -1356,13 +1602,16 @@ mod imp {
             // Default account is created label-less; backfill it (and migrate
             // older installs) to "Account 1" so it matches added accounts.
             mgr.backfill_labels();
-            let accounts = mgr.get_accounts_sorted();
+            let mut accounts = mgr.get_accounts_sorted();
             // Boot into the last-used account, not list-first (#166).
             let Some(first) = mgr.mru_first() else {
                 log::error!("spawn_all_accounts: no account after add()");
                 return;
             };
             mgr.activate(&first.id);
+            // The foreground consumes pending_url; create it before prewarming
+            // other accounts, including after a frame-transfer recovery.
+            accounts.sort_by_key(|account| account.id != first.id);
             for acc in &accounts {
                 let foreground = adopt_active && acc.id == first.id;
                 self.spawn_browser(Some(acc.id.clone()), foreground);
@@ -1486,18 +1735,14 @@ mod imp {
             let window_info = WindowInfo {
                 windowless_rendering_enabled: 1,
                 // GPU-accelerated OSR: hand us a DMA-BUF via on_accelerated_paint
-                // instead of a CPU buffer, when supported + opted in. (gpu-osr)
+                // instead of a CPU buffer, when supported and not opted out.
                 shared_texture_enabled: self.shared_texture_enabled_for_browser() as i32,
                 ..Default::default()
             };
             let settings = BrowserSettings {
-                // 60fps OSR: the old 30 cap read as scroll/typing lag next to a
-                // real browser (#173) — measured 29 vs 58fps under wheel load.
-                // Idle cost is nil (an idle chat paints ~0 frames; hidden windows
-                // are paused via was_hidden, #151), so this only spends CPU while
-                // content actually animates. Runtime set_windowless_frame_rate is
-                // a no-op in this CEF build, so the rate is fixed at creation.
-                windowless_frame_rate: 60,
+                // CEF 152's Alloy OSR supports rates above 60 and live updates.
+                // Hidden browsers remain paused by was_hidden independently.
+                windowless_frame_rate: crate::refresh_rate::for_widget(&*self.obj()),
                 ..Default::default()
             };
 
@@ -1521,6 +1766,14 @@ mod imp {
                 log::error!("browser_host_create_browser_sync returned None");
                 return;
             };
+            log::info!(
+                "render cadence: CEF requested={} effective={} shared_texture={}",
+                settings.windowless_frame_rate,
+                b.host()
+                    .map(|host| host.windowless_frame_rate())
+                    .unwrap_or(0),
+                window_info.shared_texture_enabled
+            );
             log::info!("browser spawned (account={account_id:?}, foreground={make_foreground})");
 
             if let Some(id) = account_id.clone() {
@@ -1598,13 +1851,19 @@ mod imp {
             self.browser_id.store(id, Ordering::Relaxed);
             super::register_context_menu_widget(id, &self.obj());
             if let Some(shared) = self.shared.lock().as_ref() {
-                shared.lock().foreground_browser_id = id;
+                let mut state = shared.lock();
+                state.foreground_browser_id = id;
+                state.popup_visible = false;
+                state.popup = crate::handlers::FrameBuffer::default();
             }
+            self.obj().clear_popup_texture();
             *self.foreground.lock() = account_id;
             *self.life_span.lock() = Some(life);
             *self.browser.lock() = Some(browser.clone());
+            self.watch_first_frame(id);
 
             if let Some(host) = browser.host() {
+                host.set_windowless_frame_rate(crate::refresh_rate::for_widget(&*self.obj()));
                 // Respect window visibility: when the window is hidden (e.g.
                 // start-in-background) the new foreground must stay paused, or
                 // CEF composites an invisible page at full rate (#151).
@@ -1626,6 +1885,48 @@ mod imp {
             }
             self.obj().queue_render();
             self.apply_audio_mute();
+        }
+
+        /// Start the deadline when a browser becomes visible, including a
+        /// prewarmed account or a window restored from the background. Own one
+        /// timer per view; account changes and teardown cancel the previous one.
+        fn watch_first_frame(&self, browser_id: i32) {
+            if let Some(watch) = self.first_frame_watch.borrow_mut().take() {
+                watch.remove();
+            }
+            if browser_id == 0 || !self.window_visible.load(Ordering::Relaxed) {
+                return;
+            }
+            let Some(shared) = self.shared.lock().clone() else {
+                return;
+            };
+            let initial_serial = shared.lock().view_frame_serial;
+            let watch = self.obj().downgrade();
+            *self.first_frame_watch.borrow_mut() = Some(glib::timeout_add_local_once(
+                std::time::Duration::from_secs(10),
+                move || {
+                    let Some(view) = watch.upgrade() else {
+                        return;
+                    };
+                    let imp = view.imp();
+                    imp.first_frame_watch.borrow_mut().take();
+                    let failed = imp.shared.lock().as_ref().is_some_and(|s| {
+                        let s = s.lock();
+                        s.view_frame_serial == initial_serial
+                            && s.foreground_browser_id == browser_id
+                    });
+                    if failed && imp.window_visible.load(Ordering::Relaxed) {
+                        if imp.shared_texture_enabled_for_browser() {
+                            log::warn!(
+                                "graphics: accelerated CEF browser delivered no frame; retrying CPU transfer"
+                            );
+                            imp.schedule_software_osr_fallback();
+                        } else {
+                            crate::graphics::retry_cef_after_frame_failure();
+                        }
+                    }
+                },
+            ));
         }
 
         /// Switch the foreground to the account `new_id`, pausing the previous
@@ -1759,42 +2060,14 @@ mod imp {
             self.texture.store(tex, Ordering::Relaxed);
             self.tex_w.store(0, Ordering::Relaxed);
             self.tex_h.store(0, Ordering::Relaxed);
-
-            // GPU-OSR: a second texture the imported DMA-BUF EGLImage targets.
-            let mut atex = 0;
-            unsafe {
-                gl::GenTextures(1, &mut atex);
-                gl::BindTexture(gl::TEXTURE_2D, atex);
-                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint);
-                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
-                gl::TexParameteri(
-                    gl::TEXTURE_2D,
-                    gl::TEXTURE_WRAP_S,
-                    gl::CLAMP_TO_EDGE as GLint,
-                );
-                gl::TexParameteri(
-                    gl::TEXTURE_2D,
-                    gl::TEXTURE_WRAP_T,
-                    gl::CLAMP_TO_EDGE as GLint,
-                );
-                gl::BindTexture(gl::TEXTURE_2D, 0);
-            }
-            self.accel_tex.store(atex, Ordering::Relaxed);
         }
 
         unsafe fn teardown_gl(&self) {
-            // Release the live EGLImage while the GL context is still current.
-            *self.imported.borrow_mut() = None;
             unsafe {
                 let tex = self.texture.load(Ordering::Relaxed);
                 if tex != 0 {
                     gl::DeleteTextures(1, &tex);
                     self.texture.store(0, Ordering::Relaxed);
-                }
-                let atex = self.accel_tex.load(Ordering::Relaxed);
-                if atex != 0 {
-                    gl::DeleteTextures(1, &atex);
-                    self.accel_tex.store(0, Ordering::Relaxed);
                 }
                 let vbo = self.vbo.load(Ordering::Relaxed);
                 if vbo != 0 {
@@ -1825,67 +2098,12 @@ mod imp {
                 gl::ClearColor(0.0, 0.0, 0.0, 1.0);
                 gl::Clear(gl::COLOR_BUFFER_BIT);
 
-                // GPU path: import the pending DMA-BUF to the accel texture. (gpu-osr)
-                let atex = self.accel_tex.load(Ordering::Relaxed);
-                let mut accel_failed = false;
-                if let Some(af) = s.accel.as_mut()
-                    && af.dirty
-                {
-                    if let Some(img) = crate::gl_dmabuf::import_to_texture(
-                        atex,
-                        af.width,
-                        af.height,
-                        af.fourcc,
-                        af.modifier,
-                        &af.planes,
-                    ) {
-                        // Keep the EGLImage alive while the texture is sampled;
-                        // dropping the previous one releases it.
-                        *self.imported.borrow_mut() = Some(img);
-                        af.dirty = false;
-                    } else {
-                        accel_failed = true;
-                    }
-                }
-                if accel_failed {
-                    // A rejected DMA-BUF must not pin draw() to a permanently
-                    // blank/stale accelerated branch. Drop it so an existing or
-                    // subsequent CEF CPU on_paint frame can become visible.
-                    log::warn!("accelerated OSR import failed; falling back to CPU paint");
-                    super::discard_failed_accel(&mut s.accel);
-                    *self.imported.borrow_mut() = None;
-                    // CEF's shared-texture choice is fixed at browser creation.
-                    // Recreate the pool after this render callback so subsequent
-                    // callbacks are CPU on_paint rather than more unusable DMA-BUFs.
-                    self.schedule_software_osr_fallback();
-                }
-
-                let use_accel = s.accel.is_some() && self.imported.borrow().is_some();
                 // J4 instrumentation: capture widget-physical size for draw logging.
                 let dbg_widget = self.obj();
                 let dbg_scale = paint_scale(&dbg_widget);
                 let dbg_phys_w = (dbg_widget.width() as f64 * dbg_scale).round() as i32;
                 let dbg_phys_h = (dbg_widget.height() as f64 * dbg_scale).round() as i32;
-                if use_accel {
-                    let (aw, ah) = s
-                        .accel
-                        .as_ref()
-                        .map(|a| (a.width, a.height))
-                        .unwrap_or((0, 0));
-                    log::debug!(
-                        "coord: J4 draw frame={}x{} tex={}x{} widget_physical={}x{} accel=true scale={:.3}",
-                        aw,
-                        ah,
-                        aw,
-                        ah,
-                        dbg_phys_w,
-                        dbg_phys_h,
-                        dbg_scale
-                    );
-                }
-                let (tex, bgra) = if use_accel {
-                    (atex, 0_i32)
-                } else {
+                let (tex, bgra) = {
                     // Software path: upload CEF's CPU BGRA buffer through the
                     // valid GLES context (software OSR does not eliminate GLArea).
                     let tex = self.texture.load(Ordering::Relaxed);
@@ -1959,7 +2177,7 @@ mod imp {
                     }
                     (tex, 1_i32)
                 };
-                if !use_accel {
+                {
                     let tw2 = self.tex_w.load(Ordering::Relaxed);
                     let th2 = self.tex_h.load(Ordering::Relaxed);
                     log::debug!(
@@ -2889,82 +3107,6 @@ mod imp {
     /// `accel_osr_enabled`, whose answer is fixed for the browser's lifetime.
     pub(super) static NO_GL: AtomicBool = AtomicBool::new(false);
 
-    /// GPU-accelerated OSR opt-in: env `KARERE_GPU_OSR=1` (or its setting) AND
-    /// EGL dma-buf import must be available on the current GL context. Cached on
-    /// first call; a prewarm before realization safely resolves to CPU OSR.
-    /// (gpu-osr)
-    pub(super) fn accel_osr_enabled() -> bool {
-        use std::sync::OnceLock;
-        static EN: OnceLock<bool> = OnceLock::new();
-        *EN.get_or_init(|| {
-            // Nothing can import a shared texture without a GL context, and
-            // asking for one stops CEF ever calling CPU on_paint -- which is
-            // the only thing the software present path has to draw. (#177)
-            if NO_GL.load(Ordering::Relaxed) {
-                log::info!("accel_osr: no GL context — software frames only");
-                return false;
-            }
-            // Read once — the shared-texture flag is fixed for the browser's
-            // lifetime, so this is restart-required. Env wins as a dev override /
-            // kill-switch; otherwise the experimental `gpu-rendering` GSetting.
-            // The visible-start path calls this after init_gl with the context
-            // current. Background prewarm has no context, so capability probing
-            // deliberately disables shared textures for that process. (gpu-osr)
-            let requested = match std::env::var("KARERE_GPU_OSR").ok().as_deref() {
-                Some("1") | Some("true") => true,
-                Some("0") | Some("false") => false,
-                _ => {
-                    use gtk::prelude::SettingsExt;
-                    let want = gtk::gio::Settings::new(crate::application::APP_ID)
-                        .boolean("gpu-rendering");
-                    // NVIDIA can't back CEF's exportable shared images — the GPU
-                    // process fails SkSurface init and no accelerated frame ever
-                    // arrives, leaving the chat area black (#167). Probe the GL
-                    // context actually rendering (current here: realize →
-                    // init_gl → browser creation) instead of the PCI driver
-                    // list, so hybrid setups rendering on another GPU keep the
-                    // accel path (#173). KARERE_GPU_OSR=1 forces.
-                    if want && gl_vendor_is_nvidia() {
-                        log::warn!(
-                            "accel_osr: NVIDIA driver detected — GPU rendering is \
-                             unsupported (CEF shared-image export fails, #167); \
-                             using software rendering. KARERE_GPU_OSR=1 to force."
-                        );
-                        false
-                    } else {
-                        want
-                    }
-                }
-            };
-            // Do not ask CEF for shared textures unless this current GL/EGL
-            // display can import them. Without this pre-browser fence CEF may
-            // never call CPU on_paint, leaving a blank first frame.
-            let enabled = requested && crate::gl_dmabuf::is_supported();
-            log::info!("accel_osr: requested={requested} enabled={enabled}");
-            enabled
-        })
-    }
-
-    /// True when the current GL context is driven by the NVIDIA proprietary
-    /// driver (GL_VENDOR contains "NVIDIA"; Mesa reports "Mesa"/"AMD" even on
-    /// NVIDIA hardware via nouveau/NVK, where shared images are untested but
-    /// not known-broken). Requires a current GL context — returns false when
-    /// there is none. (gpu-osr)
-    fn gl_vendor_is_nvidia() -> bool {
-        let p = unsafe { gl::GetString(gl::VENDOR) };
-        if p.is_null() {
-            // No current GL context — prewarm (start-in-background) creates
-            // browsers before the GLArea realizes. Fall back to the coarse
-            // driver-bound check so NVIDIA still gets software rendering
-            // instead of the broken accel path (#167); hybrid setups rendering
-            // on the iGPU lose accel only in this prewarmed case.
-            return std::path::Path::new("/sys/bus/pci/drivers/nvidia").exists();
-        }
-        let vendor = unsafe { std::ffi::CStr::from_ptr(p.cast()) }.to_string_lossy();
-        log::info!("accel_osr: GL_VENDOR={vendor}");
-        vendor.contains("NVIDIA")
-    }
-
     fn paint_scale(widget: &super::KarereWebView) -> f64 {
         widget.scale_factor().max(1) as f64
     }
@@ -3781,33 +3923,42 @@ mod tests {
             return;
         }
 
+        let settings = gtk::gio::Settings::new(crate::application::APP_ID);
+        assert!(settings.user_value("gpu-rendering").is_none());
+        assert!(
+            settings.boolean("gpu-rendering"),
+            "fresh profile defaults on"
+        );
+        settings.set_boolean("gpu-rendering", false).unwrap();
+        assert!(
+            !gtk::gio::Settings::new(crate::application::APP_ID).boolean("gpu-rendering"),
+            "an explicit saved opt-out survives another settings instance"
+        );
+        settings.reset("gpu-rendering");
+        assert!(settings.boolean("gpu-rendering"));
+
+        crate::presenter::verify_cpu_texture_ownership();
+        crate::presenter::verify_fractional_tiles();
+        crate::vulkan_frame::verify_hardware_ownership(&gtk::gdk::Display::default().unwrap());
+        crate::graphics::verify_frame_watch_lifecycle();
+
         for view in [KarereWebView::new(), KarereWebView::new_devtools()] {
             assert!(!view.is_realized());
-            assert_eq!(view.allowed_apis(), gtk::gdk::GLAPI::GLES);
             assert!(
-                view.required_version() >= (3, 0),
-                "GLSL ES 3.00 shaders require GLES 3.0 or newer"
+                view.imp().gl_area.borrow().is_none(),
+                "GL must not be a construction requirement"
             );
+            assert!(view.shared().lock().snapshot_present);
         }
 
-        // Force GTK's production create-context signal to fail. GDK cannot
-        // produce a context below GLES 3.0, which is all a PinePhone's Mali-400
-        // offers, so realize must fall back to software presentation rather
-        // than leave the user with GTK's error label (#177): it clears the
-        // error, flips `software_present`, and still bootstraps the browser,
-        // because CEF's CPU on_paint frames are what `snapshot` then draws.
         let failed = KarereWebView::new();
         use std::sync::atomic::Ordering as AtomicOrdering;
         failed
             .imp()
             .suppress_browser_creation
             .store(true, AtomicOrdering::Release);
-        failed.connect_create_context(|area| {
-            let error =
-                gtk::glib::Error::new(gtk::gio::IOErrorEnum::Failed, "injected GL context failure");
-            area.set_error(Some(&error));
-            None
-        });
+        failed.imp().force_gl.set(true);
+        failed.imp().reject_gl_context.set(true);
         let window = gtk::Window::builder()
             .default_width(64)
             .default_height(64)
@@ -3817,7 +3968,14 @@ mod tests {
         while gtk::glib::MainContext::default().iteration(false) {}
 
         assert!(
-            failed.error().is_none(),
+            failed
+                .imp()
+                .gl_area
+                .borrow()
+                .as_ref()
+                .unwrap()
+                .error()
+                .is_none(),
             "the GLArea error label must not be left covering a usable software path"
         );
         assert!(failed.imp().software_present.load(AtomicOrdering::Relaxed));
@@ -3838,6 +3996,7 @@ mod tests {
         window.destroy();
 
         assert_rejected_accelerated_frame_restarts_pool_then_renders_cpu_callback();
+        assert_texture_transfer_rejection_recovers_once();
     }
 
     #[test]
@@ -3862,10 +4021,58 @@ mod tests {
         frame.width = 1;
         frame.height = 2;
         assert_eq!(cpu_upload(&frame, (2, 1)), CpuUpload::Allocate);
+
+        // A resized accelerated frame may precede CPU recovery's first paint.
+        frame.width = 100;
+        assert_eq!(cpu_upload(&frame, (2, 1)), CpuUpload::Empty);
+    }
+
+    fn assert_texture_transfer_rejection_recovers_once() {
+        use std::os::fd::AsRawFd;
+        use std::sync::atomic::Ordering;
+        let view = KarereWebView::new_devtools();
+        let imp = view.imp();
+        imp.suppress_browser_creation.store(true, Ordering::Release);
+        let window = gtk::Window::builder()
+            .default_width(64)
+            .default_height(64)
+            .child(&view)
+            .build();
+        window.present();
+        while glib::MainContext::default().iteration(false) {}
+        imp.fallback_test_events.borrow_mut().clear();
+        let fd = std::fs::File::open("/dev/null").unwrap();
+        let mut info = cef::AcceleratedPaintInfo {
+            plane_count: 1,
+            format: cef::ColorType::BGRA_8888,
+            ..Default::default()
+        };
+        info.extra.coded_size.width = 1;
+        info.extra.coded_size.height = 1;
+        info.planes[0].fd = fd.as_raw_fd();
+        info.planes[0].stride = 4;
+        // A valid descriptor which is not a DMA-BUF must fail both imports and
+        // schedule exactly one deferred CPU restart, even with another callback.
+        view.accept_accelerated(&info, false);
+        view.accept_accelerated(&info, false);
+        assert!(imp.software_osr_forced.load(Ordering::Acquire));
+        assert!(imp.fallback_test_events.borrow().is_empty());
+        while glib::MainContext::default().iteration(false) {}
+        assert_eq!(
+            imp.fallback_test_events.borrow().as_slice(),
+            [("close", None), ("create", Some(false))]
+        );
+        let shared = view.shared();
+        crate::handlers::render::dispatch_cpu_paint_for_test(&shared, &[0, 0, 255, 255], 1, 1);
+        let snapshot = gtk::Snapshot::new();
+        gtk::subclass::prelude::WidgetImpl::snapshot(imp, &snapshot);
+        assert!(snapshot.to_node().is_some());
+        assert!(!shared.lock().frame.dirty);
+        window.destroy();
     }
 
     fn assert_rejected_accelerated_frame_restarts_pool_then_renders_cpu_callback() {
-        use std::os::fd::OwnedFd;
+        use std::os::fd::AsRawFd;
         use std::sync::atomic::Ordering;
 
         crate::load_gl();
@@ -3876,6 +4083,7 @@ mod tests {
         let view = KarereWebView::new_devtools();
         let imp = view.imp();
         imp.suppress_browser_creation.store(true, Ordering::Release);
+        imp.force_gl.set(true);
         let window = gtk::Window::builder()
             .default_width(64)
             .default_height(64)
@@ -3889,31 +4097,23 @@ mod tests {
         );
         imp.fallback_test_events.borrow_mut().clear();
 
-        // An invalid DMA-BUF reaches the real import call from draw() and must be
-        // rejected deterministically by EGL. /dev/null supplies an owned, valid fd
-        // while fourcc=0 is intentionally not a DRM pixel format.
-        let fd: OwnedFd = std::fs::File::open("/dev/null").unwrap().into();
+        // Send an invalid external allocation through the same owned-copy
+        // presenter used by the CEF callback. Both imports must reject /dev/null.
+        let fd = std::fs::File::open("/dev/null").unwrap();
         let shared = imp.shared.lock().as_ref().unwrap().clone();
-        shared.lock().accel = Some(crate::gl_dmabuf::AccelFrame {
-            width: 1,
-            height: 1,
-            fourcc: 0,
-            modifier: 0,
-            planes: vec![crate::gl_dmabuf::Plane {
-                fd,
-                offset: 0,
-                stride: 4,
-            }],
-            dirty: true,
-        });
-        unsafe { imp.draw() };
-        assert!(
-            shared.lock().accel.is_none(),
-            "draw must discard rejected DMA-BUF"
-        );
+        let mut info = cef::AcceleratedPaintInfo {
+            plane_count: 1,
+            format: cef::ColorType::BGRA_8888,
+            ..Default::default()
+        };
+        info.extra.coded_size.width = 1;
+        info.extra.coded_size.height = 1;
+        info.planes[0].fd = fd.as_raw_fd();
+        info.planes[0].stride = 4;
+        imp.accept_accelerated(&info, false);
         assert!(imp.software_osr_forced.load(Ordering::Acquire));
 
-        // draw() schedules, rather than recursively performs, browser teardown.
+        // The callback schedules browser teardown after returning to CEF.
         assert!(imp.fallback_test_events.borrow().is_empty());
         while gtk::glib::MainContext::default().iteration(false) {}
         assert_eq!(

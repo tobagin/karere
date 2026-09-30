@@ -126,11 +126,11 @@ if [[ "$POLICY" == "mirror" ]]; then
         fail "karere git tag mismatch — beta: $beta_karere stable: $stable_karere"
     fi
 
-    # 4. GSK_RENDERER=gl must be present in beta
-    if grep -q 'GSK_RENDERER=gl' "$BETA_MANIFEST"; then
-        pass "GSK_RENDERER=gl present in beta manifest"
+    # 4. Let GTK prefer hardware Vulkan and select a fallback if unavailable.
+    if ! grep -q 'GSK_RENDERER=' "$BETA_MANIFEST"; then
+        pass "beta manifest allows Vulkan-first renderer selection"
     else
-        fail "GSK_RENDERER=gl missing in beta manifest"
+        fail "beta manifest forces a renderer instead of allowing Vulkan first"
     fi
 
     # 5. Zero chromium-148 references remain
