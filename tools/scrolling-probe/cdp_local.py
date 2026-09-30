@@ -9,7 +9,11 @@ from urllib.parse import urlparse
 
 
 class Client:
-    def __init__(self, url):
+    def __init__(self, url, *, max_frame_bytes=1_000_000):
+        """Connect to local CDP; only trace collectors opt out of the frame cap."""
+        if max_frame_bytes is not None and max_frame_bytes <= 0:
+            raise ValueError('Frame limit must be positive or None')
+        self.max_frame_bytes = max_frame_bytes
         parsed = urlparse(url)
         if parsed.scheme != 'ws' or parsed.hostname != '127.0.0.1' or parsed.port != 9333:
             raise ValueError('CDP endpoint must be the local diagnostic port')
@@ -33,6 +37,7 @@ class Client:
             raise ConnectionError('CDP websocket handshake failed')
 
     def read(self, count):
+        """Read exactly count bytes, including buffered handshake/frame data."""
         while len(self.buffer) < count:
             chunk = self.socket.recv(max(4096, count - len(self.buffer)))
             if not chunk:
@@ -42,6 +47,7 @@ class Client:
         return result
 
     def send(self, payload, opcode=1):
+        """Send a masked client frame, including replies to server pings."""
         length = len(payload)
         header = bytes([0x80 | opcode])
         if length < 126:
@@ -54,6 +60,7 @@ class Client:
         self.socket.sendall(header + mask + bytes(value ^ mask[i % 4] for i, value in enumerate(payload)))
 
     def receive(self):
+        """Reassemble a JSON message while handling WebSocket control frames."""
         parts = []
         while True:
             first, second = self.read(2)
@@ -62,7 +69,7 @@ class Client:
                 length = struct.unpack('!H', self.read(2))[0]
             elif length == 127:
                 length = struct.unpack('!Q', self.read(8))[0]
-            if second & 128 or length > 1000000:
+            if second & 128 or (self.max_frame_bytes is not None and length > self.max_frame_bytes):
                 raise ValueError('Unexpected CDP frame')
             data = self.read(length)
             opcode = first & 15
@@ -78,6 +85,7 @@ class Client:
                 return json.loads(b''.join(parts))
 
     def call(self, method, params):
+        """Wait for this command's response, processing intervening events."""
         self.sequence += 1
         self.send(json.dumps({'id': self.sequence, 'method': method, 'params': params}).encode())
         while True:
@@ -88,6 +96,7 @@ class Client:
                 return reply['result']
 
     def evaluate(self, expression, await_promise=False):
+        """Evaluate a diagnostic expression without printing protocol data."""
         response = self.call('Runtime.evaluate', {'expression': expression,
                              'returnByValue': True, 'awaitPromise': await_promise})
         if 'exceptionDetails' in response:
@@ -95,4 +104,5 @@ class Client:
         return response.get('result', {}).get('value')
 
     def close(self):
+        """Release the diagnostic socket."""
         self.socket.close()

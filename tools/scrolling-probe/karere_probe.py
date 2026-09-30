@@ -6,16 +6,16 @@ import hashlib
 import html
 import json
 import os
-from pathlib import Path
+import queue
 import re
 import selectors
 import socket
 import subprocess
-import queue
 import threading
 import time
 import urllib.parse
 import urllib.request
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 BUILD = ROOT / ".build"
@@ -68,6 +68,7 @@ def measure_chat_list(results):
 
 
 def read(path):
+    """Read an optional procfs/sysfs value, tolerating exited processes."""
     try:
         return Path(path).read_text().strip()
     except OSError:
@@ -75,6 +76,7 @@ def read(path):
 
 
 def descendants(root):
+    """Collect the process tree, including children created by worker threads."""
     found, pending = set(), [root]
     while pending:
         pid = pending.pop()
@@ -92,6 +94,7 @@ def descendants(root):
 
 
 def process(pid):
+    """Extract resource counters and the CEF role without retaining arguments."""
     stat = read(f"/proc/{pid}/stat")
     if not stat:
         return None
@@ -106,6 +109,7 @@ def process(pid):
 
 
 def device_info(pid):
+    """Report graphics device/library names without reading their contents."""
     devices = set()
     try:
         for fd in Path(f"/proc/{pid}/fd").iterdir():
@@ -138,6 +142,7 @@ def synthetic_visibility():
 
 
 def main():
+    """Launch one reversible diagnostic instance and capture allowlisted data."""
     parser = argparse.ArgumentParser()
     parser.add_argument("label")
     parser.add_argument("--normal-logging", action="store_true")
@@ -145,6 +150,9 @@ def main():
     parser.add_argument("--fast-backstop", action="store_true")
     parser.add_argument("--schedule-probe", action="store_true")
     parser.add_argument("--synthetic", action="store_true")
+    parser.add_argument("--generated-file", type=Path)
+    parser.add_argument("--hold-synthetic", action="store_true")
+    parser.add_argument("--stage-trace", action="store_true")
     parser.add_argument("--synthetic-gpu", action="store_true")
     parser.add_argument("--chat-list", action="store_true")
     parser.add_argument("--gsk-renderer", choices=["gl", "vulkan"])
@@ -154,6 +162,8 @@ def main():
     parser.add_argument("--idle-window", choices=['visible', 'minimized', 'background'], default='visible',
                         help="Window action before idle measurement; background requires --synthetic")
     args = parser.parse_args()
+    if (args.generated_file or args.hold_synthetic) and not args.synthetic:
+        parser.error('--generated-file and --hold-synthetic require --synthetic')
     if not 0 <= args.idle_seconds <= 300:
         parser.error('--idle-seconds must be between 0 and 300')
     if args.idle_seconds and not (args.synthetic or args.chat_list):
@@ -184,7 +194,7 @@ def main():
     rows = subprocess.check_output(["flatpak", "ps", "--columns=application"], text=True).splitlines()
     if APP in [r.strip() for r in rows]:
         parser.error("Karere is already running; quit normally before launching a capture")
-    if args.synthetic or args.chat_list:
+    if args.synthetic or args.chat_list or os.environ.get("KARERE_PROBE_CDP"):
         with socket.socket() as check:
             check.settimeout(.2)
             if check.connect_ex(('127.0.0.1', 9333)) == 0:
@@ -214,14 +224,17 @@ def main():
                    f"--env=XDG_CACHE_HOME=/tmp/karere-perf-{args.label}/cache"]
     if args.binary:
         launch += [f"--filesystem={args.binary.parent}:ro", f"--command={args.binary}"]
+    if args.stage_trace:
+        launch += [f"--filesystem={RESULTS}:rw", f"--env=KARERE_STAGE_TRACE={RESULTS / (args.label + '_stages.json')}"]
     launch.append(APP)
     if args.binary:
         launch += ['--resources-dir-path=/app/lib/cef', '--locales-dir-path=/app/lib/cef/locales']
     if args.synthetic:
-        page = 'data:text/html;charset=utf-8,' + urllib.parse.quote((ROOT / 'scroll_probe.html').read_text())
+        page = 'data:text/html;charset=utf-8,' + urllib.parse.quote((args.generated_file or ROOT / 'scroll_probe.html').read_text())
         launch += ['--debuglevel=error', '--url', page]
     child = subprocess.Popen(launch, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     def quit_on_exit():
+        """Ask this diagnostic instance to exit before terminating its launcher."""
         if child.poll() is None:
             try:
                 subprocess.run(['gapplication', 'action', APP, 'quit'],
@@ -248,8 +261,12 @@ def main():
     print(json.dumps({"capture": str(output), "launcher_pid": child.pid, "settings": settings}), flush=True)
     with output.open("x", buffering=1) as stream:
         def emit(kind, **values):
-            stream.write(json.dumps({"t": time.monotonic() - start, "wall": time.time(), "kind": kind, "phase": phase, **values}) + "\n")
+            """Record a capture-time clock pair for later cross-clock alignment."""
+            now = time.monotonic()
+            stream.write(json.dumps({"t": now - start, "wall": time.time(), "monotonic": now,
+                                     "kind": kind, "phase": phase, **values}) + "\n")
         def finish_measurement(success):
+            """Enter the requested idle phase or finish the diagnostic launch."""
             nonlocal metrics_received, idle_start, idle_end
             metrics_received = True
             if success and args.idle_seconds:
@@ -317,7 +334,7 @@ def main():
                 previous = current
                 gpu = read("/sys/class/drm/card0/device/gpu_busy_percent")
                 emit("sample", processes=samples, cpu_pct=sum(s["cpu_pct"] for s in samples), gpu_busy_pct=int(gpu) if gpu and gpu.isdigit() else None, memory_pressure=read("/proc/pressure/memory"), on_ac=read("/sys/class/power_supply/AC0/online"))
-                if args.synthetic and not metrics_received and now - start > 5:
+                if args.synthetic and not args.hold_synthetic and not metrics_received and now - start > 5:
                     try:
                         with urllib.request.urlopen('http://127.0.0.1:9333/json/list', timeout=.2) as response:
                             targets = json.load(response)
