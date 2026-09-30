@@ -271,7 +271,7 @@ fn real_binary_starts_with_software_gles_for_visible_and_prewarmed_windows() {
     // binary/widget: a rejected desktop-GL context must still display CPU frames.
     set_background(&fixture, false);
     let mut legacy = RunningApp::spawn(&fixture, true);
-    legacy.wait_for_context_failure();
+    legacy.wait_for_software_fallback();
     legacy.quit_after_expected_context_failure(&fixture);
 
     set_background(&fixture, false);
