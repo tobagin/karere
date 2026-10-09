@@ -1,0 +1,35 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Generated conversation scrolling workload</title>
+<style>
+* {box-sizing:border-box}
+body {margin:0;background:#111b21;color:#e9edef;font:16px/1.5 sans-serif}
+#pane-side {position:absolute;left:65px;top:154px;width:605.296875px;height:calc(100vh - 154px);overflow-y:scroll;background:#202c33}
+#main {position:absolute;left:670.296875px;top:0;right:0;height:100vh;overflow:hidden;background:#172229}
+#conversation {position:absolute;inset:64px 0;overflow-y:scroll;padding:0 40px}
+#wallpaper {position:absolute;inset:0;background:#ffffff;opacity:.08;mask-repeat:repeat;mask-size:480px 480px;pointer-events:none}
+.row {height:76px;padding:12px 24px;border-bottom:1px solid #34454f}
+.bubble {width:520px;max-width:85%;padding:12px 20px;margin:16px 0;border-radius:8px;background:#202c33;box-shadow:0 1px 2px #0004}
+.bubble:nth-child(even) {margin-left:auto;background:#005c4b}
+.detail {font-size:13px;color:#aaa}
+</style>
+<div id="pane-side"></div><div id="main"><div id="wallpaper"></div><div id="conversation"></div></div>
+<script>
+const wallpaper=document.querySelector('#wallpaper');
+let svg='<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480"><g fill="none" stroke="black" stroke-width="1.5">';
+for(let i=0;i<320;i++){
+ const x=(i*71)%480,y=(i*137)%480,r=4+i%13;
+ svg+=`<path d="M ${x-r} ${y} C ${x-r} ${y-r*2} ${x+r} ${y+r*2} ${x+r} ${y} S ${x} ${y-r*2} ${x-r} ${y} Z"/>`;
+}
+svg+='</g></svg>';
+wallpaper.style.maskImage='url("data:image/svg+xml,'+encodeURIComponent(svg)+'")';
+window.__generatedWallpaper={setMask(enabled){wallpaper.style.display=enabled?'':'none';}};
+for(let i=0;i<250;i++){
+ let row=document.createElement('div');row.className='row';row.textContent='Generated chat '+i;
+ document.querySelector('#pane-side').append(row);
+ let bubble=document.createElement('div');bubble.className='bubble';
+ bubble.textContent='Generated message '+i+'. This is ordinary text used to measure scrolling through a wide conversation pane. The content is synthetic and identical between runs.';
+ document.querySelector('#conversation').append(bubble);
+}
+document.querySelector('#conversation').scrollTop=7000;
+</script>
