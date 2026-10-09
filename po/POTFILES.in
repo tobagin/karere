@@ -1,4 +1,5 @@
 src/main.rs
+src/web_view.rs
 src/window.rs
 src/actions.rs
 src/tray.rs

@@ -5,6 +5,19 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.4] - 2026-09-29
+
+### Fixed
+- **Dragged and pasted files attach without filesystem access (#192)**: 4.3.3 read dropped files straight from their path and granted read-only access to the common user directories to make that work. Those permissions are gone. When the source offers a portal file transfer, Karere takes the transfer key from the drop or the clipboard and asks the document portal for the files, which works from any folder.
+- **Drags were refused on entry**: the drop target allowed only the copy action, while the action reported as a drag enters the window is the compositor's pick for the source (move, from Nautilus on Hyprland). Every such drag was refused before Karere could ask for a copy, with no overlay and no error. The decision is now made on the offered file types.
+- **Letters dropped while typing (#180)**: a text key was delivered as a bare character with no key-down in front of it. Chromium suppresses the character that follows a key-down the page handled, so a letter pressed while Backspace, Enter or an arrow key was still held was swallowed. Every press now sends its key-down first.
+- **Pasting a text file inserted nothing**: it was treated as typed text rather than as an attachment.
+- **Conversation scrolling (#173)**: the decorative wallpaper mask behind a conversation was re-rasterised on every scroll step, holding page updates to about 25 per second on a large HiDPI window. It is now kept on its own layer. Measured by the contributor on an AMD Radeon 680M at 60 Hz: about 25 to 56-60 redraws per second. Diagnosis and fix by [@sknowledge1](https://github.com/sknowledge1) (#193).
+
+### Changed
+- **A file that cannot be read says so**: a source that offers only a plain path, such as a file manager that was started before the document portal, cannot be read from inside the sandbox. This used to fail silently; a notice now offers to open the file chooser in that folder.
+- **Flatpak permissions**: removed read-only access to Documents, Pictures, Videos, Music and Desktop.
+
 ## [4.3.3] - 2026-09-27
 
 ### Fixed
