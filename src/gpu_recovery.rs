@@ -14,6 +14,7 @@ const CEF_GL: i32 = 87;
 const CEF_VULKAN: i32 = 88;
 const GTK_GL: i32 = 89;
 const GTK_VULKAN: i32 = 90;
+const CEF_NATIVE_HANDLE: i32 = 91;
 const WORKER: &str = "_KARERE_RENDER_WORKER";
 pub const FENCE_TIMEOUT_NS: u64 = 1_000_000_000;
 
@@ -38,6 +39,7 @@ pub fn supervise() -> std::io::Result<Option<i32>> {
 
 fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
     let mut recovered = false;
+    let mut native_handle_retried = false;
     // Only the worker knows which display GTK actually opened. Infer the
     // failed CEF backend from its explicit retry request, not from a parent's
     // guess made before Wayland/X11 selection.
@@ -50,7 +52,7 @@ fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
         let code = status.code().unwrap_or(128 + status.signal().unwrap_or(1));
         if !matches!(
             code,
-            GPU_FAILURE | CEF_GL | CEF_VULKAN | GTK_GL | GTK_VULKAN
+            GPU_FAILURE | CEF_GL | CEF_VULKAN | GTK_GL | GTK_VULKAN | CEF_NATIVE_HANDLE
         ) {
             return Ok(code);
         }
@@ -69,6 +71,15 @@ fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
             if result == 0 {
                 std::thread::sleep(Duration::from_millis(10));
             }
+        }
+        if code == CEF_NATIVE_HANDLE {
+            if native_handle_retried {
+                return Ok(code);
+            }
+            eprintln!("karere: no accelerated CEF frame; retrying native-handle buffers once");
+            command.env("KARERE_CEF_NATIVE_HANDLE", "1");
+            native_handle_retried = true;
+            continue;
         }
         if code == GTK_GL || code == GTK_VULKAN {
             let failed = if code == GTK_GL { "gl" } else { "vulkan" };
@@ -122,6 +133,10 @@ pub fn restart_cef(backend: &str) -> ! {
     } else {
         CEF_GL
     });
+}
+
+pub fn restart_native_handle() -> ! {
+    std::process::exit(CEF_NATIVE_HANDLE);
 }
 
 /// No Drop handlers or callback return: neither is safe with an outstanding read
@@ -236,6 +251,28 @@ mod tests {
     fn persistent_failure_does_not_restart_forever() {
         let code = run_supervised(Command::new("sh").args(["-c", "exit 86"])).unwrap();
         assert_eq!(code, GPU_FAILURE);
+    }
+
+    #[test]
+    fn native_handle_retry_preserves_backends_and_transfer() {
+        let code = run_supervised(
+            Command::new("sh")
+                .args([
+                    "-c",
+                    "test \"$KARERE_GPU_OSR\" = 1 && test \"$KARERE_CEF_GRAPHICS\" = gl && test \"$GSK_RENDERER\" = gl || exit 9; if [ \"$KARERE_CEF_NATIVE_HANDLE\" = 1 ]; then exit 0; else exit 91; fi",
+                ])
+                .env("KARERE_GPU_OSR", "1")
+                .env("KARERE_CEF_GRAPHICS", "gl")
+                .env("GSK_RENDERER", "gl")
+                .env_remove("KARERE_CEF_NATIVE_HANDLE"),
+        )
+        .unwrap();
+        assert_eq!(code, 0);
+        assert_eq!(
+            run_supervised(Command::new("sh").args(["-c", "exit 91"])).unwrap(),
+            CEF_NATIVE_HANDLE,
+            "an engine ignoring the retry cannot restart forever"
+        );
     }
 
     #[test]

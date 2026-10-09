@@ -1,5 +1,10 @@
 # Karere 4.3.3: adaptive refresh and Vulkan experiment
 
+Historical report: the current branch now includes upstream 4.3.4 and #193's
+reviewed diagnostic tools. See [the 9 October compatibility update](ACCELERATION.md#compatibility-update--9-october-2026)
+before following the older integration instructions below. No historical
+performance measurements have been relabeled as validation of the new code.
+
 This records the prototype at `29342bc`, before the default-on follow-up.
 For the current defaults, producer repair and media diagnostics, see
 [ACCELERATION.md](ACCELERATION.md). Historical measurements retain their original

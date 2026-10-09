@@ -162,6 +162,32 @@ class ClockTests(unittest.TestCase):
 class TransportTests(unittest.TestCase):
     """Trace transport accepts large frames without weakening ordinary clients."""
 
+    def test_custom_media_port_retains_trace_and_endpoint_controls(self):
+        """The integrated transport supports media ports and trace limits together."""
+        import base64
+        import hashlib
+
+        nonce = b'\0' * 16
+        key = base64.b64encode(nonce).decode()
+        accept = base64.b64encode(hashlib.sha1(
+            (key + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11').encode()).digest())
+        connection = Mock(recv=Mock(return_value=(
+            b'HTTP/1.1 101 Switching Protocols\r\nSec-WebSocket-Accept: '
+            + accept + b'\r\n\r\n')))
+        with patch('cdp_local.os.urandom', return_value=nonce), \
+                patch('cdp_local.socket.create_connection', return_value=connection) as connect_socket:
+            client = Client('ws://127.0.0.1:9444/devtools/page/test',
+                            port=9444, max_frame_bytes=None)
+            connect_socket.assert_called_once_with(('127.0.0.1', 9444), timeout=35)
+            self.assertIsNone(client.max_frame_bytes)
+            self.assertIn(b'Host: 127.0.0.1:9444', connection.sendall.call_args.args[0])
+        with patch('cdp_local.socket.create_connection') as connect_socket:
+            for url in ['ws://127.0.0.1:9333/devtools/page/test',
+                        'ws://example.com:9444/devtools/page/test']:
+                with self.assertRaises(ValueError):
+                    Client(url, port=9444, max_frame_bytes=None)
+            connect_socket.assert_not_called()
+
     def test_trace_constructor_alone_opts_out_of_limit(self):
         """The trace subclass explicitly disables the cap at connection setup."""
         with patch.object(Client, '__init__', return_value=None) as initialize:

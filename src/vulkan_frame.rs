@@ -4,6 +4,7 @@
 //! only our exported image, whose allocation stays alive until its texture dies.
 use anyhow::{Context, Result, bail, ensure};
 use ash::{Entry, vk};
+use gtk::{gdk, prelude::*};
 use std::{
     ffi::CStr,
     os::fd::{AsRawFd, BorrowedFd, FromRawFd, IntoRawFd, OwnedFd},
@@ -78,12 +79,13 @@ pub struct Frame {
 
 pub struct Copier {
     device: Arc<Device>,
+    display: gdk::Display,
     // GTK keeps an Arc until it releases the texture. Never overwrite that image.
     frames: Vec<Arc<Frame>>,
 }
 
 impl Copier {
-    pub fn new() -> Result<Self> {
+    pub fn new(display: &gdk::Display) -> Result<Self> {
         unsafe {
             let entry = Entry::load().context("load Vulkan loader")?;
             let app = vk::ApplicationInfo::default()
@@ -97,21 +99,18 @@ impl Copier {
                 _entry: entry,
                 instance,
             });
-            let mut devices = owner.instance.enumerate_physical_devices()?;
-            devices.sort_by_key(|p| {
-                match owner
+            // A discrete GPU is not necessarily the one driving GTK. Prefer
+            // devices whose tiled BGRA exports GTK can import; a shared linear
+            // format is the compatibility fallback on hybrid systems.
+            let formats = display.dmabuf_formats();
+            let mut devices = Vec::new();
+            for physical in owner.instance.enumerate_physical_devices()? {
+                if owner
                     .instance
-                    .get_physical_device_properties(*p)
+                    .get_physical_device_properties(physical)
                     .device_type
+                    == vk::PhysicalDeviceType::CPU
                 {
-                    vk::PhysicalDeviceType::DISCRETE_GPU => 0,
-                    vk::PhysicalDeviceType::INTEGRATED_GPU => 1,
-                    _ => 2,
-                }
-            });
-            for physical in devices {
-                let props = owner.instance.get_physical_device_properties(physical);
-                if props.device_type == vk::PhysicalDeviceType::CPU {
                     continue;
                 }
                 let extensions = owner
@@ -124,12 +123,25 @@ impl Copier {
                 }) {
                     continue;
                 }
+                let modifiers = compatible_export_modifiers(
+                    &export_modifiers(&owner.instance, physical, vk::Format::B8G8R8A8_UNORM),
+                    |modifier| formats.contains(0x34325241, modifier),
+                );
+                if !modifiers.is_empty() {
+                    devices.push((!modifiers.iter().any(|modifier| *modifier != 0), physical));
+                }
+            }
+            devices.sort_by_key(|(linear_only, _)| *linear_only);
+            for (_, physical) in devices {
+                let props = owner.instance.get_physical_device_properties(physical);
                 let Some((family, _)) = owner
                     .instance
                     .get_physical_device_queue_family_properties(physical)
                     .into_iter()
                     .enumerate()
-                    .find(|(_, q)| q.queue_flags.contains(vk::QueueFlags::GRAPHICS))
+                    .find(|(_, q)| {
+                        q.queue_count > 0 && q.queue_flags.contains(vk::QueueFlags::GRAPHICS)
+                    })
                 else {
                     continue;
                 };
@@ -137,13 +149,21 @@ impl Copier {
                     .queue_family_index(family as u32)
                     .queue_priorities(&[1.0])];
                 let names: Vec<_> = REQUIRED.iter().map(|s| s.as_ptr()).collect();
-                let device = owner.instance.create_device(
+                let device = match owner.instance.create_device(
                     physical,
                     &vk::DeviceCreateInfo::default()
                         .queue_create_infos(&queues)
                         .enabled_extension_names(&names),
                     None,
-                )?;
+                ) {
+                    Ok(device) => device,
+                    Err(error) => {
+                        log::warn!(
+                            "graphics: compatible Vulkan device initialization failed: {error}; trying remaining devices"
+                        );
+                        continue;
+                    }
+                };
                 let pool = match device.create_command_pool(
                     &vk::CommandPoolCreateInfo::default()
                         .queue_family_index(family as u32)
@@ -170,10 +190,11 @@ impl Copier {
                         queue,
                         pool,
                     }),
+                    display: display.clone(),
                     frames: Vec::new(),
                 });
             }
-            bail!("no hardware Vulkan device supports DMA-BUF import/export and DRM modifiers")
+            bail!("no hardware Vulkan device supports GTK-compatible DMA-BUF exports")
         }
     }
 
@@ -303,34 +324,15 @@ impl Copier {
 
     fn allocate(&self, width: u32, height: u32, fourcc: u32, format: vk::Format) -> Result<Frame> {
         unsafe {
-            let mut modifiers = vk::DrmFormatModifierPropertiesListEXT::default();
-            let mut props = vk::FormatProperties2::default().push_next(&mut modifiers);
-            self.device
-                .instance
-                .instance
-                .get_physical_device_format_properties2(self.device.physical, format, &mut props);
-            let mut list = vec![
-                vk::DrmFormatModifierPropertiesEXT::default();
-                modifiers.drm_format_modifier_count as usize
-            ];
-            modifiers.p_drm_format_modifier_properties = list.as_mut_ptr();
-            let mut props = vk::FormatProperties2::default().push_next(&mut modifiers);
-            self.device
-                .instance
-                .instance
-                .get_physical_device_format_properties2(self.device.physical, format, &mut props);
-            let required =
-                vk::FormatFeatureFlags::SAMPLED_IMAGE | vk::FormatFeatureFlags::TRANSFER_DST;
-            list.sort_by_key(|m| m.drm_format_modifier != 0);
-            let supported: Vec<_> = list
-                .iter()
-                .filter(|m| {
-                    m.drm_format_modifier_plane_count == 1
-                        && m.drm_format_modifier_tiling_features.contains(required)
-                })
-                .map(|m| m.drm_format_modifier)
-                .collect();
-            ensure!(!supported.is_empty(), "no sampled DMA-BUF export modifier");
+            let formats = self.display.dmabuf_formats();
+            let supported = compatible_export_modifiers(
+                &export_modifiers(&self.device.instance.instance, self.device.physical, format),
+                |modifier| formats.contains(fourcc, modifier),
+            );
+            ensure!(
+                !supported.is_empty(),
+                "no GTK-compatible sampled DMA-BUF export modifier"
+            );
             let mut modifiers = vk::ImageDrmFormatModifierListCreateInfoEXT::default()
                 .drm_format_modifiers(&supported);
             let mut external = vk::ExternalMemoryImageCreateInfo::default().handle_types(DMA);
@@ -579,6 +581,47 @@ pub(crate) fn wait_dmabuf(fd: std::os::fd::RawFd, write: bool) -> Result<()> {
     }
 }
 
+fn export_modifiers(
+    instance: &ash::Instance,
+    physical: vk::PhysicalDevice,
+    format: vk::Format,
+) -> Vec<vk::DrmFormatModifierPropertiesEXT> {
+    unsafe {
+        let mut modifiers = vk::DrmFormatModifierPropertiesListEXT::default();
+        let mut props = vk::FormatProperties2::default().push_next(&mut modifiers);
+        instance.get_physical_device_format_properties2(physical, format, &mut props);
+        let mut list = vec![
+            vk::DrmFormatModifierPropertiesEXT::default();
+            modifiers.drm_format_modifier_count as usize
+        ];
+        modifiers.p_drm_format_modifier_properties = list.as_mut_ptr();
+        let mut props = vk::FormatProperties2::default().push_next(&mut modifiers);
+        instance.get_physical_device_format_properties2(physical, format, &mut props);
+        list.truncate(modifiers.drm_format_modifier_count as usize);
+        list
+    }
+}
+
+fn compatible_export_modifiers(
+    modifiers: &[vk::DrmFormatModifierPropertiesEXT],
+    gtk_supports: impl Fn(u64) -> bool,
+) -> Vec<u64> {
+    let required = vk::FormatFeatureFlags::SAMPLED_IMAGE | vk::FormatFeatureFlags::TRANSFER_DST;
+    let mut supported: Vec<_> = modifiers
+        .iter()
+        .filter(|modifier| {
+            modifier.drm_format_modifier_plane_count == 1
+                && modifier
+                    .drm_format_modifier_tiling_features
+                    .contains(required)
+                && gtk_supports(modifier.drm_format_modifier)
+        })
+        .map(|modifier| modifier.drm_format_modifier)
+        .collect();
+    supported.sort_by_key(|modifier| *modifier != 0);
+    supported
+}
+
 fn image_info(
     format: vk::Format,
     width: u32,
@@ -700,7 +743,7 @@ impl Copier {
 #[cfg(test)]
 pub fn verify_hardware_ownership(display: &gtk::gdk::Display) {
     use gtk::prelude::*;
-    let producer = match Copier::new() {
+    let producer = match Copier::new(display) {
         Ok(copier) => copier,
         Err(error) => {
             eprintln!("SKIP Vulkan ownership fixture: {error:#}");
@@ -724,7 +767,7 @@ pub fn verify_hardware_ownership(display: &gtk::gdk::Display) {
     info.planes[0].fd = source.fd.as_raw_fd();
     info.planes[0].offset = u64::from(source.offset);
     info.planes[0].stride = source.stride;
-    let mut consumer = Copier::new().unwrap();
+    let mut consumer = Copier::new(display).unwrap();
     let first = consumer.copy(&info).unwrap().unwrap();
     let texture = crate::presenter::texture_from_vulkan(display, first.clone()).unwrap();
     // The retained GL alternative has the same borrowed-frame ownership rule.
@@ -820,7 +863,7 @@ fn verify_live_buffer_reuse(display: &gtk::gdk::Display, info: &cef::Accelerated
             .child(&picture)
             .build();
         window.present();
-        let vk_consumer = RefCell::new(Copier::new().unwrap());
+        let vk_consumer = RefCell::new(Copier::new(display).unwrap());
         let gl_consumer = RefCell::new(crate::presenter::Presenter::default());
         let state = Rc::new(RefCell::new((0_usize, 0_usize, None::<String>)));
         let observed = state.clone();
@@ -878,6 +921,45 @@ fn verify_live_buffer_reuse(display: &gtk::gdk::Display, info: &cef::Accelerated
         assert!(
             state.0 >= 12,
             "{transfer} pool stopped circulating: {state:?}"
+        );
+    }
+}
+
+#[cfg(test)]
+mod compatibility_tests {
+    use super::*;
+
+    #[test]
+    fn hybrid_exports_exclude_modifiers_gtk_cannot_import() {
+        let features = vk::FormatFeatureFlags::SAMPLED_IMAGE | vk::FormatFeatureFlags::TRANSFER_DST;
+        let nvidia = vk::DrmFormatModifierPropertiesEXT::default()
+            .drm_format_modifier(0x0300_0000_004f_e012)
+            .drm_format_modifier_plane_count(1)
+            .drm_format_modifier_tiling_features(features);
+        let amd = vk::DrmFormatModifierPropertiesEXT::default()
+            .drm_format_modifier(0x0200_0000_0000_0001)
+            .drm_format_modifier_plane_count(1)
+            .drm_format_modifier_tiling_features(features);
+        let linear = vk::DrmFormatModifierPropertiesEXT::default()
+            .drm_format_modifier_plane_count(1)
+            .drm_format_modifier_tiling_features(features);
+        let accepts = |modifier| modifier == 0 || modifier == amd.drm_format_modifier;
+        assert!(compatible_export_modifiers(&[nvidia], accepts).is_empty());
+        assert_eq!(
+            compatible_export_modifiers(&[nvidia, amd, linear], accepts),
+            vec![0, amd.drm_format_modifier]
+        );
+        assert!(compatible_export_modifiers(&[amd], |_| false).is_empty());
+        assert!(
+            compatible_export_modifiers(
+                &[
+                    amd.drm_format_modifier_plane_count(2),
+                    linear
+                        .drm_format_modifier_tiling_features(vk::FormatFeatureFlags::SAMPLED_IMAGE)
+                ],
+                |_| true
+            )
+            .is_empty()
         );
     }
 }

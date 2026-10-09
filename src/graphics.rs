@@ -6,6 +6,7 @@ use std::{cell::RefCell, rc::Rc};
 
 static DISPLAY: AtomicU8 = AtomicU8::new(0);
 static RESTART: AtomicBool = AtomicBool::new(false);
+static RESTART_NATIVE_HANDLE: AtomicBool = AtomicBool::new(false);
 
 /// Bound GTK's own synchronous GPU waits as well as our frame-copy operations.
 /// Before/after-paint bracket actual drawing; settled or hidden windows have no
@@ -263,6 +264,12 @@ fn angle_backend(backend: &str, display: &str) -> &'static str {
 }
 
 pub fn configure_cef(cmd: &mut CommandLine) {
+    if std::env::var("KARERE_CEF_NATIVE_HANDLE")
+        .is_ok_and(|value| matches!(value.as_str(), "1" | "true"))
+        && cmd.has_switch(Some(&"karere-osr-native-handle".into())) == 0
+    {
+        cmd.append_switch(Some(&"karere-osr-native-handle".into()));
+    }
     if cef_backend() == "software" {
         cmd.append_switch(Some(&"disable-gpu".into()));
         log::warn!("graphics: CEF software recovery selected");
@@ -295,12 +302,36 @@ pub fn retry_cef_after_frame_failure() {
 }
 
 pub fn restart_if_requested() -> anyhow::Result<()> {
+    if RESTART_NATIVE_HANDLE.load(Ordering::Acquire) {
+        crate::gpu_recovery::restart_native_handle();
+    }
     if RESTART.load(Ordering::Acquire) {
         // The supervisor waits for exit before restarting, so the old D-Bus
         // connection and CEF children are gone. It retains the tried backends.
         crate::gpu_recovery::restart_cef(next_cef_backend());
     }
     Ok(())
+}
+
+fn native_handle_retry_allowed(requested: Option<&str>) -> bool {
+    // An explicit opt-out goes straight to CPU recovery. An opt-in is already
+    // using the alternate allocation path, so repeating it cannot help.
+    !matches!(requested, Some("0" | "false" | "1" | "true"))
+}
+
+/// Retry the opt-in CEF allocation path only after a visible shared-texture
+/// browser has delivered no initial frame. Working Mesa paths keep their default.
+pub fn retry_native_handle_after_frame_failure() -> bool {
+    if !native_handle_retry_allowed(std::env::var("KARERE_CEF_NATIVE_HANDLE").ok().as_deref()) {
+        return false;
+    }
+    if !RESTART_NATIVE_HANDLE.swap(true, Ordering::AcqRel) {
+        log::warn!("graphics: no accelerated startup frame; requesting native-handle retry");
+        if let Some(app) = gtk::gio::Application::default() {
+            app.quit();
+        }
+    }
+    true
 }
 
 fn next_cef_backend() -> &'static str {
@@ -311,7 +342,15 @@ fn next_cef_backend() -> &'static str {
 
 #[cfg(test)]
 mod tests {
-    use super::{angle_backend, selected_cef_backend};
+    use super::{angle_backend, native_handle_retry_allowed, selected_cef_backend};
+
+    #[test]
+    fn native_handle_recovery_respects_explicit_choices() {
+        assert!(native_handle_retry_allowed(None));
+        for value in ["0", "false", "1", "true"] {
+            assert!(!native_handle_retry_allowed(Some(value)));
+        }
+    }
 
     #[test]
     fn cef_default_follows_the_working_display_and_keeps_overrides() {

@@ -52,7 +52,7 @@ impl Presenter {
                 if self.copier.is_some() {
                     return true;
                 }
-                match crate::vulkan_frame::Copier::new() {
+                match crate::vulkan_frame::Copier::new(&widget.display()) {
                     Ok(copier) => {
                         self.copier = Some(copier);
                         return true;
@@ -183,7 +183,7 @@ impl Presenter {
 
     fn vulkan(&mut self, display: &gdk::Display, info: &cef::AcceleratedPaintInfo) -> Result<bool> {
         if self.copier.is_none() {
-            self.copier = Some(crate::vulkan_frame::Copier::new()?);
+            self.copier = Some(crate::vulkan_frame::Copier::new(display)?);
         }
         let Some(frame) = self.copier.as_mut().unwrap().copy(info)? else {
             return Ok(false);

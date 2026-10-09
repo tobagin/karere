@@ -1,5 +1,40 @@
 # Default-on acceleration diagnostics
 
+## Compatibility update — 9 October 2026
+
+This branch now includes upstream 4.3.4 and the reviewed conversation diagnostic
+tools from #193. The production wallpaper stylesheet had already been
+cherry-picked upstream as `58e7e8d`; #193 itself remains open. Conversation
+comparisons, including `--amplitude`, now run directly from this checkout.
+
+The CEF backport preserves mappable shared images by default. Native-handle
+allocation requires the new `--karere-osr-native-handle` CEF switch. After a
+visible accelerated browser delivers no initial frame for ten seconds, Karere
+restarts the worker once with that switch, keeping its GTK/CEF backends and saved
+GPU preference. If this attempt also delivers no frames, the existing per-view
+CPU recovery applies. `KARERE_CEF_NATIVE_HANDLE=1` selects the alternate path on
+the first launch; `=0` skips it. A stock engine ignores this custom switch and
+may therefore need two ten-second startup windows before CPU recovery.
+Standalone CEF producer controls must pass `--karere-osr-native-handle` directly;
+they do not use Karere's environment-to-switch mapping.
+
+The Vulkan copier selects devices with BGRA export formats accepted by GTK's
+display instead of preferring a discrete GPU. Every allocation intersects its
+single-plane, sampled/transfer-capable modifiers with GTK's supported formats,
+including the actual output fourcc. This prevents exporting a vendor modifier
+GTK cannot import; cross-device producer imports can still fail and use the
+existing GL/CPU fallback.
+
+These source changes supersede the unconditional native-handle preference in
+the historical measurements below. The revised engine has not been rebuilt or
+tested on the maintainer's AMD/Quadro hybrid or the RTX 5090. The previous local
+archive does not contain this switch. Keep #195 in draft pending compatible
+engine artifacts, updated download pins and hardware validation. The agreed
+alternative remains waiting for an official CEF release containing the fix;
+no delivery date is assumed.
+
+## Historical measurements
+
 GPU frame transfer now defaults on, including NVIDIA, while explicit saved
 opt-outs and `KARERE_GPU_OSR=0` remain effective. A preference or visible chat is
 not proof of accelerated delivery. The original pinned NVIDIA CEF delivered
@@ -257,15 +292,15 @@ workload/window geometry; a single passing sample does not complete that matrix.
 
 ## Combined conversation diagnostics
 
-The integration checkout applies the optional
-[amplitude argument patch](diagnostic-patches/pr193-scroll-amplitude.patch) to
-#193's existing Python runner. Its JavaScript already supports the parameter;
-no sampler or wallpaper code is duplicated. The default remains 900 CSS pixels.
+This checkout includes #193's reviewed Python/JavaScript runner and applies its
+previously optional [amplitude argument patch](diagnostic-patches/pr193-scroll-amplitude.patch).
+The command now exposes `--amplitude` directly; no sampler or wallpaper code is
+duplicated. The default remains 900 CSS pixels.
 The tested maximized chat list has 1,265 pixels of loaded scroll range, less than
 that probe's 900 + 400 guard. `--amplitude 800` fits without loading data or
 relaxing frame-rate acceptance. Geometry, amplitude and range are recorded, and
-each sample restores its original position. Apply the patch after #193 until
-that branch merges; the production feature branch remains independent.
+each sample restores its original position. The patch file is retained as
+historical integration provenance and does not need to be applied again.
 
 The repaired installed bundle now passes all 24 requested scrolling samples:
 three per workload and window size for generated animation, chat list, long text

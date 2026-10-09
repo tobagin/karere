@@ -1,9 +1,17 @@
 # Scrolling and CEF pump diagnostics
 
-Current default-on acceleration work and reproducible producer/media controls
-are documented in [ACCELERATION.md](ACCELERATION.md). Its 240 Hz target remains
-**unverified**. [ADAPTIVE_REFRESH_FINDINGS.md](ADAPTIVE_REFRESH_FINDINGS.md) retains
-the earlier prototype's lower-ceiling measurements and original backend policy.
+## Current checkout
+
+The GPU/adaptive-refresh branch includes upstream 4.3.4 and the reviewed #193
+conversation tools. No additional integration checkout or amplitude patch is
+needed. See [ACCELERATION.md](ACCELERATION.md#compatibility-update--9-october-2026)
+for current allocation/recovery behavior. Earlier reports preserve the exact
+engine and source versions used for their measurements.
+
+[ACCELERATION.md](ACCELERATION.md) preserves the recorded 240 Hz results for
+the earlier repaired engine. The current compatibility revision requires fresh
+engine and hardware validation. [ADAPTIVE_REFRESH_FINDINGS.md](ADAPTIVE_REFRESH_FINDINGS.md)
+retains the earlier prototype's lower-ceiling measurements and original backend policy.
 
 These optional tools reproduce the CPU-buffer off-screen rendering stall described in [issue #173](https://github.com/tobagin/karere/issues/173). The [original findings](FINDINGS.md) document controlled CPU → GPU → CPU comparisons on Karere 4.3.0. The [fix validation](FIX_VALIDATION.md) describes the paint-driven CEF scheduler and compares the compiled application against the original Flatpak.
 

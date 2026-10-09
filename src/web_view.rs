@@ -1920,10 +1920,12 @@ mod imp {
                     });
                     if failed && imp.window_visible.load(Ordering::Relaxed) {
                         if imp.shared_texture_enabled_for_browser() {
-                            log::warn!(
-                                "graphics: accelerated CEF browser delivered no frame; retrying CPU transfer"
-                            );
-                            imp.schedule_software_osr_fallback();
+                            if !crate::graphics::retry_native_handle_after_frame_failure() {
+                                log::warn!(
+                                    "graphics: accelerated CEF browser delivered no frame; retrying CPU transfer"
+                                );
+                                imp.schedule_software_osr_fallback();
+                            }
                         } else {
                             crate::graphics::retry_cef_after_frame_failure();
                         }
@@ -4521,6 +4523,7 @@ mod input_tests {
             });
         }
 
+        #[cfg(debug_assertions)]
         fn send_to_browser(&mut self, _message: crate::ipc::RendererMessage) {
             panic!("copy selection must execute JavaScript, not send a renderer reply");
         }

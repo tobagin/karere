@@ -9,29 +9,34 @@ https://chromium-review.googlesource.com/c/chromium/src/+/8220427
 
 Both changes are required: merely selecting native handles in CEF leaves
 Chromium's capturer taking its CPU readback path and rejecting ARGB results.
-Keep the existing preference on non-Linux platforms. Apply from Chromium src.
+Native handles are opt-in on Linux through --karere-osr-native-handle.
+Keep mappable images by default on every platform to preserve Mesa allocation. Apply from Chromium src.
 Target: CEF 708dc14 / Chromium 152.0.7977.83 before packaging.
 Remove this backport when both upstream changes are in the selected release.
 
 diff --git a/cef/libcef/browser/osr/video_consumer_osr.cc b/cef/libcef/browser/osr/video_consumer_osr.cc
-index 321bf9e51b..1ed745d57d 100644
 --- a/cef/libcef/browser/osr/video_consumer_osr.cc
 +++ b/cef/libcef/browser/osr/video_consumer_osr.cc
-@@ -4,6 +4,7 @@
+@@ -4,6 +4,8 @@
  
  #include "cef/libcef/browser/osr/video_consumer_osr.h"
  
++#include "base/command_line.h"
 +#include "build/build_config.h"
  #include "cef/libcef/browser/osr/render_widget_host_view_osr.h"
  #include "media/base/video_frame_metadata.h"
  #include "media/capture/mojom/video_capture_buffer.mojom.h"
-@@ -51,7 +52,12 @@ void CefVideoConsumerOSR::SetActive(bool active) {
+@@ -51,7 +53,16 @@
      video_capturer_->Start(
          this,
          use_shared_texture_
 +#if BUILDFLAG(IS_LINUX)
-+            ? viz::mojom::BufferFormatPreference::
-+                  kPreferSharedImageWithNativeHandle
++            ? (base::CommandLine::ForCurrentProcess()->HasSwitch(
++                   "karere-osr-native-handle")
++                   ? viz::mojom::BufferFormatPreference::
++                         kPreferSharedImageWithNativeHandle
++                   : viz::mojom::BufferFormatPreference::
++                         kPreferMappableSharedImage)
 +#else
              ? viz::mojom::BufferFormatPreference::kPreferMappableSharedImage
 +#endif
