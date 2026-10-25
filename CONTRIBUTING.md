@@ -35,14 +35,15 @@ This project follows the principles of respect, inclusivity, and professionalism
 
 ### Prerequisites
 
-- **SDKs**: `org.gnome.Sdk//49`, `org.freedesktop.Sdk.Extension.rust-stable//24.08`
+- **SDKs**: `org.gnome.Sdk//51`, `org.freedesktop.Sdk.Extension.rust-stable//26.08`
+- **GTK**: 4.16 or newer (DMA-BUF textures and damage-aware memory texture uploads)
 - **Tools**: `flatpak-builder`, Rust/Cargo 1.97.1 with the matching rustfmt and Clippy components (optional, for local checks)
 
 ### Building with Flatpak (Recommended)
 
 ```bash
 # Install dependencies
-flatpak install org.gnome.Sdk//49 org.gnome.Platform//49 org.freedesktop.Sdk.Extension.rust-stable//24.08
+flatpak install org.gnome.Sdk//51 org.gnome.Platform//51 org.freedesktop.Sdk.Extension.rust-stable//26.08
 
 # Build and run
 flatpak-builder --user --install --force-clean build packaging/io.github.tobagin.karere.Devel.yml
@@ -91,7 +92,7 @@ Karere is built with:
 
 - **Language**: Rust
 - **Toolkit**: GTK4 + LibAdwaita
-- **Web Engine**: WebKitGTK 6.0
+- **Web Engine**: Chromium Embedded Framework (CEF), with off-screen rendering
 - **UI**: Blueprint (`.blp`) compiled to GtkBuilder XML
 - **Distribution**: Flatpak
 

@@ -1,12 +1,13 @@
-# Throwaway CEF proprietary-codec builder. Downloads the latest sources matching
-# the Rust `cef` crate, builds x64 + arm64 minimal distribs, drops tarballs +
+# Throwaway CEF proprietary-codec builder. Downloads the pinned sources matching
+# Cargo.lock, builds x64 + arm64 minimal distribs, drops tarballs +
 # sha256 in /out. The ~200 GB work tree lives in an anonymous volume (/work),
 # discarded with --rm — nothing is kept between runs.
 #
 #   podman build -f tools/cef-container/Containerfile -t cef-codecs tools/
 #   podman run --rm -v ./cef-out:/out:Z cef-codecs
 #
-#   env overrides: CEF_BRANCH=7977 (skip auto-detect), ARCHES="x64" (default "x64 arm64"),
+#   env overrides: CEF_BRANCH + CEF_CHECKOUT (override pin together),
+#                 ARCHES="x64" (default "x64 arm64"),
 #                 CEF_NINJA_JOBS=6 (cap parallelism on a memory-tight host)
 #
 # Package set mirrors the proven .github/workflows/build-cef-codecs.yml runner:

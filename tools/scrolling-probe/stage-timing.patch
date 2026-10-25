@@ -1,0 +1,223 @@
+diff --git a/src/handlers/render.rs b/src/handlers/render.rs
+index 88e6bee..93e98a5 100644
+--- a/src/handlers/render.rs
++++ b/src/handlers/render.rs
+@@ -149,6 +149,11 @@ wrap_render_handler! {
+                     }
+                 }
+             }
++            let damage = union_dirty(dirty_rects, width, height).unwrap_or((0, 0, width, height));
++            let _paint_span = crate::perf_probe::Span::new("paint", &[
++                width as i64, height as i64, damage.0 as i64, damage.1 as i64,
++                damage.2 as i64, damage.3 as i64,
++            ]);
+             let len = (width as usize) * (height as usize) * 4;
+             let slice = unsafe { std::slice::from_raw_parts(buffer, len) };
+
+diff --git a/src/main.rs b/src/main.rs
+index 6cf135b..c6042ec 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -19,6 +19,7 @@ mod i18n;
+ mod ipc;
+ mod notifications;
+ mod paste;
++mod perf_probe;
+ mod permissions_store;
+ mod preferences;
+ mod spellcheck;
+@@ -105,6 +106,7 @@ fn main() -> Result<()> {
+     if is_primary {
+         cef_pump::stop();
+         cef::shutdown();
++        perf_probe::flush();
+     }
+     std::process::exit(code);
+ }
+diff --git a/src/web_view.rs b/src/web_view.rs
+index 7f72f4d..8548b6a 100644
+--- a/src/web_view.rs
++++ b/src/web_view.rs
+@@ -798,6 +798,7 @@ mod imp {
+             self.parent_realize();
+             let widget = self.obj();
+             widget.make_current();
++            crate::perf_probe::observe_clock(&*widget);
+             if let Some(err) = widget.error() {
+                 // No GL context. GDK cannot produce one below GLES 3.0, which is
+                 // all a Mali-400 (PinePhone, lima) offers, so this is terminal for
+@@ -926,6 +927,7 @@ mod imp {
+
+     impl GLAreaImpl for KarereWebView {
+         fn render(&self, _ctx: &gtk::gdk::GLContext) -> glib::Propagation {
++            let _render_span = crate::perf_probe::Span::new("render", &[]);
+             unsafe {
+                 self.draw();
+             }
+@@ -1933,6 +1935,10 @@ mod imp {
+                                 s.frame
+                                     .damage
+                                     .unwrap_or((0, 0, s.frame.width, s.frame.height));
++                            let _upload_span = crate::perf_probe::Span::new(
++                                "upload",
++                                &[x as i64, y as i64, w as i64, h as i64],
++                            );
+                             if (x, y, w, h) != (0, 0, s.frame.width, s.frame.height) {
+                                 gl::PixelStorei(gl::UNPACK_ROW_LENGTH, s.frame.width);
+                                 gl::PixelStorei(gl::UNPACK_SKIP_PIXELS, x);
+@@ -2418,6 +2424,16 @@ mod imp {
+                 // Surface unit = pixel deltas (touchpad); Wheel unit = notch
+                 // clicks (mouse). Scaled differently in send_wheel. (#161)
+                 let precise = ctrl.unit() == gtk::gdk::ScrollUnit::Surface;
++                crate::perf_probe::record(
++                    "gtk-wheel",
++                    crate::perf_probe::now(),
++                    &[
++                        ctrl.current_event_time() as i64,
++                        (dx * 1000.0) as i64,
++                        (dy * 1000.0) as i64,
++                        precise as i64,
++                    ],
++                );
+                 send_wheel(&widget, dx, dy, modifiers, precise);
+                 glib::Propagation::Stop
+             }
+@@ -3245,6 +3261,17 @@ mod imp {
+             modifiers,
+         };
+         with_host(widget, |host| {
++            crate::perf_probe::record(
++                "cef-wheel",
++                crate::perf_probe::now(),
++                &[
++                    ix as i64,
++                    iy as i64,
++                    event.x as i64,
++                    event.y as i64,
++                    s as i64,
++                ],
++            );
+             host.send_mouse_wheel_event(Some(&event), ix as i32, iy as i32);
+         });
+     }
+diff --git a/src/perf_probe.rs b/src/perf_probe.rs
+new file mode 100644
+--- /dev/null
++++ b/src/perf_probe.rs
+@@ -0,0 +1,116 @@
++//! Temporary, opt-in diagnostic timing. Numeric metadata only; no page content.
++use gtk::prelude::*;
++use parking_lot::Mutex;
++use serde::Serialize;
++use std::{cell::Cell, fs::File, io::BufWriter, path::PathBuf, sync::LazyLock};
++
++#[derive(Serialize)]
++struct Entry {
++    stage: &'static str,
++    start_us: i64,
++    end_us: i64,
++    data: [i64; 8],
++}
++struct Capture {
++    path: PathBuf,
++    entries: Mutex<Vec<Entry>>,
++}
++static CAPTURE: LazyLock<Option<Capture>> = LazyLock::new(|| {
++    std::env::var_os("KARERE_STAGE_TRACE").map(|path| Capture {
++        path: path.into(),
++        entries: Mutex::new(Vec::with_capacity(32768)),
++    })
++});
++
++pub fn now() -> i64 {
++    glib::monotonic_time()
++}
++
++pub fn record(stage: &'static str, start_us: i64, values: &[i64]) {
++    let Some(capture) = CAPTURE.as_ref() else {
++        return;
++    };
++    let end_us = now();
++    let mut data = [0; 8];
++    for (slot, value) in data.iter_mut().zip(values) {
++        *slot = *value;
++    }
++    let mut entries = capture.entries.lock();
++    if entries.len() < 500000 {
++        entries.push(Entry {
++            stage,
++            start_us,
++            end_us,
++            data,
++        });
++    }
++}
++
++pub struct Span {
++    stage: &'static str,
++    start: i64,
++    data: [i64; 8],
++}
++impl Span {
++    pub fn new(stage: &'static str, values: &[i64]) -> Self {
++        let mut data = [0; 8];
++        for (slot, value) in data.iter_mut().zip(values) {
++            *slot = *value;
++        }
++        Self {
++            stage,
++            start: now(),
++            data,
++        }
++    }
++}
++impl Drop for Span {
++    fn drop(&mut self) {
++        record(self.stage, self.start, &self.data);
++    }
++}
++
++pub fn observe_clock(widget: &impl IsA<gtk::Widget>) {
++    if CAPTURE.is_none() {
++        return;
++    }
++    if let Some(clock) = widget.frame_clock() {
++        let last = Cell::new(clock.history_start() - 1);
++        clock.connect_after_paint(move |clock| {
++            for frame in (last.get() + 1).max(clock.history_start())..=clock.frame_counter() {
++                let Some(t) = clock.timings(frame) else {
++                    continue;
++                };
++                if !t.is_complete() {
++                    break;
++                }
++                record(
++                    "presentation",
++                    t.frame_time(),
++                    &[
++                        frame,
++                        t.presentation_time(),
++                        t.predicted_presentation_time(),
++                        t.refresh_interval(),
++                    ],
++                );
++                last.set(frame);
++            }
++        });
++    }
++}
++
++pub fn flush() {
++    let Some(capture) = CAPTURE.as_ref() else {
++        return;
++    };
++    match File::create(&capture.path) {
++        Ok(file) => {
++            let entries = std::mem::take(&mut *capture.entries.lock());
++            if let Err(error) = serde_json::to_writer(BufWriter::new(file), &entries) {
++                eprintln!("stage probe write failed: {error}");
++            }
++        }
++        Err(error) => eprintln!("stage probe open failed: {error}"),
++    }
++}

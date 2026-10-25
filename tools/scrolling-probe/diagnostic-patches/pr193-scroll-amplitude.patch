@@ -1,0 +1,29 @@
+--- a/tools/scrolling-probe/conversation_probe.py
++++ b/tools/scrolling-probe/conversation_probe.py
+@@ -34,6 +34,7 @@
+     parser.add_argument('--target', choices=['conversation', 'list'], default='conversation')
+     parser.add_argument('--mode', choices=['programmatic', 'wheel', 'observe'], default='programmatic')
+     parser.add_argument('--duration', type=int, default=20)
++    parser.add_argument('--amplitude', type=float, default=900, help='Fixed loaded scroll range in CSS pixels')
+     parser.add_argument('--wheel-hz', type=float, default=8)
+     parser.add_argument('--anchor-bottom', type=float)
+     parser.add_argument('--run-id', default=None, help=argparse.SUPPRESS)
+@@ -42,6 +43,8 @@
+     validate_label(parser, args.label)
+     if not 1 <= args.duration <= 25:
+         parser.error('--duration must be 1 to 25 seconds (CDP timeout is 35 seconds)')
++    if not 0 < args.amplitude <= 20000:
++        parser.error('--amplitude must be positive and at most 20000 CSS pixels')
+     if not 0 < args.wheel_hz <= 120:
+         parser.error('--wheel-hz must be greater than 0 and at most 120')
+     path = ROOT / 'results' / f'{args.label}_page.json'
+@@ -56,7 +59,8 @@
+             before = metrics(client)
+             params = {'runId': run_id, 'target': args.target,
+                       'mode': 'observe' if args.mode in ('wheel', 'observe') else args.mode,
+-                      'warmup': 5000, 'duration': args.duration * 1000, 'anchorBottom': args.anchor_bottom}
++                      'warmup': 5000, 'duration': args.duration * 1000, 'anchorBottom': args.anchor_bottom,
++                      'amplitude': args.amplitude}
+             geometry = client.evaluate('window.__karereConversationProbe.start(' + json.dumps(params) + ')')
+             host_start = time.monotonic()
+             deliveries = []

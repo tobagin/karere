@@ -22,9 +22,9 @@
       <description>Whether to start the application in the background.</description>
     </key>
     <key name="gpu-rendering" type="b">
-      <default>false</default>
-      <summary>GPU rendering (experimental)</summary>
-      <description>Render the WhatsApp view on the GPU via accelerated off-screen rendering (DMA-BUF import). Experimental; requires a restart. Disable if the chat area is blank.</description>
+      <default>true</default>
+      <summary>GPU frame transfer</summary>
+      <description>Transfer chat frames on the GPU when supported. Enabled by default, with automatic CPU transfer recovery if accelerated frames are unavailable. Changes require a restart.</description>
     </key>
     <key name="close-button-action" type="s">
       <default>'background'</default>

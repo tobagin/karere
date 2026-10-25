@@ -3,25 +3,15 @@
 # build-cef-codecs.sh, move only the distrib tarball + sha256 to /out.
 set -euo pipefail
 
-# Default branch = whatever the latest Rust `cef` crate binds against
-# (its +N.N.N build metadata → chromium branch, 3rd version component).
-if [[ -z "${CEF_BRANCH:-}" ]]; then
-  echo ">> resolving CEF branch from the latest cef crate…"
-  CEF_VER=$(curl -fsSL -A cef-container https://crates.io/api/v1/crates/cef \
-    | python3 -c 'import json,sys; print(json.load(sys.stdin)["crate"]["max_version"].split("+")[1])')
-  # "152.0.6+g708dc14+chromium-152.0.7977.83" → branch 7977, checkout 708dc14.
-  # The exact commit matters: the binaries must match the crate's pinned CEF
-  # version, and branch tip can be a release ahead.
-  read -r CEF_BRANCH CEF_CHECKOUT < <(curl -fsSL https://cef-builds.spotifycdn.com/index.json \
-    | python3 -c "
-import json, sys
-d = json.load(sys.stdin)
-v = next(x for x in d['linux64']['versions'] if x['cef_version'].startswith('$CEF_VER+'))
-print(v['chromium_version'].split('.')[2], v['cef_version'].split('+')[1].lstrip('g'))")
-  export CEF_CHECKOUT
-  echo ">> cef crate $CEF_VER -> chromium branch $CEF_BRANCH, cef commit $CEF_CHECKOUT"
+# Match Cargo.lock and the source patches, not a moving crates.io release.
+if [[ -z "${CEF_BRANCH:-}" && -z "${CEF_CHECKOUT:-}" ]]; then
+  CEF_BRANCH=7977
+  CEF_CHECKOUT=708dc140cbc3286826a8abef89dc23a44ff9ea72
+elif [[ -z "${CEF_BRANCH:-}" || -z "${CEF_CHECKOUT:-}" ]]; then
+  echo "error: set both CEF_BRANCH and CEF_CHECKOUT when changing the pinned engine" >&2
+  exit 2
 fi
-export CEF_BRANCH
+export CEF_BRANCH CEF_CHECKOUT
 
 # Fresh tree every run — skip full git history (saves tens of GB).
 export AUTOMATE_EXTRA="--no-chromium-history"

@@ -1,0 +1,158 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Karere generated media probe</title>
+<style>body{margin:0;background:#222}canvas,video{width:48vw;vertical-align:top}</style>
+<canvas id="source"></canvas><video id="output" muted autoplay playsinline></video>
+<script>
+"use strict";
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const source = document.querySelector("canvas"), output = document.querySelector("video");
+let peers = [], stream, decoded = 0, frameTimes = [], latencies = [];
+const pick = (object, keys) => Object.fromEntries(keys.filter(k => object[k] !== undefined).map(k => [k, object[k]]));
+function frame(now, metadata) {
+  decoded++; frameTimes.push(now);
+  if (Number.isFinite(metadata.captureTime)) latencies.push(now - metadata.captureTime);
+  output.requestVideoFrameCallback(frame);
+}
+output.requestVideoFrameCallback(frame);
+async function until(predicate) {
+  const deadline = performance.now() + 15000;
+  while (!predicate()) {
+    if (performance.now() > deadline) throw new Error("media readiness deadline");
+    await sleep(20);
+  }
+}
+async function stats() {
+  if (!peers.length) return {quality: output.getVideoPlaybackQuality().toJSON?.() || pick(output.getVideoPlaybackQuality(), ["totalVideoFrames", "droppedVideoFrames", "corruptedVideoFrames"])};
+  const rows = [];
+  for (const pc of peers) for (const row of (await pc.getStats()).values()) {
+    if (["outbound-rtp", "inbound-rtp", "codec", "media-source"].includes(row.type)) rows.push(pick(row, [
+      "type", "kind", "id", "codecId", "mimeType", "sdpFmtpLine", "timestamp",
+      "framesEncoded", "framesDecoded", "framesSent", "framesReceived", "framesDropped",
+      "framesPerSecond", "frameWidth", "frameHeight", "bytesSent", "bytesReceived",
+      "totalEncodeTime", "totalDecodeTime", "totalPacketSendDelay", "jitterBufferDelay",
+      "jitterBufferEmittedCount", "encoderImplementation", "decoderImplementation",
+      "powerEfficientEncoder", "powerEfficientDecoder", "qualityLimitationReason",
+      "targetBitrate", "freezeCount", "totalFreezesDuration", "frames", "width", "height"
+    ]));
+  }
+  return rows;
+}
+window.startProbe = async ({kind, width, height, fps, bitrate, codec}) => {
+  source.width = width; source.height = height;
+  if (kind === "playback") {
+    source.hidden = true;
+    output.src = "/sample.mp4";
+    await output.play();
+    await until(() => output.readyState >= 3 && output.videoWidth === width);
+    return {kind, width: output.videoWidth, height: output.videoHeight};
+  }
+  // The runner installs Chromium's fake device and never grants a real device.
+  // Active synthetic capture also exposes the hardware implementation stats
+  // which Chromium intentionally hides from canvas-only, noncapturing pages.
+  if (!new URL(location.href).searchParams.has("fakeCapture")) throw new Error("fake-capture runner required");
+  stream = await navigator.mediaDevices.getUserMedia({video: {
+    width: {exact: width}, height: {exact: height}, frameRate: {exact: fps}
+  }, audio: false});
+  source.hidden = true;
+  const track = stream.getVideoTracks()[0];
+  const sender = new RTCPeerConnection({iceServers: []});
+  const receiver = new RTCPeerConnection({iceServers: []});
+  peers = [sender, receiver];
+  const pending = [[], []];
+  sender.onicecandidate = event => { if (event.candidate) pending[1].push(event.candidate); };
+  receiver.onicecandidate = event => { if (event.candidate) pending[0].push(event.candidate); };
+  receiver.ontrack = event => { output.srcObject = new MediaStream([event.track]); };
+  const transceiver = sender.addTransceiver(track, {direction: "sendonly", streams: [stream]});
+  const codecs = RTCRtpSender.getCapabilities("video").codecs.filter(c => c.mimeType.toLowerCase() === `video/${codec}`.toLowerCase());
+  if (!codecs.length) throw new Error("requested codec unavailable");
+  transceiver.setCodecPreferences(codecs);
+  const parameters = transceiver.sender.getParameters();
+  parameters.encodings[0].maxBitrate = bitrate;
+  parameters.encodings[0].maxFramerate = fps;
+  parameters.degradationPreference = "maintain-resolution";
+  await transceiver.sender.setParameters(parameters);
+  await sender.setLocalDescription(await sender.createOffer());
+  await receiver.setRemoteDescription(sender.localDescription);
+  await receiver.setLocalDescription(await receiver.createAnswer());
+  await sender.setRemoteDescription(receiver.localDescription);
+  await until(() => peers.every(pc => pc.iceGatheringState === "complete"));
+  for (let i = 0; i < 2; i++) for (const candidate of pending[i]) await peers[i].addIceCandidate(candidate);
+  await until(() => output.readyState >= 3 && output.videoWidth > 0);
+  await output.play();
+  return {kind, width: output.videoWidth, height: output.videoHeight, codec,
+    source: "Chromium synthetic capture", sourceSettings: pick(track.getSettings(), ["width", "height", "frameRate"])};
+};
+window.prepareSample = async (warmup = 5) => {
+  if (!peers.length) { output.currentTime = 0; await output.play(); }
+  await sleep(warmup * 1000);
+};
+window.sampleProbe = async (duration = 30, warmup = 5) => {
+  if (warmup) await prepareSample(warmup);
+  const before = await stats(), decodedStart = decoded;
+  frameTimes = []; latencies = [];
+  const start = performance.now(), mediaStart = output.currentTime;
+  await sleep(duration * 1000);
+  const end = performance.now(), after = await stats();
+  const intervals = frameTimes.slice(1).map((value, i) => value - frameTimes[i]).sort((a, b) => a - b);
+  const percentile = (values, p) => values.length ? values[Math.min(values.length - 1, Math.ceil(values.length * p) - 1)] : null;
+  latencies.sort((a, b) => a - b);
+  // Only sample generated output. No camera, microphone or account is involved.
+  const check = document.createElement("canvas"); check.width = check.height = 2;
+  const context = check.getContext("2d"); context.drawImage(output, 0, 0, 2, 2);
+  const pixels = [...context.getImageData(0, 0, 2, 2).data];
+  const sourceFrames = Array.isArray(after) ? after.filter(row => row.type === "media-source")
+    .reduce((sum, row) => sum + (row.frames || 0) - (before.find(old => old.id === row.id)?.frames || 0), 0) : null;
+  return {duration: (end-start)/1000, warmup, before, after,
+    sourceFrames, videoCallbacks: decoded-decodedStart,
+    videoCallbackFps: (decoded-decodedStart)*1000/(end-start),
+    videoIntervalMedianMs: percentile(intervals, .5), videoIntervalP95Ms: percentile(intervals, .95),
+    captureToCallbackMedianMs: percentile(latencies, .5), captureToCallbackP95Ms: percentile(latencies, .95),
+    mediaSeconds: output.currentTime-mediaStart, readyState: output.readyState,
+    width: output.videoWidth, height: output.videoHeight, outputPixelChecksum: pixels.reduce((a,b) => a+b, 0),
+    outputNonBlank: pixels.some((value, index) => index % 4 !== 3 && value > 0),
+    visible: document.visibilityState === "visible", ended: output.ended};
+};
+window.stopProbe = () => {
+  peers.forEach(pc => pc.close());
+  stream?.getTracks().forEach(track => track.stop()); output.pause();
+};
+// Generated playback only, after timing samples. Compare identical decoded
+// frames between software and hardware controls without adding readback to the
+// measured loop. Small RGB grids are sufficient to detect blank/color failures.
+window.verifyPlaybackOutput = async () => {
+  if (peers.length) throw new Error("pixel control requires generated playback");
+  output.pause();
+  const canvas = document.createElement("canvas"); canvas.width = 16; canvas.height = 9;
+  const context = canvas.getContext("2d");
+  const frames = [];
+  for (const position of [1, 12, 25]) {
+    // Seek inside a frame interval, avoiding decoder rounding on an exact PTS.
+    // A seeked event alone can precede delivery of the new hardware texture.
+    const presented = new Promise((resolve, reject) => {
+      let callback;
+      const timeout = setTimeout(() => {
+        output.cancelVideoFrameCallback(callback); reject(new Error("pixel frame deadline"));
+      }, 5000);
+      const check = (now, metadata) => {
+        if (Math.abs(metadata.mediaTime - position) < .02) {
+          clearTimeout(timeout); resolve(metadata.mediaTime);
+        } else {
+          callback = output.requestVideoFrameCallback(check);
+        }
+      };
+      callback = output.requestVideoFrameCallback(check);
+    });
+    const seeked = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error("pixel seek deadline")), 5000);
+      output.addEventListener("seeked", () => { clearTimeout(timeout); resolve(); }, {once: true});
+    });
+    output.currentTime = position + .01; await seeked;
+    if (Math.abs(output.currentTime - position) > .05) throw new Error("pixel seek did not reach requested frame");
+    const presentedMediaTime = await presented;
+    context.drawImage(output, 0, 0, canvas.width, canvas.height);
+    frames.push({mediaTime: output.currentTime, presentedMediaTime, rgba: [...context.getImageData(0, 0, 16, 9).data]});
+  }
+  return {grid: [16, 9], frames};
+};
+</script>

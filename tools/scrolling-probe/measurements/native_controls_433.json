@@ -1,0 +1,1340 @@
+{
+  "scope": "Matched generated stock 4.3.3 and latest PR #193 controls",
+  "samples": [
+    {
+      "label": "native_control_stock433_windowed_1",
+      "capture": "native_control_stock433_windowed_1.jsonl",
+      "geometry": {
+        "width": 1859,
+        "height": 944,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 60.0,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.799999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.933,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.933,
+      "cpu_percent": 37.7,
+      "cpu_by_role": {
+        "main": 22.2,
+        "renderer": 5.2,
+        "gpu-process": 10.2
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 898,
+        "rate": 59.867,
+        "median_ms": 16.666,
+        "p95_ms": 20.84,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2690
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl",
+        "--windowed",
+        "--idle-seconds",
+        "30",
+        "--idle-window",
+        "visible"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "ff514d5691741b5d7a5d9c5c09a6c9fb7256c5974ebcd20317bccb9709c81e27",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.0069866399935563,
+          "wall": 1790631099.4975142,
+          "monotonic": 36080.765395963,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "stock433"
+    },
+    {
+      "label": "native_control_stock433_windowed_2",
+      "capture": "native_control_stock433_windowed_2.jsonl",
+      "geometry": {
+        "width": 1859,
+        "height": 944,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 60.0,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.799999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.933,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.933,
+      "cpu_percent": 38.0,
+      "cpu_by_role": {
+        "main": 22.9,
+        "renderer": 4.9,
+        "gpu-process": 10.3
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 899,
+        "rate": 59.933,
+        "median_ms": 16.667,
+        "p95_ms": 16.718,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2689
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl",
+        "--windowed"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "ff514d5691741b5d7a5d9c5c09a6c9fb7256c5974ebcd20317bccb9709c81e27",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.0372864099990693,
+          "wall": 1790631156.541647,
+          "monotonic": 36137.809528357,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "stock433"
+    },
+    {
+      "label": "native_control_stock433_windowed_3",
+      "capture": "native_control_stock433_windowed_3.jsonl",
+      "geometry": {
+        "width": 1859,
+        "height": 944,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 60.0,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.700000000000728,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.933,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.933,
+      "cpu_percent": 39.1,
+      "cpu_by_role": {
+        "main": 23.1,
+        "renderer": 5.3,
+        "gpu-process": 10.6
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 899,
+        "rate": 59.933,
+        "median_ms": 16.667,
+        "p95_ms": 16.725,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2690
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl",
+        "--windowed"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "ff514d5691741b5d7a5d9c5c09a6c9fb7256c5974ebcd20317bccb9709c81e27",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.0487223040036042,
+          "wall": 1790631178.488774,
+          "monotonic": 36159.756656078,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "stock433"
+    },
+    {
+      "label": "native_control_stock433_maximized_1",
+      "capture": "native_control_stock433_maximized_1.jsonl",
+      "geometry": {
+        "width": 2648,
+        "height": 1398,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 59.867,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.799999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.8,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.8,
+      "cpu_percent": 59.7,
+      "cpu_by_role": {
+        "main": 34.1,
+        "renderer": 5.5,
+        "gpu-process": 20.1
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 896,
+        "rate": 59.733,
+        "median_ms": 16.667,
+        "p95_ms": 20.833,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2682
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl",
+        "--idle-seconds",
+        "30",
+        "--idle-window",
+        "background"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "ff514d5691741b5d7a5d9c5c09a6c9fb7256c5974ebcd20317bccb9709c81e27",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.0822044950036798,
+          "wall": 1790631200.4661846,
+          "monotonic": 36181.73406606,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "stock433"
+    },
+    {
+      "label": "native_control_stock433_maximized_2",
+      "capture": "native_control_stock433_maximized_2.jsonl",
+      "geometry": {
+        "width": 2648,
+        "height": 1398,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 59.8,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.799999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.667,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.4,
+      "cpu_percent": 59.5,
+      "cpu_by_role": {
+        "main": 34.5,
+        "renderer": 5.0,
+        "gpu-process": 20.1
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 890,
+        "rate": 59.333,
+        "median_ms": 16.667,
+        "p95_ms": 16.69,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2687
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "ff514d5691741b5d7a5d9c5c09a6c9fb7256c5974ebcd20317bccb9709c81e27",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.0588883409945993,
+          "wall": 1790631257.4187553,
+          "monotonic": 36238.68663685,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "stock433"
+    },
+    {
+      "label": "native_control_stock433_maximized_3",
+      "capture": "native_control_stock433_maximized_3.jsonl",
+      "geometry": {
+        "width": 2648,
+        "height": 1398,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 59.867,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.799999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.8,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.8,
+      "cpu_percent": 58.6,
+      "cpu_by_role": {
+        "main": 33.9,
+        "renderer": 4.9,
+        "gpu-process": 19.8
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 896,
+        "rate": 59.733,
+        "median_ms": 16.666,
+        "p95_ms": 20.82,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2682
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "ff514d5691741b5d7a5d9c5c09a6c9fb7256c5974ebcd20317bccb9709c81e27",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.1042799510032637,
+          "wall": 1790631279.425754,
+          "monotonic": 36260.693635468,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "stock433"
+    },
+    {
+      "label": "native_control_pr193_windowed_1",
+      "capture": "native_control_pr193_windowed_1.jsonl",
+      "geometry": {
+        "width": 1859,
+        "height": 944,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 60.0,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.700000000000728,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.933,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.933,
+      "cpu_percent": 38.1,
+      "cpu_by_role": {
+        "main": 22.6,
+        "renderer": 5.5,
+        "gpu-process": 10.0
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 899,
+        "rate": 59.933,
+        "median_ms": 16.668,
+        "p95_ms": 20.822,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2689
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl",
+        "--windowed",
+        "--idle-seconds",
+        "30",
+        "--idle-window",
+        "visible"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "7772ee599f2f432bf3c3b9ba8a150d55e8d05bfc6068657776f1755bbb4f1fe3",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.0469421410016366,
+          "wall": 1790631301.3662062,
+          "monotonic": 36282.63408804,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "pr193"
+    },
+    {
+      "label": "native_control_pr193_windowed_2",
+      "capture": "native_control_pr193_windowed_2.jsonl",
+      "geometry": {
+        "width": 1859,
+        "height": 944,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 60.0,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.799999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.933,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.867,
+      "cpu_percent": 37.4,
+      "cpu_by_role": {
+        "main": 22.6,
+        "renderer": 4.9,
+        "gpu-process": 9.9
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 898,
+        "rate": 59.867,
+        "median_ms": 16.667,
+        "p95_ms": 16.725,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2690
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl",
+        "--windowed"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "7772ee599f2f432bf3c3b9ba8a150d55e8d05bfc6068657776f1755bbb4f1fe3",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.0413485530007165,
+          "wall": 1790631358.3852317,
+          "monotonic": 36339.653113146,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "pr193"
+    },
+    {
+      "label": "native_control_pr193_windowed_3",
+      "capture": "native_control_pr193_windowed_3.jsonl",
+      "geometry": {
+        "width": 1859,
+        "height": 944,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 60.0,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.799999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.933,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.867,
+      "cpu_percent": 37.6,
+      "cpu_by_role": {
+        "main": 22.7,
+        "renderer": 4.8,
+        "gpu-process": 10.2
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 898,
+        "rate": 59.867,
+        "median_ms": 16.667,
+        "p95_ms": 16.724,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2690
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl",
+        "--windowed"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "7772ee599f2f432bf3c3b9ba8a150d55e8d05bfc6068657776f1755bbb4f1fe3",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.06018071899598,
+          "wall": 1790631380.3693867,
+          "monotonic": 36361.637268278,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "pr193"
+    },
+    {
+      "label": "native_control_pr193_maximized_1",
+      "capture": "native_control_pr193_maximized_1.jsonl",
+      "geometry": {
+        "width": 2648,
+        "height": 1398,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 59.867,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.700000000000728,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.8,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.733,
+      "cpu_percent": 58.3,
+      "cpu_by_role": {
+        "main": 33.5,
+        "renderer": 5.1,
+        "gpu-process": 19.7
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 896,
+        "rate": 59.733,
+        "median_ms": 16.667,
+        "p95_ms": 20.835,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2684
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl",
+        "--idle-seconds",
+        "30",
+        "--idle-window",
+        "background"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "7772ee599f2f432bf3c3b9ba8a150d55e8d05bfc6068657776f1755bbb4f1fe3",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.0879014429956442,
+          "wall": 1790631402.3749118,
+          "monotonic": 36383.642793019,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "pr193"
+    },
+    {
+      "label": "native_control_pr193_maximized_2",
+      "capture": "native_control_pr193_maximized_2.jsonl",
+      "geometry": {
+        "width": 2648,
+        "height": 1398,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 59.867,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.700000000000728,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.8,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.8,
+      "cpu_percent": 58.5,
+      "cpu_by_role": {
+        "main": 33.5,
+        "renderer": 5.1,
+        "gpu-process": 19.8
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 896,
+        "rate": 59.733,
+        "median_ms": 16.667,
+        "p95_ms": 20.794,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2681
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "7772ee599f2f432bf3c3b9ba8a150d55e8d05bfc6068657776f1755bbb4f1fe3",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.0909303240041481,
+          "wall": 1790631459.455989,
+          "monotonic": 36440.723870326,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "pr193"
+    },
+    {
+      "label": "native_control_pr193_maximized_3",
+      "capture": "native_control_pr193_maximized_3.jsonl",
+      "geometry": {
+        "width": 2648,
+        "height": 1398,
+        "dpr": 2
+      },
+      "duration_seconds": 15.0,
+      "page_rate": 59.867,
+      "page_median_ms": 16.69999999999891,
+      "page_p95_ms": 16.799999999999272,
+      "history_changes": null,
+      "scroll_base": null,
+      "scroll_amplitude": null,
+      "cpu_paints_s": 59.8,
+      "accelerated_callbacks_s": 0.0,
+      "gtk_snapshots_s": 59.733,
+      "cpu_percent": 59.3,
+      "cpu_by_role": {
+        "main": 34.3,
+        "renderer": 5.0,
+        "gpu-process": 20.0
+      },
+      "window_presentation": {
+        "surface": 47,
+        "count": 895,
+        "rate": 59.667,
+        "median_ms": 16.667,
+        "p95_ms": 16.713,
+        "refresh_ms": 4.166666,
+        "unused_refresh_opportunities": 2683
+      },
+      "discarded_feedbacks": 0,
+      "fresh_content_presentation": null,
+      "presentation_clock": {
+        "epoch_minus_monotonic": 1790595018.7321177,
+        "error": null
+      },
+      "transfer_observed": "cpu",
+      "note": "Captured monotonic alignment selects presentation boundaries; legacy receipt-time fallback cannot verify acceptance. Serial/commit correlation requires one visible web view. Unused refresh opportunities are not necessarily dropped frames.",
+      "sample_invalid_reasons": [],
+      "sample_valid": true,
+      "verdict": "presentation unverified",
+      "accelerated_sample_accepted": false,
+      "configuration": [
+        "--gsk-renderer",
+        "gl"
+      ],
+      "cef_graphics_observed": {
+        "devices": [
+          {
+            "vendorId": 4318,
+            "deviceId": 11141,
+            "vendorString": "Google Inc. (NVIDIA Corporation)",
+            "deviceString": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+            "driverVendor": "NVIDIA",
+            "driverVersion": "615.71.09"
+          }
+        ],
+        "feature_status": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "disabled_software",
+          "vulkan": "disabled_off",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webgpu_on_vk_via_gl_interop": "enabled",
+          "webnn": "disabled_off"
+        },
+        "aux": {
+          "displayType": "ANGLE_OPENGL",
+          "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+          "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+          "glVendor": "Google Inc. (NVIDIA Corporation)",
+          "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)",
+          "hardwareSupportsVulkan": true
+        }
+      },
+      "backend_events": [],
+      "application_sha256": "7772ee599f2f432bf3c3b9ba8a150d55e8d05bfc6068657776f1755bbb4f1fe3",
+      "cef_library_sha256": "a96119766abd9d976d1975dc16a49c5e062ade0122afbbf1cf4ee008f9e72fc6",
+      "cef_library_observed": [
+        {
+          "t": 1.0722163389946218,
+          "wall": 1790631481.4180243,
+          "monotonic": 36462.68590526,
+          "kind": "cef_library",
+          "phase": "startup",
+          "observed_paths": [
+            "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+          ],
+          "expected_path": "$WORKSPACE/baseline-4.3.3/build-dir/files/lib/cef/libcef.so"
+        }
+      ],
+      "build": "pr193"
+    }
+  ],
+  "idle": [
+    {
+      "label": "native_control_stock433_windowed_1",
+      "window_state": "visible",
+      "page_visibility": "visible",
+      "duration": 30.010923385620117,
+      "cpu_percent": 0.36528948425007574,
+      "resource_samples": 30
+    },
+    {
+      "label": "native_control_stock433_maximized_1",
+      "window_state": "background",
+      "page_visibility": "hidden",
+      "duration": 30.008136510849,
+      "cpu_percent": 0.2657048540757768,
+      "resource_samples": 30
+    },
+    {
+      "label": "native_control_pr193_windowed_1",
+      "window_state": "visible",
+      "page_visibility": "visible",
+      "duration": 30.00861668586731,
+      "cpu_percent": 0.36534681306368544,
+      "resource_samples": 30
+    },
+    {
+      "label": "native_control_pr193_maximized_1",
+      "window_state": "background",
+      "page_visibility": "hidden",
+      "duration": 30.008180141448975,
+      "cpu_percent": 0.265660648390666,
+      "resource_samples": 30
+    }
+  ],
+  "comparison_complete": true,
+  "source_revisions": {
+    "stock433": "fb0179f94c5bdb25aafca79b7661fec8f169bcaa",
+    "pr193": "7cc4615cbfe1707c3a7cd4f424d8d4a7239dba3c"
+  },
+  "environment": {
+    "display": "DP-1",
+    "resolution": [
+      3840,
+      2160
+    ],
+    "refresh_hz": 240,
+    "scale": 1.45,
+    "adaptive_sync": "Never",
+    "runtime": "org.gnome.Platform/x86_64/51",
+    "gpu": "RTX 5090",
+    "driver": "615.71.09"
+  },
+  "limitation": "Unmodified control binaries have no fresh content serials. Page/CEF/GTK and window presentation rates are diagnostic; fresh presentation remains unverified. Generated fixture comparison does not replace matched real-conversation controls."
+}

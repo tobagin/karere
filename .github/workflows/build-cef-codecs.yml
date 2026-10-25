@@ -10,6 +10,12 @@ on:
         description: "CEF branch number for Chromium 152 (see https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)"
         required: true
         type: string
+        default: "7977"
+      cef_checkout:
+        description: "Exact CEF commit; patches must be verified against this revision"
+        required: true
+        default: "708dc140cbc3286826a8abef89dc23a44ff9ea72"
+        type: string
       runner:
         description: "Runner label(s). Default = GitHub free runner (likely too small). Override with a larger/self-hosted runner."
         required: false
@@ -46,45 +52,30 @@ jobs:
             git python3 python3-pip curl ca-certificates lsb-release sudo \
             build-essential pkg-config
 
-      - name: Fetch depot_tools + automate-git.py
+      - name: Build CEF with proprietary codecs
+        env:
+          CEF_BRANCH: ${{ inputs.cef_branch }}
+          CEF_CHECKOUT: ${{ inputs.cef_checkout }}
+          CEF_ARCH: x64
+          CEF_NINJA_JOBS: "3"
+          CEF_NINJA_RETRIES: "2"
+          AUTOMATE_EXTRA: "--no-chromium-history"
         run: |
           set -eux
           sudo chown -R "$USER" /cef-build
-          cd /cef-build
-          git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          curl -fsSL \
-            "https://bitbucket.org/chromiumembedded/cef/raw/master/tools/automate/automate-git.py" \
-            -o automate-git.py
-          df -h /cef-build
-
-      - name: Build CEF with proprietary codecs
-        env:
-          # proprietary_codecs+ffmpeg_branding=Chrome = H.264/AAC; thin_lto/pgo off +
-          # symbol_level=0 avoid the OOM/timeout-prone link/PGO stages.
-          GN_DEFINES: "is_official_build=true is_component_build=false proprietary_codecs=true ffmpeg_branding=Chrome use_thin_lto=false chrome_pgo_phase=false symbol_level=0 blink_symbol_level=0"
-          CEF_USE_GN: "1"
-        run: |
-          set -eux
-          export PATH="/cef-build/depot_tools:$PATH"
-          cd /cef-build
-          # --no-chromium-history trims tens of GB off checkout; full history overran the LVM.
-          python3 automate-git.py \
-            --download-dir=/cef-build/cef \
-            --branch="${{ inputs.cef_branch }}" \
-            --no-chromium-history \
-            --minimal-distrib \
-            --no-debug-build \
-            --build-target=cefsimple \
-            --x64-build \
-            --force-clean
+          # Keep codecs and all Karere CEF/Chromium patches in one pipeline.
+          bash tools/build-cef-codecs.sh /cef-build
           df -h /cef-build || true
 
       - name: Locate tarball + sha256
         id: dist
         run: |
           set -eux
-          DIST=/cef-build/cef/chromium/src/cef/binary_distrib
-          TARBALL="$(ls -t "$DIST"/cef_binary_*_linux64_minimal.tar.bz2 | head -1)"
+          DIST=/cef-build/chromium/src/cef/binary_distrib
+          TARBALL="$(find "$DIST" -maxdepth 1 -type f \
+            \( -name 'cef_binary_*_linux64_minimal.zip' -o -name 'cef_binary_*_linux64_minimal.tar.bz2' \) \
+            | sort | head -1)"
+          test -n "$TARBALL"
           echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
           sha256sum "$TARBALL" | tee "$TARBALL.sha256"
 

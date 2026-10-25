@@ -1,0 +1,38 @@
+{
+  "scope": "Repaired-engine generated graphics smoke; no performance claim",
+  "engine_sha256": "99ecea06ca889d5a3bc44fbea4d217b7306c6de21a3ee3551a5a3ace5db7d0f7",
+  "graphics": {
+    "displayType": "ANGLE_OPENGL_EGL",
+    "glImplementationParts": "(gl=egl-angle,angle=opengl)",
+    "glRenderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 615.71.09)",
+    "glVendor": "Google Inc. (NVIDIA Corporation)",
+    "glVersion": "OpenGL ES 3.0 (ANGLE 2.1.1 git hash: 7df613367a1d)"
+  },
+  "operations": {
+    "webgl2": {
+      "available": true,
+      "pixels": [
+        64,
+        127,
+        191,
+        255
+      ],
+      "outputCorrect": true,
+      "renderer": "ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL ES 3.2)",
+      "vendor": "Google Inc. (NVIDIA Corporation)"
+    },
+    "webgpu": {
+      "available": true,
+      "vendor": "nvidia",
+      "architecture": "blackwell",
+      "device": "",
+      "description": "",
+      "fallbackAdapter": false,
+      "outputCorrect": true
+    }
+  },
+  "shutdown": {
+    "exit_code": 0,
+    "listener_closed": true
+  }
+}
