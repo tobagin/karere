@@ -137,19 +137,19 @@ impl ksni::Tray for KarereTray {
             MenuItem::Separator,
             StandardItem {
                 label: gettext("Preferences"),
-                activate: Box::new(|_| activate_app_action("preferences", None)),
+                activate: Box::new(|_| activate_dialog_action("preferences")),
                 ..Default::default()
             }
             .into(),
             StandardItem {
                 label: gettext("Keyboard Shortcuts"),
-                activate: Box::new(|_| activate_app_action("show-help-overlay", None)),
+                activate: Box::new(|_| activate_dialog_action("show-help-overlay")),
                 ..Default::default()
             }
             .into(),
             StandardItem {
                 label: gettext("About Karere"),
-                activate: Box::new(|_| activate_app_action("about", None)),
+                activate: Box::new(|_| activate_dialog_action("about")),
                 ..Default::default()
             }
             .into(),
@@ -172,6 +172,23 @@ fn activate_app_action(name: &str, target: Option<glib::Variant>) {
         if let Some(app) = gio::Application::default() {
             app.activate_action(&name, target.as_ref());
         }
+    });
+}
+
+/// Like `activate_app_action`, but shows a hidden window first so the dialog
+/// has a visible parent (#200).
+fn activate_dialog_action(name: &str) {
+    let name = name.to_owned();
+    glib::MainContext::default().invoke(move || {
+        let Some(app) = gio::Application::default().and_downcast::<gtk::Application>() else {
+            return;
+        };
+        if let Some(win) = app.windows().into_iter().next() {
+            if !win.is_visible() {
+                win.present();
+            }
+        }
+        app.activate_action(&name, None);
     });
 }
 
