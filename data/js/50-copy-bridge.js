@@ -4,6 +4,7 @@
 // never reaches the GDK clipboard / PRIMARY. Report selections to the host
 // (SetClipboard), which writes them out:
 //   * `copy` event   → regular clipboard (Ctrl+C / context-menu copy)
+//   * `cut` event    → regular clipboard (Ctrl+X / context-menu cut)
 //   * `navigator.clipboard.writeText/write` → regular clipboard (WhatsApp's
 //     own message menu "Copy")
 //   * `selectionchange` (debounced) → PRIMARY selection (Linux middle-click)
@@ -94,6 +95,52 @@
             e.preventDefault();
           }
         } catch (_) {}
+      },
+      false
+    );
+
+    // Cut (Ctrl+X / context-menu Cut) has the same OSR problem as copy, but
+    // must never preventDefault: that would also cancel the deletion in plain
+    // inputs. The capture listener snapshots the selection before any page
+    // handler can stop propagation or remove it; the bubble listener then
+    // prefers clipboardData the page set (e.g. WhatsApp's composer).
+    function selectedText() {
+      var el = document.activeElement;
+      if (
+        el &&
+        (el.tagName === "TEXTAREA" || el.tagName === "INPUT") &&
+        typeof el.selectionStart === "number" &&
+        el.selectionStart !== el.selectionEnd
+      ) {
+        return String(el.value).substring(el.selectionStart, el.selectionEnd);
+      }
+      var sel = window.getSelection();
+      return sel && !sel.isCollapsed ? sel.toString() : "";
+    }
+    var cutSent = "";
+    window.addEventListener(
+      "cut",
+      function () {
+        try {
+          cutSent = selectedText();
+          if (cutSent) send("SetClipboard", { text: cutSent, primary: false });
+        } catch (_) {}
+      },
+      true
+    );
+    document.addEventListener(
+      "cut",
+      function (e) {
+        try {
+          var text = "";
+          try {
+            text = e.clipboardData && e.clipboardData.getData("text/plain");
+          } catch (_) {}
+          if (text && text !== cutSent) {
+            send("SetClipboard", { text: text, primary: false });
+          }
+        } catch (_) {}
+        cutSent = "";
       },
       false
     );

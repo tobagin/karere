@@ -157,7 +157,7 @@ bash tests/wayland_fractional_verify.sh --help
 ### Text selection automation
 
 - [ ] `cargo test` — unit and headless integration coverage, including ordered raw mouse drag lifecycle, click counts, touch-emulation suppression, HiDPI coordinates, CEF Copy command classification, IPC, clipboard sanitization/caps, and clean SIGTERM exit.
-- [ ] `node tests/copy_bridge.test.js` — executes the production injected copy bridge with populated, duplicate, Unicode/multi-line, immediate-copy, PRIMARY debounce, and empty/collapsed selection cases.
+- [ ] `node tests/copy_bridge.test.js` — executes the production injected copy bridge with populated, duplicate, Unicode/multi-line, immediate-copy, PRIMARY debounce, and empty/collapsed selection cases, plus cut (capture-phase snapshot, page clipboardData, plain inputs, never cancelling the deletion).
 - [ ] `bash tests/flathub_beta_cef_policy.sh` — offline; asserts the flathub-beta CEF/engine policy (beta manifest mirrors stable: CEF tag, archive.json names, karere tag, GSK_RENDERER=gl, zero chromium-148).
 
 ## Beta testing (flathub-beta)
