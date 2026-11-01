@@ -1,5 +1,5 @@
 /* Observation-only CEF callback tracing. ABI verified against checksum-locked
- * cef-dll-sys 152.3.0+152.0.6, x86_64_unknown_linux_gnu.rs.
+ * CEF 152.0.6 and 156.0.14/156.0.15 Linux x86-64 headers (cef_probe_abi.c).
  * Expected sizes: base 40, app 80, browser-process handler 96 bytes.
  * This wrapper preserves callbacks and reference counts; it records no page data.
  */
@@ -75,22 +75,26 @@ static struct handler_prefix *observe_get_handler(struct app_prefix *app) {
 }
 
 int cef_initialize(const void *args, const void *settings, void *opaque, void *info) {
-    /* cef_settings_t: size 448, remote_debugging_port offset 336, verified in
-     * the same checksum-locked binding. This enables loopback CDP without
+    /* cef_settings_t: sizes 448 (152) / 496 (156), port offset 336, verified
+     * against the matching headers. This enables loopback CDP without
      * Karere's --debug switches that relax origin/private-network checks. */
-    union { max_align_t alignment; unsigned char bytes[448]; } local_settings;
-    if (getenv("KARERE_PROBE_CDP") && settings && *(const size_t *)settings == 448) {
+    union { max_align_t alignment; unsigned char bytes[496]; } local_settings;
+    size_t settings_size = settings ? *(const size_t *)settings : 0;
+    if (getenv("KARERE_PROBE_CDP") &&
+        (settings_size == 448 || settings_size == 496)) {
         const int port = 9333;
-        memcpy(local_settings.bytes, settings, sizeof(local_settings.bytes));
+        memcpy(local_settings.bytes, settings, settings_size);
         memcpy(local_settings.bytes + 336, &port, sizeof(port));
         settings = local_settings.bytes;
-        fprintf(stderr, "pump-probe local_cdp_enabled port=9333 standard_security_flags=preserved\n");
+        fprintf(stderr, "pump-probe local_cdp_enabled port=9333 settings_size=%zu standard_security_flags=preserved\n", settings_size);
+    } else if (getenv("KARERE_PROBE_CDP")) {
+        fprintf(stderr, "pump-probe unsupported_settings_abi size=%zu CDP_disabled\n", settings_size);
     }
     struct app_prefix *app = opaque;
     if (app && app->size == sizeof(*app) && app->get_handler) {
         original_get_handler = app->get_handler;
         app->get_handler = observe_get_handler;
-        fprintf(stderr, "pump-probe schedule_callback_wrapped ABI=cef152-linux-x86_64\n");
+        fprintf(stderr, "pump-probe schedule_callback_wrapped ABI=cef152-or156-linux-x86_64\n");
     }
     return timing_initialize(args, settings, opaque, info);
 }

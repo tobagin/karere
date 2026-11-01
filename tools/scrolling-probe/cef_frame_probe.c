@@ -92,6 +92,9 @@ static int CEF_CALLBACK screen_info(cef_render_handler_t *self,
     info->rect = info->available_rect = (cef_rect_t){0, 0, probe_width, probe_height};
     return 1;
 }
+#ifdef KARERE_FRAME_INTEGRITY
+#include "cef_frame_integrity.h"
+#endif
 static void count_frame(int accelerated) {
     const double now = seconds();
     if (!first_frame) first_frame = now;
@@ -104,6 +107,10 @@ static void CEF_CALLBACK paint(cef_render_handler_t *self, cef_browser_t *browse
                               cef_paint_element_type_t type, size_t count,
                               const cef_rect_t *rects, const void *pixels,
                               int width, int height) {
+#ifdef KARERE_FRAME_INTEGRITY
+    if (type == PET_VIEW && integrity_should_check(width, height))
+        integrity_inspect(pixels, width, height, 1, (size_t)width * 4);
+#endif
     if (type == PET_VIEW) count_frame(0);
 }
 static void CEF_CALLBACK accelerated(cef_render_handler_t *self,
@@ -112,6 +119,9 @@ static void CEF_CALLBACK accelerated(cef_render_handler_t *self,
                                     const cef_rect_t *rects,
                                     const cef_accelerated_paint_info_t *info) {
     if (type != PET_VIEW) return;
+#ifdef KARERE_FRAME_INTEGRITY
+    integrity_gpu(info);
+#endif
     if (!gpu_frames) {
         printf("{\"kind\":\"first_accelerated_frame\",\"planes\":%d,"
                "\"modifier\":\"0x%016" PRIx64 "\",\"format\":%d,"
@@ -158,8 +168,13 @@ static void pump_until(double deadline) {
 int main(int argc, char **argv) {
     probe_width = option("KARERE_FRAME_PROBE_WIDTH", 960, 8192);
     probe_height = option("KARERE_FRAME_PROBE_HEIGHT", 540, 8192);
-    const int duration = option("KARERE_FRAME_PROBE_DURATION", 15, 3600);
+    int duration = option("KARERE_FRAME_PROBE_DURATION", 15, 3600);
     const int rate = option("KARERE_FRAME_PROBE_RATE", 240, 1000);
+#ifdef KARERE_FRAME_INTEGRITY
+    integrity_enabled = getenv("KARERE_FRAME_PROBE_INTEGRITY") != NULL;
+    integrity_target = option("KARERE_FRAME_PROBE_RESIZES", 72, 72);
+    if (integrity_enabled) duration = 2 + (integrity_target * 35 + 99) / 100;
+#endif
     const char *hash = cef_api_hash(CEF_API_VERSION, 0);
     if (!hash || strcmp(hash, CEF_API_HASH_PLATFORM)) {
         fprintf(stderr, "CEF header/library API hash mismatch\n");
@@ -246,6 +261,16 @@ int main(int argc, char **argv) {
     const double start = seconds();
     sample_start = start + 5;
     sample_end = sample_start + duration;
+#ifdef KARERE_FRAME_INTEGRITY
+    if (integrity_enabled) {
+        integrity_started = start;
+        integrity_next = start + 5.5;
+        while (!interrupted && !closed && seconds() < sample_end) {
+            integrity_tick(host);
+            pump_until(seconds() + .002);
+        }
+    } else
+#endif
     pump_until(sample_end);
     const double end = seconds();
     const double sampled = end > sample_start ? end - sample_start : 0;
@@ -268,10 +293,18 @@ int main(int argc, char **argv) {
     host->base.release(&host->base);
     browser->base.release(&browser->base);
     cef_shutdown();
+#ifdef KARERE_FRAME_INTEGRITY
+    int integrity_passed = !integrity_enabled || integrity_report();
+    integrity_cleanup();
+#endif
     release(&client->base);
     release(&render->base);
     release(&life->base);
     release(&app->base);
     release(&process->base);
+#ifdef KARERE_FRAME_INTEGRITY
+    return integrity_passed ? 0 : 4;
+#else
     return 0;
+#endif
 }

@@ -104,6 +104,15 @@ class CorrelationTests(unittest.TestCase):
         self.assertEqual(result['transfer_observed'], 'cpu')
         self.assertFalse(result['accelerated_sample_accepted'])
 
+    def test_texture_readback_cannot_pass_performance_acceptance(self):
+        """A correctness fixture stays invalid even with perfect timing records."""
+        rows, page = sample()
+        rows.insert(0, {'kind': 'integrity_mode', 'wall': 9, 'performance_sample': False})
+        result = summarize(rows, page)
+        self.assertFalse(result['sample_valid'])
+        self.assertFalse(result['accelerated_sample_accepted'])
+        self.assertEqual(result['verdict'], 'presentation unverified')
+
     def test_short_samples_and_unreliable_feedback_cannot_pass(self):
         """Smoke duration or software-estimated presentation is insufficient."""
         for arguments in ({'seconds': 1}, {'flags': 3}):

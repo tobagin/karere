@@ -44,10 +44,13 @@ def main():
             ], check=True, env=environment)
             # Replace the inode rather than truncating a potentially mapped library.
             output.replace(build / output.name)
+    # Keep overrides separate when stable and Devel are compared in sequence.
+    # An override for one schema must never silently reset the other's defaults.
+    schemas = build / APP
     for windowed in (False, True):
         for gpu in (False, True):
-            directory = build / (("schemas_windowed" if windowed else "schemas") + ("_gpu" if gpu else ""))
-            directory.mkdir(exist_ok=True)
+            directory = schemas / (("schemas_windowed" if windowed else "schemas") + ("_gpu" if gpu else ""))
+            directory.mkdir(parents=True, exist_ok=True)
             (directory / f"{APP}.gschema.xml").write_bytes(schema)
             (directory / "99-perf.gschema.override").write_text(
                 f"[{APP}]\nis-maximized={str(not windowed).lower()}\ngpu-rendering={str(gpu).lower()}\n"

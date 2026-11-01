@@ -142,8 +142,8 @@ def configure_presentation_probe(parser, args):
     APP = args.app_id
     if not re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)+", APP):
         parser.error("Invalid Flatpak application ID")
-    if args.windowed and not args.synthetic:
-        parser.error("--windowed requires an isolated --synthetic fixture")
+    if args.windowed and not (args.synthetic or args.profile_directory):
+        parser.error("--windowed requires an isolated fixture or cloned profile")
 
 
 def synthetic_visibility():
@@ -161,6 +161,28 @@ def synthetic_visibility():
     raise RuntimeError('Generated page unavailable for the background visibility check')
 
 
+def cef_gpu_info():
+    """Read actual browser graphics state, never page targets or account data."""
+    from cdp_local import Client
+    with urllib.request.urlopen('http://127.0.0.1:9333/json/version', timeout=.5) as response:
+        version = json.load(response)
+    client = Client(version['webSocketDebuggerUrl'])
+    try:
+        gpu = client.call('SystemInfo.getInfo', {})['gpu']
+        attributes = gpu.get('auxAttributes', {})
+        return {
+            'devices': gpu.get('devices', []),
+            'feature_status': gpu.get('featureStatus', {}),
+            'graphics': {key: attributes[key] for key in (
+                'glRenderer', 'glVendor', 'glVersion', 'displayType', 'glImplementationParts'
+            ) if key in attributes},
+            'video_decoding_capabilities': gpu.get('videoDecoding', []),
+            'video_encoding_capabilities': gpu.get('videoEncoding', []),
+        }
+    finally:
+        client.close()
+
+
 def main():
     """Launch one reversible diagnostic instance and capture allowlisted data."""
     parser = argparse.ArgumentParser()
@@ -172,6 +194,8 @@ def main():
     parser.add_argument("--synthetic", action="store_true")
     parser.add_argument("--generated-file", type=Path)
     parser.add_argument("--hold-synthetic", action="store_true")
+    parser.add_argument("--frame-integrity", action="store_true",
+                        help="Read back generated fixture textures; invalid for FPS sampling")
     parser.add_argument("--stage-trace", action="store_true")
     parser.add_argument("--synthetic-gpu", action="store_true")
     parser.add_argument("--chat-list", action="store_true")
@@ -185,11 +209,25 @@ def main():
     parser.add_argument("--x11-recovery", action="store_true", help="One-launch X11 sockets for an isolated fixture")
     parser.add_argument("--binary", type=Path, help="Test a compiled Karere inside the installed Flatpak runtime")
     parser.add_argument("--cef-directory", type=Path, help="Matching CEF library/resources for an engine control")
+    parser.add_argument("--profile-directory", type=Path,
+                        help="Private diagnostic clone with a .karere-diagnostic-profile marker")
+    parser.add_argument("--profile-transfer", choices=['cpu', 'accelerated'], default='accelerated',
+                        help="Transfer setting in the cloned profile's memory-only settings")
     parser.add_argument("--idle-seconds", type=float, default=0,
                         help="After scrolling and 5 seconds settling, measure this many idle seconds")
     parser.add_argument("--idle-window", choices=['visible', 'minimized', 'background'], default='visible',
                         help="Window action before idle measurement; background requires --synthetic")
     args = parser.parse_args()
+    if args.profile_directory:
+        if args.synthetic:
+            parser.error('--profile-directory and --synthetic are separate workloads')
+        args.profile_directory = args.profile_directory.resolve(strict=True)
+        if (not args.profile_directory.is_dir()
+                or not (args.profile_directory / '.karere-diagnostic-profile').is_file()
+                or args.profile_directory.is_relative_to((Path.home() / '.var/app').resolve())):
+            parser.error('--profile-directory must be a marked diagnostic clone outside normal Flatpak profiles')
+    if args.frame_integrity and not (args.synthetic and args.generated_file and args.hold_synthetic):
+        parser.error('--frame-integrity requires --synthetic, --generated-file and --hold-synthetic')
     if args.x11_recovery and not args.synthetic:
         parser.error("--x11-recovery requires an isolated --synthetic fixture")
     if (args.generated_file or args.hold_synthetic) and not args.synthetic:
@@ -246,6 +284,8 @@ def main():
     prefs = subprocess.check_output(["flatpak", "run", "--command=sh", APP, "-c", 'for key in ' + ' '.join(KEYS) + '; do printf "%s=" "$key"; gsettings get ' + APP + ' "$key"; done'], text=True)
     settings = dict(line.split("=", 1) for line in prefs.splitlines() if "=" in line)
     launch = ["flatpak", "run", "--env=RUST_LOG=" + ("warn" if args.normal_logging else LOG_FILTER), "--env=RUST_LOG_STYLE=never"]
+    if args.frame_integrity:
+        launch += ['--env=KARERE_GENERATED_FRAME_INTEGRITY=1']
     if args.x11_recovery:
         launch += ["--nosocket=wayland", "--nosocket=fallback-x11", "--socket=x11", "--env=GDK_BACKEND=x11"]
     if args.pump_probe or args.fast_backstop or args.schedule_probe:
@@ -266,15 +306,19 @@ def main():
                         (args.cpu_presenter, "KARERE_CPU_PRESENTER")):
         if value:
             launch.append(f"--env={name}={value}")
-    if args.synthetic:
-        schema_dir = BUILD / (('schemas_windowed' if args.windowed else 'schemas') + ('_gpu' if args.synthetic_gpu else ''))
+    if args.synthetic or args.profile_directory:
+        gpu = args.synthetic_gpu if args.synthetic else args.profile_transfer == 'accelerated'
+        schema_dir = BUILD / APP / (('schemas_windowed' if args.windowed else 'schemas') + ('_gpu' if gpu else ''))
         if not (schema_dir / 'gschemas.compiled').is_file():
             parser.error('Isolated schemas not built; run prepare.py first')
+        profile = args.profile_directory or Path(f'/tmp/karere-perf-{args.label}')
         launch += [f"--filesystem={ROOT}:ro", "--env=GSETTINGS_BACKEND=memory",
                    f"--env=GSETTINGS_SCHEMA_DIR={schema_dir}",
-                   f"--env=XDG_DATA_HOME=/tmp/karere-perf-{args.label}/data",
-                   f"--env=XDG_CONFIG_HOME=/tmp/karere-perf-{args.label}/config",
-                   f"--env=XDG_CACHE_HOME=/tmp/karere-perf-{args.label}/cache"]
+                   f"--env=XDG_DATA_HOME={profile / 'data'}",
+                   f"--env=XDG_CONFIG_HOME={profile / 'config'}",
+                   f"--env=XDG_CACHE_HOME={profile / 'cache'}"]
+        if args.profile_directory:
+            launch.append(f'--filesystem={profile}:rw')
     if args.binary:
         launch += [f"--filesystem={args.binary.parent}:ro", f"--command={args.binary}"]
     if args.cef_directory:
@@ -315,6 +359,7 @@ def main():
     idle_visibility = None
     synthetic_debug_reported = False
     cef_paths_reported = False
+    cef_gpu_reported = False
     print(json.dumps({"capture": str(output), "launcher_pid": child.pid, "settings": settings}), flush=True)
     with output.open("x", buffering=1) as stream:
         def emit(kind, **values):
@@ -339,6 +384,10 @@ def main():
             else:
                 subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
         emit("start", label=args.label, settings=settings, launcher_pid=child.pid, normal_logging=args.normal_logging, pump_probe=args.pump_probe, fast_backstop=args.fast_backstop, schedule_probe=args.schedule_probe, synthetic=args.synthetic, synthetic_gpu=args.synthetic_gpu, chat_list=args.chat_list, gsk_renderer=args.gsk_renderer, cef_graphics=args.cef_graphics, frame_transfer=args.frame_transfer, cpu_presenter=args.cpu_presenter, binary_sha256=binary_hash, cef_library_sha256=cef_hash, windowed=args.windowed, wayland_timing=args.wayland_timing)
+        if args.profile_directory:
+            emit('profile_clone', memory_settings=True, transfer_requested=args.profile_transfer)
+        if args.frame_integrity:
+            emit('integrity_mode', performance_sample=False, generated_only=True)
         while True:
             while not live_results.empty():
                 kind, report = live_results.get_nowait()
@@ -354,6 +403,8 @@ def main():
                 while b"\n" in buffer:
                     line, buffer = buffer.split(b"\n", 1)
                     text = line.decode(errors="replace")
+                    if args.frame_integrity and text.startswith('KARERE_INTEGRITY '):
+                        emit('integrity', **json.loads(text.removeprefix('KARERE_INTEGRITY ')))
                     if args.wayland_timing and re.search(r"wp_presentation|wl_surface#\d+\.(?:commit|frame)|wl_callback#\d+\.done", text):
                         emit("wayland", message=text)
                     if ALLOW.search(text):
@@ -373,6 +424,14 @@ def main():
                 idle_end = None
                 subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
             if now - last_sample >= 1:
+                if args.schedule_probe and not cef_gpu_reported:
+                    try:
+                        emit('cef_gpu', **cef_gpu_info())
+                        cef_gpu_reported = True
+                    except (OSError, ValueError, RuntimeError, KeyError):
+                        if now - start > 15:
+                            emit('cef_gpu_unavailable')
+                            cef_gpu_reported = True
                 if not cef_paths_reported:
                     paths = cef_library_paths(child.pid)
                     if paths:

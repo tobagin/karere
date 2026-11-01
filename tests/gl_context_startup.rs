@@ -10,7 +10,10 @@ use std::process::{Child, Command, Stdio};
 use std::sync::mpsc::{self, Receiver};
 use std::time::{Duration, Instant};
 
-const APP_ID: &str = "io.github.tobagin.karere";
+const APP_ID: &str = match option_env!("KARERE_APP_ID") {
+    Some(id) => id,
+    None => "io.github.tobagin.karere",
+};
 const STARTUP_TIMEOUT: Duration = Duration::from_secs(30);
 
 struct RunningApp {
@@ -199,6 +202,7 @@ fn assert_no_context_error(output: &str) {
 
 fn mesa_egl_vendor_file() -> Option<&'static Path> {
     [
+        "/usr/lib/x86_64-linux-gnu/GL/default/share/glvnd/egl_vendor.d/50_mesa.json",
         "/usr/share/glvnd/egl_vendor.d/50_mesa.json",
         "/usr/share/egl/egl_external_platform.d/50_mesa.json",
     ]

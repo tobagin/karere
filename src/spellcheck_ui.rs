@@ -5,6 +5,8 @@
 //! star updates the item's `favorite`; the caller persists
 //! `favorite-spell-check-languages` and calls `sorter.changed(...)` to re-sort.
 
+use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use gtk::glib;
@@ -78,6 +80,10 @@ pub fn build_list_factory(on_toggle: SpellToggleCallback) -> gtk::SignalListItem
         item.set_child(Some(&row));
     });
 
+    // Handler ids live here, not on the button (main thread only).
+    let toggle_ids: Rc<RefCell<HashMap<usize, glib::SignalHandlerId>>> =
+        Rc::new(RefCell::new(HashMap::new()));
+    let bind_ids = toggle_ids.clone();
     factory.connect_bind(move |_, item| {
         let item = item.downcast_ref::<gtk::ListItem>().expect("ListItem");
         let Some(lang) = item.item().and_downcast::<SpellLang>() else {
@@ -94,12 +100,14 @@ pub fn build_list_factory(on_toggle: SpellToggleCallback) -> gtk::SignalListItem
 
         label.set_text(&lang.name());
         update_star_visual(&star, lang.favorite());
-        star.set_active(lang.favorite());
 
-        // Reconnect cleanly each bind: stash the handler id on the button.
-        if let Some(id) = unsafe { star.steal_data::<glib::SignalHandlerId>("toggle-id") } {
-            star.disconnect(id);
+        // Reconnect cleanly each bind; disconnect before set_active so a
+        // recycled row never fires the previous item's handler.
+        let key = star.as_ptr() as usize;
+        if let Some(old) = bind_ids.borrow_mut().remove(&key) {
+            star.disconnect(old);
         }
+        star.set_active(lang.favorite());
         let on_toggle = on_toggle.clone();
         let lang_weak = lang.downgrade();
         let id = star.connect_toggled(move |btn| {
@@ -110,7 +118,25 @@ pub fn build_list_factory(on_toggle: SpellToggleCallback) -> gtk::SignalListItem
             update_star_visual(btn, now);
             on_toggle(&lang, now);
         });
-        unsafe { star.set_data("toggle-id", id) };
+        bind_ids.borrow_mut().insert(key, id);
+    });
+
+    // Forget the handler on unbind so recycled rows don't leak.
+    let unbind_ids = toggle_ids.clone();
+    factory.connect_unbind(move |_, item| {
+        let Some(item) = item.downcast_ref::<gtk::ListItem>() else {
+            return;
+        };
+        let Some(row) = item.child().and_downcast::<gtk::Box>() else {
+            return;
+        };
+        let Some(star) = row.last_child().and_downcast::<gtk::ToggleButton>() else {
+            return;
+        };
+        let key = star.as_ptr() as usize;
+        if let Some(old) = unbind_ids.borrow_mut().remove(&key) {
+            star.disconnect(old);
+        }
     });
 
     factory

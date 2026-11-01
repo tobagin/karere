@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Generated CEF frame integrity fixture</title>
+<style>html,body{margin:0;overflow:hidden}canvas{display:block;width:100vw;height:100vh}</style>
+<canvas></canvas>
+<script>
+'use strict';
+const canvas = document.querySelector('canvas');
+const context = canvas.getContext('2d', {alpha: false});
+let frame = 0;
+function paint() {
+  if (canvas.width !== innerWidth || canvas.height !== innerHeight) {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+  }
+  frame = (frame + 1) % 128;
+  context.fillStyle = `rgb(${64 + frame},${64 + frame * 37 % 128},${64 + frame * 53 % 128})`;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  requestAnimationFrame(paint);
+}
+requestAnimationFrame(paint);
+</script>

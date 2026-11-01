@@ -165,6 +165,8 @@ def report(capture, page=None, single_view=False):
     }
     fresh_stats = result['fresh_content_presentation']
     invalid = []
+    if any(row.get('kind') in ('integrity', 'integrity_mode') for row in rows):
+        invalid.append('generated texture readback enabled; not a performance sample')
     if page.get('status', 'complete') != 'complete':
         invalid.append('page sample incomplete')
     if page.get('scroll_height_changes', 0):

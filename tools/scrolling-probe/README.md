@@ -15,7 +15,11 @@ retains the earlier prototype's lower-ceiling measurements and original backend 
 
 These optional tools reproduce the CPU-buffer off-screen rendering stall described in [issue #173](https://github.com/tobagin/karere/issues/173). The [original findings](FINDINGS.md) document controlled CPU → GPU → CPU comparisons on Karere 4.3.0. The [fix validation](FIX_VALIDATION.md) describes the paint-driven CEF scheduler and compares the compiled application against the original Flatpak.
 
-The probes were tested with the stable `io.github.tobagin.karere` Flatpak, CEF `152.0.6+g708dc14`, on **Linux x86-64**. They rely on that CEF ABI. They are developer diagnostics and are not included in the application build or installed as persistent overrides.
+The timing probes support the verified CEF 152 and 156 ABIs on **Linux x86-64**.
+Other versions fail closed until their layouts are checked. These are optional
+developer diagnostics, absent from the installed application and persistent overrides.
+See [the released CEF 156 retest](RELEASE_156_RETEST.md) for current provenance,
+completed controls and the remaining acceptance gates.
 
 The v4.3.2 [conversation follow-up](CONVERSATION_FINDINGS.md) identifies a separate
 SVG-mask raster cost and CPU frame-transfer cost after the original scheduler
@@ -32,7 +36,75 @@ python3 tools/scrolling-probe/prepare.py
 
 The preparation script builds the two C libraries and derives memory-backend GSettings schemas from the installed Flatpak. Generated libraries, schemas and captures stay under ignored `.build/` and `results/` directories. No Rust/CEF rebuild is needed. The GCC TLS dialect flag keeps the interposer compatible with the tested Flatpak runtime.
 
-The ABI was verified against the checksum-locked `cef-dll-sys 152.3.0+152.0.6` Linux x86-64 bindings (crate SHA-256 `ced5c6a0f46744561b50e283f9134c21bdd95a2e991695b0fc7399ad79765bbd`). App size/handler offset: 80/64 bytes. Browser-handler size/schedule offset: 96/72 bytes. Settings size/debug-port offset: 448/336 bytes.
+The ABI was checked against matching CEF headers. App size/handler offset is
+80/64 bytes and browser-handler size/schedule offset is 96/72 bytes in both.
+Settings size/debug-port offset is **448/336** in CEF 152 and **496/336** in
+CEF 156. Compile `cef_probe_abi.c` against the exact runtime headers before
+loading the interposer. Preparation keeps stable and Devel schema overrides
+in separate application-ID directories, so sequential comparisons cannot reset
+another build's fixture defaults.
+
+## Released-engine producer and image checks
+
+`cef_release_check.py` runs a matching, separately compiled `cef_frame_probe.c`
+inside the Devel sandbox. It verifies the actual mapped library and records
+its hash, CEF/ANGLE device and backend, callback type, and orderly shutdown of
+the temporary loopback listener. It uses generated pages and temporary profiles.
+Compile against the selected library's headers; the producer rejects an API
+hash mismatch before CEF initialization. Neither callbacks nor its optional
+readback checks establish compositor presentation FPS.
+
+For CEF 156, compile inside the matching SDK with the staged headers/library:
+
+```sh
+export CEF_PATH=/absolute/path/to/matching/cef
+flatpak run --devel --filesystem="$PWD" --filesystem="$CEF_PATH:ro" \
+  --env=CEF_PATH="$CEF_PATH" --env=PROBE_SOURCE="$PWD/tools/scrolling-probe" \
+  --env=PROBE_OUT="$PWD/.build/release-probes" --command=sh org.gnome.Sdk//51 -c '
+  set -eu
+  mkdir -p "$PROBE_OUT"
+  gcc -O2 -Wall -Wextra -Werror -Wno-unused-parameter -DCEF_API_VERSION=15600 \
+    -I"$CEF_PATH" "$PROBE_SOURCE/cef_probe_abi.c" -o "$PROBE_OUT/cef-abi"
+  "$PROBE_OUT/cef-abi"
+  gcc -O2 -Wall -Wextra -Werror -Wno-unused-parameter -DCEF_API_VERSION=15600 \
+    -I"$CEF_PATH" "$PROBE_SOURCE/cef_frame_probe.c" -L"$CEF_PATH" \
+    -Wl,-rpath,"$CEF_PATH" -lcef -o "$PROBE_OUT/cef-frame"
+  gcc -O2 -Wall -Wextra -Werror -Wno-unused-parameter -DCEF_API_VERSION=15600 \
+    -DKARERE_FRAME_INTEGRITY -I"$CEF_PATH" "$PROBE_SOURCE/cef_frame_probe.c" \
+    -L"$CEF_PATH" -Wl,-rpath,"$CEF_PATH" -lcef -lEGL -lGLESv2 \
+    -o "$PROBE_OUT/cef-integrity"
+  gcc -O2 -Wall -Wextra -Werror -Wno-unused-parameter -DCEF_API_VERSION=15600 \
+    -I"$CEF_PATH" "$PROBE_SOURCE/cef_frame_integrity_test.c" -L"$CEF_PATH" \
+    -Wl,-rpath,"$CEF_PATH" -lcef -lEGL -lGLESv2 -o "$PROBE_OUT/checker-calibration"
+  "$PROBE_OUT/checker-calibration"
+'
+```
+
+```sh
+python3 tools/scrolling-probe/cef_release_check.py /path/to/new-producer.json \
+  --library /path/to/matching/cef --probe /path/to/cef-frame --angle gl-egl
+```
+
+For image correctness, compile the producer with `-DKARERE_FRAME_INTEGRITY`
+and link EGL/GLESv2. `--integrity --workload webgl --resizes 72` copies borrowed
+CEF DMA-BUFs into owned textures, checks generated color grids after resize,
+and bounds GPU waits. Run `cef_frame_integrity_test.c` first to calibrate valid,
+partial, blank, and missing-coverage cases. Repeat with `--cpu` as a positive
+control. This detects partial/blank generated images; it cannot prove the
+absence of an intermittent producer race on other hardware or prove that a
+coherent image is the newest page frame.
+
+Apply `frame-integrity.patch` in a disposable checkout and build the application
+in debug mode against the matching CEF; the checker is absent from release
+builds. The optional debug-build GTK checker uses `--frame-integrity --synthetic
+--generated-file tools/scrolling-probe/frame_integrity_webgl.html
+--hold-synthetic`. It requires an explicitly generated data URL and memory-only
+settings. `gtk_resize_check.py CAPTURE OUTPUT --script-dir DIRECTORY` controls
+72 real maximize/restore transitions in KDE, confirms geometry and image
+coverage, unloads its temporary KWin script, then quits the fixture. Performance
+analysis rejects captures with either integrity marker: readbacks must never
+be included in an accepted FPS sample. Preserve invalid controller attempts
+with their own names instead of overwriting evidence.
 
 ## Reproduce with generated content
 
@@ -81,6 +153,19 @@ The original `--fast-backstop` experiment likewise only applies to the original
 timer implementation.
 
 ## Optional test of the real chat list
+
+For engine comparisons, `--profile-directory DIRECTORY` uses a private cold
+copy containing `.karere-diagnostic-profile`. It rejects normal Flatpak profile
+locations and unmarked directories, grants only the selected copy write access,
+and uses memory-only settings. `--profile-transfer cpu|accelerated` selects
+the fixture setting; `--windowed` fixes the starting geometry. Keep separate
+copies for CEF 152 and 156 and never open an upgraded copy with the older engine.
+The capture records clone use and requested transfer without recording account
+contents. This option does not create a copy or authorize relinking an account.
+With the schedule probe, a once-per-launch browser `SystemInfo.getInfo` query
+records the actual CEF GPU/backend and advertised decode/encode capabilities.
+These flags and capability lists do not prove that a workload used a hardware
+decoder or encoder; media fixtures record the actual implementation separately.
 
 This mode uses the normal profile and its current GPU preference:
 
