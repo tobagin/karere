@@ -77,6 +77,9 @@ flatpak run --devel --filesystem="$PWD" --filesystem="$CEF_PATH:ro" \
     -I"$CEF_PATH" "$PROBE_SOURCE/cef_frame_integrity_test.c" -L"$CEF_PATH" \
     -Wl,-rpath,"$CEF_PATH" -lcef -lEGL -lGLESv2 -o "$PROBE_OUT/checker-calibration"
   "$PROBE_OUT/checker-calibration"
+  gcc -shared -fPIC -O2 -Wall -Wextra -Werror -Wno-unused-parameter \
+    -DCEF_API_VERSION=15600 -I"$CEF_PATH" "$PROBE_SOURCE/cef_recovery_fault.c" \
+    -o "$PROBE_OUT/cef-recovery-fault.so" -ldl
 '
 ```
 
@@ -106,9 +109,40 @@ analysis rejects captures with either integrity marker: readbacks must never
 be included in an accepted FPS sample. Preserve invalid controller attempts
 with their own names instead of overwriting evidence.
 
+`cef_recovery_fault.c` exercises the real initial-frame watchdog on CEF 156.
+It activates only with `KARERE_FAULT_DROP_ACCELERATED=1`, memory-backed settings,
+a `/tmp/karere-perf-…` profile and a generated `data:` browser/launcher URL. It verifies
+the major/client/handler ABI, preserves CPU callbacks and drops accelerated
+callbacks without importing, reading or retaining their resources. Keep the
+compiled library beside a diagnostic launcher supplied through `--binary`:
+
+```sh
+#!/bin/sh
+export KARERE_FAULT_DROP_ACCELERATED=1
+export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}/absolute/fixture-dir/cef-recovery-fault.so"
+exec /app/bin/karere "$@"
+```
+
+Use `--synthetic --synthetic-gpu --windowed --schedule-probe` with that launcher.
+Require both the dropped-callback marker and the real ten-second CPU recovery,
+then positive CPU delivery and normal shutdown. Performance analysis rejects
+these fault-marked captures even if their timing would otherwise pass.
+
 ## Reproduce with generated content
 
 Fully quit Karere first. Each capture refuses an existing instance or output filename. The synthetic test uses an isolated temporary profile inside Flatpak and memory-only settings, leaving the normal profile and GPU preference intact. Each launch closes automatically after a 5-second warmup and a 15-second scrolling interval.
+
+The launcher applies XDG roots with `/usr/bin/env` **inside** the sandbox;
+Flatpak resets its reserved XDG variables after processing `--env` arguments.
+`profile_exec.sh` refuses to exec the application unless all three roots match
+the requested profile and settings use the memory backend. Captures also verify
+the owned application's actual environment and CEF's user-data directory prefixes.
+Both proof records are retained. Requested flags alone do not establish isolation.
+
+The 1 November audit found that earlier captures using `--env=XDG_*` lacked
+that protection and used regular app directories. They retain their numeric
+measurements but are excluded from isolated-profile comparisons/acceptance.
+Regular data was preserved after closure; no automatic rollback was performed.
 
 ```sh
 python3 tools/scrolling-probe/karere_probe.py cpu --synthetic --schedule-probe

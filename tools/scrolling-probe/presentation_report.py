@@ -165,8 +165,16 @@ def report(capture, page=None, single_view=False):
     }
     fresh_stats = result['fresh_content_presentation']
     invalid = []
+    isolated_requested = any(row.get('kind') == 'profile_clone'
+                             or (row.get('kind') == 'start' and row.get('synthetic'))
+                             for row in rows)
+    if isolated_requested and not any(row.get('kind') == 'profile_isolation'
+                                     and row.get('verified') for row in rows):
+        invalid.append('diagnostic profile isolation not verified')
     if any(row.get('kind') in ('integrity', 'integrity_mode') for row in rows):
         invalid.append('generated texture readback enabled; not a performance sample')
+    if any('graphics: recovery-fault ' in row.get('message', '') for row in rows):
+        invalid.append('generated frame-delivery fault injection; not a performance sample')
     if page.get('status', 'complete') != 'complete':
         invalid.append('page sample incomplete')
     if page.get('scroll_height_changes', 0):

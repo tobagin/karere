@@ -146,6 +146,41 @@ def configure_presentation_probe(parser, args):
         parser.error("--windowed requires an isolated fixture or cloned profile")
 
 
+def isolated_command(profile, executable):
+    """Apply reserved XDG variables after Flatpak establishes its environment."""
+    return [f'KARERE_PROBE_PROFILE_ROOT={profile}',
+            f'XDG_DATA_HOME={profile / "data"}',
+            f'XDG_CONFIG_HOME={profile / "config"}',
+            f'XDG_CACHE_HOME={profile / "cache"}',
+            '/bin/sh', str(ROOT / 'profile_exec.sh'), str(executable)]
+
+
+def verify_profile_processes(pid, profile):
+    """Verify owned process roots and CEF directory prefixes without logging IDs."""
+    expected = {f'XDG_{name}_HOME'.encode(): str(profile / name.lower()).encode()
+                for name in ['DATA', 'CONFIG', 'CACHE']}
+    mains = cef_roots = 0
+    for child in descendants(pid):
+        try:
+            args = Path(f'/proc/{child}/cmdline').read_bytes().split(b'\0')
+            executable = Path(f'/proc/{child}/exe').readlink().name
+            if 'karere' in executable and not any(a.startswith(b'--type=') for a in args):
+                environment = dict(item.split(b'=', 1) for item in
+                    Path(f'/proc/{child}/environ').read_bytes().split(b'\0') if b'=' in item)
+                if any(environment.get(key) != value for key, value in expected.items()):
+                    raise RuntimeError('Owned application process has incorrect diagnostic XDG roots')
+                mains += 1
+            for arg in args:
+                if arg.startswith(b'--user-data-dir='):
+                    directory = Path(os.fsdecode(arg.split(b'=', 1)[1]))
+                    if not directory.is_relative_to(profile / 'data'):
+                        raise RuntimeError('Owned CEF process uses a non-diagnostic data directory')
+                    cef_roots += 1
+        except (OSError, ProcessLookupError):
+            continue
+    return {'main_processes_checked': mains, 'cef_directory_prefixes_checked': cef_roots} if mains and cef_roots else None
+
+
 def synthetic_visibility():
     """Read only the generated page's visibility state for the background check."""
     from cdp_local import Client
@@ -315,19 +350,20 @@ def main():
             parser.error('Isolated schemas not built; run prepare.py first')
         profile = args.profile_directory or Path(f'/tmp/karere-perf-{args.label}')
         launch += [f"--filesystem={ROOT}:ro", "--env=GSETTINGS_BACKEND=memory",
-                   f"--env=GSETTINGS_SCHEMA_DIR={schema_dir}",
-                   f"--env=XDG_DATA_HOME={profile / 'data'}",
-                   f"--env=XDG_CONFIG_HOME={profile / 'config'}",
-                   f"--env=XDG_CACHE_HOME={profile / 'cache'}"]
+                   f"--env=GSETTINGS_SCHEMA_DIR={schema_dir}", '--command=/usr/bin/env']
         if args.profile_directory:
             launch.append(f'--filesystem={profile}:rw')
     if args.binary:
-        launch += [f"--filesystem={args.binary.parent}:ro", f"--command={args.binary}"]
+        launch += [f"--filesystem={args.binary.parent}:ro"]
+        if not (args.synthetic or args.profile_directory):
+            launch += [f"--command={args.binary}"]
     if args.cef_directory:
         launch += [f"--filesystem={args.cef_directory}:ro", f"--env=LD_LIBRARY_PATH={args.cef_directory}"]
     if args.stage_trace:
         launch += [f"--filesystem={RESULTS}:rw", f"--env=KARERE_STAGE_TRACE={RESULTS / (args.label + '_stages.json')}"]
     launch.append(APP)
+    if args.synthetic or args.profile_directory:
+        launch += isolated_command(profile, args.binary or '/app/bin/karere')
     if args.binary or args.cef_directory:
         cef_directory = args.cef_directory or Path('/app/lib/cef')
         launch += [f'--resources-dir-path={cef_directory}', f'--locales-dir-path={cef_directory / "locales"}']
@@ -390,6 +426,7 @@ def main():
             emit('profile_clone', memory_settings=True, transfer_requested=args.profile_transfer)
         if args.frame_integrity:
             emit('integrity_mode', performance_sample=False, generated_only=True)
+        profile_verified = False
         while True:
             while not live_results.empty():
                 kind, report = live_results.get_nowait()
@@ -405,6 +442,8 @@ def main():
                 while b"\n" in buffer:
                     line, buffer = buffer.split(b"\n", 1)
                     text = line.decode(errors="replace")
+                    if text == 'KARERE_PROFILE_ROOTS_VERIFIED':
+                        emit('profile_guard', verified=True)
                     if text.startswith('KARERE_INTEGRITY '):
                         emit('integrity', **json.loads(text.removeprefix('KARERE_INTEGRITY ')))
                     if args.wayland_timing and re.search(r"wp_presentation|wl_surface#\d+\.(?:commit|frame)|wl_callback#\d+\.done", text):
@@ -426,6 +465,13 @@ def main():
                 idle_end = None
                 subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
             if now - last_sample >= 1:
+                if (args.synthetic or args.profile_directory) and not profile_verified:
+                    verification = verify_profile_processes(child.pid, profile)
+                    if verification:
+                        emit('profile_isolation', verified=True, **verification)
+                        profile_verified = True
+                    elif now - start > 10:
+                        raise RuntimeError('Could not verify actual diagnostic profile routing')
                 if args.schedule_probe and not cef_gpu_reported:
                     try:
                         emit('cef_gpu', **cef_gpu_info())

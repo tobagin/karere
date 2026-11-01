@@ -1,7 +1,29 @@
 # Released CEF 156 retest
 
-Checkpoint: 1 November 2026. **In progress; accelerated presentation acceptance
-and the final codec-enabled bundle are not verified.** Earlier local-backport
+**Profile-routing audit: earlier GTK/generated/account results below are excluded
+from isolated comparisons and acceptance.** Flatpak resets reserved `XDG_*`
+variables passed with `--env`; those launches used regular application directories.
+The numeric measurements and their original identities are preserved. Earlier
+private-clone/untouched-account-data claims are withdrawn. Stable binaries are
+unchanged, but ordinary account/cache files may have been accessed or updated.
+
+Testing stopped at discovery. Current Devel data was preserved after closure;
+no automatic account rollback was performed. The fix applies roots with `env`
+inside the sandbox, refuses exec on mismatched roots/settings, and verifies
+actual owned-process environments plus CEF user-data prefixes. All 59 Python
+regressions pass. The first corrected launch verified two Karere processes and
+three CEF prefixes. New matched measurements remain required. Standalone CEF
+producer checks use their own explicit `mkdtemp` cache and are unaffected.
+
+Five corrected private-profile recovery checks now pass: environment CPU
+recovery, missing Vulkan at CEF and transfer layers, a genuinely dropped initial
+accelerated stream, and one-launch X11. The injected stream triggered the real
+ten-second CPU retry and then positive CPU delivery. Each capture verifies the
+owned process environments and CEF roots; X11 confirms GTK/CEF display matching.
+These are functional recovery controls, not FPS acceptance.
+
+Checkpoint: 1 November 2026. **In progress; full accelerated presentation acceptance
+is not verified.** The codec-enabled Devel bundle is built and installed. Earlier local-backport
 measurements retain their original engine, binary, driver and display identities.
 
 ## Frozen inputs
@@ -70,7 +92,8 @@ newest page frame. No WhatsApp contents or account screenshots are collected.
 
 Three 15-second samples per size, each after five seconds of active scrolling
 warmup. Compilation was paused. All 18 text/list/media samples completed without
-history/layout changes. CPU transfer was selected in the private clone; CEF still
+history/layout changes. CPU transfer was selected, but the requested private
+clone was not effective; CEF still
 used actual NVIDIA ANGLE OpenGL hardware compositing/rasterization.
 
 | Workload | Size | Page frames/s | Window presentations/s | Window p95 ms | CPU % |
@@ -86,6 +109,8 @@ Ranges cover the three samples, not confidence intervals. CPU is the measured
 process tree including instrumentation, with 100% representing one logical CPU.
 Windowed viewport: 1859×944 CSS pixels; maximized: 3072×1636; page DPR 2.
 Stock lacks content serials: **fresh-content presentation is unverified**.
+These pre-audit runs also lack the required profile isolation and are excluded
+from matched comparisons. Requested private-root flags were not effective.
 Window feedback rates are upper bounds. Numeric per-sample cadence, CPU by role,
 geometry and unused refresh opportunities are in
 [`measurements/released_cef156_retest_20261101.json`](measurements/released_cef156_retest_20261101.json).
@@ -93,11 +118,12 @@ Scroll positions and the user's window size were restored before normal exit.
 
 ## PR comparison with original CEF 152
 
-The same protocol, viewports and text anchor produced 12 stable text/list samples
+The same protocol, viewports and fixed anchors produced 18 stable text/list/media samples
 on the explicit CPU-transfer recovery path. Content serials and presentation
-feedback correlate reliably; every sample has a **lower ceiling measured**.
+feedback correlate, but isolation failed and the samples are excluded from
+matched comparisons. Their former lower-ceiling verdicts are retained separately.
 The existing wallpaper optimization is installed and applied to its one matching
-decorative layer. Media testing is still pending.
+decorative layer.
 
 | Workload | Size | Fresh presentations/s | Median ms | p95 ms | CPU % |
 |---|---|---:|---:|---:|---:|
@@ -105,6 +131,8 @@ decorative layer. Media testing is still pending.
 | Long text | Maximized | 42.933–43.400 | 24.986–24.996 | 25.013–25.019 | 231.8–232.6 |
 | Chat list | Windowed | 225.200–230.867 | 4.167 | 4.232–8.323 | 166.5–169.5 |
 | Chat list | Maximized | 66.667–91.533 | 8.369–16.661 | 16.674–16.684 | 213.4–220.6 |
+| Substantial media | Windowed | 189.667–201.467 | 4.168–4.170 | 8.348–8.357 | 185.3–192.7 |
+| Substantial media | Maximized | 44.933–45.133 | 20.837–20.838 | 25.011–25.013 | 197.8–198.6 |
 
 Windowed text reaches about 239 CPU paints/s while GTK/fresh presentation reaches
 126–129/s; maximized delivery is about 85–86 CPU paints/s and 43 presentations/s.
@@ -116,6 +144,44 @@ range was too short. More history was loaded outside timing and only the missing
 three samples were retried; completed windowed samples were retained. Full
 numeric results, including unused refresh opportunities, are in the same JSON
 aggregate. The original scroll anchor and windowed geometry were restored.
+The media capture also restored its original 4980.5-pixel bottom anchor and
+1859×944 viewport before normal exit. A subsequent 30-second visible idle
+control, after five seconds settling and with no input, averaged 1.0% CPU and
+zero paint/draw callbacks. There is no matched stock idle sample yet.
+
+## Installed codec-enabled CEF 156 candidate
+
+The separate x86_64 Devel bundle is built and installed at Flatpak commit
+`e74a6388a7707c2124b59d98da7ae843855c730e823609d7166c7badb07f4f77`.
+Bundle SHA-256: `5169833693c60069150678974a59253ee019d13b095b364b6376f548ac2a036d`.
+Final installed CEF SHA-256:
+`631eeb36f2450dd47c852775ceacdbbb86e2faa0d2b9eca3d3b425f2c1169a1c`.
+Flatpak strips nonloaded symbols; all ELF load segments match the source-build
+engine, and installed/build library bytes match. Its API header matches the
+official archive. Fresh memory-backed settings inherit GPU Rendering `true`.
+
+On this exact codec engine, the standalone CPU, GL/EGL and Vulkan checks each
+passed 72 resizes and 219 checked frames. All five GTK consumer combinations
+passed 72 maximize/restore cycles and 216 checked frames each. No blank/partial
+images were detected. These local checks do not establish a general fix for #4314.
+
+All 12 pre-audit generated GPU samples crossed the numeric 240 Hz gate, but failed
+the requested profile isolation and are **excluded from acceptance**. Each used a
+five-second active warmup, 15-second measurement and reliable content-serial /
+compositor correlation. GTK used hardware GL with application-owned GL textures;
+CEF's actual backend/device was recorded independently of requested flags.
+
+| CEF backend | Size | Fresh presentations/s | Median ms | p95 ms | CPU % |
+|---|---|---:|---:|---:|---:|
+| GL/EGL | Windowed | 236.400–236.933 | 4.167 | 4.204–4.212 | 69.9–71.1 |
+| GL/EGL | Maximized | 237.067–237.667 | 4.167 | 4.179–4.195 | 61.1–66.4 |
+| Vulkan | Windowed | 237.133–237.467 | 4.167 | 4.192–4.200 | 68.0–68.2 |
+| Vulkan | Maximized | 237.400–237.667 | 4.166–4.167 | 4.191–4.212 | 65.0–66.2 |
+
+Current verdict: **presentation unverified for acceptance pending isolated reruns**. Latest-engine
+account, media, recovery, mode-change and idle validation remain incomplete.
+The original stable Flatpak binary is unchanged. Production CEF pins in this
+intermediate PR remain 152 until architecture artifacts and acceptance are coherent.
 
 ## Reproduction and remaining gates
 
@@ -142,8 +208,8 @@ Use unique labels, an already selected and fully loaded conversation, fixed
 ranges and no unrelated input. Close the diagnostic instance normally afterward;
 verify that its listener is gone. The original stable profile is never a target.
 
-Still required: matching codec-enabled x64 Devel bundle and hashes, repeated
-generated/list/text/media accelerated presentation samples, recovery checks,
+Still required: remaining backend controls, repeated list/text/media accelerated
+presentation samples, recovery checks,
 media and fake-device local WebRTC, settled idle, physical rate adaptation and
 input confirmation on the final build. ARM artifacts and wider hardware remain
 unverified. Do not pair 156 Rust bindings with a 152 ARM engine.

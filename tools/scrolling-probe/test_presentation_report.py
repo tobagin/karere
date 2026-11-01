@@ -113,6 +113,27 @@ class CorrelationTests(unittest.TestCase):
         self.assertFalse(result['accelerated_sample_accepted'])
         self.assertEqual(result['verdict'], 'presentation unverified')
 
+    def test_injected_frame_failure_cannot_pass_performance_acceptance(self):
+        """A recovery test cannot qualify even when its timing looks perfect."""
+        for marker in ['armed engine=156', 'accelerated_callback_dropped']:
+            with self.subTest(marker=marker):
+                rows, page = sample()
+                rows.insert(0, event('graphics: recovery-fault ' + marker, 'render'))
+                result = summarize(rows, page)
+                self.assertFalse(result['sample_valid'])
+                self.assertFalse(result['accelerated_sample_accepted'])
+                self.assertEqual(result['verdict'], 'presentation unverified')
+
+    def test_isolated_capture_requires_verified_process_roots(self):
+        """Requested paths and a launcher marker alone do not prove isolation."""
+        for marker in [{'kind': 'start', 'synthetic': True}, {'kind': 'profile_clone'}]:
+            with self.subTest(marker=marker):
+                rows, page = sample()
+                rows[:0] = [dict(marker, wall=9), {'kind': 'profile_guard', 'verified': True, 'wall': 9}]
+                self.assertFalse(summarize(rows, page)['accelerated_sample_accepted'])
+                rows.insert(0, {'kind': 'profile_isolation', 'verified': True, 'wall': 9})
+                self.assertTrue(summarize(rows, page)['accelerated_sample_accepted'])
+
     def test_short_samples_and_unreliable_feedback_cannot_pass(self):
         """Smoke duration or software-estimated presentation is insufficient."""
         for arguments in ({'seconds': 1}, {'flags': 3}):
