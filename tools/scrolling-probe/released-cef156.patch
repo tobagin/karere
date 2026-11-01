@@ -1,0 +1,676 @@
+Released CEF 156.0.15 / cef-rs 156.3.0 experimental migration.
+Apply in a disposable checkout, stage matching codec-enabled CEF artifacts,
+and build x86-64 only until matching ARM artifacts are available.
+Production Flatpak engine pins are intentionally not changed by this patch.
+No pending NVIDIA synchronization patch is included.
+
+diff --git a/.github/workflows/build-cef-codecs.yml b/.github/workflows/build-cef-codecs.yml
+index 3aa8103..ecef910 100644
+--- a/.github/workflows/build-cef-codecs.yml
++++ b/.github/workflows/build-cef-codecs.yml
+@@ -7,14 +7,14 @@ on:
+   workflow_dispatch:
+     inputs:
+       cef_branch:
+-        description: "CEF branch number for Chromium 152 (see https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)"
++        description: "CEF branch number for Chromium 156 (see https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)"
+         required: true
+         type: string
+-        default: "7977"
++        default: "8078"
+       cef_checkout:
+         description: "Exact CEF commit; patches must be verified against this revision"
+         required: true
+-        default: "708dc140cbc3286826a8abef89dc23a44ff9ea72"
++        default: "cf671c072925b27823a61181152f4f288e8e4306"
+         type: string
+       runner:
+         description: "Runner label(s). Default = GitHub free runner (likely too small). Override with a larger/self-hosted runner."
+@@ -82,7 +82,7 @@ jobs:
+       - name: Upload CEF distribution
+         uses: actions/upload-artifact@v4
+         with:
+-          name: cef-152-proprietary-codecs-linux64
++          name: cef-156-proprietary-codecs-linux64
+           path: |
+             ${{ steps.dist.outputs.tarball }}
+             ${{ steps.dist.outputs.tarball }}.sha256
+diff --git a/Cargo.lock b/Cargo.lock
+index 1e4bef9..ebd5dfe 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -382,9 +382,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "cef"
+-version = "152.3.0+152.0.6"
++version = "156.3.0+156.0.15"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "785012b485c1a2685876b1f924722a047309900b88f15fc3581869caabdce3d8"
++checksum = "630eba7cb50b3cc5ee13ece8c922f36f72ace8a1db8e81b6f694b98c5cf373b1"
+ dependencies = [
+  "anyhow",
+  "cargo_metadata",
+@@ -402,9 +402,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "cef-dll-sys"
+-version = "152.3.0+152.0.6"
++version = "156.3.0+156.0.15"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ced5c6a0f46744561b50e283f9134c21bdd95a2e991695b0fc7399ad79765bbd"
++checksum = "02d194589b022eed4f975dc40fc8a6318ea7b42e2ff8b393f880f496790cafc4"
+ dependencies = [
+  "anyhow",
+  "cc",
+diff --git a/Cargo.toml b/Cargo.toml
+index bd53490..40351da 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -37,7 +37,7 @@ libadwaita = { version = "0.9", features = ["v1_6"] }
+ glib = "0.22"
+ gio = "0.22"
+ gdk-pixbuf = "0.22"
+-cef = { version = "152.3", features = ["build-util"] }
++cef = { version = "=156.3.0", features = ["build-util"] }
+ epoxy = "0.1"
+ gl = "0.14"
+ libloading = "0.9"
+diff --git a/download-cef.sh b/download-cef.sh
+index 74ac420..f19954f 100755
+--- a/download-cef.sh
++++ b/download-cef.sh
+@@ -1,10 +1,10 @@
+ #!/usr/bin/env bash
+ # Download + extract CEF Linux binary distribution into ./cef-binaries/
+-# Version must match the 'cef' crate's bundled CEF version (152.0.6 / chromium 152.0.7977.83 at time of writing).
++# Version must match the 'cef' crate's bundled CEF version (156.0.15 / chromium 156.0.8078.80 at time of writing).
+ # See Cargo.toml / Cargo.lock (cef crate) and packaging/io.github.tobagin.karere*.yml (cef-binaries URLs) for the sources of truth.
+ set -euo pipefail
+ 
+-CEF_VERSION="${CEF_VERSION:-152.0.6+g708dc14+chromium-152.0.7977.83}"
++CEF_VERSION="${CEF_VERSION:-156.0.15+gcf671c0+chromium-156.0.8078.80}"
+ ARCH="$(uname -m)"
+ 
+ case "$ARCH" in
+diff --git a/packaging/cargo-sources.json b/packaging/cargo-sources.json
+index 3ad180e..0ce97d9 100644
+--- a/packaging/cargo-sources.json
++++ b/packaging/cargo-sources.json
+@@ -496,27 +496,27 @@
+     {
+         "type": "archive",
+         "archive-type": "tar-gzip",
+-        "url": "https://static.crates.io/crates/cef/cef-152.3.0+152.0.6.crate",
+-        "sha256": "785012b485c1a2685876b1f924722a047309900b88f15fc3581869caabdce3d8",
+-        "dest": "cargo/vendor/cef-152.3.0+152.0.6"
++        "url": "https://static.crates.io/crates/cef/cef-156.3.0+156.0.15.crate",
++        "sha256": "630eba7cb50b3cc5ee13ece8c922f36f72ace8a1db8e81b6f694b98c5cf373b1",
++        "dest": "cargo/vendor/cef-156.3.0+156.0.15"
+     },
+     {
+         "type": "inline",
+-        "contents": "{\"package\": \"785012b485c1a2685876b1f924722a047309900b88f15fc3581869caabdce3d8\", \"files\": {}}",
+-        "dest": "cargo/vendor/cef-152.3.0+152.0.6",
++        "contents": "{\"package\": \"630eba7cb50b3cc5ee13ece8c922f36f72ace8a1db8e81b6f694b98c5cf373b1\", \"files\": {}}",
++        "dest": "cargo/vendor/cef-156.3.0+156.0.15",
+         "dest-filename": ".cargo-checksum.json"
+     },
+     {
+         "type": "archive",
+         "archive-type": "tar-gzip",
+-        "url": "https://static.crates.io/crates/cef-dll-sys/cef-dll-sys-152.3.0+152.0.6.crate",
+-        "sha256": "ced5c6a0f46744561b50e283f9134c21bdd95a2e991695b0fc7399ad79765bbd",
+-        "dest": "cargo/vendor/cef-dll-sys-152.3.0+152.0.6"
++        "url": "https://static.crates.io/crates/cef-dll-sys/cef-dll-sys-156.3.0+156.0.15.crate",
++        "sha256": "02d194589b022eed4f975dc40fc8a6318ea7b42e2ff8b393f880f496790cafc4",
++        "dest": "cargo/vendor/cef-dll-sys-156.3.0+156.0.15"
+     },
+     {
+         "type": "inline",
+-        "contents": "{\"package\": \"ced5c6a0f46744561b50e283f9134c21bdd95a2e991695b0fc7399ad79765bbd\", \"files\": {}}",
+-        "dest": "cargo/vendor/cef-dll-sys-152.3.0+152.0.6",
++        "contents": "{\"package\": \"02d194589b022eed4f975dc40fc8a6318ea7b42e2ff8b393f880f496790cafc4\", \"files\": {}}",
++        "dest": "cargo/vendor/cef-dll-sys-156.3.0+156.0.15",
+         "dest-filename": ".cargo-checksum.json"
+     },
+     {
+diff --git a/src/gpu_recovery.rs b/src/gpu_recovery.rs
+index 156f625..dc26e24 100644
+--- a/src/gpu_recovery.rs
++++ b/src/gpu_recovery.rs
+@@ -14,7 +14,6 @@ const CEF_GL: i32 = 87;
+ const CEF_VULKAN: i32 = 88;
+ const GTK_GL: i32 = 89;
+ const GTK_VULKAN: i32 = 90;
+-const CEF_NATIVE_HANDLE: i32 = 91;
+ const WORKER: &str = "_KARERE_RENDER_WORKER";
+ pub const FENCE_TIMEOUT_NS: u64 = 1_000_000_000;
+ 
+@@ -39,7 +38,6 @@ pub fn supervise() -> std::io::Result<Option<i32>> {
+ 
+ fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
+     let mut recovered = false;
+-    let mut native_handle_retried = false;
+     // Only the worker knows which display GTK actually opened. Infer the
+     // failed CEF backend from its explicit retry request, not from a parent's
+     // guess made before Wayland/X11 selection.
+@@ -52,7 +50,7 @@ fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
+         let code = status.code().unwrap_or(128 + status.signal().unwrap_or(1));
+         if !matches!(
+             code,
+-            GPU_FAILURE | CEF_GL | CEF_VULKAN | GTK_GL | GTK_VULKAN | CEF_NATIVE_HANDLE
++            GPU_FAILURE | CEF_GL | CEF_VULKAN | GTK_GL | GTK_VULKAN
+         ) {
+             return Ok(code);
+         }
+@@ -72,15 +70,6 @@ fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
+                 std::thread::sleep(Duration::from_millis(10));
+             }
+         }
+-        if code == CEF_NATIVE_HANDLE {
+-            if native_handle_retried {
+-                return Ok(code);
+-            }
+-            eprintln!("karere: no accelerated CEF frame; retrying native-handle buffers once");
+-            command.env("KARERE_CEF_NATIVE_HANDLE", "1");
+-            native_handle_retried = true;
+-            continue;
+-        }
+         if code == GTK_GL || code == GTK_VULKAN {
+             let failed = if code == GTK_GL { "gl" } else { "vulkan" };
+             if gtk_backends.contains(&failed) {
+@@ -135,10 +124,6 @@ pub fn restart_cef(backend: &str) -> ! {
+     });
+ }
+ 
+-pub fn restart_native_handle() -> ! {
+-    std::process::exit(CEF_NATIVE_HANDLE);
+-}
+-
+ /// No Drop handlers or callback return: neither is safe with an outstanding read
+ /// of CEF's allocation. Kernel process cleanup retains in-flight GPU references.
+ pub fn completion_unknown(reason: &str) -> ! {
+@@ -254,24 +239,11 @@ mod tests {
+     }
+ 
+     #[test]
+-    fn native_handle_retry_preserves_backends_and_transfer() {
+-        let code = run_supervised(
+-            Command::new("sh")
+-                .args([
+-                    "-c",
+-                    "test \"$KARERE_GPU_OSR\" = 1 && test \"$KARERE_CEF_GRAPHICS\" = gl && test \"$GSK_RENDERER\" = gl || exit 9; if [ \"$KARERE_CEF_NATIVE_HANDLE\" = 1 ]; then exit 0; else exit 91; fi",
+-                ])
+-                .env("KARERE_GPU_OSR", "1")
+-                .env("KARERE_CEF_GRAPHICS", "gl")
+-                .env("GSK_RENDERER", "gl")
+-                .env_remove("KARERE_CEF_NATIVE_HANDLE"),
+-        )
+-        .unwrap();
+-        assert_eq!(code, 0);
++    fn obsolete_native_handle_retry_is_not_repeated() {
+         assert_eq!(
+             run_supervised(Command::new("sh").args(["-c", "exit 91"])).unwrap(),
+-            CEF_NATIVE_HANDLE,
+-            "an engine ignoring the retry cannot restart forever"
++            91,
++            "released CEF uses native handles without a custom retry switch"
+         );
+     }
+ 
+diff --git a/src/graphics.rs b/src/graphics.rs
+index 6c6eadc..aed578d 100644
+--- a/src/graphics.rs
++++ b/src/graphics.rs
+@@ -6,7 +6,6 @@ use std::{cell::RefCell, rc::Rc};
+ 
+ static DISPLAY: AtomicU8 = AtomicU8::new(0);
+ static RESTART: AtomicBool = AtomicBool::new(false);
+-static RESTART_NATIVE_HANDLE: AtomicBool = AtomicBool::new(false);
+ 
+ /// Bound GTK's own synchronous GPU waits as well as our frame-copy operations.
+ /// Before/after-paint bracket actual drawing; settled or hidden windows have no
+@@ -264,12 +263,6 @@ fn angle_backend(backend: &str, display: &str) -> &'static str {
+ }
+ 
+ pub fn configure_cef(cmd: &mut CommandLine) {
+-    if std::env::var("KARERE_CEF_NATIVE_HANDLE")
+-        .is_ok_and(|value| matches!(value.as_str(), "1" | "true"))
+-        && cmd.has_switch(Some(&"karere-osr-native-handle".into())) == 0
+-    {
+-        cmd.append_switch(Some(&"karere-osr-native-handle".into()));
+-    }
+     if cef_backend() == "software" {
+         cmd.append_switch(Some(&"disable-gpu".into()));
+         log::warn!("graphics: CEF software recovery selected");
+@@ -302,9 +295,6 @@ pub fn retry_cef_after_frame_failure() {
+ }
+ 
+ pub fn restart_if_requested() -> anyhow::Result<()> {
+-    if RESTART_NATIVE_HANDLE.load(Ordering::Acquire) {
+-        crate::gpu_recovery::restart_native_handle();
+-    }
+     if RESTART.load(Ordering::Acquire) {
+         // The supervisor waits for exit before restarting, so the old D-Bus
+         // connection and CEF children are gone. It retains the tried backends.
+@@ -313,27 +303,6 @@ pub fn restart_if_requested() -> anyhow::Result<()> {
+     Ok(())
+ }
+ 
+-fn native_handle_retry_allowed(requested: Option<&str>) -> bool {
+-    // An explicit opt-out goes straight to CPU recovery. An opt-in is already
+-    // using the alternate allocation path, so repeating it cannot help.
+-    !matches!(requested, Some("0" | "false" | "1" | "true"))
+-}
+-
+-/// Retry the opt-in CEF allocation path only after a visible shared-texture
+-/// browser has delivered no initial frame. Working Mesa paths keep their default.
+-pub fn retry_native_handle_after_frame_failure() -> bool {
+-    if !native_handle_retry_allowed(std::env::var("KARERE_CEF_NATIVE_HANDLE").ok().as_deref()) {
+-        return false;
+-    }
+-    if !RESTART_NATIVE_HANDLE.swap(true, Ordering::AcqRel) {
+-        log::warn!("graphics: no accelerated startup frame; requesting native-handle retry");
+-        if let Some(app) = gtk::gio::Application::default() {
+-            app.quit();
+-        }
+-    }
+-    true
+-}
+-
+ fn next_cef_backend() -> &'static str {
+     // An explicitly selected Vulkan trial can fall back to GL. The supervisor
+     // skips any backend already attempted in this launch, preventing loops.
+@@ -342,15 +311,7 @@ fn next_cef_backend() -> &'static str {
+ 
+ #[cfg(test)]
+ mod tests {
+-    use super::{angle_backend, native_handle_retry_allowed, selected_cef_backend};
+-
+-    #[test]
+-    fn native_handle_recovery_respects_explicit_choices() {
+-        assert!(native_handle_retry_allowed(None));
+-        for value in ["0", "false", "1", "true"] {
+-            assert!(!native_handle_retry_allowed(Some(value)));
+-        }
+-    }
++    use super::{angle_backend, selected_cef_backend};
+ 
+     #[test]
+     fn cef_default_follows_the_working_display_and_keeps_overrides() {
+diff --git a/src/web_view.rs b/src/web_view.rs
+index 9fa76d2..03ccbc6 100644
+--- a/src/web_view.rs
++++ b/src/web_view.rs
+@@ -1136,12 +1136,20 @@ mod imp {
+             for browser in self.browsers.lock().values() {
+                 if let Some(host) = browser.host() {
+                     host.set_windowless_frame_rate(fps);
++                    log::debug!(
++                        "render cadence: runtime requested={fps} effective={} FPS",
++                        host.windowless_frame_rate()
++                    );
+                 }
+             }
+             if let Some(browser) = self.browser.lock().as_ref()
+                 && let Some(host) = browser.host()
+             {
+                 host.set_windowless_frame_rate(fps);
++                log::debug!(
++                    "render cadence: runtime requested={fps} effective={} FPS",
++                    host.windowless_frame_rate()
++                );
+             }
+         }
+ 
+@@ -1920,12 +1928,10 @@ mod imp {
+                     });
+                     if failed && imp.window_visible.load(Ordering::Relaxed) {
+                         if imp.shared_texture_enabled_for_browser() {
+-                            if !crate::graphics::retry_native_handle_after_frame_failure() {
+-                                log::warn!(
+-                                    "graphics: accelerated CEF browser delivered no frame; retrying CPU transfer"
+-                                );
+-                                imp.schedule_software_osr_fallback();
+-                            }
++                            log::warn!(
++                                "graphics: accelerated CEF browser delivered no frame; retrying CPU transfer"
++                            );
++                            imp.schedule_software_osr_fallback();
+                         } else {
+                             crate::graphics::retry_cef_after_frame_failure();
+                         }
+diff --git a/tools/build-cef-codecs.sh b/tools/build-cef-codecs.sh
+index aeee9c2..a50baaa 100755
+--- a/tools/build-cef-codecs.sh
++++ b/tools/build-cef-codecs.sh
+@@ -8,7 +8,7 @@
+ # carries patent-licensing obligations, falling on whoever hosts the tarball.
+ #
+ # Usage: CEF_BRANCH=<n> tools/build-cef-codecs.sh [download-dir]
+-#   CEF_BRANCH MUST match Karere's Chromium 152 line (chromium-152.0.7977.83); wrong
++#   CEF_BRANCH MUST match Karere's Chromium 156 line (chromium-156.0.8078.80); wrong
+ #   branch wastes the whole build, so the script refuses to start without it.
+ #
+ set -euo pipefail
+@@ -17,8 +17,8 @@ if [[ -z "${CEF_BRANCH:-}" ]]; then
+   cat >&2 <<'EOF'
+ error: CEF_BRANCH is required.
+ 
+-  Set it to the CEF branch number for Chromium 152 (the line Karere targets,
+-  chromium-152.0.7977.83). Look it up at:
++  Set it to the CEF branch number for Chromium 156 (the line Karere targets,
++  chromium-156.0.8078.80). Look it up at:
+     https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding
+ 
+   Then re-run, e.g.:
+@@ -45,7 +45,7 @@ FORCE_CLEAN_FLAG=""
+ # Extra automate-git.py flags (e.g. --no-chromium-history in throwaway containers).
+ AUTOMATE_EXTRA="${AUTOMATE_EXTRA:-}"
+ 
+-# Pin the exact CEF commit (e.g. 708dc14 from "152.0.6+g708dc14+…") instead of
++# Pin the exact CEF commit (e.g. cf671c0 from "156.0.15+gcf671c0+…") instead of
+ # branch tip — the produced binaries must match the Rust cef crate's pinned
+ # version, and branch tip can be a release ahead.
+ CHECKOUT_FLAG=""
+diff --git a/tools/cef-container/entrypoint.sh b/tools/cef-container/entrypoint.sh
+index a9a37ea..1283b60 100644
+--- a/tools/cef-container/entrypoint.sh
++++ b/tools/cef-container/entrypoint.sh
+@@ -5,8 +5,8 @@ set -euo pipefail
+ 
+ # Match Cargo.lock and the source patches, not a moving crates.io release.
+ if [[ -z "${CEF_BRANCH:-}" && -z "${CEF_CHECKOUT:-}" ]]; then
+-  CEF_BRANCH=7977
+-  CEF_CHECKOUT=708dc140cbc3286826a8abef89dc23a44ff9ea72
++  CEF_BRANCH=8078
++  CEF_CHECKOUT=cf671c072925b27823a61181152f4f288e8e4306
+ elif [[ -z "${CEF_BRANCH:-}" || -z "${CEF_CHECKOUT:-}" ]]; then
+   echo "error: set both CEF_BRANCH and CEF_CHECKOUT when changing the pinned engine" >&2
+   exit 2
+@@ -14,7 +14,7 @@ fi
+ export CEF_BRANCH CEF_CHECKOUT
+ 
+ # Fresh tree every run — skip full git history (saves tens of GB).
+-export AUTOMATE_EXTRA="--no-chromium-history"
++export AUTOMATE_EXTRA="${AUTOMATE_EXTRA:---no-chromium-history}"
+ 
+ DIST=/work/chromium/src/cef/binary_distrib
+ mkdir -p /out
+diff --git a/tools/cef-patches/karere-nvidia-native-shared-images.patch b/tools/cef-patches/karere-nvidia-native-shared-images.patch
+deleted file mode 100644
+index 65942a2..0000000
+--- a/tools/cef-patches/karere-nvidia-native-shared-images.patch
++++ /dev/null
+@@ -1,254 +0,0 @@
+-NVIDIA shared-texture OSR: export native-handle SharedImages without CPU mapping.
+-
+-Backport CEF PR #4238 (cafbf7f24971aa2526381e8e1978e11d1838ae64),
+-by Kristof Imeri, and its required Chromium CL 8220427
+-(9522ea8ad0bed3c3fd1b4f570ed9792dec8176d5), also by Kristof Imeri.
+-Upstream references:
+-https://github.com/chromiumembedded/cef/pull/4238
+-https://chromium-review.googlesource.com/c/chromium/src/+/8220427
+-
+-Both changes are required: merely selecting native handles in CEF leaves
+-Chromium's capturer taking its CPU readback path and rejecting ARGB results.
+-Native handles are opt-in on Linux through --karere-osr-native-handle.
+-Keep mappable images by default on every platform to preserve Mesa allocation. Apply from Chromium src.
+-Target: CEF 708dc14 / Chromium 152.0.7977.83 before packaging.
+-Remove this backport when both upstream changes are in the selected release.
+-
+-diff --git a/cef/libcef/browser/osr/video_consumer_osr.cc b/cef/libcef/browser/osr/video_consumer_osr.cc
+---- a/cef/libcef/browser/osr/video_consumer_osr.cc
+-+++ b/cef/libcef/browser/osr/video_consumer_osr.cc
+-@@ -4,6 +4,8 @@
+- 
+- #include "cef/libcef/browser/osr/video_consumer_osr.h"
+- 
+-+#include "base/command_line.h"
+-+#include "build/build_config.h"
+- #include "cef/libcef/browser/osr/render_widget_host_view_osr.h"
+- #include "media/base/video_frame_metadata.h"
+- #include "media/capture/mojom/video_capture_buffer.mojom.h"
+-@@ -51,7 +53,16 @@
+-     video_capturer_->Start(
+-         this,
+-         use_shared_texture_
+-+#if BUILDFLAG(IS_LINUX)
+-+            ? (base::CommandLine::ForCurrentProcess()->HasSwitch(
+-+                   "karere-osr-native-handle")
+-+                   ? viz::mojom::BufferFormatPreference::
+-+                         kPreferSharedImageWithNativeHandle
+-+                   : viz::mojom::BufferFormatPreference::
+-+                         kPreferMappableSharedImage)
+-+#else
+-             ? viz::mojom::BufferFormatPreference::kPreferMappableSharedImage
+-+#endif
+-             : viz::mojom::BufferFormatPreference::kDefault);
+-   } else {
+-     video_capturer_->Stop();
+-
+-diff --git a/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.cc b/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.cc
+-index 3e5d942..7e8152b 100644
+---- a/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.cc
+-+++ b/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.cc
+-@@ -1122,25 +1122,34 @@
+-   // TODO(crbug.com/346799708): The condition to check `pixel_format_` shouldn't
+-   // be necessary but video capture is started with I420+mappable SI in tests.
+-   // That still captures software I420 frames and not textures.
+--  const bool capture_texture_results =
+-+  const bool prefer_mappable_shared_image =
+-       buffer_format_preference_ ==
+--          mojom::BufferFormatPreference::kPreferMappableSharedImage &&
+--      (pixel_format_ == media::PIXEL_FORMAT_NV12 ||
+--       pixel_format_ == media::PIXEL_FORMAT_ARGB ||
+--       pixel_format_ == media::PIXEL_FORMAT_RGBAF16);
+-+      mojom::BufferFormatPreference::kPreferMappableSharedImage;
+-+#if BUILDFLAG(IS_LINUX)
+-+  const bool prefer_shared_image =
+-+      prefer_mappable_shared_image ||
+-+      buffer_format_preference_ ==
+-+          mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle;
+-+#else
+-+  const bool prefer_shared_image = prefer_mappable_shared_image;
+-+#endif
+-+  const bool should_capture_texture_results =
+-+      prefer_shared_image && (pixel_format_ == media::PIXEL_FORMAT_NV12 ||
+-+                              pixel_format_ == media::PIXEL_FORMAT_ARGB ||
+-+                              pixel_format_ == media::PIXEL_FORMAT_RGBAF16);
+- 
+-   std::optional<BlitRequest> blit_request;
+--  if (capture_texture_results) {
+-+  if (should_capture_texture_results) {
+-     TRACE_EVENT("gpu.capture", "PopulateBlitRequest");
+- 
+-     auto sync_token = frame_capture.frame->acquire_sync_token();
+- 
+-     // TODO(crbug.com/41350322): change the capturer to only request the
+-     // parts of the frame that have changed whenever possible.
+--    blit_request =
+--        BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
+--                    frame_capture.frame->shared_image(), sync_token,
+--                    /*populates_mappable_shared_image=*/true);
+-+    blit_request = BlitRequest(
+-+        content_rect.origin(), LetterboxingBehavior::kLetterbox,
+-+        frame_capture.frame->shared_image(), sync_token,
+-+        /*populates_mappable_shared_image=*/prefer_mappable_shared_image);
+- 
+-     // We haven't captured the frame yet, but let's pretend that we did for
+-     // the sake of blend information computation. We will be asking for an
+-@@ -1170,7 +1179,7 @@
+-   // Request a copy of the next frame from the frame sink.
+-   auto request = std::make_unique<CopyOutputRequest>(
+-       VideoPixelFormatToCopyOutputRequestFormat(pixel_format_),
+--      capture_texture_results
+-+      should_capture_texture_results
+-           ? CopyOutputRequest::ResultDestination::kSharedImage
+-           : CopyOutputRequest::ResultDestination::kSystemMemory,
+-       base::BindOnce(&FrameSinkVideoCapturerImpl::DidCopyFrame,
+-@@ -1350,8 +1359,16 @@
+-         frame_capture.CaptureFailed(CaptureResult::kARGBReadbackFailed);
+-       }
+-     } else {
+-+#if BUILDFLAG(IS_LINUX)
+-+      CHECK(buffer_format_preference_ ==
+-+                mojom::BufferFormatPreference::kPreferMappableSharedImage ||
+-+            buffer_format_preference_ ==
+-+                mojom::BufferFormatPreference::
+-+                    kPreferSharedImageWithNativeHandle);
+-+#else
+-       CHECK_EQ(buffer_format_preference_,
+-                mojom::BufferFormatPreference::kPreferMappableSharedImage);
+-+#endif
+-       // MappableSI ARGB results are written to the existing pool texture.
+-       if (result->IsEmpty()) {
+-         frame_capture.CaptureFailed(
+-diff --git a/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl_unittest.cc b/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl_unittest.cc
+-index 7c12017..a90674fd 100644
+---- a/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl_unittest.cc
+-+++ b/components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl_unittest.cc
+-@@ -24,6 +24,7 @@
+- #include "base/test/test_mock_time_task_runner.h"
+- #include "base/time/time.h"
+- #include "base/token.h"
+-+#include "build/build_config.h"
+- #include "cc/base/math_util.h"
+- #include "components/viz/common/frame_sinks/begin_frame_args.h"
+- #include "components/viz/common/frame_sinks/copy_output_request.h"
+-@@ -464,6 +465,12 @@
+-   void RequestCopyOfOutput(std::unique_ptr<PendingCopyOutputRequest>
+-                                pending_copy_output_request) override {
+-     auto& request = pending_copy_output_request->copy_output_request;
+-+    last_result_destination_ = request->result_destination();
+-+    last_blit_request_populates_mappable_shared_image_ =
+-+        request->has_blit_request()
+-+            ? std::make_optional(
+-+                  request->blit_request().populates_mappable_shared_image())
+-+            : std::nullopt;
+-     EXPECT_NE(base::UnguessableToken(), request->source());
+-     if (pending_copy_output_request->subtree_capture_id.is_valid()) {
+-       EXPECT_EQ(capture_bounds_, request->area());
+-@@ -551,6 +558,15 @@
+-   // is done via |SendCopyOutputResult()|.
+-   int num_copy_results() const { return results_.size(); }
+- 
+-+  std::optional<CopyOutputResult::Destination> last_result_destination() const {
+-+    return last_result_destination_;
+-+  }
+-+
+-+  std::optional<bool> last_blit_request_populates_mappable_shared_image()
+-+      const {
+-+    return last_blit_request_populates_mappable_shared_image_;
+-+  }
+-+
+-   void SendCopyOutputResult(int offset) {
+-     auto it = results_.begin() + offset;
+-     std::move(*it).Run();
+-@@ -572,6 +588,8 @@
+-   SizeSet size_set_;
+-   CompositorFrameMetadata metadata_;
+-   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+-+  std::optional<CopyOutputResult::Destination> last_result_destination_;
+-+  std::optional<bool> last_blit_request_populates_mappable_shared_image_;
+- 
+-   mutable RegionCaptureCropId current_crop_id_;
+-   mutable SubtreeCaptureId current_capture_id_;
+-@@ -874,7 +892,9 @@
+- 
+-   bool IsUsingGpuMemoryBuffer() {
+-     return buffer_format_preference_ ==
+--           mojom::BufferFormatPreference::kPreferMappableSharedImage;
+-+               mojom::BufferFormatPreference::kPreferMappableSharedImage ||
+-+           buffer_format_preference_ == mojom::BufferFormatPreference::
+-+                                            kPreferSharedImageWithNativeHandle;
+-   }
+- 
+-   base::TimeTicks GetNextVsync() const {
+-@@ -2355,19 +2375,60 @@
+-   StopCapture();
+- }
+- 
+-+TEST_P(FrameSinkVideoCapturerTest, ConfiguresSharedImageBlitRequest) {
+-+  if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
+-+    GTEST_SKIP();
+-+  }
+-+
+-+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
+-+      .WillRepeatedly(Return(&frame_sink_));
+-+  capturer_->ChangeTarget(kVideoCaptureTarget,
+-+                          /*sub_capture_target_version=*/0);
+-+
+-+  NiceMock<MockConsumer> consumer;
+-+  StartCapture(&consumer);
+-+
+-+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+-+  ASSERT_TRUE(frame_sink_.last_result_destination().has_value());
+-+  EXPECT_EQ(CopyOutputResult::Destination::kSharedImage,
+-+            *frame_sink_.last_result_destination());
+-+
+-+  ASSERT_TRUE(frame_sink_.last_blit_request_populates_mappable_shared_image()
+-+                  .has_value());
+-+  const bool expect_mappable =
+-+      buffer_format_preference_ ==
+-+      mojom::BufferFormatPreference::kPreferMappableSharedImage;
+-+  EXPECT_EQ(expect_mappable,
+-+            *frame_sink_.last_blit_request_populates_mappable_shared_image());
+-+
+-+  StopCapture();
+-+}
+-+
+-+std::vector<std::tuple<mojom::BufferFormatPreference, media::VideoPixelFormat>>
+-+GetFrameSinkVideoCapturerTestParams() {
+-+  std::vector<
+-+      std::tuple<mojom::BufferFormatPreference, media::VideoPixelFormat>>
+-+      params = {
+-+          {mojom::BufferFormatPreference::kDefault, media::PIXEL_FORMAT_I420},
+-+          {mojom::BufferFormatPreference::kDefault, media::PIXEL_FORMAT_ARGB},
+-+          {mojom::BufferFormatPreference::kPreferMappableSharedImage,
+-+           media::PIXEL_FORMAT_NV12},
+-+          {mojom::BufferFormatPreference::kPreferMappableSharedImage,
+-+           media::PIXEL_FORMAT_ARGB},
+-+          {mojom::BufferFormatPreference::kPreferMappableSharedImage,
+-+           media::PIXEL_FORMAT_RGBAF16},
+-+      };
+-+#if BUILDFLAG(IS_LINUX)
+-+  params.emplace_back(
+-+      mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle,
+-+      media::PIXEL_FORMAT_ARGB);
+-+#endif
+-+  return params;
+-+}
+-+
+- INSTANTIATE_TEST_SUITE_P(
+-     All,
+-     FrameSinkVideoCapturerTest,
+--    testing::Values(
+--        std::tuple(mojom::BufferFormatPreference::kDefault,
+--                   media::PIXEL_FORMAT_I420),
+--        std::tuple(mojom::BufferFormatPreference::kDefault,
+--                   media::PIXEL_FORMAT_ARGB),
+--        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
+--                   media::PIXEL_FORMAT_NV12),
+--        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
+--                   media::PIXEL_FORMAT_ARGB),
+--        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
+--                   media::PIXEL_FORMAT_RGBAF16)));
+-+    testing::ValuesIn(GetFrameSinkVideoCapturerTestParams()));
+- 
+- }  // namespace viz
+diff --git a/src/main.rs b/src/main.rs
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -53,7 +53,11 @@
+     let banner = gettext("Karere starting");
+     log::info!("{}", banner);
+ 
+-    let _ = cef::api_hash(cef::sys::CEF_API_VERSION_LAST, 0);
++    anyhow::ensure!(
++        !cef::api_hash(cef::sys::CEF_API_VERSION_LAST, 0).is_null(),
++        "CEF runtime does not support application API version {}",
++        cef::sys::CEF_API_VERSION_LAST
++    );
+     load_gl();
+ 
+     let args = Args::new();

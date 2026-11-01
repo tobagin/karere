@@ -80,15 +80,19 @@ int cef_initialize(const void *args, const void *settings, void *opaque, void *i
      * Karere's --debug switches that relax origin/private-network checks. */
     union { max_align_t alignment; unsigned char bytes[496]; } local_settings;
     size_t settings_size = settings ? *(const size_t *)settings : 0;
-    if (getenv("KARERE_PROBE_CDP") &&
-        (settings_size == 448 || settings_size == 496)) {
+    int (*version_info)(int) = dlsym(RTLD_NEXT, "cef_version_info");
+    int major = version_info ? version_info(0) : 0;
+    if (!((major == 152 && settings_size == 448) ||
+          (major == 156 && settings_size == 496))) {
+        fprintf(stderr, "pump-probe unsupported_cef_abi major=%d settings_size=%zu CDP_and_callback_wrapping_disabled\n", major, settings_size);
+        return timing_initialize(args, settings, opaque, info);
+    }
+    if (getenv("KARERE_PROBE_CDP")) {
         const int port = 9333;
         memcpy(local_settings.bytes, settings, settings_size);
         memcpy(local_settings.bytes + 336, &port, sizeof(port));
         settings = local_settings.bytes;
         fprintf(stderr, "pump-probe local_cdp_enabled port=9333 settings_size=%zu standard_security_flags=preserved\n", settings_size);
-    } else if (getenv("KARERE_PROBE_CDP")) {
-        fprintf(stderr, "pump-probe unsupported_settings_abi size=%zu CDP_disabled\n", settings_size);
     }
     struct app_prefix *app = opaque;
     if (app && app->size == sizeof(*app) && app->get_handler) {

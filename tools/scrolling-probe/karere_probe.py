@@ -249,6 +249,7 @@ def main():
     if os.environ.get("KARERE_PROBE_CDP"):
         # The matching interposer enables CDP without loosening browser security.
         args.schedule_probe = True
+    interposer_hash = None
     binary_hash = None
     if args.binary:
         args.binary = args.binary.resolve(strict=True)
@@ -292,6 +293,7 @@ def main():
         library = 'schedule_probe.so' if args.schedule_probe else 'pump_probe.so'
         if not (BUILD / library).is_file():
             parser.error('Probe not built; run prepare.py first')
+        interposer_hash = hashlib.sha256((BUILD / library).read_bytes()).hexdigest()
         launch += [f"--filesystem={ROOT}:ro", f"--env=LD_PRELOAD={BUILD / library}"]
     if args.fast_backstop:
         launch += ["--env=KARERE_PROBE_BACKSTOP_MS=8"]
@@ -383,7 +385,7 @@ def main():
                 idle_end = idle_start + args.idle_seconds
             else:
                 subprocess.run(['gapplication', 'action', APP, 'quit'], check=True)
-        emit("start", label=args.label, settings=settings, launcher_pid=child.pid, normal_logging=args.normal_logging, pump_probe=args.pump_probe, fast_backstop=args.fast_backstop, schedule_probe=args.schedule_probe, synthetic=args.synthetic, synthetic_gpu=args.synthetic_gpu, chat_list=args.chat_list, gsk_renderer=args.gsk_renderer, cef_graphics=args.cef_graphics, frame_transfer=args.frame_transfer, cpu_presenter=args.cpu_presenter, binary_sha256=binary_hash, cef_library_sha256=cef_hash, windowed=args.windowed, wayland_timing=args.wayland_timing)
+        emit("start", label=args.label, settings=settings, launcher_pid=child.pid, normal_logging=args.normal_logging, pump_probe=args.pump_probe, fast_backstop=args.fast_backstop, schedule_probe=args.schedule_probe, synthetic=args.synthetic, synthetic_gpu=args.synthetic_gpu, chat_list=args.chat_list, gsk_renderer=args.gsk_renderer, cef_graphics=args.cef_graphics, frame_transfer=args.frame_transfer, cpu_presenter=args.cpu_presenter, binary_sha256=binary_hash, cef_library_sha256=cef_hash, interposer_sha256=interposer_hash, windowed=args.windowed, wayland_timing=args.wayland_timing)
         if args.profile_directory:
             emit('profile_clone', memory_settings=True, transfer_requested=args.profile_transfer)
         if args.frame_integrity:
@@ -403,7 +405,7 @@ def main():
                 while b"\n" in buffer:
                     line, buffer = buffer.split(b"\n", 1)
                     text = line.decode(errors="replace")
-                    if args.frame_integrity and text.startswith('KARERE_INTEGRITY '):
+                    if text.startswith('KARERE_INTEGRITY '):
                         emit('integrity', **json.loads(text.removeprefix('KARERE_INTEGRITY ')))
                     if args.wayland_timing and re.search(r"wp_presentation|wl_surface#\d+\.(?:commit|frame)|wl_callback#\d+\.done", text):
                         emit("wayland", message=text)

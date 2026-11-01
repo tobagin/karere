@@ -30,6 +30,24 @@ The CDN engine lacks H.264/AAC, so its results are engine controls, not proof of
 the final codec-enabled application. Production pins in this checkpoint remain
 CEF 152; the experimental 156 migration and matching codec build are separate.
 
+The tested migration is supplied as [`released-cef156.patch`](released-cef156.patch).
+It updates bindings/lockfile, generated Cargo sources, ABI refusal, engine build
+defaults and recovery, and removes the obsolete native-handle backport. It
+contains no pending synchronization fix. Apply it in an isolated worktree:
+
+```sh
+git worktree add --detach ../karere-cef156 HEAD
+git -C ../karere-cef156 apply "$PWD/tools/scrolling-probe/released-cef156.patch"
+# For image checks only, also apply frame-integrity.patch and build debug.
+```
+
+Set `CEF_PATH` to the matching staged engine for SDK builds. For an installable
+Devel candidate, expand its manifest with `flatpak-builder --show-manifest`,
+remove non-x64 CEF archive/metadata entries from that **local** expanded manifest,
+then use `tools/cef-container/stage-local.py` with the matching codec archive and
+build with `--arch=x86_64`. The patch does not replace production archive pins;
+both architecture artifacts must be coherent before a production migration.
+
 ## Checks completed
 
 - Official 156.0.15 standalone CPU, GL/EGL and Vulkan image controls: 72 resizes
@@ -41,7 +59,8 @@ CEF 152; the experimental 156 migration and matching codec build are separate.
   the instrumentation. Loaded library hashes and actual GPU/backend are recorded.
 - Migrated application: 112 Rust unit tests, both startup integration tests,
   formatting and strict release Clippy passed. Diagnostic Python regressions:
-  51 passed with local socket access.
+  54 passed with local socket access, including actual interposer fixtures for
+  verified layouts, unknown/mismatched versions and a missing version symbol.
 
 Image checks use generated content only and are excluded from FPS acceptance.
 They detect partial/blank images; they cannot prove that a coherent image is the
@@ -71,6 +90,32 @@ Window feedback rates are upper bounds. Numeric per-sample cadence, CPU by role,
 geometry and unused refresh opportunities are in
 [`measurements/released_cef156_retest_20261101.json`](measurements/released_cef156_retest_20261101.json).
 Scroll positions and the user's window size were restored before normal exit.
+
+## PR comparison with original CEF 152
+
+The same protocol, viewports and text anchor produced 12 stable text/list samples
+on the explicit CPU-transfer recovery path. Content serials and presentation
+feedback correlate reliably; every sample has a **lower ceiling measured**.
+The existing wallpaper optimization is installed and applied to its one matching
+decorative layer. Media testing is still pending.
+
+| Workload | Size | Fresh presentations/s | Median ms | p95 ms | CPU % |
+|---|---|---:|---:|---:|---:|
+| Long text | Windowed | 125.933–128.600 | 8.331–8.332 | 12.315–12.495 | 213.8–215.2 |
+| Long text | Maximized | 42.933–43.400 | 24.986–24.996 | 25.013–25.019 | 231.8–232.6 |
+| Chat list | Windowed | 225.200–230.867 | 4.167 | 4.232–8.323 | 166.5–169.5 |
+| Chat list | Maximized | 66.667–91.533 | 8.369–16.661 | 16.674–16.684 | 213.4–220.6 |
+
+Windowed text reaches about 239 CPU paints/s while GTK/fresh presentation reaches
+126–129/s; maximized delivery is about 85–86 CPU paints/s and 43 presentations/s.
+Raising CEF's rate alone does not remove the remaining transfer/presentation cost.
+CPU recovery is measured here and has no 235 FPS requirement.
+
+The first maximized attempt was rejected before measurement because its loaded
+range was too short. More history was loaded outside timing and only the missing
+three samples were retried; completed windowed samples were retained. Full
+numeric results, including unused refresh opportunities, are in the same JSON
+aggregate. The original scroll anchor and windowed geometry were restored.
 
 ## Reproduction and remaining gates
 
