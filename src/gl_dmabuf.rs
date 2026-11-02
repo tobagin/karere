@@ -186,6 +186,16 @@ pub fn import_to_texture(
     planes: &[Plane],
 ) -> Option<ImportedImage> {
     use std::os::fd::AsRawFd;
+    // DMA-BUF's size query does not move its file position. Some EGL drivers
+    // accept an image for an empty/non-buffer fd and fail only when it is read;
+    // reject that storage before submitting a copy to the graphics driver.
+    for plane in planes {
+        let size = unsafe { libc::lseek(plane.fd.as_raw_fd(), 0, libc::SEEK_END) };
+        if size <= 0 || plane.offset >= size as u64 {
+            log::warn!("gl_dmabuf: plane has no accessible DMA-BUF storage");
+            return None;
+        }
+    }
     let e = egl()?;
     unsafe {
         let dpy = (e.get_current_display)();
@@ -244,9 +254,17 @@ pub fn import_to_texture(
             return None;
         }
 
+        let imported = ImportedImage { dpy, image };
+        let mut previous_texture = 0;
+        gl::GetIntegerv(gl::TEXTURE_BINDING_2D, &mut previous_texture);
         gl::BindTexture(GL_TEXTURE_2D, texture);
         (e.image_target_texture_2d)(GL_TEXTURE_2D, image);
-        gl::BindTexture(GL_TEXTURE_2D, 0);
+        let error = gl::GetError();
+        gl::BindTexture(GL_TEXTURE_2D, previous_texture as c_uint);
+        if error != gl::NO_ERROR {
+            log::warn!("gl_dmabuf: EGL image texture binding failed (GL error={error:#x})");
+            return None;
+        }
 
         static FIRST: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
         if FIRST.swap(false, std::sync::atomic::Ordering::Relaxed) {
@@ -255,7 +273,7 @@ pub fn import_to_texture(
             );
         }
 
-        Some(ImportedImage { dpy, image })
+        Some(imported)
     }
 }
 

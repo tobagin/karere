@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "legacy_release": {
+    "cef_version": "152.0.6+g708dc14+chromium-152.0.7977.83",
+    "cef_checkout": "708dc140cbc3286826a8abef89dc23a44ff9ea72",
+    "cef_branch": "7977",
+    "chromium_revision": "79460ebecaa5625e57a5fb679a735659e73dc687"
+  },
+  "minimum_fixed_release": null,
+  "chromium_fix_commit": "3cd7aa26069901a37f73477e381d01842a8072ce",
+  "required_fixes": [
+    "https://github.com/chromiumembedded/cef/pull/4314",
+    "https://chromium.googlesource.com/chromium/src/+/3cd7aa26069901a37f73477e381d01842a8072ce"
+  ],
+  "note": "Set minimum_fixed_release only after verifying a stable release contains both fixes (including any required Chromium backport). Record cef_version, cef_checkout, cef_fix_commit (upstream), chromium_revision and evidence URLs. Later releases must contain each verified release revision or its upstream fix commit. A version number alone is not evidence."
+}

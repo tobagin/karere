@@ -4357,7 +4357,18 @@ mod tests {
             cpu_upload(&shared.lock().frame, (0, 0)),
             CpuUpload::Allocate
         );
-        unsafe { imp.draw() };
+        // GTK's render callback owns the current GL context and framebuffer.
+        // Calling draw directly here can use a different GSK/transfer context.
+        assert!(
+            !imp.software_present.load(Ordering::Relaxed),
+            "CPU recovery must retain the working GLArea presenter"
+        );
+        view.queue_render();
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+        while shared.lock().frame.dirty && std::time::Instant::now() < deadline {
+            gtk::glib::MainContext::default().iteration(false);
+            std::thread::sleep(std::time::Duration::from_millis(1));
+        }
         let state = shared.lock();
         assert!(!state.frame.dirty, "CPU callback must be consumed by draw");
         assert_eq!(state.frame.pixels, pixels);
@@ -4523,6 +4534,7 @@ mod input_tests {
             });
         }
 
+        #[cfg(debug_assertions)]
         fn send_to_browser(&mut self, _message: crate::ipc::RendererMessage) {
             panic!("copy selection must execute JavaScript, not send a renderer reply");
         }
