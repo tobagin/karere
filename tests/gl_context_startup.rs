@@ -57,7 +57,7 @@ impl RunningApp {
             // The harness asserts diagnostic markers. A shell's RUST_LOG=warn
             // must not silently override --debuglevel and hide those markers.
             .env("RUST_LOG", "debug")
-            // This deliberately tests GL recovery, not preferred Vulkan selection.
+            // Pin the GL recovery path independently of automatic backend selection.
             .env("KARERE_CEF_GRAPHICS", "gl")
             .env("GSETTINGS_BACKEND", "keyfile")
             .env("GSETTINGS_SCHEMA_DIR", fixture.join("schemas"))

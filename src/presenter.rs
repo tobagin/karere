@@ -436,7 +436,7 @@ pub fn verify_cpu_texture_ownership() {
 }
 
 /// Compare tiled sampling with an untiled reference through the real Vulkan
-/// renderer. The 145% case matches this monitor; other scales catch tile seams.
+/// renderer. Fractional and integer scales both exercise tile seams.
 #[cfg(test)]
 pub fn verify_fractional_tiles() {
     let window = gtk::Window::new();

@@ -4523,7 +4523,6 @@ mod input_tests {
             });
         }
 
-        #[cfg(debug_assertions)]
         fn send_to_browser(&mut self, _message: crate::ipc::RendererMessage) {
             panic!("copy selection must execute JavaScript, not send a renderer reply");
         }

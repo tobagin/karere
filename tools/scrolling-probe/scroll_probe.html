@@ -30,14 +30,12 @@ let start, last, intervals = [], changes = 0;
 function frame(t) {
   if (start === undefined) start = t;
   const age = t - start;
-  // Warm the active scrolling workload, not a static page. Keep the phase
-  // continuous across the warmup/sample boundary to avoid a cold raster burst.
-  const leg = (age / 3000) % 2;
-  pane.scrollTop = (leg <= 1 ? leg : 2 - leg) * 8000;
   if (age >= warmup && age < warmup + duration) {
     if (last !== undefined) intervals.push(t - last);
     last = t;
     phase.textContent = 'Measuring a fixed 15-second scrolling workload…';
+    const leg = ((age - warmup) / 3000) % 2;
+    pane.scrollTop = (leg <= 1 ? leg : 2 - leg) * 8000;
     changes++;
   }
   if (age < warmup + duration) { requestAnimationFrame(frame); return; }

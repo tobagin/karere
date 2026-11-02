@@ -110,7 +110,6 @@ impl ShellRenderProcessHandlerBuilder {
 /// IPC decoding, so tests cannot bypass browser-message dispatch.
 pub(crate) trait RendererDispatchSink {
     fn execute_java_script(&mut self, script: &str, source_url: &str);
-    #[cfg(debug_assertions)]
     fn send_to_browser(&mut self, message: RendererMessage);
 }
 
@@ -125,7 +124,6 @@ impl RendererDispatchSink for FrameDispatchSink<'_> {
         );
     }
 
-    #[cfg(debug_assertions)]
     fn send_to_browser(&mut self, message: RendererMessage) {
         if let Some(mut message) = message.to_cef_message() {
             self.0
@@ -141,7 +139,6 @@ impl<S: RendererDispatchSink> RendererDispatchSink for Option<S> {
         }
     }
 
-    #[cfg(debug_assertions)]
     fn send_to_browser(&mut self, message: RendererMessage) {
         if let Some(sink) = self {
             sink.send_to_browser(message);

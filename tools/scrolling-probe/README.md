@@ -1,30 +1,8 @@
 # Scrolling and CEF pump diagnostics
 
-## Current checkout
-
-The GPU/adaptive-refresh branch includes upstream 4.3.4 and the reviewed #193
-conversation tools. No additional integration checkout or amplitude patch is
-needed. See [ACCELERATION.md](ACCELERATION.md#compatibility-update--9-october-2026)
-for current allocation/recovery behavior. Earlier reports preserve the exact
-engine and source versions used for their measurements.
-
-[ACCELERATION.md](ACCELERATION.md) preserves the recorded 240 Hz results for
-the earlier repaired engine. The current compatibility revision requires fresh
-engine and hardware validation. [ADAPTIVE_REFRESH_FINDINGS.md](ADAPTIVE_REFRESH_FINDINGS.md)
-retains the earlier prototype's lower-ceiling measurements and original backend policy.
-
 These optional tools reproduce the CPU-buffer off-screen rendering stall described in [issue #173](https://github.com/tobagin/karere/issues/173). The [original findings](FINDINGS.md) document controlled CPU → GPU → CPU comparisons on Karere 4.3.0. The [fix validation](FIX_VALIDATION.md) describes the paint-driven CEF scheduler and compares the compiled application against the original Flatpak.
 
-The timing probes support the verified CEF 152 and 156 ABIs on **Linux x86-64**.
-Other versions fail closed until their layouts are checked. These are optional
-developer diagnostics, absent from the installed application and persistent overrides.
-See [the released CEF 156 retest](RELEASE_156_RETEST.md) for current provenance,
-completed controls and the remaining acceptance gates.
-
-The v4.3.2 [conversation follow-up](CONVERSATION_FINDINGS.md) identifies a separate
-SVG-mask raster cost and CPU frame-transfer cost after the original scheduler
-fix. See the conversation procedure below; the older generated workload is not
-a reproducer for this new mask issue.
+The probes were tested with the stable `io.github.tobagin.karere` Flatpak, CEF `152.0.6+g708dc14`, on **Linux x86-64**. They rely on that CEF ABI. They are developer diagnostics and are not included in the application build or installed as persistent overrides.
 
 ## Prepare
 
@@ -36,113 +14,11 @@ python3 tools/scrolling-probe/prepare.py
 
 The preparation script builds the two C libraries and derives memory-backend GSettings schemas from the installed Flatpak. Generated libraries, schemas and captures stay under ignored `.build/` and `results/` directories. No Rust/CEF rebuild is needed. The GCC TLS dialect flag keeps the interposer compatible with the tested Flatpak runtime.
 
-The ABI was checked against matching CEF headers. App size/handler offset is
-80/64 bytes and browser-handler size/schedule offset is 96/72 bytes in both.
-Settings size/debug-port offset is **448/336** in CEF 152 and **496/336** in
-CEF 156. Compile `cef_probe_abi.c` against the exact runtime headers before
-loading the interposer. Preparation keeps stable and Devel schema overrides
-in separate application-ID directories, so sequential comparisons cannot reset
-another build's fixture defaults.
-
-## Released-engine producer and image checks
-
-`cef_release_check.py` runs a matching, separately compiled `cef_frame_probe.c`
-inside the Devel sandbox. It verifies the actual mapped library and records
-its hash, CEF/ANGLE device and backend, callback type, and orderly shutdown of
-the temporary loopback listener. It uses generated pages and temporary profiles.
-Compile against the selected library's headers; the producer rejects an API
-hash mismatch before CEF initialization. Neither callbacks nor its optional
-readback checks establish compositor presentation FPS.
-
-For CEF 156, compile inside the matching SDK with the staged headers/library:
-
-```sh
-export CEF_PATH=/absolute/path/to/matching/cef
-flatpak run --devel --filesystem="$PWD" --filesystem="$CEF_PATH:ro" \
-  --env=CEF_PATH="$CEF_PATH" --env=PROBE_SOURCE="$PWD/tools/scrolling-probe" \
-  --env=PROBE_OUT="$PWD/.build/release-probes" --command=sh org.gnome.Sdk//51 -c '
-  set -eu
-  mkdir -p "$PROBE_OUT"
-  gcc -O2 -Wall -Wextra -Werror -Wno-unused-parameter -DCEF_API_VERSION=15600 \
-    -I"$CEF_PATH" "$PROBE_SOURCE/cef_probe_abi.c" -o "$PROBE_OUT/cef-abi"
-  "$PROBE_OUT/cef-abi"
-  gcc -O2 -Wall -Wextra -Werror -Wno-unused-parameter -DCEF_API_VERSION=15600 \
-    -I"$CEF_PATH" "$PROBE_SOURCE/cef_frame_probe.c" -L"$CEF_PATH" \
-    -Wl,-rpath,"$CEF_PATH" -lcef -o "$PROBE_OUT/cef-frame"
-  gcc -O2 -Wall -Wextra -Werror -Wno-unused-parameter -DCEF_API_VERSION=15600 \
-    -DKARERE_FRAME_INTEGRITY -I"$CEF_PATH" "$PROBE_SOURCE/cef_frame_probe.c" \
-    -L"$CEF_PATH" -Wl,-rpath,"$CEF_PATH" -lcef -lEGL -lGLESv2 \
-    -o "$PROBE_OUT/cef-integrity"
-  gcc -O2 -Wall -Wextra -Werror -Wno-unused-parameter -DCEF_API_VERSION=15600 \
-    -I"$CEF_PATH" "$PROBE_SOURCE/cef_frame_integrity_test.c" -L"$CEF_PATH" \
-    -Wl,-rpath,"$CEF_PATH" -lcef -lEGL -lGLESv2 -o "$PROBE_OUT/checker-calibration"
-  "$PROBE_OUT/checker-calibration"
-  gcc -shared -fPIC -O2 -Wall -Wextra -Werror -Wno-unused-parameter \
-    -DCEF_API_VERSION=15600 -I"$CEF_PATH" "$PROBE_SOURCE/cef_recovery_fault.c" \
-    -o "$PROBE_OUT/cef-recovery-fault.so" -ldl
-'
-```
-
-```sh
-python3 tools/scrolling-probe/cef_release_check.py /path/to/new-producer.json \
-  --library /path/to/matching/cef --probe /path/to/cef-frame --angle gl-egl
-```
-
-For image correctness, compile the producer with `-DKARERE_FRAME_INTEGRITY`
-and link EGL/GLESv2. `--integrity --workload webgl --resizes 72` copies borrowed
-CEF DMA-BUFs into owned textures, checks generated color grids after resize,
-and bounds GPU waits. Run `cef_frame_integrity_test.c` first to calibrate valid,
-partial, blank, and missing-coverage cases. Repeat with `--cpu` as a positive
-control. This detects partial/blank generated images; it cannot prove the
-absence of an intermittent producer race on other hardware or prove that a
-coherent image is the newest page frame.
-
-Apply `frame-integrity.patch` in a disposable checkout and build the application
-in debug mode against the matching CEF; the checker is absent from release
-builds. The optional debug-build GTK checker uses `--frame-integrity --synthetic
---generated-file tools/scrolling-probe/frame_integrity_webgl.html
---hold-synthetic`. It requires an explicitly generated data URL and memory-only
-settings. `gtk_resize_check.py CAPTURE OUTPUT --script-dir DIRECTORY` controls
-72 real maximize/restore transitions in KDE, confirms geometry and image
-coverage, unloads its temporary KWin script, then quits the fixture. Performance
-analysis rejects captures with either integrity marker: readbacks must never
-be included in an accepted FPS sample. Preserve invalid controller attempts
-with their own names instead of overwriting evidence.
-
-`cef_recovery_fault.c` exercises the real initial-frame watchdog on CEF 156.
-It activates only with `KARERE_FAULT_DROP_ACCELERATED=1`, memory-backed settings,
-a `/tmp/karere-perf-…` profile and a generated `data:` browser/launcher URL. It verifies
-the major/client/handler ABI, preserves CPU callbacks and drops accelerated
-callbacks without importing, reading or retaining their resources. Keep the
-compiled library beside a diagnostic launcher supplied through `--binary`:
-
-```sh
-#!/bin/sh
-export KARERE_FAULT_DROP_ACCELERATED=1
-export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}/absolute/fixture-dir/cef-recovery-fault.so"
-exec /app/bin/karere "$@"
-```
-
-Use `--synthetic --synthetic-gpu --windowed --schedule-probe` with that launcher.
-Require both the dropped-callback marker and the real ten-second CPU recovery,
-then positive CPU delivery and normal shutdown. Performance analysis rejects
-these fault-marked captures even if their timing would otherwise pass.
+The ABI was verified against the checksum-locked `cef-dll-sys 152.3.0+152.0.6` Linux x86-64 bindings (crate SHA-256 `ced5c6a0f46744561b50e283f9134c21bdd95a2e991695b0fc7399ad79765bbd`). App size/handler offset: 80/64 bytes. Browser-handler size/schedule offset: 96/72 bytes. Settings size/debug-port offset: 448/336 bytes.
 
 ## Reproduce with generated content
 
 Fully quit Karere first. Each capture refuses an existing instance or output filename. The synthetic test uses an isolated temporary profile inside Flatpak and memory-only settings, leaving the normal profile and GPU preference intact. Each launch closes automatically after a 5-second warmup and a 15-second scrolling interval.
-
-The launcher applies XDG roots with `/usr/bin/env` **inside** the sandbox;
-Flatpak resets its reserved XDG variables after processing `--env` arguments.
-`profile_exec.sh` refuses to exec the application unless all three roots match
-the requested profile and settings use the memory backend. Captures also verify
-the owned application's actual environment and CEF's user-data directory prefixes.
-Both proof records are retained. Requested flags alone do not establish isolation.
-
-The 1 November audit found that earlier captures using `--env=XDG_*` lacked
-that protection and used regular app directories. They retain their numeric
-measurements but are excluded from isolated-profile comparisons/acceptance.
-Regular data was preserved after closure; no automatic rollback was performed.
 
 ```sh
 python3 tools/scrolling-probe/karere_probe.py cpu --synthetic --schedule-probe
@@ -188,19 +64,6 @@ timer implementation.
 
 ## Optional test of the real chat list
 
-For engine comparisons, `--profile-directory DIRECTORY` uses a private cold
-copy containing `.karere-diagnostic-profile`. It rejects normal Flatpak profile
-locations and unmarked directories, grants only the selected copy write access,
-and uses memory-only settings. `--profile-transfer cpu|accelerated` selects
-the fixture setting; `--windowed` fixes the starting geometry. Keep separate
-copies for CEF 152 and 156 and never open an upgraded copy with the older engine.
-The capture records clone use and requested transfer without recording account
-contents. This option does not create a copy or authorize relinking an account.
-With the schedule probe, a once-per-launch browser `SystemInfo.getInfo` query
-records the actual CEF GPU/backend and advertised decode/encode capabilities.
-These flags and capability lists do not prove that a workload used a hardware
-decoder or encoder; media fixtures record the actual implementation separately.
-
 This mode uses the normal profile and its current GPU preference:
 
 ```sh
@@ -209,15 +72,9 @@ python3 tools/scrolling-probe/karere_probe.py chat_cpu --chat-list
 
 The controller waits for a visible WhatsApp chat list, settles for 20 seconds, warms up for 5 seconds, and moves `scrollTop` through a 900 CSS-pixel range for 15 seconds. It restores the starting offset and quits. It does not click, type, read messages/contacts/cookies, or send messages. Keep Karere untouched during the measurement.
 
-For CPU → GPU → CPU comparisons, change GPU Rendering in Preferences and fully quit between runs. Restore the original preference afterwards. The accelerated workaround in the historical results was verified on AMD. Earlier NVIDIA presenter experiments were opt-in and fell back to CPU transfer; current default-on policy and recovery validation are documented in [ACCELERATION.md](ACCELERATION.md).
+For CPU → GPU → CPU comparisons, change GPU Rendering in Preferences and fully quit between runs. Restore the original preference afterwards. The accelerated workaround in the recorded results was verified on AMD; do not bypass Karere's NVIDIA compatibility check.
 
 The real-page probe temporarily enables CEF's loopback CDP port through its initialization field, preserving normal origin/private-network security flags. It does not pass Karere's `--debug` option. The small CDP client only accepts `127.0.0.1:9333`. The generated-page mode uses Karere's debug option in its isolated profile. Both reject an already occupied diagnostic port. Quitting the diagnostic instance removes the probe and listener; relaunch Karere normally afterwards.
-
-The listener was verified with `ss -ltnp '( sport = :9333 )'` to bind to
-`127.0.0.1` in the tested Flatpak. Loopback is a destination restriction, not
-authentication: other local processes able to reach this port can use CDP.
-Keep the diagnostic session temporary and verify the listener disappears when
-it exits. The client does not add authentication or claim per-user isolation.
 
 To check whether application debug logging contributes to the pump pattern:
 
@@ -242,168 +99,3 @@ The analyzer uses the exact active interval reported by the page, counting CEF p
 The committed [generated-page aggregates](measurements/automatic_summary.json) and [real chat-list aggregates](measurements/chat_summary.json) preserve the original investigation results. In synthetic captures, `configuration.settings` records the unchanged normal-profile preferences; `synthetic_gpu` identifies the isolated GPU override. Raw machine-specific captures and compiled binaries are not committed. Fresh captures use their own labels and timestamps.
 
 `pump_probe.c` measures actual pump entry/exit with a monotonic clock. `schedule_probe.c` additionally observes scheduling callbacks, preserving their arguments and reference-count callbacks. Paint/draw timestamps come from receipt of allowlisted application logs, so events near interval boundaries may shift slightly. Callback rates do not establish compositor presentation FPS or input-to-screen latency. Programmatic scrolling bypasses wheel/touchpad input handling; native-menu latency remains a separate measurement. All comparisons retain the same instrumentation, which itself adds some overhead.
-
-## Conversation follow-up on v4.3.2
-
-Quit Karere normally. For an installed-executable capture with the saved GPU
-preference, run in one terminal:
-
-```sh
-KARERE_PROBE_CDP=1 python3 tools/scrolling-probe/karere_probe.py conversation_cpu --schedule-probe
-```
-
-Keep the window visible, open a conversation and let startup settle. In a second
-terminal run:
-
-```sh
-python3 tools/scrolling-probe/conversation_probe.py conversation_baseline
-python3 tools/scrolling-probe/conversation_probe.py list_control --target list
-```
-
-The controller identifies a scrollable pane by geometry and verifies that it
-actually moves. It uses a five-second warmup and twenty-second active interval,
-stays within loaded history, and restores the starting scroll position. Inspect
-`scroll_height_changes`; discard history-loading runs from steady-scroll claims.
-Use new labels because automatic samples reject existing output files.
-
-Conversation diagnostic commands accept `--target-id ID`. Without it, exactly
-one eligible visible page must exist; ambiguity reports only IDs, never titles
-or URLs. Comparisons and trace collectors pass their chosen ID to child probes
-instead of selecting a second page. A missing/hidden explicit target fails
-without falling back to another page. Reports include `target_id`, `run_id` and
-`status`; cancelled/incomplete runs are not successful samples.
-
-The matched comparison needs at least 4852.5 CSS pixels of loaded scroll range.
-`prepare_conversation.py` can position an open chat and load enough history;
-it does not open a chat unless explicitly given `--open-row N` (zero-based).
-It reads geometry and counts, not names or message text. Keep the same chat
-visible throughout a series.
-
-```sh
-python3 tools/scrolling-probe/prepare_conversation.py
-python3 tools/scrolling-probe/wallpaper_comparison.py cpu_repeat
-```
-
-This runs original → background hint → background hint → original at a common
-3452.5 px bottom anchor, with three-second settling before each warmup. It refuses
-an ambiguous background match. It automatically toggles the compiled stylesheet
-when present, otherwise an inline hint on older binaries. It checks computed
-`will-change` (`auto` / `transform`) before and after every sample, including the
-experiment identity and whether the original element/stylesheet still exists.
-A conflicting inline declaration fails the comparison instead of pretending
-the hint was disabled. Each result records its checked `wallpaper_condition`;
-failed post-checks mark the owned result `invalid_condition` for exclusion from
-the aggregate.
-
-To test a binary containing `80-conversation-wallpaper.js`, use
-`wallpaper_comparison.py PREFIX --production` to **require** that stylesheet.
-This remains compatible with the original explicit production procedure; the
-default now chooses it automatically when the stylesheet exists.
-
-The comparison restores the saved stylesheet enabled/disabled state and exact
-inline value/priority in a `finally` block. `wallpaper_probe.py on` and `off`
-deliberately leave their condition active; `wallpaper_probe.py restore` restores
-the original snapshot and ends that experiment. Off and restore are different
-operations. All three accept `--target-id ID`.
-
-On exceptions, Ctrl-C or SIGTERM, parent tools stop/reap their child, cancel only
-the matching page-side run, restore scroll/wallpaper state and close connections.
-Cancellation is idempotent, including before the first animation frame. Cleanup
-failure preserves the original error and asks the operator to close the
-diagnostic instance. SIGKILL, browser exit or a disconnected CDP socket cannot
-guarantee restoration; quit the diagnostic instance and relaunch normally.
-
-On supported hardware, close that capture and launch a separate GPU comparison
-with the transient `KARERE_GPU_OSR=1` environment override. Verify accelerated
-paint/import and actual GPU information; never infer the active GPU from device
-file access or the preference alone. This was tested on AMD, not NVIDIA.
-
-The opt-in Rust stage instrumentation is kept in [stage-timing.patch](stage-timing.patch),
-outside the production build. Apply it in a disposable checkout, compile against
-the matching CEF, and use that executable:
-
-```sh
-git apply tools/scrolling-probe/stage-timing.patch
-# Build Karere with the matching CEF/GTK toolchain, then launch:
-```
-
-```sh
-KARERE_PROBE_CDP=1 python3 tools/scrolling-probe/karere_probe.py stages_cpu \
-  --schedule-probe --binary /path/to/compiled/karere --stage-trace
-```
-
-`--stage-trace` buffers numeric paint, upload, render, input and GDK presentation
-timings, then writes `results/<label>_stages.json` at clean exit. End a capture
-with `gapplication action io.github.tobagin.karere quit` before analyzing it.
-The recorded `binary_sha256` identifies the tested executable.
-
-```sh
-python3 tools/scrolling-probe/summarize_conversation.py
-```
-
-The analyzer joins page intervals with process CPU, CEF pump and optional stage
-timings. `results/conversation_summary.json` is the local combined output. Its
-new capture rows include both `wall` and absolute `monotonic` time. Each result's
-`clock_offset_epoch_minus_monotonic` comes from its matched capture's start row,
-with `clock_alignment_source: capture_start`; analysis after a reboot/suspend
-does not change that offset. The former single top-level offset has been replaced
-by these per-run fields. Legacy rows without `monotonic` use the summary-time
-offset with `clock_alignment_source: summary_time_fallback` and an explicit
-warning; those older pump/stage results may be unreliable after suspend/reboot.
-Neither path makes clock steps or suspension **during** a capture valid. Only
-exited captures containing the entire page interval and completed page samples
-are included. Published historical aggregates are retained, not regenerated
-using a later machine clock.
-
-Additional probes:
-
-- `conversation_probe.py LABEL --mode wheel` injects browser wheel input, bypassing
-  GTK. At the measured DPR, requested and page-observed deltas differed; compare
-  observed motion, not command deltas alone.
-- `manual_probe.py start LABEL` / `finish LABEL` observes genuine input for up to
-  ten minutes. Keep the same real or generated page open until the user finishes;
-  do not attach a delayed subjective reply to a different target. It restores
-  the original scroll position at completion. Start records the selected target
-  and run ID; finish reconnects only to that target and requires the same run.
-  Legacy start records lacking those IDs must be replaced by a new capture.
-- `trace_conversation.py LABEL` records Chromium trace names/times while running
-  one automatic sample. It removes trace arguments before storage. Inclusive
-  stage durations overlap and must not be summed as independent CPU work. Only
-  the trace client disables the normal 1,000,000-byte WebSocket frame cap, since
-  trace buckets can be larger; ordinary CDP clients retain that cap. The collector
-  ends and drains tracing through `tracingComplete` before writing a trace file.
-  Failure/interruption attempts the same shutdown but is reported as a failure.
-- `--synthetic --generated-file tools/scrolling-probe/conversation_probe.html
-  --hold-synthetic` launches an isolated generated conversation and keeps it open
-  for these controllers. This control **does not reproduce the WhatsApp mask
-  slowdown**; it measures viewport/frame-transfer costs without account content.
-- `validate_wallpaper.py` evaluates the production wallpaper script on that
-  isolated generated page: replacement chats/backgrounds, scope, geometry,
-  removed masks, narrow layouts and idempotent injection. It also checks diagnostic
-  toggling/restoration, replacement failures and owned cancellation. It refuses a real
-  page. Direct evaluation is necessary because the existing identity hook's
-  synchronous localStorage access stops the bundle on an opaque `data:` origin.
-  Automatic bundle installation is checked separately in the real app. These
-  fixture checks validate DOM behavior, not the WhatsApp raster bottleneck.
-
-Offline regressions need only Python's standard library:
-
-```sh
-python3 -m unittest discover -s tools/scrolling-probe -p 'test_*.py' -v
-```
-
-With the generated fixture running, use a fresh validation label followed by a
-fresh comparison prefix (the validation command installs the production script):
-
-```sh
-python3 tools/scrolling-probe/validate_wallpaper.py --label wallpaper_review_checks
-python3 tools/scrolling-probe/wallpaper_comparison.py wallpaper_review_abba
-```
-
-The regression checks cover delayed clock alignment, legacy captures, large and
-fragmented trace frames, trace completion, target selection, child interruption,
-manual ownership and condition invalidation. See [review validation](REVIEW_VALIDATION.md)
-for the recorded PR #193 follow-up checks.
-
-No diagnostic launch changes saved GPU preferences or installs a persistent
-Flatpak override. Quit the diagnostic instance and relaunch normally when done.
