@@ -412,18 +412,14 @@ fn write_spellcheck_dictionaries(browser: &cef::Browser, langs: &[String]) -> bo
 
 /// Apply the spellcheck enable flag + dictionary list to a live browser.
 ///
-/// `force_clear` selects how the list is written:
-/// - `true` (first apply of a page load): Chromium ignores a `Set` equal to the
-///   persisted pref, so force a real `[]`→`[lang]` transition across a loop tick
-///   so the renderer sees two distinct updates.
-/// - `false` (live switch): value differs, so set `[lang]` DIRECTLY. The `[]` clear
-///   must NOT be used — clearing after spellcheck is running tears the OSR service
-///   down and the re-set doesn't revive it (dead until restart).
+/// The list is always written directly. Never write an intermediate `[]`: once
+/// spellcheck is running in OSR, a clear tears the service down and the re-set
+/// doesn't revive it (dead until restart). At startup the service is already
+/// running from `--spell-check-languages`, so a clear there killed it too (#203).
 pub(crate) fn apply_spellcheck_to_browser(
     browser: &cef::Browser,
     langs: &[String],
     enabled: bool,
-    force_clear: bool,
 ) {
     use cef::ImplBrowser;
     use cef::{CefString, ImplBrowserHost, ImplPreferenceManager, ImplValue, value_create};
@@ -443,23 +439,6 @@ pub(crate) fn apply_spellcheck_to_browser(
         }
     }
 
-    if force_clear && !langs.is_empty() {
-        // First apply: force the [] → [lang] transition across a loop tick.
-        write_spellcheck_dictionaries(browser, &[]);
-        log::info!("spellcheck.dictionaries = [] (force re-check)");
-        let browser = browser.clone();
-        let langs = langs.to_vec();
-        glib::idle_add_local_once(move || {
-            if write_spellcheck_dictionaries(&browser, &langs) {
-                log::info!("spellcheck.dictionaries = {langs:?}");
-            } else {
-                log::warn!("set spellcheck.dictionaries failed");
-            }
-        });
-        return;
-    }
-
-    // Live switch (or disable): write directly, no [] teardown.
     if write_spellcheck_dictionaries(browser, langs) {
         log::info!("spellcheck.dictionaries = {langs:?} (direct)");
     } else {
@@ -1256,7 +1235,7 @@ mod imp {
                 return;
             };
             // Live switch: never use the [] force-clear (tears down OSR spellcheck).
-            super::apply_spellcheck_to_browser(&browser, langs, enabled, false);
+            super::apply_spellcheck_to_browser(&browser, langs, enabled);
         }
 
         pub fn reload(&self) {

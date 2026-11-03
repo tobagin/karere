@@ -271,19 +271,15 @@ wrap_render_handler! {
             }
             let Some(browser) = browser else { return };
             let (enabled, langs) = super::load::resolve_spellcheck_settings();
-            let force_clear;
             {
                 let mut s = self.handler.shared.lock();
                 if s.spellcheck_last.as_ref() == Some(&(enabled, langs.clone())) {
                     return; // already applied this exact config — avoid re-check flash
                 }
-                // First apply of this load → force the [] transition; a live
-                // switch later sets directly (no [] teardown).
-                force_clear = s.spellcheck_last.is_none();
                 s.spellcheck_last = Some((enabled, langs.clone()));
             }
-            log::debug!("editable focused → applying spellcheck {langs:?} (force_clear={force_clear})");
-            crate::web_view::apply_spellcheck_to_browser(browser, &langs, enabled, force_clear);
+            log::debug!("editable focused → applying spellcheck {langs:?}");
+            crate::web_view::apply_spellcheck_to_browser(browser, &langs, enabled);
         }
     }
 }
