@@ -105,6 +105,54 @@ assert.deepEqual(sent.pop(), {
   payload: { text: "menu selection", primary: false },
 });
 
+// Cut mirrors the selection to CLIPBOARD from the capture phase, before the
+// page can stop propagation or delete it, and never cancels the deletion.
+sent.length = 0;
+selection = { text: "cut me 🙂", collapsed: false };
+prevented = false;
+const cutEvent = {
+  clipboardData: { getData: () => "" },
+  preventDefault() { prevented = true; },
+};
+hostListeners.get("cut")(cutEvent);
+listeners.get("cut")(cutEvent);
+assert.equal(prevented, false);
+assert.deepEqual(sent, [{
+  name: "SetClipboard",
+  payload: { text: "cut me 🙂", primary: false },
+}]);
+
+// Page-set clipboardData that differs from the raw selection wins.
+sent.length = 0;
+selection = { text: "hi ", collapsed: false };
+const pageCut = { clipboardData: { getData: () => "hi 😀" }, preventDefault() {} };
+hostListeners.get("cut")(pageCut);
+listeners.get("cut")(pageCut);
+assert.deepEqual(sent.map((m) => m.payload.text), ["hi ", "hi 😀"]);
+
+// Text selected inside a plain input/textarea is read from its value.
+sent.length = 0;
+selection = { text: "", collapsed: true };
+context.document.activeElement = {
+  tagName: "TEXTAREA",
+  value: "keep CUT keep",
+  selectionStart: 5,
+  selectionEnd: 8,
+};
+hostListeners.get("cut")(cutEvent);
+listeners.get("cut")(cutEvent);
+assert.deepEqual(sent, [{
+  name: "SetClipboard",
+  payload: { text: "CUT", primary: false },
+}]);
+context.document.activeElement = undefined;
+
+// An empty cut mirrors nothing (existing host clipboard preserved).
+sent.length = 0;
+hostListeners.get("cut")(cutEvent);
+listeners.get("cut")(cutEvent);
+assert.deepEqual(sent, []);
+
 console.log("copy bridge regression: ok");
 
 // WhatsApp's own message-menu "Copy" goes through the async Clipboard API;
