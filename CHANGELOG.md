@@ -5,6 +5,15 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.5] - 2026-11-03
+
+### Fixed
+- **Spell checking did nothing until the language was changed (#203)**: the first time a text field got focus, Karere cleared the dictionary list and set it again to make Chromium pick up the startup language. The startup language is already active by then, and clearing it stops spell checking for the rest of the session. The list is now written directly, so spell checking works from launch in every language.
+- **Cut did not reach the system clipboard**: Ctrl+X and Cut from the right-click menu removed the text but left the clipboard unchanged, so pasting elsewhere gave the previous content. Cut text is now mirrored like copied text. Fix by [@valnssh](https://github.com/valnssh) (#202).
+- **Tray menu dialogs with the window hidden (#200)**: Preferences, Keyboard Shortcuts and About opened from the tray did nothing while Karere ran in the background. The window is now shown first.
+- **Tray unread dot on HiDPI (#199)**: the dot was too small to see at fractional scaling. It is about three times larger, with a cut-out ring around it.
+- **Spell check favourite stars**: toggling a star in the language list could act on a different language after the list scrolled. Fix by [@loxoron218](https://github.com/loxoron218) (#201).
+
 ## [4.3.4] - 2026-09-29
 
 ### Fixed

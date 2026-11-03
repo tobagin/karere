@@ -101,6 +101,17 @@
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
 
   <releases>
+    <release version="4.3.5" date="2026-11-03">
+      <description>
+        <ul>
+          <li>Fixed spell checking not working until the language was changed (#203).</li>
+          <li>Cut text (Ctrl+X or the right-click menu) now reaches the system clipboard.</li>
+          <li>Preferences, Keyboard Shortcuts and About opened from the tray now show the hidden window (#200).</li>
+          <li>The tray unread dot is larger, so it stays visible on HiDPI displays (#199).</li>
+          <li>Fixed spell check favourite stars sometimes toggling the wrong language.</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.3.4" date="2026-09-29">
       <description>
         <ul>

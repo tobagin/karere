@@ -28,22 +28,17 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.3.4
+### 🆕 What's New in 4.3.5
 
-- **Drag and drop and paste attach files from any folder (#192)**: Karere no longer needs access to
-  your folders to attach a file. When the file manager offers a portal file transfer, Karere asks
-  the document portal for the file, so a drop or a paste works from Documents, a removable drive or
-  anywhere else. Read-only access to Documents, Pictures, Videos, Music and Desktop is removed.
-- **Drags are no longer refused on entry**: on some desktops every drag was turned away as it
-  entered the window, with no overlay and no error.
-- **A file that cannot be read says so**: a file manager that was started before the document
-  portal offers only a plain path, which the sandbox cannot read. A notice now offers to open the
-  file chooser in that folder. Restarting the file manager restores direct attaching.
-- **Letters are no longer dropped while typing (#180)**: a letter pressed while Backspace, Enter or
-  an arrow key was still held was swallowed. Fast typing overlaps keys, so it looked random.
-- **Smoother scrolling inside conversations (#173)**: the wallpaper mask behind a conversation was
-  redrawn on every scroll step. Diagnosis and fix by [@sknowledge1](https://github.com/sknowledge1).
-- **Pasting a text file attaches it** instead of inserting nothing.
+- **Spell checking works from launch (#203)**: it used to stay off until you picked another language
+  and switched back. This affected every language, not only Brazilian Portuguese.
+- **Cut reaches the system clipboard**: Ctrl+X and Cut from the right-click menu now put the text on
+  the clipboard, so it pastes into other apps. Fix by [@valnssh](https://github.com/valnssh).
+- **Tray menu dialogs bring the window back (#200)**: Preferences, Keyboard Shortcuts and About did
+  nothing while Karere ran in the background.
+- **A visible unread dot on HiDPI (#199)**: the tray dot is about three times larger.
+- **Spell check favourite stars toggle the right language**. Fix by
+  [@loxoron218](https://github.com/loxoron218).
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
