@@ -56,10 +56,13 @@ pub struct DownloadFailed {
 #[derive(Default)]
 pub struct SharedState {
     pub frame: FrameBuffer,
-    /// Pending GPU-accelerated frame (DMA-BUF) from `on_accelerated_paint`, when
-    /// shared-texture OSR is enabled; consumed + imported to a GL texture in
-    /// `draw`. `None` on the software (`on_paint`) path. (gpu-osr)
-    pub accel: Option<crate::gl_dmabuf::AccelFrame>,
+    pub popup: FrameBuffer,
+    pub popup_visible: bool,
+    pub popup_rect: (i32, i32, i32, i32),
+    pub snapshot_present: bool,
+    pub frame_serial: u64,
+    /// Main-view delivery only: a popup must not satisfy the startup watchdog.
+    pub view_frame_serial: u64,
     /// Logical (DIP) viewport size — CEF's GetViewRect and GetScreenInfo rect.
     /// With non-empty screen rects Chromium honours device_scale_factor, so the
     /// physical paint buffer = this × `scale_factor` = the GLArea framebuffer
@@ -129,7 +132,7 @@ pub struct SharedState {
     /// `SendWeakRef` only satisfies the `Arc<Mutex<_>>` bounds. Going through
     /// the timer added 0–16 ms per frame and beat against the 60 Hz paint
     /// stream, dropping and doubling frames — the "stutter" in #173/#179.
-    pub redraw: Option<gtk::glib::SendWeakRef<gtk::GLArea>>,
+    pub redraw: Option<gtk::glib::SendWeakRef<crate::web_view::KarereWebView>>,
 }
 
 pub type SharedRef = Arc<Mutex<SharedState>>;

@@ -7,9 +7,10 @@
 # Needs ~100-150 GB disk, 16 GB+ RAM, several hours. Distributing H.264/AAC binaries
 # carries patent-licensing obligations, falling on whoever hosts the tarball.
 #
-# Usage: CEF_BRANCH=<n> tools/build-cef-codecs.sh [download-dir]
-#   CEF_BRANCH MUST match Karere's Chromium 152 line (chromium-152.0.7977.83); wrong
-#   branch wastes the whole build, so the script refuses to start without it.
+# Usage: CEF_BUILD_MODE=upgrade CEF_VERSION=<full-version> CEF_CHECKOUT=<full-sha>
+#   CEF_BRANCH=<n> tools/build-cef-codecs.sh [download-dir]
+# Use legacy-current-pin explicitly to rebuild the current Chromium 152 line
+# (chromium-152.0.7977.83). Upgrade mode waits for a verified fixed release.
 #
 set -euo pipefail
 
@@ -26,6 +27,20 @@ error: CEF_BRANCH is required.
 EOF
   exit 2
 fi
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CEF_BUILD_MODE="${CEF_BUILD_MODE:-upgrade}"
+if [[ "$CEF_BUILD_MODE" == legacy-current-pin ]]; then
+  CEF_VERSION="${CEF_VERSION:-152.0.6+g708dc14+chromium-152.0.7977.83}"
+  CEF_CHECKOUT="${CEF_CHECKOUT:-708dc140cbc3286826a8abef89dc23a44ff9ea72}"
+fi
+# This is deliberately before mkdir, cloning, hooks or expensive work.
+PREFLIGHT="$(python3 "$SCRIPT_DIR/cef-release.py" preflight \
+  --mode "$CEF_BUILD_MODE" --cef-version "${CEF_VERSION:-}" \
+  --cef-checkout "${CEF_CHECKOUT:-}" --cef-branch "$CEF_BRANCH" \
+  --arch "${CEF_ARCH:-x64}")" || { printf '%s\n' "$PREFLIGHT" >&2; exit 2; }
+export CEF_ARCHIVE_FORMAT="${CEF_ARCHIVE_FORMAT:-tar.bz2}"
+case "$CEF_ARCHIVE_FORMAT" in zip|tar.bz2) ;; *) echo 'error: unsupported CEF_ARCHIVE_FORMAT' >&2; exit 2 ;; esac
 
 DOWNLOAD_DIR="${1:-$HOME/Projects/cef-build}"
 DEPOT_TOOLS_DIR="$DOWNLOAD_DIR/depot_tools"
@@ -58,12 +73,18 @@ echo
 
 # 1. depot_tools
 mkdir -p "$DOWNLOAD_DIR"
+printf '%s\n' "$PREFLIGHT" > "$DOWNLOAD_DIR/cef-preflight-${CEF_ARCH:-x64}.json"
 if [[ ! -d "$DEPOT_TOOLS_DIR" ]]; then
   echo ">> cloning depot_tools"
   git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git \
     "$DEPOT_TOOLS_DIR"
 fi
 export PATH="$DEPOT_TOOLS_DIR:$PATH"
+# Pinned/offline-update builds still need depot_tools' Python bootstrap. In a
+# fresh container DEPOT_TOOLS_UPDATE=0 otherwise leaves gn unable to start.
+if [[ ! -f "$DEPOT_TOOLS_DIR/python3_bin_reldir.txt" ]]; then
+  "$DEPOT_TOOLS_DIR/ensure_bootstrap"
+fi
 
 # 2. automate-git.py
 AUTOMATE="$DOWNLOAD_DIR/automate-git.py"
@@ -150,21 +171,30 @@ fi
 # 4b. Apply Karere CEF source patches (idle-CPU fix #151, etc.). Patches live in
 #     tools/cef-patches/ and apply from the Chromium src root (paths cover both
 #     base/ and cef/). Idempotent: skip a patch already present in the tree.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PATCH_DIR="$SCRIPT_DIR/cef-patches"
-if compgen -G "$PATCH_DIR/*.patch" >/dev/null; then
-  for patch in "$PATCH_DIR"/*.patch; do
-    name="$(basename "$patch")"
-    if patch -p1 -d "$CHROMIUM_SRC" --dry-run --reverse --force <"$patch" >/dev/null 2>&1; then
-      echo ">> patch already applied, skipping: $name"
-      continue
-    fi
-    echo ">> applying patch: $name"
-    patch -p1 -d "$CHROMIUM_SRC" --forward <"$patch"
-  done
-else
-  echo ">> no patches found in $PATCH_DIR"
+PATCHES=(karere-151-detach-worksource.patch karere-173-pump-continuation.patch)
+if [[ "$CEF_BUILD_MODE" == legacy-current-pin ]]; then
+  PATCHES+=(karere-nvidia-native-shared-images.patch)
 fi
+# The old native-handle backport is specific to the legacy engine. Fixed releases
+# already contain that work and must not receive it again.
+for name in "${PATCHES[@]}"; do
+  patch="$PATCH_DIR/$name"
+  if patch -p1 -d "$CHROMIUM_SRC" --dry-run --reverse --force <"$patch" >/dev/null 2>&1; then
+    echo ">> patch already applied, skipping: $name"
+    continue
+  fi
+  echo ">> applying patch: $name"
+  patch -p1 -d "$CHROMIUM_SRC" --forward <"$patch"
+done
+
+# VersionFormatter needs CEF branch history to generate the exact release name.
+if [[ "$(git -C "$CHROMIUM_SRC/cef" rev-parse --is-shallow-repository)" == true ]]; then
+  git -C "$CHROMIUM_SRC/cef" fetch --unshallow origin
+fi
+git -C "$CHROMIUM_SRC/cef" fetch origin \
+  "refs/heads/master:refs/remotes/origin/master" \
+  "refs/heads/$CEF_BRANCH:refs/remotes/origin/$CEF_BRANCH"
 
 # 4c. Build. automate-git's own build phase shells out to `autoninja` with no -j
 #     and prepends depot_tools to PATH (so a PATH shim can't cap it); siso then
@@ -177,10 +207,14 @@ OUT_DIR="out/Release_GN_${CEF_ARCH:-x64}"
 JOBS_FLAG=""
 [[ -n "${CEF_NINJA_JOBS:-}" ]] && JOBS_FLAG="-j $CEF_NINJA_JOBS"
 ( cd "$CHROMIUM_SRC/cef" && python3 tools/gclient_hook.py )
+python3 "$SCRIPT_DIR/cef-release.py" source \
+  --preflight "$DOWNLOAD_DIR/cef-preflight-${CEF_ARCH:-x64}.json" \
+  --chromium-src "$CHROMIUM_SRC" --patch-dir "$PATCH_DIR" \
+  > "$DOWNLOAD_DIR/cef-source-${CEF_ARCH:-x64}.json"
 attempt=0
 until ( cd "$CHROMIUM_SRC" && autoninja -C "$OUT_DIR" $JOBS_FLAG cefsimple chrome_sandbox ); do
   attempt=$((attempt + 1))
-  if (( attempt > ${CEF_NINJA_RETRIES:-500} )); then
+  if (( attempt > ${CEF_NINJA_RETRIES:-2} )); then
     echo "error: ninja failed $attempt times, giving up" >&2
     exit 1
   fi
@@ -204,15 +238,16 @@ python3 "$AUTOMATE" \
   --no-build \
   --force-distrib
 
-# 5. Locate the tarball + print sha256.
+# 5. Verify the exact version/architecture, headers, resources and ELF machine.
+# Old caches may contain other versions, architectures and incorrect shallow-git
+# version names. Never select the newest (or first) matching glob.
 DISTRIB_DIR="$DOWNLOAD_DIR/chromium/src/cef/binary_distrib"
-# CEF ≤149 emitted .tar.bz2; 150+ emits .zip. Accept either.
-TARBALL="$(ls -t "$DISTRIB_DIR"/cef_binary_*_linux*_minimal.tar.bz2 "$DISTRIB_DIR"/cef_binary_*_linux*_minimal.zip 2>/dev/null | head -1 || true)"
-
-if [[ -z "$TARBALL" ]]; then
-  echo "error: build finished but no minimal tarball found under $DISTRIB_DIR" >&2
-  exit 1
-fi
+python3 "$SCRIPT_DIR/cef-release.py" artifact \
+  --provenance "$DOWNLOAD_DIR/cef-source-${CEF_ARCH:-x64}.json" \
+  --distrib-dir "$DISTRIB_DIR" --format "$CEF_ARCHIVE_FORMAT" \
+  > "$DOWNLOAD_DIR/cef-artifact-${CEF_ARCH:-x64}.json"
+TARBALL="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["artifact"])' \
+  "$DOWNLOAD_DIR/cef-artifact-${CEF_ARCH:-x64}.json")"
 
 echo
 echo "=============================================================="

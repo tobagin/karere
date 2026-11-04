@@ -36,6 +36,7 @@ This project follows the principles of respect, inclusivity, and professionalism
 ### Prerequisites
 
 - **SDKs**: `org.gnome.Sdk//49`, `org.freedesktop.Sdk.Extension.rust-stable//24.08`
+- **GTK**: 4.16 or newer (owned DMA-BUF textures and damage-aware memory textures)
 - **Tools**: `flatpak-builder`, Rust/Cargo 1.97.1 with the matching rustfmt and Clippy components (optional, for local checks)
 
 ### Building with Flatpak (Recommended)

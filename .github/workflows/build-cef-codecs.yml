@@ -6,9 +6,32 @@ name: Build CEF (proprietary codecs)
 on:
   workflow_dispatch:
     inputs:
+      build_mode:
+        description: "Explicit legacy rebuild, or upgrade after a fixed stable CEF release is verified"
+        required: true
+        type: choice
+        options: [upgrade, legacy-current-pin]
+        default: upgrade
+      cef_version:
+        description: "Full CEF release version (must match checkout and Rust bindings)"
+        required: true
+        type: string
+        default: "152.0.6+g708dc14+chromium-152.0.7977.83"
+      arch:
+        description: "Target architecture; ARM64 can be cross-compiled on x64"
+        required: true
+        type: choice
+        options: [x64, arm64]
+        default: x64
       cef_branch:
         description: "CEF branch number for Chromium 152 (see https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)"
         required: true
+        type: string
+        default: "7977"
+      cef_checkout:
+        description: "Exact CEF commit; patches must be verified against this revision"
+        required: true
+        default: "708dc140cbc3286826a8abef89dc23a44ff9ea72"
         type: string
       runner:
         description: "Runner label(s). Default = GitHub free runner (likely too small). Override with a larger/self-hosted runner."
@@ -18,11 +41,27 @@ on:
 
 jobs:
   build:
-    name: Build CEF (x64, proprietary codecs)
+    name: Build CEF (${{ inputs.arch }}, proprietary codecs)
     runs-on: ${{ inputs.runner }}
     timeout-minutes: 4320   # only honored by self-hosted; free runners hard-cap at 6 h
     steps:
+      - name: Checkout (for the build script)
+        uses: actions/checkout@v4
+
+      - name: Verify released engine before provisioning/building
+        env:
+          CEF_BUILD_MODE: ${{ inputs.build_mode }}
+          CEF_VERSION: ${{ inputs.cef_version }}
+          CEF_CHECKOUT: ${{ inputs.cef_checkout }}
+          CEF_BRANCH: ${{ inputs.cef_branch }}
+          CEF_ARCH: ${{ inputs.arch }}
+        run: |
+          python3 tools/cef-release.py preflight --mode "$CEF_BUILD_MODE" \
+            --cef-version "$CEF_VERSION" --cef-checkout "$CEF_CHECKOUT" \
+            --cef-branch "$CEF_BRANCH" --arch "$CEF_ARCH"
+
       - name: Maximize build disk
+        if: ${{ inputs.runner == 'ubuntu-22.04' }}
         # Reclaim preinstalled toolchains into one LVM at the build dir.
         uses: easimon/maximize-build-space@master
         with:
@@ -36,9 +75,6 @@ jobs:
           remove-docker-images: "true"
           build-mount-path: /cef-build
 
-      - name: Checkout (for the build script)
-        uses: actions/checkout@v4
-
       - name: Install build prerequisites
         run: |
           sudo apt-get update
@@ -46,54 +82,44 @@ jobs:
             git python3 python3-pip curl ca-certificates lsb-release sudo \
             build-essential pkg-config
 
-      - name: Fetch depot_tools + automate-git.py
-        run: |
-          set -eux
-          sudo chown -R "$USER" /cef-build
-          cd /cef-build
-          git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          curl -fsSL \
-            "https://bitbucket.org/chromiumembedded/cef/raw/master/tools/automate/automate-git.py" \
-            -o automate-git.py
-          df -h /cef-build
-
       - name: Build CEF with proprietary codecs
         env:
-          # proprietary_codecs+ffmpeg_branding=Chrome = H.264/AAC; thin_lto/pgo off +
-          # symbol_level=0 avoid the OOM/timeout-prone link/PGO stages.
-          GN_DEFINES: "is_official_build=true is_component_build=false proprietary_codecs=true ffmpeg_branding=Chrome use_thin_lto=false chrome_pgo_phase=false symbol_level=0 blink_symbol_level=0"
-          CEF_USE_GN: "1"
+          CEF_BUILD_MODE: ${{ inputs.build_mode }}
+          CEF_VERSION: ${{ inputs.cef_version }}
+          CEF_BRANCH: ${{ inputs.cef_branch }}
+          CEF_CHECKOUT: ${{ inputs.cef_checkout }}
+          CEF_ARCH: ${{ inputs.arch }}
+          CEF_NINJA_JOBS: "3"
+          CEF_NINJA_RETRIES: "2"
+          AUTOMATE_EXTRA: "--no-chromium-history"
         run: |
           set -eux
-          export PATH="/cef-build/depot_tools:$PATH"
-          cd /cef-build
-          # --no-chromium-history trims tens of GB off checkout; full history overran the LVM.
-          python3 automate-git.py \
-            --download-dir=/cef-build/cef \
-            --branch="${{ inputs.cef_branch }}" \
-            --no-chromium-history \
-            --minimal-distrib \
-            --no-debug-build \
-            --build-target=cefsimple \
-            --x64-build \
-            --force-clean
+          sudo mkdir -p /cef-build
+          sudo chown -R "$USER" /cef-build
+          # Keep codecs and all Karere CEF/Chromium patches in one pipeline.
+          bash tools/build-cef-codecs.sh /cef-build
           df -h /cef-build || true
 
-      - name: Locate tarball + sha256
+      - name: Locate verified artifact
         id: dist
+        env:
+          CEF_ARCH: ${{ inputs.arch }}
         run: |
           set -eux
-          DIST=/cef-build/cef/chromium/src/cef/binary_distrib
-          TARBALL="$(ls -t "$DIST"/cef_binary_*_linux64_minimal.tar.bz2 | head -1)"
+          TARBALL=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["artifact"])' "/cef-build/cef-artifact-$CEF_ARCH.json")
           echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
-          sha256sum "$TARBALL" | tee "$TARBALL.sha256"
+          echo "name=$(basename "$TARBALL")" >> "$GITHUB_OUTPUT"
+          (cd "$(dirname "$TARBALL")" && sha256sum --check "$(basename "$TARBALL").sha256")
 
       - name: Upload CEF distribution
         uses: actions/upload-artifact@v4
         with:
-          name: cef-152-proprietary-codecs-linux64
+          # Legacy cef-152-proprietary-codecs artifacts now include the exact
+          # full version and target architecture instead of a stale fixed label.
+          name: proprietary-codecs-${{ steps.dist.outputs.name }}
           path: |
             ${{ steps.dist.outputs.tarball }}
             ${{ steps.dist.outputs.tarball }}.sha256
+            ${{ steps.dist.outputs.tarball }}.provenance.json
           retention-days: 14
           if-no-files-found: error

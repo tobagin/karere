@@ -10,7 +10,10 @@ use std::process::{Child, Command, Stdio};
 use std::sync::mpsc::{self, Receiver};
 use std::time::{Duration, Instant};
 
-const APP_ID: &str = "io.github.tobagin.karere";
+const APP_ID: &str = match option_env!("KARERE_APP_ID") {
+    Some(id) => id,
+    None => "io.github.tobagin.karere",
+};
 const STARTUP_TIMEOUT: Duration = Duration::from_secs(30);
 
 struct RunningApp {
@@ -51,6 +54,11 @@ impl RunningApp {
             .env("MESA_GLES_VERSION_OVERRIDE", "3.2")
             .env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
             .env("KARERE_GPU_OSR", "0")
+            // The harness asserts diagnostic markers. A shell's RUST_LOG=warn
+            // must not silently override --debuglevel and hide those markers.
+            .env("RUST_LOG", "debug")
+            // Pin the GL recovery path independently of automatic backend selection.
+            .env("KARERE_CEF_GRAPHICS", "gl")
             .env("GSETTINGS_BACKEND", "keyfile")
             .env("GSETTINGS_SCHEMA_DIR", fixture.join("schemas"))
             .env("XDG_CONFIG_HOME", fixture.join("config"))
@@ -83,12 +91,15 @@ impl RunningApp {
         self.wait_for_output(expected, false);
     }
 
-    fn wait_for_software_fallback(&mut self) {
-        self.wait_for_output(&["presenting frames in software", "browser spawned"], true);
-        assert!(
-            !self.output.contains("GLArea realize error"),
-            "legacy desktop-GL context failure stopped at the GL fence:\n{}",
-            self.output
+    fn wait_for_context_failure(&mut self) {
+        self.wait_for_output(
+            &[
+                "no GL context",
+                "browser spawned",
+                "on_paint delivered=",
+                "J4 draw frame=",
+            ],
+            true,
         );
     }
 
@@ -191,6 +202,7 @@ fn assert_no_context_error(output: &str) {
 
 fn mesa_egl_vendor_file() -> Option<&'static Path> {
     [
+        "/usr/lib/x86_64-linux-gnu/GL/default/share/glvnd/egl_vendor.d/50_mesa.json",
         "/usr/share/glvnd/egl_vendor.d/50_mesa.json",
         "/usr/share/egl/egl_external_platform.d/50_mesa.json",
     ]
@@ -259,12 +271,11 @@ fn present_background_app(fixture: &Path) {
 fn real_binary_starts_with_software_gles_for_visible_and_prewarmed_windows() {
     let fixture = fixture();
 
-    // The fixture's debug-only legacy desktop-GL contract still gets no GL
-    // context from the production widget; that must not stop the app, which
-    // presents frames in software and carries on to spawn the browser. (#177)
+    // Prove the fixture models the pre-fix boundary with the actual production
+    // binary/widget: a rejected desktop-GL context must still display CPU frames.
     set_background(&fixture, false);
     let mut legacy = RunningApp::spawn(&fixture, true);
-    legacy.wait_for_software_fallback();
+    legacy.wait_for_context_failure();
     legacy.quit_after_expected_context_failure(&fixture);
 
     set_background(&fixture, false);
@@ -292,12 +303,10 @@ fn stable_and_devel_flatpak_graphics_policy_stays_synchronized() {
     let devel =
         fs::read_to_string(root.join("packaging/io.github.tobagin.karere.Devel.yml")).unwrap();
 
-    for policy in [
-        "--socket=wayland",
-        "--socket=fallback-x11",
-        "--env=GSK_RENDERER=gl",
-    ] {
+    for policy in ["--socket=wayland", "--socket=fallback-x11"] {
         assert_eq!(stable.matches(policy).count(), 1, "stable policy: {policy}");
         assert_eq!(devel.matches(policy).count(), 1, "Devel policy: {policy}");
     }
+    assert!(!stable.contains("--env=GSK_RENDERER="));
+    assert!(!devel.contains("--env=GSK_RENDERER="));
 }

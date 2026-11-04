@@ -183,10 +183,10 @@ fn activate_dialog_action(name: &str) {
         let Some(app) = gio::Application::default().and_downcast::<gtk::Application>() else {
             return;
         };
-        if let Some(win) = app.windows().into_iter().next() {
-            if !win.is_visible() {
-                win.present();
-            }
+        if let Some(win) = app.windows().into_iter().next()
+            && !win.is_visible()
+        {
+            win.present();
         }
         app.activate_action(&name, None);
     });

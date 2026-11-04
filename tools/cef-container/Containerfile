@@ -1,12 +1,14 @@
-# Throwaway CEF proprietary-codec builder. Downloads the latest sources matching
-# the Rust `cef` crate, builds x64 + arm64 minimal distribs, drops tarballs +
-# sha256 in /out. The ~200 GB work tree lives in an anonymous volume (/work),
-# discarded with --rm — nothing is kept between runs.
+# CEF proprietary-codec builder. Builds x64 + arm64 minimal distributions with
+# checksums/provenance in /out. Mount /work persistently to retain build caches.
 #
 #   podman build -f tools/cef-container/Containerfile -t cef-codecs tools/
-#   podman run --rm -v ./cef-out:/out:Z cef-codecs
+#   podman run --rm -e CEF_BUILD_MODE=legacy-current-pin \
+#     -v ./cef-work:/work:Z -v ./cef-out:/out:Z cef-codecs
 #
-#   env overrides: CEF_BRANCH=7977 (skip auto-detect), ARCHES="x64" (default "x64 arm64"),
+#   Upgrade: CEF_BUILD_MODE=upgrade, CEF_VERSION + CEF_BRANCH + CEF_CHECKOUT;
+#            blocked until tools/cef-release-policy.json has a verified minimum.
+#   env overrides:
+#                 ARCHES="x64" (default "x64 arm64"),
 #                 CEF_NINJA_JOBS=6 (cap parallelism on a memory-tight host)
 #
 # Package set mirrors the proven .github/workflows/build-cef-codecs.yml runner:
@@ -21,6 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY build-cef-codecs.sh /opt/karere/build-cef-codecs.sh
+COPY cef-release.py cef-release-policy.json /opt/karere/
 COPY cef-patches/ /opt/karere/cef-patches/
 COPY cef-container/entrypoint.sh /opt/karere/entrypoint.sh
 RUN chmod +x /opt/karere/build-cef-codecs.sh /opt/karere/entrypoint.sh

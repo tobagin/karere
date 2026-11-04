@@ -126,11 +126,11 @@ if [[ "$POLICY" == "mirror" ]]; then
         fail "karere git tag mismatch — beta: $beta_karere stable: $stable_karere"
     fi
 
-    # 4. GSK_RENDERER=gl must be present in beta
-    if grep -q 'GSK_RENDERER=gl' "$BETA_MANIFEST"; then
-        pass "GSK_RENDERER=gl present in beta manifest"
+    # 4. Keep renderer selection and bounded recovery in the application.
+    if ! grep -q 'GSK_RENDERER=' "$BETA_MANIFEST"; then
+        pass "beta manifest allows application-selected rendering"
     else
-        fail "GSK_RENDERER=gl missing in beta manifest"
+        fail "beta manifest overrides application renderer selection"
     fi
 
     # 5. Zero chromium-148 references remain
