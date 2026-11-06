@@ -6,7 +6,8 @@
 //   * `copy` event   → regular clipboard (Ctrl+C / context-menu copy)
 //   * `cut` event    → regular clipboard (Ctrl+X / context-menu cut)
 //   * `navigator.clipboard.writeText/write` → regular clipboard (WhatsApp's
-//     own message menu "Copy")
+//     own message menu "Copy"; `image/png` items via SetClipboardImage, e.g.
+//     "Copy sticker image")
 //   * `selectionchange` (debounced) → PRIMARY selection (Linux middle-click)
 //
 // Wrapped in try/catch so a throw never takes down the renderer.
@@ -54,7 +55,25 @@
       cb.write = function (items) {
         try {
           Array.prototype.forEach.call(items || [], function (item) {
-            if (item && item.types && item.types.indexOf("text/plain") !== -1) {
+            // Images (#196): WhatsApp's "Copy image"/"Copy sticker image" write a
+            // PNG ClipboardItem; ship it base64 for the host to set as a texture.
+            if (item && item.types && item.types.indexOf("image/png") !== -1) {
+              item
+                .getType("image/png")
+                .then(function (blob) {
+                  return new Promise(function (resolve, reject) {
+                    var r = new FileReader();
+                    r.onload = function () { resolve(String(r.result)); };
+                    r.onerror = reject;
+                    r.readAsDataURL(blob);
+                  });
+                })
+                .then(function (url) {
+                  var b64 = url.slice(url.indexOf(",") + 1);
+                  if (b64) send("SetClipboardImage", { base64_png: b64 });
+                })
+                .catch(function () {});
+            } else if (item && item.types && item.types.indexOf("text/plain") !== -1) {
               item
                 .getType("text/plain")
                 .then(function (blob) { return blob.text(); })

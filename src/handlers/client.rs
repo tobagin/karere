@@ -132,6 +132,10 @@ mod generated_client {
                 }
                 // Handled by dispatch_renderer_message_with above.
                 Ok(RendererMessage::SetClipboard { .. }) => 1,
+                Ok(RendererMessage::SetClipboardImage { base64_png }) => {
+                    write_host_clipboard_image(&base64_png);
+                    1
+                }
                 Ok(RendererMessage::ProfileIdentity { wid, pushname, source }) => {
                     if let Some(id) = account_id.as_deref() {
                         // Identity = page connected → clear awaiting-pairing. A
@@ -293,6 +297,42 @@ fn write_host_clipboard(text: &str, primary: bool) {
         display.clipboard()
     };
     clipboard.set_text(text);
+}
+
+/// Cap on a page-supplied clipboard image, checked before decoding (≈48 MB raw).
+const MAX_CLIPBOARD_IMAGE_B64: usize = 64 * 1024 * 1024;
+
+/// Put a page-copied PNG on the host GDK clipboard (#196). CEF OSR keeps
+/// `navigator.clipboard.write` images in Chromium's internal clipboard, so the
+/// copy bridge forwards them. GDK decodes the bytes, so anything that isn't a
+/// valid image is dropped rather than offered to other apps.
+fn write_host_clipboard_image(base64_png: &str) {
+    use base64::Engine;
+    use gtk::prelude::*;
+    if base64_png.len() > MAX_CLIPBOARD_IMAGE_B64 {
+        log::warn!(
+            "SetClipboardImage: oversized base64 ({} bytes), dropping",
+            base64_png.len()
+        );
+        return;
+    }
+    let bytes = match base64::engine::general_purpose::STANDARD.decode(base64_png.as_bytes()) {
+        Ok(b) => b,
+        Err(e) => {
+            log::warn!("SetClipboardImage: bad base64: {e}");
+            return;
+        }
+    };
+    let texture = match gtk::gdk::Texture::from_bytes(&gtk::glib::Bytes::from_owned(bytes)) {
+        Ok(t) => t,
+        Err(e) => {
+            log::warn!("SetClipboardImage: not a decodable image: {e}");
+            return;
+        }
+    };
+    if let Some(display) = gtk::gdk::Display::default() {
+        display.clipboard().set_texture(&texture);
+    }
 }
 
 impl ClientBuilder {

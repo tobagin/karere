@@ -34,6 +34,13 @@ const context = {
       listeners.set(name, callback);
     },
   },
+  // Stand-in for the browser FileReader: blobs here are { dataUrl }.
+  FileReader: class {
+    readAsDataURL(blob) {
+      this.result = blob.dataUrl;
+      Promise.resolve().then(() => this.onload());
+    }
+  },
   navigator: {
     clipboard: {
       writeText(text) {
@@ -184,4 +191,18 @@ setImmediate(() => {
     payload: { text: "item copy", primary: false },
   });
   console.log("copy bridge clipboard api: ok");
+
+  // An image/png ClipboardItem ("Copy sticker image", #196) mirrors as base64.
+  sent.length = 0;
+  context.navigator.clipboard.write([{
+    types: ["image/png"],
+    getType: () => Promise.resolve({ dataUrl: "data:image/png;base64,iVBORw0KGgo=" }),
+  }]);
+  setTimeout(() => {
+    assert.deepEqual(sent, [{
+      name: "SetClipboardImage",
+      payload: { base64_png: "iVBORw0KGgo=" },
+    }]);
+    console.log("copy bridge clipboard image: ok");
+  }, 0);
 });

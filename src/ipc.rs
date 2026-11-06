@@ -81,6 +81,10 @@ pub enum RendererMessage {
         text: String,
         primary: bool,
     },
+    /// Page-copied image (`image/png` ClipboardItem) for the regular clipboard.
+    SetClipboardImage {
+        base64_png: String,
+    },
     #[cfg(debug_assertions)]
     Pong,
 }
@@ -184,6 +188,7 @@ impl RendererMessage {
         "ConsoleLog",
         "PasteConsumed",
         "SetClipboard",
+        "SetClipboardImage",
         #[cfg(debug_assertions)]
         "Pong",
     ];
@@ -199,6 +204,7 @@ impl RendererMessage {
             RendererMessage::ConsoleLog { .. } => "ConsoleLog",
             RendererMessage::PasteConsumed { .. } => "PasteConsumed",
             RendererMessage::SetClipboard { .. } => "SetClipboard",
+            RendererMessage::SetClipboardImage { .. } => "SetClipboardImage",
             #[cfg(debug_assertions)]
             RendererMessage::Pong => "Pong",
         }
@@ -300,6 +306,9 @@ mod tests {
             RendererMessage::SetClipboard {
                 text: "hello".into(),
                 primary: true,
+            },
+            RendererMessage::SetClipboardImage {
+                base64_png: "iVBOR".into(),
             },
             #[cfg(debug_assertions)]
             RendererMessage::Pong,
