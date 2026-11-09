@@ -1,5 +1,6 @@
 src/main.rs
 src/web_view.rs
+src/handlers/context_menu.rs
 src/window.rs
 src/actions.rs
 src/tray.rs

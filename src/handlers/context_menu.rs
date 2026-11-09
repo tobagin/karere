@@ -90,6 +90,10 @@ const FORBIDDEN: [i32; 3] = [
     IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
 ];
 
+/// Karere's own "Copy Link Address" entry. CEF's menu has no link items, so
+/// links were uncopyable (#205).
+pub(crate) const MENU_ID_COPY_LINK: i32 = cef::sys::cef_menu_id_t::MENU_ID_USER_FIRST as i32;
+
 /// Classify Chromium's Copy command by stable CEF command id, never by its
 /// localized display label.
 pub(crate) fn is_copy_command(command_id: i32) -> bool {
@@ -114,11 +118,37 @@ wrap_context_menu_handler! {
             &self,
             _browser: Option<&mut Browser>,
             _frame: Option<&mut Frame>,
-            _params: Option<&mut ContextMenuParams>,
+            params: Option<&mut ContextMenuParams>,
             model: Option<&mut MenuModel>,
         ) {
             let Some(model) = model else { return };
             strip_open_link_entries(model);
+            let has_link = params.is_some_and(|p| !userfree_to_string(p.link_url()).is_empty());
+            if has_link {
+                let label = CefString::from(gettextrs::gettext("Copy Link Address").as_str());
+                let had_items = model.count() > 0;
+                model.insert_item_at(0, MENU_ID_COPY_LINK, Some(&label));
+                if had_items {
+                    model.insert_separator_at(1);
+                }
+            }
+        }
+
+        fn on_context_menu_command(
+            &self,
+            _browser: Option<&mut Browser>,
+            _frame: Option<&mut Frame>,
+            params: Option<&mut ContextMenuParams>,
+            command_id: c_int,
+            _event_flags: cef::EventFlags,
+        ) -> c_int {
+            if command_id != MENU_ID_COPY_LINK {
+                return 0;
+            }
+            if let Some(p) = params {
+                super::client::write_regular_clipboard(&userfree_to_string(p.link_url()));
+            }
+            1
         }
 
         // OSR has no platform window for CEF to draw the menu, so the host

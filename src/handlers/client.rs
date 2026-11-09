@@ -283,6 +283,12 @@ fn sanitize_clipboard(text: &str) -> String {
         .collect()
 }
 
+/// Host-originated text copy (e.g. "Copy Link Address") through the same cap
+/// and sanitizer as page copies. CEF UI thread only.
+pub(crate) fn write_regular_clipboard(text: &str) {
+    dispatch_clipboard_write(text, false, write_host_clipboard);
+}
+
 /// Mirror page-reported selection/copy text onto the host GDK clipboard. Runs on
 /// the CEF UI thread (= glib main thread under the external pump), so GDK access
 /// is safe here.
