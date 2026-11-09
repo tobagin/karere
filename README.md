@@ -60,7 +60,9 @@ For the full release history, see [CHANGELOG.md](CHANGELOG.md).
 - **Download Manager**: Custom directory selection (e.g., `~/Downloads`) with toast notifications
 
 ### Accessibility
-- **Screen Reader Ready**: Fully labeled interface for screen reader users.
+- **Screen Reader Support (partial)**: The GTK interface is fully labeled. Inside WhatsApp, the
+  screen reader announces each control and message as keyboard focus moves to it. Browse mode and
+  reviewing the page without moving focus are not supported yet.
 - **Keyboard Navigation**: Use the entire app without a mouse.
 - **Visual Aids**: High contrast support, zoom controls, and reduced motion.
 - **Auto-Correct**: Smart text correction with dictionary support
@@ -143,7 +145,8 @@ Access preferences through the application menu or keyboard shortcut (`Ctrl+,`) 
 
 Karere includes comprehensive accessibility support:
 
-- **Screen Reader Support**: Full ARIA labels and semantic HTML
+- **Screen Reader Support (partial)**: Focus changes inside WhatsApp are announced (turned on
+  automatically when a screen reader is running); browse mode is not supported yet
 - **Keyboard Navigation**: Complete keyboard-only navigation with visible focus indicators
 - **High Contrast Mode**: Automatic detection and adaptation
 - **Reduced Motion**: Respects system reduce-motion preferences

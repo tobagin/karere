@@ -25,11 +25,15 @@ pub struct FrameBuffer {
 #[derive(Clone)]
 pub struct ShellRenderHandler {
     shared: SharedRef,
+    a11y: cef::AccessibilityHandler,
 }
 
 impl ShellRenderHandler {
     pub fn new(shared: SharedRef) -> Self {
-        Self { shared }
+        let a11y = super::accessibility::ShellAccessibilityHandlerBuilder::build(
+            super::accessibility::ShellAccessibilityHandler::new(shared.clone()),
+        );
+        Self { shared, a11y }
     }
 }
 
@@ -39,6 +43,10 @@ wrap_render_handler! {
     }
 
     impl RenderHandler {
+        fn accessibility_handler(&self) -> Option<cef::AccessibilityHandler> {
+            Some(self.handler.a11y.clone())
+        }
+
         fn view_rect(&self, browser: Option<&mut Browser>, rect: Option<&mut Rect>) {
             let Some(rect) = rect else { return };
             // Background browsers (M20 pool) report the cached foreground

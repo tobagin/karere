@@ -416,11 +416,7 @@ fn write_spellcheck_dictionaries(browser: &cef::Browser, langs: &[String]) -> bo
 /// spellcheck is running in OSR, a clear tears the service down and the re-set
 /// doesn't revive it (dead until restart). At startup the service is already
 /// running from `--spell-check-languages`, so a clear there killed it too (#203).
-pub(crate) fn apply_spellcheck_to_browser(
-    browser: &cef::Browser,
-    langs: &[String],
-    enabled: bool,
-) {
+pub(crate) fn apply_spellcheck_to_browser(browser: &cef::Browser, langs: &[String], enabled: bool) {
     use cef::ImplBrowser;
     use cef::{CefString, ImplBrowserHost, ImplPreferenceManager, ImplValue, value_create};
 
@@ -681,7 +677,7 @@ mod imp {
                 let Some(shared) = imp.shared.lock().clone() else {
                     return glib::ControlFlow::Continue;
                 };
-                let (cursor_name, keyboard_request) = {
+                let (cursor_name, keyboard_request, announce) = {
                     let mut s = shared.lock();
                     if s.frame.dirty || s.accel.as_ref().is_some_and(|a| a.dirty) {
                         w.queue_render();
@@ -692,10 +688,18 @@ mod imp {
                     } else {
                         None
                     };
-                    (cursor, s.keyboard_request.take())
+                    (cursor, s.keyboard_request.take(), s.a11y_announce.take())
                 };
                 if let Some(name) = cursor_name {
                     w.set_cursor_from_name(Some(name));
+                }
+                // Page focus moved under a screen reader (#204).
+                if let Some(text) = announce {
+                    gtk::prelude::AccessibleExt::announce(
+                        &w,
+                        &text,
+                        gtk::AccessibleAnnouncementPriority::Medium,
+                    );
                 }
                 // Editable focus changed in the page → focus the IM context so the
                 // on-screen keyboard shows only for real text fields. Focus-out is

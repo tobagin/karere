@@ -79,6 +79,13 @@ wrap_life_span_handler! {
             let Some(b) = browser else { return };
             self.handler.state.lock().browser = Some(b.clone());
             log::info!("browser created");
+            // Page accessibility tree for the screen-reader bridge (#204).
+            use cef::{ImplBrowser, ImplBrowserHost};
+            if super::accessibility::wanted()
+                && let Some(host) = b.host()
+            {
+                host.set_accessibility_state(cef::State::ENABLED);
+            }
         }
 
         fn do_close(&self, _browser: Option<&mut Browser>) -> i32 {

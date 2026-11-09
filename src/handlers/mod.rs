@@ -1,3 +1,4 @@
+pub mod accessibility;
 pub mod client;
 pub mod context_menu;
 pub mod display;
@@ -100,6 +101,9 @@ pub struct SharedState {
     /// the widget timer to focus/unfocus the IM context — so Phosh's on-screen
     /// keyboard tracks the actual text field, not the always-focused GLArea.
     pub keyboard_request: Option<bool>,
+    /// Pending screen-reader announcement for page focus (#204); drained by
+    /// the widget tick into `gtk::Accessible::announce`.
+    pub a11y_announce: Option<String>,
     /// Latest CEF cursor as a GTK/CSS name, plus dirty flag. OSR never touches
     /// the GTK cursor; the widget tick callback applies this.
     pub cursor_name: &'static str,
