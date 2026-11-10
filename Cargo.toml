@@ -38,7 +38,7 @@ libadwaita = { version = "0.9", features = ["v1_6"] }
 glib = "0.22"
 gio = "0.22"
 gdk-pixbuf = "0.22"
-cef = "152.3"
+cef = "156.4"
 gl = "0.14"
 libloading = "0.9"
 anyhow = "1"

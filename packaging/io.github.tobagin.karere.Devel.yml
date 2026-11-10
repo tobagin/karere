@@ -62,21 +62,23 @@ modules:
     sources:
       - type: archive
         only-arches: [x86_64]
-        url: https://github.com/tobagin/karere/releases/download/cef-152.0.6-proprietary-codecs/cef_binary_152.0.6%2Bg708dc14%2Bchromium-152.0.7977.83_linux64_minimal.zip
-        sha256: 3d64f6fac8911a368ffa415e3ee53d002cbd792866f08ed6578dae1e252cbac8
+        url: https://github.com/tobagin/karere/releases/download/cef-156.0.26-proprietary-codecs/cef_binary_156.0.26%2Bg8ea0c73%2Bchromium-156.0.8078.88_linux64_minimal.zip
+        # TODO(cef-156): replace with the published asset's sha256
+        sha256: 0000000000000000000000000000000000000000000000000000000000000000
       - type: archive
         only-arches: [aarch64]
-        url: https://github.com/tobagin/karere/releases/download/cef-152.0.6-proprietary-codecs/cef_binary_152.0.6%2Bg708dc14%2Bchromium-152.0.7977.83_linuxarm64_minimal.zip
-        sha256: fcf2ca3fd37dbd89f8a1dc58cec2f374164eb9a7e76baa96409013368dcaa42a
+        url: https://github.com/tobagin/karere/releases/download/cef-156.0.26-proprietary-codecs/cef_binary_156.0.26%2Bg8ea0c73%2Bchromium-156.0.8078.88_linuxarm64_minimal.zip
+        # TODO(cef-156): replace with the published asset's sha256
+        sha256: 0000000000000000000000000000000000000000000000000000000000000000
       - type: inline
         only-arches: [x86_64]
         contents: |
-          {"type":"minimal","name":"cef_binary_152.0.6+g708dc14+chromium-152.0.7977.83_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
+          {"type":"minimal","name":"cef_binary_156.0.26+g8ea0c73+chromium-156.0.8078.88_linux64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
       - type: inline
         only-arches: [aarch64]
         contents: |
-          {"type":"minimal","name":"cef_binary_152.0.6+g708dc14+chromium-152.0.7977.83_linuxarm64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
+          {"type":"minimal","name":"cef_binary_156.0.26+g8ea0c73+chromium-156.0.8078.88_linuxarm64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
 
   # Chromium sandbox under Flatpak: zypak stands in for the setuid

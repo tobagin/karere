@@ -8,7 +8,7 @@
 # carries patent-licensing obligations, falling on whoever hosts the tarball.
 #
 # Usage: CEF_BRANCH=<n> tools/build-cef-codecs.sh [download-dir]
-#   CEF_BRANCH MUST match Karere's Chromium 152 line (chromium-152.0.7977.83); wrong
+#   CEF_BRANCH MUST match Karere's Chromium 156 line (chromium-156.0.8078.88); wrong
 #   branch wastes the whole build, so the script refuses to start without it.
 #
 set -euo pipefail
@@ -17,8 +17,8 @@ if [[ -z "${CEF_BRANCH:-}" ]]; then
   cat >&2 <<'EOF'
 error: CEF_BRANCH is required.
 
-  Set it to the CEF branch number for Chromium 152 (the line Karere targets,
-  chromium-152.0.7977.83). Look it up at:
+  Set it to the CEF branch number for Chromium 156 (the line Karere targets,
+  chromium-156.0.8078.88, branch 8078). Look it up at:
     https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding
 
   Then re-run, e.g.:
@@ -45,7 +45,7 @@ FORCE_CLEAN_FLAG=""
 # Extra automate-git.py flags (e.g. --no-chromium-history in throwaway containers).
 AUTOMATE_EXTRA="${AUTOMATE_EXTRA:-}"
 
-# Pin the exact CEF commit (e.g. 708dc14 from "152.0.6+g708dc14+…") instead of
+# Pin the exact CEF commit (e.g. 8ea0c73 from "156.0.26+g8ea0c73+…") instead of
 # branch tip — the produced binaries must match the Rust cef crate's pinned
 # version, and branch tip can be a release ahead.
 CHECKOUT_FLAG=""

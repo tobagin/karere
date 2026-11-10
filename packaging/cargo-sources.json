@@ -353,27 +353,27 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/cef/cef-152.3.0+152.0.6.crate",
-        "sha256": "785012b485c1a2685876b1f924722a047309900b88f15fc3581869caabdce3d8",
-        "dest": "cargo/vendor/cef-152.3.0+152.0.6"
+        "url": "https://static.crates.io/crates/cef/cef-156.4.0+156.0.26.crate",
+        "sha256": "f48d6e78916f115e21933b44c39bd20de0bd25c753fb86b61fb4e2b84b001877",
+        "dest": "cargo/vendor/cef-156.4.0+156.0.26"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"785012b485c1a2685876b1f924722a047309900b88f15fc3581869caabdce3d8\", \"files\": {}}",
-        "dest": "cargo/vendor/cef-152.3.0+152.0.6",
+        "contents": "{\"package\": \"f48d6e78916f115e21933b44c39bd20de0bd25c753fb86b61fb4e2b84b001877\", \"files\": {}}",
+        "dest": "cargo/vendor/cef-156.4.0+156.0.26",
         "dest-filename": ".cargo-checksum.json"
     },
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/cef-dll-sys/cef-dll-sys-152.3.0+152.0.6.crate",
-        "sha256": "ced5c6a0f46744561b50e283f9134c21bdd95a2e991695b0fc7399ad79765bbd",
-        "dest": "cargo/vendor/cef-dll-sys-152.3.0+152.0.6"
+        "url": "https://static.crates.io/crates/cef-dll-sys/cef-dll-sys-156.4.0+156.0.26.crate",
+        "sha256": "1a29dddf938de892feea7601d6a8aee3ae2ff8c8d6a3fe30022c1356097fa8e6",
+        "dest": "cargo/vendor/cef-dll-sys-156.4.0+156.0.26"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"ced5c6a0f46744561b50e283f9134c21bdd95a2e991695b0fc7399ad79765bbd\", \"files\": {}}",
-        "dest": "cargo/vendor/cef-dll-sys-152.3.0+152.0.6",
+        "contents": "{\"package\": \"1a29dddf938de892feea7601d6a8aee3ae2ff8c8d6a3fe30022c1356097fa8e6\", \"files\": {}}",
+        "dest": "cargo/vendor/cef-dll-sys-156.4.0+156.0.26",
         "dest-filename": ".cargo-checksum.json"
     },
     {

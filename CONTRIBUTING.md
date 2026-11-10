@@ -104,7 +104,7 @@ Karere is built with:
 
 - **Language**: Rust (edition 2024)
 - **Toolkit**: GTK4 + libadwaita
-- **Web engine**: Chromium Embedded Framework (CEF, Chromium 152). CEF renders WhatsApp Web off-screen and composites it into a GTK `GLArea`.
+- **Web engine**: Chromium Embedded Framework (CEF, Chromium 156). CEF renders WhatsApp Web off-screen and composites it into a GTK `GLArea`.
 - **Injected scripts**: `data/js/` runs inside the WhatsApp Web page and reports to Rust through `window.karere.send`
 - **UI**: Blueprint (`data/ui/*.blp`), compiled to GtkBuilder `.ui` files at build time
 - **Distribution**: Flatpak on the GNOME 51 runtime

@@ -56,8 +56,11 @@ pub enum Kind {
 
 pub const MEDIA_FLAG: u32 = 1 << 31;
 pub const PROMPT_FLAG: u32 = 1 << 30;
-/// Bits that carry the request value itself (prompt types use bits 0..=28).
-const VALUE_MASK: u32 = (1 << 29) - 1;
+/// Bits that carry the request value itself (prompt types use bits 0..=29 as of
+/// CEF 156, which added AMBIENT_LOGIN = 1 << 29). A request bit outside this mask
+/// would be dropped from the stored keys, so a combined request could be granted
+/// on the strength of its other bits alone.
+const VALUE_MASK: u32 = (1 << 30) - 1;
 
 /// Stored keys for each bit of `mask` under `kind`.
 fn keys(kind: Kind, mask: u32) -> Vec<u32> {
@@ -281,6 +284,64 @@ mod tests {
         let prompt = keys(Kind::Prompt, 1);
         assert_eq!(super::resolve(Some(&inner), &media), Decision::Allow);
         assert_eq!(super::resolve(Some(&inner), &prompt), Decision::AskAll);
+    }
+
+    #[test]
+    fn every_cef_request_bit_fits_the_value_mask() {
+        use cef::sys::cef_media_access_permission_types_t as M;
+        use cef::sys::cef_permission_request_types_t as P;
+        let all = [
+            P::CEF_PERMISSION_TYPE_AR_SESSION,
+            P::CEF_PERMISSION_TYPE_CAMERA_PAN_TILT_ZOOM,
+            P::CEF_PERMISSION_TYPE_CAMERA_STREAM,
+            P::CEF_PERMISSION_TYPE_CAPTURED_SURFACE_CONTROL,
+            P::CEF_PERMISSION_TYPE_CLIPBOARD,
+            P::CEF_PERMISSION_TYPE_TOP_LEVEL_STORAGE_ACCESS,
+            P::CEF_PERMISSION_TYPE_DISK_QUOTA,
+            P::CEF_PERMISSION_TYPE_LOCAL_FONTS,
+            P::CEF_PERMISSION_TYPE_GEOLOCATION,
+            P::CEF_PERMISSION_TYPE_HAND_TRACKING,
+            P::CEF_PERMISSION_TYPE_IDENTITY_PROVIDER,
+            P::CEF_PERMISSION_TYPE_IDLE_DETECTION,
+            P::CEF_PERMISSION_TYPE_MIC_STREAM,
+            P::CEF_PERMISSION_TYPE_MIDI_SYSEX,
+            P::CEF_PERMISSION_TYPE_MULTIPLE_DOWNLOADS,
+            P::CEF_PERMISSION_TYPE_NOTIFICATIONS,
+            P::CEF_PERMISSION_TYPE_KEYBOARD_LOCK,
+            P::CEF_PERMISSION_TYPE_POINTER_LOCK,
+            P::CEF_PERMISSION_TYPE_PROTECTED_MEDIA_IDENTIFIER,
+            P::CEF_PERMISSION_TYPE_REGISTER_PROTOCOL_HANDLER,
+            P::CEF_PERMISSION_TYPE_STORAGE_ACCESS,
+            P::CEF_PERMISSION_TYPE_VR_SESSION,
+            P::CEF_PERMISSION_TYPE_WEB_APP_INSTALLATION,
+            P::CEF_PERMISSION_TYPE_WINDOW_MANAGEMENT,
+            P::CEF_PERMISSION_TYPE_FILE_SYSTEM_ACCESS,
+            P::CEF_PERMISSION_TYPE_LOCAL_NETWORK_ACCESS_DEPRECATED,
+            P::CEF_PERMISSION_TYPE_LOCAL_NETWORK,
+            P::CEF_PERMISSION_TYPE_LOOPBACK_NETWORK,
+            P::CEF_PERMISSION_TYPE_SENSORS,
+            P::CEF_PERMISSION_TYPE_AMBIENT_LOGIN,
+        ];
+        let mut union = 0u32;
+        for p in all {
+            let v = p as u32;
+            assert_eq!(v.count_ones(), 1, "{p:?} is not a single bit");
+            assert_eq!(v & !VALUE_MASK, 0, "{p:?} falls outside VALUE_MASK");
+            union |= v;
+        }
+        for m in [
+            M::CEF_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE,
+            M::CEF_MEDIA_PERMISSION_DEVICE_VIDEO_CAPTURE,
+            M::CEF_MEDIA_PERMISSION_DESKTOP_AUDIO_CAPTURE,
+            M::CEF_MEDIA_PERMISSION_DESKTOP_VIDEO_CAPTURE,
+        ] {
+            union |= m as u32;
+        }
+        assert_eq!(union & (MEDIA_FLAG | PROMPT_FLAG), 0);
+        assert_eq!(
+            keys(Kind::Prompt, P::CEF_PERMISSION_TYPE_AMBIENT_LOGIN as u32),
+            vec![PROMPT_FLAG | (1 << 29)]
+        );
     }
 
     #[test]

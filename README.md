@@ -11,10 +11,10 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 4.3 — CEF/Chromium 152
+## 🎉 Version 4.3 — CEF/Chromium 156
 
 **Karere 4.0** is a ground-up rewrite that swaps the rendering backend from WebKitGTK to the
-**Chromium Embedded Framework (CEF/Chromium 152)** while keeping the same native
+**Chromium Embedded Framework (CEF/Chromium 156)** while keeping the same native
 GTK4/libadwaita shell. It is a **hard fork** of Karere v3: there is **no automatic migration**
 — existing accounts must be re-linked by scanning the QR code again on first launch.
 
@@ -159,7 +159,7 @@ Karere is built using modern GNOME technologies:
 - **Rust**: Primary programming language for memory safety and performance
 - **GTK4**: Modern toolkit with excellent Wayland support
 - **LibAdwaita**: Native GNOME design language and components
-- **CEF / Chromium 152**: Chromium Embedded Framework renders WhatsApp Web (off-screen, composited into a GTK `GLArea`)
+- **CEF / Chromium 156**: Chromium Embedded Framework renders WhatsApp Web (off-screen, composited into a GTK `GLArea`)
 - **Blueprint**: Declarative UI definition language
 - **Flatpak**: Secure application distribution
 
@@ -178,7 +178,7 @@ Karere is designed with privacy in mind:
 ## Known Limitations
 
 ### Video Attachments
-**Video attachments now play in-app.** The v4 CEF/Chromium 152 backend ships with proprietary
+**Video attachments now play in-app.** The v4 CEF/Chromium 156 backend ships with proprietary
 codecs (H.264/AAC), removing the WebKitGTK platform limitation that blocked video playback in
 v3 and earlier.
 

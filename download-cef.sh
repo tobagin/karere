@@ -4,11 +4,11 @@
 # fix in tools/cef-patches). Dev builds therefore differ from the shipped Flatpak in video
 # playback and idle CPU. Shipped CEF is built by tools/build-cef-codecs.sh.
 # Download + extract CEF Linux binary distribution into ./cef-binaries/
-# Version must match the 'cef' crate's bundled CEF version (152.0.6 / chromium 152.0.7977.83 at time of writing).
+# Version must match the 'cef' crate's bundled CEF version (156.0.26 / chromium 156.0.8078.88 at time of writing).
 # See Cargo.toml / Cargo.lock (cef crate) and packaging/io.github.tobagin.karere*.yml (cef-binaries URLs) for the sources of truth.
 set -euo pipefail
 
-CEF_VERSION="${CEF_VERSION:-152.0.6+g708dc14+chromium-152.0.7977.83}"
+CEF_VERSION="${CEF_VERSION:-156.0.26+g8ea0c73+chromium-156.0.8078.88}"
 ARCH="$(uname -m)"
 
 case "$ARCH" in
@@ -37,4 +37,4 @@ EXTRACTED_DIR="cef_binary_${CEF_VERSION}_${CEF_PLATFORM}_minimal"
 ln -sfn "$EXTRACTED_DIR" current
 
 echo "done. set CEF_PATH=$(pwd)/current/Release"
-echo "and copy *.pak, locales/, icudtl.dat, *.bin, libcef.so, libEGL.so, libGLESv2.so, libvk_swiftshader.so, libvulkan.so.1, vk_swiftshader_icd.json next to the binary at runtime."
+echo "and copy *.pak, locales/, icudtl.dat, *.bin, libcef.so, libvk_swiftshader.so, libvulkan.so.1, vk_swiftshader_icd.json next to the binary at runtime."

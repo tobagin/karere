@@ -35,7 +35,7 @@ decode_manifest_tag() {
         echo ""
         return
     fi
-    # url like cef_binary_152.0.6%2Bg708dc14%2Bchromium-152.0.7977.83_linux64_minimal.zip
+    # url like cef_binary_156.0.26%2Bg8ea0c73%2Bchromium-156.0.8078.88_linux64_minimal.zip
     local decoded
     decoded="$(echo "$url" | sed 's/%2B/+/g')"
     # Strip prefix cef_binary_ and suffix _linux*_minimal.zip
@@ -80,7 +80,7 @@ if [[ -n "$TAG_YML" && -n "$TAG_DEVEL" && "$TAG_YML" != "$TAG_DEVEL" ]]; then
 fi
 
 # 3) Cargo.lock cef build metadata vs first three dot-components of default
-# Cargo.lock: version = "152.3.0+152.0.6" after name = "cef"
+# Cargo.lock: version = "156.4.0+156.0.26" after name = "cef"
 LOCK_VERSION="$(grep -A1 '^name = "cef"$' Cargo.lock | grep 'version' | sed -n 's/.*version = "\([^"]*\)".*/\1/p' | head -n 1)"
 if [[ -z "$LOCK_VERSION" ]]; then
     fail "could not extract cef version from Cargo.lock"
@@ -180,6 +180,16 @@ if [[ -n "$CEF_DEFAULT" ]]; then
         fail "build-cef-codecs.sh error message does not contain $CHROMIUM_LINE"
     fi
     rm -f "$TMPFILE"
+fi
+
+# 9) No placeholder checksums: a manifest sha256 of all zeros marks a CEF archive
+#    whose release asset was not published yet (see the TODO(cef-156) comments).
+ZERO_SHA_HITS="$(grep -n -E 'sha256: 0{64}$' packaging/io.github.tobagin.karere.yml packaging/io.github.tobagin.karere.Devel.yml packaging/flathub-beta/io.github.tobagin.karere.yml || true)"
+if [[ -n "$ZERO_SHA_HITS" ]]; then
+    fail "placeholder all-zero sha256 still in a manifest; fill in the published CEF asset checksums:
+$ZERO_SHA_HITS"
+else
+    pass "no placeholder sha256 in the manifests"
 fi
 
 # Summary

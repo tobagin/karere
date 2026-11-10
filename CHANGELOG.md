@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Copied images reach the system clipboard (#196)**: copying an image also puts it on the system clipboard, so it pastes into other apps.
 
 ### Changed
+- **Browser engine upgraded to CEF 156.0.26 / Chromium 156.0.8078.88** (from CEF 152.0.6 / Chromium 152.0.7977.83): current Chromium security and rendering fixes.
 - **Chromium sandbox in the Flatpak**: WhatsApp Web's renderer processes now run sandboxed again. The Flatpak ships zypak, which starts them in nested Flatpak sandboxes with Chromium's seccomp filter, instead of running every process with `--no-sandbox`.
 - **Flatpak permissions**: removed direct access to `org.freedesktop.Notifications`. Notifications already go through the notification portal.
 
