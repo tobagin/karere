@@ -465,6 +465,7 @@ mod imp {
                     return;
                 };
                 let Some(langs) = binding.selected(&lang) else {
+                    binding.sync(|i| row.set_selected(i));
                     return;
                 };
                 if let Some(web) = active_web_view() {

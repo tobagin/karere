@@ -9,17 +9,7 @@ use gtk::glib;
 use gtk::glib::subclass::Signal;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-
-use crate::permissions_store::State;
-
-/// Per-account permission overrides; empty defers to global.
-#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
-pub struct AccountPermissions {
-    #[serde(default)]
-    pub overrides: HashMap<String, HashMap<u32, State>>,
-}
 
 /// One WhatsApp Web account.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -33,18 +23,12 @@ pub struct Account {
     pub user_label: Option<String>,
     #[serde(default, with = "avatar_b64")]
     pub avatar_png: Option<Vec<u8>>,
-    #[serde(default)]
-    pub avatar_url: Option<String>,
     pub created_at: i64,
     pub last_used_at: i64,
     #[serde(default)]
     pub is_active: bool,
-    #[serde(default)]
-    pub has_session: bool,
     #[serde(default = "default_zoom")]
     pub zoom_level: f64,
-    #[serde(default)]
-    pub permissions: AccountPermissions,
     /// When true, suppress this account's notification banners + tray bump (the
     /// unread badge still shows). Per-account, persisted.
     #[serde(default)]
@@ -72,13 +56,10 @@ impl Account {
             pushname: None,
             user_label: None,
             avatar_png: None,
-            avatar_url: None,
             created_at: ts,
             last_used_at: ts,
             is_active: false,
-            has_session: false,
             zoom_level: default_zoom(),
-            permissions: AccountPermissions::default(),
             muted: false,
         }
     }
@@ -266,26 +247,84 @@ fn session_dir_ids(sessions: &std::path::Path) -> Vec<(String, std::fs::Metadata
 /// lost/corrupt accounts.json does not orphan logged-in sessions. Labels, mute
 /// and zoom are gone; identity re-fills from the Store hook on load.
 pub fn recover_from_sessions(sessions: &std::path::Path) -> Vec<Account> {
-    let mut out: Vec<Account> = session_dir_ids(sessions)
-        .into_iter()
-        .map(|(id, meta)| {
-            let ts = meta
-                .modified()
-                .ok()
-                .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
-                .map(|d| d.as_secs() as i64)
-                .unwrap_or_else(now);
-            Account {
-                id,
-                created_at: ts,
-                last_used_at: ts,
-                has_session: true,
-                ..Account::new()
-            }
-        })
-        .collect();
-    sort_stable(&mut out);
+    let mut out = Vec::new();
+    adopt_unlisted_sessions(sessions, &mut out);
     out
+}
+
+/// Add an account to `list` for every session dir under `sessions` that is not
+/// listed and carries no removal tombstone. Such dirs are live sessions whose
+/// entry was lost (an old release replaced a corrupt accounts.json, or a save
+/// failed), never something to delete. Returns the ids adopted.
+pub fn adopt_unlisted_sessions(sessions: &std::path::Path, list: &mut Vec<Account>) -> Vec<String> {
+    let mut adopted = Vec::new();
+    for (id, meta) in session_dir_ids(sessions) {
+        if list.iter().any(|a| a.id == id) || is_tombstoned(&sessions.join(&id)) {
+            continue;
+        }
+        let ts = meta
+            .modified()
+            .ok()
+            .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
+            .map(|d| d.as_secs() as i64)
+            .unwrap_or_else(now);
+        adopted.push(id.clone());
+        list.push(Account {
+            id,
+            created_at: ts,
+            last_used_at: ts,
+            ..Account::new()
+        });
+    }
+    if !adopted.is_empty() {
+        sort_stable(list);
+    }
+    adopted
+}
+
+/// Empty marker written into `sessions/<id>/` when the user removes an account,
+/// before the delayed directory wipe. Its presence is the only thing that makes
+/// a session dir eligible for deletion at startup.
+const REMOVED_MARKER: &str = ".karere-removed";
+
+fn is_tombstoned(dir: &std::path::Path) -> bool {
+    std::fs::symlink_metadata(dir.join(REMOVED_MARKER)).is_ok()
+}
+
+/// Write the removal tombstone into `sessions/<id>/`. A missing dir needs none.
+pub fn write_tombstone(sessions: &std::path::Path, id: &str) {
+    if !is_account_id(id) {
+        return;
+    }
+    let dir = sessions.join(id);
+    if !std::fs::symlink_metadata(&dir).is_ok_and(|m| m.is_dir()) {
+        return;
+    }
+    if let Err(e) = std::fs::write(dir.join(REMOVED_MARKER), b"") {
+        log::warn!("accounts: failed to mark {} as removed: {e}", dir.display());
+    }
+}
+
+/// Delete the session dirs directly under `sessions` that carry a removal
+/// tombstone (the user removed the account but the delayed wipe did not run).
+/// Unlisted dirs without a tombstone are kept and adopted instead. Call before
+/// any CEF browser exists. Returns the ids removed.
+pub fn sweep_removed_sessions(sessions: &std::path::Path) -> Vec<String> {
+    let mut removed = Vec::new();
+    for (id, _) in session_dir_ids(sessions) {
+        let dir = sessions.join(&id);
+        if !is_tombstoned(&dir) {
+            continue;
+        }
+        match std::fs::remove_dir_all(&dir) {
+            Ok(()) => {
+                log::info!("accounts: removed session dir of deleted account {}", dir.display());
+                removed.push(id);
+            }
+            Err(e) => log::warn!("accounts: failed to remove {}: {e}", dir.display()),
+        }
+    }
+    removed
 }
 
 /// How [`load_or_recover`] produced its list.
@@ -296,12 +335,16 @@ pub enum LoadOutcome {
     /// accounts.json was missing, unreadable or corrupt; the list was rebuilt
     /// from session dirs (possibly empty). Not authoritative for cleanup.
     Recovered,
+    /// As `Recovered`, but the existing file could be neither read nor backed
+    /// up: it must not be saved over for the rest of the session.
+    RecoveredUnsaved,
 }
 
 /// Load `path`; when it is missing, unreadable or corrupt, rebuild the list from
-/// the session dirs under `sessions` instead of starting empty. A corrupt file
-/// is moved aside to `<path>.corrupt-<unix ts>` (never overwritten) and the
-/// recovered list is written in its place.
+/// the session dirs under `sessions` instead of starting empty. An unreadable or
+/// corrupt file is moved (or copied) aside to `<path>.corrupt-<unix ts>` and the
+/// recovered list is written in its place; when neither works the file is left
+/// alone and [`LoadOutcome::RecoveredUnsaved`] is returned.
 pub fn load_or_recover(
     path: &std::path::Path,
     sessions: &std::path::Path,
@@ -316,21 +359,32 @@ pub fn load_or_recover(
     if let Some(e) = &err {
         log::error!("accounts: {e}; rebuilding the account list from session dirs");
     }
-    if matches!(err, Some(AccountsError::Parse(_))) {
+    // A file that exists but could not be read or parsed is never overwritten:
+    // move it aside (or copy it) first, and if neither works keep it untouched.
+    let mut preserved = true;
+    if err.is_some() {
         let mut aside = path.as_os_str().to_owned();
         aside.push(format!(".corrupt-{}", now()));
         let aside = PathBuf::from(aside);
         match std::fs::rename(path, &aside) {
-            Ok(()) => log::warn!("accounts: moved corrupt file to {}", aside.display()),
+            Ok(()) => log::warn!("accounts: moved unusable file to {}", aside.display()),
             Err(e) => {
-                log::error!("accounts: could not move corrupt file aside: {e}");
+                log::error!("accounts: could not move unusable file aside: {e}");
                 if let Err(e) = std::fs::copy(path, &aside) {
-                    log::error!("accounts: could not back up corrupt file: {e}");
+                    log::error!(
+                        "accounts: could not back up {} ({e}); running with the recovered \
+                         list in memory only, changes this session will not be saved",
+                        path.display()
+                    );
+                    preserved = false;
                 }
             }
         }
     }
     let list = recover_from_sessions(sessions);
+    if !preserved {
+        return (list, LoadOutcome::RecoveredUnsaved);
+    }
     if !list.is_empty() {
         log::warn!("accounts: recovered {} account(s) from session dirs", list.len());
         if let Err(e) = save_to(path, &list) {
@@ -338,28 +392,6 @@ pub fn load_or_recover(
         }
     }
     (list, LoadOutcome::Recovered)
-}
-
-/// Delete session dirs directly under `sessions` whose name is a canonical
-/// account id not in `known` (left behind when removal's delayed wipe did not
-/// run). Only call with an authoritative list ([`LoadOutcome::Loaded`]) and
-/// before any CEF browser exists. Returns the ids removed.
-pub fn sweep_orphan_sessions(sessions: &std::path::Path, known: &[Account]) -> Vec<String> {
-    let mut removed = Vec::new();
-    for (id, _) in session_dir_ids(sessions) {
-        if known.iter().any(|a| a.id == id) {
-            continue;
-        }
-        let dir = sessions.join(&id);
-        match std::fs::remove_dir_all(&dir) {
-            Ok(()) => {
-                log::info!("accounts: removed orphan session dir {}", dir.display());
-                removed.push(id);
-            }
-            Err(e) => log::warn!("accounts: failed to remove orphan {}: {e}", dir.display()),
-        }
-    }
-    removed
 }
 
 /// Lowest unused default label `Account N` (N >= 1) among `accounts`.
@@ -398,8 +430,8 @@ mod imp {
 
     impl ObjectImpl for AccountManager {
         fn signals() -> &'static [Signal] {
-            static SIGNALS: Lazy<Vec<Signal>> =
-                Lazy::new(|| vec![Signal::builder("accounts-changed").build()]);
+            static SIGNALS: std::sync::LazyLock<Vec<Signal>> =
+                std::sync::LazyLock::new(|| vec![Signal::builder("accounts-changed").build()]);
             SIGNALS.as_ref()
         }
     }
@@ -411,8 +443,13 @@ glib::wrapper! {
 }
 
 impl AccountManager {
-    /// Persist the current list to `accounts.json`.
+    /// Persist the current list to `accounts.json`. A no-op when the file could
+    /// be neither read nor backed up at startup ([`LoadOutcome::RecoveredUnsaved`],
+    /// already logged): it is never saved over.
     pub fn save(&self) -> Result<(), AccountsError> {
+        if SAVE_BLOCKED.load(std::sync::atomic::Ordering::Relaxed) {
+            return Ok(());
+        }
         save_to(&accounts_file(), &self.imp().accounts.borrow())
     }
 
@@ -483,8 +520,12 @@ impl AccountManager {
         }
     }
 
-    /// Remove the account with `id`.
+    /// Remove the account with `id`. Tombstones its session dir first, so the
+    /// startup sweep deletes it if the caller's delayed wipe never runs.
     pub fn remove(&self, id: &str) {
+        if !cfg!(test) {
+            write_tombstone(&sessions_root(), id);
+        }
         self.imp().accounts.borrow_mut().retain(|a| a.id != id);
         self.save_logged();
         self.emit_changed();
@@ -649,11 +690,15 @@ thread_local! {
     static MANAGER: RefCell<Option<AccountManager>> = const { RefCell::new(None) };
 }
 
+/// Set when accounts.json could be neither read nor backed up: never save over it.
+static SAVE_BLOCKED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
 /// The process-wide [`AccountManager`], loading `accounts.json` on first use.
 /// A missing, unreadable or corrupt file never starts the app empty over live
 /// sessions: a corrupt file is moved aside and the list rebuilt from the session
-/// dirs ([`load_or_recover`]). Only after a clean load are session dirs of
-/// unknown accounts swept; the first call happens before any browser exists.
+/// dirs ([`load_or_recover`]). Session dirs are deleted only when tombstoned by
+/// an explicit removal; unlisted untombstoned dirs are adopted. The first call
+/// happens before any browser exists.
 pub fn manager() -> AccountManager {
     MANAGER.with(|cell| {
         if cell.borrow().is_none() {
@@ -666,11 +711,30 @@ pub fn manager() -> AccountManager {
                 }
             } else {
                 let sessions = sessions_root();
-                let (list, outcome) = load_or_recover(&accounts_file(), &sessions);
+                let removed = sweep_removed_sessions(&sessions);
+                let (mut list, outcome) = load_or_recover(&accounts_file(), &sessions);
+                if outcome == LoadOutcome::RecoveredUnsaved {
+                    SAVE_BLOCKED.store(true, std::sync::atomic::Ordering::Relaxed);
+                }
+                // A removal whose save failed: the tombstone is the user's intent.
+                let before = list.len();
+                list.retain(|a| !removed.contains(&a.id));
+                let mut dirty = list.len() != before;
                 if outcome == LoadOutcome::Loaded {
-                    sweep_orphan_sessions(&sessions, &list);
+                    let adopted = adopt_unlisted_sessions(&sessions, &mut list);
+                    if !adopted.is_empty() {
+                        log::warn!(
+                            "accounts: adopted {} unlisted session dir(s): {}",
+                            adopted.len(),
+                            adopted.join(", ")
+                        );
+                        dirty = true;
+                    }
                 }
                 m.imp().accounts.replace(list);
+                if dirty {
+                    m.save_logged();
+                }
             }
             *cell.borrow_mut() = Some(m);
         }
@@ -682,8 +746,6 @@ pub fn manager() -> AccountManager {
 #[derive(Default, Clone, Debug)]
 pub struct AccountRuntime {
     pub awaiting_pairing: bool,
-    pub degraded: bool,
-    pub degraded_reason: Option<String>,
     /// Unread chats as reported by the page title ("(N) WhatsApp").
     pub unread: u32,
 }
@@ -737,30 +799,6 @@ pub fn set_awaiting_pairing(account_id: &str, awaiting: bool) -> bool {
         r.awaiting_pairing = awaiting;
         changed
     })
-}
-
-/// Mark the account degraded (Store hook failed). Returns `true` only on the first transition, so callers can do one-time work.
-pub fn set_degraded(account_id: &str, reason: String) -> bool {
-    mutate_runtime(account_id, |r| {
-        if r.degraded {
-            return false;
-        }
-        r.degraded = true;
-        r.degraded_reason = Some(reason);
-        true
-    })
-}
-
-/// Clear the degraded badge; call only on a fresh successful Store hook attachment.
-pub fn clear_degraded(account_id: &str) {
-    mutate_runtime(account_id, |r| {
-        if !r.degraded {
-            return false;
-        }
-        r.degraded = false;
-        r.degraded_reason = None;
-        true
-    });
 }
 
 /// Set `account_id`'s unread-chat count (from the page title). Emits
@@ -822,6 +860,25 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("karere-acct-{}", uuid::Uuid::new_v4()));
         let path = dir.join("accounts.json");
         assert!(load_from(&path).unwrap().is_empty());
+    }
+
+    #[test]
+    fn load_accepts_legacy_keys_from_older_versions() {
+        let dir = std::env::temp_dir().join(format!("karere-acct-{}", uuid::Uuid::new_v4()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("accounts.json");
+        let doc = r#"[{"id":"abc","wid":null,"pushname":"Ada","user_label":null,
+            "avatar_png":null,"avatar_url":"https://example.invalid/a.png",
+            "created_at":1,"last_used_at":2,"is_active":true,"has_session":true,
+            "zoom_level":1.25,"permissions":{"overrides":{"https://web.whatsapp.com":{"1":"Allow"}}},
+            "muted":false}]"#;
+        std::fs::write(&path, doc).unwrap();
+        let list = load_from(&path).unwrap();
+        assert_eq!(list.len(), 1);
+        assert_eq!(list[0].id, "abc");
+        assert_eq!(list[0].pushname.as_deref(), Some("Ada"));
+        assert_eq!(list[0].zoom_level, 1.25);
+        std::fs::remove_dir_all(&dir).ok();
     }
 
     #[test]
@@ -925,7 +982,7 @@ mod tests {
     }
 
     #[test]
-    fn valid_file_loads_and_sweep_removes_only_orphan_account_dirs() {
+    fn unlisted_session_without_tombstone_is_adopted_not_deleted() {
         let (dir, path, sessions) = temp_store();
         let kept = Account::new();
         save_to(&path, std::slice::from_ref(&kept)).unwrap();
@@ -935,14 +992,119 @@ mod tests {
         std::fs::create_dir(sessions.join("Default")).unwrap();
         std::fs::create_dir(sessions.join(orphan.to_uppercase())).unwrap();
 
-        let (list, outcome) = load_or_recover(&path, &sessions);
+        assert!(sweep_removed_sessions(&sessions).is_empty());
+        let (mut list, outcome) = load_or_recover(&path, &sessions);
         assert_eq!(outcome, LoadOutcome::Loaded);
         assert_eq!(list, vec![kept.clone()]);
-        assert_eq!(sweep_orphan_sessions(&sessions, &list), vec![orphan.clone()]);
-        assert!(sessions.join(&kept.id).is_dir());
-        assert!(!sessions.join(&orphan).exists());
-        assert!(sessions.join("Default").is_dir());
-        assert!(sessions.join(orphan.to_uppercase()).is_dir());
+        assert_eq!(adopt_unlisted_sessions(&sessions, &mut list), vec![orphan.clone()]);
+        let mut ids: Vec<_> = list.iter().map(|a| a.id.clone()).collect();
+        ids.sort();
+        let mut want = vec![kept.id.clone(), orphan.clone()];
+        want.sort();
+        assert_eq!(ids, want);
+        for d in [kept.id.clone(), orphan.clone(), "Default".to_owned(), orphan.to_uppercase()] {
+            assert!(sessions.join(&d).is_dir());
+        }
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn tombstoned_session_is_deleted_and_not_adopted() {
+        let (dir, _path, sessions) = temp_store();
+        let gone = Account::new().id;
+        let live = Account::new().id;
+        std::fs::create_dir(sessions.join(&gone)).unwrap();
+        std::fs::create_dir(sessions.join(&live)).unwrap();
+        write_tombstone(&sessions, &gone);
+        assert!(sessions.join(&gone).join(REMOVED_MARKER).exists());
+
+        // Recovery never resurrects a tombstoned dir, even before the sweep.
+        let ids: Vec<_> = recover_from_sessions(&sessions).into_iter().map(|a| a.id).collect();
+        assert_eq!(ids, vec![live.clone()]);
+
+        assert_eq!(sweep_removed_sessions(&sessions), vec![gone.clone()]);
+        assert!(!sessions.join(&gone).exists());
+        assert!(sessions.join(&live).is_dir());
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn sweep_leaves_non_uuid_names_and_symlinks_alone() {
+        let (dir, _path, sessions) = temp_store();
+        // Tombstones inside dirs that are not ours must not trigger a delete.
+        let other = sessions.join("Default");
+        std::fs::create_dir(&other).unwrap();
+        std::fs::write(other.join(REMOVED_MARKER), b"").unwrap();
+        let upper = Account::new().id.to_uppercase();
+        std::fs::create_dir(sessions.join(&upper)).unwrap();
+        std::fs::write(sessions.join(&upper).join(REMOVED_MARKER), b"").unwrap();
+        // A uuid-named symlink to a tombstoned dir: neither followed nor adopted.
+        let target = dir.join("elsewhere");
+        std::fs::create_dir(&target).unwrap();
+        std::fs::write(target.join(REMOVED_MARKER), b"").unwrap();
+        let link = Account::new().id;
+        std::os::unix::fs::symlink(&target, sessions.join(&link)).unwrap();
+        let link2 = Account::new().id;
+        let target2 = dir.join("elsewhere2");
+        std::fs::create_dir(&target2).unwrap();
+        std::os::unix::fs::symlink(&target2, sessions.join(&link2)).unwrap();
+
+        assert!(sweep_removed_sessions(&sessions).is_empty());
+        assert!(other.is_dir());
+        assert!(sessions.join(&upper).is_dir());
+        assert!(target.join(REMOVED_MARKER).exists());
+        assert!(sessions.join(&link).symlink_metadata().unwrap().file_type().is_symlink());
+        let mut list = Vec::new();
+        assert!(adopt_unlisted_sessions(&sessions, &mut list).is_empty());
+        // write_tombstone refuses symlinked and non-uuid targets too.
+        write_tombstone(&sessions, &link2);
+        assert!(!target2.join(REMOVED_MARKER).exists());
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn unreadable_file_is_moved_aside_before_saving_recovered_list() {
+        let (dir, path, sessions) = temp_store();
+        // A directory in place of the file: exists, but reading it is an I/O error.
+        std::fs::create_dir(&path).unwrap();
+        std::fs::write(path.join("marker"), b"keep").unwrap();
+        let a = Account::new().id;
+        std::fs::create_dir(sessions.join(&a)).unwrap();
+
+        let (list, outcome) = load_or_recover(&path, &sessions);
+        assert_eq!(outcome, LoadOutcome::Recovered);
+        assert_eq!(list.len(), 1);
+        let aside: Vec<_> = std::fs::read_dir(&dir)
+            .unwrap()
+            .flatten()
+            .filter(|e| e.file_name().to_string_lossy().starts_with("accounts.json.corrupt-"))
+            .collect();
+        assert_eq!(aside.len(), 1);
+        assert_eq!(std::fs::read(aside[0].path().join("marker")).unwrap(), b"keep");
+        assert_eq!(load_from(&path).unwrap(), list);
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn unreadable_file_that_cannot_be_backed_up_is_not_overwritten() {
+        use std::os::unix::fs::PermissionsExt;
+        let (dir, path, sessions) = temp_store();
+        std::fs::create_dir(&path).unwrap();
+        std::fs::write(path.join("marker"), b"keep").unwrap();
+        let a = Account::new().id;
+        std::fs::create_dir(sessions.join(&a)).unwrap();
+        // Read-only parent: the rename aside fails, and copying a dir fails too.
+        std::fs::set_permissions(&dir, std::fs::Permissions::from_mode(0o500)).unwrap();
+        let writable = std::fs::write(dir.join("probe"), b"").is_ok();
+        if !writable {
+            let (list, outcome) = load_or_recover(&path, &sessions);
+            assert_eq!(outcome, LoadOutcome::RecoveredUnsaved);
+            assert_eq!(list.len(), 1);
+            assert!(path.is_dir());
+            assert_eq!(std::fs::read(path.join("marker")).unwrap(), b"keep");
+        }
+        // Running as root ignores the mode; nothing to check in that case.
+        std::fs::set_permissions(&dir, std::fs::Permissions::from_mode(0o700)).unwrap();
         std::fs::remove_dir_all(&dir).ok();
     }
 

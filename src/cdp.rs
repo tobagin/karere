@@ -150,6 +150,7 @@ const PAGE_PATCH: &str = r#"
     // tag -> time a real-body notification fired (see construct).
     var bodyTags = (window.__karereBodyTags = window.__karereBodyTags || new Map());
     var BODY_TTL_MS = 5000;
+    var TIDY_MS = 10000;
     function emit(o) { try { console.log(PREFIX + JSON.stringify(o)); } catch (e) {} }
     function nextSeq() { window.__karereSeq = (window.__karereSeq || 0) + 1; return window.__karereSeq; }
 
@@ -163,6 +164,8 @@ const PAGE_PATCH: &str = r#"
       this.onclick = null; this.onclose = null; this.onshow = null; this.onerror = null;
       this._l = { click: [], close: [], show: [], error: [] };
       this._closed = false;
+      this._emitted = false;
+      this._emitAt = 0;
     }
     Stub.prototype.addEventListener = function (t, c) { if (this._l[t] && typeof c === "function") this._l[t].push(c); };
     Stub.prototype.removeEventListener = function (t, c) { var a = this._l[t]; if (!a) return; var i = a.indexOf(c); if (i >= 0) a.splice(i, 1); };
@@ -174,18 +177,26 @@ const PAGE_PATCH: &str = r#"
     };
     Stub.prototype._fire = function (t) { var e; try { e = new Event(t); } catch (x) { e = { type: t, target: this }; } this.dispatchEvent(e); };
     // `report`: page-initiated close -> tell the host to withdraw the banner.
-    // Only the current stub for a tag counts, and the report is deferred so a
-    // close immediately followed by a same-tag replacement keeps the banner.
+    // Only the current, emitted stub for a tag counts, and the report is
+    // deferred so a close immediately followed by a same-tag replacement keeps
+    // the banner. Closes within TIDY_MS of the emit are WhatsApp tidying up
+    // after itself, not the chat being read: the banner stays (and stays
+    // clickable via __karereActivateNotif).
     Stub.prototype._close = function (report) {
-      if (this._closed) return;
-      this._closed = true;
-      if (liveByTag.get(this.tag) === this) {
+      var live = liveByTag.get(this.tag) === this;
+      if (report && live && this._emitted && Date.now() - this._emitAt < TIDY_MS) {
+        if (!this._closed) { this._closed = true; this._fire("close"); }
+        return;
+      }
+      if (live) {
         liveByTag.delete(this.tag);
-        if (report) {
+        if (report && this._emitted) {
           var tag = this.tag;
           setTimeout(function () { if (!liveByTag.has(tag)) emit({ event: "close", tag: tag }); }, 1000);
         }
       }
+      if (this._closed) return;
+      this._closed = true;
       this._fire("close");
     };
     Stub.prototype.close = function () { this._close(true); };
@@ -212,13 +223,16 @@ const PAGE_PATCH: &str = r#"
 
     function construct(title, opts) {
       var stub = new Stub(title, opts);
-      liveByTag.set(stub.tag, stub);
       // WhatsApp fires twice per tag (real body, then empty); skip an empty body
-      // only shortly after a real one for the same tag.
+      // only shortly after a real one for the same tag. The skipped duplicate
+      // never replaces the emitted stub, so closing it cannot withdraw a banner.
       var now = Date.now();
       bodyTags.forEach(function (t, k) { if (now - t > BODY_TTL_MS) bodyTags.delete(k); });
       if (!stub.body && bodyTags.has(stub.tag)) return stub;
       if (stub.body) bodyTags.set(stub.tag, now);
+      stub._emitted = true;
+      stub._emitAt = now;
+      liveByTag.set(stub.tag, stub);
       resolveIcon(stub.icon).then(function (icon) {
         emit({ title: stub.title, body: stub.body, tag: stub.tag, icon: icon });
       });

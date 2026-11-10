@@ -58,25 +58,6 @@ foreach name : blueprint_files
   )
 endforeach
 
-# gresource bundle (also embedded into the binary at build time via build.rs;
-# installed here so external tooling and karere v3-compatible install layout
-# work too).
-install_data(
-  'karere.gresource.xml',
-  install_dir: get_option('datadir') / 'karere',
-)
-
-# Notification sounds
-sounds_dir = get_option('datadir') / 'karere' / 'sounds'
-install_data(
-  'sounds/alert.oga',
-  'sounds/pop.oga',
-  'sounds/soft.oga',
-  'sounds/start.oga',
-  'sounds/whatsapp.oga',
-  install_dir: sounds_dir,
-)
-
 # Icons
 if get_option('profile') == 'development'
   icon_src_id = 'io.github.tobagin.karere.Devel'

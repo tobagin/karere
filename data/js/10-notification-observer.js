@@ -139,11 +139,6 @@
         });
     }
 
-    // Page-supplied account identity; empty => browser uses default account.
-    function accountId() {
-      return typeof window.__karereAccountId === "string" ? window.__karereAccountId : "";
-    }
-
     function construct(title, opts) {
       var stub = new NotifStub(title, opts);
       // Overwrite any prior stub for this tag (WhatsApp reuses tags per chat).
@@ -151,7 +146,8 @@
 
       resolveIcon(stub.icon).then(function (icon) {
         send("NotificationSeen", {
-          account_id: accountId(),
+          // Empty: the browser side resolves the account from its own browser id.
+          account_id: "",
           title: stub.title,
           body: stub.body,
           icon: icon,

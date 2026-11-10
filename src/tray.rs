@@ -421,11 +421,6 @@ pub fn set_accounts(accounts: Vec<AccountSummary>) {
     refresh_running();
 }
 
-/// Re-render the menu after an account-list change (`app.refresh-tray-accounts`).
-pub fn refresh_accounts() {
-    refresh_running();
-}
-
 /// Refresh the tray if one is running.
 fn refresh_running() {
     if let Some(handle) = tray_lock().handle.as_ref() {

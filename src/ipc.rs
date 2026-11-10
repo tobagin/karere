@@ -72,9 +72,6 @@ pub enum RendererMessage {
         source: Option<String>,
     },
     AwaitingPairing,
-    StoreUnavailable {
-        reason: String,
-    },
     /// `icon` is a renderer-inlined data URL.
     NotificationSeen {
         account_id: String,
@@ -203,7 +200,6 @@ impl RendererMessage {
         "ProfileIdentity",
         "ProfileAvatar",
         "AwaitingPairing",
-        "StoreUnavailable",
         "NotificationSeen",
         "NotificationClosed",
         "ConsoleLog",
@@ -219,7 +215,6 @@ impl RendererMessage {
             RendererMessage::ProfileIdentity { .. } => "ProfileIdentity",
             RendererMessage::ProfileAvatar { .. } => "ProfileAvatar",
             RendererMessage::AwaitingPairing => "AwaitingPairing",
-            RendererMessage::StoreUnavailable { .. } => "StoreUnavailable",
             RendererMessage::NotificationSeen { .. } => "NotificationSeen",
             RendererMessage::NotificationClosed { .. } => "NotificationClosed",
             RendererMessage::ConsoleLog { .. } => "ConsoleLog",
@@ -320,9 +315,6 @@ mod tests {
                 source: Some("store".into()),
             },
             RendererMessage::AwaitingPairing,
-            RendererMessage::StoreUnavailable {
-                reason: "boot".into(),
-            },
             RendererMessage::NotificationSeen {
                 account_id: "a".into(),
                 title: "t".into(),

@@ -250,10 +250,6 @@ fn cpu_upload(frame: &crate::handlers::FrameBuffer, texture_size: (i32, i32)) ->
     }
 }
 
-fn discard_failed_accel<T>(pending: &mut Option<T>) {
-    pending.take();
-}
-
 /// UV transform `[x, y, w, h]` (fractions of the texture) that samples just
 /// `visible` out of a `coded`-sized buffer. Fed to the vertex shader's `u_uv`.
 fn texture_uv(visible: (i32, i32, i32, i32), coded: (i32, i32)) -> [f32; 4] {
@@ -368,11 +364,11 @@ fn on_mobile_desktop() -> bool {
 }
 
 /// The width (logical px) below which `auto` mode switches WhatsApp Web to the
-/// single-pane mobile layout. Matches karere v3's `MOBILE_WIDTH_THRESHOLD`. (M21)
+/// single-pane mobile layout. (M21)
 pub(crate) const MOBILE_WIDTH_THRESHOLD: i32 = 768;
 
-/// Verbatim karere v3 `mobile_responsive.js` (git `890148c`), embedded for
-/// on-demand injection (NOT in the always-run M13 bundle). Applies the single-pane
+/// The upstream Whatslectron-UT mobile layout script (with local patches),
+/// embedded for on-demand injection (NOT in the always-run M13 bundle). Applies the single-pane
 /// layout unconditionally when run, so the host gates *when* it runs (see
 /// [`should_use_mobile_layout`] / [`apply_mobile_layout`]). (M21)
 const EMBED_MOBILE: &str = include_str!("../data/js-deferred/mobile_responsive.js");
@@ -648,6 +644,16 @@ pub fn dispatch_context_menu(
     }
 }
 
+/// Apply the cursor / IM focus / announcement requests pending in `area`'s
+/// shared state. Called from the idle callback `handlers::wake_view` queues.
+/// Main-thread only.
+pub(crate) fn flush_view_requests(area: &gtk::GLArea) {
+    use gtk::prelude::Cast;
+    if let Some(view) = area.downcast_ref::<KarereWebView>() {
+        view.imp().flush_requests(false);
+    }
+}
+
 mod imp {
     use cef::{
         self, Browser, BrowserSettings, CefString, EventFlags, ImplBrowser, ImplBrowserHost,
@@ -662,7 +668,7 @@ mod imp {
     use gtk::glib;
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
-    use once_cell::sync::Lazy;
+    use std::sync::LazyLock;
     use parking_lot::Mutex;
     use std::cell::RefCell;
     use std::collections::HashMap;
@@ -774,7 +780,7 @@ mod imp {
         /// foreground switch. When it fires, a foreground page loaded with the
         /// other layout is reloaded so `on_load_end` re-evaluates. (D5)
         mobile_check: RefCell<Option<glib::SourceId>>,
-        /// The GLArea's IM context, stored so the widget timer can focus it in/out
+        /// The GLArea's IM context, stored so `flush_requests` can focus it in/out
         /// in response to CEF's editable-focus signal (keyboard_request). Set once
         /// in `install_input_controllers`.
         pub im_context: RefCell<Option<gtk::IMMulticontext>>,
@@ -792,6 +798,8 @@ mod imp {
         /// dropped the next key (#180). Deferring it lets the paired true cancel
         /// it, while a genuine blur still settles. See `im_focus_step`.
         pub im_focus_out_pending: std::cell::Cell<u8>,
+        /// The focus-out debounce timer is running (`arm_im_focus_timer`).
+        im_focus_timer_armed: std::cell::Cell<bool>,
         /// Input-method composition (preedit) state; decides whether a key press
         /// goes to the IM before CEF and how committed text is delivered. (I1)
         pub ime_state: std::cell::Cell<ImeState>,
@@ -839,70 +847,14 @@ mod imp {
             *self.shared.lock() = Some(shared.clone());
             shared.lock().redraw = Some(widget.upcast_ref::<gtk::GLArea>().downgrade().into());
 
-            // Paints queue their own render (`request_redraw` in the render
-            // handler); this 60 Hz WALL-CLOCK timer is the backstop for a dirty
-            // frame nobody queued (foreground switch, resize) and drains the
-            // cursor/IM requests. NOT add_tick_callback: a tick callback is
-            // paced by the widget frame clock, which free-runs (pinning a core)
-            // when vsync is unreliable — e.g. software/non-conformant Vulkan
-            // (issue #151). A timeout is bounded, and idle ticks are a cheap
-            // lock + bool check (~0 CPU) since nothing is dirty.
-            let w_weak = widget.downgrade();
-            glib::timeout_add_local(std::time::Duration::from_millis(16), move || {
-                let Some(w) = w_weak.upgrade() else {
-                    return glib::ControlFlow::Break;
-                };
-                let imp = w.imp();
-                let Some(shared) = imp.shared.lock().clone() else {
-                    return glib::ControlFlow::Continue;
-                };
-                let (cursor_name, keyboard_request, announce) = {
-                    let mut s = shared.lock();
-                    if s.frame.dirty || s.accel.as_ref().is_some_and(|a| a.dirty) {
-                        w.queue_render();
-                    }
-                    let cursor = if s.cursor_dirty {
-                        s.cursor_dirty = false;
-                        Some(s.cursor_name)
-                    } else {
-                        None
-                    };
-                    (cursor, s.keyboard_request.take(), s.a11y_announce.take())
-                };
-                if let Some(name) = cursor_name {
-                    w.set_cursor_from_name(Some(name));
-                }
-                // Page focus moved under a screen reader (#204).
-                if let Some(text) = announce {
-                    gtk::prelude::AccessibleExt::announce(
-                        &w,
-                        &text,
-                        gtk::AccessibleAnnouncementPriority::Medium,
-                    );
-                }
-                // Editable focus changed in the page → focus the IM context so the
-                // on-screen keyboard shows only for real text fields. Focus-out is
-                // debounced so a composer re-render's false/true pair never leaves
-                // the IM unfocused across the next keystroke (#180).
-                if let Some(im) = imp.im_context.borrow().as_ref() {
-                    let mut pending = imp.im_focus_out_pending.get();
-                    let action =
-                        im_focus_step(keyboard_request, imp.im_focused.get(), &mut pending);
-                    imp.im_focus_out_pending.set(pending);
-                    match action {
-                        ImFocusAction::FocusIn => {
-                            im.focus_in();
-                            imp.im_focused.set(true);
-                        }
-                        ImFocusAction::FocusOut => {
-                            im.focus_out();
-                            imp.im_focused.set(false);
-                        }
-                        ImFocusAction::Idle => {}
-                    }
-                }
-                glib::ControlFlow::Continue
-            });
+            // No periodic timer here. Paints queue their own render
+            // (`request_redraw` in the render handler), and the cursor / IM /
+            // announcement handlers queue one coalesced flush through
+            // `handlers::wake_view` (`flush_requests`). Only a pending IM
+            // focus-out runs a short-lived timer, for its debounce. A hidden
+            // window therefore costs no wakeups from this view.
+            // (Never add_tick_callback: the frame clock free-runs when vsync is
+            // unreliable, pinning a core — issue #151.)
 
             widget.set_focusable(true);
             widget.set_can_focus(true);
@@ -910,7 +862,7 @@ mod imp {
         }
 
         fn signals() -> &'static [Signal] {
-            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
+            static SIGNALS: LazyLock<Vec<Signal>> = LazyLock::new(|| {
                 vec![
                     Signal::builder("title-changed")
                         .param_types([String::static_type()])
@@ -1539,6 +1491,101 @@ mod imp {
             }
         }
 
+        /// Apply the cursor, screen-reader and IM-focus requests the CEF
+        /// handlers left in the shared state. Runs from the idle callback
+        /// `handlers::wake_view` queues (`debounce_tick` false), and from the
+        /// IM focus-out debounce timer (`debounce_tick` true), never inside a
+        /// CEF callback or with the shared lock held across GTK calls.
+        pub(super) fn flush_requests(&self, debounce_tick: bool) {
+            let w = self.obj();
+            let Some(shared) = self.shared.lock().clone() else {
+                return;
+            };
+            let (dirty, cursor_name, keyboard_request, announce) = {
+                let mut s = shared.lock();
+                if !debounce_tick {
+                    s.view_wake_queued = false;
+                }
+                let dirty = s.frame.dirty || s.accel.as_ref().is_some_and(|a| a.dirty);
+                let cursor = if s.cursor_dirty {
+                    s.cursor_dirty = false;
+                    Some(s.cursor_name)
+                } else {
+                    None
+                };
+                (dirty, cursor, s.keyboard_request.take(), s.a11y_announce.take())
+            };
+            // Paints queue their own render; this only covers a frame still
+            // waiting for one.
+            if dirty {
+                w.queue_render();
+            }
+            if let Some(name) = cursor_name {
+                w.set_cursor_from_name(Some(name));
+            }
+            // Page focus moved under a screen reader (#204).
+            if let Some(text) = announce {
+                gtk::prelude::AccessibleExt::announce(
+                    &*w,
+                    &text,
+                    gtk::AccessibleAnnouncementPriority::Medium,
+                );
+            }
+            // Editable focus changed in the page → focus the IM context so the
+            // on-screen keyboard shows only for real text fields. Focus-out is
+            // debounced so a composer re-render's false/true pair never leaves
+            // the IM unfocused across the next keystroke (#180). The countdown
+            // only advances on debounce ticks, so an unrelated flush (cursor,
+            // announcement) cannot shorten it.
+            if keyboard_request.is_none() && !debounce_tick {
+                return;
+            }
+            let Some(im) = self.im_context.borrow().clone() else {
+                return;
+            };
+            let mut pending = self.im_focus_out_pending.get();
+            let action = im_focus_step(keyboard_request, self.im_focused.get(), &mut pending);
+            self.im_focus_out_pending.set(pending);
+            match action {
+                ImFocusAction::FocusIn => {
+                    im.focus_in();
+                    self.im_focused.set(true);
+                }
+                ImFocusAction::FocusOut => {
+                    im.focus_out();
+                    self.im_focused.set(false);
+                }
+                ImFocusAction::Idle => {}
+            }
+            if pending > 0 {
+                self.arm_im_focus_timer();
+            }
+        }
+
+        /// Tick the IM focus-out debounce every `IM_FOCUS_TICK` until it has
+        /// settled (applied or cancelled), then stop. At most one runs.
+        fn arm_im_focus_timer(&self) {
+            if self.im_focus_timer_armed.replace(true) {
+                return;
+            }
+            let weak = self.obj().downgrade();
+            glib::timeout_add_local(IM_FOCUS_TICK, move || {
+                let Some(w) = weak.upgrade() else {
+                    return glib::ControlFlow::Break;
+                };
+                let imp = w.imp();
+                imp.flush_requests(true);
+                if imp.im_focus_out_pending.get() > 0 {
+                    glib::ControlFlow::Continue
+                } else {
+                    // Cleared before returning Break: the source is then gone,
+                    // so nothing may hold or remove its id.
+                    imp.im_focus_timer_armed.set(false);
+                    glib::ControlFlow::Break
+                }
+            });
+        }
+
         /// Push the mute flag (`window.__karereMuteNotifSound`) to every account.
         /// The bundle hook (70-notification-sound.js) blocks WhatsApp's notification/UI
         /// tones (not WebRTC call audio or voice notes). Muted when master OR
@@ -1763,11 +1810,13 @@ mod imp {
                 ..Default::default()
             };
 
-            let url_string = self
-                .pending_url
-                .lock()
-                .take()
-                .unwrap_or_else(|| Self::WHATSAPP_URL.to_owned());
+            // A launch URL (deep link, --url) goes to the foreground browser only.
+            let url_string = if make_foreground || account_id.is_none() {
+                self.pending_url.lock().take()
+            } else {
+                None
+            }
+            .unwrap_or_else(|| Self::WHATSAPP_URL.to_owned());
             let url = CefString::from(url_string.as_str());
 
             let mut client = client;
@@ -1794,19 +1843,6 @@ mod imp {
                 if let Some(reg) = crate::cdp::attach(&b, &id) {
                     self.cdp_registrations.borrow_mut().insert(id, reg);
                 }
-            }
-
-            #[cfg(debug_assertions)]
-            {
-                let browser = b.clone();
-                glib::timeout_add_local_once(std::time::Duration::from_secs(2), move || {
-                    if let Some(frame) = browser.main_frame()
-                        && let Some(mut msg) = crate::ipc::BrowserMessage::Ping.to_cef_message()
-                    {
-                        frame.send_process_message(cef::ProcessId::RENDERER, Some(&mut msg));
-                        log::info!("IPC verify: Ping sent to renderer");
-                    }
-                });
             }
 
             if make_foreground {
@@ -1963,7 +1999,9 @@ mod imp {
                 *self.life_span.lock() = None;
                 *self.foreground.lock() = None;
                 if let Some(shared) = self.shared.lock().as_ref() {
-                    shared.lock().foreground_browser_id = 0;
+                    let mut s = shared.lock();
+                    s.foreground_browser_id = 0;
+                    s.popup = Default::default();
                 }
             }
         }
@@ -2176,7 +2214,7 @@ mod imp {
                     // blank/stale accelerated branch. Drop it so an existing or
                     // subsequent CEF CPU on_paint frame can become visible.
                     log::warn!("accelerated OSR import failed; falling back to CPU paint");
-                    super::discard_failed_accel(&mut s.accel);
+                    s.accel = None;
                     *self.imported.borrow_mut() = None;
                     // CEF's shared-texture choice is fixed at browser creation.
                     // Recreate the pool after this render callback so subsequent
@@ -3058,7 +3096,11 @@ mod imp {
                         .map(|e| im.filter_keypress(&e))
                         .unwrap_or(false);
                     if consumed {
-                        swallowed_keys.borrow_mut().push(keycode);
+                        let mut keys = swallowed_keys.borrow_mut();
+                        if !keys.contains(&keycode) {
+                            keys.push(keycode);
+                        }
+                        drop(keys);
                         return glib::Propagation::Stop;
                     }
                     send_key_raw(&widget, keyval, keycode, layout, state, true);
@@ -3285,8 +3327,6 @@ mod imp {
             }
         ));
         widget.add_controller(drop_target);
-
-        let _ = gdk::ModifierType::SHIFT_MASK; // suppress unused-import warning
     }
 
     pub(super) fn is_copy_shortcut(keyval: gtk::gdk::Key, state: gtk::gdk::ModifierType) -> bool {
@@ -3325,8 +3365,11 @@ mod imp {
         }
     }
 
-    /// Ticks a focus-out waits before it is applied. The drain runs every 16 ms,
-    /// so this is ~64 ms — longer than the gap between the editable-focus false
+    /// Interval of the IM focus-out debounce timer (`arm_im_focus_timer`).
+    pub(super) const IM_FOCUS_TICK: std::time::Duration = std::time::Duration::from_millis(16);
+
+    /// Ticks a focus-out waits before it is applied. The debounce timer ticks
+    /// every `IM_FOCUS_TICK`, so this is ~64 ms — longer than the gap between the editable-focus false
     /// and true a composer re-render emits, and short enough that a real blur
     /// still hides an on-screen keyboard promptly. (#180)
     pub(super) const IM_FOCUS_OUT_DEBOUNCE_TICKS: u8 = 4;
@@ -4342,6 +4385,7 @@ mod imp {
             Ok(p) => p,
             Err(err) => {
                 log::warn!("paste: {err}");
+                toast_paste_too_large(widget);
                 return;
             }
         };
@@ -4360,6 +4404,13 @@ mod imp {
                 y,
             },
         );
+    }
+
+    /// Tell the user an oversized paste/drop was refused (`make_blob` limit).
+    fn toast_paste_too_large(widget: &super::KarereWebView) {
+        if let Some(window) = widget.root().and_downcast::<crate::window::KarereWindow>() {
+            window.show_toast(&gettextrs::gettext("File is too large to attach (limit 48 MB)"));
+        }
     }
 
     /// Notify the page that a file drag is hovering so it can pre-mount its
@@ -4634,6 +4685,7 @@ mod imp {
                 return;
             };
             let sizes: Vec<usize> = loaded.iter().map(|(_, _, bytes)| bytes.len()).collect();
+            let mut too_large = false;
             for batch in batch_by_size(&sizes, PASTE_BATCH_BYTES) {
                 let files: Vec<crate::ipc::PasteFile> = loaded[batch]
                     .iter()
@@ -4645,6 +4697,7 @@ mod imp {
                         }),
                         Err(err) => {
                             log::warn!("paste: {err}");
+                            too_large = true;
                             None
                         }
                     })
@@ -4662,6 +4715,9 @@ mod imp {
                         y,
                     },
                 );
+            }
+            if too_large {
+                toast_paste_too_large(&widget);
             }
             if offer_chooser && let Some(file) = unreadable {
                 choose_unreadable_file(&widget, &file, kind, coords);

@@ -31,10 +31,7 @@ impl KarereApplication {
     /// Handle one launch (first or forwarded). `link` is a validated WhatsApp
     /// Web URL from a deep link; `background` is the autostart flag.
     pub fn activate_with_url(&self, url: &str, link: Option<&str>, background: bool) {
-        if let Some(win) = self
-            .active_window()
-            .or_else(|| self.windows().into_iter().next())
-        {
+        if let Some(win) = any_window(self) {
             if let Some(link) = link {
                 if let Some(kw) = win.downcast_ref::<KarereWindow>() {
                     kw.load_url(link);
@@ -97,6 +94,11 @@ pub(crate) fn apply_theme(settings: &gio::Settings) {
     // default "System" theme) follows prefers-color-scheme, which CEF never
     // derives from the libadwaita theme — so emulate it over CDP. (#160)
     crate::cdp::set_dark_preference(mgr.is_dark());
+    reapply_web_color_scheme_everywhere();
+}
+
+/// Re-push the effective color scheme into every window's web content.
+fn reapply_web_color_scheme_everywhere() {
     if let Some(app) = gio::Application::default().and_downcast::<gtk::Application>() {
         for win in app.windows() {
             if let Some(kw) = win.downcast_ref::<KarereWindow>() {
@@ -104,6 +106,13 @@ pub(crate) fn apply_theme(settings: &gio::Settings) {
             }
         }
     }
+}
+
+/// The active window, or any window when none is active (a hidden window is
+/// not "active"). (#175)
+pub(crate) fn any_window(app: &impl IsA<gtk::Application>) -> Option<gtk::Window> {
+    app.active_window()
+        .or_else(|| app.windows().into_iter().next())
 }
 
 fn register_accels(app: &KarereApplication) {
@@ -140,7 +149,6 @@ fn register_accels(app: &KarereApplication) {
         ),
         ("win.zoom-out", &["<Primary>minus", "<Primary>KP_Subtract"]),
         ("win.zoom-reset", &["<Primary>0", "<Primary>KP_0"]),
-        ("win.toggle-zoom-controls", &["<Primary>b"]),
         ("app.do-not-disturb", &["<Primary><Shift>n"]),
     ];
     for (action, accels) in bindings {
@@ -244,13 +252,7 @@ mod imp {
             // desktop scheme changes; re-mirror it to the web content. (#160)
             adw::StyleManager::default().connect_dark_notify(|mgr| {
                 crate::cdp::set_dark_preference(mgr.is_dark());
-                if let Some(app) = gio::Application::default().and_downcast::<gtk::Application>() {
-                    for win in app.windows() {
-                        if let Some(kw) = win.downcast_ref::<KarereWindow>() {
-                            kw.reapply_web_color_scheme();
-                        }
-                    }
-                }
+                reapply_web_color_scheme_everywhere();
             });
             // Live tray enable/disable/auto.
             settings.connect_changed(Some("systray-icon"), |_, _| {
@@ -290,9 +292,10 @@ mod imp {
             );
             // Existing autostart entries predate `--background`; re-register once
             // so they gain it (the portal updates the entry in place).
-            if settings.boolean("run-on-startup") {
+            if settings.boolean("run-on-startup") && !settings.boolean("autostart-migrated") {
                 app.activate_action("sync-autostart", None);
             }
+            let _ = settings.set_boolean("autostart-migrated", true);
             // Keep Settings alive so the change handlers keep firing.
             let _ = self.settings.set(settings);
         }

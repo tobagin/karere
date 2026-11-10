@@ -110,14 +110,14 @@ pub struct SharedState {
     pub ime_caret_rect: Option<(i32, i32, i32, i32)>,
     /// Pending IM focus state from CEF's virtual-keyboard request: `Some(true)`
     /// when a page editable gains focus, `Some(false)` when it blurs. Drained by
-    /// the widget timer to focus/unfocus the IM context — so Phosh's on-screen
+    /// the view flush (`wake_view`) to focus/unfocus the IM context — so Phosh's on-screen
     /// keyboard tracks the actual text field, not the always-focused GLArea.
     pub keyboard_request: Option<bool>,
     /// Pending screen-reader announcement for page focus (#204); drained by
-    /// the widget tick into `gtk::Accessible::announce`.
+    /// the view flush (`wake_view`) into `gtk::Accessible::announce`.
     pub a11y_announce: Option<String>,
     /// Latest CEF cursor as a GTK/CSS name, plus dirty flag. OSR never touches
-    /// the GTK cursor; the widget tick callback applies this.
+    /// the GTK cursor; the view flush (`wake_view`) applies this.
     pub cursor_name: &'static str,
     pub cursor_dirty: bool,
     /// Pending JS fullscreen request (M21): `Some(true)` = enter, `Some(false)`
@@ -141,15 +141,37 @@ pub struct SharedState {
     /// (KARE-019)
     pub window_origin: (i32, i32),
     /// The presenting `GtkGLArea`, so a paint can queue its own render instead
-    /// of waiting for the widget's 16 ms poll timer. On_paint runs on the main
+    /// of waiting for a poll timer. On_paint runs on the main
     /// thread (external_message_pump), so the upgrade is always legal; the
     /// `SendWeakRef` only satisfies the `Arc<Mutex<_>>` bounds. Going through
     /// the timer added 0–16 ms per frame and beat against the 60 Hz paint
     /// stream, dropping and doubling frames — the "stutter" in #173/#179.
     pub redraw: Option<gtk::glib::SendWeakRef<gtk::GLArea>>,
+    /// A `wake_view` flush is queued and has not drained the requests yet, so
+    /// a burst of cursor/IM/announce changes costs one main-loop callback.
+    pub view_wake_queued: bool,
 }
 
 pub type SharedRef = Arc<Mutex<SharedState>>;
+
+/// Have the owning view apply the cursor / IM focus / announcement requests
+/// just stored in `s`, from a main-loop idle callback rather than from inside
+/// the CEF callback. Takes the guard so the lock is released first; at most
+/// one flush is queued until the view drains (`view_wake_queued`).
+pub fn wake_view(mut s: parking_lot::MutexGuard<'_, SharedState>) {
+    if s.view_wake_queued {
+        return;
+    }
+    let Some(area) = s.redraw.clone() else { return };
+    s.view_wake_queued = true;
+    drop(s);
+    gtk::glib::idle_add_full(gtk::glib::Priority::DEFAULT, move || {
+        if let Some(area) = area.upgrade() {
+            crate::web_view::flush_view_requests(&area);
+        }
+        gtk::glib::ControlFlow::Break
+    });
+}
 
 pub fn new_shared(size: (i32, i32), scale: f32) -> SharedRef {
     Arc::new(Mutex::new(SharedState {

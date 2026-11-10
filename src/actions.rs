@@ -12,7 +12,10 @@ static RUNTIME: OnceLock<&'static tokio::runtime::Runtime> = OnceLock::new();
 
 pub(crate) fn runtime() -> &'static tokio::runtime::Runtime {
     RUNTIME.get_or_init(|| {
-        let rt = tokio::runtime::Runtime::new()
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(1)
+            .enable_all()
+            .build()
             .expect("failed to create tokio runtime for portal calls");
         // Leaked: must outlive `main` for portal callbacks. One per process.
         Box::leak(Box::new(rt))
@@ -30,7 +33,6 @@ pub fn register_app_actions(app: &KarereApplication) {
     register_switch_account(app);
     register_notification_mute_account(app);
     register_do_not_disturb(app);
-    register_refresh_tray_accounts(app);
     register_open_download(app);
     register_show_download(app);
 }
@@ -42,9 +44,7 @@ fn register_quit(app: &KarereApplication) {
         app,
         move |_, _| {
             // A hidden window may not be "active" — fall back to the window list. (#175)
-            if let Some(win) = app
-                .active_window()
-                .or_else(|| app.windows().into_iter().next())
+            if let Some(win) = crate::application::any_window(&app)
                 .and_downcast::<crate::window::KarereWindow>()
             {
                 win.quit_now();
@@ -64,10 +64,7 @@ fn register_present_window(app: &KarereApplication) {
         #[weak]
         app,
         move |_, _| {
-            let Some(win) = app
-                .active_window()
-                .or_else(|| app.windows().into_iter().next())
-            else {
+            let Some(win) = crate::application::any_window(&app) else {
                 log::warn!("app.present-window: no window to present");
                 return;
             };
@@ -238,10 +235,7 @@ fn register_notification_clicked(app: &KarereApplication) {
                 log::warn!("notification-clicked: malformed target");
                 return;
             };
-            let Some(win) = app
-                .active_window()
-                .or_else(|| app.windows().into_iter().next())
-            else {
+            let Some(win) = crate::application::any_window(&app) else {
                 log::warn!("notification-clicked: no window to raise");
                 return;
             };
@@ -343,16 +337,6 @@ fn register_do_not_disturb(app: &KarereApplication) {
     app.add_action(&action);
 }
 
-/// `app.refresh-tray-accounts`: request a `ksni` menu redraw. The window pushes
-/// fresh summaries via `tray::set_accounts`; this just triggers the rerender.
-fn register_refresh_tray_accounts(app: &KarereApplication) {
-    let action = gio::SimpleAction::new("refresh-tray-accounts", None);
-    action.connect_activate(|_, _| {
-        crate::tray::refresh_accounts();
-    });
-    app.add_action(&action);
-}
-
 /// `app.switch-account <id>`: switch the window to account `id` (tray entries).
 fn register_switch_account(app: &KarereApplication) {
     let action = gio::SimpleAction::new("switch-account", Some(glib::VariantTy::STRING));
@@ -364,10 +348,7 @@ fn register_switch_account(app: &KarereApplication) {
             if id.is_empty() {
                 return;
             }
-            let Some(win) = app
-                .active_window()
-                .or_else(|| app.windows().into_iter().next())
-            else {
+            let Some(win) = crate::application::any_window(&app) else {
                 return;
             };
             // Always surface (never toggle): "show this account", not "toggle".
@@ -467,7 +448,7 @@ fn register_sync_autostart(app: &KarereApplication) {
             let result = if want {
                 // `--background` marks autostart launches so only those stay hidden.
                 Background::request()
-                    .reason("Karere can keep running in the background to deliver messages.")
+                    .reason(gettextrs::gettext("Karere can keep running in the background to deliver messages.").as_str())
                     .auto_start(true)
                     .command(["karere", "--background"])
                     .send()
@@ -511,7 +492,7 @@ fn revert_autostart_setting() {
         }
         let win = gio::Application::default()
             .and_downcast::<gtk::Application>()
-            .and_then(|app| app.active_window().or_else(|| app.windows().into_iter().next()))
+            .and_then(|app| crate::application::any_window(&app))
             .and_downcast::<crate::window::KarereWindow>();
         if let Some(win) = win {
             win.show_toast(&gettextrs::gettext(

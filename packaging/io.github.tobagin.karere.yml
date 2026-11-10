@@ -17,6 +17,12 @@ cleanup:
   - '*.la'
   - '*.a'
   - /include
+  # CEF SDK files used only while building the karere module (cef-dll-sys cmake);
+  # nothing reads them at runtime. chrome-sandbox is intentionally kept.
+  - /lib/cef/include
+  - /lib/cef/libcef_dll
+  - /lib/cef/cmake
+  - /lib/cef/CMakeLists.txt
 
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin

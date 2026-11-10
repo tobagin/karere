@@ -84,7 +84,9 @@ wrap_permission_handler! {
             // notifications/messages are globally off, ignoring any stored
             // per-origin decision.
             if requests_notifications(mask) && !notifications_allowed() {
-                cb.cont(PermissionRequestResult::DENY);
+                // DISMISS, not DENY: a deny is persisted in the profile and would
+                // outlive Do Not Disturb.
+                cb.cont(PermissionRequestResult::DISMISS);
                 return 1;
             }
 

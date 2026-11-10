@@ -101,7 +101,7 @@ wrap_display_handler! {
         }
 
         // OSR: CEF never sets the platform cursor, so record it (as a CSS name)
-        // for the widget tick callback to apply. Returns 1 = handled.
+        // for the view flush (`wake_view`) to apply. Returns 1 = handled.
         fn on_cursor_change(
             &self,
             browser: Option<&mut Browser>,
@@ -120,6 +120,7 @@ wrap_display_handler! {
             if s.cursor_name != name {
                 s.cursor_name = name;
                 s.cursor_dirty = true;
+                super::wake_view(s);
             }
             1
         }

@@ -18,7 +18,7 @@ endif
 
 dependency('glib-2.0', version: '>= 2.66')
 dependency('gio-2.0', version: '>= 2.66')
-dependency('gtk4', version: '>= 4.12')
+dependency('gtk4', version: '>= 4.14')
 dependency('libadwaita-1', version: '>= 1.6')
 
 cargo = find_program('cargo', required: true)
@@ -28,7 +28,7 @@ output = 'karere'
 
 cargo_options = [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
 cargo_options += [ '--target-dir', meson.project_build_root() / 'target' ]
-cargo_options += [ '--release' ]
+cargo_options += [ '--release', '--locked' ]
 rust_target = 'release'
 
 if fs.is_dir(meson.project_source_root() / 'cargo')

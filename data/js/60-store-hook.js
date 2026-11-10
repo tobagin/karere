@@ -11,10 +11,8 @@
 //   • avatar  — localStorage['WACachedProfilePicEURL'] → fetch → base64 (CORS-OK,
 //               served by pps.whatsapp.net with image/jpeg)
 //
-// Emits ProfileIdentity/ProfileAvatar (source:"store"); a store-sourced identity
-// clears any prior degraded badge. While unpaired (no wid) emits AwaitingPairing
-// (debounced) and keeps polling — never StoreUnavailable, so accounts never get
-// stuck in degraded mode.
+// Emits ProfileIdentity/ProfileAvatar (source:"store"). While unpaired (no wid)
+// emits AwaitingPairing (debounced) and keeps polling.
 (function () {
   "use strict";
 

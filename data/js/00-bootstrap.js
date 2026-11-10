@@ -53,12 +53,6 @@
         return original.apply(console, arguments);
       };
     });
-
-    // Browser -> page DOM events (handled by later scripts in the bundle).
-    document.addEventListener("karere:dispatch-paste", function (_ev) {
-    });
-    document.addEventListener("karere:close-notif", function (_ev) {
-    });
   } catch (err) {
     var msg = "karere bootstrap failed: " + (err && err.stack ? err.stack : err);
     try {

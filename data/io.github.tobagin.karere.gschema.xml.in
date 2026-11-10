@@ -36,6 +36,11 @@
       <summary>Run on startup</summary>
       <description>Whether to start the application automatically when the user logs in.</description>
     </key>
+    <key name="autostart-migrated" type="b">
+      <default>false</default>
+      <summary>Autostart entry migrated</summary>
+      <description>Whether the autostart entry was re-registered with the --background flag.</description>
+    </key>
     <key name="window-width" type="i">
       <default>800</default>
       <summary>Window width</summary>

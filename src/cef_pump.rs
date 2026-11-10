@@ -6,13 +6,23 @@
 //! backstop. Keep one source, including the backstop, so callbacks cannot pile up.
 
 use parking_lot::Mutex;
+use std::cell::RefCell;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, LazyLock};
 use std::time::{Duration, Instant};
 
 const BACKSTOP: Duration = Duration::from_millis(100);
+/// Backstop and delay cap while every window is hidden (tray mode). Nothing is
+/// painted then, so the backstop only guards against a lost wakeup; CEF's own
+/// delayed-work requests up to this long are still honoured exactly.
+const IDLE_BACKSTOP: Duration = Duration::from_secs(1);
 
-static PUMP: LazyLock<Arc<MessagePump>> =
-    LazyLock::new(|| MessagePump::new(glib::MainContext::default(), cef::do_message_loop_work));
+static PUMP: LazyLock<Arc<MessagePump>> = LazyLock::new(|| {
+    MessagePump::new(glib::MainContext::default(), || {
+        cef::do_message_loop_work();
+        run_after_work();
+    })
+});
 
 pub fn schedule(delay_ms: i64) {
     PUMP.schedule(Duration::from_millis(delay_ms.max(0) as u64));
@@ -20,6 +30,28 @@ pub fn schedule(delay_ms: i64) {
 
 pub fn stop() {
     PUMP.stop();
+}
+
+/// Lengthen the backstop to `IDLE_BACKSTOP` while no window is visible, and
+/// restore the normal one as soon as a window is shown.
+pub fn set_idle_mode(idle: bool) {
+    PUMP.set_idle_mode(idle);
+}
+
+thread_local! {
+    static AFTER_WORK: RefCell<Vec<Box<dyn Fn() -> bool>>> = const { RefCell::new(Vec::new()) };
+}
+
+/// Run `hook` on the main thread after every batch of CEF work, i.e. after
+/// any browser-process callback could have changed handler state. It must be
+/// cheap and must not touch GTK directly (queue an idle instead) or register
+/// another hook. Returning `false` unregisters it.
+pub fn on_after_work(hook: impl Fn() -> bool + 'static) {
+    AFTER_WORK.with(|hooks| hooks.borrow_mut().push(Box::new(hook)));
+}
+
+fn run_after_work() {
+    AFTER_WORK.with(|hooks| hooks.borrow_mut().retain(|hook| hook()));
 }
 
 struct Pending {
@@ -41,6 +73,7 @@ struct MessagePump {
     context: glib::MainContext,
     state: Mutex<State>,
     work: Box<dyn Fn() + Send + Sync>,
+    idle: AtomicBool,
 }
 
 impl MessagePump {
@@ -49,11 +82,28 @@ impl MessagePump {
             context,
             state: Mutex::new(State::default()),
             work: Box::new(work),
+            idle: AtomicBool::new(false),
         })
     }
 
+    fn backstop(&self) -> Duration {
+        if self.idle.load(Ordering::Relaxed) {
+            IDLE_BACKSTOP
+        } else {
+            BACKSTOP
+        }
+    }
+
+    fn set_idle_mode(self: &Arc<Self>, idle: bool) {
+        let was_idle = self.idle.swap(idle, Ordering::Relaxed);
+        // A pending idle-mode backstop may be up to a second out; pull it in.
+        if was_idle && !idle {
+            self.schedule(BACKSTOP);
+        }
+    }
+
     fn schedule(self: &Arc<Self>, delay: Duration) {
-        self.schedule_at(Instant::now() + delay.min(BACKSTOP));
+        self.schedule_at(Instant::now() + delay.min(self.backstop()));
     }
 
     fn schedule_at(self: &Arc<Self>, deadline: Instant) {
@@ -123,7 +173,7 @@ impl MessagePump {
             state
                 .deferred
                 .take()
-                .unwrap_or_else(|| Instant::now() + BACKSTOP)
+                .unwrap_or_else(|| Instant::now() + self.backstop())
         };
         self.schedule_at(deadline);
     }
@@ -239,6 +289,42 @@ mod tests {
         context.iteration(false);
         assert_eq!(calls.load(Ordering::SeqCst), 1);
         pump.stop();
+    }
+
+    fn pending_deadline(pump: &MessagePump) -> Instant {
+        pump.state.lock().pending.as_ref().unwrap().deadline
+    }
+
+    #[test]
+    fn idle_mode_lengthens_backstop_and_showing_restores_it() {
+        let (context, pump, calls) = counter();
+        pump.set_idle_mode(true);
+        let start = Instant::now();
+        pump.schedule(Duration::from_secs(5));
+        let deadline = pump_deadline_window(&pump, start);
+        assert!(deadline > start + BACKSTOP, "hidden: delay capped at the idle backstop");
+
+        // Showing a window pulls the pending source back to the normal backstop.
+        pump.set_idle_mode(false);
+        assert!(pending_deadline(&pump) <= Instant::now() + BACKSTOP);
+
+        // The re-arm after work follows the mode, too.
+        pump.set_idle_mode(true);
+        pump.schedule(Duration::ZERO);
+        let start = Instant::now();
+        context.iteration(false);
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        let deadline = pump_deadline_window(&pump, start);
+        assert!(deadline > start + BACKSTOP, "hidden: re-arm uses the idle backstop");
+        pump.stop();
+    }
+
+    /// The pending deadline, checked to lie within the idle backstop of `start`.
+    fn pump_deadline_window(pump: &MessagePump, start: Instant) -> Instant {
+        let deadline = pending_deadline(pump);
+        assert!(deadline <= Instant::now() + IDLE_BACKSTOP);
+        assert!(deadline >= start);
+        deadline
     }
 
     #[test]

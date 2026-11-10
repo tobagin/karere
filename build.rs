@@ -35,6 +35,7 @@ fn main() {
 
     println!("cargo:rerun-if-env-changed=CEF_PATH");
     println!("cargo:rerun-if-changed=data/karere.gresource.xml");
+    println!("cargo:rerun-if-changed=data/ui");
 }
 
 /// Concatenate `data/js/*.js` (lexical order, so `00-bootstrap.js` runs first) into

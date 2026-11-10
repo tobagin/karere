@@ -127,7 +127,7 @@ fn main() -> Result<()> {
             match std::env::current_exe() {
                 Ok(exe) => {
                     let err = std::process::Command::new(exe)
-                        .args(std::env::args_os().skip(1))
+                        .args(deeplink::chromium_args(std::env::args()).into_iter().skip(1))
                         .exec();
                     log::error!("restart: exec failed: {err}");
                 }

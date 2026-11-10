@@ -15,12 +15,17 @@ add-extensions:
     autodelete: true
     no-autodownload: true
 
-# Drop dev-only artifacts Flathub flags. /lib/cef/include is NOT under /include,
-# so CEF's headers (used by the embedded loader) survive the /include cleanup.
+# Drop dev-only artifacts Flathub flags, plus the build-only CEF SDK files.
 cleanup:
   - '*.la'
   - '*.a'
   - /include
+  # CEF SDK files used only while building the karere module (cef-dll-sys cmake);
+  # nothing reads them at runtime. chrome-sandbox is intentionally kept.
+  - /lib/cef/include
+  - /lib/cef/libcef_dll
+  - /lib/cef/cmake
+  - /lib/cef/CMakeLists.txt
 
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin

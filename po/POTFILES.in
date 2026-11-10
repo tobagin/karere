@@ -5,6 +5,10 @@ src/window.rs
 src/actions.rs
 src/tray.rs
 src/preferences.rs
+src/notifications.rs
+src/spellcheck_ui.rs
+src/handlers/permission.rs
+src/handlers/request.rs
 data/ui/window.ui
 data/ui/preferences.ui
 data/ui/keyboard-shortcuts.ui

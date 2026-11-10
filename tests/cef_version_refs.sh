@@ -119,10 +119,12 @@ if [[ -z "$CHROMIUM_MAJOR" ]]; then
     fail "could not derive Chromium major from CEF_DEFAULT ($CEF_DEFAULT)"
 else
     pass "Chromium major is $CHROMIUM_MAJOR"
-    if grep -Fq "Now built on CEF/Chromium ${CHROMIUM_MAJOR}." data/io.github.tobagin.karere.metainfo.xml.in; then
-        pass "metainfo current description contains CEF/Chromium $CHROMIUM_MAJOR"
+    if sed '/<releases>/,$d' data/io.github.tobagin.karere.metainfo.xml.in | grep -Eq 'CEF/Chromium [0-9]{3}'; then
+        fail "metainfo description hard-codes a CEF/Chromium version"
+    elif grep -Fq "Built on the Chromium Embedded Framework." data/io.github.tobagin.karere.metainfo.xml.in; then
+        pass "metainfo description names CEF without a version"
     else
-        fail "metainfo current description missing 'Now built on CEF/Chromium ${CHROMIUM_MAJOR}.'"
+        fail "metainfo description missing 'Built on the Chromium Embedded Framework.'"
     fi
     # README: every "Chromium NNN" mention must name the shipping major.
     README_MAJORS="$(grep -oE 'Chromium [0-9]{3}' README.md | sort -u || true)"

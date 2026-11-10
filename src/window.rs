@@ -233,13 +233,6 @@ mod imp {
                 ),
             );
 
-            settings.connect_changed(Some("close-button-action"), |s, _key| {
-                log::info!(
-                    "close-button-action changed to {:?}",
-                    s.string("close-button-action").as_str()
-                );
-            });
-
             let settings_for_close = settings.clone();
             window.connect_close_request(clone!(
                 #[weak(rename_to = this)]
@@ -273,6 +266,9 @@ mod imp {
                 #[weak(rename_to = this)]
                 self,
                 move |win| {
+                    // First, so CEF work requested by the re-show below is
+                    // already under the normal backstop.
+                    crate::cef_pump::set_idle_mode(!win.is_visible());
                     crate::tray::set_window_visible(win.is_visible());
                     if let Some(web) = this.web_view.borrow().as_ref() {
                         web.set_window_visible(win.is_visible());
@@ -289,6 +285,7 @@ mod imp {
                 }
             ));
             crate::tray::set_window_visible(window.is_visible());
+            crate::cef_pump::set_idle_mode(!window.is_visible());
         }
     }
 
@@ -342,8 +339,8 @@ mod imp {
             offline.append(
                 &adw::StatusPage::builder()
                     .icon_name("network-offline-symbolic")
-                    .title("No connection")
-                    .description("Waiting for the network — retrying…")
+                    .title(&gettextrs::gettext("No connection"))
+                    .description(&gettextrs::gettext("Waiting for the network — retrying…"))
                     .vexpand(true)
                     .build(),
             );
@@ -355,13 +352,20 @@ mod imp {
             *self.web_view.borrow_mut() = Some(web);
         }
 
-        /// Poll the shared handler state at 100 ms and surface it on the GTK
-        /// side: crash toasts, crash-storm dialog, offline overlay.
+        /// Surface the shared handler state on the GTK side: crash toasts,
+        /// crash-storm dialog, find counter, downloads, JS fullscreen, offline
+        /// overlay.
+        ///
+        /// Not polled. Every producer is a CEF callback, and those only run
+        /// inside the pump's `do_message_loop_work`, so a `cef_pump` after-work
+        /// hook spots new state and queues one drain on idle. A producer ever
+        /// reached synchronously from GTK code is still seen on the pump's next
+        /// backstop turn, so nothing is lost.
         ///
         /// The overlay tracks `GNetworkMonitor` as well as the load-error
         /// `offline` flag: WhatsApp's service worker serves a cached page when
         /// offline so a load error never fires — the network monitor is the only
-        /// reliable offline signal.
+        /// reliable offline signal. It is followed through `network-changed`.
         fn start_state_poll(&self, web: &KarereWebView, offline: &gtk::Box) {
             use gtk::gio::prelude::NetworkMonitorExt;
 
@@ -372,11 +376,18 @@ mod imp {
             let counter_weak = self.find_counter_label.downgrade();
             let monitor = gtk::gio::NetworkMonitor::default();
             let dialog_open = Rc::new(Cell::new(false));
-            let was_net_down = Rc::new(Cell::new(false));
+            let was_net_down = Rc::new(Cell::new(!monitor.is_network_available()));
+            // Load-error flag as of the last drain, so a change alone wakes one.
+            let last_offline = Rc::new(Cell::new(false));
+            let drain_queued = Rc::new(Cell::new(false));
+            let hook_web = web.downgrade();
+            let net_web = web.downgrade();
+            let drain_monitor = monitor.clone();
+            let drain_last_offline = last_offline.clone();
 
-            glib::timeout_add_local(std::time::Duration::from_millis(100), move || {
+            let drain: Rc<dyn Fn()> = Rc::new(move || {
                 let Some(web) = web_weak.upgrade() else {
-                    return glib::ControlFlow::Break;
+                    return;
                 };
                 let shared = web.shared();
                 let (toast, dialog, flag_offline, find, completed, failed, fullscreen) = {
@@ -411,7 +422,11 @@ mod imp {
                     if find.count == 0 {
                         label.set_visible(false);
                     } else {
-                        label.set_text(&format!("{} of {}", find.active, find.count));
+                        label.set_text(
+                            &gettextrs::gettext("{active} of {count}")
+                                .replace("{active}", &find.active.to_string())
+                                .replace("{count}", &find.count.to_string()),
+                        );
                         label.set_visible(true);
                     }
                 }
@@ -450,18 +465,69 @@ mod imp {
                     }
                 }
 
-                let net_down = !monitor.is_network_available();
-                // Network just came back: reload so the cached page reconnects.
-                if was_net_down.get() && !net_down {
-                    web.reload();
-                }
-                was_net_down.set(net_down);
-
+                let net_down = !drain_monitor.is_network_available();
                 if let Some(page) = offline_weak.upgrade() {
                     page.set_visible(flag_offline || net_down);
                 }
-                glib::ControlFlow::Continue
+                drain_last_offline.set(flag_offline);
             });
+
+            let schedule_drain: Rc<dyn Fn()> = Rc::new({
+                let drain = drain.clone();
+                let queued = drain_queued.clone();
+                move || {
+                    if queued.replace(true) {
+                        return;
+                    }
+                    let drain = drain.clone();
+                    let queued = queued.clone();
+                    glib::idle_add_local_once(move || {
+                        queued.set(false);
+                        drain();
+                    });
+                }
+            });
+
+            let net_drain = drain.clone();
+            monitor.connect_network_changed(move |monitor, _available| {
+                let net_down = !monitor.is_network_available();
+                // Network just came back: reload so the cached page reconnects.
+                if was_net_down.get()
+                    && !net_down
+                    && let Some(web) = net_web.upgrade()
+                {
+                    web.reload();
+                }
+                was_net_down.set(net_down);
+                net_drain();
+            });
+
+            let hook_drain = schedule_drain.clone();
+            crate::cef_pump::on_after_work(move || {
+                let Some(web) = hook_web.upgrade() else {
+                    return false;
+                };
+                if drain_queued.get() {
+                    return true;
+                }
+                let shared = web.shared();
+                let pending = {
+                    let s = shared.lock();
+                    s.crash_toast.is_some()
+                        || s.crash_dialog_request.is_some()
+                        || s.find_result.is_some()
+                        || !s.downloads_completed.is_empty()
+                        || !s.downloads_failed.is_empty()
+                        || s.fullscreen_request.is_some()
+                        || s.offline != last_offline.get()
+                };
+                if pending {
+                    hook_drain();
+                }
+                true
+            });
+            // First drain: show the overlay when starting without a network.
+            schedule_drain();
         }
 
         /// Hide the headerbar while fullscreen, restore on exit. Tied to
@@ -658,18 +724,6 @@ mod imp {
                 row.add_suffix(&spinner);
             }
 
-            // Persistent degraded-mode yellow badge.
-            if runtime.degraded {
-                let badge = gtk::Label::new(Some(&gettextrs::gettext("degraded")));
-                badge.add_css_class("warning");
-                badge.add_css_class("caption-heading");
-                badge.set_valign(gtk::Align::Center);
-                if let Some(reason) = runtime.degraded_reason.as_deref() {
-                    badge.set_tooltip_text(Some(reason));
-                }
-                row.add_suffix(&badge);
-            }
-
             // Unread badge: the page title's count of unread chats ("99+" cap).
             // Muted accounts keep their badge; only the tray total skips them.
             if runtime.unread > 0 {
@@ -739,7 +793,7 @@ mod imp {
                 self,
                 #[strong]
                 id,
-                move |_| this.open_account_dialog(&id, false)
+                move |_| this.open_account_dialog(&id)
             ));
             row.add_suffix(&edit);
 
@@ -853,9 +907,8 @@ mod imp {
         }
 
         /// Add/edit dialog: only `user_label` is editable; identity fields are
-        /// shown read-only. When `is_new`, the dialog auto-closes once the
-        /// account's `pushname` is discovered (pairing complete).
-        fn open_account_dialog(&self, id: &str, is_new: bool) {
+        /// shown read-only.
+        fn open_account_dialog(&self, id: &str) {
             let mgr = crate::accounts::manager();
             let Some(account) = mgr.get(id) else { return };
             let id = account.id.clone();
@@ -886,10 +939,6 @@ mod imp {
                 &gettextrs::gettext("WhatsApp ID"),
                 account.wid.as_deref(),
             ));
-            group.add(&dim(
-                &gettextrs::gettext("Avatar URL"),
-                account.avatar_url.as_deref(),
-            ));
             page.add(&group);
 
             let toolbar = adw::ToolbarView::new();
@@ -905,11 +954,7 @@ mod imp {
             toolbar.set_content(Some(&page));
 
             let dialog = adw::Dialog::builder()
-                .title(if is_new {
-                    gettextrs::gettext("Add Account")
-                } else {
-                    gettextrs::gettext("Edit Account")
-                })
+                .title(gettextrs::gettext("Edit Account"))
                 .content_width(420)
                 .child(&toolbar)
                 .build();
@@ -934,34 +979,6 @@ mod imp {
                 }
             ));
 
-            // For a new account, close automatically once it pairs (pushname set).
-            if is_new {
-                let mgr2 = crate::accounts::manager();
-                let handler_id = std::rc::Rc::new(RefCell::new(None));
-                let dialog_weak = dialog.downgrade();
-                let id_owned = id.clone();
-                let sig = mgr2.connect_local("accounts-changed", false, move |_| {
-                    if let Some(a) = crate::accounts::manager().get(&id_owned)
-                        && a.pushname.is_some()
-                        && let Some(d) = dialog_weak.upgrade()
-                    {
-                        d.close();
-                    }
-                    None
-                });
-                *handler_id.borrow_mut() = Some(sig);
-                // Disconnect the watcher when the dialog goes away.
-                dialog.connect_closed(clone!(
-                    #[strong]
-                    handler_id,
-                    move |_| {
-                        if let Some(sig) = handler_id.borrow_mut().take() {
-                            crate::accounts::manager().disconnect(sig);
-                        }
-                    }
-                ));
-            }
-
             dialog.present(Some(&*self.obj()));
         }
 
@@ -976,14 +993,12 @@ mod imp {
             let name = mgr.get(id).map(|a| row_title(&a)).unwrap_or_default();
             let dialog = adw::AlertDialog::new(
                 Some(&gettextrs::gettext("Remove account?")),
-                Some(&format!(
-                    "{} {}. {}",
-                    gettextrs::gettext("This removes the local session for"),
-                    name,
-                    gettextrs::gettext(
-                        "The device stays linked on your phone until you remove it there."
-                    ),
-                )),
+                Some(
+                    &gettextrs::gettext(
+                        "This removes the local session for {name}. The device stays linked on your phone until you remove it there.",
+                    )
+                    .replace("{name}", &name),
+                ),
             );
             dialog.add_response("cancel", &gettextrs::gettext("Cancel"));
             dialog.add_response("remove", &gettextrs::gettext("Remove"));
@@ -1196,6 +1211,8 @@ mod imp {
                     ),
                 );
             }
+            // The handlers die with the Settings object; keep it for the process.
+            std::mem::forget(zoom_settings);
         }
     }
 
@@ -1280,7 +1297,7 @@ mod imp {
         /// Open embedded DevTools: dock a fresh OSR view in the bottom pane and
         /// load the CDP DevTools frontend for the active page into it.
         ///
-        /// CEF 148 can't render `ShowDevTools` windowless, so DevTools is the
+        /// CEF can't render `ShowDevTools` windowless, so DevTools is the
         /// frontend page served by `--remote-debugging-port`, loaded as a URL.
         /// The target URL is resolved off the main thread.
         fn open_devtools(&self) {
@@ -1295,7 +1312,7 @@ mod imp {
                 log::info!("open_devtools: disabled (relaunch with --debug to enable)");
                 self.toast_overlay
                     .get()
-                    .add_toast(adw::Toast::new("DevTools available only with --debug"));
+                    .add_toast(adw::Toast::new(&gettextrs::gettext("DevTools available only with --debug")));
                 return;
             }
 
@@ -1338,7 +1355,7 @@ mod imp {
                     }
                     Err(e) => {
                         log::warn!("devtools frontend unavailable: {e}");
-                        toast.add_toast(adw::Toast::new(&format!("DevTools unavailable: {e}")));
+                        toast.add_toast(adw::Toast::new(&gettextrs::gettext("DevTools unavailable: {error}").replace("{error}", &e.to_string())));
                         if let Some(win) = win_weak.upgrade() {
                             win.imp().close_devtools();
                         }
@@ -1476,6 +1493,7 @@ mod imp {
                     return;
                 };
                 let Some(langs) = binding.selected(&lang) else {
+                    binding.sync(|i| dd.set_selected(i));
                     return;
                 };
                 if let Some(win) = win.upgrade()
@@ -1577,8 +1595,8 @@ mod imp {
 
     fn show_crash_dialog(win: &super::KarereWindow, req: CrashDialog, dialog_open: Rc<Cell<bool>>) {
         let dialog = adw::AlertDialog::new(Some(&req.title), Some(&req.body));
-        dialog.add_response("cancel", "Cancel");
-        dialog.add_response("logs", "Open logs");
+        dialog.add_response("cancel", &gettextrs::gettext("Cancel"));
+        dialog.add_response("logs", &gettextrs::gettext("Open logs"));
         dialog.set_response_appearance("logs", adw::ResponseAppearance::Suggested);
         dialog.set_default_response(Some("logs"));
         dialog.set_close_response("cancel");
@@ -1607,13 +1625,15 @@ mod imp {
         // us offer both "Open" and "Show in Folder".
         let row = gtk::Box::new(gtk::Orientation::Horizontal, 12);
         row.set_valign(gtk::Align::Center);
-        let label = gtk::Label::new(Some(&format!("{name} downloaded")));
+        let label = gtk::Label::new(Some(
+            &gettextrs::gettext("{name} downloaded").replace("{name}", &name),
+        ));
         label.set_hexpand(true);
         label.set_xalign(0.0);
         label.set_ellipsize(gtk::pango::EllipsizeMode::End);
-        let open = gtk::Button::with_label("Open");
+        let open = gtk::Button::with_label(&gettextrs::gettext("Open"));
         open.add_css_class("flat");
-        let show = gtk::Button::with_label("Show in Folder");
+        let show = gtk::Button::with_label(&gettextrs::gettext("Show in Folder"));
         show.add_css_class("flat");
         row.append(&label);
         row.append(&open);
@@ -1658,7 +1678,7 @@ mod imp {
         let name = &dl.name;
         let file_path = dl.path.to_string_lossy().into_owned();
 
-        let notif = gtk::gio::Notification::new("Download complete");
+        let notif = gtk::gio::Notification::new(&gettextrs::gettext("Download complete"));
         notif.set_body(Some(name));
         notif.set_icon(&gtk::gio::ThemedIcon::new("folder-download-symbolic"));
         // Click / Open → app.open-download with the file path.
@@ -1667,7 +1687,7 @@ mod imp {
             Some(&file_path.to_variant()),
         );
         notif.add_button_with_target_value(
-            "Open",
+            &gettextrs::gettext("Open"),
             "app.open-download",
             Some(&file_path.to_variant()),
         );
@@ -1685,14 +1705,14 @@ mod imp {
 
     /// Surface a failed download as an `AdwAlertDialog`.
     fn show_download_failed(win: &super::KarereWindow, fail: DownloadFailed) {
-        let title = format!("Download failed: {}", fail.reason);
+        let title = gettextrs::gettext("Download failed: {reason}").replace("{reason}", &fail.reason);
         let dialog = if fail.name.is_empty() {
             adw::AlertDialog::new(Some(&title), None)
         } else {
-            let body = format!("“{}” could not be saved.", fail.name);
+            let body = gettextrs::gettext("“{name}” could not be saved.").replace("{name}", &fail.name);
             adw::AlertDialog::new(Some(&title), Some(&body))
         };
-        dialog.add_response("ok", "OK");
+        dialog.add_response("ok", &gettextrs::gettext("OK"));
         dialog.set_default_response(Some("ok"));
         dialog.set_close_response("ok");
         dialog.present(Some(win));

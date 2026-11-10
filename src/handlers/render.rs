@@ -371,6 +371,7 @@ wrap_render_handler! {
                 let mut s = self.handler.shared.lock();
                 if is_foreground(&s, id) {
                     s.keyboard_request = Some(input_mode != TextInputMode::NONE);
+                    super::wake_view(s);
                 }
             }
             if input_mode == TextInputMode::NONE {

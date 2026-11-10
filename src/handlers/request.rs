@@ -46,7 +46,7 @@ wrap_request_handler! {
     impl RequestHandler {
         fn on_before_browse(
             &self,
-            _browser: Option<&mut Browser>,
+            browser: Option<&mut Browser>,
             frame: Option<&mut Frame>,
             request: Option<&mut Request>,
             user_gesture: ::std::os::raw::c_int,
@@ -62,13 +62,35 @@ wrap_request_handler! {
             if url.is_empty() {
                 return 0;
             }
-            let is_main = frame.is_none_or(|f| f.is_main() == 1);
+            let is_main = frame.as_ref().is_none_or(|f| f.is_main() == 1);
             if !is_main {
                 // Subframes never leave the shell; disallowed ones are cancelled.
                 return if is_subframe_allowed(&url) { 0 } else { 1 };
             }
             if is_in_shell(&url) || is_dev_url_override(&url) {
                 return 0;
+            }
+            // wa.me / api.whatsapp.com chat links clicked inside a chat stay in
+            // the app: cancel this one and load the mapped chat URL instead.
+            if let Some(mapped) = in_app_target(&url) {
+                let target = match frame {
+                    Some(f) => Some(f.clone()),
+                    None => browser.and_then(|b| b.main_frame()),
+                };
+                if let Some(target) = target {
+                    // Deferred: never start a load from inside the callback
+                    // that is cancelling this one.
+                    glib::idle_add_local_once(move || {
+                        target.load_url(Some(&CefString::from(mapped.as_str())));
+                    });
+                }
+                return 1;
+            }
+            if user_gesture == 0 {
+                log::warn!(
+                    "cancelled top-frame navigation without a user gesture (host: {:?})",
+                    url.split_once(':').and_then(|(_, rest)| host_of(rest))
+                );
             }
             open_external(&url, user_gesture != 0);
             1
@@ -102,13 +124,13 @@ wrap_request_handler! {
                 s.crash_history
                     .retain(|t| now.duration_since(*t) < CRASH_WINDOW);
                 s.crash_history.push(now);
-                s.crash_toast = Some("Web view crashed — reconnecting…".to_string());
+                s.crash_toast = Some(gettextrs::gettext("Web view crashed — reconnecting…"));
                 if s.crash_history.len() >= CRASH_THRESHOLD {
                     s.crash_dialog_request = Some(CrashDialog {
-                        title: "Web view keeps crashing.".to_string(),
-                        body: "The embedded WhatsApp view crashed repeatedly. \
-                               Open the logs to investigate."
-                            .to_string(),
+                        title: gettextrs::gettext("Web view keeps crashing."),
+                        body: gettextrs::gettext(
+                            "The embedded WhatsApp view crashed repeatedly. Open the logs to investigate.",
+                        ),
                     });
                     true
                 } else {
@@ -143,15 +165,26 @@ pub(crate) fn route_target(browser: Option<&mut Browser>, url: &str, allow_exter
     if url.is_empty() {
         return;
     }
-    if is_whatsapp_web(url) {
+    if let Some(target) = in_app_target(url) {
         if let Some(browser) = browser
             && let Some(frame) = browser.main_frame()
         {
-            frame.load_url(Some(&CefString::from(url)));
+            frame.load_url(Some(&CefString::from(target.as_str())));
         }
     } else {
         open_external(url, allow_external);
     }
+}
+
+/// The WhatsApp Web URL to load in the main frame for `url`: itself when it is
+/// already WhatsApp Web, the mapped chat URL for a `wa.me` /
+/// `api.whatsapp.com/send` link, `None` otherwise (`chat.whatsapp.com` invites
+/// included, which go external).
+fn in_app_target(url: &str) -> Option<String> {
+    if is_whatsapp_web(url) {
+        return Some(url.to_owned());
+    }
+    crate::deeplink::map_deep_link(url)
 }
 
 /// Hand `url` to the desktop's default handler when the scheme is allowlisted
@@ -220,18 +253,28 @@ fn is_in_shell(url: &str) -> bool {
     }
 }
 
-/// Subframe policy: inert schemes and https WhatsApp hosts load; everything
-/// else is cancelled (never opened externally).
+/// Subframe policy: inert schemes, https WhatsApp hosts and the https players
+/// WhatsApp embeds inline for shared links load; everything else is cancelled
+/// (never opened externally).
 fn is_subframe_allowed(url: &str) -> bool {
     match scheme_of(url).as_deref() {
         Some("about" | "blob" | "data" | "chrome-error") => true,
         Some("https") => url
             .split_once(':')
             .and_then(|(_, rest)| host_of(rest))
-            .is_some_and(|host| is_whatsapp_host(&host.to_ascii_lowercase())),
+            .map(|host| host.to_ascii_lowercase())
+            .is_some_and(|host| is_whatsapp_host(&host) || EMBED_PLAYER_HOSTS.contains(&host.as_str())),
         _ => false,
     }
 }
+
+/// Exact hosts of the inline players (YouTube, Instagram, Facebook video).
+const EMBED_PLAYER_HOSTS: &[&str] = &[
+    "www.youtube.com",
+    "www.youtube-nocookie.com",
+    "www.instagram.com",
+    "www.facebook.com",
+];
 
 /// The `--url` development override is loaded as given. It never gets the
 /// native bridge (that is gated on [`is_whatsapp_web`] separately).
@@ -318,6 +361,40 @@ mod tests {
         assert!(!is_subframe_allowed("https://google.com/"));
         assert!(!is_subframe_allowed("file:///etc/passwd"));
         assert!(!is_subframe_allowed("javascript:alert(1)"));
+    }
+
+    #[test]
+    fn subframe_embed_players_allowed_over_https_only() {
+        assert!(is_subframe_allowed("https://www.youtube.com/embed/abc?autoplay=1"));
+        assert!(is_subframe_allowed("https://WWW.YouTube-NoCookie.com/embed/abc"));
+        assert!(is_subframe_allowed("https://www.instagram.com/p/abc/embed"));
+        assert!(is_subframe_allowed("https://www.facebook.com/plugins/video.php?href=x"));
+        assert!(!is_subframe_allowed("http://www.youtube.com/embed/abc"));
+        assert!(!is_subframe_allowed("https://youtube.com.evil.example/embed/abc"));
+        assert!(!is_subframe_allowed("https://evil.example/www.youtube.com"));
+        assert!(!is_subframe_allowed("https://m.youtube.com/embed/abc"));
+        // Embeds are never top-frame or external targets by virtue of the list.
+        assert!(!is_in_shell("https://www.youtube.com/embed/abc"));
+    }
+
+    #[test]
+    fn whatsapp_chat_links_stay_in_app() {
+        assert_eq!(
+            in_app_target("https://wa.me/15551234567").as_deref(),
+            Some("https://web.whatsapp.com/send?phone=15551234567")
+        );
+        assert!(
+            in_app_target("https://api.whatsapp.com/send?phone=15551234567&text=hi")
+                .is_some_and(|u| u.starts_with("https://web.whatsapp.com/send?phone=15551234567"))
+        );
+        assert_eq!(
+            in_app_target("https://web.whatsapp.com/").as_deref(),
+            Some("https://web.whatsapp.com/")
+        );
+        // Invites and everything else keep going external.
+        assert_eq!(in_app_target("https://chat.whatsapp.com/AbCdEf"), None);
+        assert_eq!(in_app_target("https://google.com/"), None);
+        assert_eq!(in_app_target("https://wa.me/not-a-number"), None);
     }
 
     #[test]

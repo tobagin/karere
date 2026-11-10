@@ -329,6 +329,7 @@ wrap_accessibility_handler! {
                 if mine == 0 || s.foreground_browser_id == 0 || mine == s.foreground_browser_id {
                     log::trace!("a11y: announce {text:?}");
                     s.a11y_announce = Some(text);
+                    super::wake_view(s);
                 }
             }
         }

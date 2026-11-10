@@ -17,10 +17,6 @@ use super::render::{ShellRenderHandler, ShellRenderHandlerBuilder};
 use super::{ShellContextMenuHandlerBuilder, ShellRequestHandler, ShellRequestHandlerBuilder};
 use base64::Engine;
 
-/// Degraded-mode DOM scraper (M20 §6). Not in the injected bundle; run in an
-/// account's main frame only on `StoreUnavailable`.
-const DOM_FALLBACK_JS: &str = include_str!("../../data/js-deferred/profile_dom_fallback.js");
-
 // The CEF macro generates a constructor with one argument per registered handler.
 #[allow(clippy::too_many_arguments)]
 mod generated_client {
@@ -95,10 +91,16 @@ mod generated_client {
             // The page may only write the host clipboard right after the user
             // did something in the web view (key, click, drag, touch, menu
             // Copy); otherwise a script could replace it at any time. (S9)
-            if let Ok(
-                RendererMessage::SetClipboard { .. } | RendererMessage::SetClipboardImage { .. },
-            ) = decoded.as_ref()
-                && !crate::web_view::recent_user_input(CLIPBOARD_GESTURE_WINDOW_MS)
+            let gesture_window = match decoded.as_ref() {
+                Ok(RendererMessage::SetClipboard { .. }) => Some(CLIPBOARD_GESTURE_WINDOW_MS),
+                // The page fetches and encodes the image before sending it.
+                Ok(RendererMessage::SetClipboardImage { .. }) => {
+                    Some(6 * CLIPBOARD_GESTURE_WINDOW_MS)
+                }
+                _ => None,
+            };
+            if let Some(window) = gesture_window
+                && !crate::web_view::recent_user_input(window)
             {
                 log::debug!("clipboard write without recent user input, dropping");
                 return 1;
@@ -154,17 +156,13 @@ mod generated_client {
                     write_host_clipboard_image(&base64_png);
                     1
                 }
-                Ok(RendererMessage::ProfileIdentity { wid, pushname, source }) => {
+                Ok(RendererMessage::ProfileIdentity { wid, pushname, source: _ }) => {
                     if !identity_is_sane(wid.as_deref(), &pushname) {
                         log::warn!("ProfileIdentity: oversized or malformed fields, dropping");
                     } else if let Some(id) = account_id.as_deref() {
                         // Identity = page connected → clear awaiting-pairing. A
-                        // Store-sourced identity means the hook attached, so it
-                        // also clears the degraded badge (the only thing that does).
+                        // Store-sourced identity means the hook attached.
                         crate::accounts::set_awaiting_pairing(id, false);
-                        if source.as_deref() == Some("store") {
-                            crate::accounts::clear_degraded(id);
-                        }
                         let manager = crate::accounts::manager();
                         let unchanged = manager.get(id).is_some_and(|a| {
                             (wid.is_none() || a.wid == wid)
@@ -215,26 +213,6 @@ mod generated_client {
                         // identity so the switcher stops showing a stale avatar.
                         if crate::accounts::set_awaiting_pairing(id, true) {
                             crate::accounts::manager().clear_identity(id);
-                        }
-                    }
-                    1
-                }
-                Ok(RendererMessage::StoreUnavailable { reason }) => {
-                    if let Some(id) = account_id.as_deref() {
-                        // Act only on the first transition into degraded; the
-                        // hook may report this many times per second.
-                        let newly_degraded = crate::accounts::set_degraded(id, reason.clone());
-                        if newly_degraded {
-                            log::warn!(
-                                "account {id}: Store hook unavailable: {}",
-                                log_safe(&reason)
-                            );
-                            // §6.1: inject the degraded DOM fallback here.
-                            if let Some(frame) = frame.as_ref() {
-                                let code = CefString::from(DOM_FALLBACK_JS);
-                                let url = CefString::from("karere://profile-dom-fallback");
-                                frame.execute_java_script(Some(&code), Some(&url), 0);
-                            }
                         }
                     }
                     1
