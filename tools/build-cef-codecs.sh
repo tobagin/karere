@@ -60,7 +60,7 @@ echo
 mkdir -p "$DOWNLOAD_DIR"
 if [[ ! -d "$DEPOT_TOOLS_DIR" ]]; then
   echo ">> cloning depot_tools"
-  git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git \
+  git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git \
     "$DEPOT_TOOLS_DIR"
 fi
 export PATH="$DEPOT_TOOLS_DIR:$PATH"
