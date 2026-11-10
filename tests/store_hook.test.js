@@ -65,7 +65,7 @@ function load({ rows, wid, eurl, fetchImpl, databases }) {
   };
   vm.createContext(context);
   vm.runInContext(source, context, { filename: "60-store-hook.js" });
-  return { sent, timers, idb };
+  return { sent, timers, idb, store };
 }
 
 const identities = (sent) => sent.filter((m) => m.name === "ProfileIdentity").map((m) => m.payload);
@@ -132,6 +132,26 @@ const identities = (sent) => sent.filter((m) => m.name === "ProfileIdentity").ma
     assert.deepEqual(r3.sent.filter((m) => m.name === "ProfileAvatar").map((m) => m.payload), [
       { base64_png: "QUJD", source: "store" },
     ]);
+  }
+
+  // Avatar removed: a later tick without the URL sends an empty clear, once.
+  {
+    const good = () => Promise.resolve({ ok: true, status: 200, headers: { get: () => "image/jpeg" }, blob: () => Promise.resolve({}) });
+    const r = load({ rows: [], wid, eurl: "https://pps.example/a", fetchImpl: good });
+    await flush();
+    delete r.store.WACachedProfilePicEURL;
+    r.timers[r.timers.length - 1].cb();
+    await flush();
+    r.timers[r.timers.length - 1].cb();
+    await flush();
+    assert.deepEqual(r.sent.filter((m) => m.name === "ProfileAvatar").map((m) => m.payload), [
+      { base64_png: "QUJD", source: "store" },
+      { base64_png: "", source: "store" },
+    ]);
+    // Never had a picture: nothing is sent.
+    const r0 = load({ rows: [], wid });
+    await flush();
+    assert.equal(r0.sent.filter((m) => m.name === "ProfileAvatar").length, 0);
   }
 
   console.log("store hook: ok");

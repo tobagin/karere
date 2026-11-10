@@ -131,7 +131,7 @@ karere/
 
 ## Translations
 
-Translation catalogs live in `po/`. They were machine-translated and have not been reviewed by native speakers yet (see `po/README.md`). Corrections are welcome as pull requests. To regenerate the template and merge catalogs after changing translatable strings, run `tools/update-po.sh`.
+Translation catalogs live in `po/`. They were machine-translated and have not been reviewed by native speakers yet (see `po/README.md`). Corrections are welcome as pull requests. To regenerate the template and merge catalogs after changing translatable strings, run `tools/update-po.sh`. To add a new language, add its code to `po/LINGUAS`, copy `po/karere.pot` to `po/<code>.po`, translate it, and open a pull request. `tools/verify-po.sh` checks that the catalogs are valid.
 
 ## Getting Help
 

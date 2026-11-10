@@ -7,7 +7,7 @@
 //   * `cut` event    → regular clipboard (Ctrl+X / context-menu cut)
 //   * `navigator.clipboard.writeText/write` → regular clipboard (WhatsApp's
 //     own message menu "Copy"; `image/png` items via SetClipboardImage, e.g.
-//     "Copy sticker image")
+//     "Copy sticker image"; `text/html` is sent along with `text/plain`)
 //   * `selectionchange` (debounced) → PRIMARY selection (Linux middle-click)
 //
 // Wrapped in try/catch so a throw never takes down the renderer.
@@ -79,11 +79,23 @@
             }
             // An image+text item mirrors both, not just the image.
             if (item && item.types && item.types.indexOf("text/plain") !== -1) {
+              var htmlP =
+                item.types.indexOf("text/html") !== -1
+                  ? item
+                      .getType("text/html")
+                      .then(function (blob) { return blob.text(); })
+                      .catch(function () { return ""; })
+                  : Promise.resolve("");
               item
                 .getType("text/plain")
                 .then(function (blob) { return blob.text(); })
                 .then(function (text) {
-                  if (text) send("SetClipboard", { text: text, primary: false });
+                  return htmlP.then(function (html) {
+                    if (!text) return;
+                    var msg = { text: text, primary: false };
+                    if (html) msg.html = html;
+                    send("SetClipboard", msg);
+                  });
                 })
                 .catch(function () {});
             }
@@ -102,8 +114,12 @@
       function (e) {
         try {
           var text = "";
+          var html = "";
           try {
             text = e.clipboardData && e.clipboardData.getData("text/plain");
+          } catch (_) {}
+          try {
+            html = (text && e.clipboardData && e.clipboardData.getData("text/html")) || "";
           } catch (_) {}
           if (!text) {
             var sel = window.getSelection();
@@ -113,7 +129,9 @@
             console.log("karere copy event: " + (text ? text.length + " chars" : "EMPTY"));
           } catch (_) {}
           if (text) {
-            send("SetClipboard", { text: text, primary: false });
+            var msg = { text: text, primary: false };
+            if (html) msg.html = html;
+            send("SetClipboard", msg);
             // Stop Chromium's OSR-native copy (windowless, never reaches the
             // system clipboard) from clobbering our GDK write.
             e.preventDefault();

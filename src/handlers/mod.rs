@@ -150,6 +150,10 @@ pub struct SharedState {
     /// A `wake_view` flush is queued and has not drained the requests yet, so
     /// a burst of cursor/IM/announce changes costs one main-loop callback.
     pub view_wake_queued: bool,
+    /// Page drag-out from `RenderHandler::start_dragging`, queued for the
+    /// view to start the GTK drag (from an idle, never inside the CEF
+    /// callback). While set, further drags are refused.
+    pub drag_out: Option<render::DragOut>,
 }
 
 pub type SharedRef = Arc<Mutex<SharedState>>;

@@ -428,11 +428,38 @@ pub fn load_or_recover(
     (list, LoadOutcome::Recovered)
 }
 
-/// Lowest unused default label `Account N` (N >= 1) among `accounts`.
+/// `N` of a stored default label `Account N` (the legacy English text that is
+/// still what gets persisted), `None` for any user-chosen label.
+pub fn default_label_number(label: &str) -> Option<u32> {
+    let digits = label.trim().strip_prefix("Account ")?;
+    if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) {
+        return None;
+    }
+    digits.parse().ok()
+}
+
+/// Fill the `{n}` placeholder of a (translated) default-label template.
+fn fill_default_label(template: &str, n: u32) -> String {
+    template.replace("{n}", &n.to_string())
+}
+
+/// The label to show for `account`: a stored default `Account N` is rendered
+/// through gettext, a user-chosen label verbatim, `None` when it has no label.
+/// Every place that displays an account label goes through this.
+pub fn display_label(account: &Account) -> Option<String> {
+    let label = account.user_label.as_deref().filter(|l| !l.trim().is_empty())?;
+    Some(match default_label_number(label) {
+        Some(n) => fill_default_label(&gettextrs::gettext("Account {n}"), n),
+        None => label.to_owned(),
+    })
+}
+
+/// Lowest unused default label `Account N` (N >= 1) among `accounts`. The
+/// stored text stays the English legacy form; it is translated at display time.
 pub fn lowest_unused_label(accounts: &[Account]) -> String {
     let used: std::collections::HashSet<u32> = accounts
         .iter()
-        .filter_map(|a| a.user_label.as_deref()?.trim().strip_prefix("Account ")?.parse().ok())
+        .filter_map(|a| default_label_number(a.user_label.as_deref()?))
         .collect();
     let n = (1..).find(|n| !used.contains(n)).unwrap_or(1);
     format!("Account {n}")
@@ -755,6 +782,20 @@ impl AccountManager {
         }
         self.save_logged();
         self.emit_changed();
+    }
+
+    /// Drop the stored avatar for `id`; no-op (no signal, no save) when none is set.
+    pub fn clear_avatar(&self, id: &str) {
+        let changed = {
+            let mut list = self.imp().accounts.borrow_mut();
+            list.iter_mut()
+                .find(|a| a.id == id)
+                .is_some_and(|a| a.avatar_png.take().is_some())
+        };
+        if changed {
+            self.save_logged();
+            self.emit_changed();
+        }
     }
 
     /// Drop discovered identity (wid/pushname/avatar) for `id` — called on
@@ -1279,6 +1320,36 @@ mod tests {
         let mut d = Account::new();
         d.user_label = Some("Account 2".into());
         assert_eq!(lowest_unused_label(&[a, b, d]), "Account 4");
+    }
+
+    #[test]
+    fn default_label_pattern_is_exact() {
+        assert_eq!(default_label_number("Account 7"), Some(7));
+        assert_eq!(default_label_number(" Account 12 "), Some(12));
+        assert_eq!(default_label_number("Account"), None);
+        assert_eq!(default_label_number("Account "), None);
+        assert_eq!(default_label_number("Account 1b"), None);
+        assert_eq!(default_label_number("Account -1"), None);
+        assert_eq!(default_label_number("My Account 1"), None);
+        assert_eq!(default_label_number("Work"), None);
+    }
+
+    #[test]
+    fn default_label_template_fills_number() {
+        assert_eq!(fill_default_label("Account {n}", 3), "Account 3");
+        assert_eq!(fill_default_label("Conta n.º {n}", 12), "Conta n.º 12");
+    }
+
+    #[test]
+    fn display_label_translates_defaults_only() {
+        let mut a = Account::new();
+        assert_eq!(display_label(&a), None);
+        a.user_label = Some("  ".into());
+        assert_eq!(display_label(&a), None);
+        a.user_label = Some("Account 4".into());
+        assert_eq!(display_label(&a).as_deref(), Some("Account 4"));
+        a.user_label = Some("Work".into());
+        assert_eq!(display_label(&a).as_deref(), Some("Work"));
     }
 
     #[test]

@@ -355,6 +355,51 @@ wrap_render_handler! {
             }
         }
 
+        // The page started a drag (an image, a link, selected text). OSR has no
+        // platform drag of its own: hand the data to the view, which starts a
+        // GTK drag from an idle and reports its end back through
+        // `drag_source_ended_at` + `drag_source_system_drag_ended`. Returning
+        // 0 cancels the drag in the page.
+        fn start_dragging(
+            &self,
+            browser: Option<&mut Browser>,
+            drag_data: Option<&mut cef::DragData>,
+            allowed_ops: cef::DragOperationsMask,
+            _x: ::std::os::raw::c_int,
+            _y: ::std::os::raw::c_int,
+        ) -> ::std::os::raw::c_int {
+            let (Some(browser), Some(data)) = (browser, drag_data) else {
+                return 0;
+            };
+            let id = browser.identifier();
+            {
+                let s = self.handler.shared.lock();
+                if !is_foreground(&s, id) || s.redraw.is_none() || s.drag_out.is_some() {
+                    return 0;
+                }
+            }
+            let ops: cef::sys::cef_drag_operations_mask_t = allowed_ops.into();
+            let Some(drag) = drag_out_from(browser.clone(), data, ops.0) else {
+                return 0;
+            };
+            let mut s = self.handler.shared.lock();
+            let Some(area) = s.redraw.clone() else {
+                return 0;
+            };
+            s.drag_out = Some(drag);
+            drop(s);
+            gtk::glib::idle_add_full(gtk::glib::Priority::DEFAULT, move || {
+                use gtk::prelude::Cast;
+                if let Some(area) = area.upgrade()
+                    && let Some(view) = area.downcast_ref::<crate::web_view::KarereWebView>()
+                {
+                    view.begin_drag_out();
+                }
+                gtk::glib::ControlFlow::Break
+            });
+            1
+        }
+
         // Fires when a page editable gains/loses focus. Drives two things: the IM
         // focus (so Phosh's on-screen keyboard tracks the text field, not the
         // always-focused GLArea), and — when an editable gains focus — a reliable
@@ -391,6 +436,110 @@ wrap_render_handler! {
             }
             log::debug!("editable focused → applying spellcheck {langs:?}");
             crate::web_view::apply_spellcheck_to_browser(browser, &langs, enabled);
+        }
+    }
+}
+
+/// A page drag-out CEF asked for in `start_dragging`, waiting for the view
+/// to start the GTK drag. Each field is one form the drop target may take.
+pub struct DragOut {
+    /// The dragging browser: its host gets the end-of-drag calls.
+    pub browser: Browser,
+    /// Selected text, or the link's URL when only a link is dragged.
+    pub text: Option<String>,
+    pub html: Option<String>,
+    /// A web link (http/https), offered as `text/uri-list`.
+    pub uri: Option<String>,
+    /// A dragged image's bytes, written out so it can be offered as a file.
+    pub file: Option<std::path::PathBuf>,
+    /// CEF `cef_drag_operations_mask_t` bits the page allows.
+    pub allowed_ops: u32,
+}
+
+/// Read what can be offered out of the page's drag data. `None` when there
+/// is nothing (an internal drag of something with no text, link or image).
+fn drag_out_from(browser: Browser, data: &cef::DragData, allowed_ops: u32) -> Option<DragOut> {
+    use cef::{CefString, ImplDragData};
+    let non_empty = |s: String| (!s.is_empty()).then_some(s);
+    let link = non_empty(CefString::from(&data.link_url()).to_string());
+    // An image's link is its `src`: a blob:/data: URL means nothing outside
+    // the page, so only web links leave as links.
+    let uri = link.filter(|url| {
+        let lower = url.to_ascii_lowercase();
+        lower.starts_with("https://") || lower.starts_with("http://")
+    });
+    let file = write_drag_file(data);
+    let (text, html) = if data.is_fragment() != 0 {
+        (
+            non_empty(CefString::from(&data.fragment_text()).to_string()),
+            non_empty(CefString::from(&data.fragment_html()).to_string()),
+        )
+    } else {
+        (None, None)
+    };
+    // An image's HTML is an <img> of that blob URL; the file stands for it.
+    let html = if file.is_some() { None } else { html };
+    let text = text.or_else(|| if file.is_some() { None } else { uri.clone() });
+    if text.is_none() && html.is_none() && uri.is_none() && file.is_none() {
+        return None;
+    }
+    Some(DragOut {
+        browser,
+        text,
+        html,
+        uri,
+        file,
+        allowed_ops,
+    })
+}
+
+/// How long dragged-out image files are kept: the drop target may read
+/// the file a little after the drop, so earlier drags are pruned lazily.
+const DRAG_FILE_TTL: std::time::Duration = std::time::Duration::from_secs(600);
+
+/// Write a dragged image's contents to a file under the user cache dir (in
+/// the Flatpak, a path the host can read too) and return it. `None` when the
+/// drag carries no file contents or writing fails.
+fn write_drag_file(data: &cef::DragData) -> Option<std::path::PathBuf> {
+    use cef::{CefString, ImplDragData};
+    if data.file_contents(None) == 0 {
+        return None;
+    }
+    let root = gtk::glib::user_cache_dir().join("drag-out");
+    prune_drag_files(&root);
+    let name = CefString::from(&data.file_name()).to_string();
+    let name = std::path::Path::new(&name)
+        .file_name()
+        .map(|n| n.to_os_string())
+        .filter(|n| !n.is_empty())
+        .unwrap_or_else(|| "image".into());
+    let dir = root.join(uuid::Uuid::new_v4().to_string());
+    if let Err(err) = std::fs::create_dir_all(&dir) {
+        log::warn!("drag-out: create {}: {err}", dir.display());
+        return None;
+    }
+    let path = dir.join(name);
+    let mut writer =
+        cef::stream_writer_create_for_file(Some(&CefString::from(path.to_string_lossy().as_ref())))?;
+    let written = data.file_contents(Some(&mut writer));
+    // Releasing the writer closes the file.
+    drop(writer);
+    (written > 0).then_some(path)
+}
+
+fn prune_drag_files(root: &std::path::Path) {
+    let Ok(entries) = std::fs::read_dir(root) else {
+        return;
+    };
+    for entry in entries.flatten() {
+        let stale = entry
+            .metadata()
+            .and_then(|m| m.modified())
+            .ok()
+            .and_then(|t| t.elapsed().ok())
+            .is_some_and(|age| age > DRAG_FILE_TTL);
+        if stale {
+            let _ = std::fs::remove_dir_all(entry.path());
         }
     }
 }

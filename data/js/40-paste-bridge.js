@@ -6,6 +6,8 @@
 //
 //   single: { mime, kind: "paste"|"drop", name?, x?, y?,
 //             payload: { kind: "Base64", data } }
+//   (an unnamed text/plain "drop" is dragged-in text/URL, inserted into the
+//   editable under x/y)
 //   batch:  { kind, x?, y?, files: [{ mime, name?, payload: { kind: "Base64", data } }] }
 //
 // x/y are page CSS px. We rebuild ONE DataTransfer (every File of a batch, or
@@ -142,6 +144,81 @@
     document.dispatchEvent(new DragEvent("dragover", opts));
   }
 
+  // The editable root holding `el` (the composer's contenteditable, or the
+  // field itself), which is what takes focus and owns the caret.
+  function editableRoot(el) {
+    try {
+      if (el && typeof el.closest === "function") {
+        return el.closest('[contenteditable="true"], input, textarea') || el;
+      }
+    } catch (e) {}
+    return el;
+  }
+
+  // Focus the editable and put the caret at (x, y), so a dropped text lands
+  // where it was released rather than wherever the caret last was.
+  function placeCaretAt(el, x, y) {
+    try {
+      var root = editableRoot(el);
+      if (root && typeof root.focus === "function") root.focus();
+      if (typeof document.caretRangeFromPoint !== "function") return;
+      var range = document.caretRangeFromPoint(x, y);
+      if (!range || !root || typeof root.contains !== "function") return;
+      if (!root.contains(range.startContainer)) return;
+      var sel = typeof window.getSelection === "function" ? window.getSelection() : null;
+      if (!sel) return;
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } catch (e) {}
+  }
+
+  function decodeText(payload) {
+    try {
+      return new TextDecoder().decode(base64ToBytes(payload.data));
+    } catch (e) {
+      return "";
+    }
+  }
+
+  // A dropped text or URL: insert it into the editable under the drop point
+  // (nothing elsewhere), through the same synthetic paste a text paste uses.
+  async function handleTextDrop(detail) {
+    // A URL drag offers text/uri-list, so its hover primed the file dropzone;
+    // dismiss that overlay before hit-testing for the editable beneath it.
+    cancelPendingLeave();
+    try {
+      document.dispatchEvent(
+        new DragEvent("dragleave", {
+          dataTransfer: getHoverDT(),
+          clientX: detail.x,
+          clientY: detail.y,
+          bubbles: true,
+          cancelable: true,
+        })
+      );
+    } catch (e) {}
+    await sleep(60);
+    var target = document.elementFromPoint(detail.x, detail.y);
+    if (!isEditable(target)) {
+      ack();
+      return;
+    }
+    placeCaretAt(target, detail.x, detail.y);
+    // The editor picks the new DOM selection up from `selectionchange`,
+    // which fires asynchronously.
+    await sleep(30);
+    var dt = new DataTransfer();
+    dt.setData("text/plain", decodeText(detail.payload));
+    target.dispatchEvent(
+      new ClipboardEvent("paste", {
+        clipboardData: dt,
+        bubbles: true,
+        cancelable: true,
+      })
+    );
+    ack();
+  }
+
   // One {mime, name?, payload} entry → File.
   function entryToFile(entry) {
     var mime = entry.mime || "application/octet-stream";
@@ -155,6 +232,11 @@
     // Middle-click / Ctrl+V text: no File, just a text/plain entry. A named
     // text/plain payload is a pasted text *file*, which attaches like any other.
     var isText = !batch && kind === "paste" && detail.mime === "text/plain" && !detail.name;
+    // Same shape with kind "drop": a dragged-in text or URL, not a file.
+    if (!batch && kind === "drop" && detail.mime === "text/plain" && !detail.name) {
+      await handleTextDrop(detail);
+      return;
+    }
 
     // Target: focused element for paste, element-under-cursor for drop.
     var target;
@@ -195,13 +277,7 @@
     var dt = new DataTransfer();
 
     if (isText) {
-      var text = "";
-      try {
-        text = new TextDecoder().decode(base64ToBytes(detail.payload.data));
-      } catch (e) {
-        text = "";
-      }
-      dt.setData("text/plain", text);
+      dt.setData("text/plain", decodeText(detail.payload));
       target.dispatchEvent(
         new ClipboardEvent("paste", {
           clipboardData: dt,

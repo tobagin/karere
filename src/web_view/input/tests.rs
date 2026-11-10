@@ -7,9 +7,11 @@ use super::mouse::{
     page_coords, physical_mouse_coordinates, send_click_with, send_move_with,
     should_forward_mouse, zoom_scroll_steps,
 };
+use super::drag_out::{cef_operation, gdk_actions};
+use super::gestures::{KINETIC_FRAME, KINETIC_FRICTION, KINETIC_MAX, KineticDecay, PinchSteps};
 use crate::web_view::clipboard_dnd::{
-    ExplicitCopyTrigger, RendererMessageSink, batch_by_size, dispatch_explicit_copy,
-    request_live_selection_with,
+    ExplicitCopyTrigger, RendererMessageSink, UriDrop, batch_by_size, classify_uri_list,
+    dispatch_explicit_copy, preferred_image_mime, request_live_selection_with,
 };
 use crate::handlers::{
     client::dispatch_renderer_message_with,
@@ -153,7 +155,7 @@ impl RendererDispatchSink for JavaScriptRenderer<'_> {
             result["innerJson"].as_str().unwrap(),
         )
         .unwrap();
-        dispatch_renderer_message_with(&message, |text, primary| {
+        dispatch_renderer_message_with(&message, |text, _html, primary| {
             self.clipboard.borrow_mut().push((primary, text.to_owned()));
         });
     }
@@ -865,4 +867,114 @@ fn non_copy_commands_and_modified_shortcuts_do_not_request_selection() {
         dispatch_explicit_copy(trigger, || requests.set(requests.get() + 1));
     }
     assert_eq!(requests.get(), 0);
+}
+
+#[test]
+fn pinch_steps_once_per_tenth_of_scale_and_rebases() {
+    let mut p = PinchSteps::default();
+    assert_eq!(p.update(1.05), 0);
+    assert_eq!(p.update(1.10), 1);
+    // The next step needs another x1.1 on top of the last one.
+    assert_eq!(p.update(1.15), 0);
+    assert_eq!(p.update(1.22), 1);
+    // A jump fires several steps at once.
+    let mut p = PinchSteps::default();
+    assert_eq!(p.update(1.4), 3);
+    // Pinching back in from there zooms out step by step.
+    assert_eq!(p.update(1.2), -1);
+    assert_eq!(p.update(0.95), -2);
+    let mut p = PinchSteps::default();
+    assert_eq!(p.update(0.5), -7);
+    // Garbage scales are ignored; reset re-bases on the gesture start.
+    assert_eq!(p.update(f64::NAN), 0);
+    assert_eq!(p.update(0.0), 0);
+    p = PinchSteps::default();
+    assert_eq!(p.update(1.0), 0);
+    assert_eq!(p, PinchSteps::default());
+}
+
+#[test]
+fn kinetic_decay_slows_and_stops() {
+    let dt = KINETIC_FRAME.as_secs_f64();
+    let mut k = KineticDecay::new(1000.0, -500.0);
+    let (dx, dy) = k.step(0.1).expect("first frame moves");
+    assert!((dx - 1000.0 * dt).abs() < 1e-9 && (dy + 500.0 * dt).abs() < 1e-9);
+    let (dx2, _) = k.step(0.1).unwrap();
+    assert!((dx2 - dx * KINETIC_FRICTION).abs() < 1e-9);
+    // It always ends, below the minimum delta or at the time cap.
+    let mut frames = 2u128;
+    while k.step(0.1).is_some() {
+        frames += 1;
+    }
+    assert!(frames > 10);
+    assert!(frames * KINETIC_FRAME.as_millis() <= KINETIC_MAX.as_millis() + KINETIC_FRAME.as_millis());
+    // A huge velocity is still capped in time.
+    let mut k = KineticDecay::new(1e12, 0.0);
+    let mut frames = 0u128;
+    while k.step(0.1).is_some() {
+        frames += 1;
+    }
+    assert_eq!(frames, KINETIC_MAX.as_millis().div_ceil(KINETIC_FRAME.as_millis()));
+    // Too slow to be visible: nothing at all.
+    assert_eq!(KineticDecay::new(1.0, 1.0).step(0.1), None);
+    assert_eq!(KineticDecay::new(f64::NAN, f64::INFINITY).step(0.1), None);
+}
+
+#[test]
+fn uri_list_drops_split_files_from_links() {
+    assert_eq!(
+        classify_uri_list("# comment\r\nfile:///home/a/x.png\r\nFILE:///var/y.pdf\r\n"),
+        Some(UriDrop::Files(vec![
+            "file:///home/a/x.png".into(),
+            "FILE:///var/y.pdf".into()
+        ]))
+    );
+    assert_eq!(
+        classify_uri_list("https://example.org/a\r\n"),
+        Some(UriDrop::Text("https://example.org/a".into()))
+    );
+    assert_eq!(
+        classify_uri_list("file:///a\nhttps://b\n"),
+        Some(UriDrop::Text("file:///a\nhttps://b".into()))
+    );
+    assert_eq!(classify_uri_list("\r\n# only a comment\r\n\0"), None);
+}
+
+#[test]
+fn clipboard_images_prefer_original_encodings() {
+    fn offer(mimes: &'static [&'static str]) -> impl Fn(&str) -> bool {
+        move |m| mimes.iter().any(|x| *x == m)
+    }
+    assert_eq!(preferred_image_mime(offer(&["image/png", "image/gif"])), Some("image/gif"));
+    assert_eq!(
+        preferred_image_mime(offer(&["image/png", "image/webp", "image/jpeg"])),
+        Some("image/webp")
+    );
+    assert_eq!(preferred_image_mime(offer(&["image/jpeg", "image/png"])), Some("image/jpeg"));
+    // A texture GDK converts to every format: keep the lossless PNG.
+    assert_eq!(
+        preferred_image_mime(offer(&["image/png", "image/jpeg", "image/bmp", "image/tiff"])),
+        Some("image/png")
+    );
+    assert_eq!(preferred_image_mime(offer(&["image/bmp"])), None);
+    assert_eq!(preferred_image_mime(offer(&[])), None);
+}
+
+#[test]
+fn drag_out_operations_round_trip() {
+    use cef::sys::cef_drag_operations_mask_t as Op;
+    use gtk::gdk::DragAction;
+    assert_eq!(gdk_actions(0), DragAction::COPY);
+    assert_eq!(
+        gdk_actions(Op::DRAG_OPERATION_COPY.0 | Op::DRAG_OPERATION_LINK.0),
+        DragAction::COPY | DragAction::LINK
+    );
+    assert_eq!(
+        gdk_actions(Op::DRAG_OPERATION_EVERY.0),
+        DragAction::COPY | DragAction::LINK | DragAction::MOVE
+    );
+    assert_eq!(cef_operation(DragAction::COPY), Op::DRAG_OPERATION_COPY.0);
+    assert_eq!(cef_operation(DragAction::MOVE), Op::DRAG_OPERATION_MOVE.0);
+    assert_eq!(cef_operation(DragAction::LINK), Op::DRAG_OPERATION_LINK.0);
+    assert_eq!(cef_operation(DragAction::empty()), Op::DRAG_OPERATION_NONE.0);
 }

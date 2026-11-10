@@ -30,7 +30,10 @@ function load(state) {
       get body() {
         return state.body || null;
       },
-      elementFromPoint: () => null,
+      elementFromPoint: () => state.point || null,
+      dispatchEvent(e) {
+        (state.docEvents = state.docEvents || []).push(e);
+      },
     },
     DataTransfer: class {
       constructor() {
@@ -192,6 +195,33 @@ const image = { mime: "image/png", kind: "paste", payload: { kind: "Base64", dat
     const drops = state.body.events.filter((e) => e.type === "drop");
     assert.equal(drops.length, 1);
     assert.equal(drops[0].dataTransfer.files.length, 1);
+  }
+
+  // A dropped text lands in the editable under the drop point as a paste,
+  // after any primed file dropzone was dismissed.
+  {
+    const state = { active: el(false), composer: el(true), point: el(true) };
+    const { fire, acks } = load(state);
+    fire({ mime: "text/plain", kind: "drop", x: 5, y: 6, payload: { kind: "Base64", data: "aGk=" } });
+    await new Promise((r) => setTimeout(r, 150));
+    assert.equal(state.point.events.length, 1);
+    assert.equal(state.point.events[0].type, "paste");
+    assert.equal(state.point.events[0].clipboardData.data["text/plain"], "hi");
+    assert.equal(state.docEvents[0].type, "dragleave");
+    assert.equal(state.composer.events.length, 0);
+    assert.equal(acks.length, 1);
+  }
+
+  // A text drop outside any editable inserts nothing, and is not a file drop.
+  {
+    const state = { active: el(false), composer: el(true), point: el(false), body: el(false) };
+    const { fire, acks } = load(state);
+    fire({ mime: "text/plain", kind: "drop", x: 5, y: 6, payload: { kind: "Base64", data: "aGk=" } });
+    await new Promise((r) => setTimeout(r, 150));
+    assert.equal(state.point.events.length, 0);
+    assert.equal(state.body.events.length, 0);
+    assert.equal(state.composer.events.length, 0);
+    assert.equal(acks.length, 1);
   }
 
   console.log("paste bridge: ok");

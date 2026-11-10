@@ -180,7 +180,10 @@ mod generated_client {
                     if let Some(id) = account_id.as_deref() {
                         // Cap the page-supplied blob before decoding (≈6 MB raw).
                         const MAX_AVATAR_B64: usize = 8 * 1024 * 1024;
-                        if base64_png.len() > MAX_AVATAR_B64 {
+                        if base64_png.is_empty() {
+                            // The user removed their profile picture.
+                            crate::accounts::manager().clear_avatar(id);
+                        } else if base64_png.len() > MAX_AVATAR_B64 {
                             log::warn!(
                                 "ProfileAvatar: oversized base64 ({} bytes), dropping",
                                 base64_png.len()
@@ -292,17 +295,34 @@ fn prepare_clipboard_write(text: &str) -> Option<String> {
     (!sanitized.is_empty()).then_some(sanitized)
 }
 
+/// Cap and clean the `text/html` flavor of a page copy: same size limit as the
+/// text, NUL bytes removed. `None` means the flavor is dropped (text still goes).
+fn prepare_clipboard_html(html: &str) -> Option<String> {
+    if html.len() > MAX_CLIPBOARD_BYTES {
+        return None;
+    }
+    let cleaned: String = html.chars().filter(|&c| c != '\0').collect();
+    (!cleaned.is_empty()).then_some(cleaned)
+}
+
 /// Consume the typed message produced by the real client CEF decoder. `None`
 /// means the message belongs to another client concern; `Some(false)` is a
 /// rejected empty/oversized clipboard payload.
 pub(crate) fn dispatch_renderer_message_with(
     message: &crate::ipc::RendererMessage,
-    write: impl FnOnce(&str, bool),
+    write: impl FnOnce(&str, Option<&str>, bool),
 ) -> Option<bool> {
     match message {
-        crate::ipc::RendererMessage::SetClipboard { text, primary } => {
-            Some(dispatch_clipboard_write(text, *primary, write))
-        }
+        crate::ipc::RendererMessage::SetClipboard {
+            text,
+            primary,
+            html,
+        } => Some(dispatch_clipboard_write(
+            text,
+            html.as_deref(),
+            *primary,
+            write,
+        )),
         _ => None,
     }
 }
@@ -313,12 +333,19 @@ pub(crate) fn dispatch_renderer_message_with(
 /// destination decision.
 pub(crate) fn dispatch_clipboard_write(
     text: &str,
+    html: Option<&str>,
     primary: bool,
-    write: impl FnOnce(&str, bool),
+    write: impl FnOnce(&str, Option<&str>, bool),
 ) -> bool {
     match prepare_clipboard_write(text) {
         Some(text) => {
-            write(&text, primary);
+            // PRIMARY stays text-only.
+            let html = if primary {
+                None
+            } else {
+                html.and_then(prepare_clipboard_html)
+            };
+            write(&text, html.as_deref(), primary);
             true
         }
         None => {
@@ -347,13 +374,13 @@ fn sanitize_clipboard(text: &str) -> String {
 /// Host-originated text copy (e.g. "Copy Link Address") through the same cap
 /// and sanitizer as page copies. CEF UI thread only.
 pub(crate) fn write_regular_clipboard(text: &str) {
-    dispatch_clipboard_write(text, false, write_host_clipboard);
+    dispatch_clipboard_write(text, None, false, write_host_clipboard);
 }
 
 /// Mirror page-reported selection/copy text onto the host GDK clipboard. Runs on
 /// the CEF UI thread (= glib main thread under the external pump), so GDK access
 /// is safe here.
-fn write_host_clipboard(text: &str, primary: bool) {
+fn write_host_clipboard(text: &str, html: Option<&str>, primary: bool) {
     use gtk::prelude::*;
     let Some(display) = gtk::gdk::Display::default() else {
         return;
@@ -363,7 +390,23 @@ fn write_host_clipboard(text: &str, primary: bool) {
     } else {
         display.clipboard()
     };
-    clipboard.set_text(text);
+    let Some(html) = html else {
+        clipboard.set_text(text);
+        return;
+    };
+    // Plain string (offered as text/plain;charset=utf-8 and friends) plus HTML.
+    let providers = [
+        gtk::gdk::ContentProvider::for_value(&text.to_value()),
+        gtk::gdk::ContentProvider::for_bytes(
+            "text/html",
+            &gtk::glib::Bytes::from_owned(html.as_bytes().to_vec()),
+        ),
+    ];
+    let union = gtk::gdk::ContentProvider::new_union(&providers);
+    if let Err(e) = clipboard.set_content(Some(&union)) {
+        log::warn!("SetClipboard: failed to set rich clipboard content: {e}");
+        clipboard.set_text(text);
+    }
 }
 
 /// How long after host-observed user input a page clipboard write is accepted.
@@ -448,7 +491,7 @@ impl ClientBuilder {
 mod tests {
     use super::{
         MAX_CLIPBOARD_BYTES, MAX_LOG_CHARS, dispatch_renderer_message_with, identity_is_sane,
-        is_jpeg, is_png, log_safe, prepare_clipboard_write, sanitize_clipboard,
+        is_jpeg, is_png, log_safe, prepare_clipboard_html, prepare_clipboard_write, sanitize_clipboard,
     };
 
     #[test]
@@ -513,21 +556,30 @@ mod tests {
     }
 
     #[test]
+    fn html_flavor_is_capped_and_stripped_of_nul() {
+        assert_eq!(prepare_clipboard_html("<b>a\0b</b>").as_deref(), Some("<b>ab</b>"));
+        assert_eq!(prepare_clipboard_html("\0"), None);
+        assert_eq!(prepare_clipboard_html(&"x".repeat(MAX_CLIPBOARD_BYTES + 1)), None);
+    }
+
+    #[test]
     fn production_dispatch_selects_destination_and_sanitizes_before_write() {
         let mut writes = Vec::new();
         for message in [
             crate::ipc::RendererMessage::SetClipboard {
                 text: "regular\x1b text".to_owned(),
                 primary: false,
+                html: Some("<b>reg\0ular</b>".to_owned()),
             },
             crate::ipc::RendererMessage::SetClipboard {
                 text: "primary\ntext".to_owned(),
                 primary: true,
+                html: Some("<i>x</i>".to_owned()),
             },
         ] {
             assert_eq!(
-                dispatch_renderer_message_with(&message, |text, primary| {
-                    writes.push((primary, text.to_owned()));
+                dispatch_renderer_message_with(&message, |text, html, primary| {
+                    writes.push((primary, text.to_owned(), html.map(str::to_owned)));
                 }),
                 Some(true)
             );
@@ -535,16 +587,17 @@ mod tests {
         let empty = crate::ipc::RendererMessage::SetClipboard {
             text: String::new(),
             primary: false,
+            html: None,
         };
         assert_eq!(
-            dispatch_renderer_message_with(&empty, |_, _| unreachable!()),
+            dispatch_renderer_message_with(&empty, |_, _, _| unreachable!()),
             Some(false)
         );
         assert_eq!(
             writes,
             vec![
-                (false, "regular text".to_owned()),
-                (true, "primary\ntext".to_owned()),
+                (false, "regular text".to_owned(), Some("<b>regular</b>".to_owned())),
+                (true, "primary\ntext".to_owned(), None),
             ]
         );
     }

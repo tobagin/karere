@@ -285,9 +285,6 @@ impl ShellBrowserProcessHandlerBuilder {
 }
 
 pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
-    // Reclaim any paste tempfiles leaked by a prior crash before CEF starts.
-    crate::paste::sweep_old();
-
     // M20: per-account RequestContext cache_path lives under accounts/sessions/
     // <id>/data, and CEF requires it to be a SUBDIRECTORY of root_cache_path —
     // so root that at accounts/sessions. Shared `.bdic` dicts persist here too.

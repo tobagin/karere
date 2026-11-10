@@ -11,7 +11,8 @@
 //   • avatar  — localStorage['WACachedProfilePicEURL'] → fetch → base64 (CORS-OK,
 //               served by pps.whatsapp.net with image/jpeg)
 //
-// Emits ProfileIdentity/ProfileAvatar (source:"store"). While unpaired (no wid)
+// Emits ProfileIdentity/ProfileAvatar (source:"store"; an empty base64_png
+// means the picture was removed). While unpaired (no wid)
 // emits AwaitingPairing (debounced) and keeps polling.
 (function () {
   "use strict";
@@ -202,6 +203,11 @@
 
     // Avatar (only when the cached EURL changes).
     var eurl = readEurl();
+    // Picture removed: the URL seen earlier is gone. An empty payload clears it.
+    if (!eurl && lastEurl) {
+      lastEurl = null;
+      send("ProfileAvatar", { base64_png: "", source: "store" });
+    }
     if (eurl && eurl !== lastEurl && !avatarBusy) {
       avatarBusy = true;
       fetchAvatarBase64(eurl)

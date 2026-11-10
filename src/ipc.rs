@@ -96,6 +96,9 @@ pub enum RendererMessage {
     SetClipboard {
         text: String,
         primary: bool,
+        /// Rich-text flavor (`text/html`) of the same copy; absent for plain text.
+        #[serde(default)]
+        html: Option<String>,
     },
     /// Page-copied image (`image/png` ClipboardItem) for the regular clipboard.
     SetClipboardImage {
@@ -336,6 +339,12 @@ mod tests {
             RendererMessage::SetClipboard {
                 text: "hello".into(),
                 primary: true,
+                html: None,
+            },
+            RendererMessage::SetClipboard {
+                text: "hello".into(),
+                primary: false,
+                html: Some("<b>hello</b>".into()),
             },
             RendererMessage::SetClipboardImage {
                 base64_png: "iVBOR".into(),

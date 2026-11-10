@@ -104,6 +104,13 @@ pub struct KarereWebView {
     /// fine touchpad deltas aren't truncated away. Main-thread only. (#161)
     pub(super) scroll_accum_x: std::cell::Cell<f64>,
     pub(super) scroll_accum_y: std::cell::Cell<f64>,
+    /// Clears the mouse controllers' held-button state without dispatching
+    /// releases, for a page drag-out whose release went to the drop target.
+    /// Set once in `install_input_controllers`.
+    pub(super) forget_mouse_buttons: RefCell<Option<Box<dyn Fn()>>>,
+    /// The page drag-out in progress, kept alive until it ends; taking it is
+    /// what reports the end to CEF exactly once.
+    pub(super) drag_out: RefCell<Option<(gtk::gdk::Drag, Browser)>>,
     /// CEF browser id for context-menu registry (de)registration; `0` until spawn.
     pub(super) browser_id: AtomicI32,
     /// Pending OSR context-menu callback (non-`Send`, main-thread only). Resolved

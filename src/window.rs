@@ -302,7 +302,7 @@ mod imp {
         account
             .pushname
             .clone()
-            .or_else(|| account.user_label.clone())
+            .or_else(|| crate::accounts::display_label(account))
             .unwrap_or_else(|| gettextrs::gettext("Account"))
     }
 
@@ -705,8 +705,8 @@ mod imp {
             // pushname yet) show the waiting state instead.
             if runtime.awaiting_pairing && account.pushname.is_none() {
                 row.set_subtitle(&gettextrs::gettext("Waiting for QR scan…"));
-            } else if let Some(label) = account.user_label.as_deref() {
-                row.set_subtitle(&glib::markup_escape_text(label));
+            } else if let Some(label) = crate::accounts::display_label(account) {
+                row.set_subtitle(&glib::markup_escape_text(&label));
             }
 
             // Prefix: avatar (custom image or initials).
@@ -916,9 +916,11 @@ mod imp {
             let page = adw::PreferencesPage::new();
             let group = adw::PreferencesGroup::new();
 
+            let shown_label = crate::accounts::display_label(&account).unwrap_or_default();
+            let stored_label = account.user_label.clone();
             let label_row = adw::EntryRow::builder()
                 .title(gettextrs::gettext("Label"))
-                .text(account.user_label.as_deref().unwrap_or(""))
+                .text(shown_label.as_str())
                 .build();
             group.add(&label_row);
 
@@ -1019,7 +1021,12 @@ mod imp {
                 id,
                 move |_| {
                     let text = label_row.text();
-                    let label = (!text.trim().is_empty()).then(|| text.to_string());
+                    // An untouched translated default keeps its stored form.
+                    let label = if text.as_str() == shown_label {
+                        stored_label.clone()
+                    } else {
+                        (!text.trim().is_empty()).then(|| text.to_string())
+                    };
                     crate::accounts::manager().update_user_label(&id, label);
                     dialog.close();
                 }

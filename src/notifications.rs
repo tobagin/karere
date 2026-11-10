@@ -292,7 +292,7 @@ fn account_label(account_id: &str) -> Option<String> {
     }
     let account = mgr.get(account_id)?;
     let nonempty = |s: &Option<String>| s.clone().filter(|s| !s.trim().is_empty());
-    nonempty(&account.user_label).or_else(|| nonempty(&account.pushname))
+    crate::accounts::display_label(&account).or_else(|| nonempty(&account.pushname))
 }
 
 /// Banner title from the (privacy-filtered) sender and the optional account

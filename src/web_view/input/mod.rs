@@ -1,3 +1,5 @@
+mod drag_out;
+mod gestures;
 pub(super) mod keyboard;
 pub(super) mod mouse;
 mod touch;
@@ -9,11 +11,13 @@ use gtk::subclass::prelude::*;
 use std::cell::RefCell;
 
 use crate::web_view::clipboard_dnd::{
-    ExplicitCopyTrigger, PORTAL_FILE_TRANSFER, dispatch_explicit_copy, load_and_send_files,
-    read_primary_clipboard_paste, request_live_selection, send_drag_hover, send_portal_files,
+    DROP_TEXT_MIMES, ExplicitCopyTrigger, PORTAL_FILE_TRANSFER, dispatch_explicit_copy,
+    drop_may_carry_files, drop_offers_text, read_primary_clipboard_paste, read_text_drop,
+    read_uri_list_drop, request_live_selection, send_drag_hover, send_portal_files,
     try_intercept_paste,
 };
 use crate::web_view::imp::with_host;
+use gestures::{KineticScroll, PinchSteps, activate_zoom_steps};
 use keyboard::{
     ImeCommit, apply_ime_action, enter_char, ime_invalid_range, is_accelerator_key, printable_char,
     reset_ime, send_char, send_key_raw, set_focus, update_ime_cursor_location,
@@ -108,18 +112,25 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
     // pointer events don't drive WhatsApp's touch scroll. A touch-only
     // GestureDrag gives clean widget-relative single-finger press/move/release
     // (covers scroll and tap); the mouse controllers below skip the emulated
-    // pointer stream so the page isn't double-fed. Pinch is future work. (#162)
+    // pointer stream so the page isn't double-fed. Pinch is the zoom gesture
+    // below. (#162)
     let drag = gtk::GestureDrag::new();
     drag.set_touch_only(true);
     // Whether CEF holds a pressed touch point: a cancelled sequence is
     // followed by GTK's drag-end, which must not also send RELEASED. (I7)
     let touch_down = std::rc::Rc::new(std::cell::Cell::new(false));
+    // Touchpad fling in progress (see the scroll controller); any new input
+    // stops it.
+    let kinetic = std::rc::Rc::new(KineticScroll::default());
     drag.connect_drag_begin(glib::clone!(
         #[weak]
         widget,
         #[strong]
         touch_down,
+        #[strong]
+        kinetic,
         move |_g, x, y| {
+            kinetic.stop();
             crate::web_view::note_user_input();
             widget.grab_focus();
             set_focus(&widget, true);
@@ -175,11 +186,66 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
     ));
     widget.add_controller(drag);
 
+    // Pinch (touchscreen two-finger, touchpad pinch) ---------------------
+    // Steps the per-account zoom like Ctrl+scroll: one step per ×1.1 of
+    // scale since the last step. Once a step fires the gesture claims its
+    // touch points, which denies them to the touch drag above, so its cancel
+    // path sends CANCELLED instead of the first finger also scrolling the
+    // page. A two-finger pan that never changes scale claims nothing and
+    // keeps scrolling through the drag.
+    let zoom = gtk::GestureZoom::new();
+    let pinch = std::rc::Rc::new(std::cell::Cell::new(PinchSteps::default()));
+    zoom.connect_begin(glib::clone!(
+        #[strong]
+        pinch,
+        move |_g, _sequence| pinch.set(PinchSteps::default())
+    ));
+    zoom.connect_scale_changed(glib::clone!(
+        #[weak]
+        widget,
+        #[strong]
+        pinch,
+        #[strong]
+        kinetic,
+        move |g, scale| {
+            let mut steps = pinch.get();
+            let n = steps.update(scale);
+            pinch.set(steps);
+            if n == 0 {
+                return;
+            }
+            kinetic.stop();
+            g.set_state(gtk::EventSequenceState::Claimed);
+            activate_zoom_steps(&widget, n);
+        }
+    ));
+    zoom.connect_end(glib::clone!(
+        #[strong]
+        pinch,
+        move |_g, _sequence| pinch.set(PinchSteps::default())
+    ));
+    zoom.connect_cancel(glib::clone!(
+        #[strong]
+        pinch,
+        move |_g, _sequence| pinch.set(PinchSteps::default())
+    ));
+    widget.add_controller(zoom);
+
     // Mouse --------------------------------------------------------------
     // Keep raw button lifecycle separate from GTK gestures. GestureClick's
     // `released` signal is cancelled after a drag threshold crossing, which
     // used to leave CEF logically button-down and made text unselectable.
     let mouse_buttons = std::rc::Rc::new(RefCell::new(MouseButtonTracker::default()));
+    // A page drag-out ends with the button released over the drop target,
+    // never here: forget it, or the next press of that button is ignored.
+    widget
+        .imp()
+        .forget_mouse_buttons
+        .replace(Some(Box::new(glib::clone!(
+            #[strong]
+            mouse_buttons,
+            move || mouse_buttons.borrow_mut().forget_all()
+        ))));
 
     let motion = gtk::EventControllerMotion::new();
     motion.connect_motion(glib::clone!(
@@ -227,6 +293,8 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
         im,
         #[strong]
         mouse_buttons,
+        #[strong]
+        kinetic,
         #[upgrade_or]
         glib::Propagation::Proceed,
         move |_ctrl, event| {
@@ -253,6 +321,7 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
             let modifiers = modifiers_from_state(event.modifier_state());
             match event.event_type() {
                 EventType::ButtonPress => {
+                    kinetic.stop();
                     crate::web_view::note_user_input();
                     let settings = widget.settings();
                     widget.grab_focus();
@@ -308,14 +377,44 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
     ));
 
     // Scroll -------------------------------------------------------------
-    let scroll = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::BOTH_AXES);
+    // KINETIC: GTK reports the release velocity of a touchpad scroll via
+    // `decelerate`; CEF's windowless wheel events carry no momentum phase,
+    // so Chromium never flings one itself. Touchscreen flings are Chromium's
+    // own (they arrive as touch events), and mouse wheels never decelerate.
+    let scroll = gtk::EventControllerScroll::new(
+        gtk::EventControllerScrollFlags::BOTH_AXES | gtk::EventControllerScrollFlags::KINETIC,
+    );
+    scroll.connect_scroll_begin(glib::clone!(
+        #[strong]
+        kinetic,
+        move |_| kinetic.stop()
+    ));
+    scroll.connect_decelerate(glib::clone!(
+        #[weak]
+        widget,
+        #[strong]
+        kinetic,
+        move |ctrl, vx, vy| {
+            if ctrl.unit() != gtk::gdk::ScrollUnit::Surface
+                || ctrl
+                    .current_event_state()
+                    .contains(gtk::gdk::ModifierType::CONTROL_MASK)
+            {
+                return;
+            }
+            kinetic.start(&widget, vx, vy);
+        }
+    ));
     let zoom_accum = std::cell::Cell::new(0.0_f64);
     scroll.connect_scroll(glib::clone!(
         #[weak]
         widget,
+        #[strong]
+        kinetic,
         #[upgrade_or]
         glib::Propagation::Proceed,
         move |ctrl, dx, dy| {
+            kinetic.stop();
             let state = ctrl.current_event_state();
             // Surface unit = pixel deltas (touchpad); Wheel unit = notch
             // clicks (mouse). Scaled differently in send_wheel. (#161)
@@ -328,13 +427,7 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
                 let mut accum = zoom_accum.get();
                 let steps = zoom_scroll_steps(&mut accum, dy, threshold);
                 zoom_accum.set(accum);
-                let action = if steps > 0 { "win.zoom-in" } else { "win.zoom-out" };
-                for _ in 0..steps.unsigned_abs() {
-                    if let Err(err) = widget.activate_action(action, None) {
-                        log::debug!("ctrl+scroll: {action}: {err}");
-                        break;
-                    }
-                }
+                activate_zoom_steps(&widget, steps);
                 return glib::Propagation::Stop;
             }
             zoom_accum.set(0.0);
@@ -361,10 +454,13 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
         im,
         #[strong]
         swallowed_keys,
+        #[strong]
+        kinetic,
         #[upgrade_or]
         glib::Propagation::Proceed,
         move |ctrl, keyval, keycode, state| {
             use gtk::gdk::{Key, ModifierType};
+            kinetic.stop();
             crate::web_view::note_user_input();
             // M17: intercept Ctrl+V before CEF. If GDK clipboard holds an image
             // or files, synthesize the paste and swallow the key so CEF's
@@ -523,14 +619,21 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
     // Drag-drop ----------------------------------------------------------
     // M17: accept file drops; surface each as a synthetic `drop` on the element
     // under the cursor (paste_bridge.js targets it via the envelope's coords).
+    // Text and web-link drops are inserted into the editable under the cursor.
     // Async target: the drop is read by hand so a portal transfer can be
     // resolved here rather than by GTK's own conversion. (#192)
-    let drop_formats = gdk::ContentFormatsBuilder::new()
-        .add_mime_type(PORTAL_FILE_TRANSFER)
-        // Matched against the offer as mime types, so the plain-path form
-        // has to be named: the file list GType alone accepts nothing.
-        .add_mime_type("text/uri-list")
-        .add_type(gdk::FileList::static_type())
+    let drop_formats = DROP_TEXT_MIMES
+        .iter()
+        .fold(
+            gdk::ContentFormatsBuilder::new()
+                .add_mime_type(PORTAL_FILE_TRANSFER)
+                // Matched against the offer as mime types, so the plain-path
+                // form has to be named: the file list GType alone accepts nothing.
+                .add_mime_type("text/uri-list")
+                .add_type(gdk::FileList::static_type())
+                .add_type(glib::Type::STRING),
+            |builder, mime| builder.add_mime_type(*mime),
+        )
         .build();
     let drop_target = gtk::DropTargetAsync::new(Some(drop_formats), gdk::DragAction::COPY);
     // Decide on the offered types alone. The default check also wants the
@@ -543,8 +646,7 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
             "drag accept? actions={:?} offered {formats}",
             drop.actions()
         );
-        formats.contain_mime_type(PORTAL_FILE_TRANSFER)
-            || formats.contain_mime_type("text/uri-list")
+        drop_may_carry_files(&formats) || drop_offers_text(&formats)
     });
     // Forward hover (enter/motion/leave) so the page's dropzone overlay mounts
     // DURING the hover — CEF only delivers the drop on release, too late to mount.
@@ -555,7 +657,9 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
         gdk::DragAction::COPY,
         move |_t, drop, x, y| {
             log::debug!("drag enter: offered {}", drop.formats());
-            send_drag_hover(&widget, "enter", x, y);
+            if drop_may_carry_files(&drop.formats()) {
+                send_drag_hover(&widget, "enter", x, y);
+            }
             gdk::DragAction::COPY
         }
     ));
@@ -565,10 +669,12 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
         widget,
         #[upgrade_or]
         gdk::DragAction::COPY,
-        move |_t, _drop, x, y| {
+        move |_t, drop, x, y| {
             // Throttle to ~10/s: keeps the dropzone alive without flooding IPC.
             let now = std::time::Instant::now();
-            if now.duration_since(last_motion.get()) >= std::time::Duration::from_millis(100) {
+            if drop_may_carry_files(&drop.formats())
+                && now.duration_since(last_motion.get()) >= std::time::Duration::from_millis(100)
+            {
                 last_motion.set(now);
                 send_drag_hover(&widget, "over", x, y);
             }
@@ -609,30 +715,11 @@ pub(in crate::web_view) fn install_input_controllers(widget: &crate::web_view::K
                         }
                     ),
                 );
+            } else if drop.formats().contain_mime_type("text/uri-list") {
+                // Local files (attached) or web links (inserted as text).
+                read_uri_list_drop(&widget, drop, coords);
             } else {
-                drop.read_value_async(
-                    gdk::FileList::static_type(),
-                    glib::Priority::DEFAULT,
-                    gtk::gio::Cancellable::NONE,
-                    glib::clone!(
-                        #[weak]
-                        widget,
-                        #[strong]
-                        drop,
-                        move |res| {
-                            match res.map(|value| value.get::<gdk::FileList>()) {
-                                Ok(Ok(list)) => {
-                                    load_and_send_files(&widget, list.files(), "drop", coords, true)
-                                }
-                                Ok(Err(err)) => {
-                                    log::warn!("drop file list decode failed: {err}")
-                                }
-                                Err(err) => log::warn!("drop file read failed: {err}"),
-                            }
-                            drop.finish(gdk::DragAction::COPY);
-                        }
-                    ),
-                );
+                read_text_drop(&widget, drop, coords);
             }
             true
         }

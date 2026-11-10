@@ -112,6 +112,17 @@ assert.deepEqual(sent.pop(), {
   payload: { text: "menu selection", primary: false },
 });
 
+// A copy event whose clipboardData carries text/html sends both flavors.
+sent.length = 0;
+listeners.get("copy")({
+  clipboardData: { getData: (t) => (t === "text/html" ? "<b>rich</b>" : "rich") },
+  preventDefault() {},
+});
+assert.deepEqual(sent.pop(), {
+  name: "SetClipboard",
+  payload: { text: "rich", primary: false, html: "<b>rich</b>" },
+});
+
 // Cut mirrors the selection to CLIPBOARD from the capture phase, before the
 // page can stop propagation or delete it, and never cancels the deletion.
 sent.length = 0;
@@ -192,6 +203,21 @@ setImmediate(() => {
   });
   console.log("copy bridge clipboard api: ok");
 
+  // A text/plain + text/html ClipboardItem sends both in one message.
+  sent.length = 0;
+  context.navigator.clipboard.write([{
+    types: ["text/plain", "text/html"],
+    getType: (t) =>
+      Promise.resolve({ text: () => Promise.resolve(t === "text/html" ? "<i>x</i>" : "x") }),
+  }]);
+  setTimeout(() => {
+    assert.deepEqual(sent.filter((m) => m.name === "SetClipboard"), [{
+      name: "SetClipboard",
+      payload: { text: "x", primary: false, html: "<i>x</i>" },
+    }]);
+    console.log("copy bridge clipboard html: ok");
+  }, 0);
+
   // An image/png ClipboardItem ("Copy sticker image", #196) mirrors as base64.
   sent.length = 0;
   context.navigator.clipboard.write([{
@@ -199,7 +225,7 @@ setImmediate(() => {
     getType: () => Promise.resolve({ dataUrl: "data:image/png;base64,iVBORw0KGgo=" }),
   }]);
   setTimeout(() => {
-    assert.deepEqual(sent, [{
+    assert.deepEqual(sent.filter((m) => m.name === "SetClipboardImage"), [{
       name: "SetClipboardImage",
       payload: { base64_png: "iVBORw0KGgo=" },
     }]);

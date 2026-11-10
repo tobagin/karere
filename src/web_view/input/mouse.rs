@@ -177,6 +177,13 @@ impl MouseButtonTracker {
         self.pressed
     }
 
+    /// Drop every held button without dispatching a release: after a page
+    /// drag-out the release went to the drop target, and Blink already
+    /// synthesised its own mouse-up when the drag ended.
+    pub(super) fn forget_all(&mut self) {
+        self.pressed = 0;
+    }
+
     pub(super) fn cancel_all(&mut self) -> Vec<(u32, i32)> {
         (1..=3)
             .filter_map(|button| self.release(button).map(|count| (button, count)))
@@ -450,13 +457,18 @@ pub(super) fn surface_to_widget(widget: &crate::web_view::KarereWebView, sx: f64
     Some((p.x() as f64, p.y() as f64))
 }
 
-pub(super) fn send_wheel(widget: &crate::web_view::KarereWebView, dx: f64, dy: f64, modifiers: u32, precise: bool) {
+/// Logical page pixels per scroll unit sent to CEF.
+pub(super) fn wheel_pixel_scale(precise: bool) -> f64 {
     // CEF wants pixel deltas. A mouse wheel reports notch clicks (±1) → use a
     // browser-like notch size. A touchpad (Surface unit) reports surface-unit
     // deltas; Chromium's own Wayland backend scales those by
     // kWheelDelta(53) / kAxisValueScale(10) = 5.3 (wayland_pointer.cc), so
     // match it — 1:1 passthrough was ~5x slower than every browser. (#161)
-    let step = if precise { 5.3 } else { 100.0 };
+    if precise { 5.3 } else { 100.0 }
+}
+
+pub(super) fn send_wheel(widget: &crate::web_view::KarereWebView, dx: f64, dy: f64, modifiers: u32, precise: bool) {
+    let step = wheel_pixel_scale(precise);
     let s = widget.scale_factor().max(1) as f64;
     let imp = widget.imp();
 
