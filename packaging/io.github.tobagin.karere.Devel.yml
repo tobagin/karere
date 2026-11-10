@@ -64,12 +64,12 @@ modules:
         only-arches: [x86_64]
         url: https://github.com/tobagin/karere/releases/download/cef-156.0.26-proprietary-codecs/cef_binary_156.0.26%2Bg8ea0c73%2Bchromium-156.0.8078.88_linux64_minimal.zip
         # TODO(cef-156): replace with the published asset's sha256
-        sha256: 0000000000000000000000000000000000000000000000000000000000000000
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
       - type: archive
         only-arches: [aarch64]
         url: https://github.com/tobagin/karere/releases/download/cef-156.0.26-proprietary-codecs/cef_binary_156.0.26%2Bg8ea0c73%2Bchromium-156.0.8078.88_linuxarm64_minimal.zip
         # TODO(cef-156): replace with the published asset's sha256
-        sha256: 0000000000000000000000000000000000000000000000000000000000000000
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
       - type: inline
         only-arches: [x86_64]
         contents: |

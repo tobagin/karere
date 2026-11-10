@@ -184,7 +184,7 @@ fi
 
 # 9) No placeholder checksums: a manifest sha256 of all zeros marks a CEF archive
 #    whose release asset was not published yet (see the TODO(cef-156) comments).
-ZERO_SHA_HITS="$(grep -n -E 'sha256: 0{64}$' packaging/io.github.tobagin.karere.yml packaging/io.github.tobagin.karere.Devel.yml packaging/flathub-beta/io.github.tobagin.karere.yml || true)"
+ZERO_SHA_HITS="$(grep -n -E 'sha256: "?0{64}"?$' packaging/io.github.tobagin.karere.yml packaging/io.github.tobagin.karere.Devel.yml packaging/flathub-beta/io.github.tobagin.karere.yml || true)"
 if [[ -n "$ZERO_SHA_HITS" ]]; then
     fail "placeholder all-zero sha256 still in a manifest; fill in the published CEF asset checksums:
 $ZERO_SHA_HITS"
