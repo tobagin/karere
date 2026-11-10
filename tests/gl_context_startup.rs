@@ -20,7 +20,9 @@ struct RunningApp {
 }
 
 impl RunningApp {
-    fn spawn(fixture: &Path, force_legacy_desktop_gl: bool) -> Self {
+    /// `autostart` adds `--background`, the flag autostart launches carry;
+    /// only those honour `start-in-background`.
+    fn spawn(fixture: &Path, force_legacy_desktop_gl: bool, autostart: bool) -> Self {
         assert!(
             std::env::var_os("DISPLAY").is_some(),
             "run this test under xvfb-run"
@@ -63,6 +65,9 @@ impl RunningApp {
         }
         if force_legacy_desktop_gl {
             command.env("KARERE_TEST_FORCE_DESKTOP_GL", "1");
+        }
+        if autostart {
+            command.arg("--background");
         }
         let mut child = command
             .spawn()
@@ -263,12 +268,12 @@ fn real_binary_starts_with_software_gles_for_visible_and_prewarmed_windows() {
     // context from the production widget; that must not stop the app, which
     // presents frames in software and carries on to spawn the browser. (#177)
     set_background(&fixture, false);
-    let mut legacy = RunningApp::spawn(&fixture, true);
+    let mut legacy = RunningApp::spawn(&fixture, true, false);
     legacy.wait_for_software_fallback();
     legacy.quit_after_expected_context_failure(&fixture);
 
     set_background(&fixture, false);
-    let mut visible = RunningApp::spawn(&fixture, false);
+    let mut visible = RunningApp::spawn(&fixture, false, false);
     visible.wait_for(&[
         "GLArea context ready: api=GLAPI(GLES) version=3",
         "browser spawned",
@@ -276,7 +281,7 @@ fn real_binary_starts_with_software_gles_for_visible_and_prewarmed_windows() {
     visible.quit(&fixture);
 
     set_background(&fixture, true);
-    let mut background = RunningApp::spawn(&fixture, false);
+    let mut background = RunningApp::spawn(&fixture, false, true);
     background.wait_for(&["start-in-background=true", "browser spawned"]);
     present_background_app(&fixture);
     background.wait_for(&["GLArea context ready: api=GLAPI(GLES) version=3"]);

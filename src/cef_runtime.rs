@@ -19,6 +19,13 @@ pub fn debug_enabled() -> bool {
     *D.get_or_init(|| std::env::args().any(|a| a == "--debug"))
 }
 
+/// True when Chromium's own sandbox cannot run: inside Flatpak, unless the app
+/// was started through zypak (`zypak-wrapper` exports `ZYPAK_BIN`), which
+/// replaces the setuid helper with nested Flatpak sandboxes.
+pub fn chromium_sandbox_disabled() -> bool {
+    std::env::var_os("FLATPAK_ID").is_some() && std::env::var_os("ZYPAK_BIN").is_none()
+}
+
 #[derive(Clone, Default)]
 pub struct ShellApp;
 
@@ -137,9 +144,9 @@ wrap_app! {
             // CEF, so CefInitialize fails with CHROME_RESULT_CODE_EULA_REFUSED
             // (28) on every first start. Skip first-run handling entirely.
             cmd.append_switch(Some(&"no-first-run".into()));
-            // Keep the flat process tree only in Flatpak, where the CEF
-            // sandbox is disabled. Native sandboxing requires zygote.
-            if std::env::var_os("FLATPAK_ID").is_some() {
+            // Flat process tree only when the sandbox is off; sandboxing
+            // (native or zypak) requires the zygote.
+            if chromium_sandbox_disabled() {
                 cmd.append_switch(Some(&"no-zygote".into()));
             }
             // Memory: turn off the site-isolation field trials too (the
@@ -147,8 +154,8 @@ wrap_app! {
             // WhatsApp's cross-origin frames don't each fork their own renderer.
             // Safe only while the top frame is pinned to web.whatsapp.com.
             cmd.append_switch(Some(&"disable-site-isolation-trials".into()));
-            if std::env::var_os("FLATPAK_ID").is_some() {
-                // Flatpak namespace sandbox conflicts with Chromium suid sandbox.
+            if chromium_sandbox_disabled() {
+                // Flatpak blocks Chromium's namespace and setuid sandboxes.
                 cmd.append_switch(Some(&"no-sandbox".into()));
             }
         }
@@ -327,11 +334,7 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
     let settings = Settings {
         windowless_rendering_enabled: 1,
         external_message_pump: 1,
-        no_sandbox: if std::env::var_os("FLATPAK_ID").is_some() {
-            1
-        } else {
-            0
-        },
+        no_sandbox: i32::from(chromium_sandbox_disabled()),
         root_cache_path: cef::CefString::from(root_cache.to_string_lossy().as_ref()),
         locale: cef::CefString::from(cef_locale.as_str()),
         accept_language_list: cef::CefString::from(accept_lang.as_str()),
@@ -348,7 +351,14 @@ pub fn initialize_browser_process(args: &Args, app: &mut App) -> Result<()> {
     if ok != 1 {
         return Err(anyhow!("cef::initialize failed (returned {ok})"));
     }
-    log::info!("CEF initialized");
+    log::info!(
+        "CEF initialized (Chromium sandbox: {})",
+        if chromium_sandbox_disabled() {
+            "off"
+        } else {
+            "on"
+        }
+    );
 
     // The scheduler includes a slow idle backstop and paint-driven continuation.
     crate::cef_pump::schedule(0);

@@ -38,9 +38,13 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
   - --socket=pulseaudio
+  # --device=all, not --device=dri: Chromium reaches webcams through V4L2
+  # (/dev/video*). The PipeWire camera portal path (WebRtcPipeWireCamera) is
+  # not enabled or tested, so dri alone would lose the camera in calls.
   - --device=all
   - --filesystem=xdg-download
-  - --talk-name=org.freedesktop.Notifications
+  # Notifications use gio::Notification, i.e. the notification portal;
+  # no org.freedesktop.Notifications access is needed.
   - --talk-name=org.kde.StatusNotifierWatcher
   - --env=LD_LIBRARY_PATH=/app/lib/cef
   - --env=GSK_RENDERER=gl
@@ -75,6 +79,23 @@ modules:
           {"type":"minimal","name":"cef_binary_152.0.6+g708dc14+chromium-152.0.7977.83_linuxarm64_minimal.tar.bz2","sha1":"0000000000000000000000000000000000000000"}
         dest-filename: archive.json
 
+  # Chromium sandbox under Flatpak: zypak stands in for the setuid
+  # chrome-sandbox and starts the zygote and renderers in nested Flatpak
+  # sandboxes through the Flatpak portal.
+  - name: zypak
+    sources:
+      # zypak v2025.09 (commit 693a71c5). Archives, not a git source: the
+      # release workflow and manifest tests treat the first tag/commit lines
+      # as the karere pin.
+      - type: archive
+        url: https://github.com/refi64/zypak/archive/693a71c5ffa80ec9c9ce2ae03b1ccc493c698e53.tar.gz
+        sha256: e83ac703821367e33fcacd7661ea82d9d2a475d40fd7de411e1a97bfb27c1ed1
+      # Its nickle submodule (header only) at the commit v2025.09 pins.
+      - type: archive
+        url: https://github.com/refi64/nickle/archive/0ac7f5dbf659caa8d1d45cb57e942f2bc565da1e.tar.gz
+        sha256: edd5a4e49e3b703c99732cd1c821c0cf4de79391db6eac59c24103e3bb2627cf
+        dest: nickle
+
   - name: karere
     buildsystem: meson
     config-opts:
@@ -88,3 +109,18 @@ modules:
     post-install:
       - mkdir -p ${FLATPAK_DEST}/share/karere
       - mv ${FLATPAK_DEST}/share/locale ${FLATPAK_DEST}/share/karere/locale
+
+  # /app/bin/karere is the zypak launcher; the real binary lives in libexec.
+  # Desktop, autostart and D-Bus launches all run `karere`, so they all get it.
+  - name: karere-launcher
+    buildsystem: simple
+    build-commands:
+      - mkdir -p ${FLATPAK_DEST}/libexec
+      - mv ${FLATPAK_DEST}/bin/karere ${FLATPAK_DEST}/libexec/karere
+      - install -Dm755 karere-launcher ${FLATPAK_DEST}/bin/karere
+    sources:
+      - type: script
+        dest-filename: karere-launcher
+        commands:
+          - export ZYPAK_CEF_LIBRARY_PATH=/app/lib/cef/libcef.so
+          - exec zypak-wrapper /app/libexec/karere "$@"

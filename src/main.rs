@@ -48,8 +48,6 @@ fn main() -> Result<()> {
     install_panic_hook();
 
     init_gettext();
-    let banner = gettext("Karere starting");
-    log::info!("{}", banner);
 
     let _ = cef::api_hash(cef::sys::CEF_API_VERSION_LAST, 0);
     load_gl();
@@ -77,6 +75,8 @@ fn main() -> Result<()> {
         ret, -1,
         "browser process must return -1 from execute_process"
     );
+    // Logged here, not before the split, so CEF subprocesses stay quiet.
+    log::info!("{}", gettext("Karere starting"));
 
     let url = parse_url_flag().unwrap_or_else(|| "https://web.whatsapp.com".into());
 
@@ -378,21 +378,36 @@ fn cef_args() -> Args {
     Args::from(cef::MainArgs { argc, argv })
 }
 
+/// Resolve the `gl` crate's entry points through libepoxy, the loader GTK
+/// itself uses, so our calls dispatch exactly like GTK's on the current
+/// context.
+///
+/// libepoxy exports every GL command `glFoo` as a data symbol `epoxy_glFoo`:
+/// a function-pointer variable that initially holds a stub which resolves the
+/// real function on first call and rewrites the variable. Reading the
+/// variable once here yields that stub (or the already-resolved function);
+/// both forward correctly on every call, so the value can be cached by `gl`.
 fn load_gl() {
     use libloading::os::unix::Library;
+    use std::ffi::c_void;
     let library = unsafe {
         Library::new("libepoxy.so.0")
             .or_else(|_| Library::new("libepoxy.so"))
             .expect("failed to load libepoxy")
     };
+    // Process lifetime: the resolved pointers live inside this library.
     let library: &'static Library = Box::leak(Box::new(library));
-    epoxy::load_with(|name| unsafe {
-        library
-            .get::<unsafe extern "C" fn()>(name.as_bytes())
-            .map(|sym| std::mem::transmute::<_, *const std::ffi::c_void>(sym))
-            .unwrap_or(std::ptr::null())
+    gl::load_with(|name| {
+        let symbol = format!("epoxy_{name}");
+        // SAFETY: `epoxy_<name>` is a `void *` variable exported by
+        // libepoxy; the symbol address is where that pointer is stored.
+        unsafe {
+            library
+                .get::<*const *const c_void>(symbol.as_bytes())
+                .map(|slot| **slot)
+                .unwrap_or(std::ptr::null())
+        }
     });
-    gl::load_with(|name| epoxy::get_proc_addr(name) as *const _);
 }
 
 #[cfg(test)]

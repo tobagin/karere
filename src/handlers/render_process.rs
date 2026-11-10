@@ -119,6 +119,8 @@ impl ShellRenderProcessHandlerBuilder {
 /// IPC decoding, so tests cannot bypass browser-message dispatch.
 pub(crate) trait RendererDispatchSink {
     fn execute_java_script(&mut self, script: &str, source_url: &str);
+    // Only the debug-build Ping reply uses it.
+    #[cfg_attr(not(debug_assertions), allow(dead_code))]
     fn send_to_browser(&mut self, message: RendererMessage);
 }
 
