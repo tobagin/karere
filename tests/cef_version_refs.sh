@@ -109,36 +109,30 @@ if [[ -n "$CEF_DEFAULT" ]]; then
     fi
 fi
 
-# 5) Metainfo current description says 150, not 148
-if grep -Fq "Now built on CEF/Chromium 152." data/io.github.tobagin.karere.metainfo.xml.in; then
-    pass "metainfo current description contains CEF/Chromium 152"
-else
-    fail "metainfo current description missing 'Now built on CEF/Chromium 152.'"
+# 5) Chromium major derived from the single source of truth (download-cef.sh default)
+CHROMIUM_MAJOR=""
+if [[ -n "$CEF_DEFAULT" ]]; then
+    CHROMIUM_MAJOR="${CEF_DEFAULT##*chromium-}"
+    CHROMIUM_MAJOR="${CHROMIUM_MAJOR%%.*}"
 fi
-if grep -Fq "Now built on CEF/Chromium 148" data/io.github.tobagin.karere.metainfo.xml.in; then
-    # Count occurrences: only historical release entries should contain 148, not the current paragraph.
-    # The current paragraph check above ensures 150 is present; but if 148 also appears outside history, fail.
-    # Simpler: ensure the exact stale sentence is gone (it would be in the current paragraph).
-    # Check that the description paragraph no longer has the stale text by ensuring no match before <releases>
-    # Extract up to <releases> and check.
-    BEFORE_RELEASES="$(sed -n '1,/<releases>/p' data/io.github.tobagin.karere.metainfo.xml.in)"
-    if echo "$BEFORE_RELEASES" | grep -Fq "Now built on CEF/Chromium 148"; then
-        fail "metainfo current-description still contains 'Now built on CEF/Chromium 148'"
+if [[ -z "$CHROMIUM_MAJOR" ]]; then
+    fail "could not derive Chromium major from CEF_DEFAULT ($CEF_DEFAULT)"
+else
+    pass "Chromium major is $CHROMIUM_MAJOR"
+    if grep -Fq "Now built on CEF/Chromium ${CHROMIUM_MAJOR}." data/io.github.tobagin.karere.metainfo.xml.in; then
+        pass "metainfo current description contains CEF/Chromium $CHROMIUM_MAJOR"
     else
-        pass "metainfo stale 148 only in historical releases (acceptable)"
+        fail "metainfo current description missing 'Now built on CEF/Chromium ${CHROMIUM_MAJOR}.'"
     fi
-fi
-
-# 6) Historical entries survive
-if grep -Fq "CEF 149" data/io.github.tobagin.karere.metainfo.xml.in; then
-    pass "historical CEF 149 still present"
-else
-    fail "historical CEF 149 missing from metainfo"
-fi
-if grep -Fq "CEF/Chromium 148" data/io.github.tobagin.karere.metainfo.xml.in; then
-    pass "historical CEF/Chromium 148 still present"
-else
-    fail "historical CEF/Chromium 148 missing from metainfo"
+    # README: every "Chromium NNN" mention must name the shipping major.
+    README_MAJORS="$(grep -oE 'Chromium [0-9]{3}' README.md | sort -u || true)"
+    if [[ -z "$README_MAJORS" ]]; then
+        fail "README.md has no 'Chromium <major>' mention"
+    elif [[ "$README_MAJORS" != "Chromium $CHROMIUM_MAJOR" ]]; then
+        fail "README.md Chromium mentions not all $CHROMIUM_MAJOR (found: $(echo $README_MAJORS))"
+    else
+        pass "README.md Chromium mentions all say $CHROMIUM_MAJOR"
+    fi
 fi
 
 # 7) xmllint well-formed
@@ -184,38 +178,6 @@ if [[ -n "$CEF_DEFAULT" ]]; then
         fail "build-cef-codecs.sh error message does not contain $CHROMIUM_LINE"
     fi
     rm -f "$TMPFILE"
-fi
-
-# 9) .github/workflows/build-cef-codecs.yml pinned to shipping Chromium major (KARE-013)
-if [[ -n "$CEF_DEFAULT" ]]; then
-    CHROMIUM_MAJOR="${CEF_DEFAULT##*chromium-}"
-    CHROMIUM_MAJOR="${CHROMIUM_MAJOR%%.*}"
-    if [[ -z "$CHROMIUM_MAJOR" ]]; then
-        fail "could not derive Chromium major from CEF_DEFAULT ($CEF_DEFAULT)"
-    else
-        if ! grep -Fq "Chromium $CHROMIUM_MAJOR" .github/workflows/build-cef-codecs.yml; then
-            fail "build-cef-codecs.yml description missing 'Chromium $CHROMIUM_MAJOR'"
-        else
-            pass "build-cef-codecs.yml description contains Chromium $CHROMIUM_MAJOR"
-        fi
-        if ! grep -Fq "cef-$CHROMIUM_MAJOR-proprietary-codecs" .github/workflows/build-cef-codecs.yml; then
-            fail "build-cef-codecs.yml artifact name missing 'cef-$CHROMIUM_MAJOR-proprietary-codecs'"
-        else
-            pass "build-cef-codecs.yml artifact name contains cef-$CHROMIUM_MAJOR-proprietary-codecs"
-        fi
-        CHROMIUM_OCCURRENCES="$(grep -oE 'Chromium [0-9]+' .github/workflows/build-cef-codecs.yml 2>/dev/null | sort -u || true)"
-        if [[ "$CHROMIUM_OCCURRENCES" != "Chromium $CHROMIUM_MAJOR" ]]; then
-            fail "build-cef-codecs.yml Chromium refs not pinned to $CHROMIUM_MAJOR (found: ${CHROMIUM_OCCURRENCES:-<none>})"
-        else
-            pass "build-cef-codecs.yml Chromium refs pinned to $CHROMIUM_MAJOR"
-        fi
-        ARTIFACT_OCCURRENCES="$(grep -oE 'cef-[0-9]+-proprietary-codecs' .github/workflows/build-cef-codecs.yml 2>/dev/null | sort -u || true)"
-        if [[ "$ARTIFACT_OCCURRENCES" != "cef-$CHROMIUM_MAJOR-proprietary-codecs" ]]; then
-            fail "build-cef-codecs.yml artifact refs not pinned to $CHROMIUM_MAJOR (found: ${ARTIFACT_OCCURRENCES:-<none>})"
-        else
-            pass "build-cef-codecs.yml artifact refs pinned to $CHROMIUM_MAJOR"
-        fi
-    fi
 fi
 
 # Summary

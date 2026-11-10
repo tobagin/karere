@@ -193,10 +193,10 @@ if [[ -f "$PY_MARKER" ]]; then
 else
     fail "case 6 --dev --regen-sources should invoke python3 mock (marker missing)"
 fi
-if echo "$RUN_STDOUT" | grep -q "Regenerating.*Devel"; then
-    pass "case 6 regen line names Devel manifest"
+if echo "$RUN_STDOUT" | grep -q "Regenerating packaging/cargo-sources.json"; then
+    pass "case 6 regen line names cargo-sources.json"
 else
-    fail "case 6 regen line should name Devel manifest (got: $RUN_STDOUT)"
+    fail "case 6 regen line should name cargo-sources.json (got: $RUN_STDOUT)"
 fi
 if [[ -s "$MOCK_LOG" ]]; then
     pass "case 6 still dispatched flatpak-builder"

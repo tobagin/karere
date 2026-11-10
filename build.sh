@@ -56,7 +56,7 @@ if [[ "$DEV" == 1 ]]; then
 fi
 
 if [[ "$REGEN_SOURCES" == 1 ]]; then
-    echo "Regenerating $MANIFEST sources from Cargo.lock…"
+    echo "Regenerating packaging/cargo-sources.json from Cargo.lock (shared by all manifests)…"
     python3 tools/flatpak-cargo-generator.py Cargo.lock -o packaging/cargo-sources.json
 fi
 

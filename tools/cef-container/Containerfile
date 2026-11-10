@@ -9,8 +9,8 @@
 #   env overrides: CEF_BRANCH=7977 (skip auto-detect), ARCHES="x64" (default "x64 arm64"),
 #                 CEF_NINJA_JOBS=6 (cap parallelism on a memory-tight host)
 #
-# Package set mirrors the proven .github/workflows/build-cef-codecs.yml runner:
-# with use_sysroot=true everything else comes from Chromium's bundled toolchain.
+# Package set: with use_sysroot=true everything else comes from Chromium's
+# bundled toolchain.
 FROM docker.io/library/ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive

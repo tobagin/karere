@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# NOTE: this fetches the STOCK CEF distribution from the Spotify CDN: no proprietary
+# codecs (H.264/AAC) and none of Karere's CEF patches (e.g. the external message pump
+# fix in tools/cef-patches). Dev builds therefore differ from the shipped Flatpak in video
+# playback and idle CPU. Shipped CEF is built by tools/build-cef-codecs.sh.
 # Download + extract CEF Linux binary distribution into ./cef-binaries/
 # Version must match the 'cef' crate's bundled CEF version (152.0.6 / chromium 152.0.7977.83 at time of writing).
 # See Cargo.toml / Cargo.lock (cef crate) and packaging/io.github.tobagin.karere*.yml (cef-binaries URLs) for the sources of truth.

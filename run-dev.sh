@@ -20,5 +20,11 @@ glib-compile-schemas "$SCHEMA_DIR"
 # Prepend so the dev schema wins over any system install.
 export GSETTINGS_SCHEMA_DIR="$SCHEMA_DIR:${GSETTINGS_SCHEMA_DIR:-}"
 
+# Use the CEF distribution provisioned by download-cef.sh when CEF_PATH is unset.
+if [[ -z "${CEF_PATH:-}" && -e cef-binaries/current ]]; then
+  CEF_PATH="$(cd cef-binaries/current && pwd)"
+  export CEF_PATH
+fi
+
 # Surface our info-level notification logs.
 exec cargo run "$@"

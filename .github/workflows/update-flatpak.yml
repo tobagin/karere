@@ -4,9 +4,14 @@ on:
   push:
     tags:
       - 'v*.*.*'   # stable semver tags, e.g. v1.2.3
-      - '!v*-*'    # exclude pre-releases (v4.0.0-beta6, -rc, …) — those go to
+      - '!v*-*'    # exclude pre-releases (v4.0.0-beta6, -rc, ...) - those go to
                    # the flathub `beta` branch via a manual PR, not stable master
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish to Flathub (for example v4.3.6)'
+        required: true
+        type: string
 
 jobs:
   update-manifest:
@@ -14,7 +19,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -23,170 +28,177 @@ jobs:
 
     - name: Extract version info
       id: version
+      env:
+        INPUT_TAG: ${{ inputs.tag }}
+        EVENT_NAME: ${{ github.event_name }}
+        REF_NAME: ${{ github.ref_name }}
       run: |
-        TAG_NAME=${GITHUB_REF#refs/tags/}
-        COMMIT_HASH=$(git rev-parse $TAG_NAME)
+        if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+          TAG_NAME="$INPUT_TAG"
+        else
+          TAG_NAME="$REF_NAME"
+        fi
+
+        if [[ ! "$TAG_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "Refusing tag '$TAG_NAME': expected a stable vX.Y.Z tag" >&2
+          exit 1
+        fi
+
+        # Annotated tags: resolve to the commit, not the tag object.
+        COMMIT_HASH=$(git rev-parse "${TAG_NAME}^{commit}")
         VERSION=${TAG_NAME#v}
-        
-        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
-        echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-        
-        echo "📦 Processing release: $TAG_NAME"
-        echo "🔍 Commit hash: $COMMIT_HASH"
-        echo "📈 Version: $VERSION"
+
+        echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
+        echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+        echo "Processing release: $TAG_NAME"
+        echo "Commit hash: $COMMIT_HASH"
+        echo "Version: $VERSION"
 
     - name: Check manifest exists
       id: check
       run: |
         MANIFEST_FILE="packaging/io.github.tobagin.karere.yml"
-        
+
         if [[ ! -f "$MANIFEST_FILE" ]]; then
-          echo "❌ Manifest file not found: $MANIFEST_FILE"
+          echo "Manifest file not found: $MANIFEST_FILE" >&2
           exit 1
         fi
-        
-        echo "✅ Local manifest found: $MANIFEST_FILE"
-        echo "📋 Current manifest tag and commit:"
+
+        echo "Local manifest found: $MANIFEST_FILE"
+        echo "Current manifest tag and commit:"
         grep -A 2 "tag:" "$MANIFEST_FILE" || echo "Tag not found in expected format"
-        
-        echo "manifest_ready=true" >> $GITHUB_OUTPUT
+
+        echo "manifest_ready=true" >> "$GITHUB_OUTPUT"
 
     - name: Create Flathub PR
+      id: pr
       if: steps.check.outputs.manifest_ready == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.FLATHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.FLATHUB_TOKEN }}
+        TAG_NAME: ${{ steps.version.outputs.tag_name }}
+        COMMIT_HASH: ${{ steps.version.outputs.commit_hash }}
       run: |
         FLATHUB_REPO="flathub/io.github.tobagin.karere"
-        
-        echo "🔄 Cloning Flathub repository..."
-        git clone https://x-access-token:$GITHUB_TOKEN@github.com/$FLATHUB_REPO.git flathub-repo
+
+        echo "Cloning Flathub repository..."
+        git clone "https://x-access-token:$GITHUB_TOKEN@github.com/$FLATHUB_REPO.git" flathub-repo
         cd flathub-repo
-        
+
         git config user.email "action@github.com"
         git config user.name "GitHub Action (Karere Updates)"
-        
+
+        # PR needs a dedicated branch. Start from the current default branch
+        # state every run; a re-run force-pushes the same branch so an
+        # already-open PR is updated instead of closed.
+        BRANCH_NAME="update-$TAG_NAME"
+        git checkout -b "$BRANCH_NAME"
+
         cp ../packaging/io.github.tobagin.karere.yml ./io.github.tobagin.karere.yml
         cp ../packaging/cargo-sources.json ./cargo-sources.json
 
         # Update tag/commit only within the karere module section.
-        sed -i '/- name: karere/,/^  - name:/ { 
-          s/tag: v.*/tag: ${{ steps.version.outputs.tag_name }}/
-          s/commit: .*/commit: ${{ steps.version.outputs.commit_hash }}/
+        sed -i '/- name: karere/,/^  - name:/ {
+          s/tag: v.*/tag: '"$TAG_NAME"'/
+          s/commit: .*/commit: '"$COMMIT_HASH"'/
         }' io.github.tobagin.karere.yml
-        
-        echo "📋 Updated manifest with:"
-        echo "  Tag: ${{ steps.version.outputs.tag_name }}"
-        echo "  Commit: ${{ steps.version.outputs.commit_hash }}"
+
+        echo "Updated manifest with:"
+        echo "  Tag: $TAG_NAME"
+        echo "  Commit: $COMMIT_HASH"
 
         git add io.github.tobagin.karere.yml cargo-sources.json
-        git commit -m "Update to ${{ steps.version.outputs.tag_name }}
+        git commit -m "Update to $TAG_NAME" \
+          -m "Set the karere source to tag $TAG_NAME at commit $COMMIT_HASH." \
+          -m "Source: https://github.com/tobagin/karere/releases/tag/$TAG_NAME"
 
-        🚀 **New Release: ${{ steps.version.outputs.tag_name }}**
-        
-        **Changes:**
-        - Updated tag from previous version to ${{ steps.version.outputs.tag_name }}
-        - Updated commit hash to ${{ steps.version.outputs.commit_hash }}
-        - Automated update from upstream repository
-        
-        **Source:** https://github.com/tobagin/karere/releases/tag/${{ steps.version.outputs.tag_name }}
-        
-        ---
-        *This update was automatically created by GitHub Actions*"
-        
-        # PR needs a dedicated branch; drop any stale one from a prior run first.
-        BRANCH_NAME="update-${{ steps.version.outputs.tag_name }}"
-        git push https://x-access-token:$GITHUB_TOKEN@github.com/$FLATHUB_REPO.git --delete "$BRANCH_NAME" 2>/dev/null || true
-        
-        git checkout -b "$BRANCH_NAME"
-        git push https://x-access-token:$GITHUB_TOKEN@github.com/$FLATHUB_REPO.git "$BRANCH_NAME"
-        
-        PR_BODY="🚀 **Automated update to ${{ steps.version.outputs.tag_name }}**
+        git push --force "https://x-access-token:$GITHUB_TOKEN@github.com/$FLATHUB_REPO.git" "$BRANCH_NAME"
 
-        This PR updates the Flatpak manifest with the latest release from the upstream repository.
+        PR_BODY="Update Karere to $TAG_NAME.
 
-        **Changes:**
-        - **Tag:** \`${{ steps.version.outputs.tag_name }}\`
-        - **Commit:** \`${{ steps.version.outputs.commit_hash }}\`
-        - **Release:** https://github.com/tobagin/karere/releases/tag/${{ steps.version.outputs.tag_name }}
+        This updates the manifest to the following release of the upstream repository.
 
-        **Automated Checks:**
-        - ✅ Manifest syntax validated
-        - ✅ Commit hash verified
-        - ✅ Tag references confirmed
+        - Tag: \`$TAG_NAME\`
+        - Commit: \`$COMMIT_HASH\`
+        - Release: https://github.com/tobagin/karere/releases/tag/$TAG_NAME
 
-        ---
-        
-        **Test Build:**
-        The Flathub CI will automatically build and test this update once the PR is created.
+        The manifest and cargo-sources.json are copied from the upstream repository at this tag, and only the tag and commit of the karere source are rewritten. No other validation is run by the workflow; the Flathub build is the test. If it passes, this PR can be merged."
 
-        **Merge Instructions:**
-        If the test build passes, this PR can be safely merged to publish the update to Flathub.
-
-        ---
-        *🤖 This PR was automatically created by [GitHub Actions](https://github.com/tobagin/karere/actions)*"
-        
         PR_JSON=$(jq -n \
-          --arg title "📦 Update Karere to ${{ steps.version.outputs.tag_name }}" \
+          --arg title "Update Karere to $TAG_NAME" \
           --arg head "$BRANCH_NAME" \
           --arg base "master" \
           --arg body "$PR_BODY" \
           '{title: $title, head: $head, base: $base, body: $body}')
-        
-        echo "🔄 Creating PR via GitHub API..."
+
+        echo "Creating PR via GitHub API..."
         API_RESPONSE=$(curl -s -X POST \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
           -H "Content-Type: application/json" \
           "https://api.github.com/repos/$FLATHUB_REPO/pulls" \
           -d "$PR_JSON")
-        
+
         PR_URL=$(echo "$API_RESPONSE" | jq -r '.html_url // empty')
-        
-        if [[ -n "$PR_URL" && "$PR_URL" != "null" ]]; then
-          echo "✅ Created PR: $PR_URL"
-          
-          # Mute the thread (GraphQL) to avoid an email flood on every release.
-          PR_NUMBER=$(echo "$API_RESPONSE" | jq -r '.number')
-          PR_NODE_ID=$(echo "$API_RESPONSE" | jq -r '.node_id')
 
-          echo "🔕 Unsubscribing from PR #$PR_NUMBER (Node ID: $PR_NODE_ID)..."
+        if [[ -z "$PR_URL" ]]; then
+          echo "PR creation failed. API response:" >&2
+          echo "$API_RESPONSE" | jq '.' >&2 || echo "$API_RESPONSE" >&2
+          # A re-run with an already-open PR gets a 422 here; the force-push above
+          # has still updated that PR, so point at it rather than guessing.
+          echo "If a PR for $BRANCH_NAME is already open it was updated by the push." >&2
+          echo "Otherwise create one at: https://github.com/$FLATHUB_REPO/pull/new/$BRANCH_NAME" >&2
+          exit 1
+        fi
 
-          gh api graphql -f query='
-            mutation($id: ID!) {
-              updateSubscription(input: {state: UNSUBSCRIBED, subscribableId: $id}) {
-                subscribable {
-                  viewerSubscription
-                }
+        echo "Created PR: $PR_URL"
+        echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+        # Mute the thread (GraphQL) to avoid an email flood on every release.
+        # Best effort only: a failure here must not fail the job.
+        PR_NUMBER=$(echo "$API_RESPONSE" | jq -r '.number')
+        PR_NODE_ID=$(echo "$API_RESPONSE" | jq -r '.node_id')
+
+        echo "Unsubscribing from PR #$PR_NUMBER (Node ID: $PR_NODE_ID)..."
+
+        if gh api graphql -f query='
+          mutation($id: ID!) {
+            updateSubscription(input: {state: UNSUBSCRIBED, subscribableId: $id}) {
+              subscribable {
+                viewerSubscription
               }
-            }' -f id="$PR_NODE_ID" > /dev/null
-            
-          echo "✅ Successfully unsubscribed."
+            }
+          }' -f id="$PR_NODE_ID" > /dev/null; then
+          echo "Unsubscribed."
         else
-          echo "⚠️ PR creation may have failed. API Response:"
-          echo "$API_RESPONSE" | jq '.'
-          echo "📋 Manual PR can be created at: https://github.com/$FLATHUB_REPO/pull/new/$BRANCH_NAME"
+          echo "Could not unsubscribe from the PR (non-fatal)."
         fi
 
     - name: Summary
       if: always()
+      env:
+        TAG_NAME: ${{ steps.version.outputs.tag_name }}
+        COMMIT_HASH: ${{ steps.version.outputs.commit_hash }}
+        VERSION: ${{ steps.version.outputs.version }}
+        PR_URL: ${{ steps.pr.outputs.pr_url }}
+        PR_OUTCOME: ${{ steps.pr.outcome }}
       run: |
-        echo "## 📋 Workflow Summary" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Tag:** \`${{ steps.version.outputs.tag_name }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "**Commit:** \`${{ steps.version.outputs.commit_hash }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "**Version:** \`${{ steps.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        if [[ "${{ steps.check.outputs.manifest_ready }}" == "true" ]]; then
-          echo "✅ **Manifest Ready:** Local Flatpak manifest found and validated" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Flathub PR Created:** Pull request submitted to Flathub repository" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "❌ **Manifest Missing:** Local manifest not found or invalid" >> $GITHUB_STEP_SUMMARY
-        fi
-        
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Next Steps:**" >> $GITHUB_STEP_SUMMARY
-        echo "1. Monitor the Flathub PR for CI build status" >> $GITHUB_STEP_SUMMARY
-        echo "2. Once CI passes, approve and merge the PR" >> $GITHUB_STEP_SUMMARY
-        echo "3. The new version will be published to Flathub automatically" >> $GITHUB_STEP_SUMMARY
+        {
+          echo "## Workflow Summary"
+          echo ""
+          echo "Tag: \`$TAG_NAME\`"
+          echo "Commit: \`$COMMIT_HASH\`"
+          echo "Version: \`$VERSION\`"
+          echo ""
+          if [[ "$PR_OUTCOME" == "success" && -n "$PR_URL" ]]; then
+            echo "Flathub PR created: $PR_URL"
+            echo ""
+            echo "Next steps:"
+            echo "1. Monitor the Flathub PR for CI build status."
+            echo "2. Once CI passes, merge the PR to publish the new version."
+          else
+            echo "The Flathub PR was not created (step outcome: ${PR_OUTCOME:-skipped}). See the job log."
+          fi
+        } >> "$GITHUB_STEP_SUMMARY"
