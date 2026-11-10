@@ -113,9 +113,9 @@ pub struct SharedState {
     /// the view flush (`wake_view`) to focus/unfocus the IM context — so Phosh's on-screen
     /// keyboard tracks the actual text field, not the always-focused GLArea.
     pub keyboard_request: Option<bool>,
-    /// Pending screen-reader announcement for page focus (#204); drained by
-    /// the view flush (`wake_view`) into `gtk::Accessible::announce`.
-    pub a11y_announce: Option<String>,
+    /// The foreground page's accessibility tree changed (#204); the view
+    /// flush syncs its AT-SPI mirror (`web_view::a11y_export`).
+    pub a11y_tree_dirty: bool,
     /// Latest CEF cursor as a GTK/CSS name, plus dirty flag. OSR never touches
     /// the GTK cursor; the view flush (`wake_view`) applies this.
     pub cursor_name: &'static str,
@@ -148,7 +148,7 @@ pub struct SharedState {
     /// stream, dropping and doubling frames — the "stutter" in #173/#179.
     pub redraw: Option<gtk::glib::SendWeakRef<gtk::GLArea>>,
     /// A `wake_view` flush is queued and has not drained the requests yet, so
-    /// a burst of cursor/IM/announce changes costs one main-loop callback.
+    /// a burst of cursor/IM/accessibility-tree changes costs one main-loop callback.
     pub view_wake_queued: bool,
     /// Page drag-out from `RenderHandler::start_dragging`, queued for the
     /// view to start the GTK drag (from an idle, never inside the CEF
@@ -158,7 +158,7 @@ pub struct SharedState {
 
 pub type SharedRef = Arc<Mutex<SharedState>>;
 
-/// Have the owning view apply the cursor / IM focus / announcement requests
+/// Have the owning view apply the cursor / IM focus / accessibility-tree requests
 /// just stored in `s`, from a main-loop idle callback rather than from inside
 /// the CEF callback. Takes the guard so the lock is released first; at most
 /// one flush is queued until the view drains (`view_wake_queued`).

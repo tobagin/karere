@@ -150,6 +150,10 @@ pub struct KarereWebView {
     /// Input-method composition (preedit) state; decides whether a key press
     /// goes to the IM before CEF and how committed text is delivered. (I1)
     pub ime_state: std::cell::Cell<ImeState>,
+    /// AT-SPI mirror of the page (#204). Created on the first accessibility
+    /// tree update, which CEF only sends when a screen reader is in use
+    /// (`handlers::accessibility::wanted`); `None` otherwise.
+    pub(super) ax_export: RefCell<Option<std::rc::Rc<super::a11y_export::Export>>>,
 }
 
 #[glib::object_subclass]
@@ -157,6 +161,8 @@ impl ObjectSubclass for KarereWebView {
     const NAME: &'static str = "KarereWebView";
     type Type = super::KarereWebView;
     type ParentType = gtk::GLArea;
+    // Re-implemented to list the page's accessible objects under the view.
+    type Interfaces = (gtk::Accessible,);
 }
 
 impl ObjectImpl for KarereWebView {
@@ -196,7 +202,7 @@ impl ObjectImpl for KarereWebView {
 
         // No periodic timer here. Paints queue their own render
         // (`request_redraw` in the render handler), and the cursor / IM /
-        // announcement handlers queue one coalesced flush through
+        // accessibility handlers queue one coalesced flush through
         // `handlers::wake_view` (`flush_requests`). Only a pending IM
         // focus-out runs a short-lived timer, for its debounce. A hidden
         // window therefore costs no wakeups from this view.
@@ -368,6 +374,25 @@ impl WidgetImpl for KarereWebView {
         {
             self.schedule_mobile_layout_check();
         }
+    }
+}
+
+impl AccessibleImpl for KarereWebView {
+    fn first_accessible_child(&self) -> Option<gtk::Accessible> {
+        match self.ax_export.borrow().as_ref() {
+            Some(e) => Some(e.root().clone().upcast()),
+            None => self.parent_first_accessible_child(),
+        }
+    }
+
+    fn platform_state(&self, state: gtk::AccessiblePlatformState) -> bool {
+        // While a page node holds focus, it reports focus instead of the view.
+        if state == gtk::AccessiblePlatformState::Focused
+            && self.ax_export.borrow().as_ref().is_some_and(|e| e.page_focused())
+        {
+            return false;
+        }
+        self.parent_platform_state(state)
     }
 }
 
@@ -546,7 +571,7 @@ impl KarereWebView {
         let Some(shared) = self.shared.lock().clone() else {
             return;
         };
-        let (dirty, cursor_name, keyboard_request, announce) = {
+        let (dirty, cursor_name, keyboard_request, a11y_tree) = {
             let mut s = shared.lock();
             if !debounce_tick {
                 s.view_wake_queued = false;
@@ -558,7 +583,8 @@ impl KarereWebView {
             } else {
                 None
             };
-            (dirty, cursor, s.keyboard_request.take(), s.a11y_announce.take())
+            let a11y_tree = std::mem::take(&mut s.a11y_tree_dirty);
+            (dirty, cursor, s.keyboard_request.take(), a11y_tree)
         };
         // Paints queue their own render; this only covers a frame still
         // waiting for one.
@@ -568,20 +594,16 @@ impl KarereWebView {
         if let Some(name) = cursor_name {
             w.set_cursor_from_name(Some(name));
         }
-        // Page focus moved under a screen reader (#204).
-        if let Some(text) = announce {
-            gtk::prelude::AccessibleExt::announce(
-                &*w,
-                &text,
-                gtk::AccessibleAnnouncementPriority::Medium,
-            );
+        // The page's accessibility tree changed under a screen reader (#204).
+        if a11y_tree {
+            self.sync_a11y_export();
         }
         // Editable focus changed in the page → focus the IM context so the
         // on-screen keyboard shows only for real text fields. Focus-out is
         // debounced so a composer re-render's false/true pair never leaves
         // the IM unfocused across the next keystroke (#180). The countdown
         // only advances on debounce ticks, so an unrelated flush (cursor,
-        // announcement) cannot shorten it.
+        // accessibility) cannot shorten it.
         if keyboard_request.is_none() && !debounce_tick {
             return;
         }
@@ -605,6 +627,29 @@ impl KarereWebView {
         if pending > 0 {
             self.arm_im_focus_timer();
         }
+    }
+
+    /// Mirror the foreground page's accessibility tree on AT-SPI, creating
+    /// the mirror on first use. Only reached when CEF sends tree updates.
+    fn sync_a11y_export(&self) {
+        let existing = self.ax_export.borrow().clone();
+        let export = match existing {
+            Some(e) => e,
+            None => {
+                let e = super::a11y_export::Export::new(&self.obj());
+                *self.ax_export.borrow_mut() = Some(e.clone());
+                e.attach();
+                e
+            }
+        };
+        let browser_id = resolved_browser(self).map_or(0, |b| b.identifier());
+        export.sync(browser_id);
+    }
+
+    /// The view's own first accessible child (its child widgets), skipping
+    /// the page mirror.
+    pub(super) fn widget_first_accessible_child(&self) -> Option<gtk::Accessible> {
+        self.parent_first_accessible_child()
     }
 
     /// Tick the IM focus-out debounce every `IM_FOCUS_TICK` until it has

@@ -400,7 +400,13 @@ impl KarereWebView {
         self.browser_id.store(id, Ordering::Relaxed);
         super::register_context_menu_widget(id, &self.obj());
         if let Some(shared) = self.shared.lock().as_ref() {
-            shared.lock().foreground_browser_id = id;
+            let mut s = shared.lock();
+            s.foreground_browser_id = id;
+            // Screen reader in use: mirror the new foreground's page (#204).
+            if self.ax_export.borrow().is_some() {
+                s.a11y_tree_dirty = true;
+                crate::handlers::wake_view(s);
+            }
         }
         {
             let mut wanted = self.wanted_foreground.lock();

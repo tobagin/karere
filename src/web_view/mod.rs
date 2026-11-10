@@ -1,6 +1,7 @@
 use gtk::glib;
 use gtk::subclass::prelude::*;
 
+mod a11y_export;
 mod clipboard_dnd;
 mod context_menu;
 mod gl;
@@ -221,7 +222,7 @@ impl KarereWebView {
     }
 }
 
-/// Apply the cursor / IM focus / announcement requests pending in `area`'s
+/// Apply the cursor / IM focus / accessibility-tree requests pending in `area`'s
 /// shared state. Called from the idle callback `handlers::wake_view` queues.
 /// Main-thread only.
 pub(crate) fn flush_view_requests(area: &gtk::GLArea) {
