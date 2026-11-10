@@ -195,6 +195,26 @@ pub(crate) fn dispatch_browser_message_with(
             );
             sink.execute_java_script(&script, "karere://paste");
         }
+        BrowserMessage::DispatchPasteFiles { kind, files, x, y } => {
+            // Same event as a single file, with a `files` list: the bridge
+            // puts them all in one DataTransfer.
+            let files: Vec<serde_json::Value> = files
+                .into_iter()
+                .map(|file| {
+                    let PasteBlob::Base64(data) = file.payload;
+                    serde_json::json!({
+                        "mime": file.mime,
+                        "name": file.name,
+                        "payload": { "kind": "Base64", "data": data },
+                    })
+                })
+                .collect();
+            let detail = serde_json::json!({ "kind": kind, "x": x, "y": y, "files": files });
+            let script = format!(
+                "window.dispatchEvent(new CustomEvent('karere:dispatch-paste',{{detail:{detail}}}))"
+            );
+            sink.execute_java_script(&script, "karere://paste");
+        }
         BrowserMessage::DragHover { phase, x, y } => {
             let detail = serde_json::json!({ "phase": phase, "x": x, "y": y });
             let script = format!(

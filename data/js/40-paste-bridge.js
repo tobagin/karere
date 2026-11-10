@@ -1,15 +1,16 @@
 // 40-paste-bridge.js — M17 GDK→page paste/drop bridge (renderer side).
 //
 // Browser intercepts Ctrl+V (image/file), drag-drop, and middle-click PRIMARY
-// text, sends DispatchPasteEvent over IPC; render_process.rs re-emits it as a
-// window CustomEvent `karere:dispatch-paste` with detail:
+// text, sends DispatchPasteEvent / DispatchPasteFiles over IPC; render_process.rs
+// re-emits it as a window CustomEvent `karere:dispatch-paste` with detail:
 //
-//   { mime, kind: "paste"|"drop", name?, x?, y?,
-//     payload: { kind: "Base64", data } | { kind: "FilePath", path } }
+//   single: { mime, kind: "paste"|"drop", name?, x?, y?,
+//             payload: { kind: "Base64", data } }
+//   batch:  { kind, x?, y?, files: [{ mime, name?, payload: { kind: "Base64", data } }] }
 //
-// We rebuild a DataTransfer (File for binary, text/plain for middle-click) and
-// dispatch a synthetic paste (on activeElement) or drop (on element under
-// cursor), then ack via PasteConsumed so the host can unlink any tempfile.
+// x/y are page CSS px. We rebuild ONE DataTransfer (every File of a batch, or
+// text/plain for middle-click) and dispatch a synthetic paste (on activeElement)
+// or drop (on element under cursor), then ack via PasteConsumed.
 //
 // Wrapped in try/catch so a throw never takes down the renderer.
 (function () {
@@ -20,13 +21,12 @@
   if (window.__karerePasteBridgeInstalled) return;
   window.__karerePasteBridgeInstalled = true;
 
-  function ack(tempfilePath) {
+  // `tempfile_path` stays in the ack for the host's message shape; payloads are
+  // always inline now, so it is always null.
+  function ack() {
     try {
       if (typeof window.karere_send === "function") {
-        window.karere_send(
-          "PasteConsumed",
-          JSON.stringify({ tempfile_path: tempfilePath || null })
-        );
+        window.karere_send("PasteConsumed", JSON.stringify({ tempfile_path: null }));
       }
     } catch (e) {
       /* channel unavailable — drop silently */
@@ -142,18 +142,19 @@
     document.dispatchEvent(new DragEvent("dragover", opts));
   }
 
-  // Resolve a payload object into a Blob.
-  async function payloadToBlob(payload, mime) {
-    if (payload.kind === "FilePath") {
-      var resp = await fetch("file://" + payload.path);
-      return await resp.blob();
-    }
-    // Base64
-    return new Blob([base64ToBytes(payload.data)], { type: mime });
+  // One {mime, name?, payload} entry → File.
+  function entryToFile(entry) {
+    var mime = entry.mime || "application/octet-stream";
+    var blob = new Blob([base64ToBytes(entry.payload.data)], { type: mime });
+    return new File([blob], entry.name || "paste." + extFromMime(mime), { type: mime });
   }
 
   async function handle(detail) {
     var kind = detail.kind === "drop" ? "drop" : "paste";
+    var batch = Array.isArray(detail.files) ? detail.files : null;
+    // Middle-click / Ctrl+V text: no File, just a text/plain entry. A named
+    // text/plain payload is a pasted text *file*, which attaches like any other.
+    var isText = !batch && kind === "paste" && detail.mime === "text/plain" && !detail.name;
 
     // Target: focused element for paste, element-under-cursor for drop.
     var target;
@@ -173,29 +174,27 @@
       // Middle-click (text/plain with coords) targets element-under-cursor;
       // Ctrl+V targets the focused element. Target must be editable — a
       // middle-click on a link/message text pastes nothing.
-      if (detail.mime === "text/plain" && typeof detail.x === "number") {
+      if (isText && typeof detail.x === "number") {
         target = document.elementFromPoint(detail.x, detail.y);
       } else {
         target = document.activeElement;
       }
-      if (!isEditable(target) && (detail.mime !== "text/plain" || detail.name)) {
+      if (!isEditable(target) && !isText) {
         // Files/images are not text: send them to the composer instead of dropping.
         target = findComposer() || target;
       }
       if (!isEditable(target)) {
-        if (detail.mime !== "text/plain") {
+        if (!isText) {
           warn("karere paste bridge: no editable target for paste");
         }
-        ack(detail.payload && detail.payload.path);
+        ack();
         return;
       }
     }
 
     var dt = new DataTransfer();
 
-    // Middle-click text paste: no File, just a text/plain entry. A named
-    // payload is a pasted text *file*, which attaches like any other file.
-    if (kind === "paste" && detail.mime === "text/plain" && !detail.name) {
+    if (isText) {
       var text = "";
       try {
         text = new TextDecoder().decode(base64ToBytes(detail.payload.data));
@@ -210,18 +209,15 @@
           cancelable: true,
         })
       );
-      ack(null);
+      ack();
       return;
     }
 
-    // Binary payload → File.
-    var blob = await payloadToBlob(detail.payload, detail.mime);
-    var filename =
-      detail.name || "paste." + extFromMime(detail.mime || "application/octet-stream");
-    var file = new File([blob], filename, {
-      type: detail.mime || blob.type || "application/octet-stream",
+    // Binary payload(s) → File(s), all in this one DataTransfer so the page
+    // sees a single multi-file paste/drop.
+    (batch || [detail]).forEach(function (entry) {
+      dt.items.add(entryToFile(entry));
     });
-    dt.items.add(file);
 
     if (kind === "drop") {
       // Full DnD sequence — WhatsApp dropzones gate the drop on prior
@@ -256,7 +252,7 @@
       );
     }
 
-    ack(detail.payload && detail.payload.kind === "FilePath" ? detail.payload.path : null);
+    ack();
   }
 
   try {
@@ -264,9 +260,7 @@
       try {
         handle(ev.detail).catch(function (err) {
           warn("karere paste bridge failed: " + (err && err.stack ? err.stack : err));
-          // Best-effort tempfile reclaim even on failure.
-          var d = ev.detail || {};
-          ack(d.payload && d.payload.kind === "FilePath" ? d.payload.path : null);
+          ack();
         });
       } catch (err) {
         warn("karere paste bridge threw: " + (err && err.stack ? err.stack : err));

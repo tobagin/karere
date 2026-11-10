@@ -115,37 +115,36 @@ fn egl() -> Option<&'static Egl> {
     EGL.get_or_init(load_egl).as_ref()
 }
 
-/// True when EGL + the dma-buf import extension are present on the current
-/// display. Must be called with the GLArea GL context current (so EGL has a
-/// current display). Cached after the first successful query. (gpu-osr)
-#[allow(dead_code)]
-pub fn is_supported() -> bool {
-    static SUPPORTED: OnceLock<bool> = OnceLock::new();
-    *SUPPORTED.get_or_init(|| {
-        let Some(e) = egl() else {
-            log::warn!("gl_dmabuf: EGL load failed");
-            return false;
-        };
-        unsafe {
-            let dpy = (e.get_current_display)();
-            if dpy.is_null() {
-                log::warn!("gl_dmabuf: no current EGL display (GL context not current at check)");
-                return false;
-            }
-            let exts = (e.query_string)(dpy, EGL_EXTENSIONS);
-            if exts.is_null() {
-                log::warn!("gl_dmabuf: eglQueryString(EGL_EXTENSIONS) returned null");
-                return false;
-            }
-            let s = CStr::from_ptr(exts).to_string_lossy();
-            let ok = s.contains("EGL_EXT_image_dma_buf_import");
-            log::warn!(
-                "gl_dmabuf: dma-buf import {}",
-                if ok { "supported" } else { "NOT supported" }
-            );
-            ok
+/// Whether EGL + the dma-buf import extension are present on the current
+/// display. Must be called with the GLArea GL context current. `None` when no
+/// EGL display is current (no context made current yet, or a GLX context), so
+/// the caller can retry later instead of recording a false negative; not
+/// cached here — the caller caches a definite answer. (gpu-osr)
+pub fn dmabuf_import_supported() -> Option<bool> {
+    let Some(e) = egl() else {
+        log::warn!("gl_dmabuf: EGL load failed");
+        return Some(false);
+    };
+    unsafe {
+        let dpy = (e.get_current_display)();
+        if dpy.is_null() {
+            log::warn!("gl_dmabuf: no current EGL display (GL context not current at check)");
+            return None;
         }
-    })
+        let exts = (e.query_string)(dpy, EGL_EXTENSIONS);
+        if exts.is_null() {
+            log::warn!("gl_dmabuf: eglQueryString(EGL_EXTENSIONS) returned null");
+            return Some(false);
+        }
+        let s = CStr::from_ptr(exts).to_string_lossy();
+        let ok = s.contains("EGL_EXT_image_dma_buf_import");
+        if ok {
+            log::info!("gl_dmabuf: dma-buf import supported");
+        } else {
+            log::warn!("gl_dmabuf: dma-buf import NOT supported");
+        }
+        Some(ok)
+    }
 }
 
 /// One imported frame: the EGLImage kept alive while its texture is sampled.
@@ -177,8 +176,13 @@ pub struct Plane {
 /// One pending accelerated frame handed off from `on_accelerated_paint` (CEF UI
 /// thread) to `draw` (GL context current). Owns the dup'd plane fds. (gpu-osr)
 pub struct AccelFrame {
+    /// Buffer (coded) size: what the EGLImage is created with.
     pub width: i32,
     pub height: i32,
+    /// Part of the buffer holding the picture, `(x, y, w, h)` in buffer
+    /// pixels. The coded size can be padded past the view; sampling only this
+    /// rect keeps the padding off screen.
+    pub visible: (i32, i32, i32, i32),
     pub fourcc: u32,
     pub modifier: u64,
     pub planes: Vec<Plane>,

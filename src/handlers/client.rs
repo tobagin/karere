@@ -92,6 +92,17 @@ mod generated_client {
             let cef_id = browser.as_ref().map(|b| b.identifier()).unwrap_or(0);
             let account_id = crate::accounts::account_for_browser(cef_id);
             let decoded = RendererMessage::try_from_cef_message(message);
+            // The page may only write the host clipboard right after the user
+            // did something in the web view (key, click, drag, touch, menu
+            // Copy); otherwise a script could replace it at any time. (S9)
+            if let Ok(
+                RendererMessage::SetClipboard { .. } | RendererMessage::SetClipboardImage { .. },
+            ) = decoded.as_ref()
+                && !crate::web_view::recent_user_input(CLIPBOARD_GESTURE_WINDOW_MS)
+            {
+                log::debug!("clipboard write without recent user input, dropping");
+                return 1;
+            }
             // Clipboard messages take the production-used narrow adapter after
             // the real CEF decoder. Other renderer messages continue through the
             // full client match below.
@@ -129,7 +140,10 @@ mod generated_client {
                     1
                 }
                 Ok(RendererMessage::NotificationClosed { tag }) => {
-                    crate::notifications::tracker().on_closed(&tag); // renderer fallback carries no account
+                    match account_id.as_deref() {
+                        Some(id) => crate::notifications::tracker().on_closed_for(id, &tag),
+                        None => crate::notifications::tracker().on_closed(&tag),
+                    }
                     1
                 }
                 // Paste payloads are always inline; the ack has nothing to clean up.
@@ -373,6 +387,9 @@ fn write_host_clipboard(text: &str, primary: bool) {
     };
     clipboard.set_text(text);
 }
+
+/// How long after host-observed user input a page clipboard write is accepted.
+const CLIPBOARD_GESTURE_WINDOW_MS: i64 = 5_000;
 
 /// Cap on a page-supplied clipboard image, checked before decoding (≈48 MB raw).
 const MAX_CLIPBOARD_IMAGE_B64: usize = 64 * 1024 * 1024;

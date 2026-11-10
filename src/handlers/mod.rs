@@ -57,9 +57,11 @@ pub struct DownloadFailed {
 #[derive(Default)]
 pub struct SharedState {
     pub frame: FrameBuffer,
-    /// Pending GPU-accelerated frame (DMA-BUF) from `on_accelerated_paint`, when
-    /// shared-texture OSR is enabled; consumed + imported to a GL texture in
-    /// `draw`. `None` on the software (`on_paint`) path. (gpu-osr)
+    /// Latest GPU-accelerated frame (DMA-BUF) from `on_accelerated_paint`, when
+    /// shared-texture OSR is enabled; imported to a GL texture in `draw` and
+    /// kept (with `dirty` cleared) while it is the frame on screen. Cleared by a
+    /// CPU `on_paint`, so a mid-session fallback to CPU frames is not hidden
+    /// behind the last DMA-BUF. (gpu-osr)
     pub accel: Option<crate::gl_dmabuf::AccelFrame>,
     /// Logical (DIP) viewport size — CEF's GetViewRect and GetScreenInfo rect.
     /// With non-empty screen rects Chromium honours device_scale_factor, so the
@@ -91,11 +93,21 @@ pub struct SharedState {
     pub downloads_completed: Vec<DownloadCompleted>,
     /// Failed downloads awaiting a failure dialog; drained by the poll loop.
     pub downloads_failed: Vec<DownloadFailed>,
-    /// Last (enabled, languages) applied via the editable-focus trigger. `None`
-    /// until the first apply of the current load (reset on each main-frame load
-    /// start). Focus re-applies only when resolved settings differ, so a live
-    /// language switch re-checks on returning focus to the composer.
-    pub spellcheck_last: Option<(bool, Vec<String>)>,
+    /// Last (enabled, languages) applied via the editable-focus trigger, keyed
+    /// by CEF browser id: spellcheck prefs live on each account's own
+    /// RequestContext, so one browser's apply says nothing about another's.
+    /// `None` (reset on any main-frame load start) makes every browser apply
+    /// again on its next editable focus. Focus re-applies only when resolved
+    /// settings differ, so a live language switch re-checks on returning focus
+    /// to the composer.
+    pub spellcheck_last: Option<std::collections::HashMap<i32, (bool, Vec<String>)>>,
+    /// Native popup widget (`<select>` dropdown etc.) of the foreground
+    /// browser, composited over the view by `draw`/`snapshot`.
+    pub popup: render::PopupLayer,
+    /// Caret/composition rect (x, y, w, h) in view (physical) coordinates
+    /// from `on_ime_composition_range_changed`, for placing the IM candidate
+    /// window. `None` until the page reports a composition range.
+    pub ime_caret_rect: Option<(i32, i32, i32, i32)>,
     /// Pending IM focus state from CEF's virtual-keyboard request: `Some(true)`
     /// when a page editable gains focus, `Some(false)` when it blurs. Drained by
     /// the widget timer to focus/unfocus the IM context — so Phosh's on-screen
@@ -123,9 +135,10 @@ pub struct SharedState {
     /// `src/web_view.rs`), converted to physical pixels (xlib physical results
     /// passed through clamped; only logical/DIP results are scaled via
     /// `widget.scale_factor()`). Before realize or after unrealize the value
-    /// is `(0,0)`. Updated on the GTK main thread by `size_allocate` /
-    /// `refresh_screen_scale`; read by `screen_point` on the CEF UI thread
-    /// (main thread under `external_message_pump`). (KARE-019)
+    /// is `(0,0)`. Updated on the GTK main thread when the viewport changes
+    /// and re-queried by `screen_point` (so a moved window is seen), which
+    /// runs on the CEF UI thread = main thread under `external_message_pump`.
+    /// (KARE-019)
     pub window_origin: (i32, i32),
     /// The presenting `GtkGLArea`, so a paint can queue its own render instead
     /// of waiting for the widget's 16 ms poll timer. On_paint runs on the main

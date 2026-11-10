@@ -211,6 +211,22 @@ pub(crate) fn cef_to_linear(cef: f64) -> f64 {
     (cef * 1.2_f64.ln()).exp()
 }
 
+/// Monotonic time (µs, `glib::monotonic_time`) of the last host-observed user
+/// input on the web view: key press, button press, drag motion, touch, or a
+/// context-menu activation. Gates page-initiated clipboard writes. (S9)
+static LAST_USER_INPUT_US: std::sync::atomic::AtomicI64 = std::sync::atomic::AtomicI64::new(i64::MIN);
+
+/// Record that the user just interacted with the web view. Main thread.
+pub(crate) fn note_user_input() {
+    LAST_USER_INPUT_US.store(glib::monotonic_time(), std::sync::atomic::Ordering::Relaxed);
+}
+
+/// True when the user interacted with the web view within the last `within_ms`.
+pub fn recent_user_input(within_ms: i64) -> bool {
+    let last = LAST_USER_INPUT_US.load(std::sync::atomic::Ordering::Relaxed);
+    last != i64::MIN && glib::monotonic_time().saturating_sub(last) <= within_ms * 1000
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum CpuUpload {
     Empty,
@@ -238,6 +254,68 @@ fn discard_failed_accel<T>(pending: &mut Option<T>) {
     pending.take();
 }
 
+/// UV transform `[x, y, w, h]` (fractions of the texture) that samples just
+/// `visible` out of a `coded`-sized buffer. Fed to the vertex shader's `u_uv`.
+fn texture_uv(visible: (i32, i32, i32, i32), coded: (i32, i32)) -> [f32; 4] {
+    let cw = coded.0.max(1) as f32;
+    let ch = coded.1.max(1) as f32;
+    let (x, y, w, h) = visible;
+    [x as f32 / cw, y as f32 / ch, w as f32 / cw, h as f32 / ch]
+}
+
+/// GL viewport `(x, y, w, h)` that puts `rect` — top-left origin, in CEF view
+/// (physical) pixels — on a `framebuffer`-sized target while the view is
+/// `view` pixels (`SharedState::size`). GL counts y from the bottom. A frame
+/// of the current view size fills the framebuffer exactly; a stale
+/// previous-size frame during a resize keeps its own size anchored top-left
+/// instead of being stretched over the new size. Popups use the same mapping.
+fn gl_viewport_for(
+    framebuffer: (i32, i32),
+    view: (i32, i32),
+    rect: (i32, i32, i32, i32),
+) -> (i32, i32, i32, i32) {
+    let sx = if view.0 > 0 { framebuffer.0 as f64 / view.0 as f64 } else { 1.0 };
+    let sy = if view.1 > 0 { framebuffer.1 as f64 / view.1 as f64 } else { 1.0 };
+    let (x, y, w, h) = rect;
+    let x0 = (x as f64 * sx).round() as i32;
+    let y0 = (y as f64 * sy).round() as i32;
+    let x1 = ((x + w) as f64 * sx).round() as i32;
+    let y1 = ((y + h) as f64 * sy).round() as i32;
+    (x0, framebuffer.1 - y1, x1 - x0, y1 - y0)
+}
+
+/// WhatsApp Web's page background, the same pair the shell tints itself with
+/// (`match-whatsapp-colors` in `application.rs`). Shown around a frame that
+/// does not cover the widget yet (resize, first paint) instead of black.
+const PAGE_BG_DARK: [f32; 3] = [0x1d as f32 / 255.0, 0x1f as f32 / 255.0, 0x1f as f32 / 255.0];
+const PAGE_BG_LIGHT: [f32; 3] = [0xf7 as f32 / 255.0, 0xf5 as f32 / 255.0, 0xf3 as f32 / 255.0];
+
+/// Page background for the current theme. Read off the widget's CSS
+/// foreground colour, which libadwaita drives from Karere's theme setting: a
+/// light foreground means a dark theme.
+fn page_background(widget: &impl gtk::prelude::WidgetExt) -> [f32; 3] {
+    let fg = widget.color();
+    page_background_for_foreground(fg.red(), fg.green(), fg.blue())
+}
+
+/// Physical screen origin of the window showing `area` (X11; `(0, 0)` on
+/// Wayland), queried now rather than at the last allocation so a moved window
+/// reports its new position. `None` when `area` is not a web view. Main thread
+/// only.
+pub(crate) fn current_window_origin(area: &gtk::GLArea) -> Option<(i32, i32)> {
+    use gtk::prelude::Cast;
+    area.downcast_ref::<KarereWebView>()
+        .map(imp::window_origin_for)
+}
+
+fn page_background_for_foreground(r: f32, g: f32, b: f32) -> [f32; 3] {
+    if 0.299 * r + 0.587 * g + 0.114 * b > 0.5 {
+        PAGE_BG_DARK
+    } else {
+        PAGE_BG_LIGHT
+    }
+}
+
 /// CEF `BrowserHost` zoom level to apply for a user zoom factor at a given
 /// integer display scale. Because this CEF build ignores device_scale_factor for
 /// OSR, the paint buffer is sized to the physical (logical × scale) view rect for
@@ -253,14 +331,40 @@ pub(crate) fn host_zoom_level(user_linear: f64, display_scale: f64) -> f64 {
 /// `webview-zoom` toggle is on, else the hard CEF minimum. Shared by the window's
 /// zoom actions and the load handler's first-paint apply. (M18 5.x)
 pub(crate) fn zoom_floor() -> f64 {
-    use gtk::gio;
     use gtk::prelude::SettingsExt;
-    let s = gio::Settings::new(crate::application::APP_ID);
-    if s.boolean("webview-zoom") {
-        s.double("zoom-level").clamp(ZOOM_MIN, ZOOM_MAX)
-    } else {
-        ZOOM_MIN
-    }
+    with_app_settings(|s| {
+        if s.boolean("webview-zoom") {
+            s.double("zoom-level").clamp(ZOOM_MIN, ZOOM_MAX)
+        } else {
+            ZOOM_MIN
+        }
+    })
+}
+
+thread_local! {
+    /// One app `GSettings` for the hot-path readers below (allocation, load
+    /// end, mute pushes) instead of constructing a new object per call. Reads
+    /// still go to the backend, so values are always current. Main thread only
+    /// (`gio::Settings` is not `Send`).
+    static APP_SETTINGS: gtk::gio::Settings = gtk::gio::Settings::new(crate::application::APP_ID);
+}
+
+fn with_app_settings<R>(f: impl FnOnce(&gtk::gio::Settings) -> R) -> R {
+    APP_SETTINGS.with(f)
+}
+
+/// Running on a phone shell, where `auto` always means the mobile layout.
+/// The session's desktop cannot change under a running process.
+fn on_mobile_desktop() -> bool {
+    static MOBILE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *MOBILE.get_or_init(|| {
+        std::env::var("XDG_CURRENT_DESKTOP").is_ok_and(|desktop| {
+            let d = desktop.to_lowercase();
+            ["phosh", "plasma-mobile", "lomiri"]
+                .iter()
+                .any(|m| d.contains(m))
+        })
+    })
 }
 
 /// The width (logical px) below which `auto` mode switches WhatsApp Web to the
@@ -277,37 +381,52 @@ const EMBED_MOBILE: &str = include_str!("../data/js-deferred/mobile_responsive.j
 /// `mobile-layout` GSetting forces `enabled`/`disabled`; `auto` is true on a mobile
 /// desktop (phosh/plasma-mobile/lomiri) or width in `(0, MOBILE_WIDTH_THRESHOLD)`. (M21)
 pub(crate) fn should_use_mobile_layout(width_logical_px: i32) -> bool {
-    use gtk::gio;
     use gtk::prelude::SettingsExt;
 
-    match gio::Settings::new(crate::application::APP_ID)
-        .string("mobile-layout")
-        .as_str()
-    {
+    let mode = with_app_settings(|s| s.string("mobile-layout"));
+    match mode.as_str() {
         "enabled" => true,
         "disabled" => false,
         _ => {
-            if let Ok(desktop) = std::env::var("XDG_CURRENT_DESKTOP") {
-                let d = desktop.to_lowercase();
-                if ["phosh", "plasma-mobile", "lomiri"]
-                    .iter()
-                    .any(|m| d.contains(m))
-                {
-                    return true;
-                }
-            }
-            width_logical_px > 0 && width_logical_px < MOBILE_WIDTH_THRESHOLD
+            on_mobile_desktop()
+                || (width_logical_px > 0 && width_logical_px < MOBILE_WIDTH_THRESHOLD)
         }
     }
+}
+
+thread_local! {
+    /// Layout each browser's current page was loaded with (CEF browser id →
+    /// mobile), recorded when `on_load_end` runs the gate. The v3 script cannot
+    /// un-apply itself, so a page whose recorded layout no longer matches the
+    /// width needs a reload; tracking it per browser lets a background account
+    /// be corrected when it comes to the foreground. Main thread only.
+    static MOBILE_LOADED: std::cell::RefCell<std::collections::HashMap<i32, bool>> =
+        std::cell::RefCell::new(std::collections::HashMap::new());
+}
+
+/// True when `browser_id`'s loaded page uses the other layout than
+/// `width_logical_px` calls for. `false` while no page has finished loading
+/// (its `on_load_end` will pick the right one).
+fn mobile_layout_mismatch(browser_id: i32, width_logical_px: i32) -> bool {
+    let wanted = should_use_mobile_layout(width_logical_px);
+    MOBILE_LOADED.with(|m| m.borrow().get(&browser_id).is_some_and(|&loaded| loaded != wanted))
+}
+
+fn record_mobile_layout(browser_id: i32, mobile: bool) {
+    MOBILE_LOADED.with(|m| {
+        m.borrow_mut().insert(browser_id, mobile);
+    });
 }
 
 /// Inject the mobile-responsive script into `browser`'s main frame when the layout
 /// is mobile for `width_logical_px`. Idempotent per page via `window.__karereMobileApplied`.
 /// Called from `on_load_end`; the script only un-applies via a full reload (driven
-/// by the resize gate in `size_allocate`). (M21)
+/// by the debounced gate in `KarereWebView::check_mobile_layout`). (M21)
 pub(crate) fn apply_mobile_layout(browser: &cef::Browser, width_logical_px: i32) {
     use cef::{CefString, ImplBrowser, ImplFrame};
-    if !should_use_mobile_layout(width_logical_px) {
+    let mobile = should_use_mobile_layout(width_logical_px);
+    record_mobile_layout(browser.identifier(), mobile);
+    if !mobile {
         return;
     }
     let Some(frame) = browser.main_frame() else {
@@ -331,8 +450,10 @@ window.__karereMobileApplied=true;{EMBED_MOBILE}\n}})();"
 pub(crate) fn notif_sound_muted_for(browser: &cef::Browser) -> bool {
     use cef::ImplBrowser;
     use gtk::prelude::SettingsExt;
-    let s = gtk::gio::Settings::new(crate::application::APP_ID);
-    if !s.boolean("notifications-enabled") || !s.boolean("notify-sound-enabled") {
+    let globally_off = with_app_settings(|s| {
+        !s.boolean("notifications-enabled") || !s.boolean("notify-sound-enabled")
+    });
+    if globally_off {
         return true;
     }
     crate::accounts::account_for_browser(browser.identifier())
@@ -365,7 +486,7 @@ pub(crate) fn apply_notif_sound_from_settings(browser: &cef::Browser) {
 pub(crate) fn apply_zoom_from_account(browser: &cef::Browser, display_scale: f64) {
     use cef::{ImplBrowser, ImplBrowserHost};
     let Some(id) = crate::accounts::account_for_browser(browser.identifier()) else {
-        log::info!(
+        log::trace!(
             "coord: J7 apply_zoom account=none browser_id={} display_scale={:.3} (uncompensated)",
             browser.identifier(),
             display_scale
@@ -378,7 +499,7 @@ pub(crate) fn apply_zoom_from_account(browser: &cef::Browser, display_scale: f64
         .unwrap_or(1.0);
     let effective = persisted.max(zoom_floor());
     let cef_level = host_zoom_level(effective, display_scale);
-    log::info!(
+    log::trace!(
         "coord: J7 apply_zoom account={} user_linear={:.3} display_scale={:.3} cef_level={:.3}",
         id,
         effective,
@@ -596,8 +717,8 @@ mod imp {
         pub fallback_test_events: RefCell<Vec<(&'static str, Option<bool>)>>,
         #[cfg(test)]
         pub suppress_browser_creation: AtomicBool,
-        /// Last chrome-window visibility (recorded; sound gating no longer uses it).
-        #[allow(dead_code)]
+        /// Last chrome-window visibility. `adopt_foreground` reads it to keep a
+        /// new foreground paused while the window is hidden (#151).
         pub window_visible: AtomicBool,
         program: AtomicU32,
         /// No usable GL context, so frames are presented through GTK's normal
@@ -613,6 +734,22 @@ mod imp {
         /// the live EGLImage kept alive while that texture is sampled. (gpu-osr)
         accel_tex: AtomicU32,
         imported: RefCell<Option<crate::gl_dmabuf::ImportedImage>>,
+        /// Popup layer (`<select>` dropdowns) textures: CPU upload target with
+        /// its current size, and the accelerated import target + live
+        /// EGLImage. Composited over the view in `draw`.
+        popup_tex: AtomicU32,
+        pub(super) popup_tex_w: AtomicI32,
+        pub(super) popup_tex_h: AtomicI32,
+        accel_popup_tex: AtomicU32,
+        imported_popup: RefCell<Option<crate::gl_dmabuf::ImportedImage>>,
+        /// Software present path: textures built from the last view / popup
+        /// frame, reused while CEF has not painted again so an unrelated
+        /// redraw does not copy the whole frame into a new texture. (P6)
+        sw_texture: RefCell<Option<gtk::gdk::MemoryTexture>>,
+        sw_popup_texture: RefCell<Option<gtk::gdk::MemoryTexture>>,
+        /// Surface whose `scale` we follow and the handler id, so a realize
+        /// connects once per surface and unrealize disconnects. (I11)
+        scale_notify: RefCell<Option<(gtk::gdk::Surface, glib::SignalHandlerId)>>,
         /// Last pointer position (logical px) so wheel events hit the element
         /// under the cursor, not the top-left corner.
         last_mouse_x: AtomicI32,
@@ -633,12 +770,10 @@ mod imp {
         pub pending_menu_command: std::cell::Cell<Option<i32>>,
         /// The currently-displayed context popover, kept alive while open.
         pub context_popover: RefCell<Option<gtk::Popover>>,
-        /// M21 mobile-layout resize gate. `mobile_active` = last mobile/desktop
-        /// decision; `mobile_init` guards the first allocation so it seeds state
-        /// without a spurious reload. A width-threshold crossing reloads so
-        /// `on_load_end` re-evaluates the gate.
-        pub mobile_active: std::cell::Cell<bool>,
-        pub mobile_init: std::cell::Cell<bool>,
+        /// M21 mobile-layout gate: pending debounced re-check after a resize or
+        /// foreground switch. When it fires, a foreground page loaded with the
+        /// other layout is reloaded so `on_load_end` re-evaluates. (D5)
+        mobile_check: RefCell<Option<glib::SourceId>>,
         /// The GLArea's IM context, stored so the widget timer can focus it in/out
         /// in response to CEF's editable-focus signal (keyboard_request). Set once
         /// in `install_input_controllers`.
@@ -657,6 +792,9 @@ mod imp {
         /// dropped the next key (#180). Deferring it lets the paired true cancel
         /// it, while a genuine blur still settles. See `im_focus_step`.
         pub im_focus_out_pending: std::cell::Cell<u8>,
+        /// Input-method composition (preedit) state; decides whether a key press
+        /// goes to the IM before CEF and how committed text is delivered. (I1)
+        pub ime_state: std::cell::Cell<ImeState>,
     }
 
     #[glib::object_subclass]
@@ -794,35 +932,58 @@ mod imp {
                 self.parent_snapshot(snapshot);
                 return;
             }
+            let widget = self.obj();
+            let (w, h) = (widget.width() as f32, widget.height() as f32);
+            let bounds = gtk::graphene::Rect::new(0.0, 0.0, w, h);
+            let [r, g, b] = super::page_background(&*widget);
+            snapshot.append_color(&gtk::gdk::RGBA::new(r, g, b, 1.0), &bounds);
             let Some(shared) = self.shared.lock().as_ref().cloned() else {
                 return;
             };
             let mut s = shared.lock();
-            if s.frame.width <= 0 || s.frame.height <= 0 || s.frame.pixels.is_empty() {
-                return;
-            }
-            // CEF hands back premultiplied BGRA, which is a GdkMemoryTexture
-            // format verbatim -- no conversion, just the one copy Bytes makes.
-            let texture = gtk::gdk::MemoryTexture::new(
-                s.frame.width,
-                s.frame.height,
-                gtk::gdk::MemoryFormat::B8g8r8a8Premultiplied,
-                &glib::Bytes::from(&s.frame.pixels[..]),
-                (s.frame.width * 4) as usize,
-            );
-            s.frame.dirty = false;
+            let view = cached_frame_texture(&self.sw_texture, &mut s.frame);
+            let popup_rect = s.popup.visible_rect(s.foreground_browser_id);
+            let popup = match popup_rect {
+                Some(_) => cached_frame_texture(&self.sw_popup_texture, &mut s.popup.frame),
+                None => {
+                    *self.sw_popup_texture.borrow_mut() = None;
+                    None
+                }
+            };
             drop(s);
-            // Frame is physical pixels, widget bounds are logical: letting the
-            // rect scale it is the same fit the GL path gets from the viewport.
-            let widget = self.obj();
+            let Some(view) = view else { return };
+            // Frame and popup rect are physical pixels, widget bounds logical.
+            // Draw the frame at its own size, anchored top-left: during a
+            // resize the previous-size frame stays 1:1 instead of stretching.
+            let scale = paint_scale(&widget) as f32;
+            snapshot.push_clip(&bounds);
             snapshot.append_texture(
-                &texture,
-                &gtk::graphene::Rect::new(0.0, 0.0, widget.width() as f32, widget.height() as f32),
+                &view,
+                &gtk::graphene::Rect::new(
+                    0.0,
+                    0.0,
+                    view.width() as f32 / scale,
+                    view.height() as f32 / scale,
+                ),
             );
+            if let (Some(popup), Some((px, py, pw, ph))) = (popup, popup_rect) {
+                snapshot.append_texture(
+                    &popup,
+                    &gtk::graphene::Rect::new(
+                        px as f32 / scale,
+                        py as f32 / scale,
+                        pw as f32 / scale,
+                        ph as f32 / scale,
+                    ),
+                );
+            }
+            snapshot.pop();
         }
 
         fn realize(&self) {
             self.parent_realize();
+            // Both present paths (GL and software) must follow scale changes.
+            self.watch_surface_scale();
             let widget = self.obj();
             widget.make_current();
             if let Some(err) = widget.error() {
@@ -855,26 +1016,35 @@ mod imp {
             unsafe {
                 self.init_gl();
             }
+            // The one point where this GLArea's context is known current and
+            // before any browser of a visible start is created. (I6)
+            probe_accel_osr();
             self.bootstrap_pool();
-
-            // Follow scale changes (e.g. dragging between monitors of different
-            // scale) so device_scale_factor / paint buffer track. The surface
-            // `scale` notify fires across the integer boundaries the OSR buffer
-            // cares about; a pure fractional change leaves the integer paint
-            // scale unchanged, so refresh_screen_scale is then a cheap no-op. (#155, #158)
-            if let Some(surface) = widget.native().and_then(|n| n.surface()) {
-                surface.connect_scale_notify(glib::clone!(
-                    #[weak]
-                    widget,
-                    move |_s| widget.imp().refresh_screen_scale()
-                ));
-            }
         }
 
         fn unrealize(&self) {
             self.close_browser();
-            unsafe {
-                self.teardown_gl();
+            if let Some((surface, id)) = self.scale_notify.take() {
+                surface.disconnect(id);
+            }
+            if let Some(id) = self.mobile_check.take() {
+                id.remove();
+            }
+            *self.sw_texture.borrow_mut() = None;
+            *self.sw_popup_texture.borrow_mut() = None;
+            // glDelete* act on whatever context is current; deleting by name
+            // with another view's context current (DevTools closing next to the
+            // main view) would free that view's objects. Only tear down with
+            // our own context current. (I4)
+            let widget = self.obj();
+            widget.make_current();
+            if widget.error().is_none() && widget.context().is_some() {
+                unsafe {
+                    self.teardown_gl();
+                }
+            } else {
+                // Our names die with the context GTK is about to destroy.
+                self.forget_gl_names();
             }
             self.parent_unrealize();
         }
@@ -887,66 +1057,17 @@ mod imp {
             // crisp; the resulting too-many-CSS-px (content too small) is corrected
             // by an equal page zoom applied to the browser (see host_zoom_level).
             // Mouse/wheel/menu coords are therefore physical too. (#158)
-            let scale = paint_scale(&self.obj());
-            let phys_w = (width as f64 * scale).round() as i32;
-            let phys_h = (height as f64 * scale).round() as i32;
-
-            let (old_size, old_scale) = self
-                .shared
-                .lock()
-                .as_ref()
-                .map(|sh| {
-                    let s = sh.lock();
-                    (s.size, s.scale_factor as f64)
-                })
-                .unwrap_or(((0, 0), 1.0));
-            if let Some(shared) = self.shared.lock().as_ref() {
-                let mut s = shared.lock();
-                s.size = (phys_w, phys_h);
-                s.scale_factor = scale as f32;
-                s.window_origin = window_origin_for(&self.obj());
-            }
-            log::info!(
-                "coord: J1 size_allocate logical={}x{} scale={:.3} physical={}x{} old_scale={:.3} new_scale={:.3} old_physical={}x{}",
-                width,
-                height,
-                scale,
-                phys_w,
-                phys_h,
-                old_scale,
-                scale,
-                old_size.0,
-                old_size.1
-            );
-
-            if let Some(browser) = resolved_browser(self)
-                && let Some(host) = browser.host()
-            {
-                host.notify_screen_info_changed();
-                host.was_resized();
-                // If the integer scale changed since the last allocation (e.g.
-                // stale prewarm seed #176 or monitor move), re-sync the zoom so
-                // the physical buffer and input transform stay coupled (#158).
-                if (scale - old_scale).abs() > f64::EPSILON {
-                    super::apply_zoom_from_account(&browser, scale);
-                }
-            }
+            self.sync_viewport(width, height, "size_allocate");
 
             // M21: gate the mobile single-pane layout on logical width. The v3
             // script can't un-apply its DOM/CSS, so a threshold crossing reloads
-            // and `on_load_end` re-injects (or not).
-            if width > 0 {
-                let is_mobile = super::should_use_mobile_layout(width);
-                if !self.mobile_init.get() {
-                    // First real allocation: seed state; first on_load_end injects if mobile.
-                    self.mobile_init.set(true);
-                    self.mobile_active.set(is_mobile);
-                } else if is_mobile != self.mobile_active.get() {
-                    self.mobile_active.set(is_mobile);
-                    if let Some(browser) = resolved_browser(self) {
-                        browser.reload();
-                    }
-                }
+            // and `on_load_end` re-injects (or not) — debounced, so dragging
+            // across the threshold reloads once at the end, not per frame.
+            if width > 0
+                && let Some(browser) = resolved_browser(self)
+                && super::mobile_layout_mismatch(browser.identifier(), width)
+            {
+                self.schedule_mobile_layout_check();
             }
         }
     }
@@ -1078,53 +1199,122 @@ mod imp {
         /// the display-scale term tracks the new scale. (#155, #158)
         fn refresh_screen_scale(&self) {
             let widget = self.obj();
-            let scale = paint_scale(&widget);
-            let (lw, lh) = (widget.width(), widget.height());
-            let (old_size, old_scale) = self
-                .shared
-                .lock()
-                .as_ref()
-                .map(|sh| {
-                    let s = sh.lock();
-                    (s.size, s.scale_factor as f64)
-                })
-                .unwrap_or(((0, 0), 1.0));
-            let new_phys = if lw > 0 && lh > 0 {
-                (
-                    (lw as f64 * scale).round() as i32,
-                    (lh as f64 * scale).round() as i32,
-                )
-            } else {
-                old_size
+            self.sync_viewport(widget.width(), widget.height(), "refresh_scale");
+            widget.queue_render();
+        }
+
+        /// Follow the native surface's scale (e.g. dragging between monitors of
+        /// different scale) so the physical paint buffer tracks it. The `scale`
+        /// notify fires across the integer boundaries the OSR buffer cares
+        /// about; a pure fractional change leaves the integer paint scale
+        /// unchanged, so `refresh_screen_scale` is then a no-op. Connected once
+        /// per surface — a re-realize on the same surface must not stack a
+        /// second handler — and disconnected on unrealize. (#155, #158, I11)
+        fn watch_surface_scale(&self) {
+            let widget = self.obj();
+            let Some(surface) = widget.native().and_then(|n| n.surface()) else {
+                return;
             };
-            if let Some(shared) = self.shared.lock().as_ref() {
-                let mut s = shared.lock();
-                s.scale_factor = scale as f32;
-                if lw > 0 && lh > 0 {
-                    s.size = new_phys;
-                }
-                s.window_origin = window_origin_for(&widget);
+            let mut slot = self.scale_notify.borrow_mut();
+            if slot.as_ref().is_some_and(|(watched, _)| *watched == surface) {
+                return;
             }
-            log::info!(
-                "coord: J6 refresh_scale logical={}x{} scale={:.3} physical={}x{} old_scale={:.3} new_scale={:.3} old_physical={}x{}",
-                lw,
-                lh,
-                scale,
-                new_phys.0,
-                new_phys.1,
-                old_scale,
-                scale,
+            if let Some((old, id)) = slot.take() {
+                old.disconnect(id);
+            }
+            let id = surface.connect_scale_notify(glib::clone!(
+                #[weak]
+                widget,
+                move |_s| widget.imp().refresh_screen_scale()
+            ));
+            *slot = Some((surface, id));
+        }
+
+        /// Publish the physical viewport for a logical `width`×`height` at the
+        /// current integer paint scale (a non-positive size keeps the old one)
+        /// and tell CEF. CEF is left alone when neither the physical size nor
+        /// the scale changed — GTK re-allocates far more often than either
+        /// moves (P3). A scale change re-applies zoom so the display-scale term
+        /// tracks it, keeping buffer and input transform coupled (#158/#176).
+        fn sync_viewport(&self, width: i32, height: i32, why: &str) {
+            let widget = self.obj();
+            let scale = paint_scale(&widget);
+            let Some(shared) = self.shared.lock().clone() else {
+                return;
+            };
+            let (old_size, old_scale, new_size) = {
+                let mut s = shared.lock();
+                let old = (s.size, s.scale_factor as f64);
+                if width > 0 && height > 0 {
+                    s.size = (
+                        (width as f64 * scale).round() as i32,
+                        (height as f64 * scale).round() as i32,
+                    );
+                }
+                s.scale_factor = scale as f32;
+                (old.0, old.1, s.size)
+            };
+            let scale_changed = (scale - old_scale).abs() > f64::EPSILON;
+            log::trace!(
+                "coord: {why} logical={width}x{height} scale={scale:.3} physical={}x{} old_scale={old_scale:.3} old_physical={}x{}",
+                new_size.0,
+                new_size.1,
                 old_size.0,
                 old_size.1
             );
+            if new_size == old_size && !scale_changed {
+                return;
+            }
+            // Lock released: the X11 query talks to the server.
+            let origin = window_origin_for(&widget);
+            shared.lock().window_origin = origin;
             if let Some(browser) = resolved_browser(self)
                 && let Some(host) = browser.host()
             {
                 host.notify_screen_info_changed();
                 host.was_resized();
-                super::apply_zoom_from_account(&browser, scale);
+                if scale_changed {
+                    super::apply_zoom_from_account(&browser, scale);
+                }
             }
-            widget.queue_render();
+        }
+
+        /// Debounced mobile-layout re-check (D5): ~400 ms after the last call,
+        /// reload the foreground page if it was loaded with the other layout.
+        /// Every call restarts the wait, so a window dragged across the
+        /// threshold reloads at most once, after it settles.
+        fn schedule_mobile_layout_check(&self) {
+            if let Some(id) = self.mobile_check.take() {
+                id.remove();
+            }
+            let weak = self.obj().downgrade();
+            let id = glib::timeout_add_local_once(std::time::Duration::from_millis(400), move || {
+                if let Some(widget) = weak.upgrade() {
+                    let imp = widget.imp();
+                    // Fired: the id is spent, never `remove()` it.
+                    drop(imp.mobile_check.take());
+                    imp.check_mobile_layout();
+                }
+            });
+            *self.mobile_check.borrow_mut() = Some(id);
+        }
+
+        fn check_mobile_layout(&self) {
+            let width = self.obj().width();
+            if width <= 0 {
+                return;
+            }
+            let Some(browser) = resolved_browser(self) else {
+                return;
+            };
+            let id = browser.identifier();
+            if super::mobile_layout_mismatch(id, width) {
+                log::info!("mobile layout changed at {width}px; reloading browser {id}");
+                // Record the new layout now so another check before the reload
+                // finishes does not reload again; on_load_end re-records it.
+                super::record_mobile_layout(id, super::should_use_mobile_layout(width));
+                browser.reload();
+            }
         }
 
         /// Present the snapshotted CEF context menu as a GTK `Popover` of buttons at
@@ -1247,7 +1437,7 @@ mod imp {
             if let Some(browser) = self.browser.lock().as_ref().cloned() {
                 let acct = crate::accounts::account_for_browser(browser.identifier())
                     .unwrap_or_else(|| "none".to_string());
-                log::info!(
+                log::trace!(
                     "coord: J7 set_zoom_linear account={} user_linear={:.3} display_scale={:.3} cef_level={:.3}",
                     acct,
                     linear,
@@ -1258,7 +1448,7 @@ mod imp {
                     host.set_zoom_level(cef_level);
                 }
             } else {
-                log::info!(
+                log::trace!(
                     "coord: J7 set_zoom_linear account=none user_linear={:.3} display_scale={:.3} cef_level={:.3} (no browser)",
                     linear,
                     display_scale,
@@ -1283,12 +1473,23 @@ mod imp {
         /// Live spellcheck-language switch via request-context prefs. CEF UI thread
         /// only — the driving GTK callbacks are already on the glib main thread.
         pub fn set_spellcheck_languages(&self, langs: &[String], enabled: bool) {
-            let Some(browser) = self.browser.lock().as_ref().cloned() else {
+            // Every pooled account: each has its own RequestContext, so
+            // applying only to the foreground left background accounts on the
+            // old dictionary until restart. (N7)
+            let mut targets: Vec<Browser> = self.browsers.lock().values().cloned().collect();
+            if targets.is_empty()
+                && let Some(browser) = self.browser.lock().as_ref()
+            {
+                targets.push(browser.clone()); // DevTools / legacy single browser
+            }
+            if targets.is_empty() {
                 log::warn!("set_spellcheck_languages: no live browser");
                 return;
-            };
+            }
             // Live switch: never use the [] force-clear (tears down OSR spellcheck).
-            super::apply_spellcheck_to_browser(&browser, langs, enabled);
+            for browser in &targets {
+                super::apply_spellcheck_to_browser(browser, langs, enabled);
+            }
         }
 
         pub fn reload(&self) {
@@ -1634,6 +1835,8 @@ mod imp {
                 .is_some_and(|previous| previous.identifier() != browser.identifier())
             {
                 self.cancel_context_menu();
+                // An open composition belongs to the outgoing page too. (I1)
+                reset_ime(&self.obj());
             }
 
             // Pause the OUTGOING foreground. Required so a later switch back wakes
@@ -1693,6 +1896,9 @@ mod imp {
             }
             self.obj().queue_render();
             self.apply_audio_mute();
+            // A background account may have loaded at another width; bring
+            // its layout in line now that it is the one on screen. (D5)
+            self.schedule_mobile_layout_check();
         }
 
         /// Switch the foreground to the account `new_id`, pausing the previous
@@ -1748,6 +1954,7 @@ mod imp {
                 }
             }
             if was_foreground {
+                reset_ime(&self.obj());
                 let id = self.browser_id.swap(0, Ordering::Relaxed);
                 if id != 0 {
                     super::unregister_context_menu_widget(id);
@@ -1843,41 +2050,55 @@ mod imp {
             self.tex_w.store(0, Ordering::Relaxed);
             self.tex_h.store(0, Ordering::Relaxed);
 
-            // GPU-OSR: a second texture the imported DMA-BUF EGLImage targets.
-            let mut atex = 0;
+            // GPU-OSR: a second texture the imported DMA-BUF EGLImage targets,
+            // plus the popup layer's CPU and DMA-BUF targets.
             unsafe {
-                gl::GenTextures(1, &mut atex);
-                gl::BindTexture(gl::TEXTURE_2D, atex);
-                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint);
-                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
-                gl::TexParameteri(
-                    gl::TEXTURE_2D,
-                    gl::TEXTURE_WRAP_S,
-                    gl::CLAMP_TO_EDGE as GLint,
-                );
-                gl::TexParameteri(
-                    gl::TEXTURE_2D,
-                    gl::TEXTURE_WRAP_T,
-                    gl::CLAMP_TO_EDGE as GLint,
-                );
-                gl::BindTexture(gl::TEXTURE_2D, 0);
+                self.accel_tex.store(new_texture(), Ordering::Relaxed);
+                self.popup_tex.store(new_texture(), Ordering::Relaxed);
+                self.accel_popup_tex.store(new_texture(), Ordering::Relaxed);
             }
-            self.accel_tex.store(atex, Ordering::Relaxed);
+            self.popup_tex_w.store(0, Ordering::Relaxed);
+            self.popup_tex_h.store(0, Ordering::Relaxed);
         }
 
-        unsafe fn teardown_gl(&self) {
-            // Release the live EGLImage while the GL context is still current.
+        /// Drop every GL name without deleting it, for when our context cannot
+        /// be made current (the objects go with the context). EGLImages need
+        /// only their display, so they are still released properly. (I4)
+        fn forget_gl_names(&self) {
             *self.imported.borrow_mut() = None;
+            *self.imported_popup.borrow_mut() = None;
+            for name in [
+                &self.texture,
+                &self.accel_tex,
+                &self.popup_tex,
+                &self.accel_popup_tex,
+                &self.vbo,
+                &self.vao,
+                &self.program,
+            ] {
+                name.store(0, Ordering::Relaxed);
+            }
+            for size in [&self.tex_w, &self.tex_h, &self.popup_tex_w, &self.popup_tex_h] {
+                size.store(0, Ordering::Relaxed);
+            }
+        }
+
+        /// Delete our GL objects. The GLArea context must be current.
+        unsafe fn teardown_gl(&self) {
+            // Release the live EGLImages while the GL context is still current.
+            *self.imported.borrow_mut() = None;
+            *self.imported_popup.borrow_mut() = None;
             unsafe {
-                let tex = self.texture.load(Ordering::Relaxed);
-                if tex != 0 {
-                    gl::DeleteTextures(1, &tex);
-                    self.texture.store(0, Ordering::Relaxed);
-                }
-                let atex = self.accel_tex.load(Ordering::Relaxed);
-                if atex != 0 {
-                    gl::DeleteTextures(1, &atex);
-                    self.accel_tex.store(0, Ordering::Relaxed);
+                for name in [
+                    &self.texture,
+                    &self.accel_tex,
+                    &self.popup_tex,
+                    &self.accel_popup_tex,
+                ] {
+                    let tex = name.swap(0, Ordering::Relaxed);
+                    if tex != 0 {
+                        gl::DeleteTextures(1, &tex);
+                    }
                 }
                 let vbo = self.vbo.load(Ordering::Relaxed);
                 if vbo != 0 {
@@ -1905,8 +2126,28 @@ mod imp {
             let mut s = shared.lock();
 
             unsafe {
-                gl::ClearColor(0.0, 0.0, 0.0, 1.0);
+                // GtkGLArea's default `resize` handler sets the viewport to its
+                // framebuffer. Read it back so layers can be placed (and the
+                // full viewport restored) without re-deriving GTK's scale.
+                let mut viewport: [GLint; 4] = [0; 4];
+                gl::GetIntegerv(gl::VIEWPORT, viewport.as_mut_ptr());
+
+                // Theme-matched page background, not black: it shows around a
+                // frame that does not cover the widget yet (resize, startup).
+                let [r, g, b] = super::page_background(&*self.obj());
+                gl::ClearColor(r, g, b, 1.0);
                 gl::Clear(gl::COLOR_BUFFER_BIT);
+
+                // A CPU paint drops the accelerated frame (render.rs on_paint);
+                // release its EGLImage here, with the context current, so the
+                // CPU frame is what gets drawn rather than the last DMA-BUF. A
+                // hidden popup drops its import the same way. (I5)
+                if s.accel.is_none() {
+                    *self.imported.borrow_mut() = None;
+                }
+                if s.popup.accel.is_none() {
+                    *self.imported_popup.borrow_mut() = None;
+                }
 
                 // GPU path: import the pending DMA-BUF to the accel texture. (gpu-osr)
                 let atex = self.accel_tex.load(Ordering::Relaxed);
@@ -1943,135 +2184,260 @@ mod imp {
                     self.schedule_software_osr_fallback();
                 }
 
-                let use_accel = s.accel.is_some() && self.imported.borrow().is_some();
-                // J4 instrumentation: capture widget-physical size for draw logging.
-                let dbg_widget = self.obj();
-                let dbg_scale = paint_scale(&dbg_widget);
-                let dbg_phys_w = (dbg_widget.width() as f64 * dbg_scale).round() as i32;
-                let dbg_phys_h = (dbg_widget.height() as f64 * dbg_scale).round() as i32;
-                if use_accel {
-                    let (aw, ah) = s
-                        .accel
-                        .as_ref()
-                        .map(|a| (a.width, a.height))
-                        .unwrap_or((0, 0));
-                    log::debug!(
-                        "coord: J4 draw frame={}x{} tex={}x{} widget_physical={}x{} accel=true scale={:.3}",
-                        aw,
-                        ah,
-                        aw,
-                        ah,
-                        dbg_phys_w,
-                        dbg_phys_h,
-                        dbg_scale
-                    );
+                // Popup DMA-BUF. A rejected one only costs the popup; the view
+                // import above is what decides the software fallback.
+                let aptex = self.accel_popup_tex.load(Ordering::Relaxed);
+                let mut popup_failed = false;
+                if let Some(pf) = s.popup.accel.as_mut()
+                    && pf.dirty
+                {
+                    if let Some(img) = crate::gl_dmabuf::import_to_texture(
+                        aptex,
+                        pf.width,
+                        pf.height,
+                        pf.fourcc,
+                        pf.modifier,
+                        &pf.planes,
+                    ) {
+                        *self.imported_popup.borrow_mut() = Some(img);
+                        pf.dirty = false;
+                    } else {
+                        popup_failed = true;
+                    }
                 }
-                let (tex, bgra) = if use_accel {
-                    (atex, 0_i32)
+                if popup_failed {
+                    log::warn!("accelerated popup import failed; popup not shown");
+                    s.popup.accel = None;
+                    *self.imported_popup.borrow_mut() = None;
+                }
+
+                let accel_view = if self.imported.borrow().is_some() {
+                    s.accel.as_ref().map(|af| {
+                        let layer = Layer {
+                            tex: atex,
+                            bgra: 0,
+                            uv: super::texture_uv(af.visible, (af.width, af.height)),
+                        };
+                        (layer, (af.visible.2, af.visible.3))
+                    })
                 } else {
-                    // Software path: upload CEF's CPU BGRA buffer through the
-                    // valid GLES context (software OSR does not eliminate GLArea).
-                    let tex = self.texture.load(Ordering::Relaxed);
-                    let tw = self.tex_w.load(Ordering::Relaxed);
-                    let th = self.tex_h.load(Ordering::Relaxed);
-                    match super::cpu_upload(&s.frame, (tw, th)) {
-                        super::CpuUpload::Empty => {
-                            log::debug!(
-                                "coord: J4 draw empty frame={}x{} tex={}x{} widget_physical={}x{} accel=false scale={:.3}",
-                                s.frame.width,
-                                s.frame.height,
-                                tw,
-                                th,
-                                dbg_phys_w,
-                                dbg_phys_h,
-                                dbg_scale
-                            );
+                    None
+                };
+                let (view, view_size) = match accel_view {
+                    Some(v) => v,
+                    None => {
+                        // Software path: upload CEF's CPU BGRA buffer through the
+                        // valid GLES context (software OSR does not eliminate GLArea).
+                        let tex = self.texture.load(Ordering::Relaxed);
+                        if !upload_cpu_frame(tex, &self.tex_w, &self.tex_h, &mut s.frame) {
                             return;
                         }
-                        super::CpuUpload::Allocate => {
-                            gl::BindTexture(gl::TEXTURE_2D, tex);
-                            gl::TexImage2D(
-                                gl::TEXTURE_2D,
-                                0,
-                                gl::RGBA8 as GLint,
-                                s.frame.width,
-                                s.frame.height,
-                                0,
-                                gl::RGBA,
-                                gl::UNSIGNED_BYTE,
-                                s.frame.pixels.as_ptr() as *const c_void,
-                            );
-                            self.tex_w.store(s.frame.width, Ordering::Relaxed);
-                            self.tex_h.store(s.frame.height, Ordering::Relaxed);
-                            s.frame.dirty = false;
-                        }
-                        super::CpuUpload::Update => {
-                            gl::BindTexture(gl::TEXTURE_2D, tex);
-                            // Upload only what CEF reported as damaged. Typing
-                            // dirties a caret-sized rect; re-sending the whole
-                            // window every frame is what makes CPU OSR stutter
-                            // on integrated GPUs (#179/#180). GLES 3.0 gives us
-                            // the UNPACK_* row addressing to do it in one call.
-                            let (x, y, w, h) =
-                                s.frame
-                                    .damage
-                                    .unwrap_or((0, 0, s.frame.width, s.frame.height));
-                            if (x, y, w, h) != (0, 0, s.frame.width, s.frame.height) {
-                                gl::PixelStorei(gl::UNPACK_ROW_LENGTH, s.frame.width);
-                                gl::PixelStorei(gl::UNPACK_SKIP_PIXELS, x);
-                                gl::PixelStorei(gl::UNPACK_SKIP_ROWS, y);
-                            }
-                            gl::TexSubImage2D(
-                                gl::TEXTURE_2D,
-                                0,
-                                x,
-                                y,
-                                w,
-                                h,
-                                gl::RGBA,
-                                gl::UNSIGNED_BYTE,
-                                s.frame.pixels.as_ptr() as *const c_void,
-                            );
-                            // Leave the unpack state as every other caller expects.
-                            gl::PixelStorei(gl::UNPACK_ROW_LENGTH, 0);
-                            gl::PixelStorei(gl::UNPACK_SKIP_PIXELS, 0);
-                            gl::PixelStorei(gl::UNPACK_SKIP_ROWS, 0);
-                            s.frame.dirty = false;
-                        }
-                        super::CpuUpload::Reuse => {}
+                        let layer = Layer {
+                            tex,
+                            bgra: 1,
+                            uv: FULL_UV,
+                        };
+                        (layer, (s.frame.width, s.frame.height))
                     }
-                    (tex, 1_i32)
                 };
-                if !use_accel {
-                    let tw2 = self.tex_w.load(Ordering::Relaxed);
-                    let th2 = self.tex_h.load(Ordering::Relaxed);
-                    log::debug!(
-                        "coord: J4 draw frame={}x{} tex={}x{} widget_physical={}x{} accel=false scale={:.3}",
-                        s.frame.width,
-                        s.frame.height,
-                        tw2,
-                        th2,
-                        dbg_phys_w,
-                        dbg_phys_h,
-                        dbg_scale
-                    );
+
+                // Popup layer (`<select>` dropdowns), CPU or DMA-BUF, drawn over
+                // the view at CEF's popup rect.
+                let mut popup = None;
+                if let Some(rect) = s.popup.visible_rect(s.foreground_browser_id) {
+                    let accel_popup = if self.imported_popup.borrow().is_some() {
+                        s.popup.accel.as_ref().map(|pf| Layer {
+                            tex: aptex,
+                            bgra: 0,
+                            uv: super::texture_uv(pf.visible, (pf.width, pf.height)),
+                        })
+                    } else {
+                        None
+                    };
+                    popup = match accel_popup {
+                        Some(layer) => Some((layer, rect)),
+                        None => {
+                            let ptex = self.popup_tex.load(Ordering::Relaxed);
+                            upload_cpu_frame(
+                                ptex,
+                                &self.popup_tex_w,
+                                &self.popup_tex_h,
+                                &mut s.popup.frame,
+                            )
+                            .then_some((
+                                Layer {
+                                    tex: ptex,
+                                    bgra: 1,
+                                    uv: FULL_UV,
+                                },
+                                rect,
+                            ))
+                        }
+                    };
                 }
+                let view_rect_size = s.size;
                 drop(s);
 
+                let framebuffer = if viewport[2] > 0 && viewport[3] > 0 {
+                    (viewport[2], viewport[3])
+                } else {
+                    view_size
+                };
                 let prog = self.program.load(Ordering::Relaxed);
                 gl::UseProgram(prog);
-                let loc = gl::GetUniformLocation(prog, c"u_bgra".as_ptr() as *const _);
-                if loc >= 0 {
-                    gl::Uniform1i(loc, bgra);
-                }
+                let locs = (
+                    gl::GetUniformLocation(prog, c"u_bgra".as_ptr() as *const _),
+                    gl::GetUniformLocation(prog, c"u_uv".as_ptr() as *const _),
+                );
                 gl::BindVertexArray(self.vao.load(Ordering::Relaxed));
                 gl::ActiveTexture(gl::TEXTURE0);
-                gl::BindTexture(gl::TEXTURE_2D, tex);
-                gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4);
+                let place = |rect| super::gl_viewport_for(framebuffer, view_rect_size, rect);
+                draw_layer(&view, place((0, 0, view_size.0, view_size.1)), locs);
+                if let Some((layer, rect)) = popup {
+                    draw_layer(&layer, place(rect), locs);
+                }
                 gl::BindVertexArray(0);
                 gl::UseProgram(0);
+                if viewport[2] > 0 && viewport[3] > 0 {
+                    gl::Viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+                }
             }
         }
+    }
+
+    /// One textured quad of the GL present path.
+    struct Layer {
+        tex: GLuint,
+        /// `u_bgra`: 1 = CPU BGRA bytes uploaded as RGBA, 0 = DMA-BUF import.
+        bgra: GLint,
+        /// `u_uv`: sampled sub-rect of the texture, `[x, y, w, h]` fractions.
+        uv: [f32; 4],
+    }
+
+    const FULL_UV: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
+
+    /// Draw `layer` into the GL `viewport` rect. Program + VAO bound by the caller.
+    unsafe fn draw_layer(layer: &Layer, viewport: (i32, i32, i32, i32), locs: (GLint, GLint)) {
+        let (x, y, w, h) = viewport;
+        unsafe {
+            gl::Viewport(x, y, w, h);
+            if locs.0 >= 0 {
+                gl::Uniform1i(locs.0, layer.bgra);
+            }
+            if locs.1 >= 0 {
+                let [u, v, uw, vh] = layer.uv;
+                gl::Uniform4f(locs.1, u, v, uw, vh);
+            }
+            gl::BindTexture(gl::TEXTURE_2D, layer.tex);
+            gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4);
+        }
+    }
+
+    /// Bring `tex` (currently holding `tex_w`×`tex_h`) up to date with the CPU
+    /// `frame`, uploading only what changed. Returns false when there is no
+    /// frame to draw. Context must be current.
+    unsafe fn upload_cpu_frame(
+        tex: GLuint,
+        tex_w: &AtomicI32,
+        tex_h: &AtomicI32,
+        frame: &mut crate::handlers::FrameBuffer,
+    ) -> bool {
+        let size = (tex_w.load(Ordering::Relaxed), tex_h.load(Ordering::Relaxed));
+        unsafe {
+            match super::cpu_upload(frame, size) {
+                super::CpuUpload::Empty => return false,
+                super::CpuUpload::Allocate => {
+                    gl::BindTexture(gl::TEXTURE_2D, tex);
+                    gl::TexImage2D(
+                        gl::TEXTURE_2D,
+                        0,
+                        gl::RGBA8 as GLint,
+                        frame.width,
+                        frame.height,
+                        0,
+                        gl::RGBA,
+                        gl::UNSIGNED_BYTE,
+                        frame.pixels.as_ptr() as *const c_void,
+                    );
+                    tex_w.store(frame.width, Ordering::Relaxed);
+                    tex_h.store(frame.height, Ordering::Relaxed);
+                    frame.dirty = false;
+                }
+                super::CpuUpload::Update => {
+                    gl::BindTexture(gl::TEXTURE_2D, tex);
+                    // Upload only what CEF reported as damaged. Typing
+                    // dirties a caret-sized rect; re-sending the whole
+                    // window every frame is what makes CPU OSR stutter
+                    // on integrated GPUs (#179/#180). GLES 3.0 gives us
+                    // the UNPACK_* row addressing to do it in one call.
+                    let (x, y, w, h) = frame.damage.unwrap_or((0, 0, frame.width, frame.height));
+                    if (x, y, w, h) != (0, 0, frame.width, frame.height) {
+                        gl::PixelStorei(gl::UNPACK_ROW_LENGTH, frame.width);
+                        gl::PixelStorei(gl::UNPACK_SKIP_PIXELS, x);
+                        gl::PixelStorei(gl::UNPACK_SKIP_ROWS, y);
+                    }
+                    gl::TexSubImage2D(
+                        gl::TEXTURE_2D,
+                        0,
+                        x,
+                        y,
+                        w,
+                        h,
+                        gl::RGBA,
+                        gl::UNSIGNED_BYTE,
+                        frame.pixels.as_ptr() as *const c_void,
+                    );
+                    // Leave the unpack state as every other caller expects.
+                    gl::PixelStorei(gl::UNPACK_ROW_LENGTH, 0);
+                    gl::PixelStorei(gl::UNPACK_SKIP_PIXELS, 0);
+                    gl::PixelStorei(gl::UNPACK_SKIP_ROWS, 0);
+                    frame.dirty = false;
+                }
+                super::CpuUpload::Reuse => {}
+            }
+        }
+        true
+    }
+
+    /// A linear-filtered, edge-clamped `GL_TEXTURE_2D`. Context must be current.
+    unsafe fn new_texture() -> GLuint {
+        let mut tex = 0;
+        unsafe {
+            gl::GenTextures(1, &mut tex);
+            gl::BindTexture(gl::TEXTURE_2D, tex);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint);
+            gl::BindTexture(gl::TEXTURE_2D, 0);
+        }
+        tex
+    }
+
+    /// Software present path: the cached texture for `frame`, rebuilt only
+    /// when CEF painted since the last snapshot. CEF hands back premultiplied
+    /// BGRA, which is a GdkMemoryTexture format verbatim, so a rebuild is the
+    /// one copy `Bytes` makes. (P6)
+    fn cached_frame_texture(
+        cache: &RefCell<Option<gtk::gdk::MemoryTexture>>,
+        frame: &mut crate::handlers::FrameBuffer,
+    ) -> Option<gtk::gdk::MemoryTexture> {
+        let mut slot = cache.borrow_mut();
+        if frame.width <= 0 || frame.height <= 0 || frame.pixels.is_empty() {
+            *slot = None;
+            return None;
+        }
+        if frame.dirty || slot.is_none() {
+            *slot = Some(gtk::gdk::MemoryTexture::new(
+                frame.width,
+                frame.height,
+                gtk::gdk::MemoryFormat::B8g8r8a8Premultiplied,
+                &glib::Bytes::from(&frame.pixels[..]),
+                (frame.width * 4) as usize,
+            ));
+            frame.dirty = false;
+        }
+        slot.clone()
     }
 
     #[derive(Debug, Clone, Copy, PartialEq)]
@@ -2319,15 +2685,69 @@ mod imp {
             #[weak]
             widget,
             move |_im, text| {
-                // CEF's `character` field is UTF-16. `ch as u16` truncated anything
-                // above the BMP — an emoji committed by the IM (U+1F600) arrived as
-                // U+F600 — so encode properly and send each surrogate in turn.
-                let mut buf = [0u16; 2];
-                for ch in text.chars() {
-                    for unit in ch.encode_utf16(&mut buf) {
-                        send_char(&widget, *unit, 0);
+                let imp = widget.imp();
+                let mut state = imp.ime_state.get();
+                let route = state.commit();
+                imp.ime_state.set(state);
+                match route {
+                    // Text that ends a composition replaces the page's composing
+                    // range (or inserts at the caret if it was already cleared).
+                    ImeCommit::Composition => {
+                        let text = CefString::from(text);
+                        with_host(&widget, |host| {
+                            host.ime_commit_text(Some(&text), Some(&ime_invalid_range()), 0)
+                        });
+                    }
+                    ImeCommit::Chars => {
+                        // CEF's `character` field is UTF-16. `ch as u16` truncated
+                        // anything above the BMP — an emoji committed by the IM
+                        // (U+1F600) arrived as U+F600 — so encode properly and send
+                        // each surrogate in turn.
+                        let mut buf = [0u16; 2];
+                        for ch in text.chars() {
+                            for unit in ch.encode_utf16(&mut buf) {
+                                send_char(&widget, *unit, 0);
+                            }
+                        }
                     }
                 }
+            }
+        ));
+        // Composition (ibus/fcitx CJK, dead keys): mirror the IM's preedit into
+        // the page as a CEF IME composition so it renders inline, and so the
+        // key handler knows to hand keys to the IM first while it is active. (I1)
+        im.connect_preedit_start(glib::clone!(
+            #[weak]
+            widget,
+            move |_im| {
+                let imp = widget.imp();
+                let mut state = imp.ime_state.get();
+                state.preedit_start();
+                imp.ime_state.set(state);
+            }
+        ));
+        im.connect_preedit_changed(glib::clone!(
+            #[weak]
+            widget,
+            move |im| {
+                let (text, _attrs, cursor) = im.preedit_string();
+                let imp = widget.imp();
+                let mut state = imp.ime_state.get();
+                let action = state.preedit_changed(text.is_empty());
+                imp.ime_state.set(state);
+                apply_ime_action(&widget, action, &text, cursor);
+                update_ime_cursor_location(&widget);
+            }
+        ));
+        im.connect_preedit_end(glib::clone!(
+            #[weak]
+            widget,
+            move |_im| {
+                let imp = widget.imp();
+                let mut state = imp.ime_state.get();
+                let action = state.preedit_end();
+                imp.ime_state.set(state);
+                apply_ime_action(&widget, action, "", 0);
             }
         ));
         // Stored so the widget timer can focus it in/out from CEF's editable-focus
@@ -2342,19 +2762,32 @@ mod imp {
         // pointer stream so the page isn't double-fed. Pinch is future work. (#162)
         let drag = gtk::GestureDrag::new();
         drag.set_touch_only(true);
+        // Whether CEF holds a pressed touch point: a cancelled sequence is
+        // followed by GTK's drag-end, which must not also send RELEASED. (I7)
+        let touch_down = std::rc::Rc::new(std::cell::Cell::new(false));
         drag.connect_drag_begin(glib::clone!(
             #[weak]
             widget,
+            #[strong]
+            touch_down,
             move |_g, x, y| {
+                super::note_user_input();
                 widget.grab_focus();
                 set_focus(&widget, true);
+                touch_down.set(true);
                 send_touch(&widget, 0, x, y, TouchEventType::PRESSED);
             }
         ));
         drag.connect_drag_update(glib::clone!(
             #[weak]
             widget,
+            #[strong]
+            touch_down,
             move |g, ox, oy| {
+                if !touch_down.get() {
+                    return;
+                }
+                super::note_user_input();
                 if let Some((sx, sy)) = g.start_point() {
                     send_touch(&widget, 0, sx + ox, sy + oy, TouchEventType::MOVED);
                 }
@@ -2363,10 +2796,32 @@ mod imp {
         drag.connect_drag_end(glib::clone!(
             #[weak]
             widget,
+            #[strong]
+            touch_down,
             move |g, ox, oy| {
+                if !touch_down.replace(false) {
+                    return;
+                }
                 if let Some((sx, sy)) = g.start_point() {
                     send_touch(&widget, 0, sx + ox, sy + oy, TouchEventType::RELEASED);
                 }
+            }
+        ));
+        // A sequence GTK takes back (another gesture claimed it, the grab
+        // broke) must be cancelled in CEF too, or the page keeps a stuck
+        // pressed touch. (I7)
+        drag.connect_cancel(glib::clone!(
+            #[weak]
+            widget,
+            #[strong]
+            touch_down,
+            move |g, _sequence| {
+                if !touch_down.replace(false) {
+                    return;
+                }
+                let (sx, sy) = g.start_point().unwrap_or((0.0, 0.0));
+                let (ox, oy) = g.offset().unwrap_or((0.0, 0.0));
+                send_touch(&widget, 0, sx + ox, sy + oy, TouchEventType::CANCELLED);
             }
         ));
         widget.add_controller(drag);
@@ -2388,6 +2843,11 @@ mod imp {
                     return; // touch handled above; don't double-feed as mouse
                 }
                 let modifiers = modifiers_from_state(ctrl.current_event_state());
+                // A drag-select is user input for as long as it lasts: the PRIMARY
+                // mirror it triggers must pass the clipboard gesture gate. (S9)
+                if mouse_buttons.borrow().active_modifiers() != 0 {
+                    super::note_user_input();
+                }
                 for event in
                     mouse_buttons
                         .borrow_mut()
@@ -2444,9 +2904,15 @@ mod imp {
                 let modifiers = modifiers_from_state(event.modifier_state());
                 match event.event_type() {
                     EventType::ButtonPress => {
+                        super::note_user_input();
                         let settings = widget.settings();
                         widget.grab_focus();
                         set_focus(&widget, true);
+                        // Clicking moves the caret away from an open composition;
+                        // end it instead of leaving the IM composing elsewhere. (I1)
+                        if widget.imp().ime_state.get().filter_first() {
+                            reset_ime(&widget);
+                        }
                         im.set_cursor_location(&gtk::gdk::Rectangle::new(x as i32, y as i32, 1, 1));
                         let events = mouse_buttons.borrow_mut().handle(MouseInput::Press {
                             button,
@@ -2458,13 +2924,16 @@ mod imp {
                             modifiers,
                         });
                         if !events.is_empty() && button == 2 {
-                            read_primary_clipboard_paste(&widget, x, y);
+                            // The page hit-tests in CSS px, not widget px. (I8)
+                            let (px, py) = widget_to_page(&widget, x, y);
+                            read_primary_clipboard_paste(&widget, px, py);
                         }
                         for event in events {
                             dispatch_mouse(&widget, event);
                         }
                     }
                     EventType::ButtonRelease => {
+                        super::note_user_input();
                         for event in mouse_buttons.borrow_mut().handle(MouseInput::Release {
                             button,
                             x,
@@ -2491,17 +2960,36 @@ mod imp {
 
         // Scroll -------------------------------------------------------------
         let scroll = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::BOTH_AXES);
+        let zoom_accum = std::cell::Cell::new(0.0_f64);
         scroll.connect_scroll(glib::clone!(
             #[weak]
             widget,
             #[upgrade_or]
             glib::Propagation::Proceed,
             move |ctrl, dx, dy| {
-                let modifiers = modifiers_from_state(ctrl.current_event_state());
+                let state = ctrl.current_event_state();
                 // Surface unit = pixel deltas (touchpad); Wheel unit = notch
                 // clicks (mouse). Scaled differently in send_wheel. (#161)
                 let precise = ctrl.unit() == gtk::gdk::ScrollUnit::Surface;
-                send_wheel(&widget, dx, dy, modifiers, precise);
+                // Ctrl+wheel is the window's zoom, not the page's: CEF would zoom
+                // the browser behind the per-account level. One action per notch;
+                // smooth deltas accumulate to a notch's worth first. (I10)
+                if state.contains(gtk::gdk::ModifierType::CONTROL_MASK) {
+                    let threshold = if precise { ZOOM_SCROLL_SURFACE_STEP } else { 1.0 };
+                    let mut accum = zoom_accum.get();
+                    let steps = zoom_scroll_steps(&mut accum, dy, threshold);
+                    zoom_accum.set(accum);
+                    let action = if steps > 0 { "win.zoom-in" } else { "win.zoom-out" };
+                    for _ in 0..steps.unsigned_abs() {
+                        if let Err(err) = widget.activate_action(action, None) {
+                            log::debug!("ctrl+scroll: {action}: {err}");
+                            break;
+                        }
+                    }
+                    return glib::Propagation::Stop;
+                }
+                zoom_accum.set(0.0);
+                send_wheel(&widget, dx, dy, modifiers_from_state(state), precise);
                 glib::Propagation::Stop
             }
         ));
@@ -2510,16 +2998,25 @@ mod imp {
         // Keyboard -----------------------------------------------------------
         // Every press sends its raw key-down first, then goes through the IM,
         // whose `commit` is the only source of text for a key it consumes. (#154)
+        // While a composition is open the IM gets the key first instead, and a
+        // key it consumes never reaches the page (Enter picks a candidate, it
+        // does not send the message). (I1)
         let keys = gtk::EventControllerKey::new();
+        // Hardware keycodes whose press the IM swallowed during composition;
+        // their release is not forwarded either, so CEF sees no orphan key-up.
+        let swallowed_keys = std::rc::Rc::new(RefCell::new(Vec::<u32>::new()));
         keys.connect_key_pressed(glib::clone!(
             #[weak]
             widget,
             #[strong]
             im,
+            #[strong]
+            swallowed_keys,
             #[upgrade_or]
             glib::Propagation::Proceed,
             move |ctrl, keyval, keycode, state| {
                 use gtk::gdk::{Key, ModifierType};
+                super::note_user_input();
                 // M17: intercept Ctrl+V before CEF. If GDK clipboard holds an image
                 // or files, synthesize the paste and swallow the key so CEF's
                 // GDK-blind native paste doesn't also fire. Text-only/empty falls through.
@@ -2547,21 +3044,42 @@ mod imp {
                     im.focus_in();
                     imp.im_focused.set(true);
                 }
-                // The key-down goes first, for text keys too. Chromium drops the
-                // CHAR that follows a key-down the page handled, and only the next
-                // key-down lifts that; a letter sent as a bare CHAR while Backspace
-                // or an arrow was still held was therefore swallowed. It carries no
-                // character, so it inserts nothing by itself. (#180)
-                send_key_raw(&widget, keyval, keycode, state, true);
-                // A consumed key is text (a letter, or a dead-key composition
-                // still buffering) — the `commit` handler emits the CHAR, which
-                // runs inside this call, so nothing else is sent.
-                let consumed = ctrl
-                    .current_event()
-                    .map(|e| im.filter_keypress(&e))
-                    .unwrap_or(false);
-                if consumed {
-                    return glib::Propagation::Stop;
+                let layout = ctrl.group();
+                let mut ime = imp.ime_state.get();
+                ime.key_press_begin();
+                imp.ime_state.set(ime);
+                if ime.filter_first() {
+                    // Composing: the IM drives the candidate window with this
+                    // key (Enter, Backspace, arrows, Space). Only a key it
+                    // declines is the page's.
+                    update_ime_cursor_location(&widget);
+                    let consumed = ctrl
+                        .current_event()
+                        .map(|e| im.filter_keypress(&e))
+                        .unwrap_or(false);
+                    if consumed {
+                        swallowed_keys.borrow_mut().push(keycode);
+                        return glib::Propagation::Stop;
+                    }
+                    send_key_raw(&widget, keyval, keycode, layout, state, true);
+                } else {
+                    // The key-down goes first, for text keys too. Chromium drops
+                    // the CHAR that follows a key-down the page handled, and only
+                    // the next key-down lifts that; a letter sent as a bare CHAR
+                    // while Backspace or an arrow was still held was therefore
+                    // swallowed. It carries no character, so it inserts nothing
+                    // by itself. (#180)
+                    send_key_raw(&widget, keyval, keycode, layout, state, true);
+                    // A consumed key is text (a letter, or a dead-key composition
+                    // starting) — the `commit` handler emits the CHAR, which runs
+                    // inside this call, so nothing else is sent.
+                    let consumed = ctrl
+                        .current_event()
+                        .map(|e| im.filter_keypress(&e))
+                        .unwrap_or(false);
+                    if consumed {
+                        return glib::Propagation::Stop;
+                    }
                 }
                 // A declined printable key means no `commit` is coming, and a
                 // RAWKEYDOWN alone inserts nothing — the character is silently
@@ -2570,6 +3088,11 @@ mod imp {
                 // re-renders, and re-focusing an async IM (ibus) can land after
                 // this key. Synthesize the CHAR ourselves. (#180)
                 if let Some(unit) = printable_char(keyval, state) {
+                    send_char(&widget, unit, modifiers_from_state(state));
+                } else if let Some(unit) = enter_char(keyval, state) {
+                    // Enter's CHAR is what inserts a newline in a <textarea> and
+                    // submits an <input>; no IM commits one. If the page handled
+                    // the key-down (the composer's send), Chromium drops it.
                     send_char(&widget, unit, modifiers_from_state(state));
                 }
                 // Let accelerator combos (Ctrl/Alt/Super+key, F5/F11) bubble to
@@ -2586,6 +3109,8 @@ mod imp {
             widget,
             #[strong]
             im,
+            #[strong]
+            swallowed_keys,
             move |ctrl, keyval, keycode, state| {
                 // Mirror the press path: if the IM consumes the release, it
                 // belongs to composition — don't also send a raw key-up.
@@ -2593,8 +3118,18 @@ mod imp {
                     .current_event()
                     .map(|e| im.filter_keypress(&e))
                     .unwrap_or(false);
-                if !consumed {
-                    send_key_raw(&widget, keyval, keycode, state, false);
+                let swallowed = {
+                    let mut keys = swallowed_keys.borrow_mut();
+                    match keys.iter().position(|k| *k == keycode) {
+                        Some(i) => {
+                            keys.swap_remove(i);
+                            true
+                        }
+                        None => false,
+                    }
+                };
+                if !consumed && !swallowed {
+                    send_key_raw(&widget, keyval, keycode, ctrl.group(), state, false);
                 }
             }
         ));
@@ -2619,7 +3154,12 @@ mod imp {
             widget,
             #[strong]
             im,
+            #[strong]
+            swallowed_keys,
             move |_| {
+                // Releases of keys pressed here now go elsewhere.
+                swallowed_keys.borrow_mut().clear();
+                reset_ime(&widget);
                 im.focus_out();
                 widget.imp().im_focused.set(false);
                 set_focus(&widget, false);
@@ -2693,7 +3233,8 @@ mod imp {
             #[upgrade_or]
             false,
             move |_target, drop, x, y| {
-                let coords = Some((x, y));
+                // Taken now, at release, and in page CSS px for the bridge. (I8)
+                let coords = Some(widget_to_page(&widget, x, y));
                 if drop.formats().contain_mime_type(PORTAL_FILE_TRANSFER) {
                     drop.read_async(
                         &[PORTAL_FILE_TRANSFER],
@@ -2728,9 +3269,7 @@ mod imp {
                             move |res| {
                                 match res.map(|value| value.get::<gdk::FileList>()) {
                                     Ok(Ok(list)) => {
-                                        for file in list.files() {
-                                            load_and_send_file(&widget, file, "drop", coords, true);
-                                        }
+                                        load_and_send_files(&widget, list.files(), "drop", coords, true)
                                     }
                                     Ok(Err(err)) => {
                                         log::warn!("drop file list decode failed: {err}")
@@ -2770,6 +3309,11 @@ mod imp {
     /// the CEF context-menu callback. The request sink is injectable so tests
     /// cover command dispatch, not just shortcut/command classification.
     pub(super) fn dispatch_explicit_copy(trigger: ExplicitCopyTrigger, request: impl FnOnce()) {
+        // A menu item is picked in the popover, not on the web view, so no
+        // press handler saw it; its Copy reply must still pass the gate. (S9)
+        if matches!(trigger, ExplicitCopyTrigger::ContextMenu(_)) {
+            super::note_user_input();
+        }
         let requested = match trigger {
             ExplicitCopyTrigger::Keyboard { keyval, state } => is_copy_shortcut(keyval, state),
             ExplicitCopyTrigger::ContextMenu(command_id) => {
@@ -2867,6 +3411,243 @@ mod imp {
             // Astral-plane keyvals can't be expressed as one UTF-16 unit; the IM
             // commit path handles those (no physical key produces them directly).
             _ => None,
+        }
+    }
+
+    /// CHAR (`\r`) to send after Enter's key-down. Blink inserts a newline in a
+    /// `<textarea>` and submits an `<input>` from this CHAR, not the key-down,
+    /// and no IM commits one. Ctrl/Alt/Super+Enter are shortcuts. (I2)
+    pub(super) fn enter_char(keyval: gtk::gdk::Key, state: gtk::gdk::ModifierType) -> Option<u16> {
+        use gtk::gdk::{Key, ModifierType};
+        if state.intersects(
+            ModifierType::CONTROL_MASK | ModifierType::ALT_MASK | ModifierType::SUPER_MASK,
+        ) {
+            return None;
+        }
+        matches!(keyval, Key::Return | Key::KP_Enter | Key::ISO_Enter).then_some(0x0D)
+    }
+
+    /// Input-method composition state, kept on the widget. `preedit`: the IM
+    /// shows a non-empty preedit. `cef_composing`: the page holds a composition
+    /// we set. `session`: a composition ran since the last key that started
+    /// outside one, so its commit must replace that composition. (I1)
+    #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+    pub struct ImeState {
+        preedit: bool,
+        cef_composing: bool,
+        session: bool,
+    }
+
+    /// What a preedit change asks of CEF.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    pub(super) enum ImeAction {
+        Idle,
+        /// `ime_set_composition` with the current preedit.
+        SetComposition,
+        /// `ime_cancel_composition`: the preedit emptied without a commit.
+        Cancel,
+    }
+
+    /// How committed IM text reaches the page.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    pub(super) enum ImeCommit {
+        /// `ime_commit_text`: ends (replaces) a composition.
+        Composition,
+        /// CHAR events: ordinary typing through the IM, as before. (#154/#180)
+        Chars,
+    }
+
+    impl ImeState {
+        /// Whether a key press goes to the IM before CEF sees its raw key-down.
+        /// Only while composing; otherwise the #180 order (raw key-down first)
+        /// stays.
+        pub(super) fn filter_first(&self) -> bool {
+            self.preedit || self.cef_composing
+        }
+
+        /// A key press outside any composition closes the previous session, so
+        /// ordinary typing commits as CHARs again. An async IM (ibus) may commit
+        /// after its key's handler returned; the session survives until here.
+        pub(super) fn key_press_begin(&mut self) {
+            if !self.filter_first() {
+                self.session = false;
+            }
+        }
+
+        pub(super) fn preedit_start(&mut self) {
+            self.session = true;
+        }
+
+        pub(super) fn preedit_changed(&mut self, empty: bool) -> ImeAction {
+            self.preedit = !empty;
+            if !empty {
+                self.session = true;
+                self.cef_composing = true;
+                ImeAction::SetComposition
+            } else if std::mem::take(&mut self.cef_composing) {
+                ImeAction::Cancel
+            } else {
+                ImeAction::Idle
+            }
+        }
+
+        pub(super) fn preedit_end(&mut self) -> ImeAction {
+            self.preedit_changed(true)
+        }
+
+        /// GtkIMContextSimple ends a dead-key sequence with preedit-end then
+        /// commit; ibus may commit first. Either order lands the text exactly
+        /// once: through `ime_commit_text` while in a session.
+        pub(super) fn commit(&mut self) -> ImeCommit {
+            let route = if self.session || self.cef_composing {
+                ImeCommit::Composition
+            } else {
+                ImeCommit::Chars
+            };
+            // CEF ends the composition on commit; a preedit that continues
+            // (partial commit) opens a new one on its next change.
+            self.cef_composing = false;
+            route
+        }
+    }
+
+    /// `CefRange::InvalidRange()`: "no replacement range", i.e. the current
+    /// composition or selection.
+    fn ime_invalid_range() -> cef::Range {
+        cef::Range {
+            from: u32::MAX,
+            to: u32::MAX,
+        }
+    }
+
+    fn apply_ime_action(widget: &super::KarereWebView, action: ImeAction, text: &str, cursor: i32) {
+        match action {
+            ImeAction::Idle => {}
+            ImeAction::SetComposition => send_ime_composition(widget, text, cursor),
+            ImeAction::Cancel => with_host(widget, |host| host.ime_cancel_composition()),
+        }
+    }
+
+    /// Show `text` as the page's composition, underlined, with the caret at
+    /// `cursor_chars` (GTK counts characters; CEF counts UTF-16 units).
+    fn send_ime_composition(widget: &super::KarereWebView, text: &str, cursor_chars: i32) {
+        let (len, caret) = ime_utf16_extent(text, cursor_chars);
+        let underline = cef::CompositionUnderline {
+            range: cef::Range { from: 0, to: len },
+            // Transparent = drawn in the text colour, so it shows in dark mode.
+            color: 0,
+            background_color: 0,
+            thick: 0,
+            style: cef::CompositionUnderlineStyle::SOLID,
+            ..Default::default()
+        };
+        let text = CefString::from(text);
+        with_host(widget, |host| {
+            host.ime_set_composition(
+                Some(&text),
+                Some(std::slice::from_ref(&underline)),
+                Some(&ime_invalid_range()),
+                Some(&cef::Range {
+                    from: caret,
+                    to: caret,
+                }),
+            )
+        });
+    }
+
+    /// UTF-16 length of `text` and the UTF-16 offset of character `cursor_chars`.
+    pub(super) fn ime_utf16_extent(text: &str, cursor_chars: i32) -> (u32, u32) {
+        let len = text.encode_utf16().count() as u32;
+        let caret = text
+            .chars()
+            .take(cursor_chars.max(0) as usize)
+            .map(char::len_utf16)
+            .sum::<usize>() as u32;
+        (len, caret.min(len))
+    }
+
+    /// Drop any open composition: the IM's (it may commit it, which then
+    /// replaces the page's composition) and then the page's. Focus-out,
+    /// account switch, browser change, and a click while composing. (I1)
+    fn reset_ime(widget: &super::KarereWebView) {
+        let imp = widget.imp();
+        let im = imp.im_context.borrow().clone();
+        if let Some(im) = im {
+            im.reset();
+        }
+        if imp.ime_state.replace(ImeState::default()).cef_composing {
+            with_host(widget, |host| host.ime_cancel_composition());
+        }
+        // The next composition reports its own range; until then the click
+        // position is the better guess.
+        if let Some(shared) = imp.shared.lock().as_ref() {
+            shared.lock().ime_caret_rect = None;
+        }
+    }
+
+    /// Place the IM candidate window at the page's composition, from the last
+    /// range CEF reported (`on_ime_composition_range_changed`, view = physical
+    /// px). Without one, the location set on the last click stays. (I1)
+    fn update_ime_cursor_location(widget: &super::KarereWebView) {
+        let imp = widget.imp();
+        let rect = imp
+            .shared
+            .lock()
+            .as_ref()
+            .and_then(|shared| shared.lock().ime_caret_rect);
+        let Some((x, y, w, h)) = rect else {
+            return;
+        };
+        let s = widget.scale_factor().max(1);
+        let im = imp.im_context.borrow().clone();
+        if let Some(im) = im {
+            im.set_cursor_location(&gtk::gdk::Rectangle::new(
+                x / s,
+                y / s,
+                (w / s).max(1),
+                (h / s).max(1),
+            ));
+        }
+    }
+
+    /// Surface-unit (touchpad) scroll distance worth one Ctrl+scroll zoom step.
+    const ZOOM_SCROLL_SURFACE_STEP: f64 = 40.0;
+
+    /// Whole zoom steps (+ = in) for a Ctrl+scroll `dy`, accumulating smooth
+    /// deltas in `accum` until they reach `threshold`. A direction change
+    /// drops the partial step. (I10)
+    pub(super) fn zoom_scroll_steps(accum: &mut f64, dy: f64, threshold: f64) -> i32 {
+        let delta = -dy;
+        if delta == 0.0 || threshold <= 0.0 {
+            return 0;
+        }
+        if *accum != 0.0 && accum.signum() != delta.signum() {
+            *accum = 0.0;
+        }
+        *accum += delta;
+        let steps = (*accum / threshold).trunc();
+        *accum -= steps * threshold;
+        steps as i32
+    }
+
+    /// Widget logical px → page CSS px. CEF's view is physical px and the page
+    /// zoom folds the display scale in (#158), so CSS = logical × scale / zoom.
+    /// The mouse path needs no such step: CEF maps its physical coords itself.
+    /// Only coordinates handed to page script (`elementFromPoint`, synthetic
+    /// event `clientX/Y`) go through here. (I8)
+    pub(super) fn page_coords(x: f64, y: f64, scale: f64, page_zoom: f64) -> (f64, f64) {
+        if !(page_zoom.is_finite() && page_zoom > 0.0) {
+            return (x, y);
+        }
+        let s = scale.max(1.0);
+        (x * s / page_zoom, y * s / page_zoom)
+    }
+
+    fn widget_to_page(widget: &super::KarereWebView, x: f64, y: f64) -> (f64, f64) {
+        let scale = widget.scale_factor().max(1) as f64;
+        match resolved_browser(widget.imp()).and_then(|browser| browser.host()) {
+            Some(host) => page_coords(x, y, scale, super::cef_to_linear(host.zoom_level())),
+            None => (x, y),
         }
     }
 
@@ -3033,88 +3814,111 @@ mod imp {
     /// downscales the result to the 1.5× surface — a single high-quality downscale,
     /// the same path every GTK GLArea takes on a fractional display. View rect and
     /// mouse/wheel coords stay in DIP (CEF maps them via device_scale_factor). (#155, #158)
+    fn paint_scale(widget: &super::KarereWebView) -> f64 {
+        widget.scale_factor().max(1) as f64
+    }
+
     /// Set once `realize` gives up on GL (#177). Process-global to reach
     /// `accel_osr_enabled`, whose answer is fixed for the browser's lifetime.
     pub(super) static NO_GL: AtomicBool = AtomicBool::new(false);
 
-    /// GPU-accelerated OSR opt-in: env `KARERE_GPU_OSR=1` (or its setting) AND
-    /// EGL dma-buf import must be available on the current GL context. Cached on
-    /// first call; a prewarm before realization safely resolves to CPU OSR.
-    /// (gpu-osr)
-    pub(super) fn accel_osr_enabled() -> bool {
-        use std::sync::OnceLock;
-        static EN: OnceLock<bool> = OnceLock::new();
-        *EN.get_or_init(|| {
-            // Nothing can import a shared texture without a GL context, and
-            // asking for one stops CEF ever calling CPU on_paint -- which is
-            // the only thing the software present path has to draw. (#177)
-            if NO_GL.load(Ordering::Relaxed) {
-                log::info!("accel_osr: no GL context — software frames only");
-                return false;
-            }
-            // Read once — the shared-texture flag is fixed for the browser's
-            // lifetime, so this is restart-required. Env wins as a dev override /
-            // kill-switch; otherwise the experimental `gpu-rendering` GSetting.
-            // The visible-start path calls this after init_gl with the context
-            // current. Background prewarm has no context, so capability probing
-            // deliberately disables shared textures for that process. (gpu-osr)
-            let requested = match std::env::var("KARERE_GPU_OSR").ok().as_deref() {
-                Some("1") | Some("true") => true,
-                Some("0") | Some("false") => false,
-                _ => {
-                    use gtk::prelude::SettingsExt;
-                    let want = gtk::gio::Settings::new(crate::application::APP_ID)
-                        .boolean("gpu-rendering");
-                    // NVIDIA can't back CEF's exportable shared images — the GPU
-                    // process fails SkSurface init and no accelerated frame ever
-                    // arrives, leaving the chat area black (#167). Probe the GL
-                    // context actually rendering (current here: realize →
-                    // init_gl → browser creation) instead of the PCI driver
-                    // list, so hybrid setups rendering on another GPU keep the
-                    // accel path (#173). KARERE_GPU_OSR=1 forces.
-                    if want && gl_vendor_is_nvidia() {
-                        log::warn!(
-                            "accel_osr: NVIDIA driver detected — GPU rendering is \
-                             unsupported (CEF shared-image export fails, #167); \
-                             using software rendering. KARERE_GPU_OSR=1 to force."
-                        );
-                        false
-                    } else {
-                        want
-                    }
+    /// GPU-OSR capability, decided once by [`probe_accel_osr`] with a GLArea
+    /// context current. Unset until then. (gpu-osr, I6)
+    static ACCEL_PROBE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+
+    /// Decide GPU-accelerated OSR: env `KARERE_GPU_OSR=1` (or the
+    /// `gpu-rendering` setting) AND EGL dma-buf import on this context. Call
+    /// only with the GLArea context current — `realize` after `init_gl`. An
+    /// answer is cached only when it was actually measured: without a current
+    /// EGL display the probe leaves the slot empty for the next realize.
+    /// Restart-required once cached, as the shared-texture flag is fixed per
+    /// browser anyway. (gpu-osr, I6)
+    pub(super) fn probe_accel_osr() {
+        if ACCEL_PROBE.get().is_some() || NO_GL.load(Ordering::Relaxed) {
+            return;
+        }
+        // Env wins as a dev override / kill-switch; otherwise the experimental
+        // `gpu-rendering` GSetting.
+        let requested = match std::env::var("KARERE_GPU_OSR").ok().as_deref() {
+            Some("1") | Some("true") => true,
+            Some("0") | Some("false") => false,
+            _ => {
+                use gtk::prelude::SettingsExt;
+                let want = super::with_app_settings(|s| s.boolean("gpu-rendering"));
+                // NVIDIA can't back CEF's exportable shared images — the GPU
+                // process fails SkSurface init and no accelerated frame ever
+                // arrives, leaving the chat area black (#167). Probe the GL
+                // context actually rendering (current here) instead of the PCI
+                // driver list, so hybrid setups rendering on another GPU keep
+                // the accel path (#173). KARERE_GPU_OSR=1 forces.
+                if want && gl_vendor_is_nvidia() {
+                    log::warn!(
+                        "accel_osr: NVIDIA driver detected — GPU rendering is \
+                         unsupported (CEF shared-image export fails, #167); \
+                         using software rendering. KARERE_GPU_OSR=1 to force."
+                    );
+                    false
+                } else {
+                    want
                 }
-            };
-            // Do not ask CEF for shared textures unless this current GL/EGL
-            // display can import them. Without this pre-browser fence CEF may
-            // never call CPU on_paint, leaving a blank first frame.
-            let enabled = requested && crate::gl_dmabuf::is_supported();
-            log::info!("accel_osr: requested={requested} enabled={enabled}");
-            enabled
-        })
+            }
+        };
+        // Do not ask CEF for shared textures unless this GL/EGL display can
+        // import them. Without this pre-browser fence CEF may never call CPU
+        // on_paint, leaving a blank first frame.
+        let enabled = if requested {
+            match crate::gl_dmabuf::dmabuf_import_supported() {
+                Some(ok) => ok,
+                None => return, // not measurable here; keep CPU OSR, retry later
+            }
+        } else {
+            false
+        };
+        log::info!("accel_osr: requested={requested} enabled={enabled}");
+        let _ = ACCEL_PROBE.set(enabled);
+    }
+
+    /// Whether a browser created now should ask CEF for shared textures.
+    ///
+    /// Before the first successful [`probe_accel_osr`] — a background (tray)
+    /// start creates every account's browser before any GLArea is realized —
+    /// this answers CPU OSR without caching it, so browsers created after the
+    /// window first shows (new accounts, DevTools, a software restart) still
+    /// get the probed answer. Pre-probe browsers stay on CPU paint for their
+    /// lifetime: requesting shared textures blind risks a never-painting view
+    /// on machines that can't export them (#167) or have no GL at all (#177).
+    pub(super) fn accel_osr_enabled() -> bool {
+        // Nothing can import a shared texture without a GL context, and asking
+        // for one stops CEF ever calling CPU on_paint -- which is the only
+        // thing the software present path has to draw. (#177)
+        if NO_GL.load(Ordering::Relaxed) {
+            return false;
+        }
+        match ACCEL_PROBE.get() {
+            Some(&enabled) => enabled,
+            None => {
+                log::debug!("accel_osr: not probed yet (no GL context) — CPU OSR for this browser");
+                false
+            }
+        }
     }
 
     /// True when the current GL context is driven by the NVIDIA proprietary
     /// driver (GL_VENDOR contains "NVIDIA"; Mesa reports "Mesa"/"AMD" even on
     /// NVIDIA hardware via nouveau/NVK, where shared images are untested but
-    /// not known-broken). Requires a current GL context — returns false when
-    /// there is none. (gpu-osr)
+    /// not known-broken). Expects a current GL context; without one it falls
+    /// back to whether the nvidia kernel driver is bound. (gpu-osr)
     fn gl_vendor_is_nvidia() -> bool {
         let p = unsafe { gl::GetString(gl::VENDOR) };
         if p.is_null() {
-            // No current GL context — prewarm (start-in-background) creates
-            // browsers before the GLArea realizes. Fall back to the coarse
-            // driver-bound check so NVIDIA still gets software rendering
-            // instead of the broken accel path (#167); hybrid setups rendering
-            // on the iGPU lose accel only in this prewarmed case.
+            // No current GL context (should not happen from the realize
+            // probe). Fall back to the coarse driver-bound check so NVIDIA
+            // still gets software rendering instead of the broken accel path.
             return std::path::Path::new("/sys/bus/pci/drivers/nvidia").exists();
         }
         let vendor = unsafe { std::ffi::CStr::from_ptr(p.cast()) }.to_string_lossy();
         log::info!("accel_osr: GL_VENDOR={vendor}");
         vendor.contains("NVIDIA")
-    }
-
-    fn paint_scale(widget: &super::KarereWebView) -> f64 {
-        widget.scale_factor().max(1) as f64
     }
 
     /// Widget screen origin in physical pixels for `RenderHandler::screen_point`.
@@ -3131,12 +3935,13 @@ mod imp {
     /// - Before realize or after unrealize (`native` or `surface` is `None`)
     ///   returns `(0,0)` without panicking; any query failure also falls back
     ///   to `(0,0)` at `debug` level. Main-thread only (callers are
-    ///   `size_allocate` / `refresh_screen_scale`).
+    ///   `sync_viewport` and, per query so window moves are seen,
+    ///   `RenderHandler::screen_point` via `current_window_origin`).
     ///
     /// Verified: no root `GdkSurface` exists in gdk4 0.11 to translate against,
     /// so the `translate_coordinates`/`compute_bounds` logical path would always
     /// return `false` — the shipped path is the xlib physical path.
-    fn window_origin_for(widget: &super::KarereWebView) -> (i32, i32) {
+    pub(super) fn window_origin_for(widget: &super::KarereWebView) -> (i32, i32) {
         // Post-unrealize guard: no native/surface → (0,0), never panic.
         let Some(native) = widget.native() else {
             return (0, 0);
@@ -3169,12 +3974,17 @@ mod imp {
         let mut ry: ::std::os::raw::c_int = 0;
         let mut child: ::std::os::raw::c_ulong = 0;
         // x11-dl loads libX11 dynamically; opening can fail without libX11.
-        let xlib = match x11::xlib::Xlib::open() {
-            Ok(lib) => lib,
-            Err(_) => {
-                log::debug!("window_origin_for: Xlib::open failed");
-                return (0, 0);
-            }
+        // Resolved once: `open()` rebuilds the whole symbol table per call.
+        static XLIB: std::sync::OnceLock<Option<x11::xlib::Xlib>> = std::sync::OnceLock::new();
+        let Some(xlib) = XLIB
+            .get_or_init(|| {
+                x11::xlib::Xlib::open()
+                    .map_err(|e| log::debug!("window_origin_for: Xlib::open failed: {e}"))
+                    .ok()
+            })
+            .as_ref()
+        else {
+            return (0, 0);
         };
         let ok = unsafe {
             (xlib.XTranslateCoordinates)(
@@ -3425,6 +4235,7 @@ mod imp {
         widget: &super::KarereWebView,
         keyval: gtk::gdk::Key,
         keycode: u32,
+        layout: u32,
         state: gtk::gdk::ModifierType,
         down: bool,
     ) {
@@ -3436,7 +4247,11 @@ mod imp {
                 KeyEventType::KEYUP
             },
             modifiers: modifiers_from_state(state),
-            windows_key_code: gdk_key_to_vk(keyval),
+            windows_key_code: gdk_key_to_vk(
+                keyval,
+                unshifted_keyval(widget, keycode, layout),
+                keycode,
+            ),
             native_key_code: keycode as i32,
             is_system_key: 0,
             character: 0,
@@ -3550,6 +4365,8 @@ mod imp {
     /// Notify the page that a file drag is hovering so it can pre-mount its
     /// dropzone before the drop commits.
     fn send_drag_hover(widget: &super::KarereWebView, phase: &str, x: f64, y: f64) {
+        // The bridge hit-tests these with elementFromPoint: CSS px. (I8)
+        let (x, y) = widget_to_page(widget, x, y);
         send_browser_message(
             widget,
             crate::ipc::BrowserMessage::DragHover {
@@ -3689,11 +4506,7 @@ mod imp {
                 widget,
                 move |res| match res {
                     Ok(value) => match value.get::<gtk::gdk::FileList>() {
-                        Ok(list) => {
-                            for file in list.files() {
-                                load_and_send_file(&widget, file, "paste", None, true);
-                            }
-                        }
+                        Ok(list) => load_and_send_files(&widget, list.files(), "paste", None, true),
                         Err(err) => log::warn!("clipboard file list decode failed: {err}"),
                     },
                     Err(err) => log::warn!("clipboard file read failed: {err}"),
@@ -3723,9 +4536,8 @@ mod imp {
             let Some(widget) = widget.upgrade() else {
                 return;
             };
-            for path in files {
-                load_and_send_file(&widget, gtk::gio::File::for_path(path), kind, coords, true);
-            }
+            let files = files.into_iter().map(gtk::gio::File::for_path).collect();
+            load_and_send_files(&widget, files, kind, coords, true);
         });
     }
 
@@ -3764,36 +4576,97 @@ mod imp {
             .unwrap_or_default())
     }
 
-    /// Load one file's contents asynchronously and dispatch it as a paste/drop.
-    fn load_and_send_file(
+    /// Raw bytes one batched paste/drop message may carry; base64 makes that
+    /// ~64 MB on the wire, the same ceiling a single file always had.
+    const PASTE_BATCH_BYTES: usize = 48 * 1024 * 1024;
+
+    /// Split files of `sizes` bytes, in order, into consecutive batches of at
+    /// most `budget` bytes. A file larger than the budget gets a batch alone
+    /// (and is then refused by `make_blob`).
+    pub(super) fn batch_by_size(sizes: &[usize], budget: usize) -> Vec<std::ops::Range<usize>> {
+        let mut batches = Vec::new();
+        let (mut start, mut total) = (0, 0usize);
+        for (i, &size) in sizes.iter().enumerate() {
+            if i > start && total.saturating_add(size) > budget {
+                batches.push(start..i);
+                start = i;
+                total = 0;
+            }
+            total = total.saturating_add(size);
+        }
+        if start < sizes.len() {
+            batches.push(start..sizes.len());
+        }
+        batches
+    }
+
+    /// Load every file, then dispatch them together so the page builds one
+    /// `DataTransfer` holding all of them: one paste/drop, one attach preview,
+    /// instead of one per file. (J4)
+    fn load_and_send_files(
         widget: &super::KarereWebView,
-        file: gtk::gio::File,
+        files: Vec<gtk::gio::File>,
         kind: &'static str,
         coords: Option<(f64, f64)>,
         offer_chooser: bool,
     ) {
-        let name = file.basename().map(|p| p.to_string_lossy().into_owned());
-        file.load_contents_async(
-            gtk::gio::Cancellable::NONE,
-            glib::clone!(
-                #[weak]
-                widget,
-                #[strong]
-                file,
-                move |res| match res {
+        if files.is_empty() {
+            return;
+        }
+        let weak = widget.downgrade();
+        glib::spawn_future_local(async move {
+            let mut loaded = Vec::new();
+            let mut unreadable = None;
+            for file in files {
+                let name = file.basename().map(|p| p.to_string_lossy().into_owned());
+                match file.load_contents_future().await {
                     Ok((bytes, _etag)) => {
                         let mime = guess_mime(name.as_deref(), &bytes);
-                        send_blob_paste(&widget, mime, kind, &bytes, name, coords);
+                        loaded.push((name, mime, bytes));
                     }
                     Err(err) => {
                         log::warn!("read dropped/pasted file failed: {err}");
-                        if offer_chooser {
-                            choose_unreadable_file(&widget, &file, kind, coords);
-                        }
+                        unreadable.get_or_insert(file);
                     }
                 }
-            ),
-        );
+            }
+            let Some(widget) = weak.upgrade() else {
+                return;
+            };
+            let sizes: Vec<usize> = loaded.iter().map(|(_, _, bytes)| bytes.len()).collect();
+            for batch in batch_by_size(&sizes, PASTE_BATCH_BYTES) {
+                let files: Vec<crate::ipc::PasteFile> = loaded[batch]
+                    .iter()
+                    .filter_map(|(name, mime, bytes)| match crate::paste::make_blob(bytes) {
+                        Ok(payload) => Some(crate::ipc::PasteFile {
+                            mime: mime.clone(),
+                            name: name.clone(),
+                            payload,
+                        }),
+                        Err(err) => {
+                            log::warn!("paste: {err}");
+                            None
+                        }
+                    })
+                    .collect();
+                if files.is_empty() {
+                    continue;
+                }
+                let (x, y) = coords.map_or((None, None), |(x, y)| (Some(x), Some(y)));
+                send_browser_message(
+                    &widget,
+                    crate::ipc::BrowserMessage::DispatchPasteFiles {
+                        kind: kind.to_string(),
+                        files,
+                        x,
+                        y,
+                    },
+                );
+            }
+            if offer_chooser && let Some(file) = unreadable {
+                choose_unreadable_file(&widget, &file, kind, coords);
+            }
+        });
     }
 
     /// A drop, or a paste of a file copied in a file manager, hands over a plain
@@ -3846,9 +4719,8 @@ mod imp {
                             widget.imp().attach_chooser_open.set(false);
                             // An error here is the user dismissing the chooser.
                             let Ok(files) = res else { return };
-                            for file in files.iter::<gtk::gio::File>().flatten() {
-                                load_and_send_file(&widget, file, kind, coords, false);
-                            }
+                            let files = files.iter::<gtk::gio::File>().flatten().collect();
+                            load_and_send_files(&widget, files, kind, coords, false);
                         }
                     ),
                 );
@@ -3929,43 +4801,171 @@ mod imp {
         );
     }
 
-    fn gdk_key_to_vk(keyval: gtk::gdk::Key) -> i32 {
-        use gtk::gdk::Key;
-        // Common keys only; everything else falls back to the unicode CHAR event.
-        match keyval {
-            Key::BackSpace => 0x08,
-            Key::Tab => 0x09,
-            Key::Return | Key::KP_Enter => 0x0D,
-            Key::Escape => 0x1B,
-            Key::Page_Up => 0x21,
-            Key::Page_Down => 0x22,
-            Key::End => 0x23,
-            Key::Home => 0x24,
-            Key::Left => 0x25,
-            Key::Up => 0x26,
-            Key::Right => 0x27,
-            Key::Down => 0x28,
-            Key::Insert => 0x2D,
-            Key::Delete => 0x2E,
-            // Only letters/digits map cleanly to a Windows VK via ASCII (A–Z, 0–9).
-            // Punctuation collides with named VKs (e.g. '.'=0x2E=VK_DELETE), making
-            // Chromium treat the keydown as a command and drop the char. Use 0; the
-            // separate CHAR event (IM commit / keyval fallback) still inserts it.
-            _ => keyval
-                .to_unicode()
-                .filter(|c| c.is_ascii_alphanumeric())
-                .map(|c| c.to_ascii_uppercase() as i32)
-                .unwrap_or(0),
-        }
+    /// The level-0 (unshifted) keyval of hardware `keycode` in keyboard
+    /// `layout`, so Shift+/ still maps to the '/' key's VK.
+    fn unshifted_keyval(
+        widget: &super::KarereWebView,
+        keycode: u32,
+        layout: u32,
+    ) -> Option<gtk::gdk::Key> {
+        widget
+            .display()
+            .map_keycode(keycode)?
+            .into_iter()
+            .find(|(k, _)| k.group() == layout as i32 && k.level() == 0)
+            .map(|(_, key)| key)
     }
 
-    const VS: &str = r#"#version 300 es
+    /// Windows virtual-key code Chromium expects in `windows_key_code`: named
+    /// keys and letters/digits from the keyval; punctuation from the unshifted
+    /// keyval of the same key, then the keyval itself; last, the key's
+    /// US-layout position (hardware keycode). 0 when nothing fits; text still
+    /// arrives through the IM commit / CHAR path either way. (I2)
+    pub(super) fn gdk_key_to_vk(
+        keyval: gtk::gdk::Key,
+        unshifted: Option<gtk::gdk::Key>,
+        keycode: u32,
+    ) -> i32 {
+        let alnum = |k: gtk::gdk::Key| {
+            k.to_unicode()
+                .filter(|c| c.is_ascii_alphanumeric())
+                .and_then(|_| ascii_vk(k))
+        };
+        named_vk(keyval)
+            .or_else(|| alnum(keyval))
+            .or_else(|| unshifted.and_then(ascii_vk))
+            .or_else(|| ascii_vk(keyval))
+            .or_else(|| keycode_vk(keycode))
+            .unwrap_or(0)
+    }
+
+    /// Keys whose VK does not depend on the layout.
+    fn named_vk(keyval: gtk::gdk::Key) -> Option<i32> {
+        use gtk::gdk::Key;
+        use gtk::glib::translate::IntoGlib;
+        Some(match keyval {
+            Key::Break => 0x03, // VK_CANCEL (Ctrl+Pause)
+            Key::BackSpace => 0x08,
+            Key::Tab | Key::ISO_Left_Tab | Key::KP_Tab => 0x09,
+            Key::Clear | Key::KP_Begin => 0x0C,
+            Key::Return | Key::KP_Enter | Key::ISO_Enter => 0x0D,
+            Key::Shift_L | Key::Shift_R => 0x10,
+            Key::Control_L | Key::Control_R => 0x11,
+            Key::Alt_L | Key::Alt_R | Key::Meta_L | Key::Meta_R => 0x12, // VK_MENU
+            Key::Pause => 0x13,
+            Key::Caps_Lock => 0x14,
+            Key::Escape => 0x1B,
+            Key::space | Key::KP_Space => 0x20,
+            Key::Page_Up | Key::KP_Page_Up => 0x21,
+            Key::Page_Down | Key::KP_Page_Down => 0x22,
+            Key::End | Key::KP_End => 0x23,
+            Key::Home | Key::KP_Home => 0x24,
+            Key::Left | Key::KP_Left => 0x25,
+            Key::Up | Key::KP_Up => 0x26,
+            Key::Right | Key::KP_Right => 0x27,
+            Key::Down | Key::KP_Down => 0x28,
+            Key::Select => 0x29,
+            Key::Execute => 0x2B,
+            Key::Print | Key::Sys_Req => 0x2C, // VK_SNAPSHOT
+            Key::Insert | Key::KP_Insert => 0x2D,
+            Key::Delete | Key::KP_Delete => 0x2E,
+            Key::Help => 0x2F,
+            Key::Super_L => 0x5B,
+            Key::Super_R => 0x5C,
+            Key::Menu => 0x5D, // VK_APPS
+            Key::KP_0 => 0x60,
+            Key::KP_1 => 0x61,
+            Key::KP_2 => 0x62,
+            Key::KP_3 => 0x63,
+            Key::KP_4 => 0x64,
+            Key::KP_5 => 0x65,
+            Key::KP_6 => 0x66,
+            Key::KP_7 => 0x67,
+            Key::KP_8 => 0x68,
+            Key::KP_9 => 0x69,
+            Key::KP_Multiply => 0x6A,
+            Key::KP_Add => 0x6B,
+            Key::KP_Separator => 0x6C,
+            Key::KP_Subtract => 0x6D,
+            Key::KP_Decimal => 0x6E,
+            Key::KP_Divide => 0x6F,
+            Key::KP_Equal => 0xBB,
+            Key::Num_Lock => 0x90,
+            Key::Scroll_Lock => 0x91,
+            Key::ISO_Level3_Shift => 0xE1, // VKEY_ALTGR
+            k if (Key::F1.into_glib()..=Key::F24.into_glib()).contains(&k.into_glib()) => {
+                0x70 + (k.into_glib() - Key::F1.into_glib()) as i32
+            }
+            _ => return None,
+        })
+    }
+
+    /// Letters and digits map to their ASCII uppercase value (VK_A..VK_Z,
+    /// VK_0..VK_9). Punctuation must NOT use its ASCII value: '.' is 0x2E =
+    /// VK_DELETE, and Chromium then runs the Delete command on the key-down
+    /// and drops the character. It gets the `VK_OEM_*` code of its US-layout
+    /// key instead, shifted symbols included ('?' is the '/' key, VK_OEM_2).
+    fn ascii_vk(keyval: gtk::gdk::Key) -> Option<i32> {
+        let c = keyval.to_unicode()?;
+        if c.is_ascii_alphanumeric() {
+            return Some(c.to_ascii_uppercase() as i32);
+        }
+        Some(match c {
+            ';' | ':' => 0xBA,  // VK_OEM_1
+            '=' | '+' => 0xBB,  // VK_OEM_PLUS
+            ',' | '<' => 0xBC,  // VK_OEM_COMMA
+            '-' | '_' => 0xBD,  // VK_OEM_MINUS
+            '.' | '>' => 0xBE,  // VK_OEM_PERIOD
+            '/' | '?' => 0xBF,  // VK_OEM_2
+            '`' | '~' => 0xC0,  // VK_OEM_3
+            '[' | '{' => 0xDB,  // VK_OEM_4
+            '\\' | '|' => 0xDC, // VK_OEM_5
+            ']' | '}' => 0xDD,  // VK_OEM_6
+            '\'' | '"' => 0xDE, // VK_OEM_7
+            _ => return None,
+        })
+    }
+
+    /// VK of the key at this position on a US layout (XKB keycode = evdev + 8).
+    /// Last resort for keyvals with no ASCII meaning: non-Latin layouts, dead
+    /// keys, shifted digits whose unshifted keyval is not known.
+    fn keycode_vk(keycode: u32) -> Option<i32> {
+        const ROW_QWERTY: &[u8] = b"QWERTYUIOP";
+        const ROW_ASDF: &[u8] = b"ASDFGHJKL";
+        const ROW_ZXCV: &[u8] = b"ZXCVBNM";
+        let evdev = keycode.checked_sub(8)?;
+        Some(match evdev {
+            2..=10 => 0x31 + (evdev - 2) as i32, // 1..9
+            11 => 0x30,                          // 0
+            12 => 0xBD,                          // minus
+            13 => 0xBB,                          // equal
+            16..=25 => ROW_QWERTY[(evdev - 16) as usize] as i32,
+            26 => 0xDB, // left brace
+            27 => 0xDD, // right brace
+            30..=38 => ROW_ASDF[(evdev - 30) as usize] as i32,
+            39 => 0xBA, // semicolon
+            40 => 0xDE, // apostrophe
+            41 => 0xC0, // grave
+            43 => 0xDC, // backslash
+            44..=50 => ROW_ZXCV[(evdev - 44) as usize] as i32,
+            51 => 0xBC, // comma
+            52 => 0xBE, // dot
+            53 => 0xBF, // slash
+            86 => 0xE2, // VK_OEM_102 (ISO key left of Z)
+            _ => return None,
+        })
+    }
+
+    pub(super) const VS: &str = r#"#version 300 es
 precision highp float;
 layout(location=0) in vec2 a_pos;
 layout(location=1) in vec2 a_uv;
 out vec2 v_uv;
+// Sampled sub-rect of the texture: xy = offset, zw = size (fractions).
+// (0,0,1,1) for CPU frames; a DMA-BUF's visible rect inside its coded size.
+uniform vec4 u_uv;
 void main() {
-    v_uv = a_uv;
+    v_uv = u_uv.xy + a_uv * u_uv.zw;
     gl_Position = vec4(a_pos, 0.0, 1.0);
 }
 "#;
@@ -4207,6 +5207,7 @@ mod tests {
         shared.lock().accel = Some(crate::gl_dmabuf::AccelFrame {
             width: 1,
             height: 1,
+            visible: (0, 0, 1, 1),
             fourcc: 0,
             modifier: 0,
             planes: vec![crate::gl_dmabuf::Plane {
@@ -4248,17 +5249,82 @@ mod tests {
         drop(state);
         assert_eq!(cpu_upload(&shared.lock().frame, (1, 1)), CpuUpload::Reuse);
 
+        // A `<select>` popup is composited from its own texture: drawing it
+        // consumes the popup frame and leaves the view frame untouched. (I3)
+        let popup = [9_u8, 9, 9, 255];
+        crate::handlers::render::dispatch_popup_for_test(&shared, (0, 0, 1, 1), &popup, 1, 1);
+        assert!(!shared.lock().frame.dirty, "a popup paint is not a view paint");
+        unsafe { imp.draw() };
+        let state = shared.lock();
+        assert!(!state.popup.frame.dirty, "popup frame must be uploaded by draw");
+        assert_eq!(state.frame.pixels, pixels, "view frame untouched by the popup");
+        drop(state);
+        assert_eq!(
+            (
+                imp.popup_tex_w.load(Ordering::Relaxed),
+                imp.popup_tex_h.load(Ordering::Relaxed)
+            ),
+            (1, 1)
+        );
+
         window.destroy();
+    }
+
+    #[test]
+    fn layers_are_placed_top_left_without_stretching() {
+        // Current-size frame fills the framebuffer exactly.
+        assert_eq!(
+            super::gl_viewport_for((100, 50), (100, 50), (0, 0, 100, 50)),
+            (0, 0, 100, 50)
+        );
+        // Stale smaller frame mid-resize: own size, top-left (GL y is bottom-up).
+        assert_eq!(
+            super::gl_viewport_for((100, 50), (100, 50), (0, 0, 80, 40)),
+            (0, 10, 80, 40)
+        );
+        // Popup at view (10, 5).
+        assert_eq!(
+            super::gl_viewport_for((100, 50), (100, 50), (10, 5, 20, 10)),
+            (10, 35, 20, 10)
+        );
+        // A framebuffer at another scale than the view still maps a full
+        // frame onto all of it.
+        assert_eq!(
+            super::gl_viewport_for((150, 75), (200, 100), (0, 0, 200, 100)),
+            (0, 0, 150, 75)
+        );
+    }
+
+    #[test]
+    fn accelerated_frames_sample_only_their_visible_rect() {
+        assert_eq!(super::texture_uv((0, 0, 4, 2), (4, 2)), [0.0, 0.0, 1.0, 1.0]);
+        assert_eq!(super::texture_uv((0, 0, 2, 1), (4, 2)), [0.0, 0.0, 0.5, 0.5]);
+        assert!(super::imp::VS.contains("u_uv"));
+    }
+
+    #[test]
+    fn background_follows_the_theme_foreground() {
+        // Light text = dark theme.
+        assert_eq!(
+            super::page_background_for_foreground(0.95, 0.95, 0.95),
+            super::PAGE_BG_DARK
+        );
+        assert_eq!(
+            super::page_background_for_foreground(0.1, 0.1, 0.1),
+            super::PAGE_BG_LIGHT
+        );
     }
 }
 
 #[cfg(test)]
 mod input_tests {
     use super::imp::{
-        ExplicitCopyTrigger, IM_FOCUS_OUT_DEBOUNCE_TICKS, ImFocusAction, MouseButtonTracker,
-        MouseDispatch, MouseEventSink, MouseInput, RendererMessageSink, dispatch_explicit_copy,
-        dispatch_mouse_with, im_focus_step, physical_mouse_coordinates, printable_char,
-        request_live_selection_with, send_click_with, send_move_with, should_forward_mouse,
+        ExplicitCopyTrigger, IM_FOCUS_OUT_DEBOUNCE_TICKS, ImFocusAction, ImeAction, ImeCommit,
+        ImeState, MouseButtonTracker, MouseDispatch, MouseEventSink, MouseInput,
+        RendererMessageSink, batch_by_size, dispatch_explicit_copy, dispatch_mouse_with,
+        enter_char, gdk_key_to_vk, im_focus_step, ime_utf16_extent, page_coords,
+        physical_mouse_coordinates, printable_char, request_live_selection_with, send_click_with,
+        send_move_with, should_forward_mouse, zoom_scroll_steps,
     };
     use crate::handlers::{
         client::dispatch_renderer_message_with,
@@ -4758,6 +5824,251 @@ mod input_tests {
         assert_eq!(printable_char(Key::Left, none), None);
         assert_eq!(printable_char(Key::F5, none), None);
         assert_eq!(printable_char(Key::Shift_L, none), None);
+        // Enter is not "printable"; its CHAR comes from `enter_char` instead.
+        assert_eq!(printable_char(Key::KP_Enter, none), None);
+    }
+
+    /// Enter (plain or Shift) sends the `\r` CHAR Blink needs for <textarea>
+    /// newlines and <input> submit; nothing else does, and shortcuts don't.
+    #[test]
+    fn only_plain_enter_synthesizes_a_carriage_return() {
+        let none = ModifierType::empty();
+        assert_eq!(enter_char(Key::Return, none), Some(0x0D));
+        assert_eq!(enter_char(Key::KP_Enter, none), Some(0x0D));
+        assert_eq!(enter_char(Key::Return, ModifierType::SHIFT_MASK), Some(0x0D));
+        assert_eq!(enter_char(Key::Return, ModifierType::CONTROL_MASK), None);
+        assert_eq!(enter_char(Key::Return, ModifierType::ALT_MASK), None);
+        for key in [Key::Tab, Key::BackSpace, Key::Escape, Key::a, Key::space] {
+            assert_eq!(enter_char(key, none), None, "{key:?}");
+        }
+    }
+
+    /// Keyval → Windows VK. Punctuation uses VK_OEM_* (never its ASCII value:
+    /// '.' = 0x2E = VK_DELETE ran the Delete command and dropped the char).
+    #[test]
+    fn keyvals_map_to_windows_virtual_keys() {
+        let cases: &[(Key, i32)] = &[
+            (Key::BackSpace, 0x08),
+            (Key::Tab, 0x09),
+            (Key::ISO_Left_Tab, 0x09),
+            (Key::Return, 0x0D),
+            (Key::KP_Enter, 0x0D),
+            (Key::Shift_L, 0x10),
+            (Key::Shift_R, 0x10),
+            (Key::Control_L, 0x11),
+            (Key::Control_R, 0x11),
+            (Key::Alt_L, 0x12),
+            (Key::Alt_R, 0x12),
+            (Key::Pause, 0x13),
+            (Key::Caps_Lock, 0x14),
+            (Key::Escape, 0x1B),
+            (Key::space, 0x20),
+            (Key::Page_Up, 0x21),
+            (Key::KP_Page_Down, 0x22),
+            (Key::KP_End, 0x23),
+            (Key::KP_Home, 0x24),
+            (Key::Left, 0x25),
+            (Key::KP_Up, 0x26),
+            (Key::KP_Right, 0x27),
+            (Key::Down, 0x28),
+            (Key::Print, 0x2C),
+            (Key::KP_Insert, 0x2D),
+            (Key::Delete, 0x2E),
+            (Key::KP_Delete, 0x2E),
+            (Key::Super_L, 0x5B),
+            (Key::Super_R, 0x5C),
+            (Key::Menu, 0x5D),
+            (Key::KP_0, 0x60),
+            (Key::KP_9, 0x69),
+            (Key::KP_Multiply, 0x6A),
+            (Key::KP_Add, 0x6B),
+            (Key::KP_Subtract, 0x6D),
+            (Key::KP_Decimal, 0x6E),
+            (Key::KP_Divide, 0x6F),
+            (Key::F1, 0x70),
+            (Key::F5, 0x74),
+            (Key::F12, 0x7B),
+            (Key::F24, 0x87),
+            (Key::Num_Lock, 0x90),
+            (Key::Scroll_Lock, 0x91),
+            (Key::a, 0x41),
+            (Key::Z, 0x5A),
+            (Key::_0, 0x30),
+            (Key::_7, 0x37),
+            (Key::semicolon, 0xBA),
+            (Key::equal, 0xBB),
+            (Key::comma, 0xBC),
+            (Key::minus, 0xBD),
+            (Key::period, 0xBE),
+            (Key::slash, 0xBF),
+            (Key::grave, 0xC0),
+            (Key::bracketleft, 0xDB),
+            (Key::backslash, 0xDC),
+            (Key::bracketright, 0xDD),
+            (Key::apostrophe, 0xDE),
+            // Shifted symbols of a US layout keep their key's code.
+            (Key::question, 0xBF),
+            (Key::greater, 0xBE),
+            (Key::colon, 0xBA),
+            (Key::quotedbl, 0xDE),
+        ];
+        for &(key, vk) in cases {
+            assert_eq!(gdk_key_to_vk(key, None, 0), vk, "{key:?}");
+        }
+        // No punctuation may land on a command VK (Delete, Insert, arrows...).
+        for key in [Key::period, Key::comma, Key::slash, Key::minus, Key::apostrophe] {
+            assert!(gdk_key_to_vk(key, None, 0) >= 0xBA, "{key:?}");
+        }
+    }
+
+    /// Shift+/ and Shift+1 keep the unshifted key's VK; a key with no ASCII
+    /// meaning (non-Latin layout, dead key) falls back to its US position.
+    #[test]
+    fn shifted_and_non_latin_keys_use_unshifted_keyval_then_position() {
+        // XKB keycodes (evdev + 8) on a US layout.
+        const KC_1: u32 = 10;
+        const KC_A: u32 = 38;
+        const KC_SLASH: u32 = 61;
+        const KC_APOSTROPHE: u32 = 48;
+        assert_eq!(gdk_key_to_vk(Key::question, Some(Key::slash), KC_SLASH), 0xBF);
+        assert_eq!(gdk_key_to_vk(Key::exclam, Some(Key::_1), KC_1), 0x31);
+        // Unshifted keyval unknown: the position still says '1'.
+        assert_eq!(gdk_key_to_vk(Key::exclam, None, KC_1), 0x31);
+        // Cyrillic 'ф' sits on the US 'A' key.
+        assert_eq!(
+            gdk_key_to_vk(Key::Cyrillic_ef, Some(Key::Cyrillic_ef), KC_A),
+            0x41
+        );
+        assert_eq!(gdk_key_to_vk(Key::dead_acute, None, KC_APOSTROPHE), 0xDE);
+        // A letter's own keyval wins over its position (AZERTY 'q' on US 'A').
+        assert_eq!(gdk_key_to_vk(Key::q, Some(Key::q), KC_A), 0x51);
+        // Unknown key, unknown position.
+        assert_eq!(gdk_key_to_vk(Key::VoidSymbol, None, 0), 0);
+    }
+
+    /// Plain typing: no preedit, raw key-down first (#180), commit as CHARs.
+    #[test]
+    fn ime_plain_typing_keeps_the_raw_first_order_and_chars() {
+        let mut ime = ImeState::default();
+        for _ in 0..3 {
+            ime.key_press_begin();
+            assert!(!ime.filter_first());
+            assert_eq!(ime.commit(), ImeCommit::Chars);
+        }
+    }
+
+    /// Dead key ´ then e: GtkIMContextSimple shows a "´" preedit, then on 'e'
+    /// ends it and commits "é". The 'e' goes to the IM first (no raw key-down
+    /// for the page to act on) and the é lands once, via ime_commit_text. The
+    /// next key is ordinary typing again.
+    #[test]
+    fn ime_dead_key_commits_once_in_either_signal_order() {
+        // preedit-end before commit (GtkIMContextSimple).
+        let mut ime = ImeState::default();
+        ime.key_press_begin();
+        assert!(!ime.filter_first(), "the dead key itself goes raw-first");
+        ime.preedit_start();
+        assert_eq!(ime.preedit_changed(false), ImeAction::SetComposition);
+        ime.key_press_begin();
+        assert!(ime.filter_first(), "'e' must reach the IM first");
+        assert_eq!(ime.preedit_changed(true), ImeAction::Cancel);
+        assert_eq!(ime.preedit_end(), ImeAction::Idle);
+        assert_eq!(ime.commit(), ImeCommit::Composition);
+        ime.key_press_begin();
+        assert!(!ime.filter_first());
+        assert_eq!(ime.commit(), ImeCommit::Chars);
+
+        // commit before preedit-end (ibus-style).
+        let mut ime = ImeState::default();
+        ime.key_press_begin();
+        assert_eq!(ime.preedit_changed(false), ImeAction::SetComposition);
+        ime.key_press_begin();
+        assert_eq!(ime.commit(), ImeCommit::Composition);
+        assert_eq!(ime.preedit_end(), ImeAction::Idle, "nothing left to cancel");
+        ime.key_press_begin();
+        assert!(!ime.filter_first());
+    }
+
+    /// CJK: while composing, Enter/Backspace/arrows go to the IM first; an
+    /// async commit after the key handler returned still replaces the
+    /// composition; Escape (preedit emptied, no commit) cancels it.
+    #[test]
+    fn ime_cjk_composition_routes_keys_to_the_im() {
+        let mut ime = ImeState::default();
+        ime.key_press_begin();
+        ime.preedit_start();
+        assert_eq!(ime.preedit_changed(false), ImeAction::SetComposition);
+        for _ in 0..4 {
+            ime.key_press_begin();
+            assert!(ime.filter_first());
+            assert_eq!(ime.preedit_changed(false), ImeAction::SetComposition);
+        }
+        // Enter picks the candidate: preedit ends, then the async commit lands.
+        ime.key_press_begin();
+        assert!(ime.filter_first());
+        assert_eq!(ime.preedit_end(), ImeAction::Cancel);
+        assert_eq!(ime.commit(), ImeCommit::Composition);
+
+        // Escape: composition discarded, then typing is plain again.
+        let mut ime = ImeState::default();
+        assert_eq!(ime.preedit_changed(false), ImeAction::SetComposition);
+        assert_eq!(ime.preedit_end(), ImeAction::Cancel);
+        ime.key_press_begin();
+        assert!(!ime.filter_first());
+        assert_eq!(ime.commit(), ImeCommit::Chars);
+    }
+
+    #[test]
+    fn ime_composition_extent_counts_utf16_units() {
+        assert_eq!(ime_utf16_extent("", 0), (0, 0));
+        assert_eq!(ime_utf16_extent("nihao", 2), (5, 2));
+        assert_eq!(ime_utf16_extent("你好", 1), (2, 1));
+        // An astral character is two UTF-16 units.
+        assert_eq!(ime_utf16_extent("a🙂b", 2), (4, 3));
+        assert_eq!(ime_utf16_extent("ab", 9), (2, 2));
+        assert_eq!(ime_utf16_extent("ab", -1), (2, 0));
+    }
+
+    /// One zoom step per wheel notch; hi-res and touchpad deltas accumulate;
+    /// reversing drops the partial step. Up (dy < 0) zooms in.
+    #[test]
+    fn ctrl_scroll_zoom_steps() {
+        let mut accum = 0.0;
+        assert_eq!(zoom_scroll_steps(&mut accum, -1.0, 1.0), 1);
+        assert_eq!(zoom_scroll_steps(&mut accum, 1.0, 1.0), -1);
+        assert_eq!(zoom_scroll_steps(&mut accum, -3.0, 1.0), 3);
+        let mut accum = 0.0;
+        let steps: i32 = (0..8)
+            .map(|_| zoom_scroll_steps(&mut accum, -0.125, 1.0))
+            .sum();
+        assert_eq!(steps, 1);
+        let mut accum = 0.0;
+        assert_eq!(zoom_scroll_steps(&mut accum, -30.0, 40.0), 0);
+        assert_eq!(zoom_scroll_steps(&mut accum, 5.0, 40.0), 0);
+        assert_eq!(zoom_scroll_steps(&mut accum, -30.0, 40.0), 0, "reversal reset");
+        assert_eq!(zoom_scroll_steps(&mut accum, -15.0, 40.0), 1);
+        assert_eq!(zoom_scroll_steps(&mut accum, 0.0, 40.0), 0);
+    }
+
+    /// Widget logical px → page CSS px: CEF's page zoom includes the display
+    /// scale (#158), so at 2x with 100 % user zoom they coincide.
+    #[test]
+    fn page_coordinates_follow_the_page_zoom() {
+        assert_eq!(page_coords(100.0, 50.0, 1.0, 1.0), (100.0, 50.0));
+        assert_eq!(page_coords(100.0, 50.0, 2.0, 2.0), (100.0, 50.0));
+        assert_eq!(page_coords(150.0, 60.0, 1.0, 1.5), (100.0, 40.0));
+        assert_eq!(page_coords(150.0, 60.0, 2.0, 3.0), (100.0, 40.0));
+        assert_eq!(page_coords(10.0, 20.0, 1.0, 0.0), (10.0, 20.0));
+    }
+
+    #[test]
+    fn file_batches_respect_the_message_budget() {
+        assert!(batch_by_size(&[], 10).is_empty());
+        assert_eq!(batch_by_size(&[3, 3, 3], 10), vec![0..3]);
+        assert_eq!(batch_by_size(&[6, 6, 6], 10), vec![0..1, 1..2, 2..3]);
+        assert_eq!(batch_by_size(&[4, 6, 1, 9], 10), vec![0..2, 2..4]);
+        // Oversized file: alone in its batch (make_blob then refuses it).
+        assert_eq!(batch_by_size(&[2, 50, 2], 10), vec![0..1, 1..2, 2..3]);
     }
 
     #[test]

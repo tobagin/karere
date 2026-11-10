@@ -13,18 +13,36 @@ pub enum PasteBlob {
     Base64(String),
 }
 
+/// One file of a batched paste/drop ([`BrowserMessage::DispatchPasteFiles`]).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PasteFile {
+    pub mime: String,
+    pub name: Option<String>,
+    pub payload: PasteBlob,
+}
+
 /// Messages from the browser process to the renderer subprocess.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum BrowserMessage {
     /// Read the main frame's live selection and report it through SetClipboard.
     /// This is user-triggered (Ctrl+C or CEF's Copy menu command).
     CopySelection,
-    /// Synthesize a paste/drop; for drops x/y are release widget coords.
+    /// Synthesize a paste/drop of one payload (image paste, middle-click text);
+    /// x/y, when set, are page CSS px.
     DispatchPasteEvent {
         mime: String,
         kind: String,
         payload: PasteBlob,
         name: Option<String>,
+        x: Option<f64>,
+        y: Option<f64>,
+    },
+    /// Several files pasted/dropped at once, delivered as one event so the page
+    /// builds a single `DataTransfer` (one attach preview, not one per file).
+    /// x/y are page CSS px for drops.
+    DispatchPasteFiles {
+        kind: String,
+        files: Vec<PasteFile>,
         x: Option<f64>,
         y: Option<f64>,
     },
@@ -152,6 +170,7 @@ impl BrowserMessage {
     const KNOWN_TAGS: &'static [&'static str] = &[
         "CopySelection",
         "DispatchPasteEvent",
+        "DispatchPasteFiles",
         "DragHover",
         #[cfg(debug_assertions)]
         "Ping",
@@ -161,6 +180,7 @@ impl BrowserMessage {
         match self {
             BrowserMessage::CopySelection => "CopySelection",
             BrowserMessage::DispatchPasteEvent { .. } => "DispatchPasteEvent",
+            BrowserMessage::DispatchPasteFiles { .. } => "DispatchPasteFiles",
             BrowserMessage::DragHover { .. } => "DragHover",
             #[cfg(debug_assertions)]
             BrowserMessage::Ping => "Ping",
@@ -249,6 +269,23 @@ mod tests {
                 name: Some("x.pdf".into()),
                 x: Some(12.0),
                 y: Some(34.0),
+            },
+            BrowserMessage::DispatchPasteFiles {
+                kind: "drop".into(),
+                files: vec![
+                    PasteFile {
+                        mime: "image/png".into(),
+                        name: Some("a.png".into()),
+                        payload: PasteBlob::Base64("AAAA".into()),
+                    },
+                    PasteFile {
+                        mime: "application/pdf".into(),
+                        name: None,
+                        payload: PasteBlob::Base64("JVBERg==".into()),
+                    },
+                ],
+                x: Some(1.5),
+                y: None,
             },
             BrowserMessage::DragHover {
                 phase: "over".into(),
