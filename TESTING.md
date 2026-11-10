@@ -1,7 +1,5 @@
 # Manual smoke tests
 
-Per PRD §11.
-
 - [ ] Window opens, page renders.
 - [ ] Scroll wheel works.
 - [ ] Click + type in search box.
@@ -29,7 +27,7 @@ Use only synthetic/non-sensitive text when recording evidence.
 
 ## Automated
 
-Use Rust 1.97.1 with its matching rustfmt and Clippy components. Run the repository-wide acceptance gates from the repository root:
+Use rustfmt and Clippy for your toolchain. Run the repository-wide gates from the repository root:
 
 ```sh
 cargo fmt --all -- --check
@@ -39,7 +37,7 @@ cargo test --workspace --all-targets
 
 ```sh
 tools/verify-po.sh  # translation catalog health gate (sentinels, msgfmt, LINGUAS parity, version)
-meson compile -C build-pot karere-pot && tools/verify-po.sh  # must be Rust-complete: 513-msgid pot, ALL CHECKS PASSED
+meson compile -C build-pot karere-pot && tools/verify-po.sh  # must report ALL CHECKS PASSED
 ```
 
 The startup integration test launches the application by its fixed application ID. If another Karere instance is active on the session bus, run the test suite in an isolated session with `dbus-run-session -- cargo test --workspace --all-targets`.
@@ -74,7 +72,7 @@ On a PinePhone running Mobian 13 under Phosh:
 4. Enable **Start in Background**, restart, then present Karere from the app launcher/tray and confirm the prewarmed browser appears rather than a blank GLArea.
 5. Quit and confirm no Karere/CEF process remains. Capture a screenshot and terminal log as release evidence.
 
-### Coordinate probe — pointer alignment (#158 / KARE-016)
+### Coordinate probe — pointer alignment (#158)
 
 Synthetic fixture `tests/fixtures/coord-probe.html` is an 8×5 labeled grid (each cell 100×100, total 800×500) with full-document click capture. Each click writes compact JSON into `document.title` (`{x:clientX,y:clientY,innerW,innerH,dpr,clientW,clientH}`, last event wins, ≤ ~100 chars) and mirrors it on `window.__karereProbe.last` for CDP `Runtime.evaluate`. The page is loaded via `--url 'data:text/html,…'` (URI-encoded, no server, no sandbox filesystem needed) so both native and Flatpak runs work.
 
@@ -94,16 +92,16 @@ dbus-run-session -- bash tests/coordinate_probe.sh --negative
 dbus-run-session -- bash tests/coordinate_probe.sh --bin "flatpak run io.github.tobagin.karere.Devel"
 ```
 
-Requirements: `Xvfb` (`xvfb-run`), `xdotool`, `python3`, `gsettings`/`glib-compile-schemas`, `curl` (optional for CDP fallback). Run under `dbus-run-session --` to isolate from any host Karere instance (host instance causes secondary-instance forwarding and `window not found` failures). Flatpak tests **must** target `io.github.tobagin.karere.Devel` (the local `--dev` build); `io.github.tobagin.karere` is the prod/stable Flatpak and is not rebuilt from this tree. The harness auto-resolves the effective `APP_ID`/`GSettings` schema from `KARERE_BIN` so Devel uses its own `io.github.tobagin.karere.Devel` schema. The matrix exits 0 and `SUMMARY` lines are consumed by CI; each row's `passed`/`worst_error_px` indicates whether the config reproduced the reporter's sustained `>1px` symptom. No real account or chat content is ever loaded (synthetic probe only, CEO privacy constraint).
+Requirements: `Xvfb` (`xvfb-run`), `xdotool`, `python3`, `gsettings`/`glib-compile-schemas`, `curl` (optional for CDP fallback). Run under `dbus-run-session --` to isolate from any host Karere instance (host instance causes secondary-instance forwarding and `window not found` failures). Flatpak tests **must** target `io.github.tobagin.karere.Devel` (the local `--dev` build); `io.github.tobagin.karere` is the prod/stable Flatpak and is not rebuilt from this tree. The harness auto-resolves the effective `APP_ID`/`GSettings` schema from `KARERE_BIN` so Devel uses its own `io.github.tobagin.karere.Devel` schema. Each row's `passed`/`worst_error_px` indicates whether the config reproduced the reporter's sustained `>1px` symptom. No real account or chat content is ever loaded (synthetic probe only).
 
-### Pointer-alignment H7 probe (chrome + fractional) — KARE-018
+### Pointer-alignment probe (chrome + fractional)
 
 Extends the synthetic probe with a chrome-mimicking fixture and fractional Wayland matrix.
 
 - **Chrome-mimic fixture:** `tests/fixtures/coord-probe.html` gains `?chrome=1` / `?h7=1` / `window.__forceH7` mode that wraps the 8×5 grid in a fixed header (60 px) + side panel (360 px) and a scrolled/transformed container (`transform: translate(10px,20px)` + `scrollTop 80`). The harness injects `window.__forceH7=1` into the data URL so `location.search` detection works without a server. The title JSON is extended with `originX/originY/gridLeft/gridTop/scrollX/scrollY/visualViewport` diagnostics so calibration can compute `contentOrigin`.
-- **Origin-calibrated harness:** `tests/coordinate_probe.sh --chrome` loads the fixture in chrome mode, performs a one-probe calibration click to derive `contentOrigin` via `getBoundingClientRect`/`visualViewport`/`scrollX/Y`, then runs remaining cell-center clicks asserting calibrated `|clientX−expectedCalibrated| ≤1px` per axis. Default (no `--chrome`) preserves KARE-016 synthetic behavior bit-identical.
+- **Origin-calibrated harness:** `tests/coordinate_probe.sh --chrome` loads the fixture in chrome mode, performs a one-probe calibration click to derive `contentOrigin` via `getBoundingClientRect`/`visualViewport`/`scrollX/Y`, then runs remaining cell-center clicks asserting calibrated `|clientX−expectedCalibrated| ≤1px` per axis. Default (no `--chrome`) keeps the synthetic behavior unchanged.
 - **Fractional Wayland:** `tests/coordinate_probe.sh --fractional` queries `gsettings get org.gnome.mutter experimental-features`; if neither `scale-monitor-framebuffer` nor `xwayland-native-scaling` is enabled, it prints `SKIP: fractional unverified on this host — missing Mutter experimental-features` and emits `SKIP` JSON rows. When the features are enabled but the host is Xvfb/non-Wayland, the harness still emits explicit `SKIP` rows (`transient scale set not implemented … needs operator Wayland session`) rather than a fake PASS — a true 125/150 % matrix requires an operator Wayland session that can drive `org.gnome.Mutter.DisplayConfig ApplyMonitorsConfig` with trap-restore; integer `GDK_SCALE=1/2` matrix still runs deterministically under Xvfb and findings record host session type and whether fractional was actually exercised.
-- **Real-page opt-in (privacy gate):** `KARERE_H7_REAL_PAGE=1 tests/coordinate_probe.sh --chrome` (or `KARERE_H7_REAL_PAGE_URL=<snapshot-file-url>` for an offline mirror) loads the live WhatsApp snapshot with a CDP-injected `window.__karereProbe` recorder and the same origin-calibrated protocol; when unset the harness prints `SKIP: real-page gated — set KARERE_H7_REAL_PAGE=1 for operator-authorized run`, does not attempt login, and runs the offline chrome-mimic fixture instead. No real account is used by default in CI.
+- **Real-page opt-in (privacy gate):** `KARERE_H7_REAL_PAGE=1 tests/coordinate_probe.sh --chrome` (or `KARERE_H7_REAL_PAGE_URL=<snapshot-file-url>` for an offline mirror) loads the live WhatsApp snapshot with a CDP-injected `window.__karereProbe` recorder and the same origin-calibrated protocol; when unset the harness prints `SKIP: real-page gated — set KARERE_H7_REAL_PAGE=1 for operator-authorized run`, does not attempt login, and runs the offline chrome-mimic fixture instead. No real account is used by default.
 - **Flags / env:** `--chrome`, `--fractional`, `--negative` (composes as `--chrome --negative` which must FAIL), `KARERE_H7_REAL_PAGE=1`, `KARERE_GPU_OSR`, `KARERE_BIN`/`KARERE_APP_ID`, `GDK_SCALE` matrix.
 - **JSON results:** synthetic rows → `coord-probe-results.json`, H7 chrome/fractional rows → `coord-probe-h7-results.json` (both git-ignored, kept for diffing; also appended to disk as each row is printed). Each row includes `expected` vs `observed` vs `originCorrected`/`expectedCalibrated` vs `error`/`calibrated_error` plus viewport metrics and joint `coord:` logs.
 
@@ -116,15 +114,15 @@ dbus-run-session -- tests/coordinate_probe.sh --chrome
 dbus-run-session -- tests/coordinate_probe.sh --chrome --fractional
 # Negative control must FAIL (proves detection)
 dbus-run-session -- tests/coordinate_probe.sh --chrome --negative
-# Real-page opt-in (operator-authorized only, never in CI)
+# Real-page opt-in (operator-authorized only)
 KARERE_H7_REAL_PAGE=1 dbus-run-session -- tests/coordinate_probe.sh --chrome
 ```
 
-### Fractional Wayland — operator-driven verification (KARE-020)
+### Fractional Wayland — operator-driven verification
 
 Why fractional needs a live Mutter session: `Xvfb` has no compositor fractional scale — it only supports integer `GDK_SCALE` (1×/2×). Fractional 125%/150% logical scales are driven by Mutter's `scale-monitor-framebuffer` (fractional framebuffer) and/or `xwayland-native-scaling` (XWayland native scale) experimental features. The harness handles whichever the host exposes and does not assume both. Under `GDK_SCALE` the integer matrix stays correct; logical 1.25/1.5 must be driven via the compositor's `org.gnome.Mutter.DisplayConfig` `ApplyMonitorsConfig` on a real Wayland session.
 
-Default (CI-safe) behavior: `bash tests/coordinate_probe.sh` runs the integer matrix and emits honest SKIP rows for 1.25/1.5 with machine-parseable `{"fractional":{"available":false,"reason":"not-opted-in","required_features":["scale-monitor-framebuffer","xwayland-native-scaling"]}}` and a human message `needs operator Wayland session`. No display mutation occurs without opt-in.
+Default behavior: `bash tests/coordinate_probe.sh` runs the integer matrix and emits honest SKIP rows for 1.25/1.5 with machine-parseable `{"fractional":{"available":false,"reason":"not-opted-in","required_features":["scale-monitor-framebuffer","xwayland-native-scaling"]}}` and a human message `needs operator Wayland session`. No display mutation occurs without opt-in.
 
 Operator-gated PASS:
 
@@ -143,7 +141,7 @@ KARERE_FRACTIONAL_WAYLAND=1 bash tests/coordinate_probe.sh --fractional-wayland
 # also: bash tests/coordinate_probe.sh --fractional-wayland  (flag equivalent to env)
 ```
 
-What it does: saves current `GetCurrentState` (serial + logical_monitors), installs `trap restore EXIT INT TERM` (idempotent, re-fetches fresh serial before restore), calls `gdbus org.gnome.Mutter.DisplayConfig ApplyMonitorsConfig` with method 1 (temporary, never persistent method 0) to set the primary logical monitor to 1.25 then 1.5 (other monitors unchanged, preserving `transform`/`primary`/`position`, with fresh serial per apply), sleeps ≥1s for compositor settle, re-runs the synthetic (8×5 grid) probe for both CPU OSR (`KARERE_GPU_OSR=0`) and GPU OSR (`KARERE_GPU_OSR=1`) and, when `tests/fixtures/coord-probe-whatsapp.html` exists, the chrome-mimic probe likewise for both paint paths (otherwise emits a `chrome-mimic pending KARE-018` SKIP row rather than a synthetic duplicate) through the production `GDK→GTK→CEF→page` path at that logical scale (via `xdotool` + title/CDP readback), validates `|clientX-expected|<=1px` per axis (`worst_error_px<=1`), and restores the original monitor configuration even on failure (gating exit code on `restore.equal`). Output is one JSON object per scale plus `restore:{before,after,equal}` and `summary` with `passed:true` per scale when `worst_error_px<=1`.
+What it does: saves current `GetCurrentState` (serial + logical_monitors), installs `trap restore EXIT INT TERM` (idempotent, re-fetches fresh serial before restore), calls `gdbus org.gnome.Mutter.DisplayConfig ApplyMonitorsConfig` with method 1 (temporary, never persistent method 0) to set the primary logical monitor to 1.25 then 1.5 (other monitors unchanged, preserving `transform`/`primary`/`position`, with fresh serial per apply), sleeps ≥1s for compositor settle, re-runs the synthetic (8×5 grid) probe for both CPU OSR (`KARERE_GPU_OSR=0`) and GPU OSR (`KARERE_GPU_OSR=1`) and, when `tests/fixtures/coord-probe-whatsapp.html` exists, the chrome-mimic probe likewise for both paint paths (otherwise emits a `chrome-mimic pending` SKIP row rather than a synthetic duplicate) through the production `GDK→GTK→CEF→page` path at that logical scale (via `xdotool` + title/CDP readback), validates `|clientX-expected|<=1px` per axis (`worst_error_px<=1`), and restores the original monitor configuration even on failure (gating exit code on `restore.equal`). Output is one JSON object per scale plus `restore:{before,after,equal}` and `summary` with `passed:true` per scale when `worst_error_px<=1`.
 
 Prerequisites: `gdbus`, `gsettings`, `python3` (with `gi`/`Gio`), `xdotool`, `curl` (CDP fallback), a GNOME/Mutter Wayland session, and **CDP port 9333 free** — the app's devtools port is a fixed constant (`src/devtools.rs`), so close any running Karere started with `--debug` first; otherwise the probe's readback would target the wrong process and the wrapper SKIPs with reason `cdp-port-held`. Refuses when `XDG_SESSION_TYPE!=wayland`, `WAYLAND_DISPLAY` empty, `gdbus` missing, `GetCurrentState` fails, `ApplyMonitorsConfigAllowed` false, or neither experimental feature is enabled — emitting structured SKIP JSON with `reason` enum (`not-wayland`, `xvfb`, `no-gdbus`, `no-displayconfig`, `missing-feature`, `permission-denied`, `not-opted-in`, `cdp-port-held`) and exit 0. Never mutates display without the opt-in flag and without passing all gates; refuses to run as root. Verify restore via post-run `gdbus call GetCurrentState` equals pre-run scale.
 
@@ -160,45 +158,22 @@ bash tests/wayland_fractional_verify.sh --help
 - [ ] `node tests/copy_bridge.test.js` — executes the production injected copy bridge with populated, duplicate, Unicode/multi-line, immediate-copy, PRIMARY debounce, and empty/collapsed selection cases, plus cut (capture-phase snapshot, page clipboardData, plain inputs, never cancelling the deletion) and `image/png` ClipboardItem writes (#196).
 - [ ] `bash tests/flathub_beta_cef_policy.sh` — offline; asserts the flathub-beta CEF/engine policy (beta manifest mirrors stable: CEF tag, archive.json names, karere tag, GSK_RENDERER=gl, zero chromium-148).
 
-## Beta testing (flathub-beta)
+## Before a release
 
-Karere 4.0 betas ship on the **`flathub-beta`** channel — separate from stable, opt-in.
-Stable users are unaffected.
-
-### Install
+Run the offline checks and the Rust gates, then the manual smoke tests above on a Flatpak build of the release candidate:
 
 ```sh
-flatpak remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
-flatpak install flathub-beta io.github.tobagin.karere
-flatpak run io.github.tobagin.karere   # add --branch=beta if stable is also installed
+tests/run-offline.sh                                   # every offline check, one pass/fail line each; non-zero exit on failure
+tests/run-js.sh                                        # injected JS bundle tests (needs node)
+cargo test --workspace --all-targets                   # see Automated above
 ```
 
-> **Note:** beta and stable share the app-id, so they share the data dir
-> `~/.var/app/io.github.tobagin.karere`. Coming from v3, you'll re-link by QR scan
-> (v4 is a hard fork — no session migration).
+## Reporting problems
 
-### What to check
+File bugs at **<https://github.com/tobagin/karere/issues>** and include:
 
-- [ ] First launch shows the v3→v4 migration dialog; QR pairing links an account.
-- [ ] Send/receive text and media; **video attachments play in-app** (new in v4).
-- [ ] Voice/video call connects (mic/cam permission prompt appears, then audio+video).
-- [ ] Notifications fire with preview; clicking one opens the chat.
-- [ ] Multi-account: add a second account, switch, confirm isolated sessions.
-- [ ] Tray icon shows unread; close-to-tray + background run work.
-- [ ] Downloads land in `~/Downloads`; spell-check, zoom (Ctrl +/-/0), paste (Ctrl+V) work.
-
-### Report bugs — open an issue
-
-File anything that breaks at **<https://github.com/tobagin/karere/issues>**.
-
-Include:
-
-- **Version**: `flatpak info io.github.tobagin.karere` (confirm it says `4.0.0`)
+- **Version**: `flatpak info io.github.tobagin.karere` (confirm it shows the released version)
 - **Desktop**: GNOME/KDE/other, Wayland or X11, distro
 - **Steps to reproduce** + what you expected vs. saw
 - **Logs**: run `flatpak run io.github.tobagin.karere` from a terminal, paste relevant output
-- For crashes: install the Debug extension and attach a backtrace —
-  `flatpak install flathub-beta io.github.tobagin.karere.Debug` then
-  `flatpak-coredumpctl io.github.tobagin.karere`
-
-Prefix the issue title with `[beta]` so it's easy to triage.
+- For crashes: install the `io.github.tobagin.karere.Debug` extension and attach a backtrace with `flatpak-coredumpctl io.github.tobagin.karere`

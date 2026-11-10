@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Report a problem with Karere
 title: ''
 labels: ''
 assignees: ''
@@ -8,31 +8,41 @@ assignees: ''
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of what went wrong.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Karere version**
+The version shown in the About dialog (for example 4.3.5).
+
+**Install source**
+- [ ] Flathub (stable)
+- [ ] Flathub (beta)
+- [ ] Built locally from source
+
+**System**
+- Distro and version:
+- Desktop environment and version:
+- Session: Wayland or X11
+- GPU and driver (for example AMD Radeon 680M with Mesa 25.x, or NVIDIA 580 proprietary):
+
+**Steps to reproduce**
+1.
+2.
+3.
 
 **Expected behavior**
-A clear and concise description of what you expected to happen.
+What you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Actual behavior**
+What happened instead.
 
-**Desktop (please complete the following information):**
- - Distro: [e.g. Fedora, Debian, Ubuntu, Arch]
- - Version [e.g. 22]
- - Source [e.g. Flathub, AUR, distro repo]
+**Logs**
+Run Karere from a terminal with debug logging, reproduce the problem, and paste the output:
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. PinePhone, Librem 5, Fairphone]
- - Distro: [e.g. pmOS, Mobian]
- - Version [e.g. 22]
- - Source [e.g. Flathub, AUR, distro repo]
-   
+```
+flatpak run io.github.tobagin.karere --debuglevel=debug
+```
+
+Before posting, remove personal details from the log: phone numbers, contact and group names, message text, and any file paths that contain your user name.
+
 **Additional context**
-Add any other context about the problem here.
+Anything else that may help, such as screenshots.

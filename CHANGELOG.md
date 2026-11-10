@@ -5,6 +5,15 @@ All notable changes to Karere will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Copy Link Address in the context menu (#205)**: the right-click menu offers Copy Link Address.
+- **Page focus is announced to screen readers (#204)**: moving keyboard focus inside WhatsApp Web is announced. Browse mode is not supported yet.
+
+### Fixed
+- **Copied images reach the system clipboard (#196)**: copying an image also puts it on the system clipboard, so it pastes into other apps.
+
 ## [4.3.5] - 2026-11-03
 
 ### Fixed

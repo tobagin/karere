@@ -13,9 +13,9 @@ module sources the working tree via `type: dir`.
 ## How a beta gets published
 
 Flathub builds whatever is on the **`beta` branch** of
-`github.com/flathub/io.github.tobagin.karere` and pushes it to the `flathub-beta`
-remote (flatpak branch `beta`). No PR is needed for an existing app — pushing the
-branch triggers a buildbot run.
+`github.com/flathub/io.github.tobagin.karere` and publishes it to the `flathub-beta`
+remote (flatpak branch `beta`). That branch is protected: changes cannot be pushed to
+it directly. Publish by opening a pull request against the `beta` branch.
 
 1. **Bump versions** in `Cargo.toml`, `Cargo.lock`, `meson.build` to `4.0.0-betaN`.
 2. **Tag** the release commit:
@@ -26,15 +26,18 @@ branch triggers a buildbot run.
    ```
 3. **Update this manifest** — set `tag:` and `commit:` on the `karere` module to the
    new tag.
-4. **Push to the Flathub `beta` branch:**
+4. **Open a pull request against the Flathub `beta` branch:** fork or clone
+   `github.com/flathub/io.github.tobagin.karere`, check out `beta`, copy in the updated
+   manifest and `cargo-sources.json`, commit on a branch, and open a PR whose base is
+   `beta`. Do not push to `beta` directly; it is PR-protected.
    ```
    git clone git@github.com:flathub/io.github.tobagin.karere.git
    cd io.github.tobagin.karere
-   git checkout -b beta            # first time; thereafter: git checkout beta
+   git checkout -b karere-betaN beta
    cp .../packaging/flathub-beta/io.github.tobagin.karere.yml .
    cp .../packaging/cargo-sources.json .
    git add -A && git commit -m "Karere 4.0.0-betaN"
-   git push -u origin beta
+   git push -u origin karere-betaN   # then open the PR into beta
    ```
 5. Watch the build at <https://buildbot.flathub.org>.
 

@@ -7,12 +7,14 @@ Thank you for your interest in contributing to Karere! This document provides gu
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
 - [Development Setup](#development-setup)
-- [Making Changes](#making-changes)
+  - [Prerequisites](#prerequisites)
+  - [Building with Flatpak (Recommended)](#building-with-flatpak-recommended)
+  - [Local Development](#local-development)
 - [Coding Standards](#coding-standards)
-- [Testing](#testing)
-- [Submitting Changes](#submitting-changes)
-- [Reporting Issues](#reporting-issues)
-- [Feature Requests](#feature-requests)
+- [Architecture Overview](#architecture-overview)
+- [Translations](#translations)
+- [Getting Help](#getting-help)
+- [License](#license)
 
 ## Code of Conduct
 
@@ -35,31 +37,42 @@ This project follows the principles of respect, inclusivity, and professionalism
 
 ### Prerequisites
 
-- **SDKs**: `org.gnome.Sdk//49`, `org.freedesktop.Sdk.Extension.rust-stable//24.08`
-- **Tools**: `flatpak-builder`, Rust/Cargo 1.97.1 with the matching rustfmt and Clippy components (optional, for local checks)
+- **Runtime and SDK**: `org.gnome.Platform//51` and `org.gnome.Sdk//51` (the `runtime-version` in `packaging/io.github.tobagin.karere.yml`), plus the `org.freedesktop.Sdk.Extension.rust-stable` extension listed under `sdk-extensions` in the same manifest
+- **Tools**: `flatpak` and `flatpak-builder` for the Flatpak build
+- **For a local `cargo build` or `cargo run` only**: a Rust toolchain that supports edition 2024, GTK 4 and libadwaita development files, `blueprint-compiler` on `PATH` (`build.rs` fails without it), and a CEF distribution (see below)
 
 ### Building with Flatpak (Recommended)
 
 ```bash
-# Install dependencies
-flatpak install org.gnome.Sdk//49 org.gnome.Platform//49 org.freedesktop.Sdk.Extension.rust-stable//24.08
+# Install the runtime and SDK
+flatpak install flathub org.gnome.Platform//51 org.gnome.Sdk//51
 
-# Build and run
-flatpak-builder --user --install --force-clean build packaging/io.github.tobagin.karere.Devel.yml
+# Build the working tree and install it as io.github.tobagin.karere.Devel
+./build.sh --dev
 flatpak run io.github.tobagin.karere.Devel
 ```
 
-The repo wrapper `./build.sh --dev` is equivalent to the `flatpak-builder` line above (see `build.sh --help`; use `FLATPAK_BUILDER_EXTRA_ARGS="--disable-rofiles-fuse"` on hosts where rofiles-fuse cannot mount).
+`./build.sh --dev` builds your checkout with `packaging/io.github.tobagin.karere.Devel.yml` (`-Dprofile=development`) and installs it. Options:
+
+- `--regen-sources`: regenerate `packaging/cargo-sources.json` from `Cargo.lock`. Run it after any `Cargo.toml` or `Cargo.lock` change, because the Flatpak build is offline.
+- `--no-install`: build without installing.
+- `FLATPAK_BUILDER_EXTRA_ARGS`: extra flatpak-builder arguments, for example `--disable-rofiles-fuse` on hosts where rofiles-fuse cannot mount.
+
+A plain `./build.sh` builds the production manifest at a tagged release commit, not your checkout, so use `--dev` to test your changes. See `./build.sh --help`.
 
 ### Local Development
 
-For quick iteration (requires `cargo`, `gtk4-devel`, `libadwaita-devel` on host):
+For quick iteration outside Flatpak, first fetch CEF into `cef-binaries/`, then run through the wrapper, which sets `CEF_PATH`, compiles the development GSettings schema, and calls `cargo run`:
 
 ```bash
-# Run via Cargo
-cargo run
+./download-cef.sh   # stock CEF distribution into cef-binaries/current
+./run-dev.sh        # sets CEF_PATH when unset, then runs cargo run
+```
 
-# Repository-wide Rust quality gates (Rust 1.97.1)
+`download-cef.sh` fetches stock CEF, without the proprietary codecs and Karere's CEF patches that the shipped Flatpak uses. Video playback and idle CPU can therefore differ between a local run and the Flatpak build. A bare `cargo build` needs `CEF_PATH` set to the CEF directory; `run-dev.sh` does this for you.
+
+```bash
+# Repository-wide Rust quality gates
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace --all-targets
@@ -72,7 +85,7 @@ cargo check --workspace --all-targets
 
 ### Rust Code Style
 
-- Use Rust 1.97.1 and its matching rustfmt/Clippy components.
+- Install rustfmt and Clippy for the toolchain you build with.
 - Check all Rust targets with `cargo fmt --all -- --check`.
 - Treat every all-target Clippy warning as an error with `cargo clippy --workspace --all-targets -- -D warnings`.
 - Structs and Enums: `PascalCase`
@@ -89,11 +102,12 @@ cargo check --workspace --all-targets
 
 Karere is built with:
 
-- **Language**: Rust
-- **Toolkit**: GTK4 + LibAdwaita
-- **Web Engine**: WebKitGTK 6.0
-- **UI**: Blueprint (`.blp`) compiled to GtkBuilder XML
-- **Distribution**: Flatpak
+- **Language**: Rust (edition 2024)
+- **Toolkit**: GTK4 + libadwaita
+- **Web engine**: Chromium Embedded Framework (CEF, Chromium 152). CEF renders WhatsApp Web off-screen and composites it into a GTK `GLArea`.
+- **Injected scripts**: `data/js/` runs inside the WhatsApp Web page and reports to Rust through `window.karere.send`
+- **UI**: Blueprint (`data/ui/*.blp`), compiled to GtkBuilder `.ui` files at build time
+- **Distribution**: Flatpak on the GNOME 51 runtime
 
 ### Project Structure
 
@@ -101,13 +115,23 @@ Karere is built with:
 karere/
 ├── data/               # Application resources
 │   ├── ui/             # Blueprint UI files
+│   ├── js/             # Scripts injected into WhatsApp Web
+│   ├── js-deferred/    # Additional scripts embedded in the binary
 │   ├── icons/          # Application icons
 │   └── sounds/         # Notification audio
 ├── src/                # Rust source code
-├── packaging/          # Flatpak manifests
+├── tests/              # Test scripts and fixtures
 ├── tools/              # Utility scripts
-└── build.rs            # Build configuration
+├── packaging/          # Flatpak manifests
+├── build.rs            # Compiles Blueprint files and resources
+├── build.sh            # Flatpak build wrapper
+├── download-cef.sh     # Fetches the CEF distribution
+└── run-dev.sh          # Local run wrapper (sets CEF_PATH)
 ```
+
+## Translations
+
+Translation catalogs live in `po/`. They were machine-translated and have not been reviewed by native speakers yet (see `po/README.md`). Corrections are welcome as pull requests. To regenerate the template and merge catalogs after changing translatable strings, run `tools/update-po.sh`.
 
 ## Getting Help
 

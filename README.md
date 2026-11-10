@@ -1,9 +1,5 @@
 # Karere
 
-> **Multi-account & identity discovery.** Each account runs in an isolated CEF `RequestContext`; accounts are listed most-recently-used (no manual ordering), and existing v3 accounts must be re-linked (no migration). Account name and avatar are discovered from WhatsApp Web's internal `Store` through a Webpack hook (the same technique as `@wppconnect/wa-js`).
->
-> **Degraded-mode contract.** If a future WhatsApp release restructures its Webpack bundle and the Store hook can't attach, the affected account falls back to scraping the DOM (`#side header`) for its name and avatar, and its switcher row shows a **persistent yellow "degraded mode" badge**. The badge does **not** clear when the DOM fallback succeeds — it is cleared only when a later page load lets the Store hook attach successfully again (typically after the hook is updated for the new WhatsApp release). The badge is intentional: it surfaces the fragile scrape path so it gets fixed rather than silently masking breakage.
-
 A fast, native WhatsApp client for Linux that feels right at home on your desktop.
 
 <div align="center">
@@ -65,10 +61,10 @@ For the full release history, see [CHANGELOG.md](CHANGELOG.md).
   reviewing the page without moving focus are not supported yet.
 - **Keyboard Navigation**: Use the entire app without a mouse.
 - **Visual Aids**: High contrast support, zoom controls, and reduced motion.
-- **Auto-Correct**: Smart text correction with dictionary support
+- **Auto-Correct**: Automatic text replacement, which can be turned off in Preferences
 
 ### Spell Checking
-- **Multi-Language Support**: 80+ dictionaries from LibreOffice
+- **Multi-Language Support**: 52 languages from Chromium's spellcheck dictionaries (the list is `KNOWN_LANGUAGES` in `src/spellcheck.rs`)
 - **Auto-Detection**: Smart language detection based on system locale
 - **Dictionary Management**: Override auto-detect to select specific languages
 - **Auto-Correct Toggle**: Enable or disable automatic text replacement
@@ -92,7 +88,7 @@ cd karere
 flatpak run io.github.tobagin.karere.Devel
 ```
 
-`./build.sh --dev` builds the working tree via `packaging/io.github.tobagin.karere.Devel.yml` (`-Dprofile=development`); plain `./build.sh` builds the production manifest (`packaging/io.github.tobagin.karere.yml`, pinned to tag v4.2.2) — not the checkout. After any `Cargo.toml`/`Cargo.lock` change run `./build.sh --regen-sources` (or `--dev --regen-sources`) to refresh vendored sources.
+`./build.sh --dev` builds the working tree via `packaging/io.github.tobagin.karere.Devel.yml` (`-Dprofile=development`); plain `./build.sh` builds the production manifest (`packaging/io.github.tobagin.karere.yml`, pinned to the latest release tag) — not the checkout. After any `Cargo.toml`/`Cargo.lock` change run `./build.sh --regen-sources` (or `--dev --regen-sources`) to refresh vendored sources.
 
 **Build dependency**: the UI is authored in [Blueprint](https://gnome.pages.gitlab.gnome.org/blueprint-compiler/) (`data/ui/*.blp`, including `preferences.blp` and `keyboard-shortcuts.blp`) and compiled to `.ui` at build time. `blueprint-compiler` must be on `PATH` for a local `cargo build`; the Flatpak SDK (`org.gnome.Sdk//51`) already ships it, so the Flatpak build needs no manifest change.
 
@@ -123,23 +119,29 @@ Access preferences through the application menu or keyboard shortcut (`Ctrl+,`) 
 ### Keyboard Shortcuts
 
 #### Standard
-- `Ctrl+N` - New Chat
-- `Ctrl+,` - Open Preferences
 - `Ctrl+Q` - Quit Application
-- `F1` - Show Keyboard Shortcuts Help
+- `Ctrl+,` - Open Preferences
+- `Ctrl+?` - Show Keyboard Shortcuts
+- `Ctrl+W` - Close window
+- `Ctrl+M` - Minimize window
+- `F11` or `Alt+Enter` - Toggle fullscreen
+- `Ctrl+Tab` or `Ctrl+Page_Down` - Next account
+- `Ctrl+Shift+Tab` or `Ctrl+Page_Up` - Previous account
+- `Alt+1` to `Alt+9` - Switch to account 1 to 9
 
 #### Zoom
-- `Ctrl++` - Zoom In
-- `Ctrl+-` - Zoom Out
-- `Ctrl+0` - Reset Zoom
+- `Ctrl++` (also `Ctrl+=` and keypad `+`) - Zoom In
+- `Ctrl+-` (also keypad `-`) - Zoom Out
+- `Ctrl+0` (also keypad `0`) - Reset Zoom
 
-#### Developer (when enabled)
-- `Ctrl+Shift+D` - Open Developer Tools
-- `Ctrl+R` - Reload Page
+#### Developer
+- `F12` or `Ctrl+Shift+I` - Open Developer Tools
+- `Ctrl+Shift+C` - Inspect element
 
 #### WhatsApp Web
-- `Ctrl+F` - Find in Chat
-- `Ctrl+Shift+F` - Search Chats
+- `Ctrl+R` or `F5` - Reload page
+- `Ctrl+Shift+R` - Reload, bypassing the cache
+- `Ctrl+F` - Find in page
 
 ### Accessibility Features
 
@@ -147,11 +149,9 @@ Karere includes comprehensive accessibility support:
 
 - **Screen Reader Support (partial)**: Focus changes inside WhatsApp are announced (turned on
   automatically when a screen reader is running); browse mode is not supported yet
-- **Keyboard Navigation**: Complete keyboard-only navigation with visible focus indicators
-- **High Contrast Mode**: Automatic detection and adaptation
-- **Reduced Motion**: Respects system reduce-motion preferences
-- **Configurable Shortcuts**: All keyboard shortcuts can be enabled/disabled
-- **Focus Management**: 82 focusable elements in a logical focus chain
+- **Keyboard Navigation**: Accounts, zoom, reload and find have shortcuts (see Keyboard Shortcuts above)
+- **High Contrast Mode**: Can be turned on in Preferences
+- **Reduced Motion**: Can be turned on in Preferences
 
 ## Architecture
 
@@ -164,12 +164,15 @@ Karere is built using modern GNOME technologies:
 - **Blueprint**: Declarative UI definition language
 - **Flatpak**: Secure application distribution
 
+Each account runs in its own CEF `RequestContext`. An account's name and avatar are read from the
+data WhatsApp Web keeps in the page's localStorage and IndexedDB (see `data/js/60-store-hook.js`),
+not from WhatsApp's internal Store. Existing v3 accounts must be linked again on first v4 launch.
+
 ## Privacy & Security
 
 Karere is designed with privacy in mind:
 
 - **Sandboxed**: Runs in a Flatpak sandbox with minimal permissions
-- **Opt-in Telemetry**: All logging and crash reporting is disabled by default
 - **Local Storage**: Uses standard user data directories, no external services
 - **Transparent**: Open source code available for audit
 
