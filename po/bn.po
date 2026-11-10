@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 20:29+0100\n"
+"POT-Creation-Date: 2026-11-10 10:44+0000\n"
 "PO-Revision-Date: 2026-06-06 21:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -22,13 +22,7 @@ msgstr ""
 msgid "@APP_NAME@"
 msgstr "@APP_NAME@"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:112
-msgid ""
-"A file that cannot be read now shows a notice offering the file chooser "
-"instead of failing silently."
-msgstr ""
-
-#: data/ui/window.ui:265
+#: data/ui/window.ui:269
 msgid "About"
 msgstr "সম্পর্কে"
 
@@ -36,31 +30,13 @@ msgstr "সম্পর্কে"
 msgid "About dialog showing application information"
 msgstr "অ্যাপ্লিকেশনের তথ্য দেখানো সম্পর্কে ডায়ালগ"
 
-#: data/ui/preferences.ui:348
+#: data/ui/preferences.ui:355
 msgid "Accessibility"
 msgstr "অ্যাক্সেসযোগ্যতা"
 
-#: data/ui/preferences.ui:428
-msgid "Accessibility Shortcuts"
-msgstr "অ্যাক্সেসযোগ্যতা শর্টকাট"
-
-#: data/ui/preferences.ui:378
+#: data/ui/preferences.ui:379
 msgid "Accessibility Zoom"
 msgstr "অ্যাক্সেসযোগ্যতা জুম"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:310
-msgid ""
-"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
-"browsing"
-msgstr "অ্যাক্সেসযোগ্যতা পছন্দ: গতি-কমানো, ফোকাস-রিং দৃশ্যমানতা, এবং ক্যারেট ব্রাউজিং"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:306
-msgid ""
-"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
-"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
-msgstr ""
-"অ্যাকাউন্ট পরিচয় (নাম + অবতার) WhatsApp Web-এর অভ্যন্তরীণ Store থেকে "
-"স্বয়ংক্রিয়ভাবে আবিষ্কৃত, একটি ব্যাজ দ্বারা প্রকাশিত অবনত DOM-স্ক্র্যাপ ফলব্যাক সহ"
 
 #: data/ui/keyboard-shortcuts.ui:38
 msgid "Accounts"
@@ -70,143 +46,11 @@ msgstr "অ্যাকাউন্ট"
 msgid "Add new account"
 msgstr "নতুন অ্যাকাউন্ট যোগ করুন"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:573
-msgid "Add new contributor Sabri Ünal to the About dialog"
-msgstr "About ডায়ালগে নতুন অবদানকারী Sabri Ünal যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:595
-msgid "Add xdg-config/autostart permission for autostart support"
-msgstr "স্বয়ংক্রিয়-শুরুর সমর্থনের জন্য xdg-config/autostart অনুমতি যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:613
-msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
-msgstr "পছন্দে \"শুরুতে চালান\" টগল যোগ করা হয়েছে (ডিফল্ট: false)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:390
-msgid ""
-"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
-"handling"
-msgstr ""
-"দক্ষ মিডিয়া হ্যান্ডলিংয়ের জন্য প্রোডাকশন Flatpak-এ GStreamer/PipeWire env "
-"ভেরিয়েবল যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:778
-msgid "Added WebKit cache control setting for improved rendering consistency"
-msgstr "উন্নত রেন্ডারিং সামঞ্জস্যের জন্য WebKit ক্যাশ নিয়ন্ত্রণ সেটিং যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:452
-msgid ""
-"Added WebRTC permission handling in preparation for WhatsApp Web voice/video "
-"calls"
-msgstr ""
-"WhatsApp Web ভয়েস/ভিডিও কলের প্রস্তুতিতে WebRTC অনুমতি হ্যান্ডলিং যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:437
-msgid ""
-"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
-msgstr "স্থায়িত্ব ও পছন্দ নিয়ন্ত্রণ সহ জুম সমর্থন (Ctrl +/-/0) যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:271
-msgid ""
-"Added an experimental \"GPU Rendering\" option (Preferences → General → "
-"Experimental) that renders the chat view on the GPU via accelerated off-"
-"screen rendering for lower CPU and power use. Off by default and requires a "
-"restart; if the chat area is blank on your hardware, turn it off and restart"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:822
-msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
-msgstr ""
-"DEVELOPMENT ফ্ল্যাগ ব্যবহার করে কম্পাইল-সময় শর্তসাপেক্ষ কম্পাইলেশন যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:428
-msgid "Added complete multi-account support with sidebar and tray integration"
-msgstr "সাইডবার ও ট্রে একীকরণ সহ সম্পূর্ণ একাধিক-অ্যাকাউন্ট সমর্থন যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:824
-msgid "Added contributors Aman Das and Cameo to about dialog"
-msgstr "About ডায়ালগে অবদানকারী Aman Das ও Cameo যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:774
-msgid ""
-"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
-msgstr ""
-"উচ্চমানের Noto Color Emoji ফন্ট যোগ করা হয়েছে (v2.047, Unicode 16.0 সমর্থন)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:538
-msgid "Added middle-click paste from primary selection (selected text)"
-msgstr "প্রাথমিক নির্বাচন (নির্বাচিত টেক্সট) থেকে মাঝ-ক্লিক পেস্ট যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:547
-msgid "Added new application icons"
-msgstr "নতুন অ্যাপ্লিকেশন আইকন যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:429
-msgid "Added per-account zoom settings and improved accessibility"
-msgstr "প্রতি-অ্যাকাউন্ট জুম সেটিংস যোগ করা হয়েছে ও অ্যাক্সেসযোগ্যতা উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:616
-msgid "Added striped symbolic icons for development version"
-msgstr "ডেভেলপমেন্ট সংস্করণের জন্য ডোরাকাটা সিম্বলিক আইকন যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:810
-msgid "Added subpixel font scaling and advanced rendering optimizations"
-msgstr "সাবপিক্সেল ফন্ট স্কেলিং ও উন্নত রেন্ডারিং অপ্টিমাইজেশন যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:354
-msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
-msgstr ""
-"WebRTC-সক্ষম WebKitGTK 2.50.5-এর মাধ্যমে ভয়েস ও ভিডিও কল সমর্থন যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:328
-msgid ""
-"Added: account switcher uses a popover on desktop windows (bottom sheet "
-"preserved on mobile)"
-msgstr ""
-"যোগ করা হয়েছে: অ্যাকাউন্ট সুইচার ডেস্কটপ উইন্ডোতে একটি পপওভার ব্যবহার করে (মোবাইলে "
-"বটম শিট সংরক্ষিত)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:326
-msgid "Added: pin favorite spell-check languages to the top of the dropdown"
-msgstr "যোগ করা হয়েছে: প্রিয় বানান-পরীক্ষার ভাষা ড্রপডাউনের শীর্ষে পিন করুন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:327
-msgid ""
-"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
-"instead of locale codes"
-msgstr ""
-"যোগ করা হয়েছে: বানান-পরীক্ষা ড্রপডাউন লোকেল কোডের পরিবর্তে স্বাভাবিক ভাষার নাম "
-"দেখায় (\"English (UK)\")"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:895
-msgid "Advanced notification system with native desktop integration"
-msgstr "নেটিভ ডেস্কটপ একীকরণ সহ উন্নত বিজ্ঞপ্তি ব্যবস্থা"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:150
-msgid "All dependencies updated to their latest releases."
-msgstr ""
-
-#: data/ui/preferences.ui:119
-msgid "Allow inspecting and debugging the WebView"
-msgstr "WebView পরিদর্শন ও ডিবাগ করার অনুমতি দিন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:128
-msgid ""
-"Also includes the 4.3.1 fixes, which were never published: stalled scrolling "
-"with software rendering (#173, #179), start-up failing on systems whose "
-"hostname changes between boots (#190), and start-up failing on hardware "
-"without OpenGL ES 3.0 (#177)."
-msgstr ""
-
-#: data/ui/preferences.ui:177
-msgid "Animate the tray icon when a new message arrives"
-msgstr "নতুন বার্তা এলে ট্রে আইকন অ্যানিমেট করুন"
-
 #: data/ui/preferences.ui:68
 msgid "Appearance"
 msgstr "চেহারা"
 
-#: data/ui/keyboard-shortcuts.ui:142
+#: data/ui/keyboard-shortcuts.ui:135
 msgid "Application"
 msgstr "অ্যাপ্লিকেশন"
 
@@ -218,15 +62,24 @@ msgstr "অ্যাপ্লিকেশনের ভাষা। পুনর�
 msgid "Application preferences and settings dialog"
 msgstr "অ্যাপ্লিকেশনের পছন্দ ও সেটিংস ডায়ালগ"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:132
+msgid "Applied after reloading"
+msgstr ""
+
+#: data/ui/preferences.ui:386
 msgid "Applied to all webviews"
 msgstr "সকল ওয়েবভিউতে প্রয়োগ করা হয়েছে"
+
+#: data/ui/preferences.ui:192
+#, fuzzy
+msgid "Applies to the notifications Karere shows for incoming messages"
+msgstr "আগত বার্তার জন্য বিজ্ঞপ্তি দেখান"
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "স্বয়ংক্রিয়"
 
-#: data/ui/preferences.ui:299
+#: data/ui/preferences.ui:306
 msgid "Auto-Detect Language"
 msgstr "স্বয়ংক্রিয়ভাবে ভাষা শনাক্ত করুন"
 
@@ -234,92 +87,42 @@ msgstr "স্বয়ংক্রিয়ভাবে ভাষা শনা�
 msgid "Auto: shown when a system tray is available"
 msgstr "স্বয়ংক্রিয়: সিস্টেম ট্রে উপলব্ধ থাকলে দেখানো হয়"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:313
 msgid "Automatically fix common spelling mistakes"
 msgstr "সাধারণ বানান ভুল স্বয়ংক্রিয়ভাবে ঠিক করুন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:888
-msgid ""
-"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
-"performance and integration."
-msgstr ""
-"BREAKING CHANGE: আরও ভালো কর্মক্ষমতা ও একীকরণের জন্য Python থেকে নেটিভ Vala-তে "
-"সম্পূর্ণ পুনর্লিখন।"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:800
-msgid "Better build system compatibility with different environments"
-msgstr "বিভিন্ন পরিবেশের সাথে আরও ভালো বিল্ড সিস্টেম সামঞ্জস্য"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:879
-msgid "Better error handling for network disconnections"
-msgstr "নেটওয়ার্ক সংযোগ বিচ্ছিন্নতার জন্য আরও ভালো ত্রুটি হ্যান্ডলিং"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:845
-msgid "Better error handling for network timeouts"
-msgstr "নেটওয়ার্ক টাইমআউটের জন্য আরও ভালো ত্রুটি হ্যান্ডলিং"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:797
-msgid "Better sandboxed environment compatibility"
-msgstr "আরও ভালো স্যান্ডবক্সড পরিবেশ সামঞ্জস্য"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:758
-msgid "Better support for modern desktop environments"
-msgstr "আধুনিক ডেস্কটপ পরিবেশের জন্য আরও ভালো সমর্থন"
 
 #: data/ui/preferences.ui:93
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:281
 msgid "Both"
 msgstr "উভয়ই"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:144
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+#, fuzzy
 msgid ""
-"Browser engine upgraded to CEF 152 / Chromium 152 for current security and "
-"rendering fixes; video attachments still play in-app."
+"Built on the Chromium Embedded Framework. Karere 4.0 replaces the WebKitGTK "
+"backend with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
 msgstr ""
+"এখন CEF/Chromium 148-এর উপর নির্মিত। Karere 4.0 WebKitGTK ব্যাকএন্ডকে Chromium "
+"Embedded Framework দিয়ে প্রতিস্থাপন করে, যা সম্পূর্ণ ভিডিও সংযুক্তি প্লেব্যাক (H.264/"
+"AAC), পৃথক সেশন সহ একাধিক-অ্যাকাউন্ট সমর্থন, প্রতি-অ্যাকাউন্ট জুম, এবং একটি দ্রুততর, "
+"আরও সামঞ্জস্যপূর্ণ রেন্ডারিং ইঞ্জিন নিয়ে আসে, একই নেটিভ GTK4/libadwaita শেল বজায় "
+"রেখে।"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:601
-msgid "Bug Fix Release"
-msgstr "বাগ ফিক্স রিলিজ"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:659
-#: data/io.github.tobagin.karere.metainfo.xml.in:713
-#: data/io.github.tobagin.karere.metainfo.xml.in:761
-#: data/io.github.tobagin.karere.metainfo.xml.in:781
-#: data/io.github.tobagin.karere.metainfo.xml.in:837
-#: data/io.github.tobagin.karere.metainfo.xml.in:854
-#: data/io.github.tobagin.karere.metainfo.xml.in:871
-msgid "Bug Fixes:"
-msgstr "বাগ ফিক্স:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:333
-msgid ""
-"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
-"dependencies to latest compatible versions"
-msgstr ""
-"WebKitGTK 2.52.3-এ, LibreOffice অভিধান 26.2.3.2-এ, Rust নির্ভরতা সর্বশেষ "
-"সামঞ্জস্যপূর্ণ সংস্করণে আপডেট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:779
-msgid "Cache disabled by default to prevent emoji rendering issues"
-msgstr "ইমোজি রেন্ডারিং সমস্যা প্রতিরোধে ডিফল্টভাবে ক্যাশ নিষ্ক্রিয় করা হয়েছে"
-
-#: data/ui/preferences.ui:176
+#: data/ui/preferences.ui:183
 msgid "Change Tray Icon on Message"
 msgstr "বার্তায় ট্রে আইকন পরিবর্তন করুন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:602
-#: data/io.github.tobagin.karere.metainfo.xml.in:611
-msgid "Changes:"
-msgstr "পরিবর্তন:"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:16
 msgid "Chat on WhatsApp"
 msgstr "WhatsApp-এ চ্যাট করুন"
 
-#: data/ui/preferences.ui:294
+#: data/ui/preferences.ui:301
 msgid "Check spelling as you type"
 msgstr "টাইপ করার সময় বানান পরীক্ষা করুন"
 
@@ -327,11 +130,11 @@ msgstr "টাইপ করার সময় বানান পরীক্�
 msgid "Choose the application color scheme"
 msgstr "অ্যাপ্লিকেশনের রঙের স্কিম নির্বাচন করুন"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:248
 msgid "Choose…"
 msgstr "নির্বাচন করুন…"
 
-#: data/ui/preferences.ui:335
+#: data/ui/preferences.ui:342
 msgid "Clear All"
 msgstr "সব সাফ করুন"
 
@@ -347,53 +150,13 @@ msgstr "উইন্ডো বন্ধ করুন"
 msgid "Close the window"
 msgstr "উইন্ডো বন্ধ করুন"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:722
-msgid "Code Quality Improvements:"
-msgstr "কোড গুণমান উন্নতি:"
+#: data/ui/window.ui:265 src/window.rs:1645
+msgid "Copy Diagnostic Info"
+msgstr ""
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:911
-msgid "Complete internationalization support"
-msgstr "সম্পূর্ণ আন্তর্জাতিকীকরণ সমর্থন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:896
-msgid "Comprehensive accessibility support"
-msgstr "বিস্তৃত অ্যাক্সেসযোগ্যতা সমর্থন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:908
-msgid "Comprehensive test suite with unit and integration tests"
-msgstr "ইউনিট ও ইন্টিগ্রেশন পরীক্ষা সহ বিস্তৃত পরীক্ষা স্যুট"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:737
-msgid "Connected show_notification signal handler for WebKit notifications"
-msgstr "WebKit বিজ্ঞপ্তির জন্য show_notification সিগন্যাল হ্যান্ডলার সংযুক্ত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:820
-msgid "Converted template files to preprocessor directives for cleaner code"
-msgstr "পরিচ্ছন্ন কোডের জন্য টেমপ্লেট ফাইল প্রিপ্রসেসর নির্দেশে রূপান্তর করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:857
-msgid "Corrected AppStream metainfo format compliance"
-msgstr "AppStream metainfo ফরম্যাট সম্মতি সংশোধন করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:841
-msgid "Corrected accessibility focus handling"
-msgstr "অ্যাক্সেসযোগ্যতা ফোকাস হ্যান্ডলিং সংশোধন করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:787
-msgid "Corrected dependency version specifications in meson.build"
-msgstr "meson.build-এ নির্ভরতা সংস্করণ নির্দিষ্টকরণ সংশোধন করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:548
-msgid "Corrected metadata description references"
-msgstr "মেটাডেটা বিবরণের রেফারেন্স সংশোধন করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:875
-msgid "Corrected window state persistence on shutdown"
-msgstr "বন্ধ করার সময় উইন্ডো স্টেট স্থায়িত্ব সংশোধন করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:511
-msgid "Ctrl+N keyboard shortcut for opening a new chat"
-msgstr "নতুন চ্যাট খোলার জন্য Ctrl+N কীবোর্ড শর্টকাট"
+#: data/ui/preferences.ui:131
+msgid "Custom CSS"
+msgstr ""
 
 #: data/ui/preferences.ui:84
 msgid "Dark"
@@ -403,24 +166,20 @@ msgstr "গাঢ়"
 msgid "Decrease the zoom level"
 msgstr "জুম স্তর কমান"
 
-#: data/ui/preferences.ui:238
+#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
 msgid "Default (Downloads)"
 msgstr "ডিফল্ট (Downloads)"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:307
 msgid "Detect the writing language automatically"
 msgstr "লেখার ভাষা স্বয়ংক্রিয়ভাবে শনাক্ত করুন"
 
-#: data/ui/keyboard-shortcuts.ui:123
+#: data/ui/keyboard-shortcuts.ui:116
 msgid "Developer"
 msgstr "ডেভেলপার"
 
-#: data/ui/preferences.ui:434
-msgid "Developer Shortcuts"
-msgstr "ডেভেলপার শর্টকাট"
-
-#: data/ui/window.ui:173 data/ui/preferences.ui:115 data/ui/preferences.ui:124
-#: data/ui/keyboard-shortcuts.ui:126
+#: data/ui/window.ui:173 data/ui/preferences.ui:115 data/ui/preferences.ui:118
+#: data/ui/keyboard-shortcuts.ui:119
 msgid "Developer Tools"
 msgstr "ডেভেলপার টুলস"
 
@@ -428,153 +187,47 @@ msgstr "ডেভেলপার টুলস"
 msgid "Disabled"
 msgstr "নিষ্ক্রিয়"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:807
-msgid "Disabled problematic WebKit caches causing font corruption"
-msgstr "ফন্ট দূষণ ঘটানো সমস্যাযুক্ত WebKit ক্যাশ নিষ্ক্রিয় করা হয়েছে"
-
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:202
 msgid "Display message content in notifications"
 msgstr "বিজ্ঞপ্তিতে বার্তার বিষয়বস্তু প্রদর্শন করুন"
 
-#: data/ui/preferences.ui:189
+#: data/ui/preferences.ui:196
 msgid "Display the contact name in notifications"
 msgstr "বিজ্ঞপ্তিতে যোগাযোগের নাম প্রদর্শন করুন"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:742
-msgid "Documentation:"
-msgstr "ডকুমেন্টেশন:"
+#: data/ui/keyboard-shortcuts.ui:138 src/tray.rs:159
+msgid "Do Not Disturb"
+msgstr ""
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:244
 msgid "Download Directory"
 msgstr "ডাউনলোড ডিরেক্টরি"
 
-#: data/ui/preferences.ui:261
+#: data/ui/preferences.ui:268
 msgid "Download Notifications"
 msgstr "ডাউনলোড বিজ্ঞপ্তি"
 
-#: data/ui/preferences.ui:230
+#: data/ui/preferences.ui:237
 msgid "Downloads"
 msgstr "ডাউনলোড"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:107
-msgid ""
-"Dragged and pasted files now attach through the file transfer portal, from "
-"any folder, without filesystem access (#192)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:821
-msgid "Eliminated .vala.in template substitution system"
-msgstr ".vala.in টেমপ্লেট প্রতিস্থাপন সিস্টেম দূর করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:793
-msgid "Eliminated WebKit cache corruption affecting emoji rendering"
-msgstr "ইমোজি রেন্ডারিংকে প্রভাবিত করা WebKit ক্যাশ দূষণ দূর করা হয়েছে"
-
-#: data/ui/preferences.ui:305
+#: data/ui/preferences.ui:312
 msgid "Enable Auto-Correct"
 msgstr "স্বয়ংক্রিয় সংশোধন সক্রিয় করুন"
 
-#: data/ui/preferences.ui:118
-msgid "Enable Developer Tools"
-msgstr "ডেভেলপার টুলস সক্রিয় করুন"
-
-#: data/ui/preferences.ui:159
+#: data/ui/preferences.ui:166
 msgid "Enable Notifications"
 msgstr "বিজ্ঞপ্তি সক্রিয় করুন"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:300
 msgid "Enable Spell Checking"
 msgstr "বানান পরীক্ষা সক্রিয় করুন"
-
-#: data/ui/preferences.ui:423
-msgid "Enable keyboard shortcuts for common actions"
-msgstr "সাধারণ কাজের জন্য কীবোর্ড শর্টকাট সক্রিয় করুন"
-
-#: data/ui/preferences.ui:429
-msgid "Enable shortcuts for accessibility features"
-msgstr "অ্যাক্সেসযোগ্যতা বৈশিষ্ট্যের জন্য শর্টকাট সক্রিয় করুন"
-
-#: data/ui/preferences.ui:435
-msgid "Enable shortcuts for developer tools"
-msgstr "ডেভেলপার টুলসের জন্য শর্টকাট সক্রিয় করুন"
-
-#: data/ui/preferences.ui:441
-msgid "Enable shortcuts for notification actions"
-msgstr "বিজ্ঞপ্তি কাজের জন্য শর্টকাট সক্রিয় করুন"
 
 #: data/ui/preferences.ui:57 data/ui/preferences.ui:104
 msgid "Enabled"
 msgstr "সক্রিয়"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:795
-msgid "Enhanced 2D canvas acceleration for better graphics performance"
-msgstr "আরও ভালো গ্রাফিক্স কর্মক্ষমতার জন্য 2D ক্যানভাস ত্বরণ উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:801
-msgid "Enhanced CI/CD pipeline stability"
-msgstr "উন্নত CI/CD পাইপলাইন স্থিতিশীলতা"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:863
-msgid "Enhanced Flathub compliance and validation"
-msgstr "Flathub সম্মতি ও যাচাইকরণ উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:789
-msgid "Enhanced URL validation for external link detection"
-msgstr "বহিরাগত লিঙ্ক শনাক্তকরণের জন্য URL যাচাইকরণ উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:775
-msgid "Enhanced WebKit rendering with maximum hardware acceleration"
-msgstr "সর্বাধিক হার্ডওয়্যার ত্বরণ সহ WebKit রেন্ডারিং উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:894
-msgid "Enhanced WebKitGTK 6.0 integration"
-msgstr "উন্নত WebKitGTK 6.0 একীকরণ"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:537
-msgid ""
-"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
-"compatibility"
-msgstr ""
-"নির্ভরযোগ্য WhatsApp Web সামঞ্জস্যের জন্য Base64 এনকোডিং সহ ছবি পেস্ট উন্নত করা "
-"হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:799
-msgid "Enhanced logging for external link operations"
-msgstr "বহিরাগত লিঙ্ক অপারেশনের জন্য উন্নত লগিং"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:672
-msgid "Enhanced packaging for better compatibility"
-msgstr "আরও ভালো সামঞ্জস্যের জন্য প্যাকেজিং উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:630
-msgid "Enhanced performance and stability"
-msgstr "কর্মক্ষমতা ও স্থিতিশীলতা উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:910
-msgid "Enhanced security with proper sandboxing"
-msgstr "যথাযথ স্যান্ডবক্সিং সহ উন্নত নিরাপত্তা"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:759
-msgid "Enhanced stability and performance optimizations"
-msgstr "স্থিতিশীলতা ও কর্মক্ষমতা অপ্টিমাইজেশন উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:880
-msgid "Enhanced stability during long sessions"
-msgstr "দীর্ঘ সেশনের সময় স্থিতিশীলতা উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:846
-msgid "Enhanced stability for extended usage"
-msgstr "দীর্ঘ ব্যবহারের জন্য স্থিতিশীলতা উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:695
-msgid "Enhanced visual documentation for users"
-msgstr "ব্যবহারকারীদের জন্য ভিজ্যুয়াল ডকুমেন্টেশন উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:640
-msgid "Ensure application starts properly in the background without delay"
-msgstr "অ্যাপ্লিকেশন বিলম্ব ছাড়াই ব্যাকগ্রাউন্ডে সঠিকভাবে শুরু হওয়া নিশ্চিত করুন"
-
-#: data/ui/preferences.ui:139
+#: data/ui/preferences.ui:146
 msgid "Experimental"
 msgstr ""
 
@@ -586,577 +239,7 @@ msgstr "পৃষ্ঠায় খুঁজুন"
 msgid "Find in page"
 msgstr "পৃষ্ঠায় খুঁজুন"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:211
-msgid ""
-"Fixed \"Start in background\" being ignored when the tray icon is disabled; "
-"the setting is now honored and relaunching the app brings the window up. "
-"(#170)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:502
-msgid "Fixed \"Too many open files\" crash by reusing notification resources"
-msgstr ""
-"বিজ্ঞপ্তি রিসোর্স পুনঃব্যবহার করে \"Too many open files\" ক্র্যাশ ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:715
-msgid ""
-"Fixed Ctrl+V paste for text content - now works for both text and images"
-msgstr ""
-"টেক্সট বিষয়বস্তুর জন্য Ctrl+V পেস্ট ঠিক করা হয়েছে - এখন টেক্সট ও ছবি উভয়ের জন্য কাজ "
-"করে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:558
-msgid "Fixed Dead Key/composition input issues"
-msgstr "ডেড কী/কম্পোজিশন ইনপুট সমস্যা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:495
-msgid "Fixed Flatpak build failure by correcting config"
-msgstr "কনফিগ সংশোধন করে Flatpak বিল্ড ব্যর্থতা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:366
-msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
-msgstr "ashpd 0.13 API পরিবর্তনের কারণে Flatpak বিল্ড ব্যর্থতা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:137
-msgid ""
-"Fixed Karere failing to start on hardware without OpenGL ES 3.0, such as the "
-"PinePhone; frames are now drawn in software instead (#177)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:136
-msgid ""
-"Fixed Karere refusing to start on systems whose hostname changes between "
-"boots, such as GNOME OS Nightly (#190)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:557
-msgid "Fixed Open action for downloaded files"
-msgstr "ডাউনলোড করা ফাইলের জন্য Open অ্যাকশন ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:718
-msgid "Fixed WebView zoom being enabled by default (now disabled)"
-msgstr "ডিফল্টভাবে WebView জুম সক্রিয় থাকা ঠিক করা হয়েছে (এখন নিষ্ক্রিয়)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:184
-msgid ""
-"Fixed WhatsApp loading in mobile layout on HiDPI displays until resized; the "
-"prewarm viewport is now sized in physical pixels (#176)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:716
-msgid "Fixed WhatsApp notification permission not persisting across sessions"
-msgstr "সেশনজুড়ে WhatsApp বিজ্ঞপ্তি অনুমতি স্থায়ী না হওয়া ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:212
-msgid ""
-"Fixed a black chat area on NVIDIA drivers by falling back to software "
-"rendering where the accelerated path cannot deliver frames. (#167)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:226
-msgid ""
-"Fixed a black/blank window on GNOME OS and other newer Wayland setups by "
-"switching to GTK's GL renderer, which presents the CEF browser view "
-"correctly where the default Vulkan renderer could not. (#164)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:662
-msgid "Fixed application freeze during lifecycle events"
-msgstr "জীবনচক্রের ঘটনার সময় অ্যাপ্লিকেশন জমে যাওয়া ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:477
-msgid ""
-"Fixed application freezing on resume by reverting aggressive cache "
-"optimization"
-msgstr ""
-"আক্রমণাত্মক ক্যাশ অপ্টিমাইজেশন প্রত্যাহার করে রিজিউমে অ্যাপ্লিকেশন জমে যাওয়া ঠিক করা "
-"হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:614
-msgid "Fixed autostart toggle pathing for Flatpak environments"
-msgstr "Flatpak পরিবেশের জন্য স্বয়ংক্রিয়-শুরু টগল পাথিং ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:488
-msgid "Fixed background notifications reliability"
-msgstr "ব্যাকগ্রাউন্ড বিজ্ঞপ্তির নির্ভরযোগ্যতা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:478
-msgid "Fixed background validation to ensure app starts correctly"
-msgstr "অ্যাপ সঠিকভাবে শুরু হওয়া নিশ্চিত করতে ব্যাকগ্রাউন্ড যাচাইকরণ ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:174
-msgid ""
-"Fixed blank view on GLES-only devices such as the PinePhone: the render area "
-"now negotiates its required GLES 3.0 context and software rendering resumes "
-"automatically when accelerated frames are unavailable (#177)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:375
-msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
-msgstr "blob URL ডাউনলোড ঠিক করা হয়েছে (যেমন মিডিয়া ভিউয়ার থেকে ছবি সংরক্ষণ)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:149
-msgid "Fixed characters being dropped right after sending a message (#180)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:157
-msgid "Fixed characters occasionally being dropped while typing (#180)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:175
-msgid ""
-"Fixed chat text selection and copying: drag-select, immediate Ctrl+C and "
-"right-click → Copy now read the live selection without racing the PRIMARY "
-"clipboard (#178)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:719
-msgid "Fixed clipboard manager intercepting all paste events"
-msgstr "ক্লিপবোর্ড ম্যানেজার সকল পেস্ট ইভেন্ট আটকানো ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:387
-msgid "Fixed crash on launch due to memory pressure threshold ordering"
-msgstr "মেমরি প্রেশার থ্রেশহোল্ড অর্ডারিংয়ের কারণে চালুর সময় ক্র্যাশ ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:873
-msgid "Fixed crash when handling invalid notification data"
-msgstr "অবৈধ বিজ্ঞপ্তি ডেটা হ্যান্ডলিংয়ের সময় ক্র্যাশ ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:839
-msgid "Fixed crash when handling invalid user input data"
-msgstr "অবৈধ ব্যবহারকারী ইনপুট ডেটা হ্যান্ডলিংয়ের সময় ক্র্যাশ ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:639
-msgid ""
-"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
-"activation"
-msgstr ""
-"D-Bus সক্রিয়করণ বাস্তবায়ন করে গুরুতর চালু-সময় জমে যাওয়া (স্পিনার) সমস্যা ঠিক করা "
-"হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:389
-msgid "Fixed dead key composition for first character in input fields"
-msgstr "ইনপুট ক্ষেত্রে প্রথম অক্ষরের জন্য ডেড কী কম্পোজিশন ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:210
-msgid ""
-"Fixed dead-key accents (e.g. US Intl) intermittently typing the plain letter "
-"after sending a message; the input method is re-focused on the next "
-"keypress. (#154)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:539
-msgid "Fixed double-paste issue with middle-click"
-msgstr "মাঝ-ক্লিকে দ্বিগুণ-পেস্ট সমস্যা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:388
-msgid "Fixed download destination and context menu issues"
-msgstr "ডাউনলোড গন্তব্য ও কনটেক্সট মেনু সমস্যা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:397
-msgid "Fixed download destination handling"
-msgstr "ডাউনলোড গন্তব্য হ্যান্ডলিং ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:355
-msgid "Fixed download filenames now use WhatsApp's original filename"
-msgstr ""
-"ঠিক করা হয়েছে: ডাউনলোড ফাইলের নাম এখন WhatsApp-এর মূল ফাইলের নাম ব্যবহার করে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:108
-msgid "Fixed drags being refused as they entered the window on some desktops."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:356
-msgid "Fixed duplicate downloads auto-increment instead of failing"
-msgstr ""
-"ঠিক করা হয়েছে: একই নামের ডাউনলোড ব্যর্থ হওয়ার পরিবর্তে স্বয়ংক্রিয়ভাবে বৃদ্ধি পায়"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:856
-msgid "Fixed duplicate provides tags in metainfo validation"
-msgstr "metainfo যাচাইকরণে ডুপ্লিকেট provides ট্যাগ ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:173
-msgid ""
-"Fixed engine-drawn popups being anchored to a degenerate window origin on "
-"X11 multi-monitor setups; the real window position is now used (#158)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:783
-msgid ""
-"Fixed external links not opening in default browser when running in Flatpak"
-msgstr "Flatpak-এ চলার সময় বহিরাগত লিঙ্ক ডিফল্ট ব্রাউজারে না খোলা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:120
-msgid ""
-"Fixed files dragged into the window not attaching; the same problem affected "
-"pasting a file copied in a file manager (#192)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:386
-msgid "Fixed freezes when viewing media galleries"
-msgstr "মিডিয়া গ্যালারি দেখার সময় জমে যাওয়া ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:786
-msgid "Fixed invalid meson version requirement preventing builds"
-msgstr "বিল্ড প্রতিরোধকারী অবৈধ meson সংস্করণ প্রয়োজনীয়তা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:109
-msgid ""
-"Fixed letters being dropped when a key was pressed while Backspace, Enter or "
-"an arrow key was still held (#180)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:546
-msgid "Fixed missing GSettings schema in Flatpak builds"
-msgstr "Flatpak বিল্ডে অনুপস্থিত GSettings স্কিমা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:661
-msgid "Fixed missing dictionaries on startup"
-msgstr "চালুর সময় অনুপস্থিত অভিধান ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:604
-msgid ""
-"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
-msgstr ""
-"StatusNotifierWatcher অনুমতি যোগ করে GNOME-এ অনুপস্থিত ট্রে আইকন ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:165
-msgid ""
-"Fixed mouse clicks landing slightly above and to the left of the pointer: "
-"clicks were offset by the header bar and window shadow, so buttons and chats "
-"often did not activate where you clicked."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:358
-msgid "Fixed notification sounds now respect GNOME volume controls"
-msgstr "ঠিক করা হয়েছে: বিজ্ঞপ্তির শব্দ এখন GNOME ভলিউম নিয়ন্ত্রণ মেনে চলে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:717
-msgid "Fixed notifications banner appearing on every app launch"
-msgstr "প্রতি অ্যাপ চালুতে বিজ্ঞপ্তি ব্যানার দেখানো ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:374
-msgid ""
-"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
-"Linux environments"
-msgstr ""
-"Phosh ও টাচ-ভিত্তিক Linux পরিবেশে অন-স্ক্রিন কীবোর্ড নির্ভরযোগ্যভাবে না দেখানো ঠিক "
-"করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:110
-msgid "Fixed pasting a text file inserting nothing."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:172
-msgid ""
-"Fixed pointer misalignment on HiDPI / mixed-scale desktops: clicks, "
-"scrolling and context menus are now pixel-accurate, and the page zoom re-"
-"syncs when moving windows between monitors with different scales (#158)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:764
-msgid "Fixed potential rendering inconsistencies"
-msgstr "সম্ভাব্য রেন্ডারিং অসঙ্গতি ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:785
-msgid "Fixed random emoji display issues and blank emoji problems"
-msgstr "এলোমেলো ইমোজি প্রদর্শন সমস্যা ও ফাঁকা ইমোজি সমস্যা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:147
-msgid ""
-"Fixed right-click Paste ignoring text, images and files copied from other "
-"applications (#189)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:135
-msgid ""
-"Fixed scrolling still stalling with software rendering: frames were held up "
-"by the browser engine's event loop and only released by a fallback timer, "
-"redrawing the window about 10 times a second instead of 60 (#173, #179)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:430
-msgid "Fixed startup race conditions and resource usage issues"
-msgstr "চালুর সময় রেস কন্ডিশন ও রিসোর্স ব্যবহারের সমস্যা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:145
-msgid ""
-"Fixed stuttery scrolling and typing lag: frames no longer wait on a poll "
-"timer and are no longer dropped, on software and GPU rendering alike (#173, "
-"#179)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:219
-msgid ""
-"Fixed the GNOME OS / Wayland black window for real (#164): CEF was racing to "
-"the X11 Ozone backend and failing to present onto the Wayland view; Karere "
-"now forces CEF's Ozone backend to match the display server, so it no longer "
-"intermittently starts black."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:148
-msgid ""
-"Fixed the message menu \"Copy\" not reaching the system clipboard (#178)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:146
-msgid "Fixed the microphone staying muted in calls (#182)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:227
-msgid ""
-"Fixed the mobile layout dropping the message box focus when pressing Enter "
-"on a computer; focus is now kept on non-touch devices while phones still "
-"hide the keyboard after sending."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:209
-msgid ""
-"Fixed touchpad scrolling being ~5x too slow with a delay before it started; "
-"deltas are now scaled the same way Chromium's own Wayland backend scales "
-"them. (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:202
-msgid ""
-"Fixed touchpad scrolling sometimes needing a click in a pane before it "
-"responded; scrolling now targets the pane under the pointer like every other "
-"app. (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:615
-msgid "Fixed tray icon quit behavior"
-msgstr "ট্রে আইকন প্রস্থান আচরণ ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:468
-msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
-msgstr "KDE/GNOME-এ ট্রে আইকন ঠিক করা হয়েছে (হালকা/গাঢ় উভয় থিমে দৃশ্যমান)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:183
-msgid ""
-"Fixed tray “Quit” doing nothing while the window is hidden (e.g. Start in "
-"background) (#175)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:340
-msgid ""
-"Fixed voice and video calls in production Flatpak (Flathub linter-compatible "
-"pre-built plugin)"
-msgstr ""
-"প্রোডাকশন Flatpak-এ ভয়েস ও ভিডিও কল ঠিক করা হয়েছে (Flathub লিন্টার-সামঞ্জস্যপূর্ণ "
-"পূর্ব-নির্মিত প্লাগইন)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:347
-msgid ""
-"Fixed voice and video calls not working in the production build (missing "
-"noise suppression plugin)"
-msgstr ""
-"প্রোডাকশন বিল্ডে ভয়েস ও ভিডিও কল কাজ না করা ঠিক করা হয়েছে (অনুপস্থিত নয়েজ "
-"সাপ্রেশন প্লাগইন)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:373
-msgid ""
-"Fixed voice and video calls showing \"Your browser doesn't support calling\""
-msgstr ""
-"\"আপনার ব্রাউজার কলিং সমর্থন করে না\" দেখানো ভয়েস ও ভিডিও কল ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:357
-msgid ""
-"Fixed window now properly unminimizes when activated from launcher or tray"
-msgstr ""
-"ঠিক করা হয়েছে: লঞ্চার বা ট্রে থেকে সক্রিয় করলে উইন্ডো এখন সঠিকভাবে আনমিনিমাইজ হয়"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:487
-msgid "Fixed window resize behavior to prevent excessive reloading"
-msgstr "অতিরিক্ত পুনঃলোড প্রতিরোধে উইন্ডো রিসাইজ আচরণ ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:438
-msgid "Fixed window size increasing on every restart"
-msgstr "প্রতিবার পুনরায় চালুতে উইন্ডোর আকার বৃদ্ধি পাওয়া ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:503
-msgid "Fixed zombie process accumulation"
-msgstr "জম্বি প্রসেস জমে যাওয়া ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:186
-msgid ""
-"Fixed “Match WhatsApp Colors” applying only after restart; it now updates "
-"live when toggled (#168)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:637
-msgid "Fixed:"
-msgstr "ঠিক করা হয়েছে:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:460
-msgid ""
-"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
-"(silences sounds)"
-msgstr ""
-"ঠিক করা হয়েছে: অ্যাপ এখন GNOME-এ সিস্টেম \"Do Not Disturb\" সেটিংস মেনে চলে "
-"(শব্দ নীরব করে)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:405
-msgid "Fixed: Download destination path handling regression"
-msgstr "ঠিক করা হয়েছে: ডাউনলোড গন্তব্য পথ হ্যান্ডলিং রিগ্রেশন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:419
-msgid ""
-"Fixed: Handle WebKit web process crashes with auto-reload and user "
-"notification"
-msgstr ""
-"ঠিক করা হয়েছে: স্বয়ংক্রিয়-পুনঃলোড ও ব্যবহারকারী বিজ্ঞপ্তি সহ WebKit ওয়েব প্রসেস "
-"ক্র্যাশ সামলান"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:420
-msgid "Fixed: JS injection and path traversal vulnerabilities"
-msgstr "ঠিক করা হয়েছে: JS ইনজেকশন ও পাথ ট্রাভার্সাল দুর্বলতা"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:412
-msgid ""
-"Fixed: JS injection and path traversal vulnerabilities in download handling"
-msgstr "ঠিক করা হয়েছে: ডাউনলোড হ্যান্ডলিংয়ে JS ইনজেকশন ও পাথ ট্রাভার্সাল দুর্বলতা"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:461
-msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
-msgstr ""
-"ঠিক করা হয়েছে: বিজ্ঞপ্তি DND ভিজ্যুয়াল এড়িয়ে যায় (অগ্রাধিকার Normal-এ নামানো "
-"হয়েছে)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:421
-msgid "Fixed: Panic in notification handling"
-msgstr "ঠিক করা হয়েছে: বিজ্ঞপ্তি হ্যান্ডলিংয়ে প্যানিক"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:445
-msgid ""
-"Fixed: Resolved webview reload loop on startup due to incorrect window size "
-"detection"
-msgstr ""
-"ঠিক করা হয়েছে: ভুল উইন্ডো আকার শনাক্তকরণের কারণে চালুর সময় ওয়েবভিউ পুনঃলোড লুপ "
-"সমাধান করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:294
-msgid ""
-"Fixed: accented characters from dead keys (e.g. the US-International layout) "
-"now compose correctly instead of inserting the base letter — input is routed "
-"through the system input method (#154)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:329
-msgid ""
-"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
-"43, CachyOS, Bazzite, postmarketOS)"
-msgstr ""
-"ঠিক করা হয়েছে: GNOME 50 / glibc 2.42+ সিস্টেমে (Arch, Fedora 43, CachyOS, "
-"Bazzite, postmarketOS) চালুর সময় অ্যাপ ক্র্যাশ"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:319
-msgid ""
-"Fixed: blank-window race when autostarted before the network/portal stack is "
-"ready (auto-retry with exponential backoff)"
-msgstr ""
-"ঠিক করা হয়েছে: নেটওয়ার্ক/পোর্টাল স্ট্যাক প্রস্তুত হওয়ার আগে স্বয়ংক্রিয়ভাবে শুরু হলে "
-"ফাঁকা-উইন্ডো রেস (সূচকীয় ব্যাকঅফ সহ স্বয়ংক্রিয়-পুনঃচেষ্টা)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:332
-msgid ""
-"Fixed: downloaded files with duplicate names silently overwriting each other "
-"(now appends (1), (2), ...)"
-msgstr ""
-"ঠিক করা হয়েছে: একই নামের ডাউনলোড করা ফাইল নীরবে একে অপরকে ওভাররাইট করত (এখন "
-"(1), (2), ... যুক্ত করে)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:249
-msgid ""
-"Fixed: input-method candidate popups (e.g. ibus-libpinyin) appeared in the "
-"top-left corner; they now show by the chat input where you click (#163)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:318
-msgid ""
-"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
-"clear behavior removed upstream — Karere now dismisses notifications "
-"explicitly)"
-msgstr ""
-"ঠিক করা হয়েছে: GNOME 50-এ ফোকাসের পর অবশিষ্ট বিজ্ঞপ্তি ব্যাজ/ব্যানার (আপস্ট্রিমে "
-"স্বয়ংক্রিয়-সাফ আচরণ সরানো হয়েছে — Karere এখন স্পষ্টভাবে বিজ্ঞপ্তি বাতিল করে)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:330
-msgid ""
-"Fixed: locale-dependent crash that required manually setting "
-"LC_ALL=en_GB.UTF-8"
-msgstr ""
-"ঠিক করা হয়েছে: লোকেল-নির্ভর ক্র্যাশ যার জন্য ম্যানুয়ালি LC_ALL=en_GB.UTF-8 সেট "
-"করতে হতো"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:331
-msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
-msgstr "ঠিক করা হয়েছে: সাম্প্রতিক WhatsApp Web DOM পরিবর্তনে মোবাইল লেআউট ভাঙা"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:241
-msgid ""
-"Fixed: on Phosh / GNOME Mobile the on-screen keyboard stayed open all the "
-"time; it now follows the focused WhatsApp text field, appearing when you tap "
-"a message or search box and hiding otherwise"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:248
-msgid ""
-"Fixed: sluggish touchpad scrolling — disabled Chromium's smooth-scroll "
-"animation for instant, responsive scrolling (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:256
-msgid ""
-"Fixed: the ARM64 (aarch64) build, which had been failing since 4.0.4 due to "
-"a type error in the GPU-rendering code — so this is the first release to "
-"reach ARM64 (Phosh / mobile) users with the recent fixes, including touch "
-"scrolling (#162)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:278
-msgid ""
-"Fixed: the selected theme is now applied from startup, including when the "
-"app launches into the background at login — the window no longer opens light "
-"when dark is selected. WhatsApp Web content also follows the theme now (when "
-"WhatsApp's own theme is set to System default) (#160)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:286
-msgid ""
-"Fixed: the web view is now crisp under fractional/HiDPI display scaling "
-"(e.g. 150%/200% on GNOME Wayland) — the page is rendered to match the "
-"window's pixel buffer exactly instead of being upscaled, while staying at "
-"the correct size (#158)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:264
-msgid ""
-"Fixed: touch scrolling and tapping in the chat view on touchscreens (e.g. "
-"Phosh / mobile Linux) — touch input is now forwarded to the web view as "
-"native touch events (#162)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:279
-msgid ""
-"Fixed: typing in the narrow/mobile layout no longer inserts a stray space "
-"after the first letter (#159)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:287
-msgid ""
-"Fixed: typing the first letter of a message no longer inserts a stray space "
-"after it (a 4.0.1 input regression) (#154)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:295
-msgid ""
-"Fixed: web content is now sized correctly under fractional display scaling "
-"such as 150%; the view and input use logical coordinates with the fractional "
-"scale applied for crisp rendering (#155, #156)"
-msgstr ""
-
-#: data/ui/preferences.ui:361
+#: data/ui/preferences.ui:368
 msgid "Focus Indicators"
 msgstr "ফোকাস নির্দেশক"
 
@@ -1168,15 +251,11 @@ msgstr "সিস্টেম অনুসরণ করুন"
 msgid "Force Reload"
 msgstr "বাধ্যতামূলক পুনরায় লোড"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:625
-msgid "Full rewrite in Rust! 🦀"
-msgstr "Rust-এ সম্পূর্ণ পুনর্লিখন! 🦀"
-
 #: data/ui/keyboard-shortcuts.ui:67
 msgid "Fullscreen"
 msgstr "পূর্ণস্ক্রিন"
 
-#: data/ui/preferences.ui:142
+#: data/ui/preferences.ui:149
 msgid "GPU Rendering"
 msgstr ""
 
@@ -1184,149 +263,39 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "GTK4 WhatsApp Web ক্লায়েন্ট"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:156
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
 msgid "General"
 msgstr "সাধারণ"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:574
-msgid "General improvements and versioning updates"
-msgstr "সাধারণ উন্নতি ও সংস্করণ আপডেট"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:900
-msgid "Granular privacy and notification controls"
-msgstr "সূক্ষ্ম গোপনীয়তা ও বিজ্ঞপ্তি নিয়ন্ত্রণ"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:901
-msgid "Hardware-accelerated rendering"
-msgstr "হার্ডওয়্যার-ত্বরিত রেন্ডারিং"
-
-#: data/ui/preferences.ui:311
+#: data/ui/preferences.ui:318
 msgid "Header Bar Language Control"
 msgstr "হেডার বার ভাষা নিয়ন্ত্রণ"
 
-#: data/ui/preferences.ui:400
+#: data/ui/preferences.ui:401
 msgid "Header Bar Zoom Controls"
 msgstr "হেডার বার জুম নিয়ন্ত্রণ"
 
-#: data/ui/preferences.ui:367
-msgid "High Contrast Mode"
-msgstr "উচ্চ কনট্রাস্ট মোড"
-
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:275
 msgid "How download notifications are displayed"
 msgstr "ডাউনলোড বিজ্ঞপ্তি কীভাবে দেখানো হয়"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:208
 msgid "How much of the message to show"
 msgstr "বার্তার কতটুকু দেখাতে হবে"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:811
-msgid "Implemented Flatpak portal system for external link handling"
-msgstr "বহিরাগত লিঙ্ক হ্যান্ডলিংয়ের জন্য Flatpak পোর্টাল সিস্টেম বাস্তবায়ন করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:736
-msgid "Implemented UserScript injection for Notification.permission state"
-msgstr ""
-"Notification.permission স্টেটের জন্য UserScript ইনজেকশন বাস্তবায়ন করা হয়েছে"
-
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:413
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr "সহায়ক প্রযুক্তির সাথে সামঞ্জস্য উন্নত করুন — পুনরায় চালু করা প্রয়োজন"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:185
-msgid ""
-"Improved NVIDIA detection via the live GL context so hybrid GPUs keep "
-"accelerated rendering, hardened the fallback for background starts, and "
-"raised the off-screen frame rate from 30 to 60 fps for smoother scroll/"
-"typing (#173)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:823
-msgid "Improved build system maintainability and type safety"
-msgstr "বিল্ড সিস্টেমের রক্ষণাবেক্ষণযোগ্যতা ও টাইপ নিরাপত্তা উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:740
-msgid "Improved build system with cleaner dependency management"
-msgstr "পরিচ্ছন্ন নির্ভরতা ব্যবস্থাপনা সহ বিল্ড সিস্টেম উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:776
-msgid "Improved emoji consistency with bundled font system"
-msgstr "বান্ডিল করা ফন্ট সিস্টেম সহ ইমোজি সামঞ্জস্য উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:765
-msgid "Improved error handling and recovery mechanisms"
-msgstr "ত্রুটি হ্যান্ডলিং ও পুনরুদ্ধার ব্যবস্থা উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:784
-msgid "Improved external link handling with proper Flatpak portal support"
-msgstr "যথাযথ Flatpak পোর্টাল সমর্থন সহ বহিরাগত লিঙ্ক হ্যান্ডলিং উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:796
-msgid "Improved font loading stability and reduced race conditions"
-msgstr "ফন্ট লোডিং স্থিতিশীলতা উন্নত ও রেস কন্ডিশন কমানো হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:470
-msgid "Improved icon compatibility across desktop environments"
-msgstr "ডেস্কটপ পরিবেশজুড়ে আইকন সামঞ্জস্য উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:480
-msgid "Improved icon rendering (symbolic icons now use currentColor)"
-msgstr ""
-"আইকন রেন্ডারিং উন্নত করা হয়েছে (সিম্বলিক আইকন এখন currentColor ব্যবহার করে)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:902
-msgid "Improved memory efficiency and startup performance"
-msgstr "উন্নত মেমরি দক্ষতা ও চালু কর্মক্ষমতা"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:453
-msgid "Improved mobile UI resizing consistency"
-msgstr "মোবাইল UI রিসাইজিং সামঞ্জস্য উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:504
-msgid "Improved overall stability"
-msgstr "সামগ্রিক স্থিতিশীলতা উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:757
-msgid "Improved system integration with latest platform libraries"
-msgstr "সর্বশেষ প্ল্যাটফর্ম লাইব্রেরি সহ সিস্টেম একীকরণ উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:864
-msgid "Improved translation file consistency"
-msgstr "অনুবাদ ফাইল সামঞ্জস্য উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:257
-msgid ""
-"Improved: smoother scrolling, especially with a touchpad — fine scroll "
-"deltas are no longer dropped, and wheel vs touchpad input is scaled "
-"appropriately (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:653
-#: data/io.github.tobagin.karere.metainfo.xml.in:669
-#: data/io.github.tobagin.karere.metainfo.xml.in:680
-#: data/io.github.tobagin.karere.metainfo.xml.in:691
-#: data/io.github.tobagin.karere.metainfo.xml.in:754
-#: data/io.github.tobagin.karere.metainfo.xml.in:791
-#: data/io.github.tobagin.karere.metainfo.xml.in:818
-#: data/io.github.tobagin.karere.metainfo.xml.in:843
-#: data/io.github.tobagin.karere.metainfo.xml.in:860
-#: data/io.github.tobagin.karere.metainfo.xml.in:877
-msgid "Improvements:"
-msgstr "উন্নতি:"
-
-#: data/ui/preferences.ui:272
+#: data/ui/preferences.ui:279
 msgid "In-app Toast"
 msgstr "অ্যাপের ভেতরে টোস্ট"
-
-#: data/ui/preferences.ui:368
-msgid "Increase contrast for better readability"
-msgstr "ভালো পঠনযোগ্যতার জন্য কনট্রাস্ট বাড়ান"
 
 #: data/ui/keyboard-shortcuts.ui:94
 msgid "Increase the zoom level"
 msgstr "জুম স্তর বাড়ান"
 
-#: data/ui/keyboard-shortcuts.ui:133
+#: data/ui/keyboard-shortcuts.ui:126
 msgid "Inspect Element"
 msgstr "উপাদান পরিদর্শন করুন"
 
@@ -1334,18 +303,10 @@ msgstr "উপাদান পরিদর্শন করুন"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "অ্যাকাউন্ট ১–৯-এ যান (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:264 src/tray.rs:43
-#: src/tray.rs:66 src/tray.rs:73
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:301
-msgid ""
-"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
-"Existing accounts must be re-linked — there is no migration from v3."
-msgstr ""
-"Karere 4.0 একটি হার্ড ফর্ক যা অ্যাপটিকে CEF/Chromium 148-এর উপর পুনর্নির্মাণ করে। "
-"বিদ্যমান অ্যাকাউন্টগুলি পুনরায় লিঙ্ক করতে হবে — v3 থেকে কোনো মাইগ্রেশন নেই।"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:24
 msgid ""
@@ -1365,17 +326,15 @@ msgstr ""
 msgid "Key features include:"
 msgstr "প্রধান বৈশিষ্ট্যগুলির মধ্যে রয়েছে:"
 
-#: data/ui/window.ui:261 data/ui/preferences.ui:422
-#: data/ui/keyboard-shortcuts.ui:152 src/tray.rs:145
+#: data/ui/window.ui:261 data/ui/keyboard-shortcuts.ui:152 src/tray.rs:172
 msgid "Keyboard Shortcuts"
 msgstr "কীবোর্ড শর্টকাট"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:61
-#: data/io.github.tobagin.karere.metainfo.xml.in:898
 msgid "Keyboard shortcuts and productivity features"
 msgstr "কীবোর্ড শর্টকাট ও উৎপাদনশীলতা বৈশিষ্ট্য"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:317
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
 msgid "Language"
 msgstr "ভাষা"
 
@@ -1387,19 +346,11 @@ msgstr "আপনি লগ ইন করলে স্বয়ংক্রি�
 msgid "Light"
 msgstr "হালকা"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:311
-msgid ""
-"Live spell-check language switching and a separately installable Debug "
-"symbol extension for symbolicated crash reports"
-msgstr ""
-"লাইভ বানান-পরীক্ষার ভাষা পরিবর্তন এবং সিম্বলাইজড ক্র্যাশ রিপোর্টের জন্য একটি "
-"পৃথকভাবে ইনস্টলযোগ্য Debug সিম্বল এক্সটেনশন"
-
-#: data/ui/preferences.ui:234
+#: data/ui/preferences.ui:241
 msgid "Location"
 msgstr "অবস্থান"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:214
 msgid "Long"
 msgstr "বড়"
 
@@ -1407,11 +358,7 @@ msgstr "বড়"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "WhatsApp Web একীকরণ সহ প্রধান অ্যাপ্লিকেশন উইন্ডো"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:302
-msgid "Major changes:"
-msgstr "প্রধান পরিবর্তন:"
-
-#: data/ui/preferences.ui:160
+#: data/ui/preferences.ui:167
 msgid "Master toggle for all notifications"
 msgstr "সকল বিজ্ঞপ্তির মূল টগল"
 
@@ -1420,7 +367,7 @@ msgstr "সকল বিজ্ঞপ্তির মূল টগল"
 msgid "Match WhatsApp Colors"
 msgstr "WhatsApp ক্লায়েন্ট"
 
-#: data/ui/preferences.ui:206
+#: data/ui/preferences.ui:213
 msgid "Medium"
 msgstr "মাঝারি"
 
@@ -1428,31 +375,23 @@ msgstr "মাঝারি"
 msgid "Menu"
 msgstr "মেনু"
 
-#: data/ui/preferences.ui:170
+#: data/ui/preferences.ui:177
 msgid "Message Notifications"
 msgstr "বার্তার বিজ্ঞপ্তি"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:191
 msgid "Message Preview"
 msgstr "বার্তার প্রিভিউ"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:174
 msgid "Messages"
 msgstr "বার্তা"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:559
-msgid "Migrated Flatpak build logic to meson.build"
-msgstr "Flatpak বিল্ড লজিক meson.build-এ স্থানান্তরিত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:906
-msgid "Migrated from Python 3 to native Vala compilation"
-msgstr "Python 3 থেকে নেটিভ Vala কম্পাইলেশনে স্থানান্তরিত করা হয়েছে"
 
 #: data/ui/keyboard-shortcuts.ui:74
 msgid "Minimize Window"
 msgstr "উইন্ডো ছোট করুন"
 
-#: data/ui/preferences.ui:356
+#: data/ui/preferences.ui:363
 msgid "Minimize animations and transitions"
 msgstr "অ্যানিমেশন ও ট্রানজিশন কমান"
 
@@ -1460,76 +399,17 @@ msgstr "অ্যানিমেশন ও ট্রানজিশন কমা
 msgid "Minimize the window"
 msgstr "উইন্ডো ছোট করুন"
 
-#: data/ui/preferences.ui:384
+#: data/ui/preferences.ui:385
 msgid "Minimum Zoom Level"
 msgstr "ন্যূনতম জুম স্তর"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:684
-msgid "Minor README corrections"
-msgstr "ছোটখাটো README সংশোধন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:673
-msgid "Minor bug fixes and stability improvements"
-msgstr "ছোটখাটো বাগ ফিক্স ও স্থিতিশীলতা উন্নতি"
 
 #: data/ui/preferences.ui:98
 msgid "Mobile Layout"
 msgstr "মোবাইল লেআউট"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:515
-msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
-msgstr "মোবাইল লেআউট সেটিং ড্রপডাউনে পরিবর্তন করা হয়েছে (স্বয়ংক্রিয়/সক্রিয়/নিষ্ক্রিয়)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:512
-msgid ""
-"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
-"Lomiri"
-msgstr ""
-"Phosh, Plasma Mobile ও Lomiri-র জন্য স্বয়ংক্রিয়-শনাক্তকরণ সহ মোবাইল লেআউট সমর্থন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:309
-msgid ""
-"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
-"popover for the off-screen-rendered web view"
-msgstr ""
-"মোবাইল-প্রতিক্রিয়াশীল লেআউট, JavaScript পূর্ণস্ক্রিন, এবং অফ-স্ক্রিন-রেন্ডার করা ওয়েব "
-"ভিউয়ের জন্য একটি OSR কনটেক্সট-মেনু পপওভার"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:893
-msgid "Modern LibAdwaita UI with Blueprint declarative interface"
-msgstr "Blueprint ঘোষণামূলক ইন্টারফেস সহ আধুনিক LibAdwaita UI"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:907
-msgid "Modern Meson build system with Blueprint UI compilation"
-msgstr "Blueprint UI কম্পাইলেশন সহ আধুনিক Meson বিল্ড সিস্টেম"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:798
-msgid "More reliable link opening mechanism"
-msgstr "আরও নির্ভরযোগ্য লিঙ্ক খোলার ব্যবস্থা"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:802
-msgid "More robust dependency handling"
-msgstr "আরও শক্তিশালী নির্ভরতা হ্যান্ডলিং"
-
-#: data/ui/preferences.ui:352
+#: data/ui/preferences.ui:359
 msgid "Motion and Focus"
 msgstr "মোশন এবং ফোকাস"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:305
-msgid ""
-"Multi-account support: each account runs in an isolated CEF RequestContext "
-"with its own cookies and storage; accounts are ordered most-recently-used"
-msgstr ""
-"একাধিক-অ্যাকাউন্ট সমর্থন: প্রতিটি অ্যাকাউন্ট নিজস্ব কুকি ও স্টোরেজ সহ একটি পৃথক CEF "
-"RequestContext-এ চলে; অ্যাকাউন্টগুলি সর্বশেষ-ব্যবহৃত অনুসারে সাজানো হয়"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:899
-msgid "Multi-language spell checking support"
-msgstr "বহু-ভাষা বানান পরীক্ষা সমর্থন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:892
-msgid "Native Vala/GTK4 implementation for optimal performance"
-msgstr "সর্বোত্তম কর্মক্ষমতার জন্য নেটিভ Vala/GTK4 বাস্তবায়ন"
 
 #: data/io.github.tobagin.karere.desktop.in:5
 msgid "Native WhatsApp Web client for Linux desktop"
@@ -1539,33 +419,6 @@ msgstr "Linux ডেস্কটপের জন্য নেটিভ WhatsApp 
 msgid "Native system notifications and tray icon support"
 msgstr "নেটিভ সিস্টেম বিজ্ঞপ্তি ও ট্রে আইকন সমর্থন"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:308
-msgid ""
-"Native system tray (StatusNotifierItem), desktop notifications, download "
-"manager, and image/text paste reimplemented on the CEF stack"
-msgstr ""
-"নেটিভ সিস্টেম ট্রে (StatusNotifierItem), ডেস্কটপ বিজ্ঞপ্তি, ডাউনলোড ম্যানেজার, এবং "
-"CEF স্ট্যাকে পুনঃনির্মিত ছবি/টেক্সট পেস্ট"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:623
-#: data/io.github.tobagin.karere.metainfo.xml.in:647
-#: data/io.github.tobagin.karere.metainfo.xml.in:702
-#: data/io.github.tobagin.karere.metainfo.xml.in:772
-#: data/io.github.tobagin.karere.metainfo.xml.in:890
-msgid "New Features:"
-msgstr "নতুন বৈশিষ্ট্য:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:626
-msgid "New System Tray Icon support"
-msgstr "নতুন সিস্টেম ট্রে আইকন সমর্থন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:193
-msgid ""
-"New opt-in \"Match WhatsApp Colors\" appearance setting: tints the window "
-"and header bar with WhatsApp Web's own background colors so the app blends "
-"with the page. Follows the light/dark theme and applies instantly. (#168)"
-msgstr ""
-
 #: data/ui/keyboard-shortcuts.ui:41
 msgid "Next Account"
 msgstr "পরবর্তী অ্যাকাউন্ট"
@@ -1574,120 +427,63 @@ msgstr "পরবর্তী অ্যাকাউন্ট"
 msgid "Next match"
 msgstr "পরবর্তী মিল"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:359
-msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
-msgstr "দ্রষ্টব্য: এই আপগ্রেডের পর WhatsApp অ্যাকাউন্ট পুনরায় লিঙ্ক করা প্রয়োজন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:529
-msgid ""
-"Notification Chat Linking: Clicking a notification now opens the specific "
-"chat in Karere."
-msgstr ""
-"বিজ্ঞপ্তি চ্যাট লিঙ্কিং: একটি বিজ্ঞপ্তিতে ক্লিক করলে এখন Karere-তে নির্দিষ্ট চ্যাট "
-"খোলে।"
-
-#: data/ui/preferences.ui:440
-msgid "Notification Shortcuts"
-msgstr "বিজ্ঞপ্তি শর্টকাট"
-
-#: data/ui/preferences.ui:220
+#: data/ui/preferences.ui:227
 msgid "Notification Sounds"
 msgstr "বিজ্ঞপ্তির শব্দ"
 
-#: data/ui/preferences.ui:267
+#: data/ui/preferences.ui:274
 msgid "Notification Type"
 msgstr "বিজ্ঞপ্তির ধরন"
 
-#: data/ui/preferences.ui:152 data/ui/preferences.ui:258
+#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "বিজ্ঞপ্তি"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:627
-msgid "Notifications fully working with persistence fixes"
-msgstr "স্থায়িত্ব ঠিককরণ সহ বিজ্ঞপ্তি সম্পূর্ণরূপে কার্যকর"
-
-#: data/ui/preferences.ui:262
+#: data/ui/preferences.ui:269
 msgid "Notify when a file download completes"
 msgstr "ফাইল ডাউনলোড সম্পন্ন হলে জানান"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:38
-#, fuzzy
-msgid ""
-"Now built on CEF/Chromium 152. Karere 4.0 replaces the WebKitGTK backend "
-"with the Chromium Embedded Framework, bringing full video attachment "
-"playback (H.264/AAC), multi-account support with isolated sessions, per-"
-"account zoom, and a faster, more compatible rendering engine while keeping "
-"the same native GTK4/libadwaita shell."
-msgstr ""
-"এখন CEF/Chromium 148-এর উপর নির্মিত। Karere 4.0 WebKitGTK ব্যাকএন্ডকে Chromium "
-"Embedded Framework দিয়ে প্রতিস্থাপন করে, যা সম্পূর্ণ ভিডিও সংযুক্তি প্লেব্যাক (H.264/"
-"AAC), পৃথক সেশন সহ একাধিক-অ্যাকাউন্ট সমর্থন, প্রতি-অ্যাকাউন্ট জুম, এবং একটি দ্রুততর, "
-"আরও সামঞ্জস্যপূর্ণ রেন্ডারিং ইঞ্জিন নিয়ে আসে, একই নেটিভ GTK4/libadwaita শেল বজায় "
-"রেখে।"
-
-#: data/ui/preferences.ui:129
+#: data/ui/preferences.ui:123 src/window.rs:1685 src/window.rs:1741
 msgid "Open"
+msgstr "খুলুন"
+
+#: data/ui/preferences.ui:136
+#, fuzzy
+msgid "Open File"
 msgstr "খুলুন"
 
 #: data/ui/keyboard-shortcuts.ui:146
 msgid "Open preferences"
 msgstr "পছন্দসমূহ খুলুন"
 
-#: data/ui/keyboard-shortcuts.ui:127
+#: data/ui/keyboard-shortcuts.ui:120
 msgid "Open the developer tools"
 msgstr "ডেভেলপার টুলস খুলুন"
 
-#: data/ui/preferences.ui:125
+#: data/ui/preferences.ui:119
 msgid "Open the developer tools for the current page"
 msgstr "বর্তমান পৃষ্ঠার জন্য ডেভেলপার টুলস খুলুন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:777
-msgid "Optimized font loading to eliminate display conflicts"
-msgstr "প্রদর্শন দ্বন্দ্ব দূর করতে ফন্ট লোডিং অপ্টিমাইজ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:479
-msgid "Optimized memory usage in mobile responsive scripts"
-msgstr "মোবাইল রেসপন্সিভ স্ক্রিপ্টে মেমরি ব্যবহার অপ্টিমাইজ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:307
-msgid ""
-"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
-"accessibility minimum-zoom floor"
-msgstr ""
-"প্রতি-অ্যাকাউন্ট জুম (Ctrl +/-/0) ঐচ্ছিক হেডার-বার জুম নিয়ন্ত্রণ ও একটি "
-"অ্যাক্সেসযোগ্যতা ন্যূনতম-জুম সীমা সহ"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:881
-msgid "Performance optimizations for faster startup"
-msgstr "দ্রুত চালুর জন্য কর্মক্ষমতা অপ্টিমাইজেশন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:847
-msgid "Performance optimizations for scrolling"
-msgstr "স্ক্রলিংয়ের জন্য কর্মক্ষমতা অপ্টিমাইজেশন"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:33
 msgid ""
 "Persistent login sessions so you don't need to scan the QR code every time"
 msgstr "স্থায়ী লগইন সেশন যাতে আপনাকে প্রতিবার QR কোড স্ক্যান করতে না হয়"
 
-#: data/ui/keyboard-shortcuts.ui:134
+#: data/ui/keyboard-shortcuts.ui:127
 msgid "Pick an element to inspect"
 msgstr "পরিদর্শনের জন্য একটি উপাদান বেছে নিন"
 
-#: data/ui/preferences.ui:221
+#: data/ui/preferences.ui:228
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "নতুন বার্তার জন্য WhatsApp-এর বিজ্ঞপ্তির শব্দ বাজান"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:628
-msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
-msgstr "Vala থেকে নেটিভ Rust/GTK4/Libadwaita-তে পোর্ট করা হয়েছে"
-
 #: data/ui/window.ui:255 data/ui/preferences.ui:10
-#: data/ui/keyboard-shortcuts.ui:145 src/tray.rs:139
+#: data/ui/keyboard-shortcuts.ui:145 src/tray.rs:166
 msgid "Preferences"
 msgstr "পছন্দসমূহ"
 
-#: data/ui/preferences.ui:200
+#: data/ui/preferences.ui:207
 msgid "Preview Length"
 msgstr "প্রিভিউয়ের দৈর্ঘ্য"
 
@@ -1699,7 +495,7 @@ msgstr "পূর্ববর্তী অ্যাকাউন্ট"
 msgid "Previous match"
 msgstr "পূর্ববর্তী মিল"
 
-#: data/ui/preferences.ui:327
+#: data/ui/preferences.ui:334
 msgid "Privacy"
 msgstr "গোপনীয়তা"
 
@@ -1707,19 +503,11 @@ msgstr "গোপনীয়তা"
 msgid "Privacy controls and comprehensive spell-checking settings"
 msgstr "গোপনীয়তা নিয়ন্ত্রণ ও বিস্তৃত বানান পরীক্ষার সেটিংস"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:909
-msgid "Production-ready error handling and crash recovery"
-msgstr "প্রোডাকশন-প্রস্তুত ত্রুটি হ্যান্ডলিং ও ক্র্যাশ পুনরুদ্ধার"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:897
-msgid "Professional logging and crash reporting system"
-msgstr "পেশাদার লগিং ও ক্র্যাশ রিপোর্টিং ব্যবস্থা"
-
 #: data/io.github.tobagin.karere.metainfo.xml.in:36
 msgid "Proper clipboard integration for text and images"
 msgstr "টেক্সট ও ছবির জন্য যথাযথ ক্লিপবোর্ড একীকরণ"
 
-#: data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159 src/tray.rs:158
+#: data/ui/window.ui:275 data/ui/keyboard-shortcuts.ui:159 src/tray.rs:185
 msgid "Quit"
 msgstr "প্রস্থান"
 
@@ -1731,25 +519,13 @@ msgstr "অ্যাপ্লিকেশন বন্ধ করুন"
 msgid "Quit Karere"
 msgstr "Karere প্রস্থান করুন"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:376
-msgid "Redesigned application icons for stable and development variants"
-msgstr "স্থিতিশীল ও ডেভেলপমেন্ট ভেরিয়েন্টের জন্য অ্যাপ্লিকেশন আইকন পুনর্নকশা করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:629
-msgid "Redesigned/streamlined preferences dialog"
-msgstr "পছন্দ ডায়ালগ পুনর্নকশা/সহজ করা হয়েছে"
-
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:362
 msgid "Reduce Motion"
 msgstr "গতি কমান"
 
 #: data/ui/window.ui:251
 msgid "Refresh WhatsApp Web"
 msgstr "WhatsApp Web রিফ্রেশ করুন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:694
-msgid "Refreshed About dialog screenshot"
-msgstr "About ডায়ালগের স্ক্রিনশট রিফ্রেশ করা হয়েছে"
 
 #: data/ui/keyboard-shortcuts.ui:15
 msgid "Reload WhatsApp Web"
@@ -1763,96 +539,23 @@ msgstr "বর্তমান পৃষ্ঠা পুনরায় লোড
 msgid "Reload, bypassing the cache"
 msgstr "ক্যাশ এড়িয়ে পুনরায় লোড করুন"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:556
-msgid "Remove direct D-Bus notification permissions for cleaner manifest"
-msgstr "পরিচ্ছন্ন ম্যানিফেস্টের জন্য সরাসরি D-Bus বিজ্ঞপ্তি অনুমতি সরানো হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:588
-msgid "Remove unnecessary autostart permission to satisfy linter"
-msgstr "লিন্টার সন্তুষ্ট করতে অপ্রয়োজনীয় স্বয়ংক্রিয়-শুরুর অনুমতি সরানো হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:379
-msgid "Removed ffmpeg-full extension (no longer required)"
-msgstr "ffmpeg-full এক্সটেনশন সরানো হয়েছে (আর প্রয়োজন নেই)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:720
-msgid ""
-"Removed hardcoded blueprint compiler paths for cross-architecture support"
-msgstr ""
-"ক্রস-আর্কিটেকচার সমর্থনের জন্য হার্ডকোড করা blueprint কম্পাইলার পাথ সরানো হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:113
-msgid ""
-"Removed read-only access to Documents, Pictures, Videos, Music and Desktop."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:806
-msgid ""
-"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
-"only)"
-msgstr ""
-"অপ্রয়োজনীয় মোবাইল ইউজার এজেন্ট পরিবর্তন সরানো হয়েছে (WhatsApp Web শুধুমাত্র "
-"ডেস্কটপের জন্য)"
-
-#: data/ui/preferences.ui:143
+#: data/ui/preferences.ui:150
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
 msgstr ""
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:828
-msgid "Replaced window.vala.in and preferences.vala.in with direct .vala files"
-msgstr ""
-"window.vala.in ও preferences.vala.in সরাসরি .vala ফাইল দিয়ে প্রতিস্থাপন করা "
-"হয়েছে"
-
 #: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
 msgid "Reset Zoom"
 msgstr "জুম রিসেট"
 
-#: data/ui/preferences.ui:249
+#: data/ui/preferences.ui:256
 msgid "Reset to default"
 msgstr "ডিফল্টে রিসেট করুন"
 
 #: data/ui/keyboard-shortcuts.ui:108
 msgid "Reset zoom to 100%"
 msgstr "জুম ১০০%-এ রিসেট করুন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:398
-msgid "Resolved WebKit crashes on media-heavy pages"
-msgstr "মিডিয়া-ভারী পৃষ্ঠায় WebKit ক্র্যাশ সমাধান করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:763
-msgid "Resolved compatibility issues with newer GNOME environments"
-msgstr "নতুন GNOME পরিবেশের সাথে সামঞ্জস্য সমস্যা সমাধান করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:788
-msgid "Resolved flatpak-builder compatibility issues"
-msgstr "flatpak-builder সামঞ্জস্য সমস্যা সমাধান করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:858
-msgid "Resolved invalid markup in release descriptions"
-msgstr "রিলিজ বিবরণে অবৈধ মার্কআপ সমাধান করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:874
-msgid "Resolved memory leak in WebKit manager cleanup"
-msgstr "WebKit ম্যানেজার পরিষ্কারে মেমরি লিক সমাধান করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:840
-msgid "Resolved memory leak in notification cleanup"
-msgstr "বিজ্ঞপ্তি পরিষ্কারে মেমরি লিক সমাধান করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:581
-msgid "Restore autostart permission for improved compatibility"
-msgstr "উন্নত সামঞ্জস্যের জন্য স্বয়ংক্রিয়-শুরুর অনুমতি পুনরুদ্ধার করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:809
-msgid "Restored Safari Linux user agent for native WebKit experience"
-msgstr "নেটিভ WebKit অভিজ্ঞতার জন্য Safari Linux ইউজার এজেন্ট পুনরুদ্ধার করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:469
-msgid "Restored correct app icons and transparent backgrounds"
-msgstr "সঠিক অ্যাপ আইকন ও স্বচ্ছ পটভূমি পুনরুদ্ধার করা হয়েছে"
 
 #: data/ui/preferences.ui:42
 msgid "Run in Background"
@@ -1862,16 +565,11 @@ msgstr "ব্যাকগ্রাউন্ডে চালান"
 msgid "Run on Startup"
 msgstr "শুরুতে চালান"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:194
-msgid ""
-"Safer avatar processing for notifications (community contribution). (#172)"
-msgstr ""
-
-#: data/ui/preferences.ui:411
+#: data/ui/preferences.ui:412
 msgid "Screen Reader Optimizations"
 msgstr "স্ক্রিন রিডার অপ্টিমাইজেশন"
 
-#: data/ui/preferences.ui:408
+#: data/ui/preferences.ui:409
 msgid "Screen Reader Support"
 msgstr "স্ক্রিন রিডার সমর্থন"
 
@@ -1879,35 +577,27 @@ msgstr "স্ক্রিন রিডার সমর্থন"
 msgid "Search the current page"
 msgstr "বর্তমান পৃষ্ঠায় অনুসন্ধান করুন"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:380
 msgid "Set a minimum zoom level for all accounts"
 msgstr "সকল অ্যাকাউন্টের জন্য একটি ন্যূনতম জুম স্তর নির্ধারণ করুন"
 
-#: data/ui/preferences.ui:205
+#: data/ui/preferences.ui:212
 msgid "Short"
 msgstr "ছোট"
 
-#: data/ui/preferences.ui:419
-msgid "Shortcuts"
-msgstr "শর্টকাট"
-
-#: data/ui/preferences.ui:194
+#: data/ui/preferences.ui:201
 msgid "Show Message Text"
 msgstr "বার্তার টেক্সট দেখান"
 
-#: data/ui/preferences.ui:188
+#: data/ui/preferences.ui:195
 msgid "Show Sender Name"
 msgstr "প্রেরকের নাম দেখান"
 
-#: data/ui/preferences.ui:171
+#: data/ui/preferences.ui:178
 msgid "Show notifications for incoming messages"
 msgstr "আগত বার্তার জন্য বিজ্ঞপ্তি দেখান"
 
-#: data/ui/keyboard-shortcuts.ui:115
-msgid "Show or hide the zoom buttons"
-msgstr "জুম বোতাম দেখান বা লুকান"
-
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:319
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr "হেডার বারে বানান পরীক্ষার ভাষার ড্রপডাউন দেখান"
 
@@ -1915,21 +605,13 @@ msgstr "হেডার বারে বানান পরীক্ষার �
 msgid "Show this shortcuts dialog"
 msgstr "এই শর্টকাট ডায়ালগ দেখান"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:369
 msgid "Show visible outlines around focused elements"
 msgstr "ফোকাসকৃত উপাদানের চারপাশে দৃশ্যমান আউটলাইন দেখান"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:402
 msgid "Show zoom buttons in the header bar"
 msgstr "হেডার বারে জুম বোতাম দেখান"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:808
-msgid "Simplified emoji font configuration to single high-quality source"
-msgstr "ইমোজি ফন্ট কনফিগারেশন একটি উচ্চমানের উৎসে সরলীকৃত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:830
-msgid "Simplified source file management in build system"
-msgstr "বিল্ড সিস্টেমে সোর্স ফাইল ব্যবস্থাপনা সরল করা হয়েছে"
 
 #: data/ui/preferences.ui:99
 msgid ""
@@ -1939,7 +621,7 @@ msgstr ""
 "একক-প্যানেল লেআউট। স্বয়ংক্রিয়: মোবাইল শেল বা সংকীর্ণ উইন্ডোতে; সক্রিয়/নিষ্ক্রিয়: "
 "যেকোনো আকারে চালু বা বন্ধ করতে বাধ্য করে"
 
-#: data/ui/preferences.ui:331
+#: data/ui/preferences.ui:338
 msgid "Site Permissions"
 msgstr "সাইটের অনুমতি"
 
@@ -1947,26 +629,11 @@ msgstr "সাইটের অনুমতি"
 msgid "Smooth performance with hardware acceleration"
 msgstr "হার্ডওয়্যার ত্বরণ সহকারে মসৃণ কর্মক্ষমতা"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:111
-msgid "Smoother scrolling inside conversations on large HiDPI windows (#173)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:158
-msgid ""
-"Software rendering now redraws only the part of the window that changed, "
-"reducing CPU and memory bandwidth per frame — most noticeable on integrated "
-"graphics (#179)."
-msgstr ""
-
-#: data/ui/preferences.ui:185
-msgid "Some settings only apply when Karere controls the popup"
-msgstr "কিছু সেটিংস শুধুমাত্র Karere পপআপ নিয়ন্ত্রণ করলে প্রযোজ্য"
-
-#: data/ui/preferences.ui:217
+#: data/ui/preferences.ui:224
 msgid "Sounds"
 msgstr "শব্দ"
 
-#: data/ui/preferences.ui:290
+#: data/ui/preferences.ui:297
 msgid "Spell Checking"
 msgstr "বানান পরীক্ষা"
 
@@ -1974,11 +641,11 @@ msgstr "বানান পরীক্ষা"
 msgid "Spell Checking Language"
 msgstr "বানান পরীক্ষার ভাষা"
 
-#: data/ui/preferences.ui:286
+#: data/ui/preferences.ui:293
 msgid "Spellcheck"
 msgstr "বানান পরীক্ষা"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:325
 msgid "Star a language to pin it to the top"
 msgstr "ড্রপডাউনের শীর্ষে পিন করতে একটি ভাষা স্টার করুন"
 
@@ -1994,31 +661,18 @@ msgstr "উইন্ডো না দেখিয়ে ছোট করে শ�
 msgid "Startup"
 msgstr "শুরু"
 
-#: data/ui/preferences.ui:332
+#: data/ui/preferences.ui:339
 msgid "Stored allow/deny decisions for websites"
 msgstr "ওয়েবসাইটের জন্য সংরক্ষিত অনুমতি/অস্বীকৃতির সিদ্ধান্ত"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:794
-msgid "Streamlined font stack for consistent emoji appearance"
-msgstr "সামঞ্জস্যপূর্ণ ইমোজি চেহারার জন্য ফন্ট স্ট্যাক সুবিন্যস্ত করা হয়েছে"
 
 #: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
 msgid "Switch Account"
 msgstr "অ্যাকাউন্ট পরিবর্তন"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:566
-msgid ""
-"Switch to XDG Background Portal for autostart (improves security and "
-"compatibility)"
-msgstr ""
-"স্বয়ংক্রিয়-শুরুর জন্য XDG Background Portal-এ পরিবর্তন করা হয়েছে (নিরাপত্তা ও "
-"সামঞ্জস্য উন্নত করে)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:555
-msgid "Switch to XDG Notification Portal (ashpd) for better sandboxing support"
-msgstr ""
-"আরও ভালো স্যান্ডবক্সিং সমর্থনের জন্য XDG Notification Portal (ashpd)-এ পরিবর্তন "
-"করা হয়েছে"
+#: data/ui/preferences.ui:184
+#, fuzzy
+msgid "Switch the tray icon to the unread variant when a new message arrives"
+msgstr "নতুন বার্তা এলে ট্রে আইকন অ্যানিমেট করুন"
 
 #: data/ui/keyboard-shortcuts.ui:42
 msgid "Switch to the next account"
@@ -2028,31 +682,13 @@ msgstr "পরবর্তী অ্যাকাউন্টে যান"
 msgid "Switch to the previous account"
 msgstr "পূর্ববর্তী অ্যাকাউন্টে যান"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:304
-msgid ""
-"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
-"proprietary-codec builds for H.264/AAC video attachment playback"
-msgstr ""
-"রেন্ডারিং ব্যাকএন্ড WebKitGTK থেকে CEF/Chromium 148-এ পরিবর্তন করা হয়েছে, H.264/"
-"AAC ভিডিও সংযুক্তি প্লেব্যাকের জন্য মালিকানাধীন-কোডেক বিল্ড সহ"
-
-#: data/ui/preferences.ui:273
+#: data/ui/preferences.ui:280
 msgid "System Notification"
 msgstr "সিস্টেম বিজ্ঞপ্তি"
 
 #: data/ui/preferences.ui:51
 msgid "System Tray Icon"
 msgstr "সিস্টেম ট্রে আইকন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:734
-#: data/io.github.tobagin.karere.metainfo.xml.in:804
-#: data/io.github.tobagin.karere.metainfo.xml.in:826
-msgid "Technical Changes:"
-msgstr "প্রযুক্তিগত পরিবর্তন:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:904
-msgid "Technical Improvements:"
-msgstr "প্রযুক্তিগত উন্নতি:"
 
 #: data/ui/preferences.ui:77
 msgid "Theme"
@@ -2062,103 +698,13 @@ msgstr "থিম"
 msgid "Thiago Fernandes"
 msgstr "Thiago Fernandes"
 
-#: data/ui/keyboard-shortcuts.ui:114
-msgid "Toggle Header Bar Zoom Controls"
-msgstr "হেডার বার জুম নিয়ন্ত্রণ টগল করুন"
-
 #: data/ui/keyboard-shortcuts.ui:68
 msgid "Toggle fullscreen mode"
 msgstr "পূর্ণস্ক্রিন মোড টগল করুন"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:176
-msgid "Translation catalogs regenerated against the current UI strings."
+#: data/ui/keyboard-shortcuts.ui:139
+msgid "Turn notification banners and sounds off or on"
 msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:513
-msgid "Tray icon click now toggles window visibility"
-msgstr "ট্রে আইকন ক্লিক এখন উইন্ডো দৃশ্যমানতা টগল করে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:610
-msgid "Update and Bug Fix Release"
-msgstr "আপডেট ও বাগ ফিক্স রিলিজ"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:756
-msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
-msgstr "উন্নত সামঞ্জস্যের জন্য GNOME রানটাইম সংস্করণ 49-এ আপডেট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:739
-msgid "Updated SettingsManager to be the default for all settings access"
-msgstr "সকল সেটিংস অ্যাক্সেসের জন্য SettingsManager-কে ডিফল্ট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:682
-msgid "Updated about dialog screenshot"
-msgstr "About ডায়ালগের স্ক্রিনশট আপডেট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:377
-msgid "Updated all Rust dependencies to latest versions"
-msgstr "সকল Rust নির্ভরতা সর্বশেষ সংস্করণে আপডেট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:862
-msgid "Updated all references from appdata to metainfo format"
-msgstr "appdata থেকে metainfo ফরম্যাটে সকল রেফারেন্স আপডেট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:683
-msgid "Updated application screenshots"
-msgstr "অ্যাপ্লিকেশন স্ক্রিনশট আপডেট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:693
-msgid "Updated application screenshots with current UI appearance"
-msgstr "বর্তমান UI চেহারা সহ অ্যাপ্লিকেশন স্ক্রিনশট আপডেট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:522
-msgid ""
-"Updated application summary and description for better AppStream compliance"
-msgstr ""
-"আরও ভালো AppStream সম্মতির জন্য অ্যাপ্লিকেশন সারাংশ ও বিবরণ আপডেট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:671
-msgid "Updated build configuration and dependencies"
-msgstr "বিল্ড কনফিগারেশন ও নির্ভরতা আপডেট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:829
-msgid "Updated meson.build to use Vala preprocessor directives"
-msgstr "Vala প্রিপ্রসেসর নির্দেশ ব্যবহার করতে meson.build আপডেট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:127
-msgid ""
-"Updated the application platform to GNOME 51 for current platform security "
-"and rendering updates."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:234
-msgid ""
-"Updated the bundled browser engine to CEF 149 (Chromium 149), up from CEF "
-"148, picking up the latest Chromium security and rendering fixes. "
-"Proprietary codecs stay enabled so WhatsApp calls and video playback keep "
-"working."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:201
-msgid ""
-"Upgraded the browser engine to CEF 150 / Chromium 150 for current security "
-"fixes; video attachments (H.264/AAC) keep playing in-app."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:378
-msgid "Upgraded to GNOME Platform 50"
-msgstr "GNOME Platform 50-এ আপগ্রেড করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:738
-msgid "WebKitGTK 6.0 storage persistence verified and documented"
-msgstr "WebKitGTK 6.0 স্টোরেজ স্থায়িত্ব যাচাই ও ডকুমেন্ট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:530
-msgid ""
-"Webcam Support: Added support for using the webcam (Status updates, Video "
-"calls) with a new permission dialog."
-msgstr ""
-"ওয়েবক্যাম সমর্থন: একটি নতুন অনুমতি ডায়ালগ সহ ওয়েবক্যাম ব্যবহারের সমর্থন যোগ করা "
-"হয়েছে (স্ট্যাটাস আপডেট, ভিডিও কল)।"
 
 #: data/ui/preferences.ui:38
 msgid "What happens when you close the window"
@@ -2180,11 +726,7 @@ msgstr "উইন্ডো"
 msgid "Window Close Behavior"
 msgstr "উইন্ডো বন্ধের আচরণ"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:514
-msgid "Window size is saved and restored when hiding/showing"
-msgstr "লুকানো/দেখানোর সময় উইন্ডোর আকার সংরক্ষিত ও পুনরুদ্ধার হয়"
-
-#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "জুম"
 
@@ -2220,349 +762,1438 @@ msgstr "whatsapp"
 msgid "whatsapp;chat;messaging;web;communication;"
 msgstr "whatsapp;chat;messaging;web;communication;"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:711
-msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
-msgstr "⌨️ AdwShortcutsDialog ব্যবহার করে কীবোর্ড শর্টকাট ডায়ালগ যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:724
-msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
-msgstr "♻️ প্রধান রিফ্যাক্টর: PascalCase ফাইলনাম সহ কোডবেস পুনর্বিন্যস্ত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:725
-msgid "♻️ Refactored Window.vala into specialized manager components"
-msgstr "♻️ Window.vala-কে বিশেষায়িত ম্যানেজার উপাদানে রিফ্যাক্টর করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:726
-msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
-msgstr ""
-"♻️ কাস্টম লগিং ও ক্র্যাশ রিপোর্টিং সরানো হয়েছে (সিস্টেম journalctl ব্যবহার করুন)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:708
-msgid ""
-"♿ Enhanced accessibility with screen reader optimization and keyboard "
-"navigation"
-msgstr ""
-"♿ স্ক্রিন রিডার অপ্টিমাইজেশন ও কীবোর্ড নেভিগেশন সহ অ্যাক্সেসযোগ্যতা উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:889
-msgid ""
-"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
-"with WhatsApp Web as this is a completely new application implementation."
-msgstr ""
-"⚠️ গুরুত্বপূর্ণ: আপগ্রেড করার পর, আপনাকে আপনার মোবাইল ডিভাইস WhatsApp Web-এর সাথে "
-"পুনরায় সিঙ্ক করতে হবে কারণ এটি একটি সম্পূর্ণ নতুন অ্যাপ্লিকেশন বাস্তবায়ন।"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:655
-msgid "⚡ Performance optimizations for startup and shutdown"
-msgstr "⚡ চালু ও বন্ধ করার জন্য কর্মক্ষমতা অপ্টিমাইজেশন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:704
-msgid "✅ Fixed WhatsApp Web notification banner persistence"
-msgstr "✅ WhatsApp Web বিজ্ঞপ্তি ব্যানার স্থায়িত্ব ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:705
-msgid "✅ Fixed notifications not working properly"
-msgstr "✅ বিজ্ঞপ্তি সঠিকভাবে কাজ না করা ঠিক করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:771
-msgid ""
-"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
-msgstr "✨ উন্নত ইমোজি সমর্থন, বহিরাগত লিঙ্ক হ্যান্ডলিং, ও বিল্ড উন্নতি"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:646
-msgid "🎉 Feature Release"
-msgstr "🎉 ফিচার রিলিজ"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:622
-msgid "🎉 Major Release 2.0.0"
-msgstr "🎉 প্রধান রিলিজ 2.0.0"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:701
-msgid "🎉 Version 1.0.0 - Major Milestone Release"
-msgstr "🎉 সংস্করণ 1.0.0 - প্রধান মাইলফলক রিলিজ"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:649
-msgid "🎤 Microphone permission support for voice notes"
-msgstr "🎤 ভয়েস নোটের জন্য মাইক্রোফোন অনুমতি সমর্থন"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:636
-msgid "🐛 Bug Fix Release"
-msgstr "🐛 বাগ ফিক্স রিলিজ"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:836
-#: data/io.github.tobagin.karere.metainfo.xml.in:870
-msgid "🐛 Bug Fixes and Improvements"
-msgstr "🐛 বাগ ফিক্স ও উন্নতি"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:753
-msgid "🐛 Runtime Update and Bug Fixes"
-msgstr "🐛 রানটাইম আপডেট ও বাগ ফিক্স"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:657
-msgid "📖 Added MPRIS workaround documentation"
-msgstr "📖 MPRIS সমাধানের ডকুমেন্টেশন যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:746
-msgid "📚 Added spell checking configuration guide"
-msgstr "📚 বানান পরীক্ষা কনফিগারেশন গাইড যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:745
-msgid "📚 Documented all keyboard shortcuts by category"
-msgstr "📚 বিভাগ অনুসারে সকল কীবোর্ড শর্টকাট ডকুমেন্ট করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:744
-msgid "📚 Enhanced README with accessibility features documentation"
-msgstr "📚 অ্যাক্সেসযোগ্যতা বৈশিষ্ট্যের ডকুমেন্টেশন সহ README উন্নত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:747
-msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
-msgstr "📚 GitHub রিপোজিটরি URL ঠিক করা হয়েছে (karere-vala → karere)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:709
-msgid "📝 Added comprehensive spell checking system with auto-detection"
-msgstr "📝 স্বয়ংক্রিয়-শনাক্তকরণ সহ বিস্তৃত বানান পরীক্ষা ব্যবস্থা যোগ করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:656
-msgid "📝 Async dictionary loading for smoother Spell Check initialization"
-msgstr "📝 মসৃণ বানান পরীক্ষা শুরুর জন্য অ্যাসিঙ্ক অভিধান লোডিং"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:679
-msgid "📝 Documentation and Metadata Update"
-msgstr "📝 ডকুমেন্টেশন ও মেটাডেটা আপডেট"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:707
-msgid ""
-"📥 Implemented download manager with custom directory and toast notifications"
-msgstr ""
-"📥 কাস্টম ডিরেক্টরি ও টোস্ট বিজ্ঞপ্তি সহ ডাউনলোড ম্যানেজার বাস্তবায়ন করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:732
-msgid "📸 Reorganized screenshots into data/screenshots/ directory"
-msgstr "📸 স্ক্রিনশট data/screenshots/ ডিরেক্টরিতে পুনর্বিন্যস্ত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:690
-msgid "📸 Screenshots and Documentation Update"
-msgstr "📸 স্ক্রিনশট ও ডকুমেন্টেশন আপডেট"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:651
-msgid "🔄 Manual reload and auto-reload on network reconnection"
-msgstr "🔄 নেটওয়ার্ক পুনঃসংযোগে ম্যানুয়াল পুনঃলোড ও স্বয়ংক্রিয়-পুনঃলোড"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:710
-msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
-msgstr "🔤 LibreOffice থেকে 80+ ভাষার অভিধান একীভূত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:817
-msgid "🔧 Code Refactoring and Architecture Improvements"
-msgstr "🔧 কোড রিফ্যাক্টরিং ও আর্কিটেকচার উন্নতি"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:668
-msgid "🔧 Maintenance Release"
-msgstr "🔧 রক্ষণাবেক্ষণ রিলিজ"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:853
-msgid "🔧 Metadata and Standards Compliance"
-msgstr "🔧 মেটাডেটা ও মান সম্মতি"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:706
-msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
-msgstr "🖼️ ক্লিপবোর্ডের মাধ্যমে ছবি পেস্ট সমর্থন যোগ করা হয়েছে (Ctrl+V)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:728
-msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
-msgstr "🗑️ অপ্রচলিত পরীক্ষা ফাইল ও অব্যবহৃত নির্ভরতা পরিষ্কার করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:727
-msgid ""
-"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
-msgstr ""
-"🗑️ Do Not Disturb বৈশিষ্ট্য সরানো হয়েছে (সিস্টেম বিজ্ঞপ্তি ডিমন দ্বারা পরিচালিত)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:729
-msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
-msgstr "🗑️ json-glib, gee, ও libsoup নির্ভরতা সরানো হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:887
-msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
-msgstr "🚀 প্রধান আর্কিটেকচার মাইগ্রেশন: Python থেকে Vala/GTK4"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:650
-msgid "🚀 Start in background option for autostart"
-msgstr "🚀 স্বয়ংক্রিয়-শুরুর জন্য ব্যাকগ্রাউন্ডে শুরু করার বিকল্প"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:730
-msgid "🧹 Centralized settings management with SettingsManager singleton"
-msgstr "🧹 SettingsManager সিঙ্গলটন সহ সেটিংস ব্যবস্থাপনা কেন্দ্রীভূত করা হয়েছে"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:731
-msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
-msgstr "🧹 DependencyContainer.vala সরানো হয়েছে (অব্যবহৃত নির্ভরতা ইনজেকশন)"
-
-#: src/main.rs:43
+#: src/main.rs:51
 msgid "Karere starting"
 msgstr "Karere শুরু হচ্ছে"
 
-#: src/web_view.rs:3730
+#: src/web_view/clipboard_dnd.rs:112
+msgid "File is too large to attach (limit 48 MB)"
+msgstr ""
+
+#: src/web_view/clipboard_dnd.rs:445
 msgid "Karere cannot read files from this folder"
 msgstr ""
 
-#: src/web_view.rs:3732
+#: src/web_view/clipboard_dnd.rs:447
 #, fuzzy
 msgid "Choose File…"
 msgstr "নির্বাচন করুন…"
 
-#: src/web_view.rs:3748
+#: src/web_view/clipboard_dnd.rs:463
 msgid "Select the File to Attach"
 msgstr ""
 
-#: src/web_view.rs:3749
+#: src/web_view/clipboard_dnd.rs:464
 msgid "Attach"
 msgstr ""
 
-#: src/window.rs:290
+#: src/handlers/context_menu.rs:127
+msgid "Copy Link Address"
+msgstr ""
+
+#: src/window.rs:306
 msgid "Account"
 msgstr "অ্যাকাউন্ট"
 
-#: src/window.rs:619
+#: src/window.rs:342
+#, fuzzy
+msgid "No connection"
+msgstr "communication"
+
+#: src/window.rs:343
+msgid "Waiting for the network — retrying…"
+msgstr ""
+
+#: src/window.rs:426
+msgid "{active} of {count}"
+msgstr ""
+
+#: src/window.rs:707
 msgid "Waiting for QR scan…"
 msgstr "QR স্ক্যানের অপেক্ষায়…"
 
-#: src/window.rs:641
-msgid "degraded"
-msgstr "অবনত"
+#. Translators: tray tooltip body; {} is the number of unread chats.
+#: src/window.rs:731 src/tray.rs:86
+#, fuzzy
+msgid "{} unread chat"
+msgid_plural "{} unread chats"
+msgstr[0] "অপঠিত"
+msgstr[1] "অপঠিত"
 
-#: src/window.rs:657
-msgid "Unread messages"
-msgstr "অপঠিত বার্তা"
-
-#: src/window.rs:668
+#: src/window.rs:753
 msgid "Notifications muted — click to unmute"
 msgstr ""
 
-#: src/window.rs:672
+#: src/window.rs:757
 #, fuzzy
 msgid "Mute notifications"
 msgstr "বিজ্ঞপ্তি"
 
-#: src/window.rs:703
+#: src/window.rs:790
 msgid "Edit account"
 msgstr "অ্যাকাউন্ট সম্পাদনা করুন"
 
-#: src/window.rs:719
+#: src/window.rs:806
 msgid "Remove account"
 msgstr "অ্যাকাউন্ট সরান"
 
-#: src/window.rs:721
+#: src/window.rs:808
 msgid "Can't remove the only account"
 msgstr "একমাত্র অ্যাকাউন্ট সরানো যায় না"
 
-#: src/window.rs:805
+#: src/window.rs:896
 msgid "Maximum of 9 accounts reached"
 msgstr "সর্বোচ্চ ৯টি অ্যাকাউন্টের সীমায় পৌঁছেছে"
 
-#: src/window.rs:831
+#: src/window.rs:920
 msgid "Label"
 msgstr "লেবেল"
 
-#: src/window.rs:846
+#: src/window.rs:935
 msgid "Name"
 msgstr "নাম"
 
-#: src/window.rs:850
+#: src/window.rs:939
 msgid "WhatsApp ID"
 msgstr "WhatsApp ID"
 
-#: src/window.rs:854
-msgid "Avatar URL"
-msgstr "অবতার URL"
+#: src/window.rs:945
+#, fuzzy
+msgid "Position"
+msgstr "অবস্থান"
 
-#: src/window.rs:863 src/window.rs:952
+#: src/window.rs:947
+msgid "Move Up"
+msgstr ""
+
+#: src/window.rs:948
+msgid "Move Down"
+msgstr ""
+
+#: src/window.rs:994 src/window.rs:1049 src/window.rs:1644
 msgid "Cancel"
 msgstr "বাতিল"
 
-#: src/window.rs:864
+#: src/window.rs:995
 msgid "Save"
 msgstr "সংরক্ষণ"
 
-#: src/window.rs:873
-msgid "Add Account"
-msgstr "অ্যাকাউন্ট যোগ করুন"
-
-#: src/window.rs:875
+#: src/window.rs:1003
 msgid "Edit Account"
 msgstr "অ্যাকাউন্ট সম্পাদনা করুন"
 
-#: src/window.rs:942
+#: src/window.rs:1041
 msgid "Remove account?"
 msgstr "অ্যাকাউন্ট সরাবেন?"
 
-#: src/window.rs:945
-msgid "This removes the local session for"
-msgstr "এটি স্থানীয় সেশন সরিয়ে ফেলে"
+#: src/window.rs:1044
+msgid ""
+"This removes the local session for {name}. To fully unlink the device, open "
+"WhatsApp on your phone, go to Linked devices, select this device and choose "
+"Log out."
+msgstr ""
 
-#: src/window.rs:948
-msgid "The device stays linked on your phone until you remove it there."
-msgstr "আপনি ফোনে এটি সরিয়ে না ফেলা পর্যন্ত ডিভাইসটি সংযুক্ত থাকে।"
-
-#: src/window.rs:953
+#: src/window.rs:1050
 msgid "Remove"
 msgstr "সরান"
 
-#: src/actions.rs:269
+#: src/window.rs:1361
+msgid "DevTools available only with --debug"
+msgstr ""
+
+#: src/window.rs:1404
+msgid "DevTools unavailable: {error}"
+msgstr ""
+
+#: src/window.rs:1646
+#, fuzzy
+msgid "Open logs"
+msgstr "খুলুন"
+
+#: src/window.rs:1680
+msgid "{name} downloaded"
+msgstr ""
+
+#: src/window.rs:1687
+#, fuzzy
+msgid "Show in Folder"
+msgstr "উইন্ডো দেখান"
+
+#: src/window.rs:1732
+#, fuzzy
+msgid "Download complete"
+msgstr "ডাউনলোড ডিরেক্টরি"
+
+#: src/window.rs:1759
+#, fuzzy
+msgid "Download failed: {reason}"
+msgstr "ডাউনলোড ডিরেক্টরি"
+
+#: src/window.rs:1763
+msgid "“{name}” could not be saved."
+msgstr ""
+
+#: src/window.rs:1766
+msgid "OK"
+msgstr ""
+
+#: src/actions.rs:193
+msgid "Diagnostic info copied"
+msgstr ""
+
+#: src/actions.rs:531
+#, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
-"seamless desktop integration with comprehensive logging and crash reporting "
-"capabilities"
+"seamless desktop integration"
 msgstr ""
 "WhatsApp Web-এর জন্য একটি আধুনিক, নেটিভ GTK4/LibAdwaita র‍্যাপার যা বিস্তৃত লগিং ও "
 "ক্র্যাশ রিপোর্টিং সক্ষমতা সহ নিরবচ্ছিন্ন ডেস্কটপ একীকরণ প্রদান করে"
 
-#: src/actions.rs:288
+#: src/actions.rs:550
 msgid "Source"
 msgstr "সোর্স"
 
-#: src/actions.rs:291
+#: src/actions.rs:553
 msgid "Special Thanks"
 msgstr "বিশেষ ধন্যবাদ"
 
-#. Translators: tray tooltip body; leading number is the unread count.
-#: src/tray.rs:68
-msgid "unread"
-msgstr "অপঠিত"
+#: src/actions.rs:584
+msgid "Karere can keep running in the background to deliver messages."
+msgstr ""
 
-#: src/tray.rs:93
+#: src/actions.rs:632
+msgid ""
+"Could not enable running on startup. Allow Karere to run in the background "
+"in your system settings."
+msgstr ""
+
+#: src/tray.rs:111
 msgid "Hide Window"
 msgstr "উইন্ডো লুকান"
 
-#: src/tray.rs:95
+#: src/tray.rs:113
 msgid "Show Window"
 msgstr "উইন্ডো দেখান"
 
-#: src/tray.rs:151
+#: src/tray.rs:178
 msgid "About Karere"
 msgstr "Karere সম্পর্কে"
 
-#: src/preferences.rs:90
+#: src/preferences.rs:105
 msgid "Restart Karere?"
 msgstr "Karere পুনরায় চালু করবেন?"
 
-#: src/preferences.rs:91
+#: src/preferences.rs:106
 msgid "Later"
 msgstr "পরে"
 
-#: src/preferences.rs:92
+#: src/preferences.rs:107
 msgid "Restart Now"
 msgstr "এখনই পুনরায় চালু করুন"
 
-#: src/preferences.rs:290
+#: src/preferences.rs:289
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "Karere পুনরায় চালু হওয়ার পর ভাষা পরিবর্তন কার্যকর হবে।"
 
-#: src/preferences.rs:319
+#: src/preferences.rs:323
 msgid "System Default"
 msgstr "সিস্টেম ডিফল্ট"
 
-#: src/preferences.rs:346
+#: src/preferences.rs:350
 msgid "The language change takes effect after Karere restarts."
 msgstr "Karere পুনরায় চালু হওয়ার পর ভাষা পরিবর্তন কার্যকর হবে।"
+
+#: src/preferences.rs:396
+msgid "Select Download Folder"
+msgstr ""
+
+#: src/preferences.rs:506
+msgid "Allowed"
+msgstr ""
+
+#: src/preferences.rs:507
+msgid "Denied"
+msgstr ""
+
+#: src/preferences.rs:508
+msgid "Ask"
+msgstr ""
+
+#: src/preferences.rs:518
+msgid "Remove this decision"
+msgstr ""
+
+#: src/notifications.rs:235
+#, fuzzy
+msgid "New message"
+msgstr "অপঠিত বার্তা"
+
+#: src/notifications.rs:252
+#, fuzzy
+msgid "View message"
+msgstr "অপঠিত বার্তা"
+
+#: src/notifications.rs:259
+#, fuzzy
+msgid "Mute Account"
+msgstr "পরবর্তী অ্যাকাউন্ট"
+
+#: src/spellcheck_ui.rs:42
+#, fuzzy
+msgid "Automatic"
+msgstr "স্বয়ংক্রিয়"
+
+#: src/spellcheck_ui.rs:86
+msgid "Pin to top"
+msgstr ""
+
+#: src/handlers/permission.rs:198
+msgid "{origin} is requesting access to {perms}."
+msgstr ""
+
+#: src/handlers/permission.rs:202
+#, fuzzy
+msgid "Permission request"
+msgstr "সাইটের অনুমতি"
+
+#: src/handlers/permission.rs:203
+msgid "Deny"
+msgstr ""
+
+#: src/handlers/permission.rs:204
+msgid "Allow"
+msgstr ""
+
+#: src/handlers/permission.rs:264 src/handlers/permission.rs:278
+msgid "microphone"
+msgstr ""
+
+#: src/handlers/permission.rs:267 src/handlers/permission.rs:281
+msgid "camera"
+msgstr ""
+
+#: src/handlers/permission.rs:270
+msgid "screen audio"
+msgstr ""
+
+#: src/handlers/permission.rs:273
+msgid "screen sharing"
+msgstr ""
+
+#: src/handlers/permission.rs:284
+#, fuzzy
+msgid "location"
+msgstr "অবস্থান"
+
+#: src/handlers/permission.rs:287
+#, fuzzy
+msgid "notifications"
+msgstr "বিজ্ঞপ্তি"
+
+#: src/handlers/permission.rs:290
+msgid "MIDI devices"
+msgstr ""
+
+#: src/handlers/permission.rs:293
+msgid "clipboard"
+msgstr ""
+
+#: src/handlers/permission.rs:298
+msgid "device access"
+msgstr ""
+
+#: src/handlers/permission.rs:310 src/handlers/permission.rs:318
+msgid "Microphone access"
+msgstr ""
+
+#: src/handlers/permission.rs:311 src/handlers/permission.rs:321
+msgid "Camera access"
+msgstr ""
+
+#: src/handlers/permission.rs:312
+msgid "Screen audio access"
+msgstr ""
+
+#: src/handlers/permission.rs:313
+msgid "Screen sharing"
+msgstr ""
+
+#: src/handlers/permission.rs:314 src/handlers/permission.rs:335
+msgid "Site access"
+msgstr ""
+
+#: src/handlers/permission.rs:327
+#, fuzzy
+msgid "Location access"
+msgstr "অবস্থান"
+
+#: src/handlers/permission.rs:330
+msgid "Clipboard access"
+msgstr ""
+
+#: src/handlers/permission.rs:333
+msgid "MIDI device access"
+msgstr ""
+
+#: src/handlers/request.rs:127
+msgid "Web view crashed — reconnecting…"
+msgstr ""
+
+#: src/handlers/request.rs:130
+msgid "Web view keeps crashing."
+msgstr ""
+
+#: src/handlers/request.rs:132
+msgid ""
+"The embedded WhatsApp view crashed repeatedly. Open the logs to investigate."
+msgstr ""
+
+#~ msgid "Accessibility Shortcuts"
+#~ msgstr "অ্যাক্সেসযোগ্যতা শর্টকাট"
+
+#~ msgid ""
+#~ "Accessibility preferences: reduce-motion, focus-ring visibility, and "
+#~ "caret browsing"
+#~ msgstr ""
+#~ "অ্যাক্সেসযোগ্যতা পছন্দ: গতি-কমানো, ফোকাস-রিং দৃশ্যমানতা, এবং ক্যারেট ব্রাউজিং"
+
+#~ msgid ""
+#~ "Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+#~ "internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+#~ msgstr ""
+#~ "অ্যাকাউন্ট পরিচয় (নাম + অবতার) WhatsApp Web-এর অভ্যন্তরীণ Store থেকে "
+#~ "স্বয়ংক্রিয়ভাবে আবিষ্কৃত, একটি ব্যাজ দ্বারা প্রকাশিত অবনত DOM-স্ক্র্যাপ ফলব্যাক সহ"
+
+#~ msgid "Add new contributor Sabri Ünal to the About dialog"
+#~ msgstr "About ডায়ালগে নতুন অবদানকারী Sabri Ünal যোগ করা হয়েছে"
+
+#~ msgid "Add xdg-config/autostart permission for autostart support"
+#~ msgstr "স্বয়ংক্রিয়-শুরুর সমর্থনের জন্য xdg-config/autostart অনুমতি যোগ করা হয়েছে"
+
+#~ msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+#~ msgstr "পছন্দে \"শুরুতে চালান\" টগল যোগ করা হয়েছে (ডিফল্ট: false)"
+
+#~ msgid ""
+#~ "Added GStreamer/PipeWire env vars to production Flatpak for efficient "
+#~ "media handling"
+#~ msgstr ""
+#~ "দক্ষ মিডিয়া হ্যান্ডলিংয়ের জন্য প্রোডাকশন Flatpak-এ GStreamer/PipeWire env "
+#~ "ভেরিয়েবল যোগ করা হয়েছে"
+
+#~ msgid ""
+#~ "Added WebKit cache control setting for improved rendering consistency"
+#~ msgstr "উন্নত রেন্ডারিং সামঞ্জস্যের জন্য WebKit ক্যাশ নিয়ন্ত্রণ সেটিং যোগ করা হয়েছে"
+
+#~ msgid ""
+#~ "Added WebRTC permission handling in preparation for WhatsApp Web voice/"
+#~ "video calls"
+#~ msgstr ""
+#~ "WhatsApp Web ভয়েস/ভিডিও কলের প্রস্তুতিতে WebRTC অনুমতি হ্যান্ডলিং যোগ করা হয়েছে"
+
+#~ msgid ""
+#~ "Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+#~ msgstr "স্থায়িত্ব ও পছন্দ নিয়ন্ত্রণ সহ জুম সমর্থন (Ctrl +/-/0) যোগ করা হয়েছে"
+
+#~ msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+#~ msgstr ""
+#~ "DEVELOPMENT ফ্ল্যাগ ব্যবহার করে কম্পাইল-সময় শর্তসাপেক্ষ কম্পাইলেশন যোগ করা হয়েছে"
+
+#~ msgid ""
+#~ "Added complete multi-account support with sidebar and tray integration"
+#~ msgstr "সাইডবার ও ট্রে একীকরণ সহ সম্পূর্ণ একাধিক-অ্যাকাউন্ট সমর্থন যোগ করা হয়েছে"
+
+#~ msgid "Added contributors Aman Das and Cameo to about dialog"
+#~ msgstr "About ডায়ালগে অবদানকারী Aman Das ও Cameo যোগ করা হয়েছে"
+
+#~ msgid ""
+#~ "Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+#~ msgstr ""
+#~ "উচ্চমানের Noto Color Emoji ফন্ট যোগ করা হয়েছে (v2.047, Unicode 16.0 সমর্থন)"
+
+#~ msgid "Added middle-click paste from primary selection (selected text)"
+#~ msgstr "প্রাথমিক নির্বাচন (নির্বাচিত টেক্সট) থেকে মাঝ-ক্লিক পেস্ট যোগ করা হয়েছে"
+
+#~ msgid "Added new application icons"
+#~ msgstr "নতুন অ্যাপ্লিকেশন আইকন যোগ করা হয়েছে"
+
+#~ msgid "Added per-account zoom settings and improved accessibility"
+#~ msgstr ""
+#~ "প্রতি-অ্যাকাউন্ট জুম সেটিংস যোগ করা হয়েছে ও অ্যাক্সেসযোগ্যতা উন্নত করা হয়েছে"
+
+#~ msgid "Added striped symbolic icons for development version"
+#~ msgstr "ডেভেলপমেন্ট সংস্করণের জন্য ডোরাকাটা সিম্বলিক আইকন যোগ করা হয়েছে"
+
+#~ msgid "Added subpixel font scaling and advanced rendering optimizations"
+#~ msgstr "সাবপিক্সেল ফন্ট স্কেলিং ও উন্নত রেন্ডারিং অপ্টিমাইজেশন যোগ করা হয়েছে"
+
+#~ msgid ""
+#~ "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+#~ msgstr ""
+#~ "WebRTC-সক্ষম WebKitGTK 2.50.5-এর মাধ্যমে ভয়েস ও ভিডিও কল সমর্থন যোগ করা হয়েছে"
+
+#~ msgid ""
+#~ "Added: account switcher uses a popover on desktop windows (bottom sheet "
+#~ "preserved on mobile)"
+#~ msgstr ""
+#~ "যোগ করা হয়েছে: অ্যাকাউন্ট সুইচার ডেস্কটপ উইন্ডোতে একটি পপওভার ব্যবহার করে "
+#~ "(মোবাইলে বটম শিট সংরক্ষিত)"
+
+#~ msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+#~ msgstr "যোগ করা হয়েছে: প্রিয় বানান-পরীক্ষার ভাষা ড্রপডাউনের শীর্ষে পিন করুন"
+
+#~ msgid ""
+#~ "Added: spell-check dropdown shows natural language names (\"English (UK)"
+#~ "\") instead of locale codes"
+#~ msgstr ""
+#~ "যোগ করা হয়েছে: বানান-পরীক্ষা ড্রপডাউন লোকেল কোডের পরিবর্তে স্বাভাবিক ভাষার "
+#~ "নাম দেখায় (\"English (UK)\")"
+
+#~ msgid "Advanced notification system with native desktop integration"
+#~ msgstr "নেটিভ ডেস্কটপ একীকরণ সহ উন্নত বিজ্ঞপ্তি ব্যবস্থা"
+
+#~ msgid "Allow inspecting and debugging the WebView"
+#~ msgstr "WebView পরিদর্শন ও ডিবাগ করার অনুমতি দিন"
+
+#~ msgid ""
+#~ "BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+#~ "performance and integration."
+#~ msgstr ""
+#~ "BREAKING CHANGE: আরও ভালো কর্মক্ষমতা ও একীকরণের জন্য Python থেকে নেটিভ Vala-"
+#~ "তে সম্পূর্ণ পুনর্লিখন।"
+
+#~ msgid "Better build system compatibility with different environments"
+#~ msgstr "বিভিন্ন পরিবেশের সাথে আরও ভালো বিল্ড সিস্টেম সামঞ্জস্য"
+
+#~ msgid "Better error handling for network disconnections"
+#~ msgstr "নেটওয়ার্ক সংযোগ বিচ্ছিন্নতার জন্য আরও ভালো ত্রুটি হ্যান্ডলিং"
+
+#~ msgid "Better error handling for network timeouts"
+#~ msgstr "নেটওয়ার্ক টাইমআউটের জন্য আরও ভালো ত্রুটি হ্যান্ডলিং"
+
+#~ msgid "Better sandboxed environment compatibility"
+#~ msgstr "আরও ভালো স্যান্ডবক্সড পরিবেশ সামঞ্জস্য"
+
+#~ msgid "Better support for modern desktop environments"
+#~ msgstr "আধুনিক ডেস্কটপ পরিবেশের জন্য আরও ভালো সমর্থন"
+
+#~ msgid "Bug Fix Release"
+#~ msgstr "বাগ ফিক্স রিলিজ"
+
+#~ msgid "Bug Fixes:"
+#~ msgstr "বাগ ফিক্স:"
+
+#~ msgid ""
+#~ "Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+#~ "dependencies to latest compatible versions"
+#~ msgstr ""
+#~ "WebKitGTK 2.52.3-এ, LibreOffice অভিধান 26.2.3.2-এ, Rust নির্ভরতা সর্বশেষ "
+#~ "সামঞ্জস্যপূর্ণ সংস্করণে আপডেট করা হয়েছে"
+
+#~ msgid "Cache disabled by default to prevent emoji rendering issues"
+#~ msgstr "ইমোজি রেন্ডারিং সমস্যা প্রতিরোধে ডিফল্টভাবে ক্যাশ নিষ্ক্রিয় করা হয়েছে"
+
+#~ msgid "Changes:"
+#~ msgstr "পরিবর্তন:"
+
+#~ msgid "Code Quality Improvements:"
+#~ msgstr "কোড গুণমান উন্নতি:"
+
+#~ msgid "Complete internationalization support"
+#~ msgstr "সম্পূর্ণ আন্তর্জাতিকীকরণ সমর্থন"
+
+#~ msgid "Comprehensive accessibility support"
+#~ msgstr "বিস্তৃত অ্যাক্সেসযোগ্যতা সমর্থন"
+
+#~ msgid "Comprehensive test suite with unit and integration tests"
+#~ msgstr "ইউনিট ও ইন্টিগ্রেশন পরীক্ষা সহ বিস্তৃত পরীক্ষা স্যুট"
+
+#~ msgid "Connected show_notification signal handler for WebKit notifications"
+#~ msgstr ""
+#~ "WebKit বিজ্ঞপ্তির জন্য show_notification সিগন্যাল হ্যান্ডলার সংযুক্ত করা হয়েছে"
+
+#~ msgid "Converted template files to preprocessor directives for cleaner code"
+#~ msgstr "পরিচ্ছন্ন কোডের জন্য টেমপ্লেট ফাইল প্রিপ্রসেসর নির্দেশে রূপান্তর করা হয়েছে"
+
+#~ msgid "Corrected AppStream metainfo format compliance"
+#~ msgstr "AppStream metainfo ফরম্যাট সম্মতি সংশোধন করা হয়েছে"
+
+#~ msgid "Corrected accessibility focus handling"
+#~ msgstr "অ্যাক্সেসযোগ্যতা ফোকাস হ্যান্ডলিং সংশোধন করা হয়েছে"
+
+#~ msgid "Corrected dependency version specifications in meson.build"
+#~ msgstr "meson.build-এ নির্ভরতা সংস্করণ নির্দিষ্টকরণ সংশোধন করা হয়েছে"
+
+#~ msgid "Corrected metadata description references"
+#~ msgstr "মেটাডেটা বিবরণের রেফারেন্স সংশোধন করা হয়েছে"
+
+#~ msgid "Corrected window state persistence on shutdown"
+#~ msgstr "বন্ধ করার সময় উইন্ডো স্টেট স্থায়িত্ব সংশোধন করা হয়েছে"
+
+#~ msgid "Ctrl+N keyboard shortcut for opening a new chat"
+#~ msgstr "নতুন চ্যাট খোলার জন্য Ctrl+N কীবোর্ড শর্টকাট"
+
+#~ msgid "Developer Shortcuts"
+#~ msgstr "ডেভেলপার শর্টকাট"
+
+#~ msgid "Disabled problematic WebKit caches causing font corruption"
+#~ msgstr "ফন্ট দূষণ ঘটানো সমস্যাযুক্ত WebKit ক্যাশ নিষ্ক্রিয় করা হয়েছে"
+
+#~ msgid "Documentation:"
+#~ msgstr "ডকুমেন্টেশন:"
+
+#~ msgid "Eliminated .vala.in template substitution system"
+#~ msgstr ".vala.in টেমপ্লেট প্রতিস্থাপন সিস্টেম দূর করা হয়েছে"
+
+#~ msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+#~ msgstr "ইমোজি রেন্ডারিংকে প্রভাবিত করা WebKit ক্যাশ দূষণ দূর করা হয়েছে"
+
+#~ msgid "Enable Developer Tools"
+#~ msgstr "ডেভেলপার টুলস সক্রিয় করুন"
+
+#~ msgid "Enable keyboard shortcuts for common actions"
+#~ msgstr "সাধারণ কাজের জন্য কীবোর্ড শর্টকাট সক্রিয় করুন"
+
+#~ msgid "Enable shortcuts for accessibility features"
+#~ msgstr "অ্যাক্সেসযোগ্যতা বৈশিষ্ট্যের জন্য শর্টকাট সক্রিয় করুন"
+
+#~ msgid "Enable shortcuts for developer tools"
+#~ msgstr "ডেভেলপার টুলসের জন্য শর্টকাট সক্রিয় করুন"
+
+#~ msgid "Enable shortcuts for notification actions"
+#~ msgstr "বিজ্ঞপ্তি কাজের জন্য শর্টকাট সক্রিয় করুন"
+
+#~ msgid "Enhanced 2D canvas acceleration for better graphics performance"
+#~ msgstr "আরও ভালো গ্রাফিক্স কর্মক্ষমতার জন্য 2D ক্যানভাস ত্বরণ উন্নত করা হয়েছে"
+
+#~ msgid "Enhanced CI/CD pipeline stability"
+#~ msgstr "উন্নত CI/CD পাইপলাইন স্থিতিশীলতা"
+
+#~ msgid "Enhanced Flathub compliance and validation"
+#~ msgstr "Flathub সম্মতি ও যাচাইকরণ উন্নত করা হয়েছে"
+
+#~ msgid "Enhanced URL validation for external link detection"
+#~ msgstr "বহিরাগত লিঙ্ক শনাক্তকরণের জন্য URL যাচাইকরণ উন্নত করা হয়েছে"
+
+#~ msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+#~ msgstr "সর্বাধিক হার্ডওয়্যার ত্বরণ সহ WebKit রেন্ডারিং উন্নত করা হয়েছে"
+
+#~ msgid "Enhanced WebKitGTK 6.0 integration"
+#~ msgstr "উন্নত WebKitGTK 6.0 একীকরণ"
+
+#~ msgid ""
+#~ "Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+#~ "compatibility"
+#~ msgstr ""
+#~ "নির্ভরযোগ্য WhatsApp Web সামঞ্জস্যের জন্য Base64 এনকোডিং সহ ছবি পেস্ট উন্নত করা "
+#~ "হয়েছে"
+
+#~ msgid "Enhanced logging for external link operations"
+#~ msgstr "বহিরাগত লিঙ্ক অপারেশনের জন্য উন্নত লগিং"
+
+#~ msgid "Enhanced packaging for better compatibility"
+#~ msgstr "আরও ভালো সামঞ্জস্যের জন্য প্যাকেজিং উন্নত করা হয়েছে"
+
+#~ msgid "Enhanced performance and stability"
+#~ msgstr "কর্মক্ষমতা ও স্থিতিশীলতা উন্নত করা হয়েছে"
+
+#~ msgid "Enhanced security with proper sandboxing"
+#~ msgstr "যথাযথ স্যান্ডবক্সিং সহ উন্নত নিরাপত্তা"
+
+#~ msgid "Enhanced stability and performance optimizations"
+#~ msgstr "স্থিতিশীলতা ও কর্মক্ষমতা অপ্টিমাইজেশন উন্নত করা হয়েছে"
+
+#~ msgid "Enhanced stability during long sessions"
+#~ msgstr "দীর্ঘ সেশনের সময় স্থিতিশীলতা উন্নত করা হয়েছে"
+
+#~ msgid "Enhanced stability for extended usage"
+#~ msgstr "দীর্ঘ ব্যবহারের জন্য স্থিতিশীলতা উন্নত করা হয়েছে"
+
+#~ msgid "Enhanced visual documentation for users"
+#~ msgstr "ব্যবহারকারীদের জন্য ভিজ্যুয়াল ডকুমেন্টেশন উন্নত করা হয়েছে"
+
+#~ msgid "Ensure application starts properly in the background without delay"
+#~ msgstr "অ্যাপ্লিকেশন বিলম্ব ছাড়াই ব্যাকগ্রাউন্ডে সঠিকভাবে শুরু হওয়া নিশ্চিত করুন"
+
+#~ msgid ""
+#~ "Fixed \"Too many open files\" crash by reusing notification resources"
+#~ msgstr ""
+#~ "বিজ্ঞপ্তি রিসোর্স পুনঃব্যবহার করে \"Too many open files\" ক্র্যাশ ঠিক করা হয়েছে"
+
+#~ msgid ""
+#~ "Fixed Ctrl+V paste for text content - now works for both text and images"
+#~ msgstr ""
+#~ "টেক্সট বিষয়বস্তুর জন্য Ctrl+V পেস্ট ঠিক করা হয়েছে - এখন টেক্সট ও ছবি উভয়ের জন্য "
+#~ "কাজ করে"
+
+#~ msgid "Fixed Dead Key/composition input issues"
+#~ msgstr "ডেড কী/কম্পোজিশন ইনপুট সমস্যা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed Flatpak build failure by correcting config"
+#~ msgstr "কনফিগ সংশোধন করে Flatpak বিল্ড ব্যর্থতা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+#~ msgstr "ashpd 0.13 API পরিবর্তনের কারণে Flatpak বিল্ড ব্যর্থতা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed Open action for downloaded files"
+#~ msgstr "ডাউনলোড করা ফাইলের জন্য Open অ্যাকশন ঠিক করা হয়েছে"
+
+#~ msgid "Fixed WebView zoom being enabled by default (now disabled)"
+#~ msgstr "ডিফল্টভাবে WebView জুম সক্রিয় থাকা ঠিক করা হয়েছে (এখন নিষ্ক্রিয়)"
+
+#~ msgid ""
+#~ "Fixed WhatsApp notification permission not persisting across sessions"
+#~ msgstr "সেশনজুড়ে WhatsApp বিজ্ঞপ্তি অনুমতি স্থায়ী না হওয়া ঠিক করা হয়েছে"
+
+#~ msgid "Fixed application freeze during lifecycle events"
+#~ msgstr "জীবনচক্রের ঘটনার সময় অ্যাপ্লিকেশন জমে যাওয়া ঠিক করা হয়েছে"
+
+#~ msgid ""
+#~ "Fixed application freezing on resume by reverting aggressive cache "
+#~ "optimization"
+#~ msgstr ""
+#~ "আক্রমণাত্মক ক্যাশ অপ্টিমাইজেশন প্রত্যাহার করে রিজিউমে অ্যাপ্লিকেশন জমে যাওয়া ঠিক "
+#~ "করা হয়েছে"
+
+#~ msgid "Fixed autostart toggle pathing for Flatpak environments"
+#~ msgstr "Flatpak পরিবেশের জন্য স্বয়ংক্রিয়-শুরু টগল পাথিং ঠিক করা হয়েছে"
+
+#~ msgid "Fixed background notifications reliability"
+#~ msgstr "ব্যাকগ্রাউন্ড বিজ্ঞপ্তির নির্ভরযোগ্যতা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed background validation to ensure app starts correctly"
+#~ msgstr "অ্যাপ সঠিকভাবে শুরু হওয়া নিশ্চিত করতে ব্যাকগ্রাউন্ড যাচাইকরণ ঠিক করা হয়েছে"
+
+#~ msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+#~ msgstr "blob URL ডাউনলোড ঠিক করা হয়েছে (যেমন মিডিয়া ভিউয়ার থেকে ছবি সংরক্ষণ)"
+
+#~ msgid "Fixed clipboard manager intercepting all paste events"
+#~ msgstr "ক্লিপবোর্ড ম্যানেজার সকল পেস্ট ইভেন্ট আটকানো ঠিক করা হয়েছে"
+
+#~ msgid "Fixed crash on launch due to memory pressure threshold ordering"
+#~ msgstr "মেমরি প্রেশার থ্রেশহোল্ড অর্ডারিংয়ের কারণে চালুর সময় ক্র্যাশ ঠিক করা হয়েছে"
+
+#~ msgid "Fixed crash when handling invalid notification data"
+#~ msgstr "অবৈধ বিজ্ঞপ্তি ডেটা হ্যান্ডলিংয়ের সময় ক্র্যাশ ঠিক করা হয়েছে"
+
+#~ msgid "Fixed crash when handling invalid user input data"
+#~ msgstr "অবৈধ ব্যবহারকারী ইনপুট ডেটা হ্যান্ডলিংয়ের সময় ক্র্যাশ ঠিক করা হয়েছে"
+
+#~ msgid ""
+#~ "Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+#~ "activation"
+#~ msgstr ""
+#~ "D-Bus সক্রিয়করণ বাস্তবায়ন করে গুরুতর চালু-সময় জমে যাওয়া (স্পিনার) সমস্যা ঠিক করা "
+#~ "হয়েছে"
+
+#~ msgid "Fixed dead key composition for first character in input fields"
+#~ msgstr "ইনপুট ক্ষেত্রে প্রথম অক্ষরের জন্য ডেড কী কম্পোজিশন ঠিক করা হয়েছে"
+
+#~ msgid "Fixed double-paste issue with middle-click"
+#~ msgstr "মাঝ-ক্লিকে দ্বিগুণ-পেস্ট সমস্যা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed download destination and context menu issues"
+#~ msgstr "ডাউনলোড গন্তব্য ও কনটেক্সট মেনু সমস্যা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed download destination handling"
+#~ msgstr "ডাউনলোড গন্তব্য হ্যান্ডলিং ঠিক করা হয়েছে"
+
+#~ msgid "Fixed download filenames now use WhatsApp's original filename"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: ডাউনলোড ফাইলের নাম এখন WhatsApp-এর মূল ফাইলের নাম ব্যবহার করে"
+
+#~ msgid "Fixed duplicate downloads auto-increment instead of failing"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: একই নামের ডাউনলোড ব্যর্থ হওয়ার পরিবর্তে স্বয়ংক্রিয়ভাবে বৃদ্ধি পায়"
+
+#~ msgid "Fixed duplicate provides tags in metainfo validation"
+#~ msgstr "metainfo যাচাইকরণে ডুপ্লিকেট provides ট্যাগ ঠিক করা হয়েছে"
+
+#~ msgid ""
+#~ "Fixed external links not opening in default browser when running in "
+#~ "Flatpak"
+#~ msgstr ""
+#~ "Flatpak-এ চলার সময় বহিরাগত লিঙ্ক ডিফল্ট ব্রাউজারে না খোলা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed freezes when viewing media galleries"
+#~ msgstr "মিডিয়া গ্যালারি দেখার সময় জমে যাওয়া ঠিক করা হয়েছে"
+
+#~ msgid "Fixed invalid meson version requirement preventing builds"
+#~ msgstr "বিল্ড প্রতিরোধকারী অবৈধ meson সংস্করণ প্রয়োজনীয়তা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed missing GSettings schema in Flatpak builds"
+#~ msgstr "Flatpak বিল্ডে অনুপস্থিত GSettings স্কিমা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed missing dictionaries on startup"
+#~ msgstr "চালুর সময় অনুপস্থিত অভিধান ঠিক করা হয়েছে"
+
+#~ msgid ""
+#~ "Fixed missing tray icon on GNOME by adding StatusNotifierWatcher "
+#~ "permission"
+#~ msgstr ""
+#~ "StatusNotifierWatcher অনুমতি যোগ করে GNOME-এ অনুপস্থিত ট্রে আইকন ঠিক করা হয়েছে"
+
+#~ msgid "Fixed notification sounds now respect GNOME volume controls"
+#~ msgstr "ঠিক করা হয়েছে: বিজ্ঞপ্তির শব্দ এখন GNOME ভলিউম নিয়ন্ত্রণ মেনে চলে"
+
+#~ msgid "Fixed notifications banner appearing on every app launch"
+#~ msgstr "প্রতি অ্যাপ চালুতে বিজ্ঞপ্তি ব্যানার দেখানো ঠিক করা হয়েছে"
+
+#~ msgid ""
+#~ "Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+#~ "Linux environments"
+#~ msgstr ""
+#~ "Phosh ও টাচ-ভিত্তিক Linux পরিবেশে অন-স্ক্রিন কীবোর্ড নির্ভরযোগ্যভাবে না দেখানো "
+#~ "ঠিক করা হয়েছে"
+
+#~ msgid "Fixed potential rendering inconsistencies"
+#~ msgstr "সম্ভাব্য রেন্ডারিং অসঙ্গতি ঠিক করা হয়েছে"
+
+#~ msgid "Fixed random emoji display issues and blank emoji problems"
+#~ msgstr "এলোমেলো ইমোজি প্রদর্শন সমস্যা ও ফাঁকা ইমোজি সমস্যা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed startup race conditions and resource usage issues"
+#~ msgstr "চালুর সময় রেস কন্ডিশন ও রিসোর্স ব্যবহারের সমস্যা ঠিক করা হয়েছে"
+
+#~ msgid "Fixed tray icon quit behavior"
+#~ msgstr "ট্রে আইকন প্রস্থান আচরণ ঠিক করা হয়েছে"
+
+#~ msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+#~ msgstr "KDE/GNOME-এ ট্রে আইকন ঠিক করা হয়েছে (হালকা/গাঢ় উভয় থিমে দৃশ্যমান)"
+
+#~ msgid ""
+#~ "Fixed voice and video calls in production Flatpak (Flathub linter-"
+#~ "compatible pre-built plugin)"
+#~ msgstr ""
+#~ "প্রোডাকশন Flatpak-এ ভয়েস ও ভিডিও কল ঠিক করা হয়েছে (Flathub লিন্টার-"
+#~ "সামঞ্জস্যপূর্ণ পূর্ব-নির্মিত প্লাগইন)"
+
+#~ msgid ""
+#~ "Fixed voice and video calls not working in the production build (missing "
+#~ "noise suppression plugin)"
+#~ msgstr ""
+#~ "প্রোডাকশন বিল্ডে ভয়েস ও ভিডিও কল কাজ না করা ঠিক করা হয়েছে (অনুপস্থিত নয়েজ "
+#~ "সাপ্রেশন প্লাগইন)"
+
+#~ msgid ""
+#~ "Fixed voice and video calls showing \"Your browser doesn't support "
+#~ "calling\""
+#~ msgstr ""
+#~ "\"আপনার ব্রাউজার কলিং সমর্থন করে না\" দেখানো ভয়েস ও ভিডিও কল ঠিক করা হয়েছে"
+
+#~ msgid ""
+#~ "Fixed window now properly unminimizes when activated from launcher or tray"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: লঞ্চার বা ট্রে থেকে সক্রিয় করলে উইন্ডো এখন সঠিকভাবে আনমিনিমাইজ "
+#~ "হয়"
+
+#~ msgid "Fixed window resize behavior to prevent excessive reloading"
+#~ msgstr "অতিরিক্ত পুনঃলোড প্রতিরোধে উইন্ডো রিসাইজ আচরণ ঠিক করা হয়েছে"
+
+#~ msgid "Fixed window size increasing on every restart"
+#~ msgstr "প্রতিবার পুনরায় চালুতে উইন্ডোর আকার বৃদ্ধি পাওয়া ঠিক করা হয়েছে"
+
+#~ msgid "Fixed zombie process accumulation"
+#~ msgstr "জম্বি প্রসেস জমে যাওয়া ঠিক করা হয়েছে"
+
+#~ msgid "Fixed:"
+#~ msgstr "ঠিক করা হয়েছে:"
+
+#~ msgid ""
+#~ "Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+#~ "(silences sounds)"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: অ্যাপ এখন GNOME-এ সিস্টেম \"Do Not Disturb\" সেটিংস মেনে চলে "
+#~ "(শব্দ নীরব করে)"
+
+#~ msgid "Fixed: Download destination path handling regression"
+#~ msgstr "ঠিক করা হয়েছে: ডাউনলোড গন্তব্য পথ হ্যান্ডলিং রিগ্রেশন"
+
+#~ msgid ""
+#~ "Fixed: Handle WebKit web process crashes with auto-reload and user "
+#~ "notification"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: স্বয়ংক্রিয়-পুনঃলোড ও ব্যবহারকারী বিজ্ঞপ্তি সহ WebKit ওয়েব প্রসেস "
+#~ "ক্র্যাশ সামলান"
+
+#~ msgid "Fixed: JS injection and path traversal vulnerabilities"
+#~ msgstr "ঠিক করা হয়েছে: JS ইনজেকশন ও পাথ ট্রাভার্সাল দুর্বলতা"
+
+#~ msgid ""
+#~ "Fixed: JS injection and path traversal vulnerabilities in download "
+#~ "handling"
+#~ msgstr "ঠিক করা হয়েছে: ডাউনলোড হ্যান্ডলিংয়ে JS ইনজেকশন ও পাথ ট্রাভার্সাল দুর্বলতা"
+
+#~ msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: বিজ্ঞপ্তি DND ভিজ্যুয়াল এড়িয়ে যায় (অগ্রাধিকার Normal-এ নামানো "
+#~ "হয়েছে)"
+
+#~ msgid "Fixed: Panic in notification handling"
+#~ msgstr "ঠিক করা হয়েছে: বিজ্ঞপ্তি হ্যান্ডলিংয়ে প্যানিক"
+
+#~ msgid ""
+#~ "Fixed: Resolved webview reload loop on startup due to incorrect window "
+#~ "size detection"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: ভুল উইন্ডো আকার শনাক্তকরণের কারণে চালুর সময় ওয়েবভিউ পুনঃলোড লুপ "
+#~ "সমাধান করা হয়েছে"
+
+#~ msgid ""
+#~ "Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, "
+#~ "Fedora 43, CachyOS, Bazzite, postmarketOS)"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: GNOME 50 / glibc 2.42+ সিস্টেমে (Arch, Fedora 43, CachyOS, "
+#~ "Bazzite, postmarketOS) চালুর সময় অ্যাপ ক্র্যাশ"
+
+#~ msgid ""
+#~ "Fixed: blank-window race when autostarted before the network/portal stack "
+#~ "is ready (auto-retry with exponential backoff)"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: নেটওয়ার্ক/পোর্টাল স্ট্যাক প্রস্তুত হওয়ার আগে স্বয়ংক্রিয়ভাবে শুরু হলে "
+#~ "ফাঁকা-উইন্ডো রেস (সূচকীয় ব্যাকঅফ সহ স্বয়ংক্রিয়-পুনঃচেষ্টা)"
+
+#~ msgid ""
+#~ "Fixed: downloaded files with duplicate names silently overwriting each "
+#~ "other (now appends (1), (2), ...)"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: একই নামের ডাউনলোড করা ফাইল নীরবে একে অপরকে ওভাররাইট করত "
+#~ "(এখন (1), (2), ... যুক্ত করে)"
+
+#~ msgid ""
+#~ "Fixed: lingering notification badges/banners after focus on GNOME 50 "
+#~ "(auto-clear behavior removed upstream — Karere now dismisses "
+#~ "notifications explicitly)"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: GNOME 50-এ ফোকাসের পর অবশিষ্ট বিজ্ঞপ্তি ব্যাজ/ব্যানার (আপস্ট্রিমে "
+#~ "স্বয়ংক্রিয়-সাফ আচরণ সরানো হয়েছে — Karere এখন স্পষ্টভাবে বিজ্ঞপ্তি বাতিল করে)"
+
+#~ msgid ""
+#~ "Fixed: locale-dependent crash that required manually setting "
+#~ "LC_ALL=en_GB.UTF-8"
+#~ msgstr ""
+#~ "ঠিক করা হয়েছে: লোকেল-নির্ভর ক্র্যাশ যার জন্য ম্যানুয়ালি LC_ALL=en_GB.UTF-8 সেট "
+#~ "করতে হতো"
+
+#~ msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+#~ msgstr "ঠিক করা হয়েছে: সাম্প্রতিক WhatsApp Web DOM পরিবর্তনে মোবাইল লেআউট ভাঙা"
+
+#~ msgid "Full rewrite in Rust! 🦀"
+#~ msgstr "Rust-এ সম্পূর্ণ পুনর্লিখন! 🦀"
+
+#~ msgid "General improvements and versioning updates"
+#~ msgstr "সাধারণ উন্নতি ও সংস্করণ আপডেট"
+
+#~ msgid "Granular privacy and notification controls"
+#~ msgstr "সূক্ষ্ম গোপনীয়তা ও বিজ্ঞপ্তি নিয়ন্ত্রণ"
+
+#~ msgid "Hardware-accelerated rendering"
+#~ msgstr "হার্ডওয়্যার-ত্বরিত রেন্ডারিং"
+
+#~ msgid "High Contrast Mode"
+#~ msgstr "উচ্চ কনট্রাস্ট মোড"
+
+#~ msgid "Implemented Flatpak portal system for external link handling"
+#~ msgstr ""
+#~ "বহিরাগত লিঙ্ক হ্যান্ডলিংয়ের জন্য Flatpak পোর্টাল সিস্টেম বাস্তবায়ন করা হয়েছে"
+
+#~ msgid "Implemented UserScript injection for Notification.permission state"
+#~ msgstr ""
+#~ "Notification.permission স্টেটের জন্য UserScript ইনজেকশন বাস্তবায়ন করা হয়েছে"
+
+#~ msgid "Improved build system maintainability and type safety"
+#~ msgstr "বিল্ড সিস্টেমের রক্ষণাবেক্ষণযোগ্যতা ও টাইপ নিরাপত্তা উন্নত করা হয়েছে"
+
+#~ msgid "Improved build system with cleaner dependency management"
+#~ msgstr "পরিচ্ছন্ন নির্ভরতা ব্যবস্থাপনা সহ বিল্ড সিস্টেম উন্নত করা হয়েছে"
+
+#~ msgid "Improved emoji consistency with bundled font system"
+#~ msgstr "বান্ডিল করা ফন্ট সিস্টেম সহ ইমোজি সামঞ্জস্য উন্নত করা হয়েছে"
+
+#~ msgid "Improved error handling and recovery mechanisms"
+#~ msgstr "ত্রুটি হ্যান্ডলিং ও পুনরুদ্ধার ব্যবস্থা উন্নত করা হয়েছে"
+
+#~ msgid "Improved external link handling with proper Flatpak portal support"
+#~ msgstr "যথাযথ Flatpak পোর্টাল সমর্থন সহ বহিরাগত লিঙ্ক হ্যান্ডলিং উন্নত করা হয়েছে"
+
+#~ msgid "Improved font loading stability and reduced race conditions"
+#~ msgstr "ফন্ট লোডিং স্থিতিশীলতা উন্নত ও রেস কন্ডিশন কমানো হয়েছে"
+
+#~ msgid "Improved icon compatibility across desktop environments"
+#~ msgstr "ডেস্কটপ পরিবেশজুড়ে আইকন সামঞ্জস্য উন্নত করা হয়েছে"
+
+#~ msgid "Improved icon rendering (symbolic icons now use currentColor)"
+#~ msgstr ""
+#~ "আইকন রেন্ডারিং উন্নত করা হয়েছে (সিম্বলিক আইকন এখন currentColor ব্যবহার করে)"
+
+#~ msgid "Improved memory efficiency and startup performance"
+#~ msgstr "উন্নত মেমরি দক্ষতা ও চালু কর্মক্ষমতা"
+
+#~ msgid "Improved mobile UI resizing consistency"
+#~ msgstr "মোবাইল UI রিসাইজিং সামঞ্জস্য উন্নত করা হয়েছে"
+
+#~ msgid "Improved overall stability"
+#~ msgstr "সামগ্রিক স্থিতিশীলতা উন্নত করা হয়েছে"
+
+#~ msgid "Improved system integration with latest platform libraries"
+#~ msgstr "সর্বশেষ প্ল্যাটফর্ম লাইব্রেরি সহ সিস্টেম একীকরণ উন্নত করা হয়েছে"
+
+#~ msgid "Improved translation file consistency"
+#~ msgstr "অনুবাদ ফাইল সামঞ্জস্য উন্নত করা হয়েছে"
+
+#~ msgid "Improvements:"
+#~ msgstr "উন্নতি:"
+
+#~ msgid "Increase contrast for better readability"
+#~ msgstr "ভালো পঠনযোগ্যতার জন্য কনট্রাস্ট বাড়ান"
+
+#~ msgid ""
+#~ "Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+#~ "Existing accounts must be re-linked — there is no migration from v3."
+#~ msgstr ""
+#~ "Karere 4.0 একটি হার্ড ফর্ক যা অ্যাপটিকে CEF/Chromium 148-এর উপর পুনর্নির্মাণ "
+#~ "করে। বিদ্যমান অ্যাকাউন্টগুলি পুনরায় লিঙ্ক করতে হবে — v3 থেকে কোনো মাইগ্রেশন নেই।"
+
+#~ msgid ""
+#~ "Live spell-check language switching and a separately installable Debug "
+#~ "symbol extension for symbolicated crash reports"
+#~ msgstr ""
+#~ "লাইভ বানান-পরীক্ষার ভাষা পরিবর্তন এবং সিম্বলাইজড ক্র্যাশ রিপোর্টের জন্য একটি "
+#~ "পৃথকভাবে ইনস্টলযোগ্য Debug সিম্বল এক্সটেনশন"
+
+#~ msgid "Major changes:"
+#~ msgstr "প্রধান পরিবর্তন:"
+
+#~ msgid "Migrated Flatpak build logic to meson.build"
+#~ msgstr "Flatpak বিল্ড লজিক meson.build-এ স্থানান্তরিত করা হয়েছে"
+
+#~ msgid "Migrated from Python 3 to native Vala compilation"
+#~ msgstr "Python 3 থেকে নেটিভ Vala কম্পাইলেশনে স্থানান্তরিত করা হয়েছে"
+
+#~ msgid "Minor README corrections"
+#~ msgstr "ছোটখাটো README সংশোধন"
+
+#~ msgid "Minor bug fixes and stability improvements"
+#~ msgstr "ছোটখাটো বাগ ফিক্স ও স্থিতিশীলতা উন্নতি"
+
+#~ msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+#~ msgstr ""
+#~ "মোবাইল লেআউট সেটিং ড্রপডাউনে পরিবর্তন করা হয়েছে (স্বয়ংক্রিয়/সক্রিয়/নিষ্ক্রিয়)"
+
+#~ msgid ""
+#~ "Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+#~ "Lomiri"
+#~ msgstr ""
+#~ "Phosh, Plasma Mobile ও Lomiri-র জন্য স্বয়ংক্রিয়-শনাক্তকরণ সহ মোবাইল লেআউট "
+#~ "সমর্থন"
+
+#~ msgid ""
+#~ "Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+#~ "popover for the off-screen-rendered web view"
+#~ msgstr ""
+#~ "মোবাইল-প্রতিক্রিয়াশীল লেআউট, JavaScript পূর্ণস্ক্রিন, এবং অফ-স্ক্রিন-রেন্ডার করা "
+#~ "ওয়েব ভিউয়ের জন্য একটি OSR কনটেক্সট-মেনু পপওভার"
+
+#~ msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+#~ msgstr "Blueprint ঘোষণামূলক ইন্টারফেস সহ আধুনিক LibAdwaita UI"
+
+#~ msgid "Modern Meson build system with Blueprint UI compilation"
+#~ msgstr "Blueprint UI কম্পাইলেশন সহ আধুনিক Meson বিল্ড সিস্টেম"
+
+#~ msgid "More reliable link opening mechanism"
+#~ msgstr "আরও নির্ভরযোগ্য লিঙ্ক খোলার ব্যবস্থা"
+
+#~ msgid "More robust dependency handling"
+#~ msgstr "আরও শক্তিশালী নির্ভরতা হ্যান্ডলিং"
+
+#~ msgid ""
+#~ "Multi-account support: each account runs in an isolated CEF "
+#~ "RequestContext with its own cookies and storage; accounts are ordered "
+#~ "most-recently-used"
+#~ msgstr ""
+#~ "একাধিক-অ্যাকাউন্ট সমর্থন: প্রতিটি অ্যাকাউন্ট নিজস্ব কুকি ও স্টোরেজ সহ একটি পৃথক CEF "
+#~ "RequestContext-এ চলে; অ্যাকাউন্টগুলি সর্বশেষ-ব্যবহৃত অনুসারে সাজানো হয়"
+
+#~ msgid "Multi-language spell checking support"
+#~ msgstr "বহু-ভাষা বানান পরীক্ষা সমর্থন"
+
+#~ msgid "Native Vala/GTK4 implementation for optimal performance"
+#~ msgstr "সর্বোত্তম কর্মক্ষমতার জন্য নেটিভ Vala/GTK4 বাস্তবায়ন"
+
+#~ msgid ""
+#~ "Native system tray (StatusNotifierItem), desktop notifications, download "
+#~ "manager, and image/text paste reimplemented on the CEF stack"
+#~ msgstr ""
+#~ "নেটিভ সিস্টেম ট্রে (StatusNotifierItem), ডেস্কটপ বিজ্ঞপ্তি, ডাউনলোড ম্যানেজার, "
+#~ "এবং CEF স্ট্যাকে পুনঃনির্মিত ছবি/টেক্সট পেস্ট"
+
+#~ msgid "New Features:"
+#~ msgstr "নতুন বৈশিষ্ট্য:"
+
+#~ msgid "New System Tray Icon support"
+#~ msgstr "নতুন সিস্টেম ট্রে আইকন সমর্থন"
+
+#~ msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+#~ msgstr "দ্রষ্টব্য: এই আপগ্রেডের পর WhatsApp অ্যাকাউন্ট পুনরায় লিঙ্ক করা প্রয়োজন"
+
+#~ msgid ""
+#~ "Notification Chat Linking: Clicking a notification now opens the specific "
+#~ "chat in Karere."
+#~ msgstr ""
+#~ "বিজ্ঞপ্তি চ্যাট লিঙ্কিং: একটি বিজ্ঞপ্তিতে ক্লিক করলে এখন Karere-তে নির্দিষ্ট চ্যাট "
+#~ "খোলে।"
+
+#~ msgid "Notification Shortcuts"
+#~ msgstr "বিজ্ঞপ্তি শর্টকাট"
+
+#~ msgid "Notifications fully working with persistence fixes"
+#~ msgstr "স্থায়িত্ব ঠিককরণ সহ বিজ্ঞপ্তি সম্পূর্ণরূপে কার্যকর"
+
+#~ msgid "Optimized font loading to eliminate display conflicts"
+#~ msgstr "প্রদর্শন দ্বন্দ্ব দূর করতে ফন্ট লোডিং অপ্টিমাইজ করা হয়েছে"
+
+#~ msgid "Optimized memory usage in mobile responsive scripts"
+#~ msgstr "মোবাইল রেসপন্সিভ স্ক্রিপ্টে মেমরি ব্যবহার অপ্টিমাইজ করা হয়েছে"
+
+#~ msgid ""
+#~ "Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and "
+#~ "an accessibility minimum-zoom floor"
+#~ msgstr ""
+#~ "প্রতি-অ্যাকাউন্ট জুম (Ctrl +/-/0) ঐচ্ছিক হেডার-বার জুম নিয়ন্ত্রণ ও একটি "
+#~ "অ্যাক্সেসযোগ্যতা ন্যূনতম-জুম সীমা সহ"
+
+#~ msgid "Performance optimizations for faster startup"
+#~ msgstr "দ্রুত চালুর জন্য কর্মক্ষমতা অপ্টিমাইজেশন"
+
+#~ msgid "Performance optimizations for scrolling"
+#~ msgstr "স্ক্রলিংয়ের জন্য কর্মক্ষমতা অপ্টিমাইজেশন"
+
+#~ msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+#~ msgstr "Vala থেকে নেটিভ Rust/GTK4/Libadwaita-তে পোর্ট করা হয়েছে"
+
+#~ msgid "Production-ready error handling and crash recovery"
+#~ msgstr "প্রোডাকশন-প্রস্তুত ত্রুটি হ্যান্ডলিং ও ক্র্যাশ পুনরুদ্ধার"
+
+#~ msgid "Professional logging and crash reporting system"
+#~ msgstr "পেশাদার লগিং ও ক্র্যাশ রিপোর্টিং ব্যবস্থা"
+
+#~ msgid "Redesigned application icons for stable and development variants"
+#~ msgstr ""
+#~ "স্থিতিশীল ও ডেভেলপমেন্ট ভেরিয়েন্টের জন্য অ্যাপ্লিকেশন আইকন পুনর্নকশা করা হয়েছে"
+
+#~ msgid "Redesigned/streamlined preferences dialog"
+#~ msgstr "পছন্দ ডায়ালগ পুনর্নকশা/সহজ করা হয়েছে"
+
+#~ msgid "Refreshed About dialog screenshot"
+#~ msgstr "About ডায়ালগের স্ক্রিনশট রিফ্রেশ করা হয়েছে"
+
+#~ msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+#~ msgstr "পরিচ্ছন্ন ম্যানিফেস্টের জন্য সরাসরি D-Bus বিজ্ঞপ্তি অনুমতি সরানো হয়েছে"
+
+#~ msgid "Remove unnecessary autostart permission to satisfy linter"
+#~ msgstr "লিন্টার সন্তুষ্ট করতে অপ্রয়োজনীয় স্বয়ংক্রিয়-শুরুর অনুমতি সরানো হয়েছে"
+
+#~ msgid "Removed ffmpeg-full extension (no longer required)"
+#~ msgstr "ffmpeg-full এক্সটেনশন সরানো হয়েছে (আর প্রয়োজন নেই)"
+
+#~ msgid ""
+#~ "Removed hardcoded blueprint compiler paths for cross-architecture support"
+#~ msgstr ""
+#~ "ক্রস-আর্কিটেকচার সমর্থনের জন্য হার্ডকোড করা blueprint কম্পাইলার পাথ সরানো হয়েছে"
+
+#~ msgid ""
+#~ "Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+#~ "only)"
+#~ msgstr ""
+#~ "অপ্রয়োজনীয় মোবাইল ইউজার এজেন্ট পরিবর্তন সরানো হয়েছে (WhatsApp Web শুধুমাত্র "
+#~ "ডেস্কটপের জন্য)"
+
+#~ msgid ""
+#~ "Replaced window.vala.in and preferences.vala.in with direct .vala files"
+#~ msgstr ""
+#~ "window.vala.in ও preferences.vala.in সরাসরি .vala ফাইল দিয়ে প্রতিস্থাপন করা "
+#~ "হয়েছে"
+
+#~ msgid "Resolved WebKit crashes on media-heavy pages"
+#~ msgstr "মিডিয়া-ভারী পৃষ্ঠায় WebKit ক্র্যাশ সমাধান করা হয়েছে"
+
+#~ msgid "Resolved compatibility issues with newer GNOME environments"
+#~ msgstr "নতুন GNOME পরিবেশের সাথে সামঞ্জস্য সমস্যা সমাধান করা হয়েছে"
+
+#~ msgid "Resolved flatpak-builder compatibility issues"
+#~ msgstr "flatpak-builder সামঞ্জস্য সমস্যা সমাধান করা হয়েছে"
+
+#~ msgid "Resolved invalid markup in release descriptions"
+#~ msgstr "রিলিজ বিবরণে অবৈধ মার্কআপ সমাধান করা হয়েছে"
+
+#~ msgid "Resolved memory leak in WebKit manager cleanup"
+#~ msgstr "WebKit ম্যানেজার পরিষ্কারে মেমরি লিক সমাধান করা হয়েছে"
+
+#~ msgid "Resolved memory leak in notification cleanup"
+#~ msgstr "বিজ্ঞপ্তি পরিষ্কারে মেমরি লিক সমাধান করা হয়েছে"
+
+#~ msgid "Restore autostart permission for improved compatibility"
+#~ msgstr "উন্নত সামঞ্জস্যের জন্য স্বয়ংক্রিয়-শুরুর অনুমতি পুনরুদ্ধার করা হয়েছে"
+
+#~ msgid "Restored Safari Linux user agent for native WebKit experience"
+#~ msgstr ""
+#~ "নেটিভ WebKit অভিজ্ঞতার জন্য Safari Linux ইউজার এজেন্ট পুনরুদ্ধার করা হয়েছে"
+
+#~ msgid "Restored correct app icons and transparent backgrounds"
+#~ msgstr "সঠিক অ্যাপ আইকন ও স্বচ্ছ পটভূমি পুনরুদ্ধার করা হয়েছে"
+
+#~ msgid "Shortcuts"
+#~ msgstr "শর্টকাট"
+
+#~ msgid "Show or hide the zoom buttons"
+#~ msgstr "জুম বোতাম দেখান বা লুকান"
+
+#~ msgid "Simplified emoji font configuration to single high-quality source"
+#~ msgstr "ইমোজি ফন্ট কনফিগারেশন একটি উচ্চমানের উৎসে সরলীকৃত করা হয়েছে"
+
+#~ msgid "Simplified source file management in build system"
+#~ msgstr "বিল্ড সিস্টেমে সোর্স ফাইল ব্যবস্থাপনা সরল করা হয়েছে"
+
+#~ msgid "Some settings only apply when Karere controls the popup"
+#~ msgstr "কিছু সেটিংস শুধুমাত্র Karere পপআপ নিয়ন্ত্রণ করলে প্রযোজ্য"
+
+#~ msgid "Streamlined font stack for consistent emoji appearance"
+#~ msgstr "সামঞ্জস্যপূর্ণ ইমোজি চেহারার জন্য ফন্ট স্ট্যাক সুবিন্যস্ত করা হয়েছে"
+
+#~ msgid ""
+#~ "Switch to XDG Background Portal for autostart (improves security and "
+#~ "compatibility)"
+#~ msgstr ""
+#~ "স্বয়ংক্রিয়-শুরুর জন্য XDG Background Portal-এ পরিবর্তন করা হয়েছে (নিরাপত্তা ও "
+#~ "সামঞ্জস্য উন্নত করে)"
+
+#~ msgid ""
+#~ "Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+#~ msgstr ""
+#~ "আরও ভালো স্যান্ডবক্সিং সমর্থনের জন্য XDG Notification Portal (ashpd)-এ পরিবর্তন "
+#~ "করা হয়েছে"
+
+#~ msgid ""
+#~ "Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+#~ "proprietary-codec builds for H.264/AAC video attachment playback"
+#~ msgstr ""
+#~ "রেন্ডারিং ব্যাকএন্ড WebKitGTK থেকে CEF/Chromium 148-এ পরিবর্তন করা হয়েছে, "
+#~ "H.264/AAC ভিডিও সংযুক্তি প্লেব্যাকের জন্য মালিকানাধীন-কোডেক বিল্ড সহ"
+
+#~ msgid "Technical Changes:"
+#~ msgstr "প্রযুক্তিগত পরিবর্তন:"
+
+#~ msgid "Technical Improvements:"
+#~ msgstr "প্রযুক্তিগত উন্নতি:"
+
+#~ msgid "Toggle Header Bar Zoom Controls"
+#~ msgstr "হেডার বার জুম নিয়ন্ত্রণ টগল করুন"
+
+#~ msgid "Tray icon click now toggles window visibility"
+#~ msgstr "ট্রে আইকন ক্লিক এখন উইন্ডো দৃশ্যমানতা টগল করে"
+
+#~ msgid "Update and Bug Fix Release"
+#~ msgstr "আপডেট ও বাগ ফিক্স রিলিজ"
+
+#~ msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+#~ msgstr "উন্নত সামঞ্জস্যের জন্য GNOME রানটাইম সংস্করণ 49-এ আপডেট করা হয়েছে"
+
+#~ msgid "Updated SettingsManager to be the default for all settings access"
+#~ msgstr "সকল সেটিংস অ্যাক্সেসের জন্য SettingsManager-কে ডিফল্ট করা হয়েছে"
+
+#~ msgid "Updated about dialog screenshot"
+#~ msgstr "About ডায়ালগের স্ক্রিনশট আপডেট করা হয়েছে"
+
+#~ msgid "Updated all Rust dependencies to latest versions"
+#~ msgstr "সকল Rust নির্ভরতা সর্বশেষ সংস্করণে আপডেট করা হয়েছে"
+
+#~ msgid "Updated all references from appdata to metainfo format"
+#~ msgstr "appdata থেকে metainfo ফরম্যাটে সকল রেফারেন্স আপডেট করা হয়েছে"
+
+#~ msgid "Updated application screenshots"
+#~ msgstr "অ্যাপ্লিকেশন স্ক্রিনশট আপডেট করা হয়েছে"
+
+#~ msgid "Updated application screenshots with current UI appearance"
+#~ msgstr "বর্তমান UI চেহারা সহ অ্যাপ্লিকেশন স্ক্রিনশট আপডেট করা হয়েছে"
+
+#~ msgid ""
+#~ "Updated application summary and description for better AppStream "
+#~ "compliance"
+#~ msgstr ""
+#~ "আরও ভালো AppStream সম্মতির জন্য অ্যাপ্লিকেশন সারাংশ ও বিবরণ আপডেট করা হয়েছে"
+
+#~ msgid "Updated build configuration and dependencies"
+#~ msgstr "বিল্ড কনফিগারেশন ও নির্ভরতা আপডেট করা হয়েছে"
+
+#~ msgid "Updated meson.build to use Vala preprocessor directives"
+#~ msgstr "Vala প্রিপ্রসেসর নির্দেশ ব্যবহার করতে meson.build আপডেট করা হয়েছে"
+
+#~ msgid "Upgraded to GNOME Platform 50"
+#~ msgstr "GNOME Platform 50-এ আপগ্রেড করা হয়েছে"
+
+#~ msgid "WebKitGTK 6.0 storage persistence verified and documented"
+#~ msgstr "WebKitGTK 6.0 স্টোরেজ স্থায়িত্ব যাচাই ও ডকুমেন্ট করা হয়েছে"
+
+#~ msgid ""
+#~ "Webcam Support: Added support for using the webcam (Status updates, Video "
+#~ "calls) with a new permission dialog."
+#~ msgstr ""
+#~ "ওয়েবক্যাম সমর্থন: একটি নতুন অনুমতি ডায়ালগ সহ ওয়েবক্যাম ব্যবহারের সমর্থন যোগ করা "
+#~ "হয়েছে (স্ট্যাটাস আপডেট, ভিডিও কল)।"
+
+#~ msgid "Window size is saved and restored when hiding/showing"
+#~ msgstr "লুকানো/দেখানোর সময় উইন্ডোর আকার সংরক্ষিত ও পুনরুদ্ধার হয়"
+
+#~ msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+#~ msgstr "⌨️ AdwShortcutsDialog ব্যবহার করে কীবোর্ড শর্টকাট ডায়ালগ যোগ করা হয়েছে"
+
+#~ msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+#~ msgstr "♻️ প্রধান রিফ্যাক্টর: PascalCase ফাইলনাম সহ কোডবেস পুনর্বিন্যস্ত করা হয়েছে"
+
+#~ msgid "♻️ Refactored Window.vala into specialized manager components"
+#~ msgstr "♻️ Window.vala-কে বিশেষায়িত ম্যানেজার উপাদানে রিফ্যাক্টর করা হয়েছে"
+
+#~ msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+#~ msgstr ""
+#~ "♻️ কাস্টম লগিং ও ক্র্যাশ রিপোর্টিং সরানো হয়েছে (সিস্টেম journalctl ব্যবহার করুন)"
+
+#~ msgid ""
+#~ "♿ Enhanced accessibility with screen reader optimization and keyboard "
+#~ "navigation"
+#~ msgstr ""
+#~ "♿ স্ক্রিন রিডার অপ্টিমাইজেশন ও কীবোর্ড নেভিগেশন সহ অ্যাক্সেসযোগ্যতা উন্নত করা "
+#~ "হয়েছে"
+
+#~ msgid ""
+#~ "⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+#~ "with WhatsApp Web as this is a completely new application implementation."
+#~ msgstr ""
+#~ "⚠️ গুরুত্বপূর্ণ: আপগ্রেড করার পর, আপনাকে আপনার মোবাইল ডিভাইস WhatsApp Web-এর "
+#~ "সাথে পুনরায় সিঙ্ক করতে হবে কারণ এটি একটি সম্পূর্ণ নতুন অ্যাপ্লিকেশন বাস্তবায়ন।"
+
+#~ msgid "⚡ Performance optimizations for startup and shutdown"
+#~ msgstr "⚡ চালু ও বন্ধ করার জন্য কর্মক্ষমতা অপ্টিমাইজেশন"
+
+#~ msgid "✅ Fixed WhatsApp Web notification banner persistence"
+#~ msgstr "✅ WhatsApp Web বিজ্ঞপ্তি ব্যানার স্থায়িত্ব ঠিক করা হয়েছে"
+
+#~ msgid "✅ Fixed notifications not working properly"
+#~ msgstr "✅ বিজ্ঞপ্তি সঠিকভাবে কাজ না করা ঠিক করা হয়েছে"
+
+#~ msgid ""
+#~ "✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+#~ msgstr "✨ উন্নত ইমোজি সমর্থন, বহিরাগত লিঙ্ক হ্যান্ডলিং, ও বিল্ড উন্নতি"
+
+#~ msgid "🎉 Feature Release"
+#~ msgstr "🎉 ফিচার রিলিজ"
+
+#~ msgid "🎉 Major Release 2.0.0"
+#~ msgstr "🎉 প্রধান রিলিজ 2.0.0"
+
+#~ msgid "🎉 Version 1.0.0 - Major Milestone Release"
+#~ msgstr "🎉 সংস্করণ 1.0.0 - প্রধান মাইলফলক রিলিজ"
+
+#~ msgid "🎤 Microphone permission support for voice notes"
+#~ msgstr "🎤 ভয়েস নোটের জন্য মাইক্রোফোন অনুমতি সমর্থন"
+
+#~ msgid "🐛 Bug Fix Release"
+#~ msgstr "🐛 বাগ ফিক্স রিলিজ"
+
+#~ msgid "🐛 Bug Fixes and Improvements"
+#~ msgstr "🐛 বাগ ফিক্স ও উন্নতি"
+
+#~ msgid "🐛 Runtime Update and Bug Fixes"
+#~ msgstr "🐛 রানটাইম আপডেট ও বাগ ফিক্স"
+
+#~ msgid "📖 Added MPRIS workaround documentation"
+#~ msgstr "📖 MPRIS সমাধানের ডকুমেন্টেশন যোগ করা হয়েছে"
+
+#~ msgid "📚 Added spell checking configuration guide"
+#~ msgstr "📚 বানান পরীক্ষা কনফিগারেশন গাইড যোগ করা হয়েছে"
+
+#~ msgid "📚 Documented all keyboard shortcuts by category"
+#~ msgstr "📚 বিভাগ অনুসারে সকল কীবোর্ড শর্টকাট ডকুমেন্ট করা হয়েছে"
+
+#~ msgid "📚 Enhanced README with accessibility features documentation"
+#~ msgstr "📚 অ্যাক্সেসযোগ্যতা বৈশিষ্ট্যের ডকুমেন্টেশন সহ README উন্নত করা হয়েছে"
+
+#~ msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+#~ msgstr "📚 GitHub রিপোজিটরি URL ঠিক করা হয়েছে (karere-vala → karere)"
+
+#~ msgid "📝 Added comprehensive spell checking system with auto-detection"
+#~ msgstr "📝 স্বয়ংক্রিয়-শনাক্তকরণ সহ বিস্তৃত বানান পরীক্ষা ব্যবস্থা যোগ করা হয়েছে"
+
+#~ msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+#~ msgstr "📝 মসৃণ বানান পরীক্ষা শুরুর জন্য অ্যাসিঙ্ক অভিধান লোডিং"
+
+#~ msgid "📝 Documentation and Metadata Update"
+#~ msgstr "📝 ডকুমেন্টেশন ও মেটাডেটা আপডেট"
+
+#~ msgid ""
+#~ "📥 Implemented download manager with custom directory and toast "
+#~ "notifications"
+#~ msgstr ""
+#~ "📥 কাস্টম ডিরেক্টরি ও টোস্ট বিজ্ঞপ্তি সহ ডাউনলোড ম্যানেজার বাস্তবায়ন করা হয়েছে"
+
+#~ msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+#~ msgstr "📸 স্ক্রিনশট data/screenshots/ ডিরেক্টরিতে পুনর্বিন্যস্ত করা হয়েছে"
+
+#~ msgid "📸 Screenshots and Documentation Update"
+#~ msgstr "📸 স্ক্রিনশট ও ডকুমেন্টেশন আপডেট"
+
+#~ msgid "🔄 Manual reload and auto-reload on network reconnection"
+#~ msgstr "🔄 নেটওয়ার্ক পুনঃসংযোগে ম্যানুয়াল পুনঃলোড ও স্বয়ংক্রিয়-পুনঃলোড"
+
+#~ msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+#~ msgstr "🔤 LibreOffice থেকে 80+ ভাষার অভিধান একীভূত করা হয়েছে"
+
+#~ msgid "🔧 Code Refactoring and Architecture Improvements"
+#~ msgstr "🔧 কোড রিফ্যাক্টরিং ও আর্কিটেকচার উন্নতি"
+
+#~ msgid "🔧 Maintenance Release"
+#~ msgstr "🔧 রক্ষণাবেক্ষণ রিলিজ"
+
+#~ msgid "🔧 Metadata and Standards Compliance"
+#~ msgstr "🔧 মেটাডেটা ও মান সম্মতি"
+
+#~ msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+#~ msgstr "🖼️ ক্লিপবোর্ডের মাধ্যমে ছবি পেস্ট সমর্থন যোগ করা হয়েছে (Ctrl+V)"
+
+#~ msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+#~ msgstr "🗑️ অপ্রচলিত পরীক্ষা ফাইল ও অব্যবহৃত নির্ভরতা পরিষ্কার করা হয়েছে"
+
+#~ msgid ""
+#~ "🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+#~ msgstr ""
+#~ "🗑️ Do Not Disturb বৈশিষ্ট্য সরানো হয়েছে (সিস্টেম বিজ্ঞপ্তি ডিমন দ্বারা পরিচালিত)"
+
+#~ msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+#~ msgstr "🗑️ json-glib, gee, ও libsoup নির্ভরতা সরানো হয়েছে"
+
+#~ msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+#~ msgstr "🚀 প্রধান আর্কিটেকচার মাইগ্রেশন: Python থেকে Vala/GTK4"
+
+#~ msgid "🚀 Start in background option for autostart"
+#~ msgstr "🚀 স্বয়ংক্রিয়-শুরুর জন্য ব্যাকগ্রাউন্ডে শুরু করার বিকল্প"
+
+#~ msgid "🧹 Centralized settings management with SettingsManager singleton"
+#~ msgstr "🧹 SettingsManager সিঙ্গলটন সহ সেটিংস ব্যবস্থাপনা কেন্দ্রীভূত করা হয়েছে"
+
+#~ msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+#~ msgstr "🧹 DependencyContainer.vala সরানো হয়েছে (অব্যবহৃত নির্ভরতা ইনজেকশন)"
+
+#~ msgid "degraded"
+#~ msgstr "অবনত"
+
+#~ msgid "Avatar URL"
+#~ msgstr "অবতার URL"
+
+#~ msgid "Add Account"
+#~ msgstr "অ্যাকাউন্ট যোগ করুন"
+
+#~ msgid "This removes the local session for"
+#~ msgstr "এটি স্থানীয় সেশন সরিয়ে ফেলে"
+
+#~ msgid "The device stays linked on your phone until you remove it there."
+#~ msgstr "আপনি ফোনে এটি সরিয়ে না ফেলা পর্যন্ত ডিভাইসটি সংযুক্ত থাকে।"

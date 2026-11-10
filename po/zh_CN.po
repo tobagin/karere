@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 20:29+0100\n"
+"POT-Creation-Date: 2026-11-10 10:44+0000\n"
 "PO-Revision-Date: 2026-06-06 21:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -23,13 +23,7 @@ msgstr ""
 msgid "@APP_NAME@"
 msgstr "@APP_NAME@"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:112
-msgid ""
-"A file that cannot be read now shows a notice offering the file chooser "
-"instead of failing silently."
-msgstr ""
-
-#: data/ui/window.ui:265
+#: data/ui/window.ui:269
 msgid "About"
 msgstr "关于"
 
@@ -37,31 +31,13 @@ msgstr "关于"
 msgid "About dialog showing application information"
 msgstr "显示应用程序信息的关于对话框"
 
-#: data/ui/preferences.ui:348
+#: data/ui/preferences.ui:355
 msgid "Accessibility"
 msgstr "无障碍"
 
-#: data/ui/preferences.ui:428
-msgid "Accessibility Shortcuts"
-msgstr "无障碍快捷键"
-
-#: data/ui/preferences.ui:378
+#: data/ui/preferences.ui:379
 msgid "Accessibility Zoom"
 msgstr "无障碍缩放"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:310
-msgid ""
-"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
-"browsing"
-msgstr "无障碍首选项：减少动效、焦点环可见性和光标浏览"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:306
-msgid ""
-"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
-"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
-msgstr ""
-"账户身份（姓名 + 头像）从 WhatsApp Web 的内部 Store 自动获取，并带有由徽章标"
-"示的降级 DOM 抓取回退方案"
 
 #: data/ui/keyboard-shortcuts.ui:38
 msgid "Accounts"
@@ -71,133 +47,11 @@ msgstr "账户"
 msgid "Add new account"
 msgstr "添加新账户"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:573
-msgid "Add new contributor Sabri Ünal to the About dialog"
-msgstr "在关于对话框中添加新贡献者 Sabri Ünal"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:595
-msgid "Add xdg-config/autostart permission for autostart support"
-msgstr "添加 xdg-config/autostart 权限以支持自启动"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:613
-msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
-msgstr "在首选项中添加了“开机自启动”开关（默认：关闭）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:390
-msgid ""
-"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
-"handling"
-msgstr "为正式版 Flatpak 添加了 GStreamer/PipeWire 环境变量以高效处理媒体"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:778
-msgid "Added WebKit cache control setting for improved rendering consistency"
-msgstr "添加了 WebKit 缓存控制设置以提高渲染一致性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:452
-msgid ""
-"Added WebRTC permission handling in preparation for WhatsApp Web voice/video "
-"calls"
-msgstr "为 WhatsApp Web 语音/视频通话添加了 WebRTC 权限处理作为准备"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:437
-msgid ""
-"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
-msgstr "添加了缩放支持（Ctrl +/-/0），含持久化和首选项控制"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:271
-msgid ""
-"Added an experimental \"GPU Rendering\" option (Preferences → General → "
-"Experimental) that renders the chat view on the GPU via accelerated off-"
-"screen rendering for lower CPU and power use. Off by default and requires a "
-"restart; if the chat area is blank on your hardware, turn it off and restart"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:822
-msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
-msgstr "使用 DEVELOPMENT 标志添加了编译时条件编译"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:428
-msgid "Added complete multi-account support with sidebar and tray integration"
-msgstr "添加了完整的多账户支持，含侧边栏和托盘集成"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:824
-msgid "Added contributors Aman Das and Cameo to about dialog"
-msgstr "在关于对话框中添加了贡献者 Aman Das 和 Cameo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:774
-msgid ""
-"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
-msgstr "添加了高质量的 Noto Color Emoji 字体（v2.047，支持 Unicode 16.0）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:538
-msgid "Added middle-click paste from primary selection (selected text)"
-msgstr "添加了来自主选区（已选文本）的中键粘贴"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:547
-msgid "Added new application icons"
-msgstr "添加了新的应用程序图标"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:429
-msgid "Added per-account zoom settings and improved accessibility"
-msgstr "添加了每账户缩放设置并改进了无障碍功能"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:616
-msgid "Added striped symbolic icons for development version"
-msgstr "为开发版本添加了条纹符号图标"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:810
-msgid "Added subpixel font scaling and advanced rendering optimizations"
-msgstr "添加了次像素字体缩放和高级渲染优化"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:354
-msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
-msgstr "通过支持 WebRTC 的 WebKitGTK 2.50.5 添加了语音和视频通话支持"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:328
-msgid ""
-"Added: account switcher uses a popover on desktop windows (bottom sheet "
-"preserved on mobile)"
-msgstr "新增：账户切换器在桌面窗口上使用弹窗（移动端保留底部表单）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:326
-msgid "Added: pin favorite spell-check languages to the top of the dropdown"
-msgstr "新增：将常用拼写检查语言置顶到下拉菜单顶部"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:327
-msgid ""
-"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
-"instead of locale codes"
-msgstr "新增：拼写检查下拉菜单显示自然语言名称（“英语（英国）”）而非区域代码"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:895
-msgid "Advanced notification system with native desktop integration"
-msgstr "具有原生桌面集成的高级通知系统"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:150
-msgid "All dependencies updated to their latest releases."
-msgstr ""
-
-#: data/ui/preferences.ui:119
-msgid "Allow inspecting and debugging the WebView"
-msgstr "允许检查和调试 WebView"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:128
-msgid ""
-"Also includes the 4.3.1 fixes, which were never published: stalled scrolling "
-"with software rendering (#173, #179), start-up failing on systems whose "
-"hostname changes between boots (#190), and start-up failing on hardware "
-"without OpenGL ES 3.0 (#177)."
-msgstr ""
-
-#: data/ui/preferences.ui:177
-msgid "Animate the tray icon when a new message arrives"
-msgstr "新消息到达时为托盘图标添加动画"
-
 #: data/ui/preferences.ui:68
 msgid "Appearance"
 msgstr "外观"
 
-#: data/ui/keyboard-shortcuts.ui:142
+#: data/ui/keyboard-shortcuts.ui:135
 msgid "Application"
 msgstr "应用程序"
 
@@ -209,15 +63,24 @@ msgstr "应用程序语言。需要重启。"
 msgid "Application preferences and settings dialog"
 msgstr "应用程序首选项和设置对话框"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:132
+msgid "Applied after reloading"
+msgstr ""
+
+#: data/ui/preferences.ui:386
 msgid "Applied to all webviews"
 msgstr "应用于所有 WebView"
+
+#: data/ui/preferences.ui:192
+#, fuzzy
+msgid "Applies to the notifications Karere shows for incoming messages"
+msgstr "显示收到消息的通知"
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "自动"
 
-#: data/ui/preferences.ui:299
+#: data/ui/preferences.ui:306
 msgid "Auto-Detect Language"
 msgstr "自动检测语言"
 
@@ -225,90 +88,41 @@ msgstr "自动检测语言"
 msgid "Auto: shown when a system tray is available"
 msgstr "自动：当系统托盘可用时显示"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:313
 msgid "Automatically fix common spelling mistakes"
 msgstr "自动修正常见拼写错误"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:888
-msgid ""
-"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
-"performance and integration."
-msgstr "破坏性更改：从 Python 完全重写为原生 Vala 以获得更好的性能和集成。"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:800
-msgid "Better build system compatibility with different environments"
-msgstr "更好地兼容不同环境的构建系统"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:879
-msgid "Better error handling for network disconnections"
-msgstr "更好地处理网络断开连接"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:845
-msgid "Better error handling for network timeouts"
-msgstr "更好地处理网络超时"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:797
-msgid "Better sandboxed environment compatibility"
-msgstr "更好的沙盒环境兼容性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:758
-msgid "Better support for modern desktop environments"
-msgstr "更好地支持现代桌面环境"
 
 #: data/ui/preferences.ui:93
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:281
 msgid "Both"
 msgstr "两者"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:144
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+#, fuzzy
 msgid ""
-"Browser engine upgraded to CEF 152 / Chromium 152 for current security and "
-"rendering fixes; video attachments still play in-app."
+"Built on the Chromium Embedded Framework. Karere 4.0 replaces the WebKitGTK "
+"backend with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
 msgstr ""
+"现已基于 CEF/Chromium 148 构建。Karere 4.0 用 Chromium 嵌入式框架替换了 "
+"WebKitGTK 后端，带来完整的视频附件播放（H.264/AAC）、具有隔离会话的多账户支"
+"持、每账户缩放，以及更快、兼容性更好的渲染引擎，同时保持相同的原生 GTK4/"
+"libadwaita 外壳。"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:601
-msgid "Bug Fix Release"
-msgstr "缺陷修复版本"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:659
-#: data/io.github.tobagin.karere.metainfo.xml.in:713
-#: data/io.github.tobagin.karere.metainfo.xml.in:761
-#: data/io.github.tobagin.karere.metainfo.xml.in:781
-#: data/io.github.tobagin.karere.metainfo.xml.in:837
-#: data/io.github.tobagin.karere.metainfo.xml.in:854
-#: data/io.github.tobagin.karere.metainfo.xml.in:871
-msgid "Bug Fixes:"
-msgstr "缺陷修复："
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:333
-msgid ""
-"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
-"dependencies to latest compatible versions"
-msgstr ""
-"将 WebKitGTK 升级到 2.52.3，LibreOffice 词典升级到 26.2.3.2，Rust 依赖项升级"
-"到最新兼容版本"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:779
-msgid "Cache disabled by default to prevent emoji rendering issues"
-msgstr "默认禁用缓存以防止表情符号渲染问题"
-
-#: data/ui/preferences.ui:176
+#: data/ui/preferences.ui:183
 msgid "Change Tray Icon on Message"
 msgstr "收到消息时更改托盘图标"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:602
-#: data/io.github.tobagin.karere.metainfo.xml.in:611
-msgid "Changes:"
-msgstr "更改："
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:16
 msgid "Chat on WhatsApp"
 msgstr "在 WhatsApp 上聊天"
 
-#: data/ui/preferences.ui:294
+#: data/ui/preferences.ui:301
 msgid "Check spelling as you type"
 msgstr "在输入时检查拼写"
 
@@ -316,11 +130,11 @@ msgstr "在输入时检查拼写"
 msgid "Choose the application color scheme"
 msgstr "选择应用程序的配色方案"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:248
 msgid "Choose…"
 msgstr "选择…"
 
-#: data/ui/preferences.ui:335
+#: data/ui/preferences.ui:342
 msgid "Clear All"
 msgstr "全部清除"
 
@@ -336,53 +150,13 @@ msgstr "关闭窗口"
 msgid "Close the window"
 msgstr "关闭窗口"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:722
-msgid "Code Quality Improvements:"
-msgstr "代码质量改进："
+#: data/ui/window.ui:265 src/window.rs:1645
+msgid "Copy Diagnostic Info"
+msgstr ""
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:911
-msgid "Complete internationalization support"
-msgstr "完整的国际化支持"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:896
-msgid "Comprehensive accessibility support"
-msgstr "全面的无障碍支持"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:908
-msgid "Comprehensive test suite with unit and integration tests"
-msgstr "包含单元测试和集成测试的全面测试套件"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:737
-msgid "Connected show_notification signal handler for WebKit notifications"
-msgstr "为 WebKit 通知连接了 show_notification 信号处理器"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:820
-msgid "Converted template files to preprocessor directives for cleaner code"
-msgstr "将模板文件转换为预处理器指令以使代码更简洁"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:857
-msgid "Corrected AppStream metainfo format compliance"
-msgstr "更正了 AppStream metainfo 格式合规性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:841
-msgid "Corrected accessibility focus handling"
-msgstr "更正了无障碍焦点处理"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:787
-msgid "Corrected dependency version specifications in meson.build"
-msgstr "更正了 meson.build 中的依赖项版本规格"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:548
-msgid "Corrected metadata description references"
-msgstr "更正了元数据描述引用"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:875
-msgid "Corrected window state persistence on shutdown"
-msgstr "更正了关闭时的窗口状态持久化"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:511
-msgid "Ctrl+N keyboard shortcut for opening a new chat"
-msgstr "用于打开新聊天的 Ctrl+N 键盘快捷键"
+#: data/ui/preferences.ui:131
+msgid "Custom CSS"
+msgstr ""
 
 #: data/ui/preferences.ui:84
 msgid "Dark"
@@ -392,24 +166,20 @@ msgstr "深色"
 msgid "Decrease the zoom level"
 msgstr "降低缩放级别"
 
-#: data/ui/preferences.ui:238
+#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
 msgid "Default (Downloads)"
 msgstr "默认（下载）"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:307
 msgid "Detect the writing language automatically"
 msgstr "自动检测书写语言"
 
-#: data/ui/keyboard-shortcuts.ui:123
+#: data/ui/keyboard-shortcuts.ui:116
 msgid "Developer"
 msgstr "开发者"
 
-#: data/ui/preferences.ui:434
-msgid "Developer Shortcuts"
-msgstr "开发者快捷键"
-
-#: data/ui/window.ui:173 data/ui/preferences.ui:115 data/ui/preferences.ui:124
-#: data/ui/keyboard-shortcuts.ui:126
+#: data/ui/window.ui:173 data/ui/preferences.ui:115 data/ui/preferences.ui:118
+#: data/ui/keyboard-shortcuts.ui:119
 msgid "Developer Tools"
 msgstr "开发者工具"
 
@@ -417,151 +187,47 @@ msgstr "开发者工具"
 msgid "Disabled"
 msgstr "已禁用"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:807
-msgid "Disabled problematic WebKit caches causing font corruption"
-msgstr "禁用了导致字体损坏的有问题的 WebKit 缓存"
-
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:202
 msgid "Display message content in notifications"
 msgstr "在通知中显示消息内容"
 
-#: data/ui/preferences.ui:189
+#: data/ui/preferences.ui:196
 msgid "Display the contact name in notifications"
 msgstr "在通知中显示联系人姓名"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:742
-msgid "Documentation:"
-msgstr "文档："
+#: data/ui/keyboard-shortcuts.ui:138 src/tray.rs:159
+msgid "Do Not Disturb"
+msgstr ""
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:244
 msgid "Download Directory"
 msgstr "下载目录"
 
-#: data/ui/preferences.ui:261
+#: data/ui/preferences.ui:268
 msgid "Download Notifications"
 msgstr "下载通知"
 
-#: data/ui/preferences.ui:230
+#: data/ui/preferences.ui:237
 msgid "Downloads"
 msgstr "下载"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:107
-msgid ""
-"Dragged and pasted files now attach through the file transfer portal, from "
-"any folder, without filesystem access (#192)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:821
-msgid "Eliminated .vala.in template substitution system"
-msgstr "消除了 .vala.in 模板替换系统"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:793
-msgid "Eliminated WebKit cache corruption affecting emoji rendering"
-msgstr "消除了影响表情符号渲染的 WebKit 缓存损坏"
-
-#: data/ui/preferences.ui:305
+#: data/ui/preferences.ui:312
 msgid "Enable Auto-Correct"
 msgstr "启用自动更正"
 
-#: data/ui/preferences.ui:118
-msgid "Enable Developer Tools"
-msgstr "启用开发者工具"
-
-#: data/ui/preferences.ui:159
+#: data/ui/preferences.ui:166
 msgid "Enable Notifications"
 msgstr "启用通知"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:300
 msgid "Enable Spell Checking"
 msgstr "启用拼写检查"
-
-#: data/ui/preferences.ui:423
-msgid "Enable keyboard shortcuts for common actions"
-msgstr "为常用操作启用键盘快捷键"
-
-#: data/ui/preferences.ui:429
-msgid "Enable shortcuts for accessibility features"
-msgstr "为无障碍功能启用快捷键"
-
-#: data/ui/preferences.ui:435
-msgid "Enable shortcuts for developer tools"
-msgstr "为开发者工具启用快捷键"
-
-#: data/ui/preferences.ui:441
-msgid "Enable shortcuts for notification actions"
-msgstr "为通知操作启用快捷键"
 
 #: data/ui/preferences.ui:57 data/ui/preferences.ui:104
 msgid "Enabled"
 msgstr "已启用"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:795
-msgid "Enhanced 2D canvas acceleration for better graphics performance"
-msgstr "增强了 2D 画布加速以获得更好的图形性能"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:801
-msgid "Enhanced CI/CD pipeline stability"
-msgstr "增强了 CI/CD 流水线稳定性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:863
-msgid "Enhanced Flathub compliance and validation"
-msgstr "增强了 Flathub 合规性和验证"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:789
-msgid "Enhanced URL validation for external link detection"
-msgstr "增强了外部链接检测的 URL 验证"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:775
-msgid "Enhanced WebKit rendering with maximum hardware acceleration"
-msgstr "通过最大化硬件加速增强了 WebKit 渲染"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:894
-msgid "Enhanced WebKitGTK 6.0 integration"
-msgstr "增强的 WebKitGTK 6.0 集成"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:537
-msgid ""
-"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
-"compatibility"
-msgstr "增强了图像粘贴，采用 Base64 编码以确保 WhatsApp Web 兼容性可靠"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:799
-msgid "Enhanced logging for external link operations"
-msgstr "增强了外部链接操作的日志记录"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:672
-msgid "Enhanced packaging for better compatibility"
-msgstr "增强了打包以获得更好的兼容性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:630
-msgid "Enhanced performance and stability"
-msgstr "增强了性能和稳定性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:910
-msgid "Enhanced security with proper sandboxing"
-msgstr "通过适当的沙盒化增强安全性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:759
-msgid "Enhanced stability and performance optimizations"
-msgstr "增强了稳定性和性能优化"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:880
-msgid "Enhanced stability during long sessions"
-msgstr "增强了长会话期间的稳定性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:846
-msgid "Enhanced stability for extended usage"
-msgstr "增强了长时间使用的稳定性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:695
-msgid "Enhanced visual documentation for users"
-msgstr "为用户增强了可视化文档"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:640
-msgid "Ensure application starts properly in the background without delay"
-msgstr "确保应用程序在后台正确启动且无延迟"
-
-#: data/ui/preferences.ui:139
+#: data/ui/preferences.ui:146
 msgid "Experimental"
 msgstr ""
 
@@ -573,547 +239,7 @@ msgstr "在页面中查找"
 msgid "Find in page"
 msgstr "在页面中查找"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:211
-msgid ""
-"Fixed \"Start in background\" being ignored when the tray icon is disabled; "
-"the setting is now honored and relaunching the app brings the window up. "
-"(#170)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:502
-msgid "Fixed \"Too many open files\" crash by reusing notification resources"
-msgstr "通过复用通知资源修复了“打开文件过多”崩溃"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:715
-msgid ""
-"Fixed Ctrl+V paste for text content - now works for both text and images"
-msgstr "修复了文本内容的 Ctrl+V 粘贴——现在文本和图像均可用"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:558
-msgid "Fixed Dead Key/composition input issues"
-msgstr "修复了死键/组合输入问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:495
-msgid "Fixed Flatpak build failure by correcting config"
-msgstr "通过修正配置修复了 Flatpak 构建失败"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:366
-msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
-msgstr "修复了由 ashpd 0.13 API 更改导致的 Flatpak 构建失败"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:137
-msgid ""
-"Fixed Karere failing to start on hardware without OpenGL ES 3.0, such as the "
-"PinePhone; frames are now drawn in software instead (#177)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:136
-msgid ""
-"Fixed Karere refusing to start on systems whose hostname changes between "
-"boots, such as GNOME OS Nightly (#190)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:557
-msgid "Fixed Open action for downloaded files"
-msgstr "修复了已下载文件的打开操作"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:718
-msgid "Fixed WebView zoom being enabled by default (now disabled)"
-msgstr "修复了 WebView 缩放默认启用的问题（现已禁用）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:184
-msgid ""
-"Fixed WhatsApp loading in mobile layout on HiDPI displays until resized; the "
-"prewarm viewport is now sized in physical pixels (#176)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:716
-msgid "Fixed WhatsApp notification permission not persisting across sessions"
-msgstr "修复了 WhatsApp 通知权限无法跨会话保留的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:212
-msgid ""
-"Fixed a black chat area on NVIDIA drivers by falling back to software "
-"rendering where the accelerated path cannot deliver frames. (#167)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:226
-msgid ""
-"Fixed a black/blank window on GNOME OS and other newer Wayland setups by "
-"switching to GTK's GL renderer, which presents the CEF browser view "
-"correctly where the default Vulkan renderer could not. (#164)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:662
-msgid "Fixed application freeze during lifecycle events"
-msgstr "修复了生命周期事件期间的应用冻结"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:477
-msgid ""
-"Fixed application freezing on resume by reverting aggressive cache "
-"optimization"
-msgstr "通过还原激进的缓存优化修复了恢复时应用冻结的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:614
-msgid "Fixed autostart toggle pathing for Flatpak environments"
-msgstr "修复了 Flatpak 环境的自启动开关路径问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:488
-msgid "Fixed background notifications reliability"
-msgstr "修复了后台通知的可靠性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:478
-msgid "Fixed background validation to ensure app starts correctly"
-msgstr "修复了后台验证以确保应用正确启动"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:174
-msgid ""
-"Fixed blank view on GLES-only devices such as the PinePhone: the render area "
-"now negotiates its required GLES 3.0 context and software rendering resumes "
-"automatically when accelerated frames are unavailable (#177)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:375
-msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
-msgstr "修复了 blob URL 下载（例如媒体查看器中的保存图像）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:149
-msgid "Fixed characters being dropped right after sending a message (#180)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:157
-msgid "Fixed characters occasionally being dropped while typing (#180)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:175
-msgid ""
-"Fixed chat text selection and copying: drag-select, immediate Ctrl+C and "
-"right-click → Copy now read the live selection without racing the PRIMARY "
-"clipboard (#178)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:719
-msgid "Fixed clipboard manager intercepting all paste events"
-msgstr "修复了剪贴板管理器拦截所有粘贴事件的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:387
-msgid "Fixed crash on launch due to memory pressure threshold ordering"
-msgstr "修复了因内存压力阈值排序导致的启动崩溃"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:873
-msgid "Fixed crash when handling invalid notification data"
-msgstr "修复了处理无效通知数据时的崩溃"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:839
-msgid "Fixed crash when handling invalid user input data"
-msgstr "修复了处理无效用户输入数据时的崩溃"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:639
-msgid ""
-"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
-"activation"
-msgstr "通过实现 D-Bus 激活修复了严重的启动冻结（旋转指示器）问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:389
-msgid "Fixed dead key composition for first character in input fields"
-msgstr "修复了输入字段中第一个字符的死键组合问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:210
-msgid ""
-"Fixed dead-key accents (e.g. US Intl) intermittently typing the plain letter "
-"after sending a message; the input method is re-focused on the next "
-"keypress. (#154)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:539
-msgid "Fixed double-paste issue with middle-click"
-msgstr "修复了中键的双重粘贴问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:388
-msgid "Fixed download destination and context menu issues"
-msgstr "修复了下载目标和右键菜单问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:397
-msgid "Fixed download destination handling"
-msgstr "修复了下载目标处理"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:355
-msgid "Fixed download filenames now use WhatsApp's original filename"
-msgstr "修复了下载文件名，现在使用 WhatsApp 的原始文件名"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:108
-msgid "Fixed drags being refused as they entered the window on some desktops."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:356
-msgid "Fixed duplicate downloads auto-increment instead of failing"
-msgstr "修复了重名下载，现在自动递增而非失败"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:856
-msgid "Fixed duplicate provides tags in metainfo validation"
-msgstr "修复了 metainfo 验证中重复的 provides 标签"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:173
-msgid ""
-"Fixed engine-drawn popups being anchored to a degenerate window origin on "
-"X11 multi-monitor setups; the real window position is now used (#158)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:783
-msgid ""
-"Fixed external links not opening in default browser when running in Flatpak"
-msgstr "修复了在 Flatpak 中运行时外部链接无法在默认浏览器中打开的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:120
-msgid ""
-"Fixed files dragged into the window not attaching; the same problem affected "
-"pasting a file copied in a file manager (#192)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:386
-msgid "Fixed freezes when viewing media galleries"
-msgstr "修复了查看媒体库时的卡顿"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:786
-msgid "Fixed invalid meson version requirement preventing builds"
-msgstr "修复了阻止构建的无效 meson 版本要求"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:109
-msgid ""
-"Fixed letters being dropped when a key was pressed while Backspace, Enter or "
-"an arrow key was still held (#180)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:546
-msgid "Fixed missing GSettings schema in Flatpak builds"
-msgstr "修复了 Flatpak 构建中缺少 GSettings 架构的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:661
-msgid "Fixed missing dictionaries on startup"
-msgstr "修复了启动时缺少词典的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:604
-msgid ""
-"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
-msgstr "通过添加 StatusNotifierWatcher 权限修复了 GNOME 上缺少托盘图标的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:165
-msgid ""
-"Fixed mouse clicks landing slightly above and to the left of the pointer: "
-"clicks were offset by the header bar and window shadow, so buttons and chats "
-"often did not activate where you clicked."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:358
-msgid "Fixed notification sounds now respect GNOME volume controls"
-msgstr "修复了通知声音现在遵循 GNOME 音量控制"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:717
-msgid "Fixed notifications banner appearing on every app launch"
-msgstr "修复了每次应用启动时都出现通知横幅的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:374
-msgid ""
-"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
-"Linux environments"
-msgstr "修复了在 Phosh 和基于触摸的 Linux 环境中屏幕键盘无法可靠出现的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:110
-msgid "Fixed pasting a text file inserting nothing."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:172
-msgid ""
-"Fixed pointer misalignment on HiDPI / mixed-scale desktops: clicks, "
-"scrolling and context menus are now pixel-accurate, and the page zoom re-"
-"syncs when moving windows between monitors with different scales (#158)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:764
-msgid "Fixed potential rendering inconsistencies"
-msgstr "修复了潜在的渲染不一致问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:785
-msgid "Fixed random emoji display issues and blank emoji problems"
-msgstr "修复了随机表情符号显示问题和空白表情符号问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:147
-msgid ""
-"Fixed right-click Paste ignoring text, images and files copied from other "
-"applications (#189)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:135
-msgid ""
-"Fixed scrolling still stalling with software rendering: frames were held up "
-"by the browser engine's event loop and only released by a fallback timer, "
-"redrawing the window about 10 times a second instead of 60 (#173, #179)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:430
-msgid "Fixed startup race conditions and resource usage issues"
-msgstr "修复了启动竞争条件和资源使用问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:145
-msgid ""
-"Fixed stuttery scrolling and typing lag: frames no longer wait on a poll "
-"timer and are no longer dropped, on software and GPU rendering alike (#173, "
-"#179)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:219
-msgid ""
-"Fixed the GNOME OS / Wayland black window for real (#164): CEF was racing to "
-"the X11 Ozone backend and failing to present onto the Wayland view; Karere "
-"now forces CEF's Ozone backend to match the display server, so it no longer "
-"intermittently starts black."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:148
-msgid ""
-"Fixed the message menu \"Copy\" not reaching the system clipboard (#178)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:146
-msgid "Fixed the microphone staying muted in calls (#182)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:227
-msgid ""
-"Fixed the mobile layout dropping the message box focus when pressing Enter "
-"on a computer; focus is now kept on non-touch devices while phones still "
-"hide the keyboard after sending."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:209
-msgid ""
-"Fixed touchpad scrolling being ~5x too slow with a delay before it started; "
-"deltas are now scaled the same way Chromium's own Wayland backend scales "
-"them. (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:202
-msgid ""
-"Fixed touchpad scrolling sometimes needing a click in a pane before it "
-"responded; scrolling now targets the pane under the pointer like every other "
-"app. (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:615
-msgid "Fixed tray icon quit behavior"
-msgstr "修复了托盘图标退出行为"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:468
-msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
-msgstr "修复了 KDE/GNOME 上的托盘图标（在浅色/深色主题下均可见）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:183
-msgid ""
-"Fixed tray “Quit” doing nothing while the window is hidden (e.g. Start in "
-"background) (#175)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:340
-msgid ""
-"Fixed voice and video calls in production Flatpak (Flathub linter-compatible "
-"pre-built plugin)"
-msgstr ""
-"修复了正式版 Flatpak 中的语音和视频通话（兼容 Flathub 检查器的预构建插件）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:347
-msgid ""
-"Fixed voice and video calls not working in the production build (missing "
-"noise suppression plugin)"
-msgstr "修复了正式构建中语音和视频通话无法工作的问题（缺少噪声抑制插件）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:373
-msgid ""
-"Fixed voice and video calls showing \"Your browser doesn't support calling\""
-msgstr "修复了语音和视频通话显示“您的浏览器不支持通话”的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:357
-msgid ""
-"Fixed window now properly unminimizes when activated from launcher or tray"
-msgstr "修复了从启动器或托盘激活时窗口现在能正确取消最小化"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:487
-msgid "Fixed window resize behavior to prevent excessive reloading"
-msgstr "修复了窗口调整大小行为以防止过度重新加载"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:438
-msgid "Fixed window size increasing on every restart"
-msgstr "修复了每次重启时窗口尺寸都增大的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:503
-msgid "Fixed zombie process accumulation"
-msgstr "修复了僵尸进程累积"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:186
-msgid ""
-"Fixed “Match WhatsApp Colors” applying only after restart; it now updates "
-"live when toggled (#168)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:637
-msgid "Fixed:"
-msgstr "已修复："
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:460
-msgid ""
-"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
-"(silences sounds)"
-msgstr "已修复：应用现在遵循 GNOME 上的系统“请勿打扰”设置（静音）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:405
-msgid "Fixed: Download destination path handling regression"
-msgstr "已修复：下载目标路径处理回归"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:419
-msgid ""
-"Fixed: Handle WebKit web process crashes with auto-reload and user "
-"notification"
-msgstr "已修复：通过自动重新加载和用户通知处理 WebKit 网页进程崩溃"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:420
-msgid "Fixed: JS injection and path traversal vulnerabilities"
-msgstr "已修复：JS 注入和路径遍历漏洞"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:412
-msgid ""
-"Fixed: JS injection and path traversal vulnerabilities in download handling"
-msgstr "已修复：下载处理中的 JS 注入和路径遍历漏洞"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:461
-msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
-msgstr "已修复：通知绕过请勿打扰的视觉提示（优先级降为普通）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:421
-msgid "Fixed: Panic in notification handling"
-msgstr "已修复：通知处理中的崩溃（panic）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:445
-msgid ""
-"Fixed: Resolved webview reload loop on startup due to incorrect window size "
-"detection"
-msgstr "已修复：解决了因窗口尺寸检测错误导致的启动时 WebView 重新加载循环"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:294
-msgid ""
-"Fixed: accented characters from dead keys (e.g. the US-International layout) "
-"now compose correctly instead of inserting the base letter — input is routed "
-"through the system input method (#154)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:329
-msgid ""
-"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
-"43, CachyOS, Bazzite, postmarketOS)"
-msgstr ""
-"已修复：在 GNOME 50 / glibc 2.42+ 系统（Arch、Fedora 43、CachyOS、Bazzite、"
-"postmarketOS）上启动时应用崩溃"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:319
-msgid ""
-"Fixed: blank-window race when autostarted before the network/portal stack is "
-"ready (auto-retry with exponential backoff)"
-msgstr ""
-"已修复：在网络/门户栈就绪前自启动时出现的空白窗口竞争（使用指数退避自动重试）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:332
-msgid ""
-"Fixed: downloaded files with duplicate names silently overwriting each other "
-"(now appends (1), (2), ...)"
-msgstr "已修复：重名下载文件相互静默覆盖的问题（现在会追加 (1)、(2)、…）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:249
-msgid ""
-"Fixed: input-method candidate popups (e.g. ibus-libpinyin) appeared in the "
-"top-left corner; they now show by the chat input where you click (#163)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:318
-msgid ""
-"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
-"clear behavior removed upstream — Karere now dismisses notifications "
-"explicitly)"
-msgstr ""
-"已修复：在 GNOME 50 上聚焦后残留的通知徽章/横幅（上游已移除自动清除行为——"
-"Karere 现在会显式关闭通知）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:330
-msgid ""
-"Fixed: locale-dependent crash that required manually setting "
-"LC_ALL=en_GB.UTF-8"
-msgstr "已修复：需要手动设置 LC_ALL=en_GB.UTF-8 的区域相关崩溃"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:331
-msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
-msgstr "已修复：因近期 WhatsApp Web DOM 更改导致的移动布局损坏"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:241
-msgid ""
-"Fixed: on Phosh / GNOME Mobile the on-screen keyboard stayed open all the "
-"time; it now follows the focused WhatsApp text field, appearing when you tap "
-"a message or search box and hiding otherwise"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:248
-msgid ""
-"Fixed: sluggish touchpad scrolling — disabled Chromium's smooth-scroll "
-"animation for instant, responsive scrolling (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:256
-msgid ""
-"Fixed: the ARM64 (aarch64) build, which had been failing since 4.0.4 due to "
-"a type error in the GPU-rendering code — so this is the first release to "
-"reach ARM64 (Phosh / mobile) users with the recent fixes, including touch "
-"scrolling (#162)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:278
-msgid ""
-"Fixed: the selected theme is now applied from startup, including when the "
-"app launches into the background at login — the window no longer opens light "
-"when dark is selected. WhatsApp Web content also follows the theme now (when "
-"WhatsApp's own theme is set to System default) (#160)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:286
-msgid ""
-"Fixed: the web view is now crisp under fractional/HiDPI display scaling "
-"(e.g. 150%/200% on GNOME Wayland) — the page is rendered to match the "
-"window's pixel buffer exactly instead of being upscaled, while staying at "
-"the correct size (#158)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:264
-msgid ""
-"Fixed: touch scrolling and tapping in the chat view on touchscreens (e.g. "
-"Phosh / mobile Linux) — touch input is now forwarded to the web view as "
-"native touch events (#162)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:279
-msgid ""
-"Fixed: typing in the narrow/mobile layout no longer inserts a stray space "
-"after the first letter (#159)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:287
-msgid ""
-"Fixed: typing the first letter of a message no longer inserts a stray space "
-"after it (a 4.0.1 input regression) (#154)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:295
-msgid ""
-"Fixed: web content is now sized correctly under fractional display scaling "
-"such as 150%; the view and input use logical coordinates with the fractional "
-"scale applied for crisp rendering (#155, #156)"
-msgstr ""
-
-#: data/ui/preferences.ui:361
+#: data/ui/preferences.ui:368
 msgid "Focus Indicators"
 msgstr "焦点指示器"
 
@@ -1125,15 +251,11 @@ msgstr "跟随系统"
 msgid "Force Reload"
 msgstr "强制重新加载"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:625
-msgid "Full rewrite in Rust! 🦀"
-msgstr "用 Rust 完全重写！🦀"
-
 #: data/ui/keyboard-shortcuts.ui:67
 msgid "Fullscreen"
 msgstr "全屏"
 
-#: data/ui/preferences.ui:142
+#: data/ui/preferences.ui:149
 msgid "GPU Rendering"
 msgstr ""
 
@@ -1141,147 +263,39 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "GTK4 WhatsApp Web 客户端"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:156
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
 msgid "General"
 msgstr "常规"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:574
-msgid "General improvements and versioning updates"
-msgstr "常规改进和版本更新"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:900
-msgid "Granular privacy and notification controls"
-msgstr "细粒度的隐私和通知控制"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:901
-msgid "Hardware-accelerated rendering"
-msgstr "硬件加速渲染"
-
-#: data/ui/preferences.ui:311
+#: data/ui/preferences.ui:318
 msgid "Header Bar Language Control"
 msgstr "标题栏语言控制"
 
-#: data/ui/preferences.ui:400
+#: data/ui/preferences.ui:401
 msgid "Header Bar Zoom Controls"
 msgstr "标题栏缩放控制"
 
-#: data/ui/preferences.ui:367
-msgid "High Contrast Mode"
-msgstr "高对比度模式"
-
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:275
 msgid "How download notifications are displayed"
 msgstr "下载通知的显示方式"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:208
 msgid "How much of the message to show"
 msgstr "显示多少消息内容"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:811
-msgid "Implemented Flatpak portal system for external link handling"
-msgstr "实现了用于外部链接处理的 Flatpak 门户系统"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:736
-msgid "Implemented UserScript injection for Notification.permission state"
-msgstr "实现了用于 Notification.permission 状态的 UserScript 注入"
-
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:413
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr "提高与辅助技术的兼容性——需要重启"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:185
-msgid ""
-"Improved NVIDIA detection via the live GL context so hybrid GPUs keep "
-"accelerated rendering, hardened the fallback for background starts, and "
-"raised the off-screen frame rate from 30 to 60 fps for smoother scroll/"
-"typing (#173)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:823
-msgid "Improved build system maintainability and type safety"
-msgstr "改进了构建系统的可维护性和类型安全性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:740
-msgid "Improved build system with cleaner dependency management"
-msgstr "通过更简洁的依赖管理改进了构建系统"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:776
-msgid "Improved emoji consistency with bundled font system"
-msgstr "通过捆绑字体系统改进了表情符号一致性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:765
-msgid "Improved error handling and recovery mechanisms"
-msgstr "改进了错误处理和恢复机制"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:784
-msgid "Improved external link handling with proper Flatpak portal support"
-msgstr "通过正确的 Flatpak 门户支持改进了外部链接处理"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:796
-msgid "Improved font loading stability and reduced race conditions"
-msgstr "改进了字体加载稳定性并减少了竞争条件"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:470
-msgid "Improved icon compatibility across desktop environments"
-msgstr "改进了跨桌面环境的图标兼容性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:480
-msgid "Improved icon rendering (symbolic icons now use currentColor)"
-msgstr "改进了图标渲染（符号图标现在使用 currentColor）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:902
-msgid "Improved memory efficiency and startup performance"
-msgstr "改进的内存效率和启动性能"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:453
-msgid "Improved mobile UI resizing consistency"
-msgstr "改进了移动 UI 调整大小的一致性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:504
-msgid "Improved overall stability"
-msgstr "改进了整体稳定性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:757
-msgid "Improved system integration with latest platform libraries"
-msgstr "通过最新的平台库改进了系统集成"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:864
-msgid "Improved translation file consistency"
-msgstr "改进了翻译文件的一致性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:257
-msgid ""
-"Improved: smoother scrolling, especially with a touchpad — fine scroll "
-"deltas are no longer dropped, and wheel vs touchpad input is scaled "
-"appropriately (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:653
-#: data/io.github.tobagin.karere.metainfo.xml.in:669
-#: data/io.github.tobagin.karere.metainfo.xml.in:680
-#: data/io.github.tobagin.karere.metainfo.xml.in:691
-#: data/io.github.tobagin.karere.metainfo.xml.in:754
-#: data/io.github.tobagin.karere.metainfo.xml.in:791
-#: data/io.github.tobagin.karere.metainfo.xml.in:818
-#: data/io.github.tobagin.karere.metainfo.xml.in:843
-#: data/io.github.tobagin.karere.metainfo.xml.in:860
-#: data/io.github.tobagin.karere.metainfo.xml.in:877
-msgid "Improvements:"
-msgstr "改进："
-
-#: data/ui/preferences.ui:272
+#: data/ui/preferences.ui:279
 msgid "In-app Toast"
 msgstr "应用内提示"
-
-#: data/ui/preferences.ui:368
-msgid "Increase contrast for better readability"
-msgstr "提高对比度以增强可读性"
 
 #: data/ui/keyboard-shortcuts.ui:94
 msgid "Increase the zoom level"
 msgstr "提高缩放级别"
 
-#: data/ui/keyboard-shortcuts.ui:133
+#: data/ui/keyboard-shortcuts.ui:126
 msgid "Inspect Element"
 msgstr "检查元素"
 
@@ -1289,18 +303,10 @@ msgstr "检查元素"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "跳转到账户 1–9（Alt+1 … Alt+9）"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:264 src/tray.rs:43
-#: src/tray.rs:66 src/tray.rs:73
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:301
-msgid ""
-"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
-"Existing accounts must be re-linked — there is no migration from v3."
-msgstr ""
-"Karere 4.0 是一次硬分叉，在 CEF/Chromium 148 上重建了应用程序。现有账户必须重"
-"新关联——无法从 v3 迁移。"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:24
 msgid ""
@@ -1318,17 +324,15 @@ msgstr ""
 msgid "Key features include:"
 msgstr "主要功能包括："
 
-#: data/ui/window.ui:261 data/ui/preferences.ui:422
-#: data/ui/keyboard-shortcuts.ui:152 src/tray.rs:145
+#: data/ui/window.ui:261 data/ui/keyboard-shortcuts.ui:152 src/tray.rs:172
 msgid "Keyboard Shortcuts"
 msgstr "键盘快捷键"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:61
-#: data/io.github.tobagin.karere.metainfo.xml.in:898
 msgid "Keyboard shortcuts and productivity features"
 msgstr "键盘快捷键和效率功能"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:317
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
 msgid "Language"
 msgstr "语言"
 
@@ -1340,18 +344,11 @@ msgstr "登录时自动启动 Karere"
 msgid "Light"
 msgstr "浅色"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:311
-msgid ""
-"Live spell-check language switching and a separately installable Debug "
-"symbol extension for symbolicated crash reports"
-msgstr ""
-"实时拼写检查语言切换，以及可单独安装的用于符号化崩溃报告的 Debug 符号扩展"
-
-#: data/ui/preferences.ui:234
+#: data/ui/preferences.ui:241
 msgid "Location"
 msgstr "位置"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:214
 msgid "Long"
 msgstr "长"
 
@@ -1359,11 +356,7 @@ msgstr "长"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "集成 WhatsApp Web 的应用程序主窗口"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:302
-msgid "Major changes:"
-msgstr "主要更改："
-
-#: data/ui/preferences.ui:160
+#: data/ui/preferences.ui:167
 msgid "Master toggle for all notifications"
 msgstr "所有通知的总开关"
 
@@ -1372,7 +365,7 @@ msgstr "所有通知的总开关"
 msgid "Match WhatsApp Colors"
 msgstr "WhatsApp 客户端"
 
-#: data/ui/preferences.ui:206
+#: data/ui/preferences.ui:213
 msgid "Medium"
 msgstr "中"
 
@@ -1380,31 +373,23 @@ msgstr "中"
 msgid "Menu"
 msgstr "菜单"
 
-#: data/ui/preferences.ui:170
+#: data/ui/preferences.ui:177
 msgid "Message Notifications"
 msgstr "消息通知"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:191
 msgid "Message Preview"
 msgstr "消息预览"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:174
 msgid "Messages"
 msgstr "消息"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:559
-msgid "Migrated Flatpak build logic to meson.build"
-msgstr "将 Flatpak 构建逻辑迁移到 meson.build"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:906
-msgid "Migrated from Python 3 to native Vala compilation"
-msgstr "从 Python 3 迁移到原生 Vala 编译"
 
 #: data/ui/keyboard-shortcuts.ui:74
 msgid "Minimize Window"
 msgstr "最小化窗口"
 
-#: data/ui/preferences.ui:356
+#: data/ui/preferences.ui:363
 msgid "Minimize animations and transitions"
 msgstr "尽量减少动画和过渡效果"
 
@@ -1412,74 +397,17 @@ msgstr "尽量减少动画和过渡效果"
 msgid "Minimize the window"
 msgstr "最小化窗口"
 
-#: data/ui/preferences.ui:384
+#: data/ui/preferences.ui:385
 msgid "Minimum Zoom Level"
 msgstr "最低缩放级别"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:684
-msgid "Minor README corrections"
-msgstr "次要的 README 更正"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:673
-msgid "Minor bug fixes and stability improvements"
-msgstr "次要缺陷修复和稳定性改进"
 
 #: data/ui/preferences.ui:98
 msgid "Mobile Layout"
 msgstr "移动布局"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:515
-msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
-msgstr "移动布局设置改为下拉菜单（自动/启用/禁用）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:512
-msgid ""
-"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
-"Lomiri"
-msgstr "移动布局支持，含 Phosh、Plasma Mobile 和 Lomiri 的自动检测"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:309
-msgid ""
-"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
-"popover for the off-screen-rendered web view"
-msgstr ""
-"移动响应式布局、JavaScript 全屏，以及用于离屏渲染网页视图的 OSR 右键菜单弹窗"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:893
-msgid "Modern LibAdwaita UI with Blueprint declarative interface"
-msgstr "现代 LibAdwaita UI 与 Blueprint 声明式界面"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:907
-msgid "Modern Meson build system with Blueprint UI compilation"
-msgstr "现代 Meson 构建系统与 Blueprint UI 编译"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:798
-msgid "More reliable link opening mechanism"
-msgstr "更可靠的链接打开机制"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:802
-msgid "More robust dependency handling"
-msgstr "更稳健的依赖处理"
-
-#: data/ui/preferences.ui:352
+#: data/ui/preferences.ui:359
 msgid "Motion and Focus"
 msgstr "动效与焦点"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:305
-msgid ""
-"Multi-account support: each account runs in an isolated CEF RequestContext "
-"with its own cookies and storage; accounts are ordered most-recently-used"
-msgstr ""
-"多账户支持：每个账户在隔离的 CEF RequestContext 中运行，拥有各自的 Cookie 和"
-"存储；账户按最近使用顺序排列"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:899
-msgid "Multi-language spell checking support"
-msgstr "多语言拼写检查支持"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:892
-msgid "Native Vala/GTK4 implementation for optimal performance"
-msgstr "原生 Vala/GTK4 实现以获得最佳性能"
 
 #: data/io.github.tobagin.karere.desktop.in:5
 msgid "Native WhatsApp Web client for Linux desktop"
@@ -1489,33 +417,6 @@ msgstr "适用于 Linux 桌面的原生 WhatsApp Web 客户端"
 msgid "Native system notifications and tray icon support"
 msgstr "原生系统通知和托盘图标支持"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:308
-msgid ""
-"Native system tray (StatusNotifierItem), desktop notifications, download "
-"manager, and image/text paste reimplemented on the CEF stack"
-msgstr ""
-"在 CEF 技术栈上重新实现的原生系统托盘（StatusNotifierItem）、桌面通知、下载管"
-"理器和图像/文本粘贴"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:623
-#: data/io.github.tobagin.karere.metainfo.xml.in:647
-#: data/io.github.tobagin.karere.metainfo.xml.in:702
-#: data/io.github.tobagin.karere.metainfo.xml.in:772
-#: data/io.github.tobagin.karere.metainfo.xml.in:890
-msgid "New Features:"
-msgstr "新功能："
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:626
-msgid "New System Tray Icon support"
-msgstr "新增系统托盘图标支持"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:193
-msgid ""
-"New opt-in \"Match WhatsApp Colors\" appearance setting: tints the window "
-"and header bar with WhatsApp Web's own background colors so the app blends "
-"with the page. Follows the light/dark theme and applies instantly. (#168)"
-msgstr ""
-
 #: data/ui/keyboard-shortcuts.ui:41
 msgid "Next Account"
 msgstr "下一个账户"
@@ -1524,115 +425,63 @@ msgstr "下一个账户"
 msgid "Next match"
 msgstr "下一个匹配项"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:359
-msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
-msgstr "注意：升级后需要重新关联 WhatsApp 账户"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:529
-msgid ""
-"Notification Chat Linking: Clicking a notification now opens the specific "
-"chat in Karere."
-msgstr "通知聊天链接：点击通知现在会在 Karere 中打开对应的聊天。"
-
-#: data/ui/preferences.ui:440
-msgid "Notification Shortcuts"
-msgstr "通知快捷键"
-
-#: data/ui/preferences.ui:220
+#: data/ui/preferences.ui:227
 msgid "Notification Sounds"
 msgstr "通知声音"
 
-#: data/ui/preferences.ui:267
+#: data/ui/preferences.ui:274
 msgid "Notification Type"
 msgstr "通知类型"
 
-#: data/ui/preferences.ui:152 data/ui/preferences.ui:258
+#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "通知"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:627
-msgid "Notifications fully working with persistence fixes"
-msgstr "通知完全可用，并修复了持久化问题"
-
-#: data/ui/preferences.ui:262
+#: data/ui/preferences.ui:269
 msgid "Notify when a file download completes"
 msgstr "文件下载完成时通知"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:38
-#, fuzzy
-msgid ""
-"Now built on CEF/Chromium 152. Karere 4.0 replaces the WebKitGTK backend "
-"with the Chromium Embedded Framework, bringing full video attachment "
-"playback (H.264/AAC), multi-account support with isolated sessions, per-"
-"account zoom, and a faster, more compatible rendering engine while keeping "
-"the same native GTK4/libadwaita shell."
-msgstr ""
-"现已基于 CEF/Chromium 148 构建。Karere 4.0 用 Chromium 嵌入式框架替换了 "
-"WebKitGTK 后端，带来完整的视频附件播放（H.264/AAC）、具有隔离会话的多账户支"
-"持、每账户缩放，以及更快、兼容性更好的渲染引擎，同时保持相同的原生 GTK4/"
-"libadwaita 外壳。"
-
-#: data/ui/preferences.ui:129
+#: data/ui/preferences.ui:123 src/window.rs:1685 src/window.rs:1741
 msgid "Open"
+msgstr "打开"
+
+#: data/ui/preferences.ui:136
+#, fuzzy
+msgid "Open File"
 msgstr "打开"
 
 #: data/ui/keyboard-shortcuts.ui:146
 msgid "Open preferences"
 msgstr "打开首选项"
 
-#: data/ui/keyboard-shortcuts.ui:127
+#: data/ui/keyboard-shortcuts.ui:120
 msgid "Open the developer tools"
 msgstr "打开开发者工具"
 
-#: data/ui/preferences.ui:125
+#: data/ui/preferences.ui:119
 msgid "Open the developer tools for the current page"
 msgstr "打开当前页面的开发者工具"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:777
-msgid "Optimized font loading to eliminate display conflicts"
-msgstr "优化了字体加载以消除显示冲突"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:479
-msgid "Optimized memory usage in mobile responsive scripts"
-msgstr "优化了移动响应式脚本中的内存使用"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:307
-msgid ""
-"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
-"accessibility minimum-zoom floor"
-msgstr "每账户缩放（Ctrl +/-/0），可选标题栏缩放控制，以及无障碍最低缩放下限"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:881
-msgid "Performance optimizations for faster startup"
-msgstr "更快启动的性能优化"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:847
-msgid "Performance optimizations for scrolling"
-msgstr "滚动的性能优化"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:33
 msgid ""
 "Persistent login sessions so you don't need to scan the QR code every time"
 msgstr "持久登录会话，无需每次都扫描二维码"
 
-#: data/ui/keyboard-shortcuts.ui:134
+#: data/ui/keyboard-shortcuts.ui:127
 msgid "Pick an element to inspect"
 msgstr "选择要检查的元素"
 
-#: data/ui/preferences.ui:221
+#: data/ui/preferences.ui:228
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "为新消息播放 WhatsApp 的通知声音"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:628
-msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
-msgstr "从 Vala 移植到原生 Rust/GTK4/Libadwaita"
-
 #: data/ui/window.ui:255 data/ui/preferences.ui:10
-#: data/ui/keyboard-shortcuts.ui:145 src/tray.rs:139
+#: data/ui/keyboard-shortcuts.ui:145 src/tray.rs:166
 msgid "Preferences"
 msgstr "首选项"
 
-#: data/ui/preferences.ui:200
+#: data/ui/preferences.ui:207
 msgid "Preview Length"
 msgstr "预览长度"
 
@@ -1644,7 +493,7 @@ msgstr "上一个账户"
 msgid "Previous match"
 msgstr "上一个匹配项"
 
-#: data/ui/preferences.ui:327
+#: data/ui/preferences.ui:334
 msgid "Privacy"
 msgstr "隐私"
 
@@ -1652,19 +501,11 @@ msgstr "隐私"
 msgid "Privacy controls and comprehensive spell-checking settings"
 msgstr "隐私控制和全面的拼写检查设置"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:909
-msgid "Production-ready error handling and crash recovery"
-msgstr "可投入生产的错误处理和崩溃恢复"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:897
-msgid "Professional logging and crash reporting system"
-msgstr "专业的日志记录和崩溃报告系统"
-
 #: data/io.github.tobagin.karere.metainfo.xml.in:36
 msgid "Proper clipboard integration for text and images"
 msgstr "完善的文本和图像剪贴板集成"
 
-#: data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159 src/tray.rs:158
+#: data/ui/window.ui:275 data/ui/keyboard-shortcuts.ui:159 src/tray.rs:185
 msgid "Quit"
 msgstr "退出"
 
@@ -1676,25 +517,13 @@ msgstr "退出应用程序"
 msgid "Quit Karere"
 msgstr "退出 Karere"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:376
-msgid "Redesigned application icons for stable and development variants"
-msgstr "为稳定版和开发版重新设计了应用程序图标"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:629
-msgid "Redesigned/streamlined preferences dialog"
-msgstr "重新设计/精简了首选项对话框"
-
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:362
 msgid "Reduce Motion"
 msgstr "减少动效"
 
 #: data/ui/window.ui:251
 msgid "Refresh WhatsApp Web"
 msgstr "刷新 WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:694
-msgid "Refreshed About dialog screenshot"
-msgstr "刷新了关于对话框截图"
 
 #: data/ui/keyboard-shortcuts.ui:15
 msgid "Reload WhatsApp Web"
@@ -1708,91 +537,23 @@ msgstr "重新加载当前页面"
 msgid "Reload, bypassing the cache"
 msgstr "重新加载并绕过缓存"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:556
-msgid "Remove direct D-Bus notification permissions for cleaner manifest"
-msgstr "移除直接的 D-Bus 通知权限以使清单更简洁"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:588
-msgid "Remove unnecessary autostart permission to satisfy linter"
-msgstr "移除不必要的自启动权限以满足检查器要求"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:379
-msgid "Removed ffmpeg-full extension (no longer required)"
-msgstr "移除了 ffmpeg-full 扩展（不再需要）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:720
-msgid ""
-"Removed hardcoded blueprint compiler paths for cross-architecture support"
-msgstr "移除了硬编码的 blueprint 编译器路径以支持跨架构"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:113
-msgid ""
-"Removed read-only access to Documents, Pictures, Videos, Music and Desktop."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:806
-msgid ""
-"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
-"only)"
-msgstr "移除了不必要的移动用户代理切换（WhatsApp Web 仅限桌面）"
-
-#: data/ui/preferences.ui:143
+#: data/ui/preferences.ui:150
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
 msgstr ""
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:828
-msgid "Replaced window.vala.in and preferences.vala.in with direct .vala files"
-msgstr "用直接的 .vala 文件替换了 window.vala.in 和 preferences.vala.in"
-
 #: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
 msgid "Reset Zoom"
 msgstr "重置缩放"
 
-#: data/ui/preferences.ui:249
+#: data/ui/preferences.ui:256
 msgid "Reset to default"
 msgstr "重置为默认值"
 
 #: data/ui/keyboard-shortcuts.ui:108
 msgid "Reset zoom to 100%"
 msgstr "将缩放重置为 100%"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:398
-msgid "Resolved WebKit crashes on media-heavy pages"
-msgstr "解决了在媒体密集页面上的 WebKit 崩溃"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:763
-msgid "Resolved compatibility issues with newer GNOME environments"
-msgstr "解决了与较新 GNOME 环境的兼容性问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:788
-msgid "Resolved flatpak-builder compatibility issues"
-msgstr "解决了 flatpak-builder 兼容性问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:858
-msgid "Resolved invalid markup in release descriptions"
-msgstr "解决了发行说明中的无效标记"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:874
-msgid "Resolved memory leak in WebKit manager cleanup"
-msgstr "解决了 WebKit 管理器清理中的内存泄漏"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:840
-msgid "Resolved memory leak in notification cleanup"
-msgstr "解决了通知清理中的内存泄漏"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:581
-msgid "Restore autostart permission for improved compatibility"
-msgstr "恢复自启动权限以提高兼容性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:809
-msgid "Restored Safari Linux user agent for native WebKit experience"
-msgstr "恢复了 Safari Linux 用户代理以获得原生 WebKit 体验"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:469
-msgid "Restored correct app icons and transparent backgrounds"
-msgstr "恢复了正确的应用图标和透明背景"
 
 #: data/ui/preferences.ui:42
 msgid "Run in Background"
@@ -1802,16 +563,11 @@ msgstr "在后台运行"
 msgid "Run on Startup"
 msgstr "开机自启动"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:194
-msgid ""
-"Safer avatar processing for notifications (community contribution). (#172)"
-msgstr ""
-
-#: data/ui/preferences.ui:411
+#: data/ui/preferences.ui:412
 msgid "Screen Reader Optimizations"
 msgstr "屏幕阅读器优化"
 
-#: data/ui/preferences.ui:408
+#: data/ui/preferences.ui:409
 msgid "Screen Reader Support"
 msgstr "屏幕阅读器支持"
 
@@ -1819,35 +575,27 @@ msgstr "屏幕阅读器支持"
 msgid "Search the current page"
 msgstr "搜索当前页面"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:380
 msgid "Set a minimum zoom level for all accounts"
 msgstr "为所有账户设置最低缩放级别"
 
-#: data/ui/preferences.ui:205
+#: data/ui/preferences.ui:212
 msgid "Short"
 msgstr "短"
 
-#: data/ui/preferences.ui:419
-msgid "Shortcuts"
-msgstr "快捷键"
-
-#: data/ui/preferences.ui:194
+#: data/ui/preferences.ui:201
 msgid "Show Message Text"
 msgstr "显示消息文本"
 
-#: data/ui/preferences.ui:188
+#: data/ui/preferences.ui:195
 msgid "Show Sender Name"
 msgstr "显示发件人姓名"
 
-#: data/ui/preferences.ui:171
+#: data/ui/preferences.ui:178
 msgid "Show notifications for incoming messages"
 msgstr "显示收到消息的通知"
 
-#: data/ui/keyboard-shortcuts.ui:115
-msgid "Show or hide the zoom buttons"
-msgstr "显示或隐藏缩放按钮"
-
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:319
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr "在标题栏中显示拼写检查语言下拉菜单"
 
@@ -1855,21 +603,13 @@ msgstr "在标题栏中显示拼写检查语言下拉菜单"
 msgid "Show this shortcuts dialog"
 msgstr "显示此快捷键对话框"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:369
 msgid "Show visible outlines around focused elements"
 msgstr "在聚焦元素周围显示可见轮廓"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:402
 msgid "Show zoom buttons in the header bar"
 msgstr "在标题栏中显示缩放按钮"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:808
-msgid "Simplified emoji font configuration to single high-quality source"
-msgstr "将表情符号字体配置简化为单一高质量来源"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:830
-msgid "Simplified source file management in build system"
-msgstr "简化了构建系统中的源文件管理"
 
 #: data/ui/preferences.ui:99
 msgid ""
@@ -1879,7 +619,7 @@ msgstr ""
 "单栏布局。自动：在移动外壳或窄窗口下启用；启用/禁用：在任意尺寸下强制开启或关"
 "闭"
 
-#: data/ui/preferences.ui:331
+#: data/ui/preferences.ui:338
 msgid "Site Permissions"
 msgstr "网站权限"
 
@@ -1887,26 +627,11 @@ msgstr "网站权限"
 msgid "Smooth performance with hardware acceleration"
 msgstr "硬件加速带来流畅的性能"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:111
-msgid "Smoother scrolling inside conversations on large HiDPI windows (#173)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:158
-msgid ""
-"Software rendering now redraws only the part of the window that changed, "
-"reducing CPU and memory bandwidth per frame — most noticeable on integrated "
-"graphics (#179)."
-msgstr ""
-
-#: data/ui/preferences.ui:185
-msgid "Some settings only apply when Karere controls the popup"
-msgstr "部分设置仅在 Karere 控制弹窗时生效"
-
-#: data/ui/preferences.ui:217
+#: data/ui/preferences.ui:224
 msgid "Sounds"
 msgstr "声音"
 
-#: data/ui/preferences.ui:290
+#: data/ui/preferences.ui:297
 msgid "Spell Checking"
 msgstr "拼写检查"
 
@@ -1914,11 +639,11 @@ msgstr "拼写检查"
 msgid "Spell Checking Language"
 msgstr "拼写检查语言"
 
-#: data/ui/preferences.ui:286
+#: data/ui/preferences.ui:293
 msgid "Spellcheck"
 msgstr "拼写检查"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:325
 msgid "Star a language to pin it to the top"
 msgstr "为某语言加星标可将其置顶"
 
@@ -1934,27 +659,18 @@ msgstr "启动时最小化，不显示窗口"
 msgid "Startup"
 msgstr "启动"
 
-#: data/ui/preferences.ui:332
+#: data/ui/preferences.ui:339
 msgid "Stored allow/deny decisions for websites"
 msgstr "已存储的网站允许/拒绝决定"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:794
-msgid "Streamlined font stack for consistent emoji appearance"
-msgstr "简化了字体栈以获得一致的表情符号外观"
 
 #: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
 msgid "Switch Account"
 msgstr "切换账户"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:566
-msgid ""
-"Switch to XDG Background Portal for autostart (improves security and "
-"compatibility)"
-msgstr "切换到 XDG 后台门户用于自启动（提高安全性和兼容性）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:555
-msgid "Switch to XDG Notification Portal (ashpd) for better sandboxing support"
-msgstr "切换到 XDG 通知门户（ashpd）以更好地支持沙盒化"
+#: data/ui/preferences.ui:184
+#, fuzzy
+msgid "Switch the tray icon to the unread variant when a new message arrives"
+msgstr "新消息到达时为托盘图标添加动画"
 
 #: data/ui/keyboard-shortcuts.ui:42
 msgid "Switch to the next account"
@@ -1964,31 +680,13 @@ msgstr "切换到下一个账户"
 msgid "Switch to the previous account"
 msgstr "切换到上一个账户"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:304
-msgid ""
-"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
-"proprietary-codec builds for H.264/AAC video attachment playback"
-msgstr ""
-"将渲染后端从 WebKitGTK 切换到 CEF/Chromium 148，并提供专有编解码器构建以支持 "
-"H.264/AAC 视频附件播放"
-
-#: data/ui/preferences.ui:273
+#: data/ui/preferences.ui:280
 msgid "System Notification"
 msgstr "系统通知"
 
 #: data/ui/preferences.ui:51
 msgid "System Tray Icon"
 msgstr "系统托盘图标"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:734
-#: data/io.github.tobagin.karere.metainfo.xml.in:804
-#: data/io.github.tobagin.karere.metainfo.xml.in:826
-msgid "Technical Changes:"
-msgstr "技术更改："
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:904
-msgid "Technical Improvements:"
-msgstr "技术改进："
 
 #: data/ui/preferences.ui:77
 msgid "Theme"
@@ -1998,102 +696,13 @@ msgstr "主题"
 msgid "Thiago Fernandes"
 msgstr "Thiago Fernandes"
 
-#: data/ui/keyboard-shortcuts.ui:114
-msgid "Toggle Header Bar Zoom Controls"
-msgstr "切换标题栏缩放控制"
-
 #: data/ui/keyboard-shortcuts.ui:68
 msgid "Toggle fullscreen mode"
 msgstr "切换全屏模式"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:176
-msgid "Translation catalogs regenerated against the current UI strings."
+#: data/ui/keyboard-shortcuts.ui:139
+msgid "Turn notification banners and sounds off or on"
 msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:513
-msgid "Tray icon click now toggles window visibility"
-msgstr "点击托盘图标现在可切换窗口可见性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:610
-msgid "Update and Bug Fix Release"
-msgstr "更新和缺陷修复版本"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:756
-msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
-msgstr "将 GNOME 运行时更新到版本 49 以增强兼容性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:739
-msgid "Updated SettingsManager to be the default for all settings access"
-msgstr "更新 SettingsManager 使其成为所有设置访问的默认方式"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:682
-msgid "Updated about dialog screenshot"
-msgstr "更新了关于对话框截图"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:377
-msgid "Updated all Rust dependencies to latest versions"
-msgstr "将所有 Rust 依赖项更新到最新版本"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:862
-msgid "Updated all references from appdata to metainfo format"
-msgstr "将所有引用从 appdata 更新为 metainfo 格式"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:683
-msgid "Updated application screenshots"
-msgstr "更新了应用程序截图"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:693
-msgid "Updated application screenshots with current UI appearance"
-msgstr "用当前 UI 外观更新了应用程序截图"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:522
-msgid ""
-"Updated application summary and description for better AppStream compliance"
-msgstr "更新了应用程序摘要和描述以更好地符合 AppStream 规范"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:671
-msgid "Updated build configuration and dependencies"
-msgstr "更新了构建配置和依赖项"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:829
-msgid "Updated meson.build to use Vala preprocessor directives"
-msgstr "更新 meson.build 以使用 Vala 预处理器指令"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:127
-msgid ""
-"Updated the application platform to GNOME 51 for current platform security "
-"and rendering updates."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:234
-msgid ""
-"Updated the bundled browser engine to CEF 149 (Chromium 149), up from CEF "
-"148, picking up the latest Chromium security and rendering fixes. "
-"Proprietary codecs stay enabled so WhatsApp calls and video playback keep "
-"working."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:201
-msgid ""
-"Upgraded the browser engine to CEF 150 / Chromium 150 for current security "
-"fixes; video attachments (H.264/AAC) keep playing in-app."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:378
-msgid "Upgraded to GNOME Platform 50"
-msgstr "升级到 GNOME Platform 50"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:738
-msgid "WebKitGTK 6.0 storage persistence verified and documented"
-msgstr "验证并记录了 WebKitGTK 6.0 存储持久化"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:530
-msgid ""
-"Webcam Support: Added support for using the webcam (Status updates, Video "
-"calls) with a new permission dialog."
-msgstr ""
-"摄像头支持：添加了使用摄像头（状态更新、视频通话）的支持，并配有新的权限对话"
-"框。"
 
 #: data/ui/preferences.ui:38
 msgid "What happens when you close the window"
@@ -2115,11 +724,7 @@ msgstr "窗口"
 msgid "Window Close Behavior"
 msgstr "窗口关闭行为"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:514
-msgid "Window size is saved and restored when hiding/showing"
-msgstr "隐藏/显示时保存并恢复窗口尺寸"
-
-#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "缩放"
 
@@ -2155,345 +760,1364 @@ msgstr "whatsapp"
 msgid "whatsapp;chat;messaging;web;communication;"
 msgstr "whatsapp;chat;messaging;web;communication;聊天;消息;通讯;"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:711
-msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
-msgstr "⌨️ 使用 AdwShortcutsDialog 添加了键盘快捷键对话框"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:724
-msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
-msgstr "♻️ 重大重构：用 PascalCase 文件名重新组织了代码库"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:725
-msgid "♻️ Refactored Window.vala into specialized manager components"
-msgstr "♻️ 将 Window.vala 重构为专用的管理器组件"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:726
-msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
-msgstr "♻️ 移除了自定义日志记录和崩溃报告（改用系统 journalctl）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:708
-msgid ""
-"♿ Enhanced accessibility with screen reader optimization and keyboard "
-"navigation"
-msgstr "♿ 通过屏幕阅读器优化和键盘导航增强了无障碍功能"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:889
-msgid ""
-"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
-"with WhatsApp Web as this is a completely new application implementation."
-msgstr ""
-"⚠️ 重要：升级后，您需要重新将移动设备与 WhatsApp Web 同步，因为这是一个全新的"
-"应用程序实现。"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:655
-msgid "⚡ Performance optimizations for startup and shutdown"
-msgstr "⚡ 启动和关闭的性能优化"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:704
-msgid "✅ Fixed WhatsApp Web notification banner persistence"
-msgstr "✅ 修复了 WhatsApp Web 通知横幅的持久化问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:705
-msgid "✅ Fixed notifications not working properly"
-msgstr "✅ 修复了通知无法正常工作的问题"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:771
-msgid ""
-"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
-msgstr "✨ 增强的表情符号支持、外部链接处理和构建改进"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:646
-msgid "🎉 Feature Release"
-msgstr "🎉 功能版本"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:622
-msgid "🎉 Major Release 2.0.0"
-msgstr "🎉 重大版本 2.0.0"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:701
-msgid "🎉 Version 1.0.0 - Major Milestone Release"
-msgstr "🎉 版本 1.0.0 - 重大里程碑版本"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:649
-msgid "🎤 Microphone permission support for voice notes"
-msgstr "🎤 用于语音便条的麦克风权限支持"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:636
-msgid "🐛 Bug Fix Release"
-msgstr "🐛 缺陷修复版本"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:836
-#: data/io.github.tobagin.karere.metainfo.xml.in:870
-msgid "🐛 Bug Fixes and Improvements"
-msgstr "🐛 缺陷修复和改进"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:753
-msgid "🐛 Runtime Update and Bug Fixes"
-msgstr "🐛 运行时更新和缺陷修复"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:657
-msgid "📖 Added MPRIS workaround documentation"
-msgstr "📖 添加了 MPRIS 变通方案文档"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:746
-msgid "📚 Added spell checking configuration guide"
-msgstr "📚 添加了拼写检查配置指南"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:745
-msgid "📚 Documented all keyboard shortcuts by category"
-msgstr "📚 按类别记录了所有键盘快捷键"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:744
-msgid "📚 Enhanced README with accessibility features documentation"
-msgstr "📚 用无障碍功能文档增强了 README"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:747
-msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
-msgstr "📚 修复了 GitHub 仓库 URL（karere-vala → karere）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:709
-msgid "📝 Added comprehensive spell checking system with auto-detection"
-msgstr "📝 添加了带自动检测的全面拼写检查系统"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:656
-msgid "📝 Async dictionary loading for smoother Spell Check initialization"
-msgstr "📝 异步词典加载以使拼写检查初始化更流畅"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:679
-msgid "📝 Documentation and Metadata Update"
-msgstr "📝 文档和元数据更新"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:707
-msgid ""
-"📥 Implemented download manager with custom directory and toast notifications"
-msgstr "📥 实现了带自定义目录和提示通知的下载管理器"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:732
-msgid "📸 Reorganized screenshots into data/screenshots/ directory"
-msgstr "📸 将截图重新组织到 data/screenshots/ 目录中"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:690
-msgid "📸 Screenshots and Documentation Update"
-msgstr "📸 截图和文档更新"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:651
-msgid "🔄 Manual reload and auto-reload on network reconnection"
-msgstr "🔄 手动重新加载及网络重连时的自动重新加载"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:710
-msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
-msgstr "🔤 集成了来自 LibreOffice 的 80+ 种语言词典"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:817
-msgid "🔧 Code Refactoring and Architecture Improvements"
-msgstr "🔧 代码重构和架构改进"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:668
-msgid "🔧 Maintenance Release"
-msgstr "🔧 维护版本"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:853
-msgid "🔧 Metadata and Standards Compliance"
-msgstr "🔧 元数据和标准合规性"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:706
-msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
-msgstr "🖼️ 添加了通过剪贴板粘贴图像的支持（Ctrl+V）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:728
-msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
-msgstr "🗑️ 清理了过时的测试文件和未使用的依赖项"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:727
-msgid ""
-"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
-msgstr "🗑️ 移除了请勿打扰功能（由系统通知守护进程处理）"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:729
-msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
-msgstr "🗑️ 移除了 json-glib、gee 和 libsoup 依赖项"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:887
-msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
-msgstr "🚀 重大架构迁移：从 Python 到 Vala/GTK4"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:650
-msgid "🚀 Start in background option for autostart"
-msgstr "🚀 自启动的后台启动选项"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:730
-msgid "🧹 Centralized settings management with SettingsManager singleton"
-msgstr "🧹 通过 SettingsManager 单例集中管理设置"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:731
-msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
-msgstr "🧹 移除了 DependencyContainer.vala（未使用的依赖注入）"
-
-#: src/main.rs:43
+#: src/main.rs:51
 msgid "Karere starting"
 msgstr "Karere 正在启动"
 
-#: src/web_view.rs:3730
+#: src/web_view/clipboard_dnd.rs:112
+msgid "File is too large to attach (limit 48 MB)"
+msgstr ""
+
+#: src/web_view/clipboard_dnd.rs:445
 msgid "Karere cannot read files from this folder"
 msgstr ""
 
-#: src/web_view.rs:3732
+#: src/web_view/clipboard_dnd.rs:447
 #, fuzzy
 msgid "Choose File…"
 msgstr "选择…"
 
-#: src/web_view.rs:3748
+#: src/web_view/clipboard_dnd.rs:463
 msgid "Select the File to Attach"
 msgstr ""
 
-#: src/web_view.rs:3749
+#: src/web_view/clipboard_dnd.rs:464
 msgid "Attach"
 msgstr ""
 
-#: src/window.rs:290
+#: src/handlers/context_menu.rs:127
+msgid "Copy Link Address"
+msgstr ""
+
+#: src/window.rs:306
 msgid "Account"
 msgstr "账户"
 
-#: src/window.rs:619
+#: src/window.rs:342
+#, fuzzy
+msgid "No connection"
+msgstr "通讯"
+
+#: src/window.rs:343
+msgid "Waiting for the network — retrying…"
+msgstr ""
+
+#: src/window.rs:426
+msgid "{active} of {count}"
+msgstr ""
+
+#: src/window.rs:707
 msgid "Waiting for QR scan…"
 msgstr "等待扫描二维码…"
 
-#: src/window.rs:641
-msgid "degraded"
-msgstr "已降级"
+#. Translators: tray tooltip body; {} is the number of unread chats.
+#: src/window.rs:731 src/tray.rs:86
+#, fuzzy
+msgid "{} unread chat"
+msgid_plural "{} unread chats"
+msgstr[0] "未读"
 
-#: src/window.rs:657
-msgid "Unread messages"
-msgstr "未读消息"
-
-#: src/window.rs:668
+#: src/window.rs:753
 msgid "Notifications muted — click to unmute"
 msgstr ""
 
-#: src/window.rs:672
+#: src/window.rs:757
 #, fuzzy
 msgid "Mute notifications"
 msgstr "通知"
 
-#: src/window.rs:703
+#: src/window.rs:790
 msgid "Edit account"
 msgstr "编辑账户"
 
-#: src/window.rs:719
+#: src/window.rs:806
 msgid "Remove account"
 msgstr "移除账户"
 
-#: src/window.rs:721
+#: src/window.rs:808
 msgid "Can't remove the only account"
 msgstr "无法移除唯一的账户"
 
-#: src/window.rs:805
+#: src/window.rs:896
 msgid "Maximum of 9 accounts reached"
 msgstr "已达到最多 9 个账户的上限"
 
-#: src/window.rs:831
+#: src/window.rs:920
 msgid "Label"
 msgstr "标签"
 
-#: src/window.rs:846
+#: src/window.rs:935
 msgid "Name"
 msgstr "姓名"
 
-#: src/window.rs:850
+#: src/window.rs:939
 msgid "WhatsApp ID"
 msgstr "WhatsApp ID"
 
-#: src/window.rs:854
-msgid "Avatar URL"
-msgstr "头像 URL"
+#: src/window.rs:945
+#, fuzzy
+msgid "Position"
+msgstr "位置"
 
-#: src/window.rs:863 src/window.rs:952
+#: src/window.rs:947
+msgid "Move Up"
+msgstr ""
+
+#: src/window.rs:948
+msgid "Move Down"
+msgstr ""
+
+#: src/window.rs:994 src/window.rs:1049 src/window.rs:1644
 msgid "Cancel"
 msgstr "取消"
 
-#: src/window.rs:864
+#: src/window.rs:995
 msgid "Save"
 msgstr "保存"
 
-#: src/window.rs:873
-msgid "Add Account"
-msgstr "添加账户"
-
-#: src/window.rs:875
+#: src/window.rs:1003
 msgid "Edit Account"
 msgstr "编辑账户"
 
-#: src/window.rs:942
+#: src/window.rs:1041
 msgid "Remove account?"
 msgstr "移除账户？"
 
-#: src/window.rs:945
-msgid "This removes the local session for"
-msgstr "这将移除以下账户的本地会话"
+#: src/window.rs:1044
+msgid ""
+"This removes the local session for {name}. To fully unlink the device, open "
+"WhatsApp on your phone, go to Linked devices, select this device and choose "
+"Log out."
+msgstr ""
 
-#: src/window.rs:948
-msgid "The device stays linked on your phone until you remove it there."
-msgstr "在手机上手动移除前，该设备会一直保持关联状态。"
-
-#: src/window.rs:953
+#: src/window.rs:1050
 msgid "Remove"
 msgstr "移除"
 
-#: src/actions.rs:269
+#: src/window.rs:1361
+msgid "DevTools available only with --debug"
+msgstr ""
+
+#: src/window.rs:1404
+msgid "DevTools unavailable: {error}"
+msgstr ""
+
+#: src/window.rs:1646
+#, fuzzy
+msgid "Open logs"
+msgstr "打开"
+
+#: src/window.rs:1680
+msgid "{name} downloaded"
+msgstr ""
+
+#: src/window.rs:1687
+#, fuzzy
+msgid "Show in Folder"
+msgstr "显示窗口"
+
+#: src/window.rs:1732
+#, fuzzy
+msgid "Download complete"
+msgstr "下载目录"
+
+#: src/window.rs:1759
+#, fuzzy
+msgid "Download failed: {reason}"
+msgstr "下载目录"
+
+#: src/window.rs:1763
+msgid "“{name}” could not be saved."
+msgstr ""
+
+#: src/window.rs:1766
+msgid "OK"
+msgstr ""
+
+#: src/actions.rs:193
+msgid "Diagnostic info copied"
+msgstr ""
+
+#: src/actions.rs:531
+#, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
-"seamless desktop integration with comprehensive logging and crash reporting "
-"capabilities"
+"seamless desktop integration"
 msgstr ""
 "现代化的原生 GTK4/LibAdwaita WhatsApp Web 封装，提供无缝的桌面集成以及全面的"
 "日志记录和崩溃报告功能"
 
-#: src/actions.rs:288
+#: src/actions.rs:550
 msgid "Source"
 msgstr "源代码"
 
-#: src/actions.rs:291
+#: src/actions.rs:553
 msgid "Special Thanks"
 msgstr "特别鸣谢"
 
-#. Translators: tray tooltip body; leading number is the unread count.
-#: src/tray.rs:68
-msgid "unread"
-msgstr "未读"
+#: src/actions.rs:584
+msgid "Karere can keep running in the background to deliver messages."
+msgstr ""
 
-#: src/tray.rs:93
+#: src/actions.rs:632
+msgid ""
+"Could not enable running on startup. Allow Karere to run in the background "
+"in your system settings."
+msgstr ""
+
+#: src/tray.rs:111
 msgid "Hide Window"
 msgstr "隐藏窗口"
 
-#: src/tray.rs:95
+#: src/tray.rs:113
 msgid "Show Window"
 msgstr "显示窗口"
 
-#: src/tray.rs:151
+#: src/tray.rs:178
 msgid "About Karere"
 msgstr "关于 Karere"
 
-#: src/preferences.rs:90
+#: src/preferences.rs:105
 msgid "Restart Karere?"
 msgstr "重启 Karere？"
 
-#: src/preferences.rs:91
+#: src/preferences.rs:106
 msgid "Later"
 msgstr "稍后"
 
-#: src/preferences.rs:92
+#: src/preferences.rs:107
 msgid "Restart Now"
 msgstr "立即重启"
 
-#: src/preferences.rs:290
+#: src/preferences.rs:289
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "语言更改将在 Karere 重启后生效。"
 
-#: src/preferences.rs:319
+#: src/preferences.rs:323
 msgid "System Default"
 msgstr "系统默认"
 
-#: src/preferences.rs:346
+#: src/preferences.rs:350
 msgid "The language change takes effect after Karere restarts."
 msgstr "语言更改将在 Karere 重启后生效。"
+
+#: src/preferences.rs:396
+msgid "Select Download Folder"
+msgstr ""
+
+#: src/preferences.rs:506
+msgid "Allowed"
+msgstr ""
+
+#: src/preferences.rs:507
+msgid "Denied"
+msgstr ""
+
+#: src/preferences.rs:508
+msgid "Ask"
+msgstr ""
+
+#: src/preferences.rs:518
+msgid "Remove this decision"
+msgstr ""
+
+#: src/notifications.rs:235
+#, fuzzy
+msgid "New message"
+msgstr "未读消息"
+
+#: src/notifications.rs:252
+#, fuzzy
+msgid "View message"
+msgstr "未读消息"
+
+#: src/notifications.rs:259
+#, fuzzy
+msgid "Mute Account"
+msgstr "下一个账户"
+
+#: src/spellcheck_ui.rs:42
+#, fuzzy
+msgid "Automatic"
+msgstr "自动"
+
+#: src/spellcheck_ui.rs:86
+msgid "Pin to top"
+msgstr ""
+
+#: src/handlers/permission.rs:198
+msgid "{origin} is requesting access to {perms}."
+msgstr ""
+
+#: src/handlers/permission.rs:202
+#, fuzzy
+msgid "Permission request"
+msgstr "网站权限"
+
+#: src/handlers/permission.rs:203
+msgid "Deny"
+msgstr ""
+
+#: src/handlers/permission.rs:204
+msgid "Allow"
+msgstr ""
+
+#: src/handlers/permission.rs:264 src/handlers/permission.rs:278
+msgid "microphone"
+msgstr ""
+
+#: src/handlers/permission.rs:267 src/handlers/permission.rs:281
+msgid "camera"
+msgstr ""
+
+#: src/handlers/permission.rs:270
+msgid "screen audio"
+msgstr ""
+
+#: src/handlers/permission.rs:273
+msgid "screen sharing"
+msgstr ""
+
+#: src/handlers/permission.rs:284
+#, fuzzy
+msgid "location"
+msgstr "位置"
+
+#: src/handlers/permission.rs:287
+#, fuzzy
+msgid "notifications"
+msgstr "通知"
+
+#: src/handlers/permission.rs:290
+msgid "MIDI devices"
+msgstr ""
+
+#: src/handlers/permission.rs:293
+msgid "clipboard"
+msgstr ""
+
+#: src/handlers/permission.rs:298
+msgid "device access"
+msgstr ""
+
+#: src/handlers/permission.rs:310 src/handlers/permission.rs:318
+msgid "Microphone access"
+msgstr ""
+
+#: src/handlers/permission.rs:311 src/handlers/permission.rs:321
+msgid "Camera access"
+msgstr ""
+
+#: src/handlers/permission.rs:312
+msgid "Screen audio access"
+msgstr ""
+
+#: src/handlers/permission.rs:313
+msgid "Screen sharing"
+msgstr ""
+
+#: src/handlers/permission.rs:314 src/handlers/permission.rs:335
+msgid "Site access"
+msgstr ""
+
+#: src/handlers/permission.rs:327
+#, fuzzy
+msgid "Location access"
+msgstr "位置"
+
+#: src/handlers/permission.rs:330
+msgid "Clipboard access"
+msgstr ""
+
+#: src/handlers/permission.rs:333
+msgid "MIDI device access"
+msgstr ""
+
+#: src/handlers/request.rs:127
+msgid "Web view crashed — reconnecting…"
+msgstr ""
+
+#: src/handlers/request.rs:130
+msgid "Web view keeps crashing."
+msgstr ""
+
+#: src/handlers/request.rs:132
+msgid ""
+"The embedded WhatsApp view crashed repeatedly. Open the logs to investigate."
+msgstr ""
+
+#~ msgid "Accessibility Shortcuts"
+#~ msgstr "无障碍快捷键"
+
+#~ msgid ""
+#~ "Accessibility preferences: reduce-motion, focus-ring visibility, and "
+#~ "caret browsing"
+#~ msgstr "无障碍首选项：减少动效、焦点环可见性和光标浏览"
+
+#~ msgid ""
+#~ "Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+#~ "internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+#~ msgstr ""
+#~ "账户身份（姓名 + 头像）从 WhatsApp Web 的内部 Store 自动获取，并带有由徽章"
+#~ "标示的降级 DOM 抓取回退方案"
+
+#~ msgid "Add new contributor Sabri Ünal to the About dialog"
+#~ msgstr "在关于对话框中添加新贡献者 Sabri Ünal"
+
+#~ msgid "Add xdg-config/autostart permission for autostart support"
+#~ msgstr "添加 xdg-config/autostart 权限以支持自启动"
+
+#~ msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+#~ msgstr "在首选项中添加了“开机自启动”开关（默认：关闭）"
+
+#~ msgid ""
+#~ "Added GStreamer/PipeWire env vars to production Flatpak for efficient "
+#~ "media handling"
+#~ msgstr "为正式版 Flatpak 添加了 GStreamer/PipeWire 环境变量以高效处理媒体"
+
+#~ msgid ""
+#~ "Added WebKit cache control setting for improved rendering consistency"
+#~ msgstr "添加了 WebKit 缓存控制设置以提高渲染一致性"
+
+#~ msgid ""
+#~ "Added WebRTC permission handling in preparation for WhatsApp Web voice/"
+#~ "video calls"
+#~ msgstr "为 WhatsApp Web 语音/视频通话添加了 WebRTC 权限处理作为准备"
+
+#~ msgid ""
+#~ "Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+#~ msgstr "添加了缩放支持（Ctrl +/-/0），含持久化和首选项控制"
+
+#~ msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+#~ msgstr "使用 DEVELOPMENT 标志添加了编译时条件编译"
+
+#~ msgid ""
+#~ "Added complete multi-account support with sidebar and tray integration"
+#~ msgstr "添加了完整的多账户支持，含侧边栏和托盘集成"
+
+#~ msgid "Added contributors Aman Das and Cameo to about dialog"
+#~ msgstr "在关于对话框中添加了贡献者 Aman Das 和 Cameo"
+
+#~ msgid ""
+#~ "Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+#~ msgstr "添加了高质量的 Noto Color Emoji 字体（v2.047，支持 Unicode 16.0）"
+
+#~ msgid "Added middle-click paste from primary selection (selected text)"
+#~ msgstr "添加了来自主选区（已选文本）的中键粘贴"
+
+#~ msgid "Added new application icons"
+#~ msgstr "添加了新的应用程序图标"
+
+#~ msgid "Added per-account zoom settings and improved accessibility"
+#~ msgstr "添加了每账户缩放设置并改进了无障碍功能"
+
+#~ msgid "Added striped symbolic icons for development version"
+#~ msgstr "为开发版本添加了条纹符号图标"
+
+#~ msgid "Added subpixel font scaling and advanced rendering optimizations"
+#~ msgstr "添加了次像素字体缩放和高级渲染优化"
+
+#~ msgid ""
+#~ "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+#~ msgstr "通过支持 WebRTC 的 WebKitGTK 2.50.5 添加了语音和视频通话支持"
+
+#~ msgid ""
+#~ "Added: account switcher uses a popover on desktop windows (bottom sheet "
+#~ "preserved on mobile)"
+#~ msgstr "新增：账户切换器在桌面窗口上使用弹窗（移动端保留底部表单）"
+
+#~ msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+#~ msgstr "新增：将常用拼写检查语言置顶到下拉菜单顶部"
+
+#~ msgid ""
+#~ "Added: spell-check dropdown shows natural language names (\"English (UK)"
+#~ "\") instead of locale codes"
+#~ msgstr ""
+#~ "新增：拼写检查下拉菜单显示自然语言名称（“英语（英国）”）而非区域代码"
+
+#~ msgid "Advanced notification system with native desktop integration"
+#~ msgstr "具有原生桌面集成的高级通知系统"
+
+#~ msgid "Allow inspecting and debugging the WebView"
+#~ msgstr "允许检查和调试 WebView"
+
+#~ msgid ""
+#~ "BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+#~ "performance and integration."
+#~ msgstr "破坏性更改：从 Python 完全重写为原生 Vala 以获得更好的性能和集成。"
+
+#~ msgid "Better build system compatibility with different environments"
+#~ msgstr "更好地兼容不同环境的构建系统"
+
+#~ msgid "Better error handling for network disconnections"
+#~ msgstr "更好地处理网络断开连接"
+
+#~ msgid "Better error handling for network timeouts"
+#~ msgstr "更好地处理网络超时"
+
+#~ msgid "Better sandboxed environment compatibility"
+#~ msgstr "更好的沙盒环境兼容性"
+
+#~ msgid "Better support for modern desktop environments"
+#~ msgstr "更好地支持现代桌面环境"
+
+#~ msgid "Bug Fix Release"
+#~ msgstr "缺陷修复版本"
+
+#~ msgid "Bug Fixes:"
+#~ msgstr "缺陷修复："
+
+#~ msgid ""
+#~ "Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+#~ "dependencies to latest compatible versions"
+#~ msgstr ""
+#~ "将 WebKitGTK 升级到 2.52.3，LibreOffice 词典升级到 26.2.3.2，Rust 依赖项升"
+#~ "级到最新兼容版本"
+
+#~ msgid "Cache disabled by default to prevent emoji rendering issues"
+#~ msgstr "默认禁用缓存以防止表情符号渲染问题"
+
+#~ msgid "Changes:"
+#~ msgstr "更改："
+
+#~ msgid "Code Quality Improvements:"
+#~ msgstr "代码质量改进："
+
+#~ msgid "Complete internationalization support"
+#~ msgstr "完整的国际化支持"
+
+#~ msgid "Comprehensive accessibility support"
+#~ msgstr "全面的无障碍支持"
+
+#~ msgid "Comprehensive test suite with unit and integration tests"
+#~ msgstr "包含单元测试和集成测试的全面测试套件"
+
+#~ msgid "Connected show_notification signal handler for WebKit notifications"
+#~ msgstr "为 WebKit 通知连接了 show_notification 信号处理器"
+
+#~ msgid "Converted template files to preprocessor directives for cleaner code"
+#~ msgstr "将模板文件转换为预处理器指令以使代码更简洁"
+
+#~ msgid "Corrected AppStream metainfo format compliance"
+#~ msgstr "更正了 AppStream metainfo 格式合规性"
+
+#~ msgid "Corrected accessibility focus handling"
+#~ msgstr "更正了无障碍焦点处理"
+
+#~ msgid "Corrected dependency version specifications in meson.build"
+#~ msgstr "更正了 meson.build 中的依赖项版本规格"
+
+#~ msgid "Corrected metadata description references"
+#~ msgstr "更正了元数据描述引用"
+
+#~ msgid "Corrected window state persistence on shutdown"
+#~ msgstr "更正了关闭时的窗口状态持久化"
+
+#~ msgid "Ctrl+N keyboard shortcut for opening a new chat"
+#~ msgstr "用于打开新聊天的 Ctrl+N 键盘快捷键"
+
+#~ msgid "Developer Shortcuts"
+#~ msgstr "开发者快捷键"
+
+#~ msgid "Disabled problematic WebKit caches causing font corruption"
+#~ msgstr "禁用了导致字体损坏的有问题的 WebKit 缓存"
+
+#~ msgid "Documentation:"
+#~ msgstr "文档："
+
+#~ msgid "Eliminated .vala.in template substitution system"
+#~ msgstr "消除了 .vala.in 模板替换系统"
+
+#~ msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+#~ msgstr "消除了影响表情符号渲染的 WebKit 缓存损坏"
+
+#~ msgid "Enable Developer Tools"
+#~ msgstr "启用开发者工具"
+
+#~ msgid "Enable keyboard shortcuts for common actions"
+#~ msgstr "为常用操作启用键盘快捷键"
+
+#~ msgid "Enable shortcuts for accessibility features"
+#~ msgstr "为无障碍功能启用快捷键"
+
+#~ msgid "Enable shortcuts for developer tools"
+#~ msgstr "为开发者工具启用快捷键"
+
+#~ msgid "Enable shortcuts for notification actions"
+#~ msgstr "为通知操作启用快捷键"
+
+#~ msgid "Enhanced 2D canvas acceleration for better graphics performance"
+#~ msgstr "增强了 2D 画布加速以获得更好的图形性能"
+
+#~ msgid "Enhanced CI/CD pipeline stability"
+#~ msgstr "增强了 CI/CD 流水线稳定性"
+
+#~ msgid "Enhanced Flathub compliance and validation"
+#~ msgstr "增强了 Flathub 合规性和验证"
+
+#~ msgid "Enhanced URL validation for external link detection"
+#~ msgstr "增强了外部链接检测的 URL 验证"
+
+#~ msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+#~ msgstr "通过最大化硬件加速增强了 WebKit 渲染"
+
+#~ msgid "Enhanced WebKitGTK 6.0 integration"
+#~ msgstr "增强的 WebKitGTK 6.0 集成"
+
+#~ msgid ""
+#~ "Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+#~ "compatibility"
+#~ msgstr "增强了图像粘贴，采用 Base64 编码以确保 WhatsApp Web 兼容性可靠"
+
+#~ msgid "Enhanced logging for external link operations"
+#~ msgstr "增强了外部链接操作的日志记录"
+
+#~ msgid "Enhanced packaging for better compatibility"
+#~ msgstr "增强了打包以获得更好的兼容性"
+
+#~ msgid "Enhanced performance and stability"
+#~ msgstr "增强了性能和稳定性"
+
+#~ msgid "Enhanced security with proper sandboxing"
+#~ msgstr "通过适当的沙盒化增强安全性"
+
+#~ msgid "Enhanced stability and performance optimizations"
+#~ msgstr "增强了稳定性和性能优化"
+
+#~ msgid "Enhanced stability during long sessions"
+#~ msgstr "增强了长会话期间的稳定性"
+
+#~ msgid "Enhanced stability for extended usage"
+#~ msgstr "增强了长时间使用的稳定性"
+
+#~ msgid "Enhanced visual documentation for users"
+#~ msgstr "为用户增强了可视化文档"
+
+#~ msgid "Ensure application starts properly in the background without delay"
+#~ msgstr "确保应用程序在后台正确启动且无延迟"
+
+#~ msgid ""
+#~ "Fixed \"Too many open files\" crash by reusing notification resources"
+#~ msgstr "通过复用通知资源修复了“打开文件过多”崩溃"
+
+#~ msgid ""
+#~ "Fixed Ctrl+V paste for text content - now works for both text and images"
+#~ msgstr "修复了文本内容的 Ctrl+V 粘贴——现在文本和图像均可用"
+
+#~ msgid "Fixed Dead Key/composition input issues"
+#~ msgstr "修复了死键/组合输入问题"
+
+#~ msgid "Fixed Flatpak build failure by correcting config"
+#~ msgstr "通过修正配置修复了 Flatpak 构建失败"
+
+#~ msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+#~ msgstr "修复了由 ashpd 0.13 API 更改导致的 Flatpak 构建失败"
+
+#~ msgid "Fixed Open action for downloaded files"
+#~ msgstr "修复了已下载文件的打开操作"
+
+#~ msgid "Fixed WebView zoom being enabled by default (now disabled)"
+#~ msgstr "修复了 WebView 缩放默认启用的问题（现已禁用）"
+
+#~ msgid ""
+#~ "Fixed WhatsApp notification permission not persisting across sessions"
+#~ msgstr "修复了 WhatsApp 通知权限无法跨会话保留的问题"
+
+#~ msgid "Fixed application freeze during lifecycle events"
+#~ msgstr "修复了生命周期事件期间的应用冻结"
+
+#~ msgid ""
+#~ "Fixed application freezing on resume by reverting aggressive cache "
+#~ "optimization"
+#~ msgstr "通过还原激进的缓存优化修复了恢复时应用冻结的问题"
+
+#~ msgid "Fixed autostart toggle pathing for Flatpak environments"
+#~ msgstr "修复了 Flatpak 环境的自启动开关路径问题"
+
+#~ msgid "Fixed background notifications reliability"
+#~ msgstr "修复了后台通知的可靠性"
+
+#~ msgid "Fixed background validation to ensure app starts correctly"
+#~ msgstr "修复了后台验证以确保应用正确启动"
+
+#~ msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+#~ msgstr "修复了 blob URL 下载（例如媒体查看器中的保存图像）"
+
+#~ msgid "Fixed clipboard manager intercepting all paste events"
+#~ msgstr "修复了剪贴板管理器拦截所有粘贴事件的问题"
+
+#~ msgid "Fixed crash on launch due to memory pressure threshold ordering"
+#~ msgstr "修复了因内存压力阈值排序导致的启动崩溃"
+
+#~ msgid "Fixed crash when handling invalid notification data"
+#~ msgstr "修复了处理无效通知数据时的崩溃"
+
+#~ msgid "Fixed crash when handling invalid user input data"
+#~ msgstr "修复了处理无效用户输入数据时的崩溃"
+
+#~ msgid ""
+#~ "Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+#~ "activation"
+#~ msgstr "通过实现 D-Bus 激活修复了严重的启动冻结（旋转指示器）问题"
+
+#~ msgid "Fixed dead key composition for first character in input fields"
+#~ msgstr "修复了输入字段中第一个字符的死键组合问题"
+
+#~ msgid "Fixed double-paste issue with middle-click"
+#~ msgstr "修复了中键的双重粘贴问题"
+
+#~ msgid "Fixed download destination and context menu issues"
+#~ msgstr "修复了下载目标和右键菜单问题"
+
+#~ msgid "Fixed download destination handling"
+#~ msgstr "修复了下载目标处理"
+
+#~ msgid "Fixed download filenames now use WhatsApp's original filename"
+#~ msgstr "修复了下载文件名，现在使用 WhatsApp 的原始文件名"
+
+#~ msgid "Fixed duplicate downloads auto-increment instead of failing"
+#~ msgstr "修复了重名下载，现在自动递增而非失败"
+
+#~ msgid "Fixed duplicate provides tags in metainfo validation"
+#~ msgstr "修复了 metainfo 验证中重复的 provides 标签"
+
+#~ msgid ""
+#~ "Fixed external links not opening in default browser when running in "
+#~ "Flatpak"
+#~ msgstr "修复了在 Flatpak 中运行时外部链接无法在默认浏览器中打开的问题"
+
+#~ msgid "Fixed freezes when viewing media galleries"
+#~ msgstr "修复了查看媒体库时的卡顿"
+
+#~ msgid "Fixed invalid meson version requirement preventing builds"
+#~ msgstr "修复了阻止构建的无效 meson 版本要求"
+
+#~ msgid "Fixed missing GSettings schema in Flatpak builds"
+#~ msgstr "修复了 Flatpak 构建中缺少 GSettings 架构的问题"
+
+#~ msgid "Fixed missing dictionaries on startup"
+#~ msgstr "修复了启动时缺少词典的问题"
+
+#~ msgid ""
+#~ "Fixed missing tray icon on GNOME by adding StatusNotifierWatcher "
+#~ "permission"
+#~ msgstr ""
+#~ "通过添加 StatusNotifierWatcher 权限修复了 GNOME 上缺少托盘图标的问题"
+
+#~ msgid "Fixed notification sounds now respect GNOME volume controls"
+#~ msgstr "修复了通知声音现在遵循 GNOME 音量控制"
+
+#~ msgid "Fixed notifications banner appearing on every app launch"
+#~ msgstr "修复了每次应用启动时都出现通知横幅的问题"
+
+#~ msgid ""
+#~ "Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+#~ "Linux environments"
+#~ msgstr "修复了在 Phosh 和基于触摸的 Linux 环境中屏幕键盘无法可靠出现的问题"
+
+#~ msgid "Fixed potential rendering inconsistencies"
+#~ msgstr "修复了潜在的渲染不一致问题"
+
+#~ msgid "Fixed random emoji display issues and blank emoji problems"
+#~ msgstr "修复了随机表情符号显示问题和空白表情符号问题"
+
+#~ msgid "Fixed startup race conditions and resource usage issues"
+#~ msgstr "修复了启动竞争条件和资源使用问题"
+
+#~ msgid "Fixed tray icon quit behavior"
+#~ msgstr "修复了托盘图标退出行为"
+
+#~ msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+#~ msgstr "修复了 KDE/GNOME 上的托盘图标（在浅色/深色主题下均可见）"
+
+#~ msgid ""
+#~ "Fixed voice and video calls in production Flatpak (Flathub linter-"
+#~ "compatible pre-built plugin)"
+#~ msgstr ""
+#~ "修复了正式版 Flatpak 中的语音和视频通话（兼容 Flathub 检查器的预构建插件）"
+
+#~ msgid ""
+#~ "Fixed voice and video calls not working in the production build (missing "
+#~ "noise suppression plugin)"
+#~ msgstr "修复了正式构建中语音和视频通话无法工作的问题（缺少噪声抑制插件）"
+
+#~ msgid ""
+#~ "Fixed voice and video calls showing \"Your browser doesn't support "
+#~ "calling\""
+#~ msgstr "修复了语音和视频通话显示“您的浏览器不支持通话”的问题"
+
+#~ msgid ""
+#~ "Fixed window now properly unminimizes when activated from launcher or tray"
+#~ msgstr "修复了从启动器或托盘激活时窗口现在能正确取消最小化"
+
+#~ msgid "Fixed window resize behavior to prevent excessive reloading"
+#~ msgstr "修复了窗口调整大小行为以防止过度重新加载"
+
+#~ msgid "Fixed window size increasing on every restart"
+#~ msgstr "修复了每次重启时窗口尺寸都增大的问题"
+
+#~ msgid "Fixed zombie process accumulation"
+#~ msgstr "修复了僵尸进程累积"
+
+#~ msgid "Fixed:"
+#~ msgstr "已修复："
+
+#~ msgid ""
+#~ "Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+#~ "(silences sounds)"
+#~ msgstr "已修复：应用现在遵循 GNOME 上的系统“请勿打扰”设置（静音）"
+
+#~ msgid "Fixed: Download destination path handling regression"
+#~ msgstr "已修复：下载目标路径处理回归"
+
+#~ msgid ""
+#~ "Fixed: Handle WebKit web process crashes with auto-reload and user "
+#~ "notification"
+#~ msgstr "已修复：通过自动重新加载和用户通知处理 WebKit 网页进程崩溃"
+
+#~ msgid "Fixed: JS injection and path traversal vulnerabilities"
+#~ msgstr "已修复：JS 注入和路径遍历漏洞"
+
+#~ msgid ""
+#~ "Fixed: JS injection and path traversal vulnerabilities in download "
+#~ "handling"
+#~ msgstr "已修复：下载处理中的 JS 注入和路径遍历漏洞"
+
+#~ msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+#~ msgstr "已修复：通知绕过请勿打扰的视觉提示（优先级降为普通）"
+
+#~ msgid "Fixed: Panic in notification handling"
+#~ msgstr "已修复：通知处理中的崩溃（panic）"
+
+#~ msgid ""
+#~ "Fixed: Resolved webview reload loop on startup due to incorrect window "
+#~ "size detection"
+#~ msgstr "已修复：解决了因窗口尺寸检测错误导致的启动时 WebView 重新加载循环"
+
+#~ msgid ""
+#~ "Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, "
+#~ "Fedora 43, CachyOS, Bazzite, postmarketOS)"
+#~ msgstr ""
+#~ "已修复：在 GNOME 50 / glibc 2.42+ 系统（Arch、Fedora 43、CachyOS、"
+#~ "Bazzite、postmarketOS）上启动时应用崩溃"
+
+#~ msgid ""
+#~ "Fixed: blank-window race when autostarted before the network/portal stack "
+#~ "is ready (auto-retry with exponential backoff)"
+#~ msgstr ""
+#~ "已修复：在网络/门户栈就绪前自启动时出现的空白窗口竞争（使用指数退避自动重"
+#~ "试）"
+
+#~ msgid ""
+#~ "Fixed: downloaded files with duplicate names silently overwriting each "
+#~ "other (now appends (1), (2), ...)"
+#~ msgstr "已修复：重名下载文件相互静默覆盖的问题（现在会追加 (1)、(2)、…）"
+
+#~ msgid ""
+#~ "Fixed: lingering notification badges/banners after focus on GNOME 50 "
+#~ "(auto-clear behavior removed upstream — Karere now dismisses "
+#~ "notifications explicitly)"
+#~ msgstr ""
+#~ "已修复：在 GNOME 50 上聚焦后残留的通知徽章/横幅（上游已移除自动清除行为——"
+#~ "Karere 现在会显式关闭通知）"
+
+#~ msgid ""
+#~ "Fixed: locale-dependent crash that required manually setting "
+#~ "LC_ALL=en_GB.UTF-8"
+#~ msgstr "已修复：需要手动设置 LC_ALL=en_GB.UTF-8 的区域相关崩溃"
+
+#~ msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+#~ msgstr "已修复：因近期 WhatsApp Web DOM 更改导致的移动布局损坏"
+
+#~ msgid "Full rewrite in Rust! 🦀"
+#~ msgstr "用 Rust 完全重写！🦀"
+
+#~ msgid "General improvements and versioning updates"
+#~ msgstr "常规改进和版本更新"
+
+#~ msgid "Granular privacy and notification controls"
+#~ msgstr "细粒度的隐私和通知控制"
+
+#~ msgid "Hardware-accelerated rendering"
+#~ msgstr "硬件加速渲染"
+
+#~ msgid "High Contrast Mode"
+#~ msgstr "高对比度模式"
+
+#~ msgid "Implemented Flatpak portal system for external link handling"
+#~ msgstr "实现了用于外部链接处理的 Flatpak 门户系统"
+
+#~ msgid "Implemented UserScript injection for Notification.permission state"
+#~ msgstr "实现了用于 Notification.permission 状态的 UserScript 注入"
+
+#~ msgid "Improved build system maintainability and type safety"
+#~ msgstr "改进了构建系统的可维护性和类型安全性"
+
+#~ msgid "Improved build system with cleaner dependency management"
+#~ msgstr "通过更简洁的依赖管理改进了构建系统"
+
+#~ msgid "Improved emoji consistency with bundled font system"
+#~ msgstr "通过捆绑字体系统改进了表情符号一致性"
+
+#~ msgid "Improved error handling and recovery mechanisms"
+#~ msgstr "改进了错误处理和恢复机制"
+
+#~ msgid "Improved external link handling with proper Flatpak portal support"
+#~ msgstr "通过正确的 Flatpak 门户支持改进了外部链接处理"
+
+#~ msgid "Improved font loading stability and reduced race conditions"
+#~ msgstr "改进了字体加载稳定性并减少了竞争条件"
+
+#~ msgid "Improved icon compatibility across desktop environments"
+#~ msgstr "改进了跨桌面环境的图标兼容性"
+
+#~ msgid "Improved icon rendering (symbolic icons now use currentColor)"
+#~ msgstr "改进了图标渲染（符号图标现在使用 currentColor）"
+
+#~ msgid "Improved memory efficiency and startup performance"
+#~ msgstr "改进的内存效率和启动性能"
+
+#~ msgid "Improved mobile UI resizing consistency"
+#~ msgstr "改进了移动 UI 调整大小的一致性"
+
+#~ msgid "Improved overall stability"
+#~ msgstr "改进了整体稳定性"
+
+#~ msgid "Improved system integration with latest platform libraries"
+#~ msgstr "通过最新的平台库改进了系统集成"
+
+#~ msgid "Improved translation file consistency"
+#~ msgstr "改进了翻译文件的一致性"
+
+#~ msgid "Improvements:"
+#~ msgstr "改进："
+
+#~ msgid "Increase contrast for better readability"
+#~ msgstr "提高对比度以增强可读性"
+
+#~ msgid ""
+#~ "Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+#~ "Existing accounts must be re-linked — there is no migration from v3."
+#~ msgstr ""
+#~ "Karere 4.0 是一次硬分叉，在 CEF/Chromium 148 上重建了应用程序。现有账户必"
+#~ "须重新关联——无法从 v3 迁移。"
+
+#~ msgid ""
+#~ "Live spell-check language switching and a separately installable Debug "
+#~ "symbol extension for symbolicated crash reports"
+#~ msgstr ""
+#~ "实时拼写检查语言切换，以及可单独安装的用于符号化崩溃报告的 Debug 符号扩展"
+
+#~ msgid "Major changes:"
+#~ msgstr "主要更改："
+
+#~ msgid "Migrated Flatpak build logic to meson.build"
+#~ msgstr "将 Flatpak 构建逻辑迁移到 meson.build"
+
+#~ msgid "Migrated from Python 3 to native Vala compilation"
+#~ msgstr "从 Python 3 迁移到原生 Vala 编译"
+
+#~ msgid "Minor README corrections"
+#~ msgstr "次要的 README 更正"
+
+#~ msgid "Minor bug fixes and stability improvements"
+#~ msgstr "次要缺陷修复和稳定性改进"
+
+#~ msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+#~ msgstr "移动布局设置改为下拉菜单（自动/启用/禁用）"
+
+#~ msgid ""
+#~ "Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+#~ "Lomiri"
+#~ msgstr "移动布局支持，含 Phosh、Plasma Mobile 和 Lomiri 的自动检测"
+
+#~ msgid ""
+#~ "Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+#~ "popover for the off-screen-rendered web view"
+#~ msgstr ""
+#~ "移动响应式布局、JavaScript 全屏，以及用于离屏渲染网页视图的 OSR 右键菜单弹"
+#~ "窗"
+
+#~ msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+#~ msgstr "现代 LibAdwaita UI 与 Blueprint 声明式界面"
+
+#~ msgid "Modern Meson build system with Blueprint UI compilation"
+#~ msgstr "现代 Meson 构建系统与 Blueprint UI 编译"
+
+#~ msgid "More reliable link opening mechanism"
+#~ msgstr "更可靠的链接打开机制"
+
+#~ msgid "More robust dependency handling"
+#~ msgstr "更稳健的依赖处理"
+
+#~ msgid ""
+#~ "Multi-account support: each account runs in an isolated CEF "
+#~ "RequestContext with its own cookies and storage; accounts are ordered "
+#~ "most-recently-used"
+#~ msgstr ""
+#~ "多账户支持：每个账户在隔离的 CEF RequestContext 中运行，拥有各自的 Cookie "
+#~ "和存储；账户按最近使用顺序排列"
+
+#~ msgid "Multi-language spell checking support"
+#~ msgstr "多语言拼写检查支持"
+
+#~ msgid "Native Vala/GTK4 implementation for optimal performance"
+#~ msgstr "原生 Vala/GTK4 实现以获得最佳性能"
+
+#~ msgid ""
+#~ "Native system tray (StatusNotifierItem), desktop notifications, download "
+#~ "manager, and image/text paste reimplemented on the CEF stack"
+#~ msgstr ""
+#~ "在 CEF 技术栈上重新实现的原生系统托盘（StatusNotifierItem）、桌面通知、下"
+#~ "载管理器和图像/文本粘贴"
+
+#~ msgid "New Features:"
+#~ msgstr "新功能："
+
+#~ msgid "New System Tray Icon support"
+#~ msgstr "新增系统托盘图标支持"
+
+#~ msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+#~ msgstr "注意：升级后需要重新关联 WhatsApp 账户"
+
+#~ msgid ""
+#~ "Notification Chat Linking: Clicking a notification now opens the specific "
+#~ "chat in Karere."
+#~ msgstr "通知聊天链接：点击通知现在会在 Karere 中打开对应的聊天。"
+
+#~ msgid "Notification Shortcuts"
+#~ msgstr "通知快捷键"
+
+#~ msgid "Notifications fully working with persistence fixes"
+#~ msgstr "通知完全可用，并修复了持久化问题"
+
+#~ msgid "Optimized font loading to eliminate display conflicts"
+#~ msgstr "优化了字体加载以消除显示冲突"
+
+#~ msgid "Optimized memory usage in mobile responsive scripts"
+#~ msgstr "优化了移动响应式脚本中的内存使用"
+
+#~ msgid ""
+#~ "Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and "
+#~ "an accessibility minimum-zoom floor"
+#~ msgstr ""
+#~ "每账户缩放（Ctrl +/-/0），可选标题栏缩放控制，以及无障碍最低缩放下限"
+
+#~ msgid "Performance optimizations for faster startup"
+#~ msgstr "更快启动的性能优化"
+
+#~ msgid "Performance optimizations for scrolling"
+#~ msgstr "滚动的性能优化"
+
+#~ msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+#~ msgstr "从 Vala 移植到原生 Rust/GTK4/Libadwaita"
+
+#~ msgid "Production-ready error handling and crash recovery"
+#~ msgstr "可投入生产的错误处理和崩溃恢复"
+
+#~ msgid "Professional logging and crash reporting system"
+#~ msgstr "专业的日志记录和崩溃报告系统"
+
+#~ msgid "Redesigned application icons for stable and development variants"
+#~ msgstr "为稳定版和开发版重新设计了应用程序图标"
+
+#~ msgid "Redesigned/streamlined preferences dialog"
+#~ msgstr "重新设计/精简了首选项对话框"
+
+#~ msgid "Refreshed About dialog screenshot"
+#~ msgstr "刷新了关于对话框截图"
+
+#~ msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+#~ msgstr "移除直接的 D-Bus 通知权限以使清单更简洁"
+
+#~ msgid "Remove unnecessary autostart permission to satisfy linter"
+#~ msgstr "移除不必要的自启动权限以满足检查器要求"
+
+#~ msgid "Removed ffmpeg-full extension (no longer required)"
+#~ msgstr "移除了 ffmpeg-full 扩展（不再需要）"
+
+#~ msgid ""
+#~ "Removed hardcoded blueprint compiler paths for cross-architecture support"
+#~ msgstr "移除了硬编码的 blueprint 编译器路径以支持跨架构"
+
+#~ msgid ""
+#~ "Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+#~ "only)"
+#~ msgstr "移除了不必要的移动用户代理切换（WhatsApp Web 仅限桌面）"
+
+#~ msgid ""
+#~ "Replaced window.vala.in and preferences.vala.in with direct .vala files"
+#~ msgstr "用直接的 .vala 文件替换了 window.vala.in 和 preferences.vala.in"
+
+#~ msgid "Resolved WebKit crashes on media-heavy pages"
+#~ msgstr "解决了在媒体密集页面上的 WebKit 崩溃"
+
+#~ msgid "Resolved compatibility issues with newer GNOME environments"
+#~ msgstr "解决了与较新 GNOME 环境的兼容性问题"
+
+#~ msgid "Resolved flatpak-builder compatibility issues"
+#~ msgstr "解决了 flatpak-builder 兼容性问题"
+
+#~ msgid "Resolved invalid markup in release descriptions"
+#~ msgstr "解决了发行说明中的无效标记"
+
+#~ msgid "Resolved memory leak in WebKit manager cleanup"
+#~ msgstr "解决了 WebKit 管理器清理中的内存泄漏"
+
+#~ msgid "Resolved memory leak in notification cleanup"
+#~ msgstr "解决了通知清理中的内存泄漏"
+
+#~ msgid "Restore autostart permission for improved compatibility"
+#~ msgstr "恢复自启动权限以提高兼容性"
+
+#~ msgid "Restored Safari Linux user agent for native WebKit experience"
+#~ msgstr "恢复了 Safari Linux 用户代理以获得原生 WebKit 体验"
+
+#~ msgid "Restored correct app icons and transparent backgrounds"
+#~ msgstr "恢复了正确的应用图标和透明背景"
+
+#~ msgid "Shortcuts"
+#~ msgstr "快捷键"
+
+#~ msgid "Show or hide the zoom buttons"
+#~ msgstr "显示或隐藏缩放按钮"
+
+#~ msgid "Simplified emoji font configuration to single high-quality source"
+#~ msgstr "将表情符号字体配置简化为单一高质量来源"
+
+#~ msgid "Simplified source file management in build system"
+#~ msgstr "简化了构建系统中的源文件管理"
+
+#~ msgid "Some settings only apply when Karere controls the popup"
+#~ msgstr "部分设置仅在 Karere 控制弹窗时生效"
+
+#~ msgid "Streamlined font stack for consistent emoji appearance"
+#~ msgstr "简化了字体栈以获得一致的表情符号外观"
+
+#~ msgid ""
+#~ "Switch to XDG Background Portal for autostart (improves security and "
+#~ "compatibility)"
+#~ msgstr "切换到 XDG 后台门户用于自启动（提高安全性和兼容性）"
+
+#~ msgid ""
+#~ "Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+#~ msgstr "切换到 XDG 通知门户（ashpd）以更好地支持沙盒化"
+
+#~ msgid ""
+#~ "Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+#~ "proprietary-codec builds for H.264/AAC video attachment playback"
+#~ msgstr ""
+#~ "将渲染后端从 WebKitGTK 切换到 CEF/Chromium 148，并提供专有编解码器构建以支"
+#~ "持 H.264/AAC 视频附件播放"
+
+#~ msgid "Technical Changes:"
+#~ msgstr "技术更改："
+
+#~ msgid "Technical Improvements:"
+#~ msgstr "技术改进："
+
+#~ msgid "Toggle Header Bar Zoom Controls"
+#~ msgstr "切换标题栏缩放控制"
+
+#~ msgid "Tray icon click now toggles window visibility"
+#~ msgstr "点击托盘图标现在可切换窗口可见性"
+
+#~ msgid "Update and Bug Fix Release"
+#~ msgstr "更新和缺陷修复版本"
+
+#~ msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+#~ msgstr "将 GNOME 运行时更新到版本 49 以增强兼容性"
+
+#~ msgid "Updated SettingsManager to be the default for all settings access"
+#~ msgstr "更新 SettingsManager 使其成为所有设置访问的默认方式"
+
+#~ msgid "Updated about dialog screenshot"
+#~ msgstr "更新了关于对话框截图"
+
+#~ msgid "Updated all Rust dependencies to latest versions"
+#~ msgstr "将所有 Rust 依赖项更新到最新版本"
+
+#~ msgid "Updated all references from appdata to metainfo format"
+#~ msgstr "将所有引用从 appdata 更新为 metainfo 格式"
+
+#~ msgid "Updated application screenshots"
+#~ msgstr "更新了应用程序截图"
+
+#~ msgid "Updated application screenshots with current UI appearance"
+#~ msgstr "用当前 UI 外观更新了应用程序截图"
+
+#~ msgid ""
+#~ "Updated application summary and description for better AppStream "
+#~ "compliance"
+#~ msgstr "更新了应用程序摘要和描述以更好地符合 AppStream 规范"
+
+#~ msgid "Updated build configuration and dependencies"
+#~ msgstr "更新了构建配置和依赖项"
+
+#~ msgid "Updated meson.build to use Vala preprocessor directives"
+#~ msgstr "更新 meson.build 以使用 Vala 预处理器指令"
+
+#~ msgid "Upgraded to GNOME Platform 50"
+#~ msgstr "升级到 GNOME Platform 50"
+
+#~ msgid "WebKitGTK 6.0 storage persistence verified and documented"
+#~ msgstr "验证并记录了 WebKitGTK 6.0 存储持久化"
+
+#~ msgid ""
+#~ "Webcam Support: Added support for using the webcam (Status updates, Video "
+#~ "calls) with a new permission dialog."
+#~ msgstr ""
+#~ "摄像头支持：添加了使用摄像头（状态更新、视频通话）的支持，并配有新的权限对"
+#~ "话框。"
+
+#~ msgid "Window size is saved and restored when hiding/showing"
+#~ msgstr "隐藏/显示时保存并恢复窗口尺寸"
+
+#~ msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+#~ msgstr "⌨️ 使用 AdwShortcutsDialog 添加了键盘快捷键对话框"
+
+#~ msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+#~ msgstr "♻️ 重大重构：用 PascalCase 文件名重新组织了代码库"
+
+#~ msgid "♻️ Refactored Window.vala into specialized manager components"
+#~ msgstr "♻️ 将 Window.vala 重构为专用的管理器组件"
+
+#~ msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+#~ msgstr "♻️ 移除了自定义日志记录和崩溃报告（改用系统 journalctl）"
+
+#~ msgid ""
+#~ "♿ Enhanced accessibility with screen reader optimization and keyboard "
+#~ "navigation"
+#~ msgstr "♿ 通过屏幕阅读器优化和键盘导航增强了无障碍功能"
+
+#~ msgid ""
+#~ "⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+#~ "with WhatsApp Web as this is a completely new application implementation."
+#~ msgstr ""
+#~ "⚠️ 重要：升级后，您需要重新将移动设备与 WhatsApp Web 同步，因为这是一个全新"
+#~ "的应用程序实现。"
+
+#~ msgid "⚡ Performance optimizations for startup and shutdown"
+#~ msgstr "⚡ 启动和关闭的性能优化"
+
+#~ msgid "✅ Fixed WhatsApp Web notification banner persistence"
+#~ msgstr "✅ 修复了 WhatsApp Web 通知横幅的持久化问题"
+
+#~ msgid "✅ Fixed notifications not working properly"
+#~ msgstr "✅ 修复了通知无法正常工作的问题"
+
+#~ msgid ""
+#~ "✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+#~ msgstr "✨ 增强的表情符号支持、外部链接处理和构建改进"
+
+#~ msgid "🎉 Feature Release"
+#~ msgstr "🎉 功能版本"
+
+#~ msgid "🎉 Major Release 2.0.0"
+#~ msgstr "🎉 重大版本 2.0.0"
+
+#~ msgid "🎉 Version 1.0.0 - Major Milestone Release"
+#~ msgstr "🎉 版本 1.0.0 - 重大里程碑版本"
+
+#~ msgid "🎤 Microphone permission support for voice notes"
+#~ msgstr "🎤 用于语音便条的麦克风权限支持"
+
+#~ msgid "🐛 Bug Fix Release"
+#~ msgstr "🐛 缺陷修复版本"
+
+#~ msgid "🐛 Bug Fixes and Improvements"
+#~ msgstr "🐛 缺陷修复和改进"
+
+#~ msgid "🐛 Runtime Update and Bug Fixes"
+#~ msgstr "🐛 运行时更新和缺陷修复"
+
+#~ msgid "📖 Added MPRIS workaround documentation"
+#~ msgstr "📖 添加了 MPRIS 变通方案文档"
+
+#~ msgid "📚 Added spell checking configuration guide"
+#~ msgstr "📚 添加了拼写检查配置指南"
+
+#~ msgid "📚 Documented all keyboard shortcuts by category"
+#~ msgstr "📚 按类别记录了所有键盘快捷键"
+
+#~ msgid "📚 Enhanced README with accessibility features documentation"
+#~ msgstr "📚 用无障碍功能文档增强了 README"
+
+#~ msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+#~ msgstr "📚 修复了 GitHub 仓库 URL（karere-vala → karere）"
+
+#~ msgid "📝 Added comprehensive spell checking system with auto-detection"
+#~ msgstr "📝 添加了带自动检测的全面拼写检查系统"
+
+#~ msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+#~ msgstr "📝 异步词典加载以使拼写检查初始化更流畅"
+
+#~ msgid "📝 Documentation and Metadata Update"
+#~ msgstr "📝 文档和元数据更新"
+
+#~ msgid ""
+#~ "📥 Implemented download manager with custom directory and toast "
+#~ "notifications"
+#~ msgstr "📥 实现了带自定义目录和提示通知的下载管理器"
+
+#~ msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+#~ msgstr "📸 将截图重新组织到 data/screenshots/ 目录中"
+
+#~ msgid "📸 Screenshots and Documentation Update"
+#~ msgstr "📸 截图和文档更新"
+
+#~ msgid "🔄 Manual reload and auto-reload on network reconnection"
+#~ msgstr "🔄 手动重新加载及网络重连时的自动重新加载"
+
+#~ msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+#~ msgstr "🔤 集成了来自 LibreOffice 的 80+ 种语言词典"
+
+#~ msgid "🔧 Code Refactoring and Architecture Improvements"
+#~ msgstr "🔧 代码重构和架构改进"
+
+#~ msgid "🔧 Maintenance Release"
+#~ msgstr "🔧 维护版本"
+
+#~ msgid "🔧 Metadata and Standards Compliance"
+#~ msgstr "🔧 元数据和标准合规性"
+
+#~ msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+#~ msgstr "🖼️ 添加了通过剪贴板粘贴图像的支持（Ctrl+V）"
+
+#~ msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+#~ msgstr "🗑️ 清理了过时的测试文件和未使用的依赖项"
+
+#~ msgid ""
+#~ "🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+#~ msgstr "🗑️ 移除了请勿打扰功能（由系统通知守护进程处理）"
+
+#~ msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+#~ msgstr "🗑️ 移除了 json-glib、gee 和 libsoup 依赖项"
+
+#~ msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+#~ msgstr "🚀 重大架构迁移：从 Python 到 Vala/GTK4"
+
+#~ msgid "🚀 Start in background option for autostart"
+#~ msgstr "🚀 自启动的后台启动选项"
+
+#~ msgid "🧹 Centralized settings management with SettingsManager singleton"
+#~ msgstr "🧹 通过 SettingsManager 单例集中管理设置"
+
+#~ msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+#~ msgstr "🧹 移除了 DependencyContainer.vala（未使用的依赖注入）"
+
+#~ msgid "degraded"
+#~ msgstr "已降级"
+
+#~ msgid "Avatar URL"
+#~ msgstr "头像 URL"
+
+#~ msgid "Add Account"
+#~ msgstr "添加账户"
+
+#~ msgid "This removes the local session for"
+#~ msgstr "这将移除以下账户的本地会话"
+
+#~ msgid "The device stays linked on your phone until you remove it there."
+#~ msgstr "在手机上手动移除前，该设备会一直保持关联状态。"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 20:29+0100\n"
+"POT-Creation-Date: 2026-11-10 10:44+0000\n"
 "PO-Revision-Date: 2026-06-06 21:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -22,13 +22,7 @@ msgstr ""
 msgid "@APP_NAME@"
 msgstr "@APP_NAME@"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:112
-msgid ""
-"A file that cannot be read now shows a notice offering the file chooser "
-"instead of failing silently."
-msgstr ""
-
-#: data/ui/window.ui:265
+#: data/ui/window.ui:269
 msgid "About"
 msgstr "Kuhusu"
 
@@ -36,34 +30,13 @@ msgstr "Kuhusu"
 msgid "About dialog showing application information"
 msgstr "Kidirisha cha kuhusu kinachoonyesha taarifa za programu"
 
-#: data/ui/preferences.ui:348
+#: data/ui/preferences.ui:355
 msgid "Accessibility"
 msgstr "Ufikivu"
 
-#: data/ui/preferences.ui:428
-msgid "Accessibility Shortcuts"
-msgstr "Njia za Mkato za Ufikivu"
-
-#: data/ui/preferences.ui:378
+#: data/ui/preferences.ui:379
 msgid "Accessibility Zoom"
 msgstr "Ukuzaji wa Ufikivu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:310
-msgid ""
-"Accessibility preferences: reduce-motion, focus-ring visibility, and caret "
-"browsing"
-msgstr ""
-"Mapendeleo ya ufikivu: punguza-mwendo, mwonekano wa pete-ya-umakini, na "
-"uvinjari wa caret"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:306
-msgid ""
-"Account identity (name + avatar) auto-discovered from WhatsApp Web's "
-"internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
-msgstr ""
-"Utambulisho wa akaunti (jina + avatari) hugunduliwa kiotomatiki kutoka Store "
-"ya ndani ya WhatsApp Web, ukiwa na njia mbadala ya kufutua DOM iliyodhoofika "
-"inayoonyeshwa na beji"
 
 #: data/ui/keyboard-shortcuts.ui:38
 msgid "Accounts"
@@ -73,160 +46,11 @@ msgstr "Akaunti"
 msgid "Add new account"
 msgstr "Ongeza akaunti mpya"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:573
-msgid "Add new contributor Sabri Ünal to the About dialog"
-msgstr "Ongeza mchangiaji mpya Sabri Ünal kwenye kidirisha cha Kuhusu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:595
-msgid "Add xdg-config/autostart permission for autostart support"
-msgstr "Ongeza ruhusa ya xdg-config/autostart kwa usaidizi wa kuanza otomatiki"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:613
-msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
-msgstr ""
-"Imeongeza swichi ya \"Endesha Wakati wa Kuanza\" katika mapendeleo (chaguo-"
-"msingi: uongo)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:390
-msgid ""
-"Added GStreamer/PipeWire env vars to production Flatpak for efficient media "
-"handling"
-msgstr ""
-"Imeongeza vigeu vya mazingira vya GStreamer/PipeWire kwa Flatpak ya "
-"uzalishaji kwa utunzaji bora wa media"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:778
-msgid "Added WebKit cache control setting for improved rendering consistency"
-msgstr ""
-"Imeongeza mpangilio wa udhibiti wa akiba ya WebKit kwa uthabiti ulioboreshwa "
-"wa uonyeshaji"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:452
-msgid ""
-"Added WebRTC permission handling in preparation for WhatsApp Web voice/video "
-"calls"
-msgstr ""
-"Imeongeza utunzaji wa ruhusa ya WebRTC katika maandalizi ya simu za sauti/"
-"video za WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:437
-msgid ""
-"Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
-msgstr ""
-"Imeongeza usaidizi wa Ukuzaji (Ctrl +/-/0) ukiwa na udumishaji na vidhibiti "
-"vya mapendeleo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:271
-msgid ""
-"Added an experimental \"GPU Rendering\" option (Preferences → General → "
-"Experimental) that renders the chat view on the GPU via accelerated off-"
-"screen rendering for lower CPU and power use. Off by default and requires a "
-"restart; if the chat area is blank on your hardware, turn it off and restart"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:822
-msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
-msgstr ""
-"Imeongeza mkusanyiko wa masharti wa wakati wa kukusanya ukitumia bendera ya "
-"DEVELOPMENT"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:428
-msgid "Added complete multi-account support with sidebar and tray integration"
-msgstr ""
-"Imeongeza usaidizi kamili wa akaunti nyingi ukiwa na upau wa pembeni na "
-"uunganishaji wa treya"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:824
-msgid "Added contributors Aman Das and Cameo to about dialog"
-msgstr "Imeongeza wachangiaji Aman Das na Cameo kwenye kidirisha cha kuhusu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:774
-msgid ""
-"Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
-msgstr ""
-"Imeongeza fonti za ubora wa juu za Noto Color Emoji (v2.047, usaidizi wa "
-"Unicode 16.0)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:538
-msgid "Added middle-click paste from primary selection (selected text)"
-msgstr ""
-"Imeongeza ubandikaji wa bonyezo-kati kutoka kwa uteuzi msingi (maandishi "
-"yaliyochaguliwa)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:547
-msgid "Added new application icons"
-msgstr "Imeongeza ikoni mpya za programu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:429
-msgid "Added per-account zoom settings and improved accessibility"
-msgstr "Imeongeza mipangilio ya ukuzaji kwa kila akaunti na kuboresha ufikivu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:616
-msgid "Added striped symbolic icons for development version"
-msgstr "Imeongeza ikoni za alama zenye milia kwa toleo la maendeleo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:810
-msgid "Added subpixel font scaling and advanced rendering optimizations"
-msgstr ""
-"Imeongeza upimaji wa fonti wa subpixel na maboresho ya uonyeshaji wa hali ya "
-"juu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:354
-msgid "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
-msgstr ""
-"Imeongeza usaidizi wa simu za sauti na video kupitia WebKitGTK 2.50.5 "
-"iliyowezeshwa kwa WebRTC"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:328
-msgid ""
-"Added: account switcher uses a popover on desktop windows (bottom sheet "
-"preserved on mobile)"
-msgstr ""
-"Imeongezwa: kibadili akaunti kinatumia popova kwenye madirisha ya eneo-kazi "
-"(karatasi ya chini imehifadhiwa kwenye simu)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:326
-msgid "Added: pin favorite spell-check languages to the top of the dropdown"
-msgstr ""
-"Imeongezwa: bandika lugha pendwa za ukaguzi wa tahajia juu ya menyu kunjuzi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:327
-msgid ""
-"Added: spell-check dropdown shows natural language names (\"English (UK)\") "
-"instead of locale codes"
-msgstr ""
-"Imeongezwa: menyu kunjuzi ya ukaguzi wa tahajia inaonyesha majina ya lugha "
-"asili (\"Kiingereza (UK)\") badala ya misimbo ya eneo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:895
-msgid "Advanced notification system with native desktop integration"
-msgstr "Mfumo wa hali ya juu wa arifa ukiwa na uunganishaji asili wa eneo-kazi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:150
-msgid "All dependencies updated to their latest releases."
-msgstr ""
-
-#: data/ui/preferences.ui:119
-msgid "Allow inspecting and debugging the WebView"
-msgstr "Ruhusu kukagua na kutatua hitilafu za WebView"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:128
-msgid ""
-"Also includes the 4.3.1 fixes, which were never published: stalled scrolling "
-"with software rendering (#173, #179), start-up failing on systems whose "
-"hostname changes between boots (#190), and start-up failing on hardware "
-"without OpenGL ES 3.0 (#177)."
-msgstr ""
-
-#: data/ui/preferences.ui:177
-msgid "Animate the tray icon when a new message arrives"
-msgstr "Hamasisha ikoni ya treya wakati ujumbe mpya unapowasili"
-
 #: data/ui/preferences.ui:68
 msgid "Appearance"
 msgstr "Mwonekano"
 
-#: data/ui/keyboard-shortcuts.ui:142
+#: data/ui/keyboard-shortcuts.ui:135
 msgid "Application"
 msgstr "Programu"
 
@@ -238,15 +62,24 @@ msgstr "Lugha ya programu. Inahitaji kuanzisha upya."
 msgid "Application preferences and settings dialog"
 msgstr "Kidirisha cha mapendeleo na mipangilio ya programu"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:132
+msgid "Applied after reloading"
+msgstr ""
+
+#: data/ui/preferences.ui:386
 msgid "Applied to all webviews"
 msgstr "Inatumika kwa webview zote"
+
+#: data/ui/preferences.ui:192
+#, fuzzy
+msgid "Applies to the notifications Karere shows for incoming messages"
+msgstr "Onyesha arifa za ujumbe unaoingia"
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "Otomatiki"
 
-#: data/ui/preferences.ui:299
+#: data/ui/preferences.ui:306
 msgid "Auto-Detect Language"
 msgstr "Tambua Lugha Kiotomatiki"
 
@@ -254,93 +87,43 @@ msgstr "Tambua Lugha Kiotomatiki"
 msgid "Auto: shown when a system tray is available"
 msgstr "Otomatiki: huonyeshwa wakati treya ya mfumo inapatikana"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:313
 msgid "Automatically fix common spelling mistakes"
 msgstr "Sahihisha kiotomatiki makosa ya kawaida ya tahajia"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:888
-msgid ""
-"BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
-"performance and integration."
-msgstr ""
-"MABADILIKO YA KUVUNJA: Uandishi upya kamili kutoka Python hadi Vala asili "
-"kwa utendaji na uunganishaji bora."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:800
-msgid "Better build system compatibility with different environments"
-msgstr "Uoanifu bora wa mfumo wa ujenzi na mazingira tofauti"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:879
-msgid "Better error handling for network disconnections"
-msgstr "Utunzaji bora wa makosa kwa kukatika kwa mtandao"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:845
-msgid "Better error handling for network timeouts"
-msgstr "Utunzaji bora wa makosa kwa muda wa kuisha wa mtandao"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:797
-msgid "Better sandboxed environment compatibility"
-msgstr "Uoanifu bora wa mazingira ya sanduku la mchanga"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:758
-msgid "Better support for modern desktop environments"
-msgstr "Usaidizi bora kwa mazingira ya kisasa ya eneo-kazi"
 
 #: data/ui/preferences.ui:93
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:281
 msgid "Both"
 msgstr "Zote Mbili"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:144
+#: data/io.github.tobagin.karere.metainfo.xml.in:38
+#, fuzzy
 msgid ""
-"Browser engine upgraded to CEF 152 / Chromium 152 for current security and "
-"rendering fixes; video attachments still play in-app."
+"Built on the Chromium Embedded Framework. Karere 4.0 replaces the WebKitGTK "
+"backend with the Chromium Embedded Framework, bringing full video attachment "
+"playback (H.264/AAC), multi-account support with isolated sessions, per-"
+"account zoom, and a faster, more compatible rendering engine while keeping "
+"the same native GTK4/libadwaita shell."
 msgstr ""
+"Sasa imejengwa juu ya CEF/Chromium 148. Karere 4.0 inachukua nafasi ya "
+"backend ya WebKitGTK na Chromium Embedded Framework, ikileta uchezaji kamili "
+"wa viambatisho vya video (H.264/AAC), usaidizi wa akaunti nyingi zenye "
+"vipindi vilivyotengwa, ukuzaji kwa kila akaunti, na injini ya uonyeshaji "
+"yenye kasi na uoanifu zaidi huku ikidumisha ganda lile lile asili la GTK4/"
+"libadwaita."
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:601
-msgid "Bug Fix Release"
-msgstr "Toleo la Kurekebisha Hitilafu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:659
-#: data/io.github.tobagin.karere.metainfo.xml.in:713
-#: data/io.github.tobagin.karere.metainfo.xml.in:761
-#: data/io.github.tobagin.karere.metainfo.xml.in:781
-#: data/io.github.tobagin.karere.metainfo.xml.in:837
-#: data/io.github.tobagin.karere.metainfo.xml.in:854
-#: data/io.github.tobagin.karere.metainfo.xml.in:871
-msgid "Bug Fixes:"
-msgstr "Marekebisho ya Hitilafu:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:333
-msgid ""
-"Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
-"dependencies to latest compatible versions"
-msgstr ""
-"Imeinua WebKitGTK hadi 2.52.3, kamusi za LibreOffice hadi 26.2.3.2, "
-"vitegemezi vya Rust hadi matoleo ya hivi karibuni yanayooana"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:779
-msgid "Cache disabled by default to prevent emoji rendering issues"
-msgstr ""
-"Akiba imezimwa kwa chaguo-msingi ili kuzuia masuala ya uonyeshaji wa emoji"
-
-#: data/ui/preferences.ui:176
+#: data/ui/preferences.ui:183
 msgid "Change Tray Icon on Message"
 msgstr "Badilisha Ikoni ya Treya kwa Ujumbe"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:602
-#: data/io.github.tobagin.karere.metainfo.xml.in:611
-msgid "Changes:"
-msgstr "Mabadiliko:"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:16
 msgid "Chat on WhatsApp"
 msgstr "Piga Gumzo kwenye WhatsApp"
 
-#: data/ui/preferences.ui:294
+#: data/ui/preferences.ui:301
 msgid "Check spelling as you type"
 msgstr "Kagua tahajia unapoandika"
 
@@ -348,11 +131,11 @@ msgstr "Kagua tahajia unapoandika"
 msgid "Choose the application color scheme"
 msgstr "Chagua mpangilio wa rangi wa programu"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:248
 msgid "Choose…"
 msgstr "Chagua…"
 
-#: data/ui/preferences.ui:335
+#: data/ui/preferences.ui:342
 msgid "Clear All"
 msgstr "Futa Vyote"
 
@@ -368,57 +151,13 @@ msgstr "Funga Dirisha"
 msgid "Close the window"
 msgstr "Funga dirisha"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:722
-msgid "Code Quality Improvements:"
-msgstr "Maboresho ya Ubora wa Msimbo:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:911
-msgid "Complete internationalization support"
-msgstr "Usaidizi kamili wa uweko-kimataifa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:896
-msgid "Comprehensive accessibility support"
-msgstr "Usaidizi kamili wa ufikivu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:908
-msgid "Comprehensive test suite with unit and integration tests"
-msgstr "Seti kamili ya majaribio ikiwa na majaribio ya kitengo na uunganishaji"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:737
-msgid "Connected show_notification signal handler for WebKit notifications"
+#: data/ui/window.ui:265 src/window.rs:1645
+msgid "Copy Diagnostic Info"
 msgstr ""
-"Imeunganisha kishughulikiaji cha ishara cha show_notification kwa arifa za "
-"WebKit"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:820
-msgid "Converted template files to preprocessor directives for cleaner code"
+#: data/ui/preferences.ui:131
+msgid "Custom CSS"
 msgstr ""
-"Imebadilisha faili za kiolezo kuwa maelekezo ya kichakataji-awali kwa msimbo "
-"safi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:857
-msgid "Corrected AppStream metainfo format compliance"
-msgstr "Imesahihisha uzingatifu wa muundo wa metainfo wa AppStream"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:841
-msgid "Corrected accessibility focus handling"
-msgstr "Imesahihisha utunzaji wa umakini wa ufikivu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:787
-msgid "Corrected dependency version specifications in meson.build"
-msgstr "Imesahihisha vainisho vya toleo la vitegemezi katika meson.build"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:548
-msgid "Corrected metadata description references"
-msgstr "Imesahihisha marejeleo ya maelezo ya metadata"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:875
-msgid "Corrected window state persistence on shutdown"
-msgstr "Imesahihisha udumishaji wa hali ya dirisha wakati wa kuzima"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:511
-msgid "Ctrl+N keyboard shortcut for opening a new chat"
-msgstr "Njia ya mkato ya kibodi ya Ctrl+N kwa kufungua gumzo jipya"
 
 #: data/ui/preferences.ui:84
 msgid "Dark"
@@ -428,24 +167,20 @@ msgstr "Nyeusi"
 msgid "Decrease the zoom level"
 msgstr "Punguza kiwango cha ukuzaji"
 
-#: data/ui/preferences.ui:238
+#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
 msgid "Default (Downloads)"
 msgstr "Chaguo-msingi (Vipakuliwa)"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:307
 msgid "Detect the writing language automatically"
 msgstr "Tambua lugha ya uandishi kiotomatiki"
 
-#: data/ui/keyboard-shortcuts.ui:123
+#: data/ui/keyboard-shortcuts.ui:116
 msgid "Developer"
 msgstr "Msanidi"
 
-#: data/ui/preferences.ui:434
-msgid "Developer Shortcuts"
-msgstr "Njia za Mkato za Wasanidi"
-
-#: data/ui/window.ui:173 data/ui/preferences.ui:115 data/ui/preferences.ui:124
-#: data/ui/keyboard-shortcuts.ui:126
+#: data/ui/window.ui:173 data/ui/preferences.ui:115 data/ui/preferences.ui:118
+#: data/ui/keyboard-shortcuts.ui:119
 msgid "Developer Tools"
 msgstr "Zana za Wasanidi"
 
@@ -453,156 +188,47 @@ msgstr "Zana za Wasanidi"
 msgid "Disabled"
 msgstr "Imezimwa"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:807
-msgid "Disabled problematic WebKit caches causing font corruption"
-msgstr ""
-"Imezima akiba za WebKit zenye matatizo zinazosababisha uharibifu wa fonti"
-
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:202
 msgid "Display message content in notifications"
 msgstr "Onyesha maudhui ya ujumbe katika arifa"
 
-#: data/ui/preferences.ui:189
+#: data/ui/preferences.ui:196
 msgid "Display the contact name in notifications"
 msgstr "Onyesha jina la mawasiliano katika arifa"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:742
-msgid "Documentation:"
-msgstr "Nyaraka:"
+#: data/ui/keyboard-shortcuts.ui:138 src/tray.rs:159
+msgid "Do Not Disturb"
+msgstr ""
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:244
 msgid "Download Directory"
 msgstr "Saraka ya Vipakuliwa"
 
-#: data/ui/preferences.ui:261
+#: data/ui/preferences.ui:268
 msgid "Download Notifications"
 msgstr "Arifa za Vipakuliwa"
 
-#: data/ui/preferences.ui:230
+#: data/ui/preferences.ui:237
 msgid "Downloads"
 msgstr "Vipakuliwa"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:107
-msgid ""
-"Dragged and pasted files now attach through the file transfer portal, from "
-"any folder, without filesystem access (#192)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:821
-msgid "Eliminated .vala.in template substitution system"
-msgstr "Imeondoa mfumo wa ubadilishaji wa kiolezo cha .vala.in"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:793
-msgid "Eliminated WebKit cache corruption affecting emoji rendering"
-msgstr "Imeondoa uharibifu wa akiba ya WebKit unaoathiri uonyeshaji wa emoji"
-
-#: data/ui/preferences.ui:305
+#: data/ui/preferences.ui:312
 msgid "Enable Auto-Correct"
 msgstr "Wezesha Usahihishaji wa Kiotomatiki"
 
-#: data/ui/preferences.ui:118
-msgid "Enable Developer Tools"
-msgstr "Wezesha Zana za Wasanidi"
-
-#: data/ui/preferences.ui:159
+#: data/ui/preferences.ui:166
 msgid "Enable Notifications"
 msgstr "Wezesha Arifa"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:300
 msgid "Enable Spell Checking"
 msgstr "Wezesha Ukaguzi wa Tahajia"
-
-#: data/ui/preferences.ui:423
-msgid "Enable keyboard shortcuts for common actions"
-msgstr "Wezesha njia za mkato za kibodi kwa vitendo vya kawaida"
-
-#: data/ui/preferences.ui:429
-msgid "Enable shortcuts for accessibility features"
-msgstr "Wezesha njia za mkato za vipengele vya ufikivu"
-
-#: data/ui/preferences.ui:435
-msgid "Enable shortcuts for developer tools"
-msgstr "Wezesha njia za mkato za zana za wasanidi"
-
-#: data/ui/preferences.ui:441
-msgid "Enable shortcuts for notification actions"
-msgstr "Wezesha njia za mkato za vitendo vya arifa"
 
 #: data/ui/preferences.ui:57 data/ui/preferences.ui:104
 msgid "Enabled"
 msgstr "Imewezeshwa"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:795
-msgid "Enhanced 2D canvas acceleration for better graphics performance"
-msgstr ""
-"Imeboresha uongezaji kasi wa turubai ya 2D kwa utendaji bora wa michoro"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:801
-msgid "Enhanced CI/CD pipeline stability"
-msgstr "Uthabiti ulioimarishwa wa bomba la CI/CD"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:863
-msgid "Enhanced Flathub compliance and validation"
-msgstr "Imeimarisha uzingatifu na uthibitishaji wa Flathub"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:789
-msgid "Enhanced URL validation for external link detection"
-msgstr "Imeboresha uthibitishaji wa URL kwa ugunduzi wa viungo vya nje"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:775
-msgid "Enhanced WebKit rendering with maximum hardware acceleration"
-msgstr ""
-"Imeboresha uonyeshaji wa WebKit ukiwa na uongezaji kasi wa juu wa maunzi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:894
-msgid "Enhanced WebKitGTK 6.0 integration"
-msgstr "Uunganishaji ulioboreshwa wa WebKitGTK 6.0"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:537
-msgid ""
-"Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
-"compatibility"
-msgstr ""
-"Imeboresha ubandikaji wa picha kwa usimbaji wa Base64 kwa uoanifu wa "
-"kuaminika wa WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:799
-msgid "Enhanced logging for external link operations"
-msgstr "Ukataji miti ulioboreshwa kwa shughuli za viungo vya nje"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:672
-msgid "Enhanced packaging for better compatibility"
-msgstr "Imeboresha ufungaji kwa uoanifu bora"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:630
-msgid "Enhanced performance and stability"
-msgstr "Utendaji na uthabiti ulioboreshwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:910
-msgid "Enhanced security with proper sandboxing"
-msgstr "Usalama ulioimarishwa ukiwa na ufunikaji sahihi wa sanduku la mchanga"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:759
-msgid "Enhanced stability and performance optimizations"
-msgstr "Maboresho ya uthabiti na utendaji yaliyoimarishwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:880
-msgid "Enhanced stability during long sessions"
-msgstr "Uthabiti ulioimarishwa wakati wa vipindi virefu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:846
-msgid "Enhanced stability for extended usage"
-msgstr "Uthabiti ulioimarishwa kwa matumizi ya muda mrefu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:695
-msgid "Enhanced visual documentation for users"
-msgstr "Imeboresha nyaraka za picha kwa watumiaji"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:640
-msgid "Ensure application starts properly in the background without delay"
-msgstr "Hakikisha programu inaanza vizuri kwenye mandharinyuma bila kuchelewa"
-
-#: data/ui/preferences.ui:139
+#: data/ui/preferences.ui:146
 msgid "Experimental"
 msgstr ""
 
@@ -614,622 +240,7 @@ msgstr "Tafuta katika Ukurasa"
 msgid "Find in page"
 msgstr "Tafuta katika ukurasa"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:211
-msgid ""
-"Fixed \"Start in background\" being ignored when the tray icon is disabled; "
-"the setting is now honored and relaunching the app brings the window up. "
-"(#170)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:502
-msgid "Fixed \"Too many open files\" crash by reusing notification resources"
-msgstr ""
-"Imerekebisha kuanguka kwa \"Faili nyingi mno zimefunguliwa\" kwa kutumia "
-"tena rasilimali za arifa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:715
-msgid ""
-"Fixed Ctrl+V paste for text content - now works for both text and images"
-msgstr ""
-"Imerekebisha ubandikaji wa Ctrl+V kwa maudhui ya maandishi - sasa unafanya "
-"kazi kwa maandishi na picha"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:558
-msgid "Fixed Dead Key/composition input issues"
-msgstr "Imerekebisha masuala ya kuingiza ya Kibonye Kifu/utunzi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:495
-msgid "Fixed Flatpak build failure by correcting config"
-msgstr "Imerekebisha kushindwa kwa ujenzi wa Flatpak kwa kusahihisha usanidi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:366
-msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
-msgstr ""
-"Imerekebisha kushindwa kwa ujenzi wa Flatpak kulikosababishwa na mabadiliko "
-"ya API ya ashpd 0.13"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:137
-msgid ""
-"Fixed Karere failing to start on hardware without OpenGL ES 3.0, such as the "
-"PinePhone; frames are now drawn in software instead (#177)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:136
-msgid ""
-"Fixed Karere refusing to start on systems whose hostname changes between "
-"boots, such as GNOME OS Nightly (#190)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:557
-msgid "Fixed Open action for downloaded files"
-msgstr "Imerekebisha kitendo cha Fungua kwa faili zilizopakuliwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:718
-msgid "Fixed WebView zoom being enabled by default (now disabled)"
-msgstr ""
-"Imerekebisha ukuzaji wa WebView kuwa umewezeshwa kwa chaguo-msingi (sasa "
-"umezimwa)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:184
-msgid ""
-"Fixed WhatsApp loading in mobile layout on HiDPI displays until resized; the "
-"prewarm viewport is now sized in physical pixels (#176)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:716
-msgid "Fixed WhatsApp notification permission not persisting across sessions"
-msgstr "Imerekebisha ruhusa ya arifa ya WhatsApp isiyodumu katika vipindi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:212
-msgid ""
-"Fixed a black chat area on NVIDIA drivers by falling back to software "
-"rendering where the accelerated path cannot deliver frames. (#167)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:226
-msgid ""
-"Fixed a black/blank window on GNOME OS and other newer Wayland setups by "
-"switching to GTK's GL renderer, which presents the CEF browser view "
-"correctly where the default Vulkan renderer could not. (#164)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:662
-msgid "Fixed application freeze during lifecycle events"
-msgstr ""
-"Imerekebisha kuganda kwa programu wakati wa matukio ya mzunguko wa maisha"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:477
-msgid ""
-"Fixed application freezing on resume by reverting aggressive cache "
-"optimization"
-msgstr ""
-"Imerekebisha kuganda kwa programu wakati wa kurejea kwa kubatilisha "
-"uboreshaji mkali wa akiba"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:614
-msgid "Fixed autostart toggle pathing for Flatpak environments"
-msgstr ""
-"Imerekebisha njia ya swichi ya kuanza otomatiki kwa mazingira ya Flatpak"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:488
-msgid "Fixed background notifications reliability"
-msgstr "Imerekebisha uaminifu wa arifa za mandharinyuma"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:478
-msgid "Fixed background validation to ensure app starts correctly"
-msgstr ""
-"Imerekebisha uthibitishaji wa mandharinyuma ili kuhakikisha programu inaanza "
-"vizuri"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:174
-msgid ""
-"Fixed blank view on GLES-only devices such as the PinePhone: the render area "
-"now negotiates its required GLES 3.0 context and software rendering resumes "
-"automatically when accelerated frames are unavailable (#177)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:375
-msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
-msgstr ""
-"Imerekebisha vipakuliwa vya URL ya blob (mfano, Hifadhi Picha kutoka kwa "
-"kionyeshi cha media)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:149
-msgid "Fixed characters being dropped right after sending a message (#180)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:157
-msgid "Fixed characters occasionally being dropped while typing (#180)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:175
-msgid ""
-"Fixed chat text selection and copying: drag-select, immediate Ctrl+C and "
-"right-click → Copy now read the live selection without racing the PRIMARY "
-"clipboard (#178)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:719
-msgid "Fixed clipboard manager intercepting all paste events"
-msgstr ""
-"Imerekebisha kidhibiti cha ubao wa kunakili kinachozuia matukio yote ya "
-"kubandika"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:387
-msgid "Fixed crash on launch due to memory pressure threshold ordering"
-msgstr ""
-"Imerekebisha kuanguka wakati wa kuanza kutokana na mpangilio wa kizingiti "
-"cha shinikizo la kumbukumbu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:873
-msgid "Fixed crash when handling invalid notification data"
-msgstr "Imerekebisha kuanguka wakati wa kushughulikia data batili ya arifa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:839
-msgid "Fixed crash when handling invalid user input data"
-msgstr ""
-"Imerekebisha kuanguka wakati wa kushughulikia data batili ya kuingiza ya "
-"mtumiaji"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:639
-msgid ""
-"Fixed critical startup freeze (spinner) issue by implementing D-Bus "
-"activation"
-msgstr ""
-"Imerekebisha tatizo muhimu la kuganda wakati wa kuanza (kizungushaji) kwa "
-"kutekeleza uamilisho wa D-Bus"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:389
-msgid "Fixed dead key composition for first character in input fields"
-msgstr ""
-"Imerekebisha utunzi wa kibonye kifu kwa herufi ya kwanza katika sehemu za "
-"kuingiza"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:210
-msgid ""
-"Fixed dead-key accents (e.g. US Intl) intermittently typing the plain letter "
-"after sending a message; the input method is re-focused on the next "
-"keypress. (#154)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:539
-msgid "Fixed double-paste issue with middle-click"
-msgstr "Imerekebisha suala la kubandika-mara mbili kwa bonyezo-kati"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:388
-msgid "Fixed download destination and context menu issues"
-msgstr "Imerekebisha masuala ya marudio ya vipakuliwa na menyu ya muktadha"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:397
-msgid "Fixed download destination handling"
-msgstr "Imerekebisha utunzaji wa marudio ya vipakuliwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:355
-msgid "Fixed download filenames now use WhatsApp's original filename"
-msgstr ""
-"Imerekebishwa majina ya faili zilizopakuliwa sasa yanatumia jina asili la "
-"faili la WhatsApp"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:108
-msgid "Fixed drags being refused as they entered the window on some desktops."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:356
-msgid "Fixed duplicate downloads auto-increment instead of failing"
-msgstr ""
-"Imerekebishwa vipakuliwa vinavyofanana vinajiongeza kiotomatiki badala ya "
-"kushindwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:856
-msgid "Fixed duplicate provides tags in metainfo validation"
-msgstr ""
-"Imerekebisha lebo za provides zinazofanana katika uthibitishaji wa metainfo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:173
-msgid ""
-"Fixed engine-drawn popups being anchored to a degenerate window origin on "
-"X11 multi-monitor setups; the real window position is now used (#158)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:783
-msgid ""
-"Fixed external links not opening in default browser when running in Flatpak"
-msgstr ""
-"Imerekebisha viungo vya nje visivyofunguliwa katika kivinjari chaguo-msingi "
-"vinapoendeshwa katika Flatpak"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:120
-msgid ""
-"Fixed files dragged into the window not attaching; the same problem affected "
-"pasting a file copied in a file manager (#192)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:386
-msgid "Fixed freezes when viewing media galleries"
-msgstr "Imerekebisha kuganda wakati wa kutazama maghala ya media"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:786
-msgid "Fixed invalid meson version requirement preventing builds"
-msgstr "Imerekebisha hitaji batili la toleo la meson lililozuia ujenzi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:109
-msgid ""
-"Fixed letters being dropped when a key was pressed while Backspace, Enter or "
-"an arrow key was still held (#180)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:546
-msgid "Fixed missing GSettings schema in Flatpak builds"
-msgstr ""
-"Imerekebisha mpangilio wa GSettings uliokosekana katika ujenzi wa Flatpak"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:661
-msgid "Fixed missing dictionaries on startup"
-msgstr "Imerekebisha kamusi zilizokosekana wakati wa kuanza"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:604
-msgid ""
-"Fixed missing tray icon on GNOME by adding StatusNotifierWatcher permission"
-msgstr ""
-"Imerekebisha ikoni ya treya iliyokosekana kwenye GNOME kwa kuongeza ruhusa "
-"ya StatusNotifierWatcher"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:165
-msgid ""
-"Fixed mouse clicks landing slightly above and to the left of the pointer: "
-"clicks were offset by the header bar and window shadow, so buttons and chats "
-"often did not activate where you clicked."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:358
-msgid "Fixed notification sounds now respect GNOME volume controls"
-msgstr ""
-"Imerekebishwa sauti za arifa sasa zinaheshimu vidhibiti vya sauti vya GNOME"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:717
-msgid "Fixed notifications banner appearing on every app launch"
-msgstr ""
-"Imerekebisha bango la arifa linaloonekana kila wakati wa kuzindua programu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:374
-msgid ""
-"Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
-"Linux environments"
-msgstr ""
-"Imerekebisha kibodi-skrini kutoonekana kwa uhakika kwenye Phosh na mazingira "
-"ya Linux yanayotumia kugusa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:110
-msgid "Fixed pasting a text file inserting nothing."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:172
-msgid ""
-"Fixed pointer misalignment on HiDPI / mixed-scale desktops: clicks, "
-"scrolling and context menus are now pixel-accurate, and the page zoom re-"
-"syncs when moving windows between monitors with different scales (#158)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:764
-msgid "Fixed potential rendering inconsistencies"
-msgstr "Imerekebisha kutofautiana kunakowezekana kwa uonyeshaji"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:785
-msgid "Fixed random emoji display issues and blank emoji problems"
-msgstr ""
-"Imerekebisha masuala ya uonyeshaji wa emoji nasibu na matatizo ya emoji tupu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:147
-msgid ""
-"Fixed right-click Paste ignoring text, images and files copied from other "
-"applications (#189)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:135
-msgid ""
-"Fixed scrolling still stalling with software rendering: frames were held up "
-"by the browser engine's event loop and only released by a fallback timer, "
-"redrawing the window about 10 times a second instead of 60 (#173, #179)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:430
-msgid "Fixed startup race conditions and resource usage issues"
-msgstr ""
-"Imerekebisha hali za mashindano wakati wa kuanza na masuala ya matumizi ya "
-"rasilimali"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:145
-msgid ""
-"Fixed stuttery scrolling and typing lag: frames no longer wait on a poll "
-"timer and are no longer dropped, on software and GPU rendering alike (#173, "
-"#179)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:219
-msgid ""
-"Fixed the GNOME OS / Wayland black window for real (#164): CEF was racing to "
-"the X11 Ozone backend and failing to present onto the Wayland view; Karere "
-"now forces CEF's Ozone backend to match the display server, so it no longer "
-"intermittently starts black."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:148
-msgid ""
-"Fixed the message menu \"Copy\" not reaching the system clipboard (#178)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:146
-msgid "Fixed the microphone staying muted in calls (#182)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:227
-msgid ""
-"Fixed the mobile layout dropping the message box focus when pressing Enter "
-"on a computer; focus is now kept on non-touch devices while phones still "
-"hide the keyboard after sending."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:209
-msgid ""
-"Fixed touchpad scrolling being ~5x too slow with a delay before it started; "
-"deltas are now scaled the same way Chromium's own Wayland backend scales "
-"them. (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:202
-msgid ""
-"Fixed touchpad scrolling sometimes needing a click in a pane before it "
-"responded; scrolling now targets the pane under the pointer like every other "
-"app. (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:615
-msgid "Fixed tray icon quit behavior"
-msgstr "Imerekebisha tabia ya kutoka ya ikoni ya treya"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:468
-msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
-msgstr ""
-"Imerekebisha ikoni za treya kwenye KDE/GNOME (zinaonekana kwenye mandhari "
-"nyepesi/nyeusi)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:183
-msgid ""
-"Fixed tray “Quit” doing nothing while the window is hidden (e.g. Start in "
-"background) (#175)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:340
-msgid ""
-"Fixed voice and video calls in production Flatpak (Flathub linter-compatible "
-"pre-built plugin)"
-msgstr ""
-"Imerekebisha simu za sauti na video katika Flatpak ya uzalishaji (programu-"
-"jalizi iliyojengwa awali inayooana na linter ya Flathub)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:347
-msgid ""
-"Fixed voice and video calls not working in the production build (missing "
-"noise suppression plugin)"
-msgstr ""
-"Imerekebisha simu za sauti na video zisizofanya kazi katika ujenzi wa "
-"uzalishaji (programu-jalizi ya ukandamizaji wa kelele iliyokosekana)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:373
-msgid ""
-"Fixed voice and video calls showing \"Your browser doesn't support calling\""
-msgstr ""
-"Imerekebisha simu za sauti na video zinazoonyesha \"Kivinjari chako "
-"hakitumii kupiga simu\""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:357
-msgid ""
-"Fixed window now properly unminimizes when activated from launcher or tray"
-msgstr ""
-"Imerekebishwa dirisha sasa linafunguliwa vizuri kutoka kwenye hali ya "
-"kupunguzwa linapoamilishwa kutoka kwa kizinduzi au treya"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:487
-msgid "Fixed window resize behavior to prevent excessive reloading"
-msgstr ""
-"Imerekebisha tabia ya kubadilisha ukubwa wa dirisha ili kuzuia upakiaji upya "
-"wa kupita kiasi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:438
-msgid "Fixed window size increasing on every restart"
-msgstr ""
-"Imerekebisha ukubwa wa dirisha kuongezeka kila wakati wa kuanzisha upya"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:503
-msgid "Fixed zombie process accumulation"
-msgstr "Imerekebisha mkusanyiko wa michakato zombi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:186
-msgid ""
-"Fixed “Match WhatsApp Colors” applying only after restart; it now updates "
-"live when toggled (#168)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:637
-msgid "Fixed:"
-msgstr "Imerekebishwa:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:460
-msgid ""
-"Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
-"(silences sounds)"
-msgstr ""
-"Imerekebishwa: Programu sasa inaheshimu mipangilio ya mfumo ya \"Usisumbue\" "
-"kwenye GNOME (inanyamazisha sauti)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:405
-msgid "Fixed: Download destination path handling regression"
-msgstr ""
-"Imerekebishwa: kurudi nyuma kwa utunzaji wa njia ya marudio ya vipakuliwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:419
-msgid ""
-"Fixed: Handle WebKit web process crashes with auto-reload and user "
-"notification"
-msgstr ""
-"Imerekebishwa: Shughulikia kuanguka kwa michakato ya wavuti ya WebKit kwa "
-"kupakia upya kiotomatiki na arifa kwa mtumiaji"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:420
-msgid "Fixed: JS injection and path traversal vulnerabilities"
-msgstr "Imerekebishwa: udhaifu wa udungaji wa JS na upitishaji wa njia"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:412
-msgid ""
-"Fixed: JS injection and path traversal vulnerabilities in download handling"
-msgstr ""
-"Imerekebishwa: udhaifu wa udungaji wa JS na upitishaji wa njia katika "
-"utunzaji wa vipakuliwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:461
-msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
-msgstr ""
-"Imerekebishwa: Arifa zinapita maonyesho ya DND (kipaumbele kimepunguzwa hadi "
-"Kawaida)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:421
-msgid "Fixed: Panic in notification handling"
-msgstr "Imerekebishwa: Hofu katika utunzaji wa arifa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:445
-msgid ""
-"Fixed: Resolved webview reload loop on startup due to incorrect window size "
-"detection"
-msgstr ""
-"Imerekebishwa: Imetatua kitanzi cha kupakia upya cha webview wakati wa "
-"kuanza kutokana na ugunduzi usio sahihi wa ukubwa wa dirisha"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:294
-msgid ""
-"Fixed: accented characters from dead keys (e.g. the US-International layout) "
-"now compose correctly instead of inserting the base letter — input is routed "
-"through the system input method (#154)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:329
-msgid ""
-"Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, Fedora "
-"43, CachyOS, Bazzite, postmarketOS)"
-msgstr ""
-"Imerekebishwa: programu kuanguka wakati wa kuanza kwenye mifumo ya GNOME "
-"50 / glibc 2.42+ (Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:319
-msgid ""
-"Fixed: blank-window race when autostarted before the network/portal stack is "
-"ready (auto-retry with exponential backoff)"
-msgstr ""
-"Imerekebishwa: mashindano ya dirisha tupu wakati inaanzishwa kiotomatiki "
-"kabla rundo la mtandao/portal halijawa tayari (jaribio upya kiotomatiki kwa "
-"kuongezeka kwa kasi)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:332
-msgid ""
-"Fixed: downloaded files with duplicate names silently overwriting each other "
-"(now appends (1), (2), ...)"
-msgstr ""
-"Imerekebishwa: faili zilizopakuliwa zenye majina yanayofanana zikifutana "
-"kimya kimya (sasa inaongeza (1), (2), ...)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:249
-msgid ""
-"Fixed: input-method candidate popups (e.g. ibus-libpinyin) appeared in the "
-"top-left corner; they now show by the chat input where you click (#163)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:318
-msgid ""
-"Fixed: lingering notification badges/banners after focus on GNOME 50 (auto-"
-"clear behavior removed upstream — Karere now dismisses notifications "
-"explicitly)"
-msgstr ""
-"Imerekebishwa: beji/mabango ya arifa yanayodumu baada ya umakini kwenye "
-"GNOME 50 (tabia ya kufuta kiotomatiki imeondolewa upstream — sasa Karere "
-"inafuta arifa kwa uwazi)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:330
-msgid ""
-"Fixed: locale-dependent crash that required manually setting "
-"LC_ALL=en_GB.UTF-8"
-msgstr ""
-"Imerekebishwa: kuanguka kunakotegemea eneo kulikohitaji kuweka "
-"LC_ALL=en_GB.UTF-8 kwa mkono"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:331
-msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
-msgstr ""
-"Imerekebishwa: mpangilio wa simu uliovunjwa na mabadiliko ya hivi karibuni "
-"ya DOM ya WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:241
-msgid ""
-"Fixed: on Phosh / GNOME Mobile the on-screen keyboard stayed open all the "
-"time; it now follows the focused WhatsApp text field, appearing when you tap "
-"a message or search box and hiding otherwise"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:248
-msgid ""
-"Fixed: sluggish touchpad scrolling — disabled Chromium's smooth-scroll "
-"animation for instant, responsive scrolling (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:256
-msgid ""
-"Fixed: the ARM64 (aarch64) build, which had been failing since 4.0.4 due to "
-"a type error in the GPU-rendering code — so this is the first release to "
-"reach ARM64 (Phosh / mobile) users with the recent fixes, including touch "
-"scrolling (#162)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:278
-msgid ""
-"Fixed: the selected theme is now applied from startup, including when the "
-"app launches into the background at login — the window no longer opens light "
-"when dark is selected. WhatsApp Web content also follows the theme now (when "
-"WhatsApp's own theme is set to System default) (#160)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:286
-msgid ""
-"Fixed: the web view is now crisp under fractional/HiDPI display scaling "
-"(e.g. 150%/200% on GNOME Wayland) — the page is rendered to match the "
-"window's pixel buffer exactly instead of being upscaled, while staying at "
-"the correct size (#158)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:264
-msgid ""
-"Fixed: touch scrolling and tapping in the chat view on touchscreens (e.g. "
-"Phosh / mobile Linux) — touch input is now forwarded to the web view as "
-"native touch events (#162)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:279
-msgid ""
-"Fixed: typing in the narrow/mobile layout no longer inserts a stray space "
-"after the first letter (#159)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:287
-msgid ""
-"Fixed: typing the first letter of a message no longer inserts a stray space "
-"after it (a 4.0.1 input regression) (#154)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:295
-msgid ""
-"Fixed: web content is now sized correctly under fractional display scaling "
-"such as 150%; the view and input use logical coordinates with the fractional "
-"scale applied for crisp rendering (#155, #156)"
-msgstr ""
-
-#: data/ui/preferences.ui:361
+#: data/ui/preferences.ui:368
 msgid "Focus Indicators"
 msgstr "Viashiria vya Umakini"
 
@@ -1241,15 +252,11 @@ msgstr "Fuata Mfumo"
 msgid "Force Reload"
 msgstr "Lazimisha Kupakia Upya"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:625
-msgid "Full rewrite in Rust! 🦀"
-msgstr "Uandishi upya kamili katika Rust! 🦀"
-
 #: data/ui/keyboard-shortcuts.ui:67
 msgid "Fullscreen"
 msgstr "Skrini Nzima"
 
-#: data/ui/preferences.ui:142
+#: data/ui/preferences.ui:149
 msgid "GPU Rendering"
 msgstr ""
 
@@ -1257,152 +264,39 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "Mteja wa WhatsApp Web wa GTK4"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:156
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
 msgid "General"
 msgstr "Jumla"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:574
-msgid "General improvements and versioning updates"
-msgstr "Maboresho ya jumla na masasisho ya matoleo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:900
-msgid "Granular privacy and notification controls"
-msgstr "Vidhibiti vya kina vya faragha na arifa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:901
-msgid "Hardware-accelerated rendering"
-msgstr "Uonyeshaji ulioongezwa kasi kwa maunzi"
-
-#: data/ui/preferences.ui:311
+#: data/ui/preferences.ui:318
 msgid "Header Bar Language Control"
 msgstr "Kidhibiti cha Lugha cha Upau wa Kichwa"
 
-#: data/ui/preferences.ui:400
+#: data/ui/preferences.ui:401
 msgid "Header Bar Zoom Controls"
 msgstr "Vidhibiti vya Ukuzaji vya Upau wa Kichwa"
 
-#: data/ui/preferences.ui:367
-msgid "High Contrast Mode"
-msgstr "Hali ya Utofautishaji wa Juu"
-
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:275
 msgid "How download notifications are displayed"
 msgstr "Jinsi arifa za vipakuliwa zinavyoonyeshwa"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:208
 msgid "How much of the message to show"
 msgstr "Ni kiasi gani cha ujumbe cha kuonyesha"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:811
-msgid "Implemented Flatpak portal system for external link handling"
-msgstr "Imetekeleza mfumo wa portal ya Flatpak kwa utunzaji wa viungo vya nje"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:736
-msgid "Implemented UserScript injection for Notification.permission state"
-msgstr "Imetekeleza udungaji wa UserScript kwa hali ya Notification.permission"
-
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:413
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr "Boresha uoanifu na teknolojia saidizi — kuanzisha upya kunahitajika"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:185
-msgid ""
-"Improved NVIDIA detection via the live GL context so hybrid GPUs keep "
-"accelerated rendering, hardened the fallback for background starts, and "
-"raised the off-screen frame rate from 30 to 60 fps for smoother scroll/"
-"typing (#173)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:823
-msgid "Improved build system maintainability and type safety"
-msgstr "Imeboresha udumishaji wa mfumo wa ujenzi na usalama wa aina"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:740
-msgid "Improved build system with cleaner dependency management"
-msgstr "Imeboresha mfumo wa ujenzi ukiwa na usimamizi safi wa vitegemezi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:776
-msgid "Improved emoji consistency with bundled font system"
-msgstr "Imeboresha uthabiti wa emoji ukiwa na mfumo wa fonti uliojumuishwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:765
-msgid "Improved error handling and recovery mechanisms"
-msgstr "Imeboresha utunzaji wa makosa na mifumo ya urejeshaji"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:784
-msgid "Improved external link handling with proper Flatpak portal support"
-msgstr ""
-"Imeboresha utunzaji wa viungo vya nje ukiwa na usaidizi sahihi wa portal ya "
-"Flatpak"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:796
-msgid "Improved font loading stability and reduced race conditions"
-msgstr ""
-"Imeboresha uthabiti wa upakiaji wa fonti na kupunguza hali za mashindano"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:470
-msgid "Improved icon compatibility across desktop environments"
-msgstr "Imeboresha uoanifu wa ikoni katika mazingira ya eneo-kazi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:480
-msgid "Improved icon rendering (symbolic icons now use currentColor)"
-msgstr ""
-"Imeboresha uonyeshaji wa ikoni (ikoni za alama sasa zinatumia currentColor)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:902
-msgid "Improved memory efficiency and startup performance"
-msgstr "Ufanisi ulioboreshwa wa kumbukumbu na utendaji wa kuanza"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:453
-msgid "Improved mobile UI resizing consistency"
-msgstr "Imeboresha uthabiti wa kubadilisha ukubwa wa UI ya simu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:504
-msgid "Improved overall stability"
-msgstr "Imeboresha uthabiti kwa ujumla"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:757
-msgid "Improved system integration with latest platform libraries"
-msgstr ""
-"Imeboresha uunganishaji wa mfumo ukiwa na maktaba za hivi karibuni za jukwaa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:864
-msgid "Improved translation file consistency"
-msgstr "Imeboresha uthabiti wa faili za tafsiri"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:257
-msgid ""
-"Improved: smoother scrolling, especially with a touchpad — fine scroll "
-"deltas are no longer dropped, and wheel vs touchpad input is scaled "
-"appropriately (#161)"
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:653
-#: data/io.github.tobagin.karere.metainfo.xml.in:669
-#: data/io.github.tobagin.karere.metainfo.xml.in:680
-#: data/io.github.tobagin.karere.metainfo.xml.in:691
-#: data/io.github.tobagin.karere.metainfo.xml.in:754
-#: data/io.github.tobagin.karere.metainfo.xml.in:791
-#: data/io.github.tobagin.karere.metainfo.xml.in:818
-#: data/io.github.tobagin.karere.metainfo.xml.in:843
-#: data/io.github.tobagin.karere.metainfo.xml.in:860
-#: data/io.github.tobagin.karere.metainfo.xml.in:877
-msgid "Improvements:"
-msgstr "Maboresho:"
-
-#: data/ui/preferences.ui:272
+#: data/ui/preferences.ui:279
 msgid "In-app Toast"
 msgstr "Toast Ndani ya Programu"
-
-#: data/ui/preferences.ui:368
-msgid "Increase contrast for better readability"
-msgstr "Ongeza utofautishaji kwa usomaji bora"
 
 #: data/ui/keyboard-shortcuts.ui:94
 msgid "Increase the zoom level"
 msgstr "Ongeza kiwango cha ukuzaji"
 
-#: data/ui/keyboard-shortcuts.ui:133
+#: data/ui/keyboard-shortcuts.ui:126
 msgid "Inspect Element"
 msgstr "Kagua Kipengele"
 
@@ -1410,18 +304,10 @@ msgstr "Kagua Kipengele"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "Rukia akaunti 1–9 (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:264 src/tray.rs:43
-#: src/tray.rs:66 src/tray.rs:73
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:301
-msgid ""
-"Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
-"Existing accounts must be re-linked — there is no migration from v3."
-msgstr ""
-"Karere 4.0 ni fork ngumu inayojenga upya programu juu ya CEF/Chromium 148. "
-"Akaunti zilizopo lazima ziunganishwe upya — hakuna uhamiaji kutoka v3."
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:24
 msgid ""
@@ -1441,17 +327,15 @@ msgstr ""
 msgid "Key features include:"
 msgstr "Vipengele muhimu ni pamoja na:"
 
-#: data/ui/window.ui:261 data/ui/preferences.ui:422
-#: data/ui/keyboard-shortcuts.ui:152 src/tray.rs:145
+#: data/ui/window.ui:261 data/ui/keyboard-shortcuts.ui:152 src/tray.rs:172
 msgid "Keyboard Shortcuts"
 msgstr "Njia za Mkato za Kibodi"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:61
-#: data/io.github.tobagin.karere.metainfo.xml.in:898
 msgid "Keyboard shortcuts and productivity features"
 msgstr "Njia za mkato za kibodi na vipengele vya tija"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:317
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
 msgid "Language"
 msgstr "Lugha"
 
@@ -1463,20 +347,11 @@ msgstr "Zindua Karere kiotomatiki unapoingia"
 msgid "Light"
 msgstr "Nyepesi"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:311
-msgid ""
-"Live spell-check language switching and a separately installable Debug "
-"symbol extension for symbolicated crash reports"
-msgstr ""
-"Ubadilishaji wa lugha ya ukaguzi wa tahajia moja kwa moja na kiendelezi cha "
-"alama za Debug kinachoweza kusakinishwa kivyake kwa ripoti za hitilafu zenye "
-"alama"
-
-#: data/ui/preferences.ui:234
+#: data/ui/preferences.ui:241
 msgid "Location"
 msgstr "Eneo"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:214
 msgid "Long"
 msgstr "Ndefu"
 
@@ -1484,11 +359,7 @@ msgstr "Ndefu"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "Dirisha kuu la programu likiwa na uunganishaji wa WhatsApp Web"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:302
-msgid "Major changes:"
-msgstr "Mabadiliko makubwa:"
-
-#: data/ui/preferences.ui:160
+#: data/ui/preferences.ui:167
 msgid "Master toggle for all notifications"
 msgstr "Swichi kuu ya arifa zote"
 
@@ -1497,7 +368,7 @@ msgstr "Swichi kuu ya arifa zote"
 msgid "Match WhatsApp Colors"
 msgstr "Mteja wa WhatsApp"
 
-#: data/ui/preferences.ui:206
+#: data/ui/preferences.ui:213
 msgid "Medium"
 msgstr "Wastani"
 
@@ -1505,31 +376,23 @@ msgstr "Wastani"
 msgid "Menu"
 msgstr "Menyu"
 
-#: data/ui/preferences.ui:170
+#: data/ui/preferences.ui:177
 msgid "Message Notifications"
 msgstr "Arifa za Ujumbe"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:191
 msgid "Message Preview"
 msgstr "Onyesho la Awali la Ujumbe"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:174
 msgid "Messages"
 msgstr "Ujumbe"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:559
-msgid "Migrated Flatpak build logic to meson.build"
-msgstr "Imehamisha mantiki ya ujenzi wa Flatpak hadi meson.build"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:906
-msgid "Migrated from Python 3 to native Vala compilation"
-msgstr "Imehamishwa kutoka Python 3 hadi mkusanyiko asili wa Vala"
 
 #: data/ui/keyboard-shortcuts.ui:74
 msgid "Minimize Window"
 msgstr "Punguza Dirisha"
 
-#: data/ui/preferences.ui:356
+#: data/ui/preferences.ui:363
 msgid "Minimize animations and transitions"
 msgstr "Punguza uhuishaji na mipito"
 
@@ -1537,82 +400,17 @@ msgstr "Punguza uhuishaji na mipito"
 msgid "Minimize the window"
 msgstr "Punguza dirisha"
 
-#: data/ui/preferences.ui:384
+#: data/ui/preferences.ui:385
 msgid "Minimum Zoom Level"
 msgstr "Kiwango cha Chini cha Ukuzaji"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:684
-msgid "Minor README corrections"
-msgstr "Marekebisho madogo ya README"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:673
-msgid "Minor bug fixes and stability improvements"
-msgstr "Marekebisho madogo ya hitilafu na maboresho ya uthabiti"
 
 #: data/ui/preferences.ui:98
 msgid "Mobile Layout"
 msgstr "Mpangilio wa Simu"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:515
-msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
-msgstr ""
-"Mpangilio wa simu umebadilishwa kuwa menyu kunjuzi (otomatiki/imewezeshwa/"
-"imezimwa)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:512
-msgid ""
-"Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
-"Lomiri"
-msgstr ""
-"Usaidizi wa mpangilio wa simu ukiwa na ugunduzi otomatiki kwa Phosh, Plasma "
-"Mobile, na Lomiri"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:309
-msgid ""
-"Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
-"popover for the off-screen-rendered web view"
-msgstr ""
-"Mpangilio unaokubali simu, skrini nzima ya JavaScript, na popova ya menyu ya "
-"muktadha ya OSR kwa mwonekano wa wavuti unaoonyeshwa nje ya skrini"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:893
-msgid "Modern LibAdwaita UI with Blueprint declarative interface"
-msgstr ""
-"UI ya kisasa ya LibAdwaita ikiwa na kiolesura cha kutangaza cha Blueprint"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:907
-msgid "Modern Meson build system with Blueprint UI compilation"
-msgstr ""
-"Mfumo wa kisasa wa ujenzi wa Meson ukiwa na mkusanyiko wa UI wa Blueprint"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:798
-msgid "More reliable link opening mechanism"
-msgstr "Mfumo wa kufungua viungo unaoaminika zaidi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:802
-msgid "More robust dependency handling"
-msgstr "Utunzaji thabiti zaidi wa vitegemezi"
-
-#: data/ui/preferences.ui:352
+#: data/ui/preferences.ui:359
 msgid "Motion and Focus"
 msgstr "Mwendo na Kuangazia"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:305
-msgid ""
-"Multi-account support: each account runs in an isolated CEF RequestContext "
-"with its own cookies and storage; accounts are ordered most-recently-used"
-msgstr ""
-"Usaidizi wa akaunti nyingi: kila akaunti inaendeshwa katika RequestContext "
-"ya CEF iliyotengwa ikiwa na vidakuzi na hifadhi yake; akaunti zinapangwa kwa "
-"zilizotumika hivi karibuni zaidi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:899
-msgid "Multi-language spell checking support"
-msgstr "Usaidizi wa ukaguzi wa tahajia wa lugha nyingi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:892
-msgid "Native Vala/GTK4 implementation for optimal performance"
-msgstr "Utekelezaji asili wa Vala/GTK4 kwa utendaji bora"
 
 #: data/io.github.tobagin.karere.desktop.in:5
 msgid "Native WhatsApp Web client for Linux desktop"
@@ -1622,34 +420,6 @@ msgstr "Mteja asili wa WhatsApp Web kwa eneo-kazi la Linux"
 msgid "Native system notifications and tray icon support"
 msgstr "Usaidizi asili wa arifa za mfumo na ikoni ya treya"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:308
-msgid ""
-"Native system tray (StatusNotifierItem), desktop notifications, download "
-"manager, and image/text paste reimplemented on the CEF stack"
-msgstr ""
-"Treya asili ya mfumo (StatusNotifierItem), arifa za eneo-kazi, kidhibiti cha "
-"vipakuliwa, na ubandikaji wa picha/maandishi vimetekelezwa upya juu ya rundo "
-"la CEF"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:623
-#: data/io.github.tobagin.karere.metainfo.xml.in:647
-#: data/io.github.tobagin.karere.metainfo.xml.in:702
-#: data/io.github.tobagin.karere.metainfo.xml.in:772
-#: data/io.github.tobagin.karere.metainfo.xml.in:890
-msgid "New Features:"
-msgstr "Vipengele Vipya:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:626
-msgid "New System Tray Icon support"
-msgstr "Usaidizi mpya wa Ikoni ya Treya ya Mfumo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:193
-msgid ""
-"New opt-in \"Match WhatsApp Colors\" appearance setting: tints the window "
-"and header bar with WhatsApp Web's own background colors so the app blends "
-"with the page. Follows the light/dark theme and applies instantly. (#168)"
-msgstr ""
-
 #: data/ui/keyboard-shortcuts.ui:41
 msgid "Next Account"
 msgstr "Akaunti Inayofuata"
@@ -1658,100 +428,43 @@ msgstr "Akaunti Inayofuata"
 msgid "Next match"
 msgstr "Inayofuata"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:359
-msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
-msgstr ""
-"Kumbuka: kuunganisha upya akaunti za WhatsApp kunahitajika baada ya "
-"uboreshaji huu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:529
-msgid ""
-"Notification Chat Linking: Clicking a notification now opens the specific "
-"chat in Karere."
-msgstr ""
-"Kuunganisha Gumzo la Arifa: Kubofya arifa sasa kunafungua gumzo mahususi "
-"katika Karere."
-
-#: data/ui/preferences.ui:440
-msgid "Notification Shortcuts"
-msgstr "Njia za Mkato za Arifa"
-
-#: data/ui/preferences.ui:220
+#: data/ui/preferences.ui:227
 msgid "Notification Sounds"
 msgstr "Sauti za Arifa"
 
-#: data/ui/preferences.ui:267
+#: data/ui/preferences.ui:274
 msgid "Notification Type"
 msgstr "Aina ya Arifa"
 
-#: data/ui/preferences.ui:152 data/ui/preferences.ui:258
+#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "Arifa"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:627
-msgid "Notifications fully working with persistence fixes"
-msgstr "Arifa zinafanya kazi kikamilifu zikiwa na marekebisho ya udumishaji"
-
-#: data/ui/preferences.ui:262
+#: data/ui/preferences.ui:269
 msgid "Notify when a file download completes"
 msgstr "Arifu wakati upakuaji wa faili unapokamilika"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:38
-#, fuzzy
-msgid ""
-"Now built on CEF/Chromium 152. Karere 4.0 replaces the WebKitGTK backend "
-"with the Chromium Embedded Framework, bringing full video attachment "
-"playback (H.264/AAC), multi-account support with isolated sessions, per-"
-"account zoom, and a faster, more compatible rendering engine while keeping "
-"the same native GTK4/libadwaita shell."
-msgstr ""
-"Sasa imejengwa juu ya CEF/Chromium 148. Karere 4.0 inachukua nafasi ya "
-"backend ya WebKitGTK na Chromium Embedded Framework, ikileta uchezaji kamili "
-"wa viambatisho vya video (H.264/AAC), usaidizi wa akaunti nyingi zenye "
-"vipindi vilivyotengwa, ukuzaji kwa kila akaunti, na injini ya uonyeshaji "
-"yenye kasi na uoanifu zaidi huku ikidumisha ganda lile lile asili la GTK4/"
-"libadwaita."
-
-#: data/ui/preferences.ui:129
+#: data/ui/preferences.ui:123 src/window.rs:1685 src/window.rs:1741
 msgid "Open"
+msgstr "Fungua"
+
+#: data/ui/preferences.ui:136
+#, fuzzy
+msgid "Open File"
 msgstr "Fungua"
 
 #: data/ui/keyboard-shortcuts.ui:146
 msgid "Open preferences"
 msgstr "Fungua mapendeleo"
 
-#: data/ui/keyboard-shortcuts.ui:127
+#: data/ui/keyboard-shortcuts.ui:120
 msgid "Open the developer tools"
 msgstr "Fungua zana za wasanidi"
 
-#: data/ui/preferences.ui:125
+#: data/ui/preferences.ui:119
 msgid "Open the developer tools for the current page"
 msgstr "Fungua zana za wasanidi kwa ukurasa wa sasa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:777
-msgid "Optimized font loading to eliminate display conflicts"
-msgstr "Imeboresha upakiaji wa fonti ili kuondoa migongano ya uonyeshaji"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:479
-msgid "Optimized memory usage in mobile responsive scripts"
-msgstr "Imeboresha matumizi ya kumbukumbu katika hati za kuitikia simu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:307
-msgid ""
-"Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and an "
-"accessibility minimum-zoom floor"
-msgstr ""
-"Ukuzaji kwa kila akaunti (Ctrl +/-/0) ukiwa na vidhibiti vya hiari vya "
-"ukuzaji vya upau wa kichwa na sakafu ya kiwango cha chini cha ukuzaji cha "
-"ufikivu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:881
-msgid "Performance optimizations for faster startup"
-msgstr "Maboresho ya utendaji kwa kuanza kwa kasi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:847
-msgid "Performance optimizations for scrolling"
-msgstr "Maboresho ya utendaji kwa kusogeza"
 
 #: data/io.github.tobagin.karere.metainfo.xml.in:33
 msgid ""
@@ -1760,24 +473,20 @@ msgstr ""
 "Vipindi vya kuingia vinavyodumu hivyo huhitaji kuchanganua msimbo wa QR kila "
 "wakati"
 
-#: data/ui/keyboard-shortcuts.ui:134
+#: data/ui/keyboard-shortcuts.ui:127
 msgid "Pick an element to inspect"
 msgstr "Chagua kipengele cha kukagua"
 
-#: data/ui/preferences.ui:221
+#: data/ui/preferences.ui:228
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "Cheza sauti ya arifa ya WhatsApp kwa ujumbe mpya"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:628
-msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
-msgstr "Imehamishwa kutoka Vala hadi Rust/GTK4/Libadwaita asili"
-
 #: data/ui/window.ui:255 data/ui/preferences.ui:10
-#: data/ui/keyboard-shortcuts.ui:145 src/tray.rs:139
+#: data/ui/keyboard-shortcuts.ui:145 src/tray.rs:166
 msgid "Preferences"
 msgstr "Mapendeleo"
 
-#: data/ui/preferences.ui:200
+#: data/ui/preferences.ui:207
 msgid "Preview Length"
 msgstr "Urefu wa Onyesho la Awali"
 
@@ -1789,7 +498,7 @@ msgstr "Akaunti Iliyopita"
 msgid "Previous match"
 msgstr "Iliyopita"
 
-#: data/ui/preferences.ui:327
+#: data/ui/preferences.ui:334
 msgid "Privacy"
 msgstr "Faragha"
 
@@ -1797,19 +506,11 @@ msgstr "Faragha"
 msgid "Privacy controls and comprehensive spell-checking settings"
 msgstr "Vidhibiti vya faragha na mipangilio kamili ya ukaguzi wa tahajia"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:909
-msgid "Production-ready error handling and crash recovery"
-msgstr "Utunzaji wa makosa tayari kwa uzalishaji na urejeshaji wa kuanguka"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:897
-msgid "Professional logging and crash reporting system"
-msgstr "Mfumo wa kitaalamu wa ukataji miti na uripoti wa kuanguka"
-
 #: data/io.github.tobagin.karere.metainfo.xml.in:36
 msgid "Proper clipboard integration for text and images"
 msgstr "Uunganishaji sahihi wa ubao wa kunakili kwa maandishi na picha"
 
-#: data/ui/window.ui:271 data/ui/keyboard-shortcuts.ui:159 src/tray.rs:158
+#: data/ui/window.ui:275 data/ui/keyboard-shortcuts.ui:159 src/tray.rs:185
 msgid "Quit"
 msgstr "Toka"
 
@@ -1821,25 +522,13 @@ msgstr "Toka kwenye Programu"
 msgid "Quit Karere"
 msgstr "Toka kwenye Karere"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:376
-msgid "Redesigned application icons for stable and development variants"
-msgstr "Imeundwa upya ikoni za programu kwa lahaja thabiti na za maendeleo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:629
-msgid "Redesigned/streamlined preferences dialog"
-msgstr "Kidirisha cha mapendeleo kilichoundwa upya/kilichorahisishwa"
-
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:362
 msgid "Reduce Motion"
 msgstr "Punguza Mwendo"
 
 #: data/ui/window.ui:251
 msgid "Refresh WhatsApp Web"
 msgstr "Onyesha upya WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:694
-msgid "Refreshed About dialog screenshot"
-msgstr "Imeburudisha picha ya skrini ya kidirisha cha Kuhusu"
 
 #: data/ui/keyboard-shortcuts.ui:15
 msgid "Reload WhatsApp Web"
@@ -1853,100 +542,23 @@ msgstr "Pakia upya ukurasa wa sasa"
 msgid "Reload, bypassing the cache"
 msgstr "Pakia upya, ukipita akiba"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:556
-msgid "Remove direct D-Bus notification permissions for cleaner manifest"
-msgstr ""
-"Ondoa ruhusa za moja kwa moja za arifa za D-Bus kwa faili ya udhihirisho safi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:588
-msgid "Remove unnecessary autostart permission to satisfy linter"
-msgstr "Ondoa ruhusa isiyo ya lazima ya kuanza otomatiki ili kuridhisha linter"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:379
-msgid "Removed ffmpeg-full extension (no longer required)"
-msgstr "Imeondoa kiendelezi cha ffmpeg-full (hakihitajiki tena)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:720
-msgid ""
-"Removed hardcoded blueprint compiler paths for cross-architecture support"
-msgstr ""
-"Imeondoa njia za mkusanyaji wa blueprint zilizosimbwa kwa usaidizi wa "
-"usanifu mbalimbali"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:113
-msgid ""
-"Removed read-only access to Documents, Pictures, Videos, Music and Desktop."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:806
-msgid ""
-"Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
-"only)"
-msgstr ""
-"Imeondoa ubadilishaji usio wa lazima wa wakala wa mtumiaji wa simu (WhatsApp "
-"Web ni ya eneo-kazi pekee)"
-
-#: data/ui/preferences.ui:143
+#: data/ui/preferences.ui:150
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
 msgstr ""
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:828
-msgid "Replaced window.vala.in and preferences.vala.in with direct .vala files"
-msgstr ""
-"Imebadilisha window.vala.in na preferences.vala.in na faili za .vala za moja "
-"kwa moja"
-
 #: data/ui/window.ui:46 data/ui/keyboard-shortcuts.ui:107
 msgid "Reset Zoom"
 msgstr "Rejesha Ukuzaji"
 
-#: data/ui/preferences.ui:249
+#: data/ui/preferences.ui:256
 msgid "Reset to default"
 msgstr "Rejesha chaguo-msingi"
 
 #: data/ui/keyboard-shortcuts.ui:108
 msgid "Reset zoom to 100%"
 msgstr "Rejesha ukuzaji kuwa 100%"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:398
-msgid "Resolved WebKit crashes on media-heavy pages"
-msgstr "Imetatua kuanguka kwa WebKit kwenye kurasa zenye media nyingi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:763
-msgid "Resolved compatibility issues with newer GNOME environments"
-msgstr "Imetatua masuala ya uoanifu na mazingira mapya ya GNOME"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:788
-msgid "Resolved flatpak-builder compatibility issues"
-msgstr "Imetatua masuala ya uoanifu ya flatpak-builder"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:858
-msgid "Resolved invalid markup in release descriptions"
-msgstr "Imetatua alama batili katika maelezo ya matoleo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:874
-msgid "Resolved memory leak in WebKit manager cleanup"
-msgstr ""
-"Imetatua uvujaji wa kumbukumbu katika usafishaji wa kidhibiti cha WebKit"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:840
-msgid "Resolved memory leak in notification cleanup"
-msgstr "Imetatua uvujaji wa kumbukumbu katika usafishaji wa arifa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:581
-msgid "Restore autostart permission for improved compatibility"
-msgstr "Rejesha ruhusa ya kuanza otomatiki kwa uoanifu ulioboreshwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:809
-msgid "Restored Safari Linux user agent for native WebKit experience"
-msgstr ""
-"Imerejesha wakala wa mtumiaji wa Safari Linux kwa uzoefu asili wa WebKit"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:469
-msgid "Restored correct app icons and transparent backgrounds"
-msgstr "Imerejesha ikoni sahihi za programu na mandharinyuma ya uwazi"
 
 #: data/ui/preferences.ui:42
 msgid "Run in Background"
@@ -1956,16 +568,11 @@ msgstr "Endesha kwa Mandharinyuma"
 msgid "Run on Startup"
 msgstr "Endesha Wakati wa Kuanza"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:194
-msgid ""
-"Safer avatar processing for notifications (community contribution). (#172)"
-msgstr ""
-
-#: data/ui/preferences.ui:411
+#: data/ui/preferences.ui:412
 msgid "Screen Reader Optimizations"
 msgstr "Maboresho ya Kisomaji cha Skrini"
 
-#: data/ui/preferences.ui:408
+#: data/ui/preferences.ui:409
 msgid "Screen Reader Support"
 msgstr "Usaidizi wa Kisomaji cha Skrini"
 
@@ -1973,35 +580,27 @@ msgstr "Usaidizi wa Kisomaji cha Skrini"
 msgid "Search the current page"
 msgstr "Tafuta ukurasa wa sasa"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:380
 msgid "Set a minimum zoom level for all accounts"
 msgstr "Weka kiwango cha chini cha ukuzaji kwa akaunti zote"
 
-#: data/ui/preferences.ui:205
+#: data/ui/preferences.ui:212
 msgid "Short"
 msgstr "Fupi"
 
-#: data/ui/preferences.ui:419
-msgid "Shortcuts"
-msgstr "Njia za Mkato"
-
-#: data/ui/preferences.ui:194
+#: data/ui/preferences.ui:201
 msgid "Show Message Text"
 msgstr "Onyesha Maandishi ya Ujumbe"
 
-#: data/ui/preferences.ui:188
+#: data/ui/preferences.ui:195
 msgid "Show Sender Name"
 msgstr "Onyesha Jina la Mtumaji"
 
-#: data/ui/preferences.ui:171
+#: data/ui/preferences.ui:178
 msgid "Show notifications for incoming messages"
 msgstr "Onyesha arifa za ujumbe unaoingia"
 
-#: data/ui/keyboard-shortcuts.ui:115
-msgid "Show or hide the zoom buttons"
-msgstr "Onyesha au ficha vitufe vya ukuzaji"
-
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:319
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr ""
 "Onyesha menyu kunjuzi ya lugha ya ukaguzi wa tahajia kwenye upau wa kichwa"
@@ -2010,22 +609,13 @@ msgstr ""
 msgid "Show this shortcuts dialog"
 msgstr "Onyesha kidirisha hiki cha njia za mkato"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:369
 msgid "Show visible outlines around focused elements"
 msgstr "Onyesha mistari inayoonekana kuzunguka vipengele vinavyolengwa"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:402
 msgid "Show zoom buttons in the header bar"
 msgstr "Onyesha vitufe vya ukuzaji kwenye upau wa kichwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:808
-msgid "Simplified emoji font configuration to single high-quality source"
-msgstr ""
-"Imerahisisha usanidi wa fonti ya emoji kuwa chanzo kimoja cha ubora wa juu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:830
-msgid "Simplified source file management in build system"
-msgstr "Imerahisisha usimamizi wa faili za chanzo katika mfumo wa ujenzi"
 
 #: data/ui/preferences.ui:99
 msgid ""
@@ -2035,7 +625,7 @@ msgstr ""
 "Mpangilio wa paneli moja. Otomatiki: kwenye maganda ya simu au madirisha "
 "membamba; Imewezeshwa/Imezimwa: lazimisha kuwasha au kuzima kwa ukubwa wowote"
 
-#: data/ui/preferences.ui:331
+#: data/ui/preferences.ui:338
 msgid "Site Permissions"
 msgstr "Ruhusa za Tovuti"
 
@@ -2043,26 +633,11 @@ msgstr "Ruhusa za Tovuti"
 msgid "Smooth performance with hardware acceleration"
 msgstr "Utendaji laini ukiwa na uongezaji kasi wa maunzi"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:111
-msgid "Smoother scrolling inside conversations on large HiDPI windows (#173)."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:158
-msgid ""
-"Software rendering now redraws only the part of the window that changed, "
-"reducing CPU and memory bandwidth per frame — most noticeable on integrated "
-"graphics (#179)."
-msgstr ""
-
-#: data/ui/preferences.ui:185
-msgid "Some settings only apply when Karere controls the popup"
-msgstr "Baadhi ya mipangilio inatumika tu wakati Karere inadhibiti kidirisha"
-
-#: data/ui/preferences.ui:217
+#: data/ui/preferences.ui:224
 msgid "Sounds"
 msgstr "Sauti"
 
-#: data/ui/preferences.ui:290
+#: data/ui/preferences.ui:297
 msgid "Spell Checking"
 msgstr "Ukaguzi wa Tahajia"
 
@@ -2070,11 +645,11 @@ msgstr "Ukaguzi wa Tahajia"
 msgid "Spell Checking Language"
 msgstr "Lugha ya Ukaguzi wa Tahajia"
 
-#: data/ui/preferences.ui:286
+#: data/ui/preferences.ui:293
 msgid "Spellcheck"
 msgstr "Ukaguzi wa Tahajia"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:325
 msgid "Star a language to pin it to the top"
 msgstr "Weka nyota kwenye lugha ili kuibandika juu"
 
@@ -2090,31 +665,18 @@ msgstr "Anza ukiwa umepunguzwa bila kuonyesha dirisha"
 msgid "Startup"
 msgstr "Kuanza"
 
-#: data/ui/preferences.ui:332
+#: data/ui/preferences.ui:339
 msgid "Stored allow/deny decisions for websites"
 msgstr "Maamuzi ya kuruhusu/kukataa yaliyohifadhiwa kwa tovuti"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:794
-msgid "Streamlined font stack for consistent emoji appearance"
-msgstr "Imerahisisha rundo la fonti kwa mwonekano thabiti wa emoji"
 
 #: data/ui/window.ui:83 data/ui/keyboard-shortcuts.ui:55
 msgid "Switch Account"
 msgstr "Badilisha Akaunti"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:566
-msgid ""
-"Switch to XDG Background Portal for autostart (improves security and "
-"compatibility)"
-msgstr ""
-"Badilisha kwenda Portal ya Mandharinyuma ya XDG kwa kuanza otomatiki "
-"(inaboresha usalama na uoanifu)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:555
-msgid "Switch to XDG Notification Portal (ashpd) for better sandboxing support"
-msgstr ""
-"Badilisha kwenda Portal ya Arifa ya XDG (ashpd) kwa usaidizi bora wa "
-"kufunika kwenye sanduku la mchanga"
+#: data/ui/preferences.ui:184
+#, fuzzy
+msgid "Switch the tray icon to the unread variant when a new message arrives"
+msgstr "Hamasisha ikoni ya treya wakati ujumbe mpya unapowasili"
 
 #: data/ui/keyboard-shortcuts.ui:42
 msgid "Switch to the next account"
@@ -2124,32 +686,13 @@ msgstr "Badilisha kwenda akaunti inayofuata"
 msgid "Switch to the previous account"
 msgstr "Badilisha kwenda akaunti iliyopita"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:304
-msgid ""
-"Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
-"proprietary-codec builds for H.264/AAC video attachment playback"
-msgstr ""
-"Imebadilisha backend ya uonyeshaji kutoka WebKitGTK hadi CEF/Chromium 148, "
-"ikiwa na ujenzi wa codec za umiliki kwa uchezaji wa viambatisho vya video "
-"vya H.264/AAC"
-
-#: data/ui/preferences.ui:273
+#: data/ui/preferences.ui:280
 msgid "System Notification"
 msgstr "Arifa ya Mfumo"
 
 #: data/ui/preferences.ui:51
 msgid "System Tray Icon"
 msgstr "Ikoni ya Treya ya Mfumo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:734
-#: data/io.github.tobagin.karere.metainfo.xml.in:804
-#: data/io.github.tobagin.karere.metainfo.xml.in:826
-msgid "Technical Changes:"
-msgstr "Mabadiliko ya Kiufundi:"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:904
-msgid "Technical Improvements:"
-msgstr "Maboresho ya Kiufundi:"
 
 #: data/ui/preferences.ui:77
 msgid "Theme"
@@ -2159,105 +702,13 @@ msgstr "Mandhari"
 msgid "Thiago Fernandes"
 msgstr "Thiago Fernandes"
 
-#: data/ui/keyboard-shortcuts.ui:114
-msgid "Toggle Header Bar Zoom Controls"
-msgstr "Geuza Vidhibiti vya Ukuzaji vya Upau wa Kichwa"
-
 #: data/ui/keyboard-shortcuts.ui:68
 msgid "Toggle fullscreen mode"
 msgstr "Geuza hali ya skrini nzima"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:176
-msgid "Translation catalogs regenerated against the current UI strings."
+#: data/ui/keyboard-shortcuts.ui:139
+msgid "Turn notification banners and sounds off or on"
 msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:513
-msgid "Tray icon click now toggles window visibility"
-msgstr "Kubofya ikoni ya treya sasa kunageuza mwonekano wa dirisha"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:610
-msgid "Update and Bug Fix Release"
-msgstr "Toleo la Sasisho na Kurekebisha Hitilafu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:756
-msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
-msgstr "Imesasisha runtime ya GNOME hadi toleo la 49 kwa uoanifu ulioboreshwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:739
-msgid "Updated SettingsManager to be the default for all settings access"
-msgstr ""
-"Imesasisha SettingsManager kuwa chaguo-msingi kwa ufikiaji wote wa mipangilio"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:682
-msgid "Updated about dialog screenshot"
-msgstr "Imesasisha picha ya skrini ya kidirisha cha kuhusu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:377
-msgid "Updated all Rust dependencies to latest versions"
-msgstr "Imesasisha vitegemezi vyote vya Rust hadi matoleo ya hivi karibuni"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:862
-msgid "Updated all references from appdata to metainfo format"
-msgstr "Imesasisha marejeleo yote kutoka muundo wa appdata hadi metainfo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:683
-msgid "Updated application screenshots"
-msgstr "Imesasisha picha za skrini za programu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:693
-msgid "Updated application screenshots with current UI appearance"
-msgstr ""
-"Imesasisha picha za skrini za programu zikiwa na mwonekano wa sasa wa UI"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:522
-msgid ""
-"Updated application summary and description for better AppStream compliance"
-msgstr ""
-"Imesasisha muhtasari na maelezo ya programu kwa uzingatifu bora wa AppStream"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:671
-msgid "Updated build configuration and dependencies"
-msgstr "Imesasisha usanidi wa ujenzi na vitegemezi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:829
-msgid "Updated meson.build to use Vala preprocessor directives"
-msgstr "Imesasisha meson.build kutumia maelekezo ya kichakataji-awali ya Vala"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:127
-msgid ""
-"Updated the application platform to GNOME 51 for current platform security "
-"and rendering updates."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:234
-msgid ""
-"Updated the bundled browser engine to CEF 149 (Chromium 149), up from CEF "
-"148, picking up the latest Chromium security and rendering fixes. "
-"Proprietary codecs stay enabled so WhatsApp calls and video playback keep "
-"working."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:201
-msgid ""
-"Upgraded the browser engine to CEF 150 / Chromium 150 for current security "
-"fixes; video attachments (H.264/AAC) keep playing in-app."
-msgstr ""
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:378
-msgid "Upgraded to GNOME Platform 50"
-msgstr "Imeinuliwa hadi Jukwaa la GNOME 50"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:738
-msgid "WebKitGTK 6.0 storage persistence verified and documented"
-msgstr "Udumishaji wa hifadhi wa WebKitGTK 6.0 umethibitishwa na kuandikwa"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:530
-msgid ""
-"Webcam Support: Added support for using the webcam (Status updates, Video "
-"calls) with a new permission dialog."
-msgstr ""
-"Usaidizi wa Kamera ya Wavuti: Imeongeza usaidizi wa kutumia kamera ya wavuti "
-"(Masasisho ya hali, Simu za video) ukiwa na kidirisha kipya cha ruhusa."
 
 #: data/ui/preferences.ui:38
 msgid "What happens when you close the window"
@@ -2279,12 +730,7 @@ msgstr "Dirisha"
 msgid "Window Close Behavior"
 msgstr "Tabia ya Kufunga Dirisha"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:514
-msgid "Window size is saved and restored when hiding/showing"
-msgstr ""
-"Ukubwa wa dirisha unahifadhiwa na kurejeshwa wakati wa kuficha/kuonyesha"
-
-#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "Ukuzaji"
 
@@ -2320,370 +766,1570 @@ msgstr "whatsapp"
 msgid "whatsapp;chat;messaging;web;communication;"
 msgstr "whatsapp;mazungumzo;kutuma ujumbe;wavuti;mawasiliano;"
 
-#: data/io.github.tobagin.karere.metainfo.xml.in:711
-msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
-msgstr ""
-"⌨️ Imeongeza kidirisha cha njia za mkato za kibodi kikitumia "
-"AdwShortcutsDialog"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:724
-msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
-msgstr ""
-"♻️ Urekebishaji mkubwa: Imepanga upya msingi wa msimbo kwa majina ya faili ya "
-"PascalCase"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:725
-msgid "♻️ Refactored Window.vala into specialized manager components"
-msgstr "♻️ Imerekebisha Window.vala kuwa vipengele maalum vya kidhibiti"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:726
-msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
-msgstr ""
-"♻️ Imeondoa ukataji miti na uripoti wa kuanguka maalum (tumia journalctl ya "
-"mfumo)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:708
-msgid ""
-"♿ Enhanced accessibility with screen reader optimization and keyboard "
-"navigation"
-msgstr ""
-"♿ Imeboresha ufikivu kwa uboreshaji wa kisomaji cha skrini na usogezaji wa "
-"kibodi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:889
-msgid ""
-"⚠️ Important: After upgrading, you will need to re-sync your mobile device "
-"with WhatsApp Web as this is a completely new application implementation."
-msgstr ""
-"⚠️ Muhimu: Baada ya kuboresha, utahitaji kusawazisha upya kifaa chako cha "
-"simu na WhatsApp Web kwani huu ni utekelezaji mpya kabisa wa programu."
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:655
-msgid "⚡ Performance optimizations for startup and shutdown"
-msgstr "⚡ Maboresho ya utendaji kwa kuanza na kuzima"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:704
-msgid "✅ Fixed WhatsApp Web notification banner persistence"
-msgstr "✅ Imerekebisha udumishaji wa bango la arifa la WhatsApp Web"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:705
-msgid "✅ Fixed notifications not working properly"
-msgstr "✅ Imerekebisha arifa zisizofanya kazi vizuri"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:771
-msgid ""
-"✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
-msgstr ""
-"✨ Usaidizi Ulioboreshwa wa Emoji, Utunzaji wa Viungo vya Nje, na Maboresho "
-"ya Ujenzi"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:646
-msgid "🎉 Feature Release"
-msgstr "🎉 Toleo la Kipengele"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:622
-msgid "🎉 Major Release 2.0.0"
-msgstr "🎉 Toleo Kubwa 2.0.0"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:701
-msgid "🎉 Version 1.0.0 - Major Milestone Release"
-msgstr "🎉 Toleo 1.0.0 - Toleo la Hatua Kuu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:649
-msgid "🎤 Microphone permission support for voice notes"
-msgstr "🎤 Usaidizi wa ruhusa ya maikrofoni kwa noti za sauti"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:636
-msgid "🐛 Bug Fix Release"
-msgstr "🐛 Toleo la Kurekebisha Hitilafu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:836
-#: data/io.github.tobagin.karere.metainfo.xml.in:870
-msgid "🐛 Bug Fixes and Improvements"
-msgstr "🐛 Marekebisho ya Hitilafu na Maboresho"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:753
-msgid "🐛 Runtime Update and Bug Fixes"
-msgstr "🐛 Sasisho la Runtime na Marekebisho ya Hitilafu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:657
-msgid "📖 Added MPRIS workaround documentation"
-msgstr "📖 Imeongeza nyaraka za njia mbadala ya MPRIS"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:746
-msgid "📚 Added spell checking configuration guide"
-msgstr "📚 Imeongeza mwongozo wa usanidi wa ukaguzi wa tahajia"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:745
-msgid "📚 Documented all keyboard shortcuts by category"
-msgstr "📚 Imeandika njia zote za mkato za kibodi kwa kategoria"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:744
-msgid "📚 Enhanced README with accessibility features documentation"
-msgstr "📚 Imeboresha README ukiwa na nyaraka za vipengele vya ufikivu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:747
-msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
-msgstr "📚 Imerekebisha URL za hazina ya GitHub (karere-vala → karere)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:709
-msgid "📝 Added comprehensive spell checking system with auto-detection"
-msgstr ""
-"📝 Imeongeza mfumo kamili wa ukaguzi wa tahajia wenye ugunduzi otomatiki"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:656
-msgid "📝 Async dictionary loading for smoother Spell Check initialization"
-msgstr ""
-"📝 Upakiaji wa kamusi usio sambamba kwa uanzishaji laini wa Ukaguzi wa "
-"Tahajia"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:679
-msgid "📝 Documentation and Metadata Update"
-msgstr "📝 Sasisho la Nyaraka na Metadata"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:707
-msgid ""
-"📥 Implemented download manager with custom directory and toast notifications"
-msgstr ""
-"📥 Imetekeleza kidhibiti cha vipakuliwa chenye saraka maalum na arifa za "
-"toast"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:732
-msgid "📸 Reorganized screenshots into data/screenshots/ directory"
-msgstr "📸 Imepanga upya picha za skrini katika saraka ya data/screenshots/"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:690
-msgid "📸 Screenshots and Documentation Update"
-msgstr "📸 Sasisho la Picha za Skrini na Nyaraka"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:651
-msgid "🔄 Manual reload and auto-reload on network reconnection"
-msgstr ""
-"🔄 Upakiaji upya wa mkono na otomatiki wakati wa kuunganishwa upya kwa "
-"mtandao"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:710
-msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
-msgstr "🔤 Imeunganisha kamusi za lugha 80+ kutoka LibreOffice"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:817
-msgid "🔧 Code Refactoring and Architecture Improvements"
-msgstr "🔧 Urekebishaji wa Msimbo na Maboresho ya Usanifu"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:668
-msgid "🔧 Maintenance Release"
-msgstr "🔧 Toleo la Matengenezo"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:853
-msgid "🔧 Metadata and Standards Compliance"
-msgstr "🔧 Uzingatifu wa Metadata na Viwango"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:706
-msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
-msgstr ""
-"🖼️ Imeongeza usaidizi wa kubandika picha kupitia ubao wa kunakili (Ctrl+V)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:728
-msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
-msgstr ""
-"🗑️ Imesafisha faili za majaribio zilizopitwa na wakati na vitegemezi "
-"visivyotumika"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:727
-msgid ""
-"🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
-msgstr ""
-"🗑️ Imeondoa kipengele cha Usisumbue (kinashughulikiwa na daemon ya arifa ya "
-"mfumo)"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:729
-msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
-msgstr "🗑️ Imeondoa vitegemezi vya json-glib, gee, na libsoup"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:887
-msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
-msgstr "🚀 Uhamiaji Mkubwa wa Usanifu: Python hadi Vala/GTK4"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:650
-msgid "🚀 Start in background option for autostart"
-msgstr "🚀 Chaguo la kuanza kwenye mandharinyuma kwa kuanza otomatiki"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:730
-msgid "🧹 Centralized settings management with SettingsManager singleton"
-msgstr ""
-"🧹 Imeweka kati usimamizi wa mipangilio ukiwa na singleton ya SettingsManager"
-
-#: data/io.github.tobagin.karere.metainfo.xml.in:731
-msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
-msgstr ""
-"🧹 Imeondoa DependencyContainer.vala (udungaji wa vitegemezi usiotumika)"
-
-#: src/main.rs:43
+#: src/main.rs:51
 msgid "Karere starting"
 msgstr "Karere inaanza"
 
-#: src/web_view.rs:3730
+#: src/web_view/clipboard_dnd.rs:112
+msgid "File is too large to attach (limit 48 MB)"
+msgstr ""
+
+#: src/web_view/clipboard_dnd.rs:445
 msgid "Karere cannot read files from this folder"
 msgstr ""
 
-#: src/web_view.rs:3732
+#: src/web_view/clipboard_dnd.rs:447
 #, fuzzy
 msgid "Choose File…"
 msgstr "Chagua…"
 
-#: src/web_view.rs:3748
+#: src/web_view/clipboard_dnd.rs:463
 msgid "Select the File to Attach"
 msgstr ""
 
-#: src/web_view.rs:3749
+#: src/web_view/clipboard_dnd.rs:464
 msgid "Attach"
 msgstr ""
 
-#: src/window.rs:290
+#: src/handlers/context_menu.rs:127
+msgid "Copy Link Address"
+msgstr ""
+
+#: src/window.rs:306
 msgid "Account"
 msgstr "Akaunti"
 
-#: src/window.rs:619
+#: src/window.rs:342
+#, fuzzy
+msgid "No connection"
+msgstr "mawasiliano"
+
+#: src/window.rs:343
+msgid "Waiting for the network — retrying…"
+msgstr ""
+
+#: src/window.rs:426
+msgid "{active} of {count}"
+msgstr ""
+
+#: src/window.rs:707
 msgid "Waiting for QR scan…"
 msgstr "Inasubiri uchanganuzi wa QR…"
 
-#: src/window.rs:641
-msgid "degraded"
-msgstr "imedhoofika"
+#. Translators: tray tooltip body; {} is the number of unread chats.
+#: src/window.rs:731 src/tray.rs:86
+#, fuzzy
+msgid "{} unread chat"
+msgid_plural "{} unread chats"
+msgstr[0] "ambazo hazijasomwa"
+msgstr[1] "ambazo hazijasomwa"
 
-#: src/window.rs:657
-msgid "Unread messages"
-msgstr "Ujumbe usiosomwa"
-
-#: src/window.rs:668
+#: src/window.rs:753
 msgid "Notifications muted — click to unmute"
 msgstr ""
 
-#: src/window.rs:672
+#: src/window.rs:757
 #, fuzzy
 msgid "Mute notifications"
 msgstr "Arifa"
 
-#: src/window.rs:703
+#: src/window.rs:790
 msgid "Edit account"
 msgstr "Hariri akaunti"
 
-#: src/window.rs:719
+#: src/window.rs:806
 msgid "Remove account"
 msgstr "Ondoa akaunti"
 
-#: src/window.rs:721
+#: src/window.rs:808
 msgid "Can't remove the only account"
 msgstr "Haiwezi kuondoa akaunti pekee"
 
-#: src/window.rs:805
+#: src/window.rs:896
 msgid "Maximum of 9 accounts reached"
 msgstr "Kiwango cha juu cha akaunti 9 kimefikiwa"
 
-#: src/window.rs:831
+#: src/window.rs:920
 msgid "Label"
 msgstr "Lebo"
 
-#: src/window.rs:846
+#: src/window.rs:935
 msgid "Name"
 msgstr "Jina"
 
-#: src/window.rs:850
+#: src/window.rs:939
 msgid "WhatsApp ID"
 msgstr "Kitambulisho cha WhatsApp"
 
-#: src/window.rs:854
-msgid "Avatar URL"
-msgstr "URL ya Avatari"
+#: src/window.rs:945
+#, fuzzy
+msgid "Position"
+msgstr "Eneo"
 
-#: src/window.rs:863 src/window.rs:952
+#: src/window.rs:947
+msgid "Move Up"
+msgstr ""
+
+#: src/window.rs:948
+msgid "Move Down"
+msgstr ""
+
+#: src/window.rs:994 src/window.rs:1049 src/window.rs:1644
 msgid "Cancel"
 msgstr "Ghairi"
 
-#: src/window.rs:864
+#: src/window.rs:995
 msgid "Save"
 msgstr "Hifadhi"
 
-#: src/window.rs:873
-msgid "Add Account"
-msgstr "Ongeza Akaunti"
-
-#: src/window.rs:875
+#: src/window.rs:1003
 msgid "Edit Account"
 msgstr "Hariri Akaunti"
 
-#: src/window.rs:942
+#: src/window.rs:1041
 msgid "Remove account?"
 msgstr "Ondoa akaunti?"
 
-#: src/window.rs:945
-msgid "This removes the local session for"
-msgstr "Hii inaondoa kipindi cha eneo-mtaani kwa"
+#: src/window.rs:1044
+msgid ""
+"This removes the local session for {name}. To fully unlink the device, open "
+"WhatsApp on your phone, go to Linked devices, select this device and choose "
+"Log out."
+msgstr ""
 
-#: src/window.rs:948
-msgid "The device stays linked on your phone until you remove it there."
-msgstr "Kifaa kinabaki kimeunganishwa kwenye simu yako hadi ukiondoe hapo."
-
-#: src/window.rs:953
+#: src/window.rs:1050
 msgid "Remove"
 msgstr "Ondoa"
 
-#: src/actions.rs:269
+#: src/window.rs:1361
+msgid "DevTools available only with --debug"
+msgstr ""
+
+#: src/window.rs:1404
+msgid "DevTools unavailable: {error}"
+msgstr ""
+
+#: src/window.rs:1646
+#, fuzzy
+msgid "Open logs"
+msgstr "Fungua"
+
+#: src/window.rs:1680
+msgid "{name} downloaded"
+msgstr ""
+
+#: src/window.rs:1687
+#, fuzzy
+msgid "Show in Folder"
+msgstr "Onyesha Dirisha"
+
+#: src/window.rs:1732
+#, fuzzy
+msgid "Download complete"
+msgstr "Saraka ya Vipakuliwa"
+
+#: src/window.rs:1759
+#, fuzzy
+msgid "Download failed: {reason}"
+msgstr "Saraka ya Vipakuliwa"
+
+#: src/window.rs:1763
+msgid "“{name}” could not be saved."
+msgstr ""
+
+#: src/window.rs:1766
+msgid "OK"
+msgstr ""
+
+#: src/actions.rs:193
+msgid "Diagnostic info copied"
+msgstr ""
+
+#: src/actions.rs:531
+#, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
-"seamless desktop integration with comprehensive logging and crash reporting "
-"capabilities"
+"seamless desktop integration"
 msgstr ""
 "Kifunika asili cha kisasa cha GTK4/LibAdwaita kwa WhatsApp Web kinachotoa "
 "uunganishaji wa eneo-kazi usio na mshono ukiwa na uwezo kamili wa ukataji "
 "miti na uripoti wa kuanguka"
 
-#: src/actions.rs:288
+#: src/actions.rs:550
 msgid "Source"
 msgstr "Chanzo"
 
-#: src/actions.rs:291
+#: src/actions.rs:553
 msgid "Special Thanks"
 msgstr "Shukrani za Pekee"
 
-#. Translators: tray tooltip body; leading number is the unread count.
-#: src/tray.rs:68
-msgid "unread"
-msgstr "ambazo hazijasomwa"
+#: src/actions.rs:584
+msgid "Karere can keep running in the background to deliver messages."
+msgstr ""
 
-#: src/tray.rs:93
+#: src/actions.rs:632
+msgid ""
+"Could not enable running on startup. Allow Karere to run in the background "
+"in your system settings."
+msgstr ""
+
+#: src/tray.rs:111
 msgid "Hide Window"
 msgstr "Ficha Dirisha"
 
-#: src/tray.rs:95
+#: src/tray.rs:113
 msgid "Show Window"
 msgstr "Onyesha Dirisha"
 
-#: src/tray.rs:151
+#: src/tray.rs:178
 msgid "About Karere"
 msgstr "Kuhusu Karere"
 
-#: src/preferences.rs:90
+#: src/preferences.rs:105
 msgid "Restart Karere?"
 msgstr "Anzisha upya Karere?"
 
-#: src/preferences.rs:91
+#: src/preferences.rs:106
 msgid "Later"
 msgstr "Baadaye"
 
-#: src/preferences.rs:92
+#: src/preferences.rs:107
 msgid "Restart Now"
 msgstr "Anzisha Upya Sasa"
 
-#: src/preferences.rs:290
+#: src/preferences.rs:289
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "Mabadiliko ya lugha yatatumika baada ya Karere kuanzishwa upya."
 
-#: src/preferences.rs:319
+#: src/preferences.rs:323
 msgid "System Default"
 msgstr "Chaguo-msingi la Mfumo"
 
-#: src/preferences.rs:346
+#: src/preferences.rs:350
 msgid "The language change takes effect after Karere restarts."
 msgstr "Mabadiliko ya lugha yatatumika baada ya Karere kuanzishwa upya."
+
+#: src/preferences.rs:396
+msgid "Select Download Folder"
+msgstr ""
+
+#: src/preferences.rs:506
+msgid "Allowed"
+msgstr ""
+
+#: src/preferences.rs:507
+msgid "Denied"
+msgstr ""
+
+#: src/preferences.rs:508
+msgid "Ask"
+msgstr ""
+
+#: src/preferences.rs:518
+msgid "Remove this decision"
+msgstr ""
+
+#: src/notifications.rs:235
+#, fuzzy
+msgid "New message"
+msgstr "Ujumbe usiosomwa"
+
+#: src/notifications.rs:252
+#, fuzzy
+msgid "View message"
+msgstr "Ujumbe usiosomwa"
+
+#: src/notifications.rs:259
+#, fuzzy
+msgid "Mute Account"
+msgstr "Akaunti Inayofuata"
+
+#: src/spellcheck_ui.rs:42
+#, fuzzy
+msgid "Automatic"
+msgstr "Otomatiki"
+
+#: src/spellcheck_ui.rs:86
+msgid "Pin to top"
+msgstr ""
+
+#: src/handlers/permission.rs:198
+msgid "{origin} is requesting access to {perms}."
+msgstr ""
+
+#: src/handlers/permission.rs:202
+#, fuzzy
+msgid "Permission request"
+msgstr "Ruhusa za Tovuti"
+
+#: src/handlers/permission.rs:203
+msgid "Deny"
+msgstr ""
+
+#: src/handlers/permission.rs:204
+msgid "Allow"
+msgstr ""
+
+#: src/handlers/permission.rs:264 src/handlers/permission.rs:278
+msgid "microphone"
+msgstr ""
+
+#: src/handlers/permission.rs:267 src/handlers/permission.rs:281
+msgid "camera"
+msgstr ""
+
+#: src/handlers/permission.rs:270
+msgid "screen audio"
+msgstr ""
+
+#: src/handlers/permission.rs:273
+msgid "screen sharing"
+msgstr ""
+
+#: src/handlers/permission.rs:284
+#, fuzzy
+msgid "location"
+msgstr "Eneo"
+
+#: src/handlers/permission.rs:287
+#, fuzzy
+msgid "notifications"
+msgstr "Arifa"
+
+#: src/handlers/permission.rs:290
+msgid "MIDI devices"
+msgstr ""
+
+#: src/handlers/permission.rs:293
+msgid "clipboard"
+msgstr ""
+
+#: src/handlers/permission.rs:298
+msgid "device access"
+msgstr ""
+
+#: src/handlers/permission.rs:310 src/handlers/permission.rs:318
+msgid "Microphone access"
+msgstr ""
+
+#: src/handlers/permission.rs:311 src/handlers/permission.rs:321
+msgid "Camera access"
+msgstr ""
+
+#: src/handlers/permission.rs:312
+msgid "Screen audio access"
+msgstr ""
+
+#: src/handlers/permission.rs:313
+msgid "Screen sharing"
+msgstr ""
+
+#: src/handlers/permission.rs:314 src/handlers/permission.rs:335
+msgid "Site access"
+msgstr ""
+
+#: src/handlers/permission.rs:327
+#, fuzzy
+msgid "Location access"
+msgstr "Eneo"
+
+#: src/handlers/permission.rs:330
+msgid "Clipboard access"
+msgstr ""
+
+#: src/handlers/permission.rs:333
+msgid "MIDI device access"
+msgstr ""
+
+#: src/handlers/request.rs:127
+msgid "Web view crashed — reconnecting…"
+msgstr ""
+
+#: src/handlers/request.rs:130
+msgid "Web view keeps crashing."
+msgstr ""
+
+#: src/handlers/request.rs:132
+msgid ""
+"The embedded WhatsApp view crashed repeatedly. Open the logs to investigate."
+msgstr ""
+
+#~ msgid "Accessibility Shortcuts"
+#~ msgstr "Njia za Mkato za Ufikivu"
+
+#~ msgid ""
+#~ "Accessibility preferences: reduce-motion, focus-ring visibility, and "
+#~ "caret browsing"
+#~ msgstr ""
+#~ "Mapendeleo ya ufikivu: punguza-mwendo, mwonekano wa pete-ya-umakini, na "
+#~ "uvinjari wa caret"
+
+#~ msgid ""
+#~ "Account identity (name + avatar) auto-discovered from WhatsApp Web's "
+#~ "internal Store, with a degraded DOM-scrape fallback surfaced by a badge"
+#~ msgstr ""
+#~ "Utambulisho wa akaunti (jina + avatari) hugunduliwa kiotomatiki kutoka "
+#~ "Store ya ndani ya WhatsApp Web, ukiwa na njia mbadala ya kufutua DOM "
+#~ "iliyodhoofika inayoonyeshwa na beji"
+
+#~ msgid "Add new contributor Sabri Ünal to the About dialog"
+#~ msgstr "Ongeza mchangiaji mpya Sabri Ünal kwenye kidirisha cha Kuhusu"
+
+#~ msgid "Add xdg-config/autostart permission for autostart support"
+#~ msgstr ""
+#~ "Ongeza ruhusa ya xdg-config/autostart kwa usaidizi wa kuanza otomatiki"
+
+#~ msgid "Added \"Run on Startup\" toggle in preferences (default: false)"
+#~ msgstr ""
+#~ "Imeongeza swichi ya \"Endesha Wakati wa Kuanza\" katika mapendeleo "
+#~ "(chaguo-msingi: uongo)"
+
+#~ msgid ""
+#~ "Added GStreamer/PipeWire env vars to production Flatpak for efficient "
+#~ "media handling"
+#~ msgstr ""
+#~ "Imeongeza vigeu vya mazingira vya GStreamer/PipeWire kwa Flatpak ya "
+#~ "uzalishaji kwa utunzaji bora wa media"
+
+#~ msgid ""
+#~ "Added WebKit cache control setting for improved rendering consistency"
+#~ msgstr ""
+#~ "Imeongeza mpangilio wa udhibiti wa akiba ya WebKit kwa uthabiti "
+#~ "ulioboreshwa wa uonyeshaji"
+
+#~ msgid ""
+#~ "Added WebRTC permission handling in preparation for WhatsApp Web voice/"
+#~ "video calls"
+#~ msgstr ""
+#~ "Imeongeza utunzaji wa ruhusa ya WebRTC katika maandalizi ya simu za sauti/"
+#~ "video za WhatsApp Web"
+
+#~ msgid ""
+#~ "Added Zoom support (Ctrl +/-/0) with persistence and preference controls"
+#~ msgstr ""
+#~ "Imeongeza usaidizi wa Ukuzaji (Ctrl +/-/0) ukiwa na udumishaji na "
+#~ "vidhibiti vya mapendeleo"
+
+#~ msgid "Added compile-time conditional compilation using DEVELOPMENT flag"
+#~ msgstr ""
+#~ "Imeongeza mkusanyiko wa masharti wa wakati wa kukusanya ukitumia bendera "
+#~ "ya DEVELOPMENT"
+
+#~ msgid ""
+#~ "Added complete multi-account support with sidebar and tray integration"
+#~ msgstr ""
+#~ "Imeongeza usaidizi kamili wa akaunti nyingi ukiwa na upau wa pembeni na "
+#~ "uunganishaji wa treya"
+
+#~ msgid "Added contributors Aman Das and Cameo to about dialog"
+#~ msgstr "Imeongeza wachangiaji Aman Das na Cameo kwenye kidirisha cha kuhusu"
+
+#~ msgid ""
+#~ "Added high-quality Noto Color Emoji fonts (v2.047, Unicode 16.0 support)"
+#~ msgstr ""
+#~ "Imeongeza fonti za ubora wa juu za Noto Color Emoji (v2.047, usaidizi wa "
+#~ "Unicode 16.0)"
+
+#~ msgid "Added middle-click paste from primary selection (selected text)"
+#~ msgstr ""
+#~ "Imeongeza ubandikaji wa bonyezo-kati kutoka kwa uteuzi msingi (maandishi "
+#~ "yaliyochaguliwa)"
+
+#~ msgid "Added new application icons"
+#~ msgstr "Imeongeza ikoni mpya za programu"
+
+#~ msgid "Added per-account zoom settings and improved accessibility"
+#~ msgstr ""
+#~ "Imeongeza mipangilio ya ukuzaji kwa kila akaunti na kuboresha ufikivu"
+
+#~ msgid "Added striped symbolic icons for development version"
+#~ msgstr "Imeongeza ikoni za alama zenye milia kwa toleo la maendeleo"
+
+#~ msgid "Added subpixel font scaling and advanced rendering optimizations"
+#~ msgstr ""
+#~ "Imeongeza upimaji wa fonti wa subpixel na maboresho ya uonyeshaji wa hali "
+#~ "ya juu"
+
+#~ msgid ""
+#~ "Added voice and video call support via WebRTC-enabled WebKitGTK 2.50.5"
+#~ msgstr ""
+#~ "Imeongeza usaidizi wa simu za sauti na video kupitia WebKitGTK 2.50.5 "
+#~ "iliyowezeshwa kwa WebRTC"
+
+#~ msgid ""
+#~ "Added: account switcher uses a popover on desktop windows (bottom sheet "
+#~ "preserved on mobile)"
+#~ msgstr ""
+#~ "Imeongezwa: kibadili akaunti kinatumia popova kwenye madirisha ya eneo-"
+#~ "kazi (karatasi ya chini imehifadhiwa kwenye simu)"
+
+#~ msgid "Added: pin favorite spell-check languages to the top of the dropdown"
+#~ msgstr ""
+#~ "Imeongezwa: bandika lugha pendwa za ukaguzi wa tahajia juu ya menyu "
+#~ "kunjuzi"
+
+#~ msgid ""
+#~ "Added: spell-check dropdown shows natural language names (\"English (UK)"
+#~ "\") instead of locale codes"
+#~ msgstr ""
+#~ "Imeongezwa: menyu kunjuzi ya ukaguzi wa tahajia inaonyesha majina ya "
+#~ "lugha asili (\"Kiingereza (UK)\") badala ya misimbo ya eneo"
+
+#~ msgid "Advanced notification system with native desktop integration"
+#~ msgstr ""
+#~ "Mfumo wa hali ya juu wa arifa ukiwa na uunganishaji asili wa eneo-kazi"
+
+#~ msgid "Allow inspecting and debugging the WebView"
+#~ msgstr "Ruhusu kukagua na kutatua hitilafu za WebView"
+
+#~ msgid ""
+#~ "BREAKING CHANGE: Complete rewrite from Python to native Vala for better "
+#~ "performance and integration."
+#~ msgstr ""
+#~ "MABADILIKO YA KUVUNJA: Uandishi upya kamili kutoka Python hadi Vala asili "
+#~ "kwa utendaji na uunganishaji bora."
+
+#~ msgid "Better build system compatibility with different environments"
+#~ msgstr "Uoanifu bora wa mfumo wa ujenzi na mazingira tofauti"
+
+#~ msgid "Better error handling for network disconnections"
+#~ msgstr "Utunzaji bora wa makosa kwa kukatika kwa mtandao"
+
+#~ msgid "Better error handling for network timeouts"
+#~ msgstr "Utunzaji bora wa makosa kwa muda wa kuisha wa mtandao"
+
+#~ msgid "Better sandboxed environment compatibility"
+#~ msgstr "Uoanifu bora wa mazingira ya sanduku la mchanga"
+
+#~ msgid "Better support for modern desktop environments"
+#~ msgstr "Usaidizi bora kwa mazingira ya kisasa ya eneo-kazi"
+
+#~ msgid "Bug Fix Release"
+#~ msgstr "Toleo la Kurekebisha Hitilafu"
+
+#~ msgid "Bug Fixes:"
+#~ msgstr "Marekebisho ya Hitilafu:"
+
+#~ msgid ""
+#~ "Bumped WebKitGTK to 2.52.3, LibreOffice dictionaries to 26.2.3.2, Rust "
+#~ "dependencies to latest compatible versions"
+#~ msgstr ""
+#~ "Imeinua WebKitGTK hadi 2.52.3, kamusi za LibreOffice hadi 26.2.3.2, "
+#~ "vitegemezi vya Rust hadi matoleo ya hivi karibuni yanayooana"
+
+#~ msgid "Cache disabled by default to prevent emoji rendering issues"
+#~ msgstr ""
+#~ "Akiba imezimwa kwa chaguo-msingi ili kuzuia masuala ya uonyeshaji wa emoji"
+
+#~ msgid "Changes:"
+#~ msgstr "Mabadiliko:"
+
+#~ msgid "Code Quality Improvements:"
+#~ msgstr "Maboresho ya Ubora wa Msimbo:"
+
+#~ msgid "Complete internationalization support"
+#~ msgstr "Usaidizi kamili wa uweko-kimataifa"
+
+#~ msgid "Comprehensive accessibility support"
+#~ msgstr "Usaidizi kamili wa ufikivu"
+
+#~ msgid "Comprehensive test suite with unit and integration tests"
+#~ msgstr ""
+#~ "Seti kamili ya majaribio ikiwa na majaribio ya kitengo na uunganishaji"
+
+#~ msgid "Connected show_notification signal handler for WebKit notifications"
+#~ msgstr ""
+#~ "Imeunganisha kishughulikiaji cha ishara cha show_notification kwa arifa "
+#~ "za WebKit"
+
+#~ msgid "Converted template files to preprocessor directives for cleaner code"
+#~ msgstr ""
+#~ "Imebadilisha faili za kiolezo kuwa maelekezo ya kichakataji-awali kwa "
+#~ "msimbo safi"
+
+#~ msgid "Corrected AppStream metainfo format compliance"
+#~ msgstr "Imesahihisha uzingatifu wa muundo wa metainfo wa AppStream"
+
+#~ msgid "Corrected accessibility focus handling"
+#~ msgstr "Imesahihisha utunzaji wa umakini wa ufikivu"
+
+#~ msgid "Corrected dependency version specifications in meson.build"
+#~ msgstr "Imesahihisha vainisho vya toleo la vitegemezi katika meson.build"
+
+#~ msgid "Corrected metadata description references"
+#~ msgstr "Imesahihisha marejeleo ya maelezo ya metadata"
+
+#~ msgid "Corrected window state persistence on shutdown"
+#~ msgstr "Imesahihisha udumishaji wa hali ya dirisha wakati wa kuzima"
+
+#~ msgid "Ctrl+N keyboard shortcut for opening a new chat"
+#~ msgstr "Njia ya mkato ya kibodi ya Ctrl+N kwa kufungua gumzo jipya"
+
+#~ msgid "Developer Shortcuts"
+#~ msgstr "Njia za Mkato za Wasanidi"
+
+#~ msgid "Disabled problematic WebKit caches causing font corruption"
+#~ msgstr ""
+#~ "Imezima akiba za WebKit zenye matatizo zinazosababisha uharibifu wa fonti"
+
+#~ msgid "Documentation:"
+#~ msgstr "Nyaraka:"
+
+#~ msgid "Eliminated .vala.in template substitution system"
+#~ msgstr "Imeondoa mfumo wa ubadilishaji wa kiolezo cha .vala.in"
+
+#~ msgid "Eliminated WebKit cache corruption affecting emoji rendering"
+#~ msgstr ""
+#~ "Imeondoa uharibifu wa akiba ya WebKit unaoathiri uonyeshaji wa emoji"
+
+#~ msgid "Enable Developer Tools"
+#~ msgstr "Wezesha Zana za Wasanidi"
+
+#~ msgid "Enable keyboard shortcuts for common actions"
+#~ msgstr "Wezesha njia za mkato za kibodi kwa vitendo vya kawaida"
+
+#~ msgid "Enable shortcuts for accessibility features"
+#~ msgstr "Wezesha njia za mkato za vipengele vya ufikivu"
+
+#~ msgid "Enable shortcuts for developer tools"
+#~ msgstr "Wezesha njia za mkato za zana za wasanidi"
+
+#~ msgid "Enable shortcuts for notification actions"
+#~ msgstr "Wezesha njia za mkato za vitendo vya arifa"
+
+#~ msgid "Enhanced 2D canvas acceleration for better graphics performance"
+#~ msgstr ""
+#~ "Imeboresha uongezaji kasi wa turubai ya 2D kwa utendaji bora wa michoro"
+
+#~ msgid "Enhanced CI/CD pipeline stability"
+#~ msgstr "Uthabiti ulioimarishwa wa bomba la CI/CD"
+
+#~ msgid "Enhanced Flathub compliance and validation"
+#~ msgstr "Imeimarisha uzingatifu na uthibitishaji wa Flathub"
+
+#~ msgid "Enhanced URL validation for external link detection"
+#~ msgstr "Imeboresha uthibitishaji wa URL kwa ugunduzi wa viungo vya nje"
+
+#~ msgid "Enhanced WebKit rendering with maximum hardware acceleration"
+#~ msgstr ""
+#~ "Imeboresha uonyeshaji wa WebKit ukiwa na uongezaji kasi wa juu wa maunzi"
+
+#~ msgid "Enhanced WebKitGTK 6.0 integration"
+#~ msgstr "Uunganishaji ulioboreshwa wa WebKitGTK 6.0"
+
+#~ msgid ""
+#~ "Enhanced image paste with Base64 encoding for reliable WhatsApp Web "
+#~ "compatibility"
+#~ msgstr ""
+#~ "Imeboresha ubandikaji wa picha kwa usimbaji wa Base64 kwa uoanifu wa "
+#~ "kuaminika wa WhatsApp Web"
+
+#~ msgid "Enhanced logging for external link operations"
+#~ msgstr "Ukataji miti ulioboreshwa kwa shughuli za viungo vya nje"
+
+#~ msgid "Enhanced packaging for better compatibility"
+#~ msgstr "Imeboresha ufungaji kwa uoanifu bora"
+
+#~ msgid "Enhanced performance and stability"
+#~ msgstr "Utendaji na uthabiti ulioboreshwa"
+
+#~ msgid "Enhanced security with proper sandboxing"
+#~ msgstr ""
+#~ "Usalama ulioimarishwa ukiwa na ufunikaji sahihi wa sanduku la mchanga"
+
+#~ msgid "Enhanced stability and performance optimizations"
+#~ msgstr "Maboresho ya uthabiti na utendaji yaliyoimarishwa"
+
+#~ msgid "Enhanced stability during long sessions"
+#~ msgstr "Uthabiti ulioimarishwa wakati wa vipindi virefu"
+
+#~ msgid "Enhanced stability for extended usage"
+#~ msgstr "Uthabiti ulioimarishwa kwa matumizi ya muda mrefu"
+
+#~ msgid "Enhanced visual documentation for users"
+#~ msgstr "Imeboresha nyaraka za picha kwa watumiaji"
+
+#~ msgid "Ensure application starts properly in the background without delay"
+#~ msgstr ""
+#~ "Hakikisha programu inaanza vizuri kwenye mandharinyuma bila kuchelewa"
+
+#~ msgid ""
+#~ "Fixed \"Too many open files\" crash by reusing notification resources"
+#~ msgstr ""
+#~ "Imerekebisha kuanguka kwa \"Faili nyingi mno zimefunguliwa\" kwa kutumia "
+#~ "tena rasilimali za arifa"
+
+#~ msgid ""
+#~ "Fixed Ctrl+V paste for text content - now works for both text and images"
+#~ msgstr ""
+#~ "Imerekebisha ubandikaji wa Ctrl+V kwa maudhui ya maandishi - sasa "
+#~ "unafanya kazi kwa maandishi na picha"
+
+#~ msgid "Fixed Dead Key/composition input issues"
+#~ msgstr "Imerekebisha masuala ya kuingiza ya Kibonye Kifu/utunzi"
+
+#~ msgid "Fixed Flatpak build failure by correcting config"
+#~ msgstr ""
+#~ "Imerekebisha kushindwa kwa ujenzi wa Flatpak kwa kusahihisha usanidi"
+
+#~ msgid "Fixed Flatpak build failure caused by ashpd 0.13 API changes"
+#~ msgstr ""
+#~ "Imerekebisha kushindwa kwa ujenzi wa Flatpak kulikosababishwa na "
+#~ "mabadiliko ya API ya ashpd 0.13"
+
+#~ msgid "Fixed Open action for downloaded files"
+#~ msgstr "Imerekebisha kitendo cha Fungua kwa faili zilizopakuliwa"
+
+#~ msgid "Fixed WebView zoom being enabled by default (now disabled)"
+#~ msgstr ""
+#~ "Imerekebisha ukuzaji wa WebView kuwa umewezeshwa kwa chaguo-msingi (sasa "
+#~ "umezimwa)"
+
+#~ msgid ""
+#~ "Fixed WhatsApp notification permission not persisting across sessions"
+#~ msgstr "Imerekebisha ruhusa ya arifa ya WhatsApp isiyodumu katika vipindi"
+
+#~ msgid "Fixed application freeze during lifecycle events"
+#~ msgstr ""
+#~ "Imerekebisha kuganda kwa programu wakati wa matukio ya mzunguko wa maisha"
+
+#~ msgid ""
+#~ "Fixed application freezing on resume by reverting aggressive cache "
+#~ "optimization"
+#~ msgstr ""
+#~ "Imerekebisha kuganda kwa programu wakati wa kurejea kwa kubatilisha "
+#~ "uboreshaji mkali wa akiba"
+
+#~ msgid "Fixed autostart toggle pathing for Flatpak environments"
+#~ msgstr ""
+#~ "Imerekebisha njia ya swichi ya kuanza otomatiki kwa mazingira ya Flatpak"
+
+#~ msgid "Fixed background notifications reliability"
+#~ msgstr "Imerekebisha uaminifu wa arifa za mandharinyuma"
+
+#~ msgid "Fixed background validation to ensure app starts correctly"
+#~ msgstr ""
+#~ "Imerekebisha uthibitishaji wa mandharinyuma ili kuhakikisha programu "
+#~ "inaanza vizuri"
+
+#~ msgid "Fixed blob URL downloads (e.g. Save Image from the media viewer)"
+#~ msgstr ""
+#~ "Imerekebisha vipakuliwa vya URL ya blob (mfano, Hifadhi Picha kutoka kwa "
+#~ "kionyeshi cha media)"
+
+#~ msgid "Fixed clipboard manager intercepting all paste events"
+#~ msgstr ""
+#~ "Imerekebisha kidhibiti cha ubao wa kunakili kinachozuia matukio yote ya "
+#~ "kubandika"
+
+#~ msgid "Fixed crash on launch due to memory pressure threshold ordering"
+#~ msgstr ""
+#~ "Imerekebisha kuanguka wakati wa kuanza kutokana na mpangilio wa kizingiti "
+#~ "cha shinikizo la kumbukumbu"
+
+#~ msgid "Fixed crash when handling invalid notification data"
+#~ msgstr "Imerekebisha kuanguka wakati wa kushughulikia data batili ya arifa"
+
+#~ msgid "Fixed crash when handling invalid user input data"
+#~ msgstr ""
+#~ "Imerekebisha kuanguka wakati wa kushughulikia data batili ya kuingiza ya "
+#~ "mtumiaji"
+
+#~ msgid ""
+#~ "Fixed critical startup freeze (spinner) issue by implementing D-Bus "
+#~ "activation"
+#~ msgstr ""
+#~ "Imerekebisha tatizo muhimu la kuganda wakati wa kuanza (kizungushaji) kwa "
+#~ "kutekeleza uamilisho wa D-Bus"
+
+#~ msgid "Fixed dead key composition for first character in input fields"
+#~ msgstr ""
+#~ "Imerekebisha utunzi wa kibonye kifu kwa herufi ya kwanza katika sehemu za "
+#~ "kuingiza"
+
+#~ msgid "Fixed double-paste issue with middle-click"
+#~ msgstr "Imerekebisha suala la kubandika-mara mbili kwa bonyezo-kati"
+
+#~ msgid "Fixed download destination and context menu issues"
+#~ msgstr "Imerekebisha masuala ya marudio ya vipakuliwa na menyu ya muktadha"
+
+#~ msgid "Fixed download destination handling"
+#~ msgstr "Imerekebisha utunzaji wa marudio ya vipakuliwa"
+
+#~ msgid "Fixed download filenames now use WhatsApp's original filename"
+#~ msgstr ""
+#~ "Imerekebishwa majina ya faili zilizopakuliwa sasa yanatumia jina asili la "
+#~ "faili la WhatsApp"
+
+#~ msgid "Fixed duplicate downloads auto-increment instead of failing"
+#~ msgstr ""
+#~ "Imerekebishwa vipakuliwa vinavyofanana vinajiongeza kiotomatiki badala ya "
+#~ "kushindwa"
+
+#~ msgid "Fixed duplicate provides tags in metainfo validation"
+#~ msgstr ""
+#~ "Imerekebisha lebo za provides zinazofanana katika uthibitishaji wa "
+#~ "metainfo"
+
+#~ msgid ""
+#~ "Fixed external links not opening in default browser when running in "
+#~ "Flatpak"
+#~ msgstr ""
+#~ "Imerekebisha viungo vya nje visivyofunguliwa katika kivinjari chaguo-"
+#~ "msingi vinapoendeshwa katika Flatpak"
+
+#~ msgid "Fixed freezes when viewing media galleries"
+#~ msgstr "Imerekebisha kuganda wakati wa kutazama maghala ya media"
+
+#~ msgid "Fixed invalid meson version requirement preventing builds"
+#~ msgstr "Imerekebisha hitaji batili la toleo la meson lililozuia ujenzi"
+
+#~ msgid "Fixed missing GSettings schema in Flatpak builds"
+#~ msgstr ""
+#~ "Imerekebisha mpangilio wa GSettings uliokosekana katika ujenzi wa Flatpak"
+
+#~ msgid "Fixed missing dictionaries on startup"
+#~ msgstr "Imerekebisha kamusi zilizokosekana wakati wa kuanza"
+
+#~ msgid ""
+#~ "Fixed missing tray icon on GNOME by adding StatusNotifierWatcher "
+#~ "permission"
+#~ msgstr ""
+#~ "Imerekebisha ikoni ya treya iliyokosekana kwenye GNOME kwa kuongeza "
+#~ "ruhusa ya StatusNotifierWatcher"
+
+#~ msgid "Fixed notification sounds now respect GNOME volume controls"
+#~ msgstr ""
+#~ "Imerekebishwa sauti za arifa sasa zinaheshimu vidhibiti vya sauti vya "
+#~ "GNOME"
+
+#~ msgid "Fixed notifications banner appearing on every app launch"
+#~ msgstr ""
+#~ "Imerekebisha bango la arifa linaloonekana kila wakati wa kuzindua programu"
+
+#~ msgid ""
+#~ "Fixed on-screen keyboard not appearing reliably on Phosh and touch-based "
+#~ "Linux environments"
+#~ msgstr ""
+#~ "Imerekebisha kibodi-skrini kutoonekana kwa uhakika kwenye Phosh na "
+#~ "mazingira ya Linux yanayotumia kugusa"
+
+#~ msgid "Fixed potential rendering inconsistencies"
+#~ msgstr "Imerekebisha kutofautiana kunakowezekana kwa uonyeshaji"
+
+#~ msgid "Fixed random emoji display issues and blank emoji problems"
+#~ msgstr ""
+#~ "Imerekebisha masuala ya uonyeshaji wa emoji nasibu na matatizo ya emoji "
+#~ "tupu"
+
+#~ msgid "Fixed startup race conditions and resource usage issues"
+#~ msgstr ""
+#~ "Imerekebisha hali za mashindano wakati wa kuanza na masuala ya matumizi "
+#~ "ya rasilimali"
+
+#~ msgid "Fixed tray icon quit behavior"
+#~ msgstr "Imerekebisha tabia ya kutoka ya ikoni ya treya"
+
+#~ msgid "Fixed tray icons on KDE/GNOME (visible on both light/dark themes)"
+#~ msgstr ""
+#~ "Imerekebisha ikoni za treya kwenye KDE/GNOME (zinaonekana kwenye mandhari "
+#~ "nyepesi/nyeusi)"
+
+#~ msgid ""
+#~ "Fixed voice and video calls in production Flatpak (Flathub linter-"
+#~ "compatible pre-built plugin)"
+#~ msgstr ""
+#~ "Imerekebisha simu za sauti na video katika Flatpak ya uzalishaji "
+#~ "(programu-jalizi iliyojengwa awali inayooana na linter ya Flathub)"
+
+#~ msgid ""
+#~ "Fixed voice and video calls not working in the production build (missing "
+#~ "noise suppression plugin)"
+#~ msgstr ""
+#~ "Imerekebisha simu za sauti na video zisizofanya kazi katika ujenzi wa "
+#~ "uzalishaji (programu-jalizi ya ukandamizaji wa kelele iliyokosekana)"
+
+#~ msgid ""
+#~ "Fixed voice and video calls showing \"Your browser doesn't support "
+#~ "calling\""
+#~ msgstr ""
+#~ "Imerekebisha simu za sauti na video zinazoonyesha \"Kivinjari chako "
+#~ "hakitumii kupiga simu\""
+
+#~ msgid ""
+#~ "Fixed window now properly unminimizes when activated from launcher or tray"
+#~ msgstr ""
+#~ "Imerekebishwa dirisha sasa linafunguliwa vizuri kutoka kwenye hali ya "
+#~ "kupunguzwa linapoamilishwa kutoka kwa kizinduzi au treya"
+
+#~ msgid "Fixed window resize behavior to prevent excessive reloading"
+#~ msgstr ""
+#~ "Imerekebisha tabia ya kubadilisha ukubwa wa dirisha ili kuzuia upakiaji "
+#~ "upya wa kupita kiasi"
+
+#~ msgid "Fixed window size increasing on every restart"
+#~ msgstr ""
+#~ "Imerekebisha ukubwa wa dirisha kuongezeka kila wakati wa kuanzisha upya"
+
+#~ msgid "Fixed zombie process accumulation"
+#~ msgstr "Imerekebisha mkusanyiko wa michakato zombi"
+
+#~ msgid "Fixed:"
+#~ msgstr "Imerekebishwa:"
+
+#~ msgid ""
+#~ "Fixed: App now respects system \"Do Not Disturb\" settings on GNOME "
+#~ "(silences sounds)"
+#~ msgstr ""
+#~ "Imerekebishwa: Programu sasa inaheshimu mipangilio ya mfumo ya "
+#~ "\"Usisumbue\" kwenye GNOME (inanyamazisha sauti)"
+
+#~ msgid "Fixed: Download destination path handling regression"
+#~ msgstr ""
+#~ "Imerekebishwa: kurudi nyuma kwa utunzaji wa njia ya marudio ya vipakuliwa"
+
+#~ msgid ""
+#~ "Fixed: Handle WebKit web process crashes with auto-reload and user "
+#~ "notification"
+#~ msgstr ""
+#~ "Imerekebishwa: Shughulikia kuanguka kwa michakato ya wavuti ya WebKit kwa "
+#~ "kupakia upya kiotomatiki na arifa kwa mtumiaji"
+
+#~ msgid "Fixed: JS injection and path traversal vulnerabilities"
+#~ msgstr "Imerekebishwa: udhaifu wa udungaji wa JS na upitishaji wa njia"
+
+#~ msgid ""
+#~ "Fixed: JS injection and path traversal vulnerabilities in download "
+#~ "handling"
+#~ msgstr ""
+#~ "Imerekebishwa: udhaifu wa udungaji wa JS na upitishaji wa njia katika "
+#~ "utunzaji wa vipakuliwa"
+
+#~ msgid "Fixed: Notifications bypass DND visuals (priority lowered to Normal)"
+#~ msgstr ""
+#~ "Imerekebishwa: Arifa zinapita maonyesho ya DND (kipaumbele kimepunguzwa "
+#~ "hadi Kawaida)"
+
+#~ msgid "Fixed: Panic in notification handling"
+#~ msgstr "Imerekebishwa: Hofu katika utunzaji wa arifa"
+
+#~ msgid ""
+#~ "Fixed: Resolved webview reload loop on startup due to incorrect window "
+#~ "size detection"
+#~ msgstr ""
+#~ "Imerekebishwa: Imetatua kitanzi cha kupakia upya cha webview wakati wa "
+#~ "kuanza kutokana na ugunduzi usio sahihi wa ukubwa wa dirisha"
+
+#~ msgid ""
+#~ "Fixed: app crash on launch on GNOME 50 / glibc 2.42+ systems (Arch, "
+#~ "Fedora 43, CachyOS, Bazzite, postmarketOS)"
+#~ msgstr ""
+#~ "Imerekebishwa: programu kuanguka wakati wa kuanza kwenye mifumo ya GNOME "
+#~ "50 / glibc 2.42+ (Arch, Fedora 43, CachyOS, Bazzite, postmarketOS)"
+
+#~ msgid ""
+#~ "Fixed: blank-window race when autostarted before the network/portal stack "
+#~ "is ready (auto-retry with exponential backoff)"
+#~ msgstr ""
+#~ "Imerekebishwa: mashindano ya dirisha tupu wakati inaanzishwa kiotomatiki "
+#~ "kabla rundo la mtandao/portal halijawa tayari (jaribio upya kiotomatiki "
+#~ "kwa kuongezeka kwa kasi)"
+
+#~ msgid ""
+#~ "Fixed: downloaded files with duplicate names silently overwriting each "
+#~ "other (now appends (1), (2), ...)"
+#~ msgstr ""
+#~ "Imerekebishwa: faili zilizopakuliwa zenye majina yanayofanana zikifutana "
+#~ "kimya kimya (sasa inaongeza (1), (2), ...)"
+
+#~ msgid ""
+#~ "Fixed: lingering notification badges/banners after focus on GNOME 50 "
+#~ "(auto-clear behavior removed upstream — Karere now dismisses "
+#~ "notifications explicitly)"
+#~ msgstr ""
+#~ "Imerekebishwa: beji/mabango ya arifa yanayodumu baada ya umakini kwenye "
+#~ "GNOME 50 (tabia ya kufuta kiotomatiki imeondolewa upstream — sasa Karere "
+#~ "inafuta arifa kwa uwazi)"
+
+#~ msgid ""
+#~ "Fixed: locale-dependent crash that required manually setting "
+#~ "LC_ALL=en_GB.UTF-8"
+#~ msgstr ""
+#~ "Imerekebishwa: kuanguka kunakotegemea eneo kulikohitaji kuweka "
+#~ "LC_ALL=en_GB.UTF-8 kwa mkono"
+
+#~ msgid "Fixed: mobile layout broken by recent WhatsApp Web DOM changes"
+#~ msgstr ""
+#~ "Imerekebishwa: mpangilio wa simu uliovunjwa na mabadiliko ya hivi "
+#~ "karibuni ya DOM ya WhatsApp Web"
+
+#~ msgid "Full rewrite in Rust! 🦀"
+#~ msgstr "Uandishi upya kamili katika Rust! 🦀"
+
+#~ msgid "General improvements and versioning updates"
+#~ msgstr "Maboresho ya jumla na masasisho ya matoleo"
+
+#~ msgid "Granular privacy and notification controls"
+#~ msgstr "Vidhibiti vya kina vya faragha na arifa"
+
+#~ msgid "Hardware-accelerated rendering"
+#~ msgstr "Uonyeshaji ulioongezwa kasi kwa maunzi"
+
+#~ msgid "High Contrast Mode"
+#~ msgstr "Hali ya Utofautishaji wa Juu"
+
+#~ msgid "Implemented Flatpak portal system for external link handling"
+#~ msgstr ""
+#~ "Imetekeleza mfumo wa portal ya Flatpak kwa utunzaji wa viungo vya nje"
+
+#~ msgid "Implemented UserScript injection for Notification.permission state"
+#~ msgstr ""
+#~ "Imetekeleza udungaji wa UserScript kwa hali ya Notification.permission"
+
+#~ msgid "Improved build system maintainability and type safety"
+#~ msgstr "Imeboresha udumishaji wa mfumo wa ujenzi na usalama wa aina"
+
+#~ msgid "Improved build system with cleaner dependency management"
+#~ msgstr "Imeboresha mfumo wa ujenzi ukiwa na usimamizi safi wa vitegemezi"
+
+#~ msgid "Improved emoji consistency with bundled font system"
+#~ msgstr "Imeboresha uthabiti wa emoji ukiwa na mfumo wa fonti uliojumuishwa"
+
+#~ msgid "Improved error handling and recovery mechanisms"
+#~ msgstr "Imeboresha utunzaji wa makosa na mifumo ya urejeshaji"
+
+#~ msgid "Improved external link handling with proper Flatpak portal support"
+#~ msgstr ""
+#~ "Imeboresha utunzaji wa viungo vya nje ukiwa na usaidizi sahihi wa portal "
+#~ "ya Flatpak"
+
+#~ msgid "Improved font loading stability and reduced race conditions"
+#~ msgstr ""
+#~ "Imeboresha uthabiti wa upakiaji wa fonti na kupunguza hali za mashindano"
+
+#~ msgid "Improved icon compatibility across desktop environments"
+#~ msgstr "Imeboresha uoanifu wa ikoni katika mazingira ya eneo-kazi"
+
+#~ msgid "Improved icon rendering (symbolic icons now use currentColor)"
+#~ msgstr ""
+#~ "Imeboresha uonyeshaji wa ikoni (ikoni za alama sasa zinatumia "
+#~ "currentColor)"
+
+#~ msgid "Improved memory efficiency and startup performance"
+#~ msgstr "Ufanisi ulioboreshwa wa kumbukumbu na utendaji wa kuanza"
+
+#~ msgid "Improved mobile UI resizing consistency"
+#~ msgstr "Imeboresha uthabiti wa kubadilisha ukubwa wa UI ya simu"
+
+#~ msgid "Improved overall stability"
+#~ msgstr "Imeboresha uthabiti kwa ujumla"
+
+#~ msgid "Improved system integration with latest platform libraries"
+#~ msgstr ""
+#~ "Imeboresha uunganishaji wa mfumo ukiwa na maktaba za hivi karibuni za "
+#~ "jukwaa"
+
+#~ msgid "Improved translation file consistency"
+#~ msgstr "Imeboresha uthabiti wa faili za tafsiri"
+
+#~ msgid "Improvements:"
+#~ msgstr "Maboresho:"
+
+#~ msgid "Increase contrast for better readability"
+#~ msgstr "Ongeza utofautishaji kwa usomaji bora"
+
+#~ msgid ""
+#~ "Karere 4.0 is a hard fork that rebuilds the app on CEF/Chromium 148. "
+#~ "Existing accounts must be re-linked — there is no migration from v3."
+#~ msgstr ""
+#~ "Karere 4.0 ni fork ngumu inayojenga upya programu juu ya CEF/Chromium "
+#~ "148. Akaunti zilizopo lazima ziunganishwe upya — hakuna uhamiaji kutoka "
+#~ "v3."
+
+#~ msgid ""
+#~ "Live spell-check language switching and a separately installable Debug "
+#~ "symbol extension for symbolicated crash reports"
+#~ msgstr ""
+#~ "Ubadilishaji wa lugha ya ukaguzi wa tahajia moja kwa moja na kiendelezi "
+#~ "cha alama za Debug kinachoweza kusakinishwa kivyake kwa ripoti za "
+#~ "hitilafu zenye alama"
+
+#~ msgid "Major changes:"
+#~ msgstr "Mabadiliko makubwa:"
+
+#~ msgid "Migrated Flatpak build logic to meson.build"
+#~ msgstr "Imehamisha mantiki ya ujenzi wa Flatpak hadi meson.build"
+
+#~ msgid "Migrated from Python 3 to native Vala compilation"
+#~ msgstr "Imehamishwa kutoka Python 3 hadi mkusanyiko asili wa Vala"
+
+#~ msgid "Minor README corrections"
+#~ msgstr "Marekebisho madogo ya README"
+
+#~ msgid "Minor bug fixes and stability improvements"
+#~ msgstr "Marekebisho madogo ya hitilafu na maboresho ya uthabiti"
+
+#~ msgid "Mobile layout setting changed to dropdown (auto/enabled/disabled)"
+#~ msgstr ""
+#~ "Mpangilio wa simu umebadilishwa kuwa menyu kunjuzi (otomatiki/imewezeshwa/"
+#~ "imezimwa)"
+
+#~ msgid ""
+#~ "Mobile layout support with auto-detection for Phosh, Plasma Mobile, and "
+#~ "Lomiri"
+#~ msgstr ""
+#~ "Usaidizi wa mpangilio wa simu ukiwa na ugunduzi otomatiki kwa Phosh, "
+#~ "Plasma Mobile, na Lomiri"
+
+#~ msgid ""
+#~ "Mobile-responsive layout, JavaScript fullscreen, and an OSR context-menu "
+#~ "popover for the off-screen-rendered web view"
+#~ msgstr ""
+#~ "Mpangilio unaokubali simu, skrini nzima ya JavaScript, na popova ya menyu "
+#~ "ya muktadha ya OSR kwa mwonekano wa wavuti unaoonyeshwa nje ya skrini"
+
+#~ msgid "Modern LibAdwaita UI with Blueprint declarative interface"
+#~ msgstr ""
+#~ "UI ya kisasa ya LibAdwaita ikiwa na kiolesura cha kutangaza cha Blueprint"
+
+#~ msgid "Modern Meson build system with Blueprint UI compilation"
+#~ msgstr ""
+#~ "Mfumo wa kisasa wa ujenzi wa Meson ukiwa na mkusanyiko wa UI wa Blueprint"
+
+#~ msgid "More reliable link opening mechanism"
+#~ msgstr "Mfumo wa kufungua viungo unaoaminika zaidi"
+
+#~ msgid "More robust dependency handling"
+#~ msgstr "Utunzaji thabiti zaidi wa vitegemezi"
+
+#~ msgid ""
+#~ "Multi-account support: each account runs in an isolated CEF "
+#~ "RequestContext with its own cookies and storage; accounts are ordered "
+#~ "most-recently-used"
+#~ msgstr ""
+#~ "Usaidizi wa akaunti nyingi: kila akaunti inaendeshwa katika "
+#~ "RequestContext ya CEF iliyotengwa ikiwa na vidakuzi na hifadhi yake; "
+#~ "akaunti zinapangwa kwa zilizotumika hivi karibuni zaidi"
+
+#~ msgid "Multi-language spell checking support"
+#~ msgstr "Usaidizi wa ukaguzi wa tahajia wa lugha nyingi"
+
+#~ msgid "Native Vala/GTK4 implementation for optimal performance"
+#~ msgstr "Utekelezaji asili wa Vala/GTK4 kwa utendaji bora"
+
+#~ msgid ""
+#~ "Native system tray (StatusNotifierItem), desktop notifications, download "
+#~ "manager, and image/text paste reimplemented on the CEF stack"
+#~ msgstr ""
+#~ "Treya asili ya mfumo (StatusNotifierItem), arifa za eneo-kazi, kidhibiti "
+#~ "cha vipakuliwa, na ubandikaji wa picha/maandishi vimetekelezwa upya juu "
+#~ "ya rundo la CEF"
+
+#~ msgid "New Features:"
+#~ msgstr "Vipengele Vipya:"
+
+#~ msgid "New System Tray Icon support"
+#~ msgstr "Usaidizi mpya wa Ikoni ya Treya ya Mfumo"
+
+#~ msgid "Note: re-linking WhatsApp accounts is required after this upgrade"
+#~ msgstr ""
+#~ "Kumbuka: kuunganisha upya akaunti za WhatsApp kunahitajika baada ya "
+#~ "uboreshaji huu"
+
+#~ msgid ""
+#~ "Notification Chat Linking: Clicking a notification now opens the specific "
+#~ "chat in Karere."
+#~ msgstr ""
+#~ "Kuunganisha Gumzo la Arifa: Kubofya arifa sasa kunafungua gumzo mahususi "
+#~ "katika Karere."
+
+#~ msgid "Notification Shortcuts"
+#~ msgstr "Njia za Mkato za Arifa"
+
+#~ msgid "Notifications fully working with persistence fixes"
+#~ msgstr "Arifa zinafanya kazi kikamilifu zikiwa na marekebisho ya udumishaji"
+
+#~ msgid "Optimized font loading to eliminate display conflicts"
+#~ msgstr "Imeboresha upakiaji wa fonti ili kuondoa migongano ya uonyeshaji"
+
+#~ msgid "Optimized memory usage in mobile responsive scripts"
+#~ msgstr "Imeboresha matumizi ya kumbukumbu katika hati za kuitikia simu"
+
+#~ msgid ""
+#~ "Per-account zoom (Ctrl +/-/0) with optional header-bar zoom controls and "
+#~ "an accessibility minimum-zoom floor"
+#~ msgstr ""
+#~ "Ukuzaji kwa kila akaunti (Ctrl +/-/0) ukiwa na vidhibiti vya hiari vya "
+#~ "ukuzaji vya upau wa kichwa na sakafu ya kiwango cha chini cha ukuzaji cha "
+#~ "ufikivu"
+
+#~ msgid "Performance optimizations for faster startup"
+#~ msgstr "Maboresho ya utendaji kwa kuanza kwa kasi"
+
+#~ msgid "Performance optimizations for scrolling"
+#~ msgstr "Maboresho ya utendaji kwa kusogeza"
+
+#~ msgid "Ported from Vala to native Rust/GTK4/Libadwaita"
+#~ msgstr "Imehamishwa kutoka Vala hadi Rust/GTK4/Libadwaita asili"
+
+#~ msgid "Production-ready error handling and crash recovery"
+#~ msgstr "Utunzaji wa makosa tayari kwa uzalishaji na urejeshaji wa kuanguka"
+
+#~ msgid "Professional logging and crash reporting system"
+#~ msgstr "Mfumo wa kitaalamu wa ukataji miti na uripoti wa kuanguka"
+
+#~ msgid "Redesigned application icons for stable and development variants"
+#~ msgstr "Imeundwa upya ikoni za programu kwa lahaja thabiti na za maendeleo"
+
+#~ msgid "Redesigned/streamlined preferences dialog"
+#~ msgstr "Kidirisha cha mapendeleo kilichoundwa upya/kilichorahisishwa"
+
+#~ msgid "Refreshed About dialog screenshot"
+#~ msgstr "Imeburudisha picha ya skrini ya kidirisha cha Kuhusu"
+
+#~ msgid "Remove direct D-Bus notification permissions for cleaner manifest"
+#~ msgstr ""
+#~ "Ondoa ruhusa za moja kwa moja za arifa za D-Bus kwa faili ya udhihirisho "
+#~ "safi"
+
+#~ msgid "Remove unnecessary autostart permission to satisfy linter"
+#~ msgstr ""
+#~ "Ondoa ruhusa isiyo ya lazima ya kuanza otomatiki ili kuridhisha linter"
+
+#~ msgid "Removed ffmpeg-full extension (no longer required)"
+#~ msgstr "Imeondoa kiendelezi cha ffmpeg-full (hakihitajiki tena)"
+
+#~ msgid ""
+#~ "Removed hardcoded blueprint compiler paths for cross-architecture support"
+#~ msgstr ""
+#~ "Imeondoa njia za mkusanyaji wa blueprint zilizosimbwa kwa usaidizi wa "
+#~ "usanifu mbalimbali"
+
+#~ msgid ""
+#~ "Removed unnecessary mobile user agent switching (WhatsApp Web is desktop-"
+#~ "only)"
+#~ msgstr ""
+#~ "Imeondoa ubadilishaji usio wa lazima wa wakala wa mtumiaji wa simu "
+#~ "(WhatsApp Web ni ya eneo-kazi pekee)"
+
+#~ msgid ""
+#~ "Replaced window.vala.in and preferences.vala.in with direct .vala files"
+#~ msgstr ""
+#~ "Imebadilisha window.vala.in na preferences.vala.in na faili za .vala za "
+#~ "moja kwa moja"
+
+#~ msgid "Resolved WebKit crashes on media-heavy pages"
+#~ msgstr "Imetatua kuanguka kwa WebKit kwenye kurasa zenye media nyingi"
+
+#~ msgid "Resolved compatibility issues with newer GNOME environments"
+#~ msgstr "Imetatua masuala ya uoanifu na mazingira mapya ya GNOME"
+
+#~ msgid "Resolved flatpak-builder compatibility issues"
+#~ msgstr "Imetatua masuala ya uoanifu ya flatpak-builder"
+
+#~ msgid "Resolved invalid markup in release descriptions"
+#~ msgstr "Imetatua alama batili katika maelezo ya matoleo"
+
+#~ msgid "Resolved memory leak in WebKit manager cleanup"
+#~ msgstr ""
+#~ "Imetatua uvujaji wa kumbukumbu katika usafishaji wa kidhibiti cha WebKit"
+
+#~ msgid "Resolved memory leak in notification cleanup"
+#~ msgstr "Imetatua uvujaji wa kumbukumbu katika usafishaji wa arifa"
+
+#~ msgid "Restore autostart permission for improved compatibility"
+#~ msgstr "Rejesha ruhusa ya kuanza otomatiki kwa uoanifu ulioboreshwa"
+
+#~ msgid "Restored Safari Linux user agent for native WebKit experience"
+#~ msgstr ""
+#~ "Imerejesha wakala wa mtumiaji wa Safari Linux kwa uzoefu asili wa WebKit"
+
+#~ msgid "Restored correct app icons and transparent backgrounds"
+#~ msgstr "Imerejesha ikoni sahihi za programu na mandharinyuma ya uwazi"
+
+#~ msgid "Shortcuts"
+#~ msgstr "Njia za Mkato"
+
+#~ msgid "Show or hide the zoom buttons"
+#~ msgstr "Onyesha au ficha vitufe vya ukuzaji"
+
+#~ msgid "Simplified emoji font configuration to single high-quality source"
+#~ msgstr ""
+#~ "Imerahisisha usanidi wa fonti ya emoji kuwa chanzo kimoja cha ubora wa juu"
+
+#~ msgid "Simplified source file management in build system"
+#~ msgstr "Imerahisisha usimamizi wa faili za chanzo katika mfumo wa ujenzi"
+
+#~ msgid "Some settings only apply when Karere controls the popup"
+#~ msgstr ""
+#~ "Baadhi ya mipangilio inatumika tu wakati Karere inadhibiti kidirisha"
+
+#~ msgid "Streamlined font stack for consistent emoji appearance"
+#~ msgstr "Imerahisisha rundo la fonti kwa mwonekano thabiti wa emoji"
+
+#~ msgid ""
+#~ "Switch to XDG Background Portal for autostart (improves security and "
+#~ "compatibility)"
+#~ msgstr ""
+#~ "Badilisha kwenda Portal ya Mandharinyuma ya XDG kwa kuanza otomatiki "
+#~ "(inaboresha usalama na uoanifu)"
+
+#~ msgid ""
+#~ "Switch to XDG Notification Portal (ashpd) for better sandboxing support"
+#~ msgstr ""
+#~ "Badilisha kwenda Portal ya Arifa ya XDG (ashpd) kwa usaidizi bora wa "
+#~ "kufunika kwenye sanduku la mchanga"
+
+#~ msgid ""
+#~ "Switched the rendering backend from WebKitGTK to CEF/Chromium 148, with "
+#~ "proprietary-codec builds for H.264/AAC video attachment playback"
+#~ msgstr ""
+#~ "Imebadilisha backend ya uonyeshaji kutoka WebKitGTK hadi CEF/Chromium "
+#~ "148, ikiwa na ujenzi wa codec za umiliki kwa uchezaji wa viambatisho vya "
+#~ "video vya H.264/AAC"
+
+#~ msgid "Technical Changes:"
+#~ msgstr "Mabadiliko ya Kiufundi:"
+
+#~ msgid "Technical Improvements:"
+#~ msgstr "Maboresho ya Kiufundi:"
+
+#~ msgid "Toggle Header Bar Zoom Controls"
+#~ msgstr "Geuza Vidhibiti vya Ukuzaji vya Upau wa Kichwa"
+
+#~ msgid "Tray icon click now toggles window visibility"
+#~ msgstr "Kubofya ikoni ya treya sasa kunageuza mwonekano wa dirisha"
+
+#~ msgid "Update and Bug Fix Release"
+#~ msgstr "Toleo la Sasisho na Kurekebisha Hitilafu"
+
+#~ msgid "Updated GNOME runtime to version 49 for enhanced compatibility"
+#~ msgstr ""
+#~ "Imesasisha runtime ya GNOME hadi toleo la 49 kwa uoanifu ulioboreshwa"
+
+#~ msgid "Updated SettingsManager to be the default for all settings access"
+#~ msgstr ""
+#~ "Imesasisha SettingsManager kuwa chaguo-msingi kwa ufikiaji wote wa "
+#~ "mipangilio"
+
+#~ msgid "Updated about dialog screenshot"
+#~ msgstr "Imesasisha picha ya skrini ya kidirisha cha kuhusu"
+
+#~ msgid "Updated all Rust dependencies to latest versions"
+#~ msgstr "Imesasisha vitegemezi vyote vya Rust hadi matoleo ya hivi karibuni"
+
+#~ msgid "Updated all references from appdata to metainfo format"
+#~ msgstr "Imesasisha marejeleo yote kutoka muundo wa appdata hadi metainfo"
+
+#~ msgid "Updated application screenshots"
+#~ msgstr "Imesasisha picha za skrini za programu"
+
+#~ msgid "Updated application screenshots with current UI appearance"
+#~ msgstr ""
+#~ "Imesasisha picha za skrini za programu zikiwa na mwonekano wa sasa wa UI"
+
+#~ msgid ""
+#~ "Updated application summary and description for better AppStream "
+#~ "compliance"
+#~ msgstr ""
+#~ "Imesasisha muhtasari na maelezo ya programu kwa uzingatifu bora wa "
+#~ "AppStream"
+
+#~ msgid "Updated build configuration and dependencies"
+#~ msgstr "Imesasisha usanidi wa ujenzi na vitegemezi"
+
+#~ msgid "Updated meson.build to use Vala preprocessor directives"
+#~ msgstr ""
+#~ "Imesasisha meson.build kutumia maelekezo ya kichakataji-awali ya Vala"
+
+#~ msgid "Upgraded to GNOME Platform 50"
+#~ msgstr "Imeinuliwa hadi Jukwaa la GNOME 50"
+
+#~ msgid "WebKitGTK 6.0 storage persistence verified and documented"
+#~ msgstr "Udumishaji wa hifadhi wa WebKitGTK 6.0 umethibitishwa na kuandikwa"
+
+#~ msgid ""
+#~ "Webcam Support: Added support for using the webcam (Status updates, Video "
+#~ "calls) with a new permission dialog."
+#~ msgstr ""
+#~ "Usaidizi wa Kamera ya Wavuti: Imeongeza usaidizi wa kutumia kamera ya "
+#~ "wavuti (Masasisho ya hali, Simu za video) ukiwa na kidirisha kipya cha "
+#~ "ruhusa."
+
+#~ msgid "Window size is saved and restored when hiding/showing"
+#~ msgstr ""
+#~ "Ukubwa wa dirisha unahifadhiwa na kurejeshwa wakati wa kuficha/kuonyesha"
+
+#~ msgid "⌨️ Added keyboard shortcuts dialog using AdwShortcutsDialog"
+#~ msgstr ""
+#~ "⌨️ Imeongeza kidirisha cha njia za mkato za kibodi kikitumia "
+#~ "AdwShortcutsDialog"
+
+#~ msgid "♻️ Major refactor: Reorganized codebase with PascalCase filenames"
+#~ msgstr ""
+#~ "♻️ Urekebishaji mkubwa: Imepanga upya msingi wa msimbo kwa majina ya faili "
+#~ "ya PascalCase"
+
+#~ msgid "♻️ Refactored Window.vala into specialized manager components"
+#~ msgstr "♻️ Imerekebisha Window.vala kuwa vipengele maalum vya kidhibiti"
+
+#~ msgid "♻️ Removed custom logging and crash reporting (use system journalctl)"
+#~ msgstr ""
+#~ "♻️ Imeondoa ukataji miti na uripoti wa kuanguka maalum (tumia journalctl "
+#~ "ya mfumo)"
+
+#~ msgid ""
+#~ "♿ Enhanced accessibility with screen reader optimization and keyboard "
+#~ "navigation"
+#~ msgstr ""
+#~ "♿ Imeboresha ufikivu kwa uboreshaji wa kisomaji cha skrini na usogezaji "
+#~ "wa kibodi"
+
+#~ msgid ""
+#~ "⚠️ Important: After upgrading, you will need to re-sync your mobile device "
+#~ "with WhatsApp Web as this is a completely new application implementation."
+#~ msgstr ""
+#~ "⚠️ Muhimu: Baada ya kuboresha, utahitaji kusawazisha upya kifaa chako cha "
+#~ "simu na WhatsApp Web kwani huu ni utekelezaji mpya kabisa wa programu."
+
+#~ msgid "⚡ Performance optimizations for startup and shutdown"
+#~ msgstr "⚡ Maboresho ya utendaji kwa kuanza na kuzima"
+
+#~ msgid "✅ Fixed WhatsApp Web notification banner persistence"
+#~ msgstr "✅ Imerekebisha udumishaji wa bango la arifa la WhatsApp Web"
+
+#~ msgid "✅ Fixed notifications not working properly"
+#~ msgstr "✅ Imerekebisha arifa zisizofanya kazi vizuri"
+
+#~ msgid ""
+#~ "✨ Enhanced Emoji Support, External Link Handling, and Build Improvements"
+#~ msgstr ""
+#~ "✨ Usaidizi Ulioboreshwa wa Emoji, Utunzaji wa Viungo vya Nje, na "
+#~ "Maboresho ya Ujenzi"
+
+#~ msgid "🎉 Feature Release"
+#~ msgstr "🎉 Toleo la Kipengele"
+
+#~ msgid "🎉 Major Release 2.0.0"
+#~ msgstr "🎉 Toleo Kubwa 2.0.0"
+
+#~ msgid "🎉 Version 1.0.0 - Major Milestone Release"
+#~ msgstr "🎉 Toleo 1.0.0 - Toleo la Hatua Kuu"
+
+#~ msgid "🎤 Microphone permission support for voice notes"
+#~ msgstr "🎤 Usaidizi wa ruhusa ya maikrofoni kwa noti za sauti"
+
+#~ msgid "🐛 Bug Fix Release"
+#~ msgstr "🐛 Toleo la Kurekebisha Hitilafu"
+
+#~ msgid "🐛 Bug Fixes and Improvements"
+#~ msgstr "🐛 Marekebisho ya Hitilafu na Maboresho"
+
+#~ msgid "🐛 Runtime Update and Bug Fixes"
+#~ msgstr "🐛 Sasisho la Runtime na Marekebisho ya Hitilafu"
+
+#~ msgid "📖 Added MPRIS workaround documentation"
+#~ msgstr "📖 Imeongeza nyaraka za njia mbadala ya MPRIS"
+
+#~ msgid "📚 Added spell checking configuration guide"
+#~ msgstr "📚 Imeongeza mwongozo wa usanidi wa ukaguzi wa tahajia"
+
+#~ msgid "📚 Documented all keyboard shortcuts by category"
+#~ msgstr "📚 Imeandika njia zote za mkato za kibodi kwa kategoria"
+
+#~ msgid "📚 Enhanced README with accessibility features documentation"
+#~ msgstr "📚 Imeboresha README ukiwa na nyaraka za vipengele vya ufikivu"
+
+#~ msgid "📚 Fixed GitHub repository URLs (karere-vala → karere)"
+#~ msgstr "📚 Imerekebisha URL za hazina ya GitHub (karere-vala → karere)"
+
+#~ msgid "📝 Added comprehensive spell checking system with auto-detection"
+#~ msgstr ""
+#~ "📝 Imeongeza mfumo kamili wa ukaguzi wa tahajia wenye ugunduzi otomatiki"
+
+#~ msgid "📝 Async dictionary loading for smoother Spell Check initialization"
+#~ msgstr ""
+#~ "📝 Upakiaji wa kamusi usio sambamba kwa uanzishaji laini wa Ukaguzi wa "
+#~ "Tahajia"
+
+#~ msgid "📝 Documentation and Metadata Update"
+#~ msgstr "📝 Sasisho la Nyaraka na Metadata"
+
+#~ msgid ""
+#~ "📥 Implemented download manager with custom directory and toast "
+#~ "notifications"
+#~ msgstr ""
+#~ "📥 Imetekeleza kidhibiti cha vipakuliwa chenye saraka maalum na arifa za "
+#~ "toast"
+
+#~ msgid "📸 Reorganized screenshots into data/screenshots/ directory"
+#~ msgstr "📸 Imepanga upya picha za skrini katika saraka ya data/screenshots/"
+
+#~ msgid "📸 Screenshots and Documentation Update"
+#~ msgstr "📸 Sasisho la Picha za Skrini na Nyaraka"
+
+#~ msgid "🔄 Manual reload and auto-reload on network reconnection"
+#~ msgstr ""
+#~ "🔄 Upakiaji upya wa mkono na otomatiki wakati wa kuunganishwa upya kwa "
+#~ "mtandao"
+
+#~ msgid "🔤 Integrated 80+ language dictionaries from LibreOffice"
+#~ msgstr "🔤 Imeunganisha kamusi za lugha 80+ kutoka LibreOffice"
+
+#~ msgid "🔧 Code Refactoring and Architecture Improvements"
+#~ msgstr "🔧 Urekebishaji wa Msimbo na Maboresho ya Usanifu"
+
+#~ msgid "🔧 Maintenance Release"
+#~ msgstr "🔧 Toleo la Matengenezo"
+
+#~ msgid "🔧 Metadata and Standards Compliance"
+#~ msgstr "🔧 Uzingatifu wa Metadata na Viwango"
+
+#~ msgid "🖼️ Added image paste support via clipboard (Ctrl+V)"
+#~ msgstr ""
+#~ "🖼️ Imeongeza usaidizi wa kubandika picha kupitia ubao wa kunakili (Ctrl+V)"
+
+#~ msgid "🗑️ Cleaned up obsolete test files and unused dependencies"
+#~ msgstr ""
+#~ "🗑️ Imesafisha faili za majaribio zilizopitwa na wakati na vitegemezi "
+#~ "visivyotumika"
+
+#~ msgid ""
+#~ "🗑️ Removed Do Not Disturb feature (handled by system notification daemon)"
+#~ msgstr ""
+#~ "🗑️ Imeondoa kipengele cha Usisumbue (kinashughulikiwa na daemon ya arifa "
+#~ "ya mfumo)"
+
+#~ msgid "🗑️ Removed json-glib, gee, and libsoup dependencies"
+#~ msgstr "🗑️ Imeondoa vitegemezi vya json-glib, gee, na libsoup"
+
+#~ msgid "🚀 Major Architecture Migration: Python to Vala/GTK4"
+#~ msgstr "🚀 Uhamiaji Mkubwa wa Usanifu: Python hadi Vala/GTK4"
+
+#~ msgid "🚀 Start in background option for autostart"
+#~ msgstr "🚀 Chaguo la kuanza kwenye mandharinyuma kwa kuanza otomatiki"
+
+#~ msgid "🧹 Centralized settings management with SettingsManager singleton"
+#~ msgstr ""
+#~ "🧹 Imeweka kati usimamizi wa mipangilio ukiwa na singleton ya "
+#~ "SettingsManager"
+
+#~ msgid "🧹 Removed DependencyContainer.vala (unused dependency injection)"
+#~ msgstr ""
+#~ "🧹 Imeondoa DependencyContainer.vala (udungaji wa vitegemezi usiotumika)"
+
+#~ msgid "degraded"
+#~ msgstr "imedhoofika"
+
+#~ msgid "Avatar URL"
+#~ msgstr "URL ya Avatari"
+
+#~ msgid "Add Account"
+#~ msgstr "Ongeza Akaunti"
+
+#~ msgid "This removes the local session for"
+#~ msgstr "Hii inaondoa kipindi cha eneo-mtaani kwa"
+
+#~ msgid "The device stays linked on your phone until you remove it there."
+#~ msgstr "Kifaa kinabaki kimeunganishwa kwenye simu yako hadi ukiondoe hapo."
