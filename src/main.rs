@@ -12,6 +12,7 @@ mod application;
 mod cdp;
 mod cef_pump;
 mod cef_runtime;
+mod deeplink;
 mod devtools;
 mod gl_dmabuf;
 mod handlers;
@@ -51,7 +52,7 @@ fn main() -> Result<()> {
     let _ = cef::api_hash(cef::sys::CEF_API_VERSION_LAST, 0);
     load_gl();
 
-    let args = Args::new();
+    let args = cef_args();
     let cmd = args
         .as_cmd_line()
         .ok_or_else(|| anyhow::anyhow!("failed to parse CEF cmdline"))?;
@@ -81,9 +82,18 @@ fn main() -> Result<()> {
 
     let app = KarereApplication::new();
 
-    app.connect_command_line(move |app, _cmd| {
+    app.connect_command_line(move |app, cmd| {
         if let Some(app) = app.downcast_ref::<KarereApplication>() {
-            app.activate_with_url(&url);
+            // `cmd` carries this launch's argv, whether it is the first
+            // instance or a forwarded second one.
+            let argv: Vec<String> = cmd
+                .arguments()
+                .iter()
+                .map(|a| a.to_string_lossy().into_owned())
+                .collect();
+            let link = deeplink::from_args(argv.iter().map(String::as_str));
+            let background = has_background_flag(argv.iter().map(String::as_str));
+            app.activate_with_url(&url, link.as_deref(), background);
         }
         glib::ExitCode::SUCCESS
     });
@@ -203,9 +213,13 @@ fn init_gettext() {
 /// Build the env_logger filter from CLI flags (default INFO). Deps stay at
 /// `warn` to keep `karere` lines readable; use RUST_LOG for dep logs.
 fn log_filter_from_args() -> String {
+    log_filter_from(std::env::args())
+}
+
+fn log_filter_from<I: IntoIterator<Item = String>>(args: I) -> String {
     let mut level: Option<String> = None;
     let mut debug_flag = false;
-    for arg in std::env::args() {
+    for arg in args {
         if arg == "--debug" {
             debug_flag = true;
         } else if let Some(v) = arg.strip_prefix("--debuglevel=") {
@@ -232,7 +246,12 @@ fn normalize_log_level(value: &str) -> String {
 }
 
 fn parse_url_flag() -> Option<String> {
-    let mut args = std::env::args().skip(1);
+    parse_url_from(std::env::args())
+}
+
+/// `--url=X` / `--url X` from a full argv (first element is the program).
+fn parse_url_from<I: IntoIterator<Item = String>>(args: I) -> Option<String> {
+    let mut args = args.into_iter().skip(1);
     while let Some(arg) = args.next() {
         if let Some(v) = arg.strip_prefix("--url=") {
             return Some(v.to_owned());
@@ -242,6 +261,29 @@ fn parse_url_flag() -> Option<String> {
         }
     }
     None
+}
+
+/// True when `--background` is on the command line (autostart launches only).
+fn has_background_flag<'a, I: IntoIterator<Item = &'a str>>(args: I) -> bool {
+    args.into_iter().skip(1).any(|a| a == "--background")
+}
+
+/// CEF's view of argv: same as ours minus positional arguments (deep links),
+/// which Chromium could otherwise try to open as a URL.
+fn cef_args() -> Args {
+    use std::ffi::{CString, c_char};
+    let filtered = deeplink::chromium_args(std::env::args());
+    let strings: Vec<CString> = filtered
+        .into_iter()
+        .filter_map(|a| CString::new(a).ok())
+        .collect();
+    let mut ptrs: Vec<*mut c_char> = strings.iter().map(|s| s.as_ptr() as *mut c_char).collect();
+    let argc = ptrs.len() as i32;
+    // CEF keeps reading argv for the life of the process; leak both buffers.
+    let argv = ptrs.as_mut_ptr();
+    std::mem::forget(ptrs);
+    std::mem::forget(strings);
+    Args::from(cef::MainArgs { argc, argv })
 }
 
 fn load_gl() {
@@ -259,4 +301,63 @@ fn load_gl() {
             .unwrap_or(std::ptr::null())
     });
     gl::load_with(|name| epoxy::get_proc_addr(name) as *const _);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn v(a: &[&str]) -> Vec<String> {
+        a.iter().map(|s| s.to_string()).collect()
+    }
+
+    #[test]
+    fn url_flag_forms() {
+        assert_eq!(parse_url_from(v(&["karere"])), None);
+        assert_eq!(
+            parse_url_from(v(&["karere", "--url=https://a"])).as_deref(),
+            Some("https://a")
+        );
+        assert_eq!(
+            parse_url_from(v(&["karere", "--debug", "--url", "https://b"])).as_deref(),
+            Some("https://b")
+        );
+        assert_eq!(parse_url_from(v(&["karere", "--url"])), None);
+        // argv[0] is never parsed as a flag.
+        assert_eq!(parse_url_from(v(&["--url=x"])), None);
+    }
+
+    #[test]
+    fn log_filter_levels() {
+        assert_eq!(log_filter_from(v(&["karere"])), "warn,karere=info");
+        assert_eq!(log_filter_from(v(&["karere", "--debug"])), "warn,karere=debug");
+        assert_eq!(
+            log_filter_from(v(&["karere", "--debuglevel=trace"])),
+            "warn,karere=trace"
+        );
+        assert_eq!(
+            log_filter_from(v(&["karere", "--debuglevel=WARNING", "--debug"])),
+            "warn,karere=warn"
+        );
+        assert_eq!(
+            log_filter_from(v(&["karere", "--debug", "--debuglevel=err"])),
+            "warn,karere=error"
+        );
+    }
+
+    #[test]
+    fn background_flag() {
+        assert!(has_background_flag(["karere", "--background"]));
+        assert!(has_background_flag(["karere", "--debug", "--background"]));
+        assert!(!has_background_flag(["karere"]));
+        assert!(!has_background_flag(["karere", "--url", "--background-x"]));
+        assert!(!has_background_flag(["--background"]));
+    }
+
+    #[test]
+    fn normalize_levels() {
+        assert_eq!(normalize_log_level("Warning"), "warn");
+        assert_eq!(normalize_log_level("INFO"), "info");
+        assert_eq!(normalize_log_level("bogus"), "debug");
+    }
 }

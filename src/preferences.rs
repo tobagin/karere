@@ -26,6 +26,21 @@ impl KarerePreferencesDialog {
         obj.imp().setup(app);
         obj
     }
+
+    /// Open Preferences, or leave the one already on screen in place.
+    pub fn show(app: &KarereApplication) {
+        let open = OPEN.with(|o| o.borrow().upgrade()).filter(|d| d.root().is_some());
+        if open.is_some() {
+            return;
+        }
+        let dialog = Self::new(app);
+        OPEN.with(|o| *o.borrow_mut() = dialog.downgrade());
+        dialog.present(app.active_window().as_ref());
+    }
+}
+
+thread_local! {
+    static OPEN: RefCell<glib::WeakRef<KarerePreferencesDialog>> = RefCell::new(glib::WeakRef::new());
 }
 
 /// Bind an `AdwComboRow` to a string GSetting; model order matches `values`.
@@ -138,8 +153,6 @@ mod imp {
         #[template_child]
         pub row_mobile_layout: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub row_dev_enable: TemplateChild<adw::SwitchRow>,
-        #[template_child]
         pub btn_dev_open: TemplateChild<gtk::Button>,
         #[template_child]
         pub row_gpu_render: TemplateChild<adw::SwitchRow>,
@@ -191,8 +204,6 @@ mod imp {
         #[template_child]
         pub row_focus: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub row_contrast: TemplateChild<adw::SwitchRow>,
-        #[template_child]
         pub row_zoom: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub row_zoom_level: TemplateChild<adw::SpinRow>,
@@ -200,14 +211,6 @@ mod imp {
         pub row_zoom_headerbar: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub row_sr_opts: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub row_kb_shortcuts: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub row_a11y_shortcuts: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub row_dev_shortcuts: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub row_notify_shortcuts: TemplateChild<adw::SwitchRow>,
 
         /// Permission rows currently shown, so a rebuild can clear them first.
         pub perm_rows: RefCell<Vec<adw::ActionRow>>,
@@ -272,7 +275,6 @@ mod imp {
                 &self.row_mobile_layout,
                 &["auto", "enabled", "disabled"],
             );
-            bind_switch(settings, "enable-developer-tools", &self.row_dev_enable);
 
             // Experimental GPU rendering — restart-required (the shared-texture
             // flag is read once at browser creation). (gpu-osr)
@@ -384,7 +386,7 @@ mod imp {
             let row = self.row_download.downgrade();
             self.btn_download_choose.connect_clicked(move |_| {
                 let dialog = gtk::FileDialog::builder()
-                    .title("Select Download Folder")
+                    .title(gettext("Select Download Folder"))
                     .modal(true)
                     .build();
                 let settings = settings_choose.clone();
@@ -411,7 +413,7 @@ mod imp {
             self.btn_download_reset.connect_clicked(move |_| {
                 let _ = settings_reset.set_string("download-directory", "");
                 if let Some(row) = row_reset.upgrade() {
-                    row.set_subtitle("Default (Downloads)");
+                    row.set_subtitle(&gettext("Default (Downloads)"));
                 }
             });
         }
@@ -419,87 +421,54 @@ mod imp {
         fn update_download_subtitle(&self, settings: &gio::Settings) {
             let dir = settings.string("download-directory");
             if dir.is_empty() {
-                self.row_download.set_subtitle("Default (Downloads)");
+                self.row_download.set_subtitle(&gettext("Default (Downloads)"));
             } else {
                 self.row_download.set_subtitle(&dir);
             }
         }
 
         fn bind_spellcheck(&self, settings: &gio::Settings) {
-            use crate::spellcheck_ui::{self, SpellLang, SpellToggleCallback};
-            use std::rc::Rc;
+            use crate::spellcheck_ui::{SpellBinding, SpellLang};
 
             bind_switch(settings, "enable-spell-checking", &self.row_spell_enable);
             bind_switch(settings, "auto-detect-language", &self.row_auto_detect);
             bind_switch(settings, "enable-auto-correct", &self.row_auto_correct);
             bind_switch(settings, "spellcheck-headerbar", &self.row_spell_headerbar);
 
-            let favorites: Vec<String> = settings
-                .strv("favorite-spell-check-languages")
-                .iter()
-                .map(|s| s.to_string())
-                .collect();
-            let store = spellcheck_ui::build_store(&favorites);
-            let sorter = spellcheck_ui::build_sorter();
-            let sort_model = gtk::SortListModel::new(Some(store), Some(sorter.clone()));
-
+            let binding = SpellBinding::new(settings);
+            let (button_factory, list_factory) = binding.factories();
             let row = self.row_spell_lang.get();
-            row.set_model(Some(&sort_model));
-            row.set_factory(Some(&spellcheck_ui::build_button_factory()));
+            row.set_factory(Some(&button_factory));
+            row.set_list_factory(Some(&list_factory));
+            row.set_model(Some(binding.model()));
 
-            // Star toggle → persist favorites and re-sort.
-            let on_toggle: SpellToggleCallback = Rc::new({
-                let settings = settings.clone();
-                let sorter = sorter.clone();
-                move |lang: &SpellLang, now: bool| {
-                    lang.set_favorite(now);
-                    let mut favs: Vec<String> = settings
-                        .strv("favorite-spell-check-languages")
-                        .iter()
-                        .map(|s| s.to_string())
-                        .collect();
-                    let code = lang.code();
-                    if now {
-                        if !favs.contains(&code) {
-                            favs.push(code);
-                        }
-                    } else {
-                        favs.retain(|c| c != &code);
-                    }
-                    let refs: Vec<&str> = favs.iter().map(String::as_str).collect();
-                    let _ = settings.set_strv("favorite-spell-check-languages", refs);
-                    sorter.changed(gtk::SorterChange::Different);
+            // Show the effective language and follow changes from the header
+            // dropdown; handlers are dropped with the dialog.
+            binding.sync(|i| row.set_selected(i));
+            let row_weak = row.downgrade();
+            let ids = binding.watch(move |i| {
+                if let Some(row) = row_weak.upgrade() {
+                    row.set_selected(i);
                 }
             });
-            row.set_list_factory(Some(&spellcheck_ui::build_list_factory(on_toggle)));
-
-            let explicit: Vec<String> = settings
-                .strv("spell-checking-languages")
-                .iter()
-                .map(|s| s.to_string())
-                .collect();
-            if let Some(want) = explicit.first() {
-                let n = sort_model.n_items();
-                for i in 0..n {
-                    if let Some(lang) = sort_model.item(i).and_downcast::<SpellLang>()
-                        && &lang.code() == want
-                    {
-                        row.set_selected(i);
-                        break;
-                    }
+            let cleanup = binding.clone();
+            let ids = RefCell::new(Some(ids));
+            self.obj().connect_closed(move |_| {
+                if let Some(ids) = ids.take() {
+                    cleanup.unwatch(ids);
                 }
-            }
+            });
 
             // Selection → persist + live-switch the running browser (no reload).
-            let settings_sel = settings.clone();
             row.connect_selected_item_notify(move |row| {
                 let Some(lang) = row.selected_item().and_downcast::<SpellLang>() else {
                     return;
                 };
-                let code = lang.code();
-                let _ = settings_sel.set_strv("spell-checking-languages", [code.as_str()]);
+                let Some(langs) = binding.selected(&lang) else {
+                    return;
+                };
                 if let Some(web) = active_web_view() {
-                    web.set_spellcheck_languages(&[code], true);
+                    web.set_spellcheck_languages(&langs, true);
                 }
             });
         }
@@ -526,9 +495,9 @@ mod imp {
             for (origin, bit, state) in entries {
                 let perm = crate::handlers::permission::permission_label(bit);
                 let verdict = match state {
-                    crate::permissions_store::State::Allow => "Allowed",
-                    crate::permissions_store::State::Deny => "Denied",
-                    crate::permissions_store::State::Ask => "Ask",
+                    crate::permissions_store::State::Allow => gettext("Allowed"),
+                    crate::permissions_store::State::Deny => gettext("Denied"),
+                    crate::permissions_store::State::Ask => gettext("Ask"),
                 };
                 let row = adw::ActionRow::builder()
                     .title(&origin)
@@ -538,7 +507,7 @@ mod imp {
                 let remove = gtk::Button::builder()
                     .icon_name("user-trash-symbolic")
                     .valign(gtk::Align::Center)
-                    .tooltip_text("Remove this decision")
+                    .tooltip_text(gettext("Remove this decision"))
                     .build();
                 remove.add_css_class("flat");
 
@@ -560,7 +529,6 @@ mod imp {
         fn bind_accessibility(&self, settings: &gio::Settings) {
             bind_switch(settings, "reduce-motion", &self.row_motion);
             bind_switch(settings, "focus-indicators", &self.row_focus);
-            bind_switch(settings, "high-contrast", &self.row_contrast);
             bind_switch(settings, "webview-zoom", &self.row_zoom);
             settings
                 .bind("zoom-level", &self.row_zoom_level.get(), "value")
@@ -572,10 +540,6 @@ mod imp {
                 &self.row_zoom_headerbar,
             );
             bind_switch(settings, "screen-reader-opts", &self.row_sr_opts);
-            bind_switch(settings, "enable-shortcuts", &self.row_kb_shortcuts);
-            bind_switch(settings, "a11y-shortcuts", &self.row_a11y_shortcuts);
-            bind_switch(settings, "dev-shortcuts", &self.row_dev_shortcuts);
-            bind_switch(settings, "notify-shortcuts", &self.row_notify_shortcuts);
         }
     }
 }

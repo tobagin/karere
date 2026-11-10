@@ -25,6 +25,10 @@ pub const ACTIVATE_ACTION: &str = "app.notification-clicked";
 /// GVariant type of the [`ACTIVATE_ACTION`] target: `(account_id, tag)`.
 pub const ACTIVATE_TARGET_TYPE: &str = "(ss)";
 
+/// App action behind a banner's "Mute Account" button; same
+/// [`ACTIVATE_TARGET_TYPE`] target as [`ACTIVATE_ACTION`].
+pub const MUTE_ACCOUNT_ACTION: &str = "app.notification-mute-account";
+
 /// Upper bound on tracked live banners across all accounts; the oldest entry is
 /// evicted beyond it so a misbehaving page cannot grow the map without limit.
 const MAX_LIVE: usize = 256;
@@ -58,8 +62,8 @@ impl Tracker {
         }
     }
 
-    /// Record the tag, set the per-account unread dot, bump the tray count, emit
-    /// the branded banner.
+    /// Record the tag and emit the branded banner (unless notifications are off,
+    /// i.e. Do Not Disturb, or the account is muted).
     pub fn on_seen(
         &self,
         tag: &str,
@@ -85,26 +89,11 @@ impl Tracker {
         }
         self.record(account_id, tag, Instant::now());
 
-        // Skip the active account: don't badge the row the user is looking at.
-        let is_active = crate::accounts::manager()
-            .active()
-            .is_some_and(|a| a.id == account_id);
-        if !is_active {
-            crate::accounts::set_unread(account_id, true);
-        }
-
-        // Per-account mute: keep the passive unread badge (set above) but
-        // suppress the banner + tray-count bump for this account.
+        // Unread counts come from the page title (`handlers::display`), not
+        // from banners. Per-account mute only suppresses the banner.
         if crate::accounts::manager().is_muted(account_id) {
             log::debug!("notifications: suppressed (account {account_id} muted)");
             return;
-        }
-
-        if settings.boolean("notify-tray-icon")
-            && let Some(app) = gio::Application::default()
-        {
-            let next = crate::tray::unread_count().saturating_add(1);
-            app.activate_action("set-unread", Some(&next.to_variant()));
         }
 
         // No separate Karere sound: WhatsApp's in-page ding is the only one (a
@@ -264,6 +253,14 @@ impl Tracker {
             ACTIVATE_ACTION,
             Some(&target),
         );
+        // Muting one account only makes sense when there are others.
+        if crate::accounts::manager().get_accounts_sorted().len() > 1 {
+            notif.add_button_with_target_value(
+                &gettext("Mute Account"),
+                MUTE_ACCOUNT_ACTION,
+                Some(&target),
+            );
+        }
 
         log::debug!("notifications: send_notification account={account_id}");
         app.send_notification(Some(&notification_id(account_id, tag)), &notif);

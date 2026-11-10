@@ -11,11 +11,6 @@
     <value nick="long" value="2"/>
   </enum>
   <schema id="@APP_ID@" path="@APP_PATH@">
-    <key name="schema-version" type="i">
-      <default>0</default>
-      <summary>Schema version</summary>
-      <description>Internal schema version used for data migrations.</description>
-    </key>
     <key name="start-in-background" type="b">
       <default>false</default>
       <summary>Start in background</summary>
@@ -110,42 +105,15 @@
       <default>''</default>
       <summary>Download directory</summary>
     </key>
-    <key name="enable-developer-tools" type="b">
-      <default>false</default>
-      <summary>Enable developer tools</summary>
-    </key>
     <key name="permission-decisions" type="a{sa{ui}}">
       <default>{}</default>
       <summary>Remembered permission decisions</summary>
       <description>Per-origin permission decisions keyed by CEF permission-mask bit: 0=Ask, 1=Allow, 2=Deny. Written only when the user checks "Remember this choice".</description>
     </key>
-    <key name="enable-multi-account" type="b">
-      <default>false</default>
-      <summary>Enable multi-account support</summary>
-      <description>Whether to show the account switcher button in the header bar.</description>
-    </key>
-    <key name="account-limit-enabled" type="b">
-      <default>true</default>
-      <summary>Enable account limit</summary>
-      <description>Whether to limit the number of accounts that can be created.</description>
-    </key>
-    <key name="account-limit" type="i">
-      <default>2</default>
-      <summary>Maximum number of accounts</summary>
-      <description>The maximum number of accounts when the account limit is enabled (1-10).</description>
-    </key>
     <!-- Accessibility -->
-    <key name="enable-shortcuts" type="b">
-      <default>true</default>
-      <summary>Enable keyboard shortcuts</summary>
-    </key>
     <key name="focus-indicators" type="b">
       <default>false</default>
       <summary>Enable focus indicators</summary>
-    </key>
-    <key name="high-contrast" type="b">
-      <default>false</default>
-      <summary>High contrast mode</summary>
     </key>
     <key name="reduce-motion" type="b">
       <default>false</default>
@@ -164,18 +132,6 @@
     <key name="screen-reader-opts" type="b">
       <default>false</default>
       <summary>Screen reader optimizations</summary>
-    </key>
-    <key name="a11y-shortcuts" type="b">
-      <default>true</default>
-      <summary>Enable accessibility shortcuts</summary>
-    </key>
-    <key name="dev-shortcuts" type="b">
-      <default>true</default>
-      <summary>Enable developer shortcuts</summary>
-    </key>
-    <key name="notify-shortcuts" type="b">
-      <default>true</default>
-      <summary>Enable notification shortcuts</summary>
     </key>
     <!-- Notifications -->
     <key name="notifications-enabled" type="b">

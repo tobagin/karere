@@ -38,9 +38,10 @@ wrap_load_handler! {
             // DevTools view, which owns no account) are untouched.
             let is_main = frame.is_none_or(|f| f.is_main() == 1);
             if is_main {
-                if let Some(account_id) =
-                    browser.and_then(|b| crate::accounts::account_for_browser(b.identifier()))
-                {
+                let browser_id = browser.map(|b| b.identifier()).unwrap_or(0);
+                // New document: drop the old accessibility tree (#204, I15).
+                super::accessibility::reset_browser(browser_id);
+                if let Some(account_id) = crate::accounts::account_for_browser(browser_id) {
                     crate::notifications::tracker().on_load_start(&account_id);
                 }
                 // New page → re-apply spellcheck on first editable-field focus.
@@ -107,7 +108,7 @@ wrap_load_handler! {
                 // M18 4.1: restore this account's persisted zoom (floor-lifted),
                 // scaled up by the display scale to fill the physical buffer.
                 crate::web_view::apply_zoom_from_account(browser, display_scale);
-                log::info!(
+                log::trace!(
                     "coord: J7 load_end browser_id={} display_scale={:.3} width_logical={}",
                     browser.identifier(),
                     display_scale,

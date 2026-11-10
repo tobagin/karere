@@ -684,7 +684,8 @@ pub struct AccountRuntime {
     pub awaiting_pairing: bool,
     pub degraded: bool,
     pub degraded_reason: Option<String>,
-    pub has_unread: bool,
+    /// Unread chats as reported by the page title ("(N) WhatsApp").
+    pub unread: u32,
 }
 
 thread_local! {
@@ -762,13 +763,34 @@ pub fn clear_degraded(account_id: &str) {
     });
 }
 
-/// Set the per-account unread flag.
-pub fn set_unread(account_id: &str, unread: bool) {
+/// Set `account_id`'s unread-chat count (from the page title). Emits
+/// `accounts-changed` only when the count actually changes.
+pub fn set_unread_count(account_id: &str, count: u32) -> bool {
     mutate_runtime(account_id, |r| {
-        let changed = r.has_unread != unread;
-        r.has_unread = unread;
+        let changed = r.unread != count;
+        r.unread = count;
         changed
-    });
+    })
+}
+
+/// Sum of the unread counts of every existing, unmuted account: the tray total.
+/// Muted accounts still show their own count in the switcher.
+pub fn unread_total_unmuted() -> u32 {
+    let mgr = manager();
+    mgr.get_accounts_sorted()
+        .iter()
+        .filter(|a| !a.muted)
+        .map(|a| runtime_state(&a.id).unread)
+        .fold(0u32, u32::saturating_add)
+}
+
+/// Badge text for an unread count, capped at "99+".
+pub fn unread_badge_text(count: u32) -> String {
+    if count > 99 {
+        "99+".to_owned()
+    } else {
+        count.to_string()
+    }
 }
 
 #[cfg(test)]
@@ -937,5 +959,12 @@ mod tests {
         let mut d = Account::new();
         d.user_label = Some("Account 2".into());
         assert_eq!(lowest_unused_label(&[a, b, d]), "Account 4");
+    }
+
+    #[test]
+    fn unread_badge_caps_at_99() {
+        assert_eq!(unread_badge_text(7), "7");
+        assert_eq!(unread_badge_text(99), "99");
+        assert_eq!(unread_badge_text(100), "99+");
     }
 }

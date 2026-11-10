@@ -109,10 +109,11 @@ wrap_permission_handler! {
                 if let Some(allow) = choice {
                     persist(&origin, Kind::Prompt, mask, allow);
                 }
-                cb_clone.cont(if choice == Some(true) {
-                    PermissionRequestResult::ACCEPT
-                } else {
-                    PermissionRequestResult::DENY
+                cb_clone.cont(match choice {
+                    Some(true) => PermissionRequestResult::ACCEPT,
+                    Some(false) => PermissionRequestResult::DENY,
+                    // DENY would persist a block in the profile; DISMISS does not.
+                    None => PermissionRequestResult::DISMISS,
                 });
             });
             1

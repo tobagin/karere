@@ -28,9 +28,11 @@ pub fn register_app_actions(app: &KarereApplication) {
     register_sync_autostart(app);
     register_notification_clicked(app);
     register_switch_account(app);
-    register_set_unread(app);
+    register_notification_mute_account(app);
+    register_do_not_disturb(app);
     register_refresh_tray_accounts(app);
     register_open_download(app);
+    register_show_download(app);
 }
 
 fn register_quit(app: &KarereApplication) {
@@ -85,8 +87,7 @@ fn register_preferences(app: &KarereApplication) {
         #[weak]
         app,
         move |_, _| {
-            let dialog = crate::preferences::KarerePreferencesDialog::new(&app);
-            dialog.present(app.active_window().as_ref());
+            crate::preferences::KarerePreferencesDialog::show(&app);
         }
     ));
     app.add_action(&action);
@@ -129,7 +130,7 @@ fn register_open_download(app: &KarereApplication) {
                 );
                 // gio must run on the glib main thread.
                 glib::MainContext::default().invoke(move || {
-                    let uri = format!("file://{path}");
+                    let uri = gio::File::for_path(&path).uri();
                     if let Err(err) =
                         gio::AppInfo::launch_default_for_uri(&uri, None::<&gio::AppLaunchContext>)
                     {
@@ -149,9 +150,74 @@ async fn open_via_portal(path: &str) -> anyhow::Result<()> {
 
     let file = std::fs::File::open(path)?;
     OpenFileRequest::default()
-        .ask(false)
+        .ask(needs_open_confirmation(path))
         .send_file(&file.as_fd())
         .await?;
+    Ok(())
+}
+
+/// File types that can run code when opened: always let the portal ask which
+/// application to use instead of launching the default handler directly.
+fn needs_open_confirmation(path: &str) -> bool {
+    const RISKY: &[&str] = &[
+        "desktop",
+        "sh",
+        "run",
+        "appimage",
+        "py",
+        "jar",
+        "exe",
+        "bat",
+        "deb",
+        "rpm",
+        "flatpakref",
+    ];
+    std::path::Path::new(path)
+        .extension()
+        .and_then(|e| e.to_str())
+        .is_some_and(|e| RISKY.contains(&e.to_ascii_lowercase().as_str()))
+}
+
+/// `app.show-download <path>`: reveal a downloaded file in the file manager
+/// (highlighted) via the OpenURI portal's OpenDirectory request.
+fn register_show_download(app: &KarereApplication) {
+    let action = gio::SimpleAction::new("show-download", Some(glib::VariantTy::STRING));
+    action.connect_activate(|_, param| {
+        let Some(path) = param.and_then(|v| v.str()) else {
+            log::warn!("app.show-download invoked without a path argument");
+            return;
+        };
+        let path = path.to_owned();
+        runtime().spawn(async move {
+            if let Err(err) = show_via_portal(&path).await {
+                log::warn!(
+                    "show-download: portal open_directory({path}) failed ({err}); \
+                     falling back to the parent folder"
+                );
+                glib::MainContext::default().invoke(move || {
+                    let parent = std::path::Path::new(&path)
+                        .parent()
+                        .map(std::path::Path::to_path_buf)
+                        .unwrap_or_else(|| std::path::PathBuf::from("/"));
+                    let uri = gio::File::for_path(parent).uri();
+                    if let Err(err) =
+                        gio::AppInfo::launch_default_for_uri(&uri, None::<&gio::AppLaunchContext>)
+                    {
+                        log::warn!("show-download: fallback launch_default_for_uri failed: {err}");
+                    }
+                });
+            }
+        });
+    });
+    app.add_action(&action);
+}
+
+async fn show_via_portal(path: &str) -> anyhow::Result<()> {
+    use ashpd::desktop::open_uri::OpenDirectoryRequest;
+    use std::os::fd::AsFd;
+
+    let file = std::fs::File::open(path)?;
+    OpenDirectoryRequest::default().send(&file.as_fd()).await?;
     Ok(())
 }
 
@@ -204,14 +270,76 @@ fn register_notification_clicked(app: &KarereApplication) {
     app.add_action(&action);
 }
 
-/// `app.set-unread <u32>`: update the tray unread count (icon + tooltip).
-/// No-op when no tray is running.
-fn register_set_unread(app: &KarereApplication) {
-    let action = gio::SimpleAction::new("set-unread", Some(glib::VariantTy::UINT32));
-    action.connect_activate(|_, param| {
-        let count = param.and_then(|v| v.get::<u32>()).unwrap_or(0);
-        crate::tray::set_unread(count);
+/// `app.notification-mute-account (account_id, tag)`: a banner's "Mute
+/// Account" button. Mutes that account's notifications (the switcher keeps
+/// counting it, the tray total drops it) and withdraws the banner.
+fn register_notification_mute_account(app: &KarereApplication) {
+    let target_ty = glib::VariantTy::new(crate::notifications::ACTIVATE_TARGET_TYPE)
+        .expect("notification target type is a valid GVariant type");
+    let name = crate::notifications::MUTE_ACCOUNT_ACTION
+        .strip_prefix("app.")
+        .expect("mute action is an app action");
+    let action = gio::SimpleAction::new(name, Some(target_ty));
+    action.connect_activate(glib::clone!(
+        #[weak]
+        app,
+        move |_, param| {
+            let Some((account_id, tag)) =
+                param.and_then(crate::notifications::parse_activate_target)
+            else {
+                log::warn!("notification-mute-account: malformed target");
+                return;
+            };
+            crate::notifications::tracker().on_activated(&account_id, &tag);
+            let mgr = crate::accounts::manager();
+            if mgr.get(&account_id).is_none() {
+                return;
+            }
+            mgr.set_muted(&account_id, true);
+            // `set_muted` does not emit (see its doc); outside the row's own
+            // toggle it is safe to rebuild the switcher, which also re-pushes
+            // the tray total.
+            mgr.emit_by_name::<()>("accounts-changed", &[]);
+            for win in app.windows() {
+                if let Some(kw) = win.downcast_ref::<crate::window::KarereWindow>() {
+                    kw.apply_audio_mute();
+                }
+            }
+        }
+    ));
+    app.add_action(&action);
+}
+
+/// `app.do-not-disturb`: boolean-state toggle, the inverse of the
+/// `notifications-enabled` key. On: no banners and no notification sound;
+/// unread counts keep updating. Kept in sync when the key changes elsewhere
+/// (Preferences), and mirrored into the tray's checkmark.
+fn register_do_not_disturb(app: &KarereApplication) {
+    let settings = gio::Settings::new(APP_ID);
+    let dnd = !settings.boolean("notifications-enabled");
+    crate::tray::set_dnd(dnd);
+    let action = gio::SimpleAction::new_stateful("do-not-disturb", None, &dnd.to_variant());
+    action.connect_activate(|action, _| {
+        let on = !action.state().and_then(|v| v.get::<bool>()).unwrap_or(false);
+        // The `changed` handler below updates the state, tray and sound mute.
+        if let Err(err) = gio::Settings::new(APP_ID).set_boolean("notifications-enabled", !on) {
+            log::warn!("do-not-disturb: cannot write notifications-enabled: {err}");
+        }
     });
+    settings.connect_changed(
+        Some("notifications-enabled"),
+        glib::clone!(
+            #[weak]
+            action,
+            move |s, key| {
+                let dnd = !s.boolean(key);
+                action.set_state(&dnd.to_variant());
+                crate::tray::set_dnd(dnd);
+            }
+        ),
+    );
+    // GSettings signals die with the object; keep it for the app's lifetime.
+    std::mem::forget(settings);
     app.add_action(&action);
 }
 
@@ -286,13 +414,13 @@ fn register_about(app: &KarereApplication) {
                 .developer_name("Thiago Fernandes")
                 .version(env!("CARGO_PKG_VERSION"))
                 .comments(gettext(
-                    "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration with comprehensive logging and crash reporting capabilities",
+                    "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides seamless desktop integration",
                 ))
                 .website("https://tobagin.github.io/apps/karere")
                 .issue_url("https://github.com/tobagin/karere/issues")
                 .support_url("https://github.com/tobagin/karere/discussions")
                 .license_type(gtk::License::Gpl30)
-                .copyright("© 2025 Thiago Fernandes")
+                .copyright("© 2025-2026 Thiago Fernandes")
                 .developers(developers.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
                 .designers(designers.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
                 .artists(artists.iter().map(|s| String::from(*s)).collect::<Vec<_>>())
@@ -337,22 +465,60 @@ fn register_sync_autostart(app: &KarereApplication) {
         runtime().spawn(async move {
             use ashpd::desktop::background::Background;
             let result = if want {
+                // `--background` marks autostart launches so only those stay hidden.
                 Background::request()
                     .reason("Karere can keep running in the background to deliver messages.")
                     .auto_start(true)
-                    .command(["karere"])
+                    .command(["karere", "--background"])
                     .send()
                     .await
             } else {
                 Background::request().auto_start(false).send().await
             };
-            match result {
-                Ok(_) => log::info!("ashpd Background::request completed (auto_start={want})"),
-                Err(err) => log::warn!("ashpd Background::request failed: {err}"),
+            let outcome = result.and_then(|r| r.response());
+            match outcome {
+                Ok(bg) => {
+                    log::info!(
+                        "ashpd Background::request completed (auto_start={want}, granted={})",
+                        bg.auto_start()
+                    );
+                    if want && !bg.auto_start() {
+                        revert_autostart_setting();
+                    }
+                }
+                Err(err) => {
+                    log::warn!("ashpd Background::request failed: {err}");
+                    if want {
+                        revert_autostart_setting();
+                    }
+                }
             }
         });
     });
     app.add_action(&action);
+}
+
+/// The portal refused (or could not register) autostart: turn the setting back
+/// off and tell the user. Runs on the main thread.
+fn revert_autostart_setting() {
+    glib::MainContext::default().invoke(|| {
+        let settings = gio::Settings::new(APP_ID);
+        if !settings.boolean("run-on-startup") {
+            return;
+        }
+        if let Err(err) = settings.set_boolean("run-on-startup", false) {
+            log::warn!("could not reset run-on-startup: {err}");
+        }
+        let win = gio::Application::default()
+            .and_downcast::<gtk::Application>()
+            .and_then(|app| app.active_window().or_else(|| app.windows().into_iter().next()))
+            .and_downcast::<crate::window::KarereWindow>();
+        if let Some(win) = win {
+            win.show_toast(&gettextrs::gettext(
+                "Could not enable running on startup. Allow Karere to run in the background in your system settings.",
+            ));
+        }
+    });
 }
 
 fn load_release_notes() -> Option<String> {
@@ -413,4 +579,26 @@ fn strip_localized(desc: &str) -> String {
         .filter(|l| !l.trim().is_empty())
         .collect::<Vec<_>>()
         .join("\n")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::needs_open_confirmation;
+
+    #[test]
+    fn risky_types_ask() {
+        for p in [
+            "dl/a.desktop",
+            "dl/a.SH",
+            "dl/Foo.AppImage",
+            "dl/x.py",
+            "dl/x.flatpakref",
+            "dl/x.deb",
+        ] {
+            assert!(needs_open_confirmation(p), "{p}");
+        }
+        for p in ["dl/a.pdf", "dl/a.txt", "dl/noext", "dl/.sh", "dl/a.sh.txt"] {
+            assert!(!needs_open_confirmation(p), "{p}");
+        }
+    }
 }

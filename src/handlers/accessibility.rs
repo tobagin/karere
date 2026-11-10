@@ -11,7 +11,8 @@
 // GtkAccessible mirror of the tree; build that if focus reading falls short.
 
 use std::collections::HashMap;
-use std::sync::{Arc, OnceLock};
+use std::sync::atomic::{AtomicI32, Ordering};
+use std::sync::{Arc, OnceLock, Weak};
 
 use cef::{
     self, AccessibilityHandler, CefString, CefStringList, ImplAccessibilityHandler,
@@ -71,20 +72,102 @@ struct AxNode {
     role: String,
     name: String,
     value: String,
+    children: Vec<i64>,
 }
 
 /// The parts of one browser's accessibility tree needed to describe focus.
 #[derive(Default)]
 pub struct AxTree {
     nodes: HashMap<i64, AxNode>,
+    /// child id → parent id, to tell a re-parented node from a removed one.
+    parents: HashMap<i64, i64>,
     focus: Option<i64>,
 }
 
 impl AxTree {
+    /// Forget the whole tree (main-frame navigation: a new document).
+    pub fn reset(&mut self) {
+        *self = Self::default();
+    }
+
+    /// Remove `id` and everything below it.
+    fn remove_subtree(&mut self, id: i64) {
+        let mut stack = vec![id];
+        while let Some(id) = stack.pop() {
+            self.parents.remove(&id);
+            if self.focus == Some(id) {
+                self.focus = None;
+            }
+            if let Some(n) = self.nodes.remove(&id) {
+                stack.extend(
+                    n.children
+                        .into_iter()
+                        .filter(|c| self.parents.get(c) == Some(&id)),
+                );
+            }
+        }
+    }
+
+    /// Apply one tree update with Chromium's `AXTreeUpdate` semantics:
+    /// `node_id_to_clear` drops that node's descendants first, every node
+    /// entry is the node's full state, and a child that left its parent's
+    /// `child_ids` (and was not re-parented in the same update) is deleted
+    /// along with its subtree.
+    fn apply_update(&mut self, update: &Json) {
+        if let Some(clear) = update["node_id_to_clear"].as_i64().filter(|&id| id != 0) {
+            let children = self
+                .nodes
+                .get_mut(&clear)
+                .map(|n| std::mem::take(&mut n.children))
+                .unwrap_or_default();
+            for c in children {
+                if self.parents.get(&c) == Some(&clear) {
+                    self.remove_subtree(c);
+                }
+            }
+        }
+        let mut dropped = Vec::new();
+        for n in update["nodes"].as_array().into_iter().flatten() {
+            let Some(id) = n["id"].as_i64() else { continue };
+            let attr = |k: &str| n["attributes"][k].as_str().unwrap_or("").trim().to_owned();
+            let children: Vec<i64> = n["child_ids"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .filter_map(Json::as_i64)
+                .collect();
+            if let Some(old) = self.nodes.get(&id) {
+                dropped.extend(
+                    old.children
+                        .iter()
+                        .filter(|c| !children.contains(c))
+                        .map(|&c| (id, c)),
+                );
+            }
+            for &c in &children {
+                self.parents.insert(c, id);
+            }
+            self.nodes.insert(
+                id,
+                AxNode {
+                    role: n["role"].as_str().unwrap_or("").to_owned(),
+                    name: attr("name"),
+                    value: attr("value"),
+                    children,
+                },
+            );
+        }
+        for (parent, child) in dropped {
+            if self.parents.get(&child) == Some(&parent) {
+                self.remove_subtree(child);
+            }
+        }
+    }
+
     /// Apply one `on_accessibility_tree_change` payload (CEF's JSON-shaped
-    /// dictionary: `updates[]` and `events[]`, each update carrying `nodes[]`
-    /// and optional `tree_data.focus_id`). Returns what to announce when focus
-    /// landed on a different, describable node.
+    /// dictionary: `updates[]` and `events[]`, each update carrying `nodes[]`,
+    /// optional `node_id_to_clear` and optional `tree_data.focus_id`). Returns
+    /// what to announce when focus landed on a different, describable node.
     pub fn apply(&mut self, msg: &Json) -> Option<String> {
         let mut focus = None;
         let updates = msg["updates"].as_array().into_iter().flatten();
@@ -94,18 +177,7 @@ impl AxTree {
             .flatten()
             .map(|e| &e["update"]);
         for update in updates.chain(event_updates) {
-            for n in update["nodes"].as_array().into_iter().flatten() {
-                let Some(id) = n["id"].as_i64() else { continue };
-                let attr = |k: &str| n["attributes"][k].as_str().unwrap_or("").trim().to_owned();
-                self.nodes.insert(
-                    id,
-                    AxNode {
-                        role: n["role"].as_str().unwrap_or("").to_owned(),
-                        name: attr("name"),
-                        value: attr("value"),
-                    },
-                );
-            }
+            self.apply_update(update);
             if let Some(id) = update["tree_data"]["focus_id"].as_i64() {
                 focus = Some(id);
             }
@@ -197,6 +269,24 @@ fn to_json(v: &Value, depth: u8) -> Json {
 pub struct ShellAccessibilityHandler {
     shared: SharedRef,
     tree: Arc<Mutex<AxTree>>,
+    /// CEF id of the browser this handler serves; 0 until [`Self::bind_browser`].
+    browser_id: Arc<AtomicI32>,
+}
+
+/// Browser id → its tree, so the load handler can reset it on navigation.
+/// Weak: a closed browser's tree is dropped with its handler.
+fn registry() -> &'static Mutex<HashMap<i32, Weak<Mutex<AxTree>>>> {
+    static REGISTRY: OnceLock<Mutex<HashMap<i32, Weak<Mutex<AxTree>>>>> = OnceLock::new();
+    REGISTRY.get_or_init(Mutex::default)
+}
+
+/// Clear browser `browser_id`'s accessibility tree (main-frame navigation).
+/// No-op for an unknown or unbound browser.
+pub fn reset_browser(browser_id: i32) {
+    let tree = registry().lock().get(&browser_id).and_then(Weak::upgrade);
+    if let Some(tree) = tree {
+        tree.lock().reset();
+    }
 }
 
 impl ShellAccessibilityHandler {
@@ -204,7 +294,20 @@ impl ShellAccessibilityHandler {
         Self {
             shared,
             tree: Arc::default(),
+            browser_id: Arc::default(),
         }
+    }
+
+    /// Tell the handler which browser it serves (the render handler sees the
+    /// browser, the accessibility callback does not). Cheap to call repeatedly.
+    /// Enables the foreground gate on announcements and [`reset_browser`].
+    pub fn bind_browser(&self, browser_id: i32) {
+        if browser_id == 0 || self.browser_id.swap(browser_id, Ordering::Relaxed) == browser_id {
+            return;
+        }
+        let mut reg = registry().lock();
+        reg.retain(|_, t| t.strong_count() > 0);
+        reg.insert(browser_id, Arc::downgrade(&self.tree));
     }
 }
 
@@ -218,9 +321,15 @@ wrap_accessibility_handler! {
             let Some(value) = value else { return };
             let json = to_json(value, 0);
             log::trace!("a11y tree change: {json}");
+            // The tree is always kept current; only the foreground browser may
+            // speak (same gate as paints; 0 = unbound or pool not wired yet).
             if let Some(text) = self.handler.tree.lock().apply(&json) {
-                log::trace!("a11y: announce {text:?}");
-                self.handler.shared.lock().a11y_announce = Some(text);
+                let mine = self.handler.browser_id.load(Ordering::Relaxed);
+                let mut s = self.handler.shared.lock();
+                if mine == 0 || s.foreground_browser_id == 0 || mine == s.foreground_browser_id {
+                    log::trace!("a11y: announce {text:?}");
+                    s.a11y_announce = Some(text);
+                }
             }
         }
     }
@@ -286,5 +395,49 @@ mod tests {
         let msg = json!({ "updates": [{ "nodes": [node(9, "row", "Ana, Lunch at 1?, 12:30")] }],
                           "events": [{ "event_type": "focus", "id": 9 }] });
         assert_eq!(t.apply(&msg).as_deref(), Some("Ana, Lunch at 1?, 12:30"));
+    }
+
+    fn parent(id: i64, children: &[i64]) -> Json {
+        json!({ "id": id, "role": "genericContainer", "child_ids": children })
+    }
+
+    #[test]
+    fn node_id_to_clear_and_dropped_children_remove_subtrees() {
+        let mut t = AxTree::default();
+        t.apply(&json!({ "updates": [{ "nodes": [
+            parent(1, &[2, 3]), parent(2, &[4]), node(3, "button", "Keep"), node(4, "button", "Gone")
+        ] }] }));
+        assert_eq!(t.nodes.len(), 4);
+
+        // 1 drops child 2: 2 and its child 4 go, 3 stays.
+        t.apply(&json!({ "updates": [{ "nodes": [parent(1, &[3])] }] }));
+        let mut ids: Vec<i64> = t.nodes.keys().copied().collect();
+        ids.sort();
+        assert_eq!(ids, vec![1, 3]);
+
+        // node_id_to_clear wipes 1's descendants before the update re-adds 5.
+        t.apply(&json!({ "updates": [{ "node_id_to_clear": 1,
+                                       "nodes": [parent(1, &[5]), node(5, "link", "New")] }] }));
+        let mut ids: Vec<i64> = t.nodes.keys().copied().collect();
+        ids.sort();
+        assert_eq!(ids, vec![1, 5]);
+
+        // A child moved to another parent in the same update survives.
+        t.apply(&json!({ "updates": [{ "nodes": [parent(1, &[6]), parent(6, &[5])] }] }));
+        assert!(t.nodes.contains_key(&5));
+
+        t.reset();
+        assert!(t.nodes.is_empty() && t.parents.is_empty());
+    }
+
+    #[test]
+    fn removed_focus_can_be_announced_again() {
+        let mut t = AxTree::default();
+        let focus = json!({ "updates": [{ "nodes": [parent(1, &[7]), node(7, "button", "Send")] }],
+                            "events": [{ "event_type": "focus", "id": 7 }] });
+        assert_eq!(t.apply(&focus).as_deref(), Some("Send, button"));
+        t.apply(&json!({ "updates": [{ "nodes": [parent(1, &[])] }] }));
+        assert!(!t.nodes.contains_key(&7));
+        assert_eq!(t.apply(&focus).as_deref(), Some("Send, button"));
     }
 }

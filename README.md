@@ -60,7 +60,7 @@ For the full release history, see [CHANGELOG.md](CHANGELOG.md).
   screen reader announces each control and message as keyboard focus moves to it. Browse mode and
   reviewing the page without moving focus are not supported yet.
 - **Keyboard Navigation**: Use the entire app without a mouse.
-- **Visual Aids**: High contrast support, zoom controls, and reduced motion.
+- **Visual Aids**: Zoom controls and reduced motion.
 - **Auto-Correct**: Automatic text replacement, which can be turned off in Preferences
 
 ### Spell Checking
@@ -112,7 +112,7 @@ The application will load WhatsApp Web and provide native desktop integration.
 Access preferences through the application menu or keyboard shortcut (`Ctrl+,`) to configure:
 
 - **General**: Theme selection, developer tools
-- **Accessibility**: Keyboard shortcuts, focus indicators, high contrast, reduced motion, zoom settings, screen reader optimization
+- **Accessibility**: Keyboard shortcuts, focus indicators, reduced motion, zoom settings, screen reader optimization
 - **Notifications**: Native notification preferences, preview settings, background notifications
 - **Spell Checking**: Multi-language spell checking with auto-detect
 
@@ -150,7 +150,6 @@ Karere includes comprehensive accessibility support:
 - **Screen Reader Support (partial)**: Focus changes inside WhatsApp are announced (turned on
   automatically when a screen reader is running); browse mode is not supported yet
 - **Keyboard Navigation**: Accounts, zoom, reload and find have shortcuts (see Keyboard Shortcuts above)
-- **High Contrast Mode**: Can be turned on in Preferences
 - **Reduced Motion**: Can be turned on in Preferences
 
 ## Architecture

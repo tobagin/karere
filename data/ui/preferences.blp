@@ -94,11 +94,6 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
     Adw.PreferencesGroup {
       title: _("Developer Tools");
 
-      Adw.SwitchRow row_dev_enable {
-        title: _("Enable Developer Tools");
-        subtitle: _("Allow inspecting and debugging the WebView");
-      }
-
       Adw.ActionRow {
         title: _("Developer Tools");
         subtitle: _("Open the developer tools for the current page");
@@ -145,13 +140,13 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
 
       Adw.SwitchRow row_tray_anim {
         title: _("Change Tray Icon on Message");
-        subtitle: _("Animate the tray icon when a new message arrives");
+        subtitle: _("Switch the tray icon to the unread variant when a new message arrives");
       }
     }
 
     Adw.PreferencesGroup {
       title: _("Message Preview");
-      description: _("Some settings only apply when Karere controls the popup");
+      description: _("Applies to the notifications Karere shows for incoming messages");
 
       Adw.SwitchRow row_preview_name {
         title: _("Show Sender Name");
@@ -308,11 +303,6 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
         title: _("Focus Indicators");
         subtitle: _("Show visible outlines around focused elements");
       }
-
-      Adw.SwitchRow row_contrast {
-        title: _("High Contrast Mode");
-        subtitle: _("Increase contrast for better readability");
-      }
     }
 
     Adw.PreferencesGroup {
@@ -329,7 +319,7 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
 
         adjustment: Gtk.Adjustment {
           lower: 0.5;
-          upper: 5.0;
+          upper: 3.0;
           value: 1.0;
           step-increment: 0.1;
           page-increment: 0.5;
@@ -350,30 +340,6 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
       Adw.SwitchRow row_sr_opts {
         title: _("Screen Reader Optimizations");
         subtitle: _("Improve compatibility with assistive technologies — restart required");
-      }
-    }
-
-    Adw.PreferencesGroup {
-      title: _("Shortcuts");
-
-      Adw.SwitchRow row_kb_shortcuts {
-        title: _("Keyboard Shortcuts");
-        subtitle: _("Enable keyboard shortcuts for common actions");
-      }
-
-      Adw.SwitchRow row_a11y_shortcuts {
-        title: _("Accessibility Shortcuts");
-        subtitle: _("Enable shortcuts for accessibility features");
-      }
-
-      Adw.SwitchRow row_dev_shortcuts {
-        title: _("Developer Shortcuts");
-        subtitle: _("Enable shortcuts for developer tools");
-      }
-
-      Adw.SwitchRow row_notify_shortcuts {
-        title: _("Notification Shortcuts");
-        subtitle: _("Enable shortcuts for notification actions");
       }
     }
   }

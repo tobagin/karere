@@ -28,16 +28,28 @@ impl KarereApplication {
             .build()
     }
 
-    pub fn activate_with_url(&self, url: &str) {
+    /// Handle one launch (first or forwarded). `link` is a validated WhatsApp
+    /// Web URL from a deep link; `background` is the autostart flag.
+    pub fn activate_with_url(&self, url: &str, link: Option<&str>, background: bool) {
         if let Some(win) = self
             .active_window()
             .or_else(|| self.windows().into_iter().next())
         {
+            if let Some(link) = link {
+                if let Some(kw) = win.downcast_ref::<KarereWindow>() {
+                    kw.load_url(link);
+                }
+            } else if background {
+                // An autostart launch that finds a running instance must not
+                // pop its window up.
+                return;
+            }
+            win.set_visible(true);
             win.present();
             return;
         }
         let app: &adw::Application = self.upcast_ref();
-        let window = KarereWindow::new(app, url);
+        let window = KarereWindow::new(app, link.unwrap_or(url));
 
         let settings = gio::Settings::new(APP_ID);
         // Re-assert the color scheme here: CEF initialization (between `startup`
@@ -46,9 +58,9 @@ impl KarereApplication {
         // until the user toggles the theme. Re-applying after CEF init makes it
         // stick, including the start-in-background case below. (#160)
         apply_theme(&settings);
-        // Honored even without a tray icon: relaunching the app presents the
-        // existing window (see the top of this fn), so it stays reachable. (#170)
-        if settings.boolean("start-in-background") {
+        // Only autostart launches (`--background`) stay hidden; a manual launch
+        // always shows the window. A deep link also always shows it.
+        if background && link.is_none() && settings.boolean("start-in-background") {
             log::info!("start-in-background=true — window built but not presented");
             // OSR browsers only spawn when the window is shown; pre-warm so
             // WhatsApp loads and notifies while we stay in the background.
@@ -128,6 +140,8 @@ fn register_accels(app: &KarereApplication) {
         ),
         ("win.zoom-out", &["<Primary>minus", "<Primary>KP_Subtract"]),
         ("win.zoom-reset", &["<Primary>0", "<Primary>KP_0"]),
+        ("win.toggle-zoom-controls", &["<Primary>b"]),
+        ("app.do-not-disturb", &["<Primary><Shift>n"]),
     ];
     for (action, accels) in bindings {
         gtk_app.set_accels_for_action(action, accels);
@@ -274,6 +288,11 @@ mod imp {
                     }
                 ),
             );
+            // Existing autostart entries predate `--background`; re-register once
+            // so they gain it (the portal updates the entry in place).
+            if settings.boolean("run-on-startup") {
+                app.activate_action("sync-autostart", None);
+            }
             // Keep Settings alive so the change handlers keep firing.
             let _ = self.settings.set(settings);
         }

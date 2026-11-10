@@ -64,6 +64,18 @@ impl KarereWindow {
         }
     }
 
+    /// Load `url` in the active account's browser.
+    pub fn load_url(&self, url: &str) {
+        if let Some(web) = self.imp().web_view.borrow().as_ref() {
+            web.load_url(url);
+        }
+    }
+
+    /// Show a plain toast in this window.
+    pub fn show_toast(&self, text: &str) {
+        self.imp().toast_overlay.add_toast(adw::Toast::new(text));
+    }
+
     /// Run `script` in `account_id`'s browser, foreground or not (notification
     /// click routing for a specific account).
     pub fn run_account_js(&self, account_id: &str, script: &str) {
@@ -162,6 +174,13 @@ mod imp {
     }
 
     impl ObjectImpl for KarereWindow {
+        fn dispose(&self) {
+            // The popover is parented to the header button by hand.
+            if let Some(popover) = self.account_popover.take() {
+                popover.unparent();
+            }
+        }
+
         fn constructed(&self) {
             self.parent_constructed();
             let window = self.obj();
@@ -467,14 +486,8 @@ mod imp {
                 if !win.is_active() {
                     return;
                 }
-                // Focus clears the unread tray indicator.
-                if let Some(app) = gio::Application::default() {
-                    app.activate_action("set-unread", Some(&0u32.to_variant()));
-                }
-                // Focus also clears the active account's per-account unread dot.
-                if let Some(a) = crate::accounts::manager().active() {
-                    crate::accounts::set_unread(&a.id, false);
-                }
+                // Unread counts are not touched here: they follow the page
+                // title, which WhatsApp updates once chats are actually read.
                 // Restart the debounce timer on each activation edge.
                 if let Some(id) = pending.borrow_mut().take() {
                     id.remove();
@@ -580,17 +593,20 @@ mod imp {
                 }
             }
 
-            // Mirror the account list into the tray: name + avatar pixmap.
+            // Mirror the account list into the tray: name, unread count, active
+            // mark, avatar pixmap; plus the unmuted unread total.
             let summaries = accounts
                 .iter()
                 .map(|a| crate::tray::AccountSummary {
                     id: a.id.clone(),
                     name: row_title(a),
-                    has_unread: crate::accounts::runtime_state(&a.id).has_unread,
+                    unread: crate::accounts::runtime_state(&a.id).unread,
+                    active: a.is_active,
                     icon_png: a.avatar_png.clone(),
                 })
                 .collect();
             crate::tray::set_accounts(summaries);
+            crate::tray::sync_unread();
 
             // Sync the header avatar to the active (or MRU-first) account.
             let active = mgr.active().or_else(|| mgr.mru_first());
@@ -654,14 +670,23 @@ mod imp {
                 row.add_suffix(&badge);
             }
 
-            // Unread dot: a banner fired for this account while it was not the
-            // focused foreground. Cleared on focus/switch.
-            if runtime.has_unread {
-                let dot = gtk::Label::new(Some("●"));
-                dot.add_css_class("accent");
-                dot.set_valign(gtk::Align::Center);
-                dot.set_tooltip_text(Some(&gettextrs::gettext("Unread messages")));
-                row.add_suffix(&dot);
+            // Unread badge: the page title's count of unread chats ("99+" cap).
+            // Muted accounts keep their badge; only the tray total skips them.
+            if runtime.unread > 0 {
+                let text = gettextrs::ngettext(
+                    "{} unread chat",
+                    "{} unread chats",
+                    runtime.unread,
+                )
+                .replace("{}", &runtime.unread.to_string());
+                let badge = gtk::Label::new(Some(&crate::accounts::unread_badge_text(
+                    runtime.unread,
+                )));
+                badge.add_css_class("unread-badge");
+                badge.set_valign(gtk::Align::Center);
+                badge.set_tooltip_text(Some(&text));
+                badge.update_property(&[gtk::accessible::Property::Label(&text)]);
+                row.add_suffix(&badge);
             }
 
             // Per-account notification mute toggle. Icons are the app's shipped
@@ -692,6 +717,8 @@ mod imp {
                 move |btn| {
                     crate::accounts::manager().set_muted(&id, btn.is_active());
                     apply_mute_visual(btn);
+                    // Muted accounts drop out of the tray total.
+                    crate::tray::sync_unread();
                     // Re-push the ding-mute flag now so it takes effect live, not
                     // just on the next page load. Each browser re-evaluates its
                     // own account's mute state.
@@ -784,8 +811,6 @@ mod imp {
         pub fn switch_account(&self, id: &str) {
             log::info!("switch_account({id})");
             self.close_switcher();
-            // Viewing an account clears its unread dot.
-            crate::accounts::set_unread(id, false);
             crate::accounts::manager().activate(id);
             if let Some(web) = self.web_view.borrow().as_ref() {
                 web.spawn_account(id, true);
@@ -1143,6 +1168,34 @@ mod imp {
                 ));
                 window.add_action(&action);
             }
+
+            // Ctrl+B: flip the header bar zoom controls (the headerbar box is
+            // bound to this key).
+            let toggle_zoom = gio::SimpleAction::new("toggle-zoom-controls", None);
+            toggle_zoom.connect_activate(|_, _| {
+                let s = gio::Settings::new(APP_ID);
+                let _ = s.set_boolean(
+                    "zoom-controls-headerbar",
+                    !s.boolean("zoom-controls-headerbar"),
+                );
+            });
+            window.add_action(&toggle_zoom);
+
+            // The accessibility floor changed in Preferences: re-apply live.
+            let zoom_settings = gio::Settings::new(APP_ID);
+            for key in ["webview-zoom", "zoom-level"] {
+                zoom_settings.connect_changed(
+                    Some(key),
+                    clone!(
+                        #[weak(rename_to = this)]
+                        self,
+                        move |_, _| {
+                            let cur = Self::load_zoom_for_active_account();
+                            this.apply_and_persist_zoom(cur);
+                        }
+                    ),
+                );
+            }
         }
     }
 
@@ -1159,6 +1212,7 @@ mod imp {
                 .active()
                 .map(|a| a.zoom_level)
                 .unwrap_or(1.0)
+                .clamp(crate::web_view::ZOOM_MIN, crate::web_view::ZOOM_MAX)
         }
 
         /// Persist `linear` as the active account's zoom. Does not emit
@@ -1172,7 +1226,7 @@ mod imp {
         /// Apply `linear` (lifted to the floor) to the live browser, persist the
         /// effective value, and update the headerbar label.
         fn apply_and_persist_zoom(&self, linear: f64) {
-            let effective = linear.max(Self::zoom_floor());
+            let effective = linear.clamp(Self::zoom_floor(), crate::web_view::ZOOM_MAX);
             if let Some(web) = self.web_view.borrow().as_ref() {
                 web.set_zoom_linear(effective);
             }
@@ -1182,15 +1236,16 @@ mod imp {
 
         /// Handle `win.zoom-in` / `win.zoom-out` / `win.zoom-reset`.
         fn zoom_step(&self, verb: &str) {
-            let floor = Self::zoom_floor();
+            let floor = Self::zoom_floor().max(crate::web_view::ZOOM_MIN);
             let cur = Self::load_zoom_for_active_account().max(floor);
             let target = match verb {
                 "zoom-in" => cur * 1.1,
                 // Clamp the step-down at the floor; never cross it.
-                "zoom-out" => (cur / 1.1).max(floor),
-                _ => 1.0_f64.max(floor),
+                "zoom-out" => cur / 1.1,
+                _ => 1.0,
             };
-            self.apply_and_persist_zoom(target);
+            // Stored value stays within [max(floor, ZOOM_MIN), ZOOM_MAX].
+            self.apply_and_persist_zoom(target.clamp(floor, crate::web_view::ZOOM_MAX));
         }
 
         /// Refresh the headerbar `<int>%` label from a linear factor.
@@ -1359,9 +1414,7 @@ mod imp {
         /// `spell-checking-languages` and switches the live browser (no reload);
         /// toggling a star persists `favorite-spell-check-languages` and re-sorts.
         fn setup_spellcheck(&self) {
-            use crate::spellcheck_ui::{self, SpellLang, SpellToggleCallback};
-            use gtk::gio::prelude::SettingsExtManual;
-            use std::rc::Rc;
+            use crate::spellcheck_ui::{self, SpellLang};
 
             let settings = gio::Settings::new(APP_ID);
             let dropdown = self.dictionary_dropdown.get();
@@ -1395,82 +1448,42 @@ mod imp {
                 }
             });
 
-            let favorites = strv_vec(&settings, "favorite-spell-check-languages");
-            let store = spellcheck_ui::build_store(&favorites);
-            let sorter = spellcheck_ui::build_sorter();
-            let sort_model = gtk::SortListModel::new(Some(store), Some(sorter.clone()));
+            let binding = spellcheck_ui::SpellBinding::new(&settings);
 
             // Set both factories BEFORE assigning the model — a DropDown with a
             // model but no factory yet emits "factory or expression must be set"
             // once per item.
-            dropdown.set_factory(Some(&spellcheck_ui::build_button_factory()));
+            let (button_factory, list_factory) = binding.factories();
+            dropdown.set_factory(Some(&button_factory));
+            dropdown.set_list_factory(Some(&list_factory));
+            dropdown.set_model(Some(binding.model()));
 
-            // Star toggle → persist favorites and re-sort.
-            let on_toggle: SpellToggleCallback = Rc::new(clone!(
-                #[strong]
-                settings,
-                #[strong]
-                sorter,
-                move |lang: &SpellLang, now: bool| {
-                    lang.set_favorite(now);
-                    let mut favs = strv_vec(&settings, "favorite-spell-check-languages");
-                    let code = lang.code();
-                    if now {
-                        if !favs.contains(&code) {
-                            favs.push(code);
-                        }
-                    } else {
-                        favs.retain(|c| c != &code);
-                    }
-                    let refs: Vec<&str> = favs.iter().map(String::as_str).collect();
-                    let _ = settings.set_strv("favorite-spell-check-languages", refs);
-                    sorter.changed(gtk::SorterChange::Different);
+            // Show the effective language (explicit, else auto-detected) and keep
+            // it in step with changes made from Preferences. The load handler
+            // applies the startup language on the first main-frame `on_load_end`
+            // (setting it before the spellcheck service is ready is ignored).
+            binding.sync(|i| dropdown.set_selected(i));
+            let dd_weak = dropdown.downgrade();
+            binding.watch(move |i| {
+                if let Some(dd) = dd_weak.upgrade() {
+                    dd.set_selected(i);
                 }
-            ));
-            dropdown.set_list_factory(Some(&spellcheck_ui::build_list_factory(on_toggle)));
-            dropdown.set_model(Some(&sort_model));
-
-            // Resolve the effective startup language: explicit list first, else a
-            // single auto-detected code. The command-line switch alone does NOT
-            // populate `spellcheck.dictionaries` (only `set_preference` does), so
-            // the list must be pushed to the live browser at startup.
-            let startup_langs = resolve_startup_languages(&settings);
-
-            // Initialise the active row from the resolved language BEFORE wiring
-            // the change handler, so restoring state doesn't write back.
-            if let Some(want) = startup_langs.first() {
-                let n = sort_model.n_items();
-                for i in 0..n {
-                    if let Some(lang) = sort_model.item(i).and_downcast::<SpellLang>()
-                        && &lang.code() == want
-                    {
-                        dropdown.set_selected(i);
-                        break;
-                    }
-                }
-            }
-
-            // NOTE: the load handler applies the startup language on the first
-            // main-frame `on_load_end` (setting it before the spellcheck service
-            // is ready is ignored). Here we only seed the dropdown's selection.
+            });
 
             let win = self.obj().downgrade();
-            dropdown.connect_selected_item_notify(clone!(
-                #[strong]
-                settings,
-                move |dd| {
-                    let Some(lang) = dd.selected_item().and_downcast::<SpellLang>() else {
-                        return;
-                    };
-                    let code = lang.code();
-                    let _ = settings.set_strv("spell-checking-languages", [code.as_str()]);
-                    if let Some(win) = win.upgrade()
-                        && let Some(web) = win.imp().web_view.borrow().as_ref()
-                    {
-                        web.set_spellcheck_languages(&[code], true);
-                    }
+            dropdown.connect_selected_item_notify(move |dd| {
+                let Some(lang) = dd.selected_item().and_downcast::<SpellLang>() else {
+                    return;
+                };
+                let Some(langs) = binding.selected(&lang) else {
+                    return;
+                };
+                if let Some(win) = win.upgrade()
+                    && let Some(web) = win.imp().web_view.borrow().as_ref()
+                {
+                    web.set_spellcheck_languages(&langs, true);
                 }
-            ));
+            });
         }
 
         /// Wire the find-in-page search bar to Chromium's `BrowserHost::find`.
@@ -1562,20 +1575,6 @@ mod imp {
         }
     }
 
-    /// Read a GSettings `as` key into an owned `Vec<String>`.
-    fn strv_vec(settings: &gio::Settings, key: &str) -> Vec<String> {
-        use gtk::gio::prelude::SettingsExtManual;
-        settings.strv(key).iter().map(|s| s.to_string()).collect()
-    }
-
-    /// Effective spellcheck languages at startup (explicit selection, else
-    /// closest auto-detected locale). Wraps `spellcheck::resolve_languages`.
-    fn resolve_startup_languages(settings: &gio::Settings) -> Vec<String> {
-        use gtk::prelude::SettingsExt;
-        let explicit = strv_vec(settings, "spell-checking-languages");
-        crate::spellcheck::resolve_languages(&explicit, settings.boolean("auto-detect-language"))
-    }
-
     fn show_crash_dialog(win: &super::KarereWindow, req: CrashDialog, dialog_open: Rc<Cell<bool>>) {
         let dialog = adw::AlertDialog::new(Some(&req.title), Some(&req.body));
         dialog.add_response("cancel", "Cancel");
@@ -1602,10 +1601,7 @@ mod imp {
     ) {
         let DownloadCompleted { path, name } = dl;
         let file_path = path.to_string_lossy().into_owned();
-        let parent_path = path
-            .parent()
-            .map(|p| p.to_string_lossy().into_owned())
-            .unwrap_or_else(|| file_path.clone());
+        let show_path = file_path.clone();
 
         // AdwToast has only one native action button; a custom title widget lets
         // us offer both "Open" and "Show in Folder".
@@ -1643,7 +1639,9 @@ mod imp {
             #[weak]
             toast,
             move |_| {
-                invoke_open_download(&win, &parent_path);
+                if let Some(app) = win.application() {
+                    app.activate_action("show-download", Some(&show_path.to_variant()));
+                }
                 toast.dismiss();
             }
         ));

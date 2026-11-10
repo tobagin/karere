@@ -1,6 +1,6 @@
 use cef::{
-    self, Browser, CefString, CursorInfo, CursorType, DisplayHandler, ImplDisplayHandler,
-    WrapDisplayHandler, rc::Rc, wrap_display_handler,
+    self, Browser, CefString, CursorInfo, CursorType, DisplayHandler, ImplBrowser,
+    ImplDisplayHandler, WrapDisplayHandler, rc::Rc, wrap_display_handler,
 };
 
 use super::SharedRef;
@@ -70,10 +70,22 @@ wrap_display_handler! {
     }
 
     impl DisplayHandler {
-        fn on_title_change(&self, _browser: Option<&mut Browser>, title: Option<&CefString>) {
+        fn on_title_change(&self, browser: Option<&mut Browser>, title: Option<&CefString>) {
             let t = title.map(CefString::to_string).unwrap_or_default();
-            self.handler.shared.lock().title = t.clone();
             log::debug!("title: {t}");
+            // WhatsApp titles the page "(N) WhatsApp" while N chats are unread:
+            // the page's own count is the source of truth for the badges.
+            let count = unread_from_title(&t);
+            self.handler.shared.lock().title = t;
+            if let Some(account_id) =
+                browser.and_then(|b| crate::accounts::account_for_browser(b.identifier()))
+            {
+                // Deferred: the change signal rebuilds GTK widgets, which must not
+                // run inside a CEF callback.
+                glib::idle_add_local_once(move || {
+                    crate::accounts::set_unread_count(&account_id, count);
+                });
+            }
         }
 
         // M21: WhatsApp's `element.requestFullscreen()` surfaces here. On the CEF
@@ -92,13 +104,19 @@ wrap_display_handler! {
         // for the widget tick callback to apply. Returns 1 = handled.
         fn on_cursor_change(
             &self,
-            _browser: Option<&mut Browser>,
+            browser: Option<&mut Browser>,
             _cursor: ::std::os::raw::c_ulong,
             type_: CursorType,
             _custom_cursor_info: Option<&CursorInfo>,
         ) -> ::std::os::raw::c_int {
             let name = cursor_css_name(type_);
             let mut s = self.handler.shared.lock();
+            // Same gate as paints: a background account's page must not change
+            // the cursor of the one in front (0 = pool not wired yet).
+            let from = browser.as_ref().map(|b| b.identifier()).unwrap_or(0);
+            if s.foreground_browser_id != 0 && from != s.foreground_browser_id {
+                return 1;
+            }
             if s.cursor_name != name {
                 s.cursor_name = name;
                 s.cursor_dirty = true;
@@ -111,5 +129,50 @@ wrap_display_handler! {
 impl ShellDisplayHandlerBuilder {
     pub fn build(handler: ShellDisplayHandler) -> DisplayHandler {
         Self::new(handler)
+    }
+}
+
+/// Unread-chat count from a WhatsApp page title: the leading "(N)" of
+/// "(N) WhatsApp". Only that prefix matters, so localized titles work too;
+/// anything else (no prefix, non-digits) is 0.
+pub(crate) fn unread_from_title(title: &str) -> u32 {
+    let Some(rest) = title.trim_start().strip_prefix('(') else {
+        return 0;
+    };
+    let Some((digits, _)) = rest.split_once(')') else {
+        return 0;
+    };
+    let digits = digits.trim();
+    if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) {
+        return 0;
+    }
+    digits.parse().unwrap_or(u32::MAX)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::unread_from_title;
+
+    #[test]
+    fn parses_leading_count() {
+        assert_eq!(unread_from_title("(3) WhatsApp"), 3);
+        assert_eq!(unread_from_title("(128) WhatsApp Business"), 128);
+        assert_eq!(unread_from_title("  (1) WhatsApp"), 1);
+    }
+
+    #[test]
+    fn no_count_is_zero() {
+        assert_eq!(unread_from_title("WhatsApp"), 0);
+        assert_eq!(unread_from_title(""), 0);
+        assert_eq!(unread_from_title("()"), 0);
+        assert_eq!(unread_from_title("(x) WhatsApp"), 0);
+        assert_eq!(unread_from_title("(3 WhatsApp"), 0);
+        assert_eq!(unread_from_title("WhatsApp (3)"), 0);
+        assert_eq!(unread_from_title("(-1) WhatsApp"), 0);
+    }
+
+    #[test]
+    fn huge_count_saturates() {
+        assert_eq!(unread_from_title("(99999999999) WhatsApp"), u32::MAX);
     }
 }

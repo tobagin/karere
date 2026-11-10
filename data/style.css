@@ -29,3 +29,14 @@
     outline: 3px solid @accent_color;
     outline-offset: -2px;
 }
+
+/* Account switcher unread-chat count (page-title count, "99+" cap). */
+.unread-badge {
+    min-width: 12px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background-color: @accent_bg_color;
+    color: @accent_fg_color;
+    font-size: smaller;
+    font-weight: bold;
+}
