@@ -4,8 +4,9 @@ use std::sync::Arc;
 
 use cef::{
     self, BeforeDownloadCallback, Browser, CefString, DownloadHandler, DownloadInterruptReason,
-    DownloadItem, DownloadItemCallback, ImplBeforeDownloadCallback, ImplDownloadHandler,
-    ImplDownloadItem, WrapDownloadHandler, rc::Rc, wrap_download_handler,
+    DownloadItem, DownloadItemCallback, ImplBeforeDownloadCallback, ImplBrowser,
+    ImplDownloadHandler, ImplDownloadItem, ImplFrame, WrapDownloadHandler, rc::Rc,
+    wrap_download_handler,
 };
 use gio::prelude::SettingsExt;
 use parking_lot::Mutex;
@@ -42,13 +43,19 @@ wrap_download_handler! {
     impl DownloadHandler {
         fn can_download(
             &self,
-            _browser: Option<&mut Browser>,
+            browser: Option<&mut Browser>,
             _url: Option<&CefString>,
             _request_method: Option<&CefString>,
         ) -> ::std::os::raw::c_int {
-            // Default impl returns 0 (cancel). Allow all; on_before_download
-            // picks the target path.
-            1
+            // Default impl returns 0 (cancel). Allow only while the browser
+            // shows WhatsApp Web; on_before_download picks the target path.
+            let allowed = browser.and_then(|b| b.main_frame()).is_some_and(|f| {
+                crate::handlers::request::is_whatsapp_web(&CefString::from(&f.url()).to_string())
+            });
+            if !allowed {
+                log::warn!("download blocked: not started from WhatsApp Web");
+            }
+            allowed.into()
         }
 
         fn on_before_download(
@@ -186,13 +193,15 @@ fn ensure_writable_dir(dir: &Path) -> bool {
 /// the common 255-byte filesystem limit to leave room for collision suffixes.
 const MAX_NAME_BYTES: usize = 200;
 
-/// Strip path separators and NUL from a renderer-supplied filename, drop any
-/// leading dots so the result can't be a hidden dotfile, and cap the length to
-/// `MAX_NAME_BYTES` on a UTF-8 char boundary. Unicode is otherwise preserved.
+/// Strip path separators, control characters and bidi controls (which can
+/// disguise an extension, e.g. `photo\u{202E}gpj.exe`) from a renderer-supplied
+/// filename, drop any leading dots so the result can't be a hidden dotfile, and
+/// cap the length to `MAX_NAME_BYTES` on a UTF-8 char boundary. Unicode is
+/// otherwise preserved.
 fn sanitize(name: &str) -> String {
     let stripped: String = name
         .chars()
-        .filter(|c| !matches!(c, '/' | '\\' | '\0'))
+        .filter(|&c| !matches!(c, '/' | '\\') && !c.is_control() && !is_bidi_control(c))
         .collect();
     // Trim leading dots so a suggested ".bashrc"-style name can't write a hidden
     // dotfile into (or clobber one in) the download dir. A name that is only dots
@@ -211,6 +220,15 @@ fn sanitize(name: &str) -> String {
         end = next;
     }
     stripped[..end].to_string()
+}
+
+/// Unicode bidirectional formatting characters (marks, embeddings, overrides,
+/// isolates).
+fn is_bidi_control(c: char) -> bool {
+    matches!(
+        c,
+        '\u{061C}' | '\u{200E}' | '\u{200F}' | '\u{202A}'..='\u{202E}' | '\u{2066}'..='\u{2069}'
+    )
 }
 
 /// Walk `name.ext` → `name (1).ext` → `name (2).ext` … until a free path is
@@ -302,6 +320,12 @@ mod tests {
         // Separators/NUL are removed and the residual leading dots are trimmed.
         assert_eq!(sanitize("../etc/passwd"), "etcpasswd");
         assert_eq!(sanitize("a\\b\0c"), "abc");
+    }
+
+    #[test]
+    fn sanitize_strips_control_and_bidi_chars() {
+        assert_eq!(sanitize("photo\u{202E}gpj.exe"), "photogpj.exe");
+        assert_eq!(sanitize("a\nb\tc\x1bd\u{2066}e\u{200F}"), "abcde");
     }
 
     #[test]

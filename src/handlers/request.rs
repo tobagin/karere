@@ -1,11 +1,10 @@
+use std::sync::OnceLock;
 use std::time::{Duration, Instant};
 
 use cef::{
-    self, Browser, Callback, CefString, Frame, ImplBrowser, ImplFrame, ImplRequest,
-    ImplRequestHandler, ImplResourceRequestHandler, Request, RequestHandler,
-    ResourceRequestHandler, ReturnValue, TerminationStatus, WindowOpenDisposition,
-    WrapRequestHandler, WrapResourceRequestHandler, rc::Rc, wrap_request_handler,
-    wrap_resource_request_handler,
+    self, Browser, CefString, Frame, ImplBrowser, ImplFrame, ImplRequest, ImplRequestHandler,
+    Request, RequestHandler, TerminationStatus, WindowOpenDisposition, WrapRequestHandler,
+    rc::Rc, wrap_request_handler,
 };
 
 use super::{CrashDialog, SharedRef};
@@ -48,9 +47,9 @@ wrap_request_handler! {
         fn on_before_browse(
             &self,
             _browser: Option<&mut Browser>,
-            _frame: Option<&mut Frame>,
+            frame: Option<&mut Frame>,
             request: Option<&mut Request>,
-            _user_gesture: ::std::os::raw::c_int,
+            user_gesture: ::std::os::raw::c_int,
             _is_redirect: ::std::os::raw::c_int,
         ) -> ::std::os::raw::c_int {
             // DevTools view: load in-view, never route out.
@@ -60,55 +59,32 @@ wrap_request_handler! {
             let Some(request) = request else { return 0 };
             let url_uf = request.url();
             let url = CefString::from(&url_uf).to_string();
-            if url.is_empty() || is_in_shell(&url) {
+            if url.is_empty() {
                 return 0;
             }
-            if let Err(err) =
-                gio::AppInfo::launch_default_for_uri(&url, None::<&gio::AppLaunchContext>)
-            {
-                log::warn!("launch_default_for_uri({url}) failed: {err}");
+            let is_main = frame.is_none_or(|f| f.is_main() == 1);
+            if !is_main {
+                // Subframes never leave the shell; disallowed ones are cancelled.
+                return if is_subframe_allowed(&url) { 0 } else { 1 };
             }
+            if is_in_shell(&url) || is_dev_url_override(&url) {
+                return 0;
+            }
+            open_external(&url, user_gesture != 0);
             1
-        }
-
-        // Scope renderer file:// access (enabled by --allow-file-access-from-files
-        // for the M17 paste tempfile) to the paste dir only. Return a handler
-        // for file:// loads only (non-file keep CEF defaults); it cancels any
-        // file:// URL outside `$XDG_RUNTIME_DIR/karere/`.
-        fn resource_request_handler(
-            &self,
-            _browser: Option<&mut Browser>,
-            _frame: Option<&mut Frame>,
-            request: Option<&mut Request>,
-            _is_navigation: ::std::os::raw::c_int,
-            _is_download: ::std::os::raw::c_int,
-            _request_initiator: Option<&CefString>,
-            _disable_default_handling: Option<&mut ::std::os::raw::c_int>,
-        ) -> Option<ResourceRequestHandler> {
-            // DevTools (permissive) view: trusted chrome, do not scope.
-            if self.handler.permissive {
-                return None;
-            }
-            let url = request
-                .map(|r| CefString::from(&r.url()).to_string())
-                .unwrap_or_default();
-            if url.starts_with("file://") {
-                Some(PasteFileGuard::new())
-            } else {
-                None
-            }
         }
 
         fn on_open_urlfrom_tab(
             &self,
             browser: Option<&mut Browser>,
-            _frame: Option<&mut Frame>,
+            frame: Option<&mut Frame>,
             target_url: Option<&CefString>,
             _target_disposition: WindowOpenDisposition,
-            _user_gesture: ::std::os::raw::c_int,
+            user_gesture: ::std::os::raw::c_int,
         ) -> ::std::os::raw::c_int {
             let url = target_url.map(CefString::to_string).unwrap_or_default();
-            route_target(browser, &url);
+            let from_main = frame.is_none_or(|f| f.is_main() == 1);
+            route_target(browser, &url, from_main && user_gesture != 0);
             1
         }
 
@@ -157,73 +133,114 @@ impl ShellRequestHandlerBuilder {
     }
 }
 
-// Per-`file://`-request guard: cancels any load outside the M17 paste tempfile
-// dir. Returned only for `file://` URLs, so it never sees other schemes.
-wrap_resource_request_handler! {
-    pub struct PasteFileGuard;
-
-    impl ResourceRequestHandler {
-        fn on_before_resource_load(
-            &self,
-            _browser: Option<&mut Browser>,
-            _frame: Option<&mut Frame>,
-            request: Option<&mut Request>,
-            _callback: Option<&mut Callback>,
-        ) -> ReturnValue {
-            let url = request
-                .map(|r| CefString::from(&r.url()).to_string())
-                .unwrap_or_default();
-            if crate::paste::is_allowed_file_url(&url) {
-                ReturnValue::CONTINUE
-            } else {
-                log::warn!("blocked file:// load outside paste dir: {url}");
-                ReturnValue::CANCEL
-            }
-        }
-    }
-}
-
-/// Route a popup/new-tab target: WhatsApp + inert URLs navigate the opener's
-/// main frame (single window), everything else opens in the default browser.
-/// Used by the popup and open-from-tab paths (never reach `on_before_browse`).
-pub(crate) fn route_target(browser: Option<&mut Browser>, url: &str) {
+/// Route a popup/new-tab target: WhatsApp Web navigates the opener's main
+/// frame (single window), allowed external links open in the default browser
+/// when `allow_external` (main frame + user gesture), everything else is
+/// dropped. Used by the popup and open-from-tab paths (never reach
+/// `on_before_browse`). Only `https://web.whatsapp.com` is ever loaded here,
+/// so a `data:`/`file:` target can never become a browser-initiated load.
+pub(crate) fn route_target(browser: Option<&mut Browser>, url: &str, allow_external: bool) {
     if url.is_empty() {
         return;
     }
-    if is_in_shell(url) {
+    if is_whatsapp_web(url) {
         if let Some(browser) = browser
             && let Some(frame) = browser.main_frame()
         {
             frame.load_url(Some(&CefString::from(url)));
         }
-    } else if let Err(err) =
-        gio::AppInfo::launch_default_for_uri(url, None::<&gio::AppLaunchContext>)
-    {
-        log::warn!("launch_default_for_uri({url}) failed: {err}");
+    } else {
+        open_external(url, allow_external);
     }
 }
 
-/// Whether `url` navigates inside the embedded view: inert schemes plus the
-/// WhatsApp host tree.
-fn is_in_shell(url: &str) -> bool {
-    let Some((scheme, rest)) = url.split_once(':') else {
-        // Relative/fragment-only target — let CEF resolve it in-shell.
-        return true;
+/// Hand `url` to the desktop's default handler when the scheme is allowlisted
+/// and the navigation came from a user gesture in the main frame.
+fn open_external(url: &str, allow_external: bool) {
+    if !allow_external || !is_external_allowed(url) {
+        log::debug!(
+            "blocked navigation (gesture/main frame: {allow_external}, scheme: {:?})",
+            scheme_of(url)
+        );
+        return;
+    }
+    if let Err(err) = gio::AppInfo::launch_default_for_uri(url, None::<&gio::AppLaunchContext>) {
+        log::warn!("launch_default_for_uri failed: {err}");
+    }
+}
+
+/// Lowercased scheme of an absolute URL.
+fn scheme_of(url: &str) -> Option<String> {
+    let (scheme, _) = url.split_once(':')?;
+    let valid = !scheme.is_empty()
+        && scheme
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '+' | '-' | '.'));
+    valid.then(|| scheme.to_ascii_lowercase())
+}
+
+/// Schemes the system may open on the page's behalf.
+fn is_external_allowed(url: &str) -> bool {
+    matches!(
+        scheme_of(url).as_deref(),
+        Some("http" | "https" | "mailto" | "tel")
+    )
+}
+
+/// Whether `url` is exactly the WhatsApp Web origin: `https`, host
+/// `web.whatsapp.com`, default port, no userinfo. This is the only origin that
+/// may stay in the top frame and the only one that gets the native bridge.
+pub(crate) fn is_whatsapp_web(url: &str) -> bool {
+    if scheme_of(url).as_deref() != Some("https") {
+        return false;
+    }
+    let Some((_, rest)) = url.split_once(':') else {
+        return false;
     };
-    let scheme = scheme.to_ascii_lowercase();
-    if matches!(
-        scheme.as_str(),
-        "data" | "blob" | "about" | "file" | "chrome-error"
-    ) {
+    let Some(authority) = rest.strip_prefix("//") else {
+        return false;
+    };
+    let end = authority.find(['/', '?', '#']).unwrap_or(authority.len());
+    let authority = authority[..end].to_ascii_lowercase();
+    authority == WHATSAPP_WEB_HOST || authority == format!("{WHATSAPP_WEB_HOST}:443")
+}
+
+const WHATSAPP_WEB_HOST: &str = "web.whatsapp.com";
+
+/// Top-frame policy: WhatsApp Web, plus the internal pages CEF itself puts in
+/// the top frame (`about:blank`, error pages) and same-origin blobs.
+fn is_in_shell(url: &str) -> bool {
+    if is_whatsapp_web(url) || url.eq_ignore_ascii_case("about:blank") {
         return true;
     }
-    match host_of(rest) {
-        Some(host) => {
-            let host = host.to_ascii_lowercase();
-            is_whatsapp_host(&host)
-        }
-        None => false,
+    match scheme_of(url).as_deref() {
+        Some("chrome-error") => true,
+        Some("blob") => is_whatsapp_web(&url["blob:".len()..]),
+        _ => false,
     }
+}
+
+/// Subframe policy: inert schemes and https WhatsApp hosts load; everything
+/// else is cancelled (never opened externally).
+fn is_subframe_allowed(url: &str) -> bool {
+    match scheme_of(url).as_deref() {
+        Some("about" | "blob" | "data" | "chrome-error") => true,
+        Some("https") => url
+            .split_once(':')
+            .and_then(|(_, rest)| host_of(rest))
+            .is_some_and(|host| is_whatsapp_host(&host.to_ascii_lowercase())),
+        _ => false,
+    }
+}
+
+/// The `--url` development override is loaded as given. It never gets the
+/// native bridge (that is gated on [`is_whatsapp_web`] separately).
+fn is_dev_url_override(url: &str) -> bool {
+    static OVERRIDE: OnceLock<Option<String>> = OnceLock::new();
+    OVERRIDE
+        .get_or_init(crate::parse_url_flag)
+        .as_deref()
+        .is_some_and(|dev| dev.trim_end_matches('/') == url.trim_end_matches('/'))
 }
 
 fn is_whatsapp_host(host: &str) -> bool {
@@ -251,19 +268,77 @@ mod tests {
     use super::*;
 
     #[test]
-    fn whatsapp_hosts_stay_in_shell() {
+    fn only_https_web_whatsapp_stays_in_shell() {
         assert!(is_in_shell("https://web.whatsapp.com/"));
-        assert!(is_in_shell("https://whatsapp.com/foo"));
-        assert!(is_in_shell("https://faq.whatsapp.com/article"));
-        assert!(is_in_shell("https://static.whatsapp.net/img.png"));
+        assert!(is_in_shell("https://web.whatsapp.com"));
+        assert!(is_in_shell("HTTPS://Web.WhatsApp.com/send?phone=1"));
+        assert!(is_in_shell("https://web.whatsapp.com:443/"));
+        assert!(!is_in_shell("http://web.whatsapp.com/"));
+        assert!(!is_in_shell("https://web.whatsapp.com:8443/"));
+        assert!(!is_in_shell("https://user@web.whatsapp.com/"));
+        assert!(!is_in_shell("https://web.whatsapp.com.evil.example/"));
+        assert!(!is_in_shell("wss://web.whatsapp.com/"));
     }
 
     #[test]
-    fn inert_schemes_stay_in_shell() {
+    fn other_whatsapp_hosts_leave_the_shell() {
+        assert!(!is_in_shell("https://faq.whatsapp.com/article"));
+        assert!(!is_in_shell("https://whatsapp.com/foo"));
+        assert!(!is_in_shell("https://chat.whatsapp.com/invite"));
+        assert!(!is_in_shell("https://static.whatsapp.net/img.png"));
+        assert!(is_external_allowed("https://faq.whatsapp.com/article"));
+    }
+
+    #[test]
+    fn top_frame_internal_pages() {
         assert!(is_in_shell("about:blank"));
-        assert!(is_in_shell("blob:abc-123"));
-        assert!(is_in_shell("data:text/plain,hi"));
         assert!(is_in_shell("chrome-error://chromewebdata/"));
+        assert!(is_in_shell("blob:https://web.whatsapp.com/1234-abcd"));
+        assert!(!is_in_shell("blob:https://evil.example/1234"));
+        assert!(!is_in_shell("about:srcdoc"));
+    }
+
+    #[test]
+    fn dangerous_schemes_rejected_in_top_frame() {
+        assert!(!is_in_shell("data:text/html,<script>1</script>"));
+        assert!(!is_in_shell("file:///etc/passwd"));
+        assert!(!is_in_shell("javascript:alert(1)"));
+        assert!(!is_in_shell("relative/path"));
+        assert!(!is_in_shell(""));
+    }
+
+    #[test]
+    fn subframe_policy() {
+        assert!(is_subframe_allowed("about:blank"));
+        assert!(is_subframe_allowed("about:srcdoc"));
+        assert!(is_subframe_allowed("blob:https://web.whatsapp.com/x"));
+        assert!(is_subframe_allowed("data:text/plain,hi"));
+        assert!(is_subframe_allowed("https://static.whatsapp.net/x"));
+        assert!(!is_subframe_allowed("http://static.whatsapp.net/x"));
+        assert!(!is_subframe_allowed("https://google.com/"));
+        assert!(!is_subframe_allowed("file:///etc/passwd"));
+        assert!(!is_subframe_allowed("javascript:alert(1)"));
+    }
+
+    #[test]
+    fn external_scheme_allowlist() {
+        assert!(is_external_allowed("https://google.com/"));
+        assert!(is_external_allowed("http://example.com/"));
+        assert!(is_external_allowed("mailto:a@example.com"));
+        assert!(is_external_allowed("TEL:+10000000000"));
+        for url in [
+            "javascript:alert(1)",
+            "data:text/html,x",
+            "file:///etc/passwd",
+            "smb://host/share",
+            "ssh://host",
+            "vscode://file/x",
+            "steam://run/1",
+            "blob:https://web.whatsapp.com/x",
+            "",
+        ] {
+            assert!(!is_external_allowed(url), "{url}");
+        }
     }
 
     #[test]

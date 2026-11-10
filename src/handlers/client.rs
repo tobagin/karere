@@ -78,6 +78,16 @@ mod generated_client {
         ) -> ::std::os::raw::c_int {
             use crate::ipc::{IpcError, RendererMessage};
             let Some(message) = message else { return 0 };
+            // Only the WhatsApp Web main frame may drive the bridge; drop
+            // anything else (other origins, subframes) as handled.
+            let from_whatsapp = frame.as_ref().is_some_and(|f| {
+                let url = CefString::from(&f.url()).to_string();
+                f.is_main() == 1 && crate::handlers::request::is_whatsapp_web(&url)
+            });
+            if !from_whatsapp {
+                log::debug!("browser: dropped renderer message from a non-WhatsApp frame");
+                return 1;
+            }
             // Attribute message to its account via the sending browser's id.
             let cef_id = browser.as_ref().map(|b| b.identifier()).unwrap_or(0);
             let account_id = crate::accounts::account_for_browser(cef_id);
@@ -92,10 +102,12 @@ mod generated_client {
             }
             match decoded {
                 Ok(RendererMessage::ConsoleLog { level, msg }) => {
-                    match level.as_str() {
-                        "error" => log::error!("[page] {msg}"),
-                        "warn" => log::warn!("[page] {msg}"),
-                        _ => log::info!("[page] {msg}"),
+                    // Page output can carry chat content: errors at warn,
+                    // everything else only at debug, always capped + escaped.
+                    if level == "error" {
+                        log::warn!("[page] {}", log_safe(&msg));
+                    } else {
+                        log::debug!("[page] {}", log_safe(&msg));
                     }
                     1
                 }
@@ -117,19 +129,11 @@ mod generated_client {
                     1
                 }
                 Ok(RendererMessage::NotificationClosed { tag }) => {
-                    crate::notifications::tracker().on_closed(&tag);
+                    crate::notifications::tracker().on_closed(&tag); // renderer fallback carries no account
                     1
                 }
-                Ok(RendererMessage::PasteConsumed { tempfile_path }) => {
-                    if let Some(path) = tempfile_path {
-                        if crate::paste::is_within_paste_dir(&path) {
-                            crate::paste::consume(&path);
-                        } else {
-                            log::warn!("PasteConsumed: rejected out-of-dir path {}", path.display());
-                        }
-                    }
-                    1
-                }
+                // Paste payloads are always inline; the ack has nothing to clean up.
+                Ok(RendererMessage::PasteConsumed { .. }) => 1,
                 // Handled by dispatch_renderer_message_with above.
                 Ok(RendererMessage::SetClipboard { .. }) => 1,
                 Ok(RendererMessage::SetClipboardImage { base64_png }) => {
@@ -137,7 +141,9 @@ mod generated_client {
                     1
                 }
                 Ok(RendererMessage::ProfileIdentity { wid, pushname, source }) => {
-                    if let Some(id) = account_id.as_deref() {
+                    if !identity_is_sane(wid.as_deref(), &pushname) {
+                        log::warn!("ProfileIdentity: oversized or malformed fields, dropping");
+                    } else if let Some(id) = account_id.as_deref() {
                         // Identity = page connected → clear awaiting-pairing. A
                         // Store-sourced identity means the hook attached, so it
                         // also clears the degraded badge (the only thing that does).
@@ -145,7 +151,14 @@ mod generated_client {
                         if source.as_deref() == Some("store") {
                             crate::accounts::clear_degraded(id);
                         }
-                        crate::accounts::manager().update_identity(id, wid, Some(pushname));
+                        let manager = crate::accounts::manager();
+                        let unchanged = manager.get(id).is_some_and(|a| {
+                            (wid.is_none() || a.wid == wid)
+                                && a.pushname.as_deref() == Some(pushname.as_str())
+                        });
+                        if !unchanged {
+                            manager.update_identity(id, wid, Some(pushname));
+                        }
                     } else {
                         log::warn!("ProfileIdentity for unknown browser id {cef_id}");
                     }
@@ -164,7 +177,18 @@ mod generated_client {
                             match base64::engine::general_purpose::STANDARD
                                 .decode(base64_png.as_bytes())
                             {
-                                Ok(bytes) => crate::accounts::manager().update_avatar(id, bytes),
+                                Ok(bytes) if !is_png(&bytes) && !is_jpeg(&bytes) => {
+                                    log::warn!("ProfileAvatar: not a PNG/JPEG, dropping");
+                                }
+                                Ok(bytes) => {
+                                    let manager = crate::accounts::manager();
+                                    let unchanged = manager
+                                        .get(id)
+                                        .is_some_and(|a| a.avatar_png.as_ref() == Some(&bytes));
+                                    if !unchanged {
+                                        manager.update_avatar(id, bytes);
+                                    }
+                                }
                                 Err(e) => log::warn!("ProfileAvatar: bad base64: {e}"),
                             }
                         }
@@ -187,7 +211,10 @@ mod generated_client {
                         // hook may report this many times per second.
                         let newly_degraded = crate::accounts::set_degraded(id, reason.clone());
                         if newly_degraded {
-                            log::warn!("account {id}: Store hook unavailable: {reason}");
+                            log::warn!(
+                                "account {id}: Store hook unavailable: {}",
+                                log_safe(&reason)
+                            );
                             // §6.1: inject the degraded DOM fallback here.
                             if let Some(frame) = frame.as_ref() {
                                 let code = CefString::from(DOM_FALLBACK_JS);
@@ -218,6 +245,48 @@ mod generated_client {
 }
 
 pub use generated_client::ClientBuilder;
+
+/// Cap on page-supplied text echoed into the log.
+const MAX_LOG_CHARS: usize = 500;
+
+/// Make page-supplied text safe for a single log line: newlines and other
+/// control characters escaped (no forged log lines), length capped.
+fn log_safe(text: &str) -> String {
+    let mut out = String::with_capacity(text.len().min(MAX_LOG_CHARS));
+    for (i, c) in text.chars().enumerate() {
+        if i == MAX_LOG_CHARS {
+            out.push_str("...");
+            break;
+        }
+        if c.is_control() {
+            out.extend(c.escape_default());
+        } else {
+            out.push(c);
+        }
+    }
+    out
+}
+
+/// Upper bounds for page-reported identity fields. Real values are far
+/// smaller (a WhatsApp push name is at most 25 characters).
+const MAX_PUSHNAME_CHARS: usize = 128;
+const MAX_WID_BYTES: usize = 64;
+
+/// Reject identity reports that are oversized or carry control characters.
+fn identity_is_sane(wid: Option<&str>, pushname: &str) -> bool {
+    let wid_ok = wid.is_none_or(|w| w.len() <= MAX_WID_BYTES && !w.chars().any(char::is_control));
+    wid_ok
+        && pushname.chars().count() <= MAX_PUSHNAME_CHARS
+        && !pushname.chars().any(char::is_control)
+}
+
+fn is_png(bytes: &[u8]) -> bool {
+    bytes.starts_with(b"\x89PNG\r\n\x1a\n")
+}
+
+fn is_jpeg(bytes: &[u8]) -> bool {
+    bytes.starts_with(&[0xFF, 0xD8, 0xFF])
+}
 
 const MAX_CLIPBOARD_BYTES: usize = 1024 * 1024;
 
@@ -329,6 +398,12 @@ fn write_host_clipboard_image(base64_png: &str) {
             return;
         }
     };
+    // The copy bridge only forwards `image/png`; don't hand anything else to
+    // the image decoders.
+    if !is_png(&bytes) {
+        log::warn!("SetClipboardImage: not a PNG, dropping");
+        return;
+    }
     let texture = match gtk::gdk::Texture::from_bytes(&gtk::glib::Bytes::from_owned(bytes)) {
         Ok(t) => t,
         Err(e) => {
@@ -377,9 +452,35 @@ impl ClientBuilder {
 #[cfg(test)]
 mod tests {
     use super::{
-        MAX_CLIPBOARD_BYTES, dispatch_renderer_message_with, prepare_clipboard_write,
-        sanitize_clipboard,
+        MAX_CLIPBOARD_BYTES, MAX_LOG_CHARS, dispatch_renderer_message_with, identity_is_sane,
+        is_jpeg, is_png, log_safe, prepare_clipboard_write, sanitize_clipboard,
     };
+
+    #[test]
+    fn log_safe_escapes_newlines_and_caps_length() {
+        assert_eq!(log_safe("a\nb\r\x1b"), "a\\nb\\r\\u{1b}");
+        assert_eq!(log_safe("héllo"), "héllo");
+        let long = log_safe(&"x".repeat(MAX_LOG_CHARS * 2));
+        assert_eq!(long.chars().count(), MAX_LOG_CHARS + 3);
+        assert!(long.ends_with("..."));
+    }
+
+    #[test]
+    fn identity_rejects_oversized_or_control_fields() {
+        assert!(identity_is_sane(Some("10000000000@c.us"), "Ada"));
+        assert!(identity_is_sane(None, "Ada"));
+        assert!(!identity_is_sane(None, "Ada\nINFO forged"));
+        assert!(!identity_is_sane(None, &"a".repeat(1000)));
+        assert!(!identity_is_sane(Some(&"1".repeat(200)), "Ada"));
+    }
+
+    #[test]
+    fn image_magic_checks() {
+        assert!(is_png(b"\x89PNG\r\n\x1a\nrest"));
+        assert!(!is_png(b"GIF89a"));
+        assert!(is_jpeg(&[0xFF, 0xD8, 0xFF, 0xE0]));
+        assert!(!is_jpeg(b"<html>"));
+    }
 
     #[test]
     fn strips_escape_and_control_chars() {

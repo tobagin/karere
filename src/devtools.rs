@@ -1,6 +1,6 @@
 //! Embedded DevTools via the Chrome DevTools Protocol (CDP).
 //!
-//! `ShowDevTools` always opens a native top-level window under CEF 148's Chrome
+//! `ShowDevTools` always opens a native top-level window under the CEF Chrome
 //! runtime, so we instead load the DevTools frontend page (served by
 //! `--remote-debugging-port`) into an OSR `KarereWebView`, like
 //! `chrome://inspect`.
@@ -80,18 +80,19 @@ fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {
 
 /// Pick a page target from `/json/list` and return its absolute
 /// `devtoolsFrontendUrl`. Prefers the WhatsApp page; skips `about:blank` and any
-/// DevTools frontend page.
+/// DevTools frontend page. Only URLs that resolve to loopback on `port` are
+/// accepted, so a stray listener cannot steer the inspector elsewhere.
 fn pick_frontend_url(body: &str, port: u16) -> Option<String> {
+    let targets: Vec<serde_json::Value> = serde_json::from_str(body).ok()?;
     let mut fallback: Option<String> = None;
     let mut preferred: Option<String> = None;
 
-    for obj in split_objects(body) {
-        let obj = obj.as_str();
-        if field(obj, "type").as_deref() != Some("page") {
+    for t in &targets {
+        if t.get("type").and_then(|v| v.as_str()) != Some("page") {
             continue;
         }
-        let url = field(obj, "url").unwrap_or_default();
-        let Some(front) = field(obj, "devtoolsFrontendUrl") else {
+        let url = t.get("url").and_then(|v| v.as_str()).unwrap_or_default();
+        let Some(front) = t.get("devtoolsFrontendUrl").and_then(|v| v.as_str()) else {
             continue;
         };
         // Skip blank pages and lingering DevTools frontend pages.
@@ -102,6 +103,9 @@ fn pick_frontend_url(body: &str, port: u16) -> Option<String> {
         {
             continue;
         }
+        let Some(front) = loopback_frontend_url(front, port) else {
+            continue;
+        };
         if url.contains("whatsapp") {
             preferred = Some(front);
             break;
@@ -111,58 +115,89 @@ fn pick_frontend_url(body: &str, port: u16) -> Option<String> {
         }
     }
 
-    let front = unescape(&preferred.or(fallback)?);
+    let front = preferred.or(fallback)?;
     log::info!("devtools target frontend url resolved");
-    if front.starts_with("http") {
-        Some(front)
-    } else {
-        Some(format!("http://127.0.0.1:{port}{front}"))
-    }
+    Some(front)
 }
 
-/// Split a JSON array body into top-level object fragments by brace depth.
-fn split_objects(body: &str) -> Vec<String> {
-    let mut out = Vec::new();
-    let mut depth = 0i32;
-    let mut start = None;
-    for (i, c) in body.char_indices() {
-        match c {
-            '{' => {
-                if depth == 0 {
-                    start = Some(i);
+/// Make `front` absolute and require it (and its `ws=` target) to be
+/// 127.0.0.1/localhost on `port`.
+fn loopback_frontend_url(front: &str, port: u16) -> Option<String> {
+    let full = if front.starts_with('/') {
+        format!("http://127.0.0.1:{port}{front}")
+    } else {
+        front.to_owned()
+    };
+    let is_local = |s: &str| {
+        s.strip_prefix(&format!("127.0.0.1:{port}"))
+            .or_else(|| s.strip_prefix(&format!("localhost:{port}")))
+            .is_some_and(|rest| rest.is_empty() || rest.starts_with('/') || rest.starts_with('?'))
+    };
+    let rest = full.strip_prefix("http://")?;
+    if !is_local(rest) {
+        return None;
+    }
+    if let Some((_, query)) = full.split_once('?') {
+        for kv in query.split('&') {
+            if let Some(ws) = kv.strip_prefix("ws=").or_else(|| kv.strip_prefix("wss=")) {
+                if !is_local(ws) {
+                    return None;
                 }
-                depth += 1;
             }
-            '}' => {
-                depth -= 1;
-                if depth == 0
-                    && let Some(s) = start.take()
-                {
-                    out.push(body[s..=i].to_owned());
-                }
-            }
-            _ => {}
         }
     }
-    out
+    Some(full)
 }
 
-/// Extract a `"key": "value"` string field from a flat JSON object fragment.
-fn field(obj: &str, key: &str) -> Option<String> {
-    let needle = format!("\"{key}\"");
-    let after_key = &obj[obj.find(&needle)? + needle.len()..];
-    let after_colon = &after_key[after_key.find(':')? + 1..];
-    let start = after_colon.find('"')? + 1;
-    let rest = &after_colon[start..];
-    // Values never contain escaped quotes, so the next quote ends it.
-    let end = rest.find('"')?;
-    Some(rest[..end].to_owned())
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-/// Undo the handful of JSON/unicode escapes Chromium may emit in a URL.
-fn unescape(s: &str) -> String {
-    s.replace("\\/", "/")
-        .replace("\\u003d", "=")
-        .replace("\\u0026", "&")
-        .replace("\\u003f", "?")
+    const P: u16 = 9333;
+
+    fn entry(ty: &str, url: &str, front: &str) -> String {
+        format!(
+            r#"{{"type":"{ty}","url":"{url}","devtoolsFrontendUrl":"{front}"}}"#
+        )
+    }
+
+    #[test]
+    fn relative_frontend_is_made_absolute() {
+        let body = format!(
+            "[{}]",
+            entry("page", "https://web.whatsapp.com/", "/devtools/inspector.html?ws=127.0.0.1:9333/devtools/page/A")
+        );
+        assert_eq!(
+            pick_frontend_url(&body, P).as_deref(),
+            Some("http://127.0.0.1:9333/devtools/inspector.html?ws=127.0.0.1:9333/devtools/page/A")
+        );
+    }
+
+    #[test]
+    fn prefers_whatsapp_and_skips_blank() {
+        let body = format!(
+            "[{},{},{}]",
+            entry("page", "about:blank", "/devtools/inspector.html?ws=127.0.0.1:9333/devtools/page/B"),
+            entry("page", "https://example.com/", "/devtools/inspector.html?ws=127.0.0.1:9333/devtools/page/C"),
+            entry("page", "https://web.whatsapp.com/", "/devtools/inspector.html?ws=127.0.0.1:9333/devtools/page/D"),
+        );
+        assert!(pick_frontend_url(&body, P).unwrap().ends_with("/page/D"));
+    }
+
+    #[test]
+    fn rejects_foreign_hosts_and_ports() {
+        let evil = entry("page", "https://web.whatsapp.com/", "http://evil.example:9333/devtools/inspector.html");
+        assert!(pick_frontend_url(&format!("[{evil}]"), P).is_none());
+        let wrong_port = entry("page", "https://web.whatsapp.com/", "http://127.0.0.1:80/x");
+        assert!(pick_frontend_url(&format!("[{wrong_port}]"), P).is_none());
+        let bad_ws = entry("page", "https://web.whatsapp.com/", "/devtools/inspector.html?ws=evil.example:9333/x");
+        assert!(pick_frontend_url(&format!("[{bad_ws}]"), P).is_none());
+        let prefix_trick = entry("page", "https://web.whatsapp.com/", "http://127.0.0.1:93330/x");
+        assert!(pick_frontend_url(&format!("[{prefix_trick}]"), P).is_none());
+    }
+
+    #[test]
+    fn invalid_json_yields_none() {
+        assert!(pick_frontend_url("not json", P).is_none());
+    }
 }

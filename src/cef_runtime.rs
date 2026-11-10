@@ -9,13 +9,14 @@ use crate::handlers::render_process::ShellRenderProcessHandlerBuilder;
 use parking_lot::Mutex;
 use std::sync::Arc;
 
-/// True when launched with `--debug` / `--debuglevel=…`. Gates developer-only
-/// surfaces that widen the attack surface (the F12 DevTools CDP port). Release
-/// builds run without them; notifications use the in-process CDP API instead.
+/// True only when launched with `--debug`. Gates developer-only surfaces that
+/// widen the attack surface (the F12 DevTools CDP port). `--debuglevel=…` only
+/// changes the log level and never opens the port. Release builds run without
+/// them; notifications use the in-process CDP API instead.
 pub fn debug_enabled() -> bool {
     use std::sync::OnceLock;
     static D: OnceLock<bool> = OnceLock::new();
-    *D.get_or_init(|| std::env::args().any(|a| a == "--debug" || a.starts_with("--debuglevel=")))
+    *D.get_or_init(|| std::env::args().any(|a| a == "--debug"))
 }
 
 #[derive(Clone, Default)]
@@ -54,7 +55,7 @@ wrap_app! {
             // need. Fold them back into one renderer and drop the warm spare.
             // (Account isolation is preserved at the RequestContext level, not by
             // process splitting.) Pairs with --disable-site-isolation-trials below.
-            let mut disabled = String::from(
+            let disabled = String::from(
                 "DocumentPictureInPictureAPI\
                  ,IsolateOrigins\
                  ,site-per-process\
@@ -76,26 +77,21 @@ wrap_app! {
             // upload) anyway — leaving the feature on is privacy-neutral here.
 
             // Embedded F12 DevTools (CDP frontend) is DEBUG-ONLY. It needs a
-            // loopback debugging PORT, a wildcard inspector origin, and the
-            // Local/Private Network Access gate disabled so the remote frontend
-            // can reach loopback. Each widens the attack surface (a website can
-            // DNS-rebind to the fixed port and drive the authenticated session),
-            // so they ship ONLY with --debug. Release notifications use the
-            // in-process DevTools message API (crate::cdp) — no port, no network.
+            // loopback debugging PORT and an inspector origin limited to that
+            // same loopback port (the frontend is served by the port itself).
+            // The port widens the attack surface, so it ships ONLY with --debug.
+            // Release notifications use the in-process DevTools message API
+            // (crate::cdp) — no port, no network.
             if debug_enabled() {
                 cmd.append_switch_with_value(
                     Some(&"remote-debugging-port".into()),
                     Some(&crate::devtools::DEVTOOLS_PORT.to_string().as_str().into()),
                 );
+                let port = crate::devtools::DEVTOOLS_PORT;
+                let origins = format!("http://127.0.0.1:{port},http://localhost:{port}");
                 cmd.append_switch_with_value(
                     Some(&"remote-allow-origins".into()),
-                    Some(&"*".into()),
-                );
-                disabled.push_str(
-                    ",BlockInsecurePrivateNetworkRequests\
-                     ,LocalNetworkAccessChecks\
-                     ,PrivateNetworkAccessForNavigations\
-                     ,PrivateNetworkAccessForWorkers",
+                    Some(&origins.as_str().into()),
                 );
             }
             cmd.append_switch_with_value(
@@ -109,9 +105,8 @@ wrap_app! {
             // Chromium show its own in-window popup instead of suppressing.
             // Notifications are suppressed in the SW/Notification shim (it never
             // calls the real showNotification), so no native banner and no
-            // notification sound; Karere emits its own gio::Notification + paplay.
+            // notification sound; Karere emits its own gio::Notification (no extra sound).
             // If a native banner ever leaks through, add --disable-notification-sound.
-            cmd.append_switch(Some(&"enable-features=UseOzonePlatform".into()));
             // Force CEF's Ozone backend to match the display server GTK uses.
             // `ozone-platform-hint=auto` let CEF resolve to X11/Xwayland (the
             // --socket=fallback-x11 path), which can't present onto the Wayland
@@ -134,10 +129,6 @@ wrap_app! {
             );
             cmd.append_switch(Some(&"enable-webrtc-vea-vda".into()));
             cmd.append_switch(Some(&"disable-smooth-scrolling".into()));
-            // M17 paste bridge: lets the renderer fetch tempfile payloads over
-            // file:// (blocked from non-file origins by default). Reach is scoped
-            // to $XDG_RUNTIME_DIR/karere/ by the resource request handler.
-            cmd.append_switch(Some(&"allow-file-access-from-files".into()));
             cmd.append_switch(Some(&"no-startup-window".into()));
             cmd.append_switch(Some(&"noerrdialogs".into()));
             cmd.append_switch(Some(&"hide-crash-restore-bubble".into()));
@@ -154,6 +145,7 @@ wrap_app! {
             // Memory: turn off the site-isolation field trials too (the
             // disable-features list above only covers the static features), so
             // WhatsApp's cross-origin frames don't each fork their own renderer.
+            // Safe only while the top frame is pinned to web.whatsapp.com.
             cmd.append_switch(Some(&"disable-site-isolation-trials".into()));
             if std::env::var_os("FLATPAK_ID").is_some() {
                 // Flatpak namespace sandbox conflicts with Chromium suid sandbox.

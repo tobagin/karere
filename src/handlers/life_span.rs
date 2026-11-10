@@ -1,7 +1,7 @@
 use cef::{
-    self, Browser, BrowserSettings, CefString, Client, DictionaryValue, Frame, ImplLifeSpanHandler,
-    LifeSpanHandler, PopupFeatures, WindowInfo, WindowOpenDisposition, WrapLifeSpanHandler, rc::Rc,
-    wrap_life_span_handler,
+    self, Browser, BrowserSettings, CefString, Client, DictionaryValue, Frame, ImplFrame,
+    ImplLifeSpanHandler, LifeSpanHandler, PopupFeatures, WindowInfo, WindowOpenDisposition,
+    WrapLifeSpanHandler, rc::Rc, wrap_life_span_handler,
 };
 use parking_lot::Mutex;
 use std::sync::Arc;
@@ -37,7 +37,7 @@ wrap_life_span_handler! {
         fn on_before_popup(
             &self,
             browser: Option<&mut Browser>,
-            _frame: Option<&mut Frame>,
+            frame: Option<&mut Frame>,
             _popup_id: ::std::os::raw::c_int,
             target_url: Option<&CefString>,
             _target_frame_name: Option<&CefString>,
@@ -51,7 +51,7 @@ wrap_life_span_handler! {
             _no_javascript_access: Option<&mut ::std::os::raw::c_int>,
         ) -> ::std::os::raw::c_int {
             let url = target_url.map(CefString::to_string).unwrap_or_default();
-            log::info!(
+            log::debug!(
                 "on_before_popup url={url:?} disposition={target_disposition:?} gesture={user_gesture}"
             );
 
@@ -69,9 +69,11 @@ wrap_life_span_handler! {
                 return 1;
             }
 
-            // Everything else stays single-window (WhatsApp links → main frame,
-            // external → system browser). Cancel the CEF popup.
-            route_target(browser, &url);
+            // Everything else stays single-window (WhatsApp Web → main frame,
+            // allowed external links from a main-frame gesture → system
+            // browser, the rest dropped). Cancel the CEF popup.
+            let from_main = frame.is_none_or(|f| f.is_main() == 1);
+            route_target(browser, &url, from_main && user_gesture != 0);
             1
         }
 

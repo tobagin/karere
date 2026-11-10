@@ -1,7 +1,7 @@
 //! Render-process handler — runs only in the renderer subprocess (via
 //! `App::render_process_handler`; never in the browser process). Jobs:
 //!
-//! - `on_context_created` (main frame): bind native `karere_send(name, json)`
+//! - `on_context_created` (WhatsApp Web main frame only): bind native `karere_send(name, json)`
 //!   onto the global and inject the build-time JS bundle. Binding happens AFTER
 //!   the context exists (not `register_extension`, which runs before context
 //!   creation and breaks the page's JS), so rendering is unaffected.
@@ -39,8 +39,10 @@ wrap_render_process_handler! {
             frame: Option<&mut Frame>,
             context: Option<&mut V8Context>,
         ) {
-            let is_main = frame.as_ref().map(|f| f.is_main()).unwrap_or(-1);
-            if is_main != 1 {
+            // Bridge + bundle only for the WhatsApp Web main frame. Any other
+            // top-frame document (DevTools, `--url` targets, error pages) gets
+            // neither.
+            if !frame.as_ref().is_some_and(|f| is_bridge_frame(f)) {
                 return;
             }
 
@@ -97,6 +99,13 @@ wrap_render_process_handler! {
             }
         }
     }
+}
+
+/// Whether `frame` is the main frame of a WhatsApp Web document, the only
+/// place the native bridge may exist.
+fn is_bridge_frame(frame: &Frame) -> bool {
+    frame.is_main() == 1
+        && crate::handlers::request::is_whatsapp_web(&CefString::from(&frame.url()).to_string())
 }
 
 impl ShellRenderProcessHandlerBuilder {
@@ -170,12 +179,8 @@ pub(crate) fn dispatch_browser_message_with(
         } => {
             // Re-shape into a discriminated object so `paste_bridge.js` can
             // branch on `payload.kind` without serde's externally-tagged form.
-            let payload_json = match payload {
-                PasteBlob::Base64(data) => serde_json::json!({ "kind": "Base64", "data": data }),
-                PasteBlob::FilePath(path) => {
-                    serde_json::json!({ "kind": "FilePath", "path": path.to_string_lossy() })
-                }
-            };
+            let PasteBlob::Base64(data) = payload;
+            let payload_json = serde_json::json!({ "kind": "Base64", "data": data });
             let detail = serde_json::json!({
                 "mime": mime,
                 "kind": kind,
@@ -236,6 +241,7 @@ wrap_v8_handler! {
                 && let Some(mut msg) = message.to_cef_message()
                 && let Some(ctx) = v8_context_get_current_context()
                 && let Some(frame) = ctx.frame()
+                && is_bridge_frame(&frame)
             {
                 frame.send_process_message(ProcessId::BROWSER, Some(&mut msg));
             }

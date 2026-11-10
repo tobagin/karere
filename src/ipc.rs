@@ -7,11 +7,10 @@ use cef::{CefString, ImplListValue, ImplProcessMessage, ProcessMessage, process_
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-/// Clipboard payload carried by a paste/drop event.
+/// Clipboard payload carried by a paste/drop event (always inline).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum PasteBlob {
     Base64(String),
-    FilePath(PathBuf),
 }
 
 /// Messages from the browser process to the renderer subprocess.
@@ -73,6 +72,8 @@ pub enum RendererMessage {
         level: String,
         msg: String,
     },
+    /// Paste ack. `tempfile_path` is a leftover of the removed tempfile path,
+    /// still sent by the paste bridge and ignored.
     PasteConsumed {
         tempfile_path: Option<PathBuf>,
     },
@@ -244,7 +245,7 @@ mod tests {
             BrowserMessage::DispatchPasteEvent {
                 mime: "application/pdf".into(),
                 kind: "drop".into(),
-                payload: PasteBlob::FilePath("/tmp/x.png".into()),
+                payload: PasteBlob::Base64("JVBERg==".into()),
                 name: Some("x.pdf".into()),
                 x: Some(12.0),
                 y: Some(34.0),

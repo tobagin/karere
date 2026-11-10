@@ -77,22 +77,21 @@ fn snapshot_model(model: &MenuModel) -> Vec<MenuEntry> {
     out
 }
 
-// Chromium content context-menu command ids (chrome/app/chrome_command_ids.h).
-// cef-rs 148's `cef_menu_id_t` stops at MENU_ID_VIEW_SOURCE, so the link-open
-// ids are pinned by value. Re-verify (step 6.2) on CEF/Chromium version bumps.
-const IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: i32 = 50100;
-const IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW: i32 = 50101;
-const IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD: i32 = 50102;
-
-const FORBIDDEN: [i32; 3] = [
-    IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-    IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-    IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
-];
-
 /// Karere's own "Copy Link Address" entry. CEF's menu has no link items, so
 /// links were uncopyable (#205).
 pub(crate) const MENU_ID_COPY_LINK: i32 = cef::sys::cef_menu_id_t::MENU_ID_USER_FIRST as i32;
+
+/// Commands the host menu may run: editing, spellcheck and Karere's own Copy
+/// Link Address. Everything else CEF offers (navigation, print, view source,
+/// open link in new tab/window) is removed from the menu and refused.
+pub(crate) fn is_allowed_command(command_id: i32) -> bool {
+    use cef::sys::cef_menu_id_t as M;
+    let id = command_id;
+    (M::MENU_ID_UNDO as i32..=M::MENU_ID_SELECT_ALL as i32).contains(&id)
+        || (M::MENU_ID_SPELLCHECK_SUGGESTION_0 as i32..=M::MENU_ID_ADD_TO_DICTIONARY as i32)
+            .contains(&id)
+        || id == MENU_ID_COPY_LINK
+}
 
 /// Classify Chromium's Copy command by stable CEF command id, never by its
 /// localized display label.
@@ -122,7 +121,7 @@ wrap_context_menu_handler! {
             model: Option<&mut MenuModel>,
         ) {
             let Some(model) = model else { return };
-            strip_open_link_entries(model);
+            strip_disallowed_entries(model);
             let has_link = params.is_some_and(|p| !userfree_to_string(p.link_url()).is_empty());
             if has_link {
                 let label = CefString::from(gettextrs::gettext("Copy Link Address").as_str());
@@ -142,6 +141,10 @@ wrap_context_menu_handler! {
             command_id: c_int,
             _event_flags: cef::EventFlags,
         ) -> c_int {
+            if !is_allowed_command(command_id) {
+                log::debug!("context menu: refused command {command_id}");
+                return 1;
+            }
             if command_id != MENU_ID_COPY_LINK {
                 return 0;
             }
@@ -207,9 +210,10 @@ impl ShellContextMenuHandlerBuilder {
     }
 }
 
-/// Remove the "Open Link in New Window/Tab/Incognito" entries and any separator
-/// they orphan (leading, trailing, or doubled).
-fn strip_open_link_entries(model: &MenuModel) {
+/// Remove every entry whose command is not [`is_allowed_command`] (recursing
+/// into submenus, dropping ones left empty) and any separator that orphans
+/// (leading, trailing, or doubled).
+fn strip_disallowed_entries(model: &MenuModel) {
     let count = model.count();
     if count == 0 {
         return;
@@ -218,12 +222,22 @@ fn strip_open_link_entries(model: &MenuModel) {
     let types: Vec<MenuItemType> = (0..count).map(|i| model.type_at(i)).collect();
     let mut remove = vec![false; count];
     for (i, slot) in remove.iter_mut().enumerate() {
-        if FORBIDDEN.contains(&model.command_id_at(i)) {
-            *slot = true;
-        }
+        *slot = if types[i] == MenuItemType::SEPARATOR {
+            false
+        } else if types[i] == MenuItemType::SUBMENU {
+            match model.sub_menu_at(i) {
+                Some(sub) => {
+                    strip_disallowed_entries(&sub);
+                    sub.count() == 0
+                }
+                None => true,
+            }
+        } else {
+            !is_allowed_command(model.command_id_at(i))
+        };
     }
 
-    // Leave unrelated menus (no link-open entries) untouched.
+    // Leave menus with nothing to remove untouched.
     if remove.iter().any(|&r| r) {
         normalize_separators(&types, &mut remove);
     }
@@ -268,7 +282,39 @@ fn normalize_separators(types: &[MenuItemType], remove: &mut [bool]) {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_copy_command, is_paste_command};
+    use super::{MENU_ID_COPY_LINK, is_allowed_command, is_copy_command, is_paste_command};
+
+    #[test]
+    fn only_edit_spellcheck_and_copy_link_commands_are_allowed() {
+        use cef::sys::cef_menu_id_t as M;
+        for id in [
+            M::MENU_ID_UNDO,
+            M::MENU_ID_CUT,
+            M::MENU_ID_COPY,
+            M::MENU_ID_PASTE,
+            M::MENU_ID_SELECT_ALL,
+            M::MENU_ID_SPELLCHECK_SUGGESTION_0,
+            M::MENU_ID_SPELLCHECK_SUGGESTION_4,
+            M::MENU_ID_NO_SPELLING_SUGGESTIONS,
+            M::MENU_ID_ADD_TO_DICTIONARY,
+        ] {
+            assert!(is_allowed_command(id as i32), "{id:?}");
+        }
+        assert!(is_allowed_command(MENU_ID_COPY_LINK));
+        for id in [
+            M::MENU_ID_BACK,
+            M::MENU_ID_RELOAD,
+            M::MENU_ID_PRINT,
+            M::MENU_ID_VIEW_SOURCE,
+            M::MENU_ID_FIND,
+        ] {
+            assert!(!is_allowed_command(id as i32), "{id:?}");
+        }
+        // Chromium's "Open link in new tab/window/incognito".
+        for id in [50100, 50101, 50102, 0, -1] {
+            assert!(!is_allowed_command(id));
+        }
+    }
 
     #[test]
     fn copy_is_classified_by_cef_command_id_not_label() {

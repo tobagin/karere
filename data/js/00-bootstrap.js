@@ -17,11 +17,14 @@
   }
 
   try {
-    // Compatibility aliases over the native bridge.
+    // Alias over the native bridge (used by the store hook).
     if (typeof window.karere_send === "function") {
       window.karere = { send: window.karere_send };
-      window.cefQuery = window.karere_send;
     }
+
+    // Notification transport (read by the host over DevTools); carries
+    // message text, so it must never be mirrored into the log.
+    var NOTIF_PREFIX = "__KARERE_NOTIF__:";
 
     // Mirror log/warn/error to the browser (ConsoleLog) and still call native.
     ["log", "warn", "error"].forEach(function (level) {
@@ -31,6 +34,10 @@
           : function () {};
       console[level] = function () {
         try {
+          var first = arguments[0];
+          if (typeof first === "string" && first.indexOf(NOTIF_PREFIX) === 0) {
+            return original.apply(console, arguments);
+          }
           var parts = Array.prototype.map.call(arguments, function (a) {
             if (typeof a === "string") return a;
             try {

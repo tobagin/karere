@@ -4,7 +4,9 @@ use cef::{
     PermissionRequestResult, WrapPermissionHandler, rc::Rc, wrap_permission_handler,
 };
 
-use crate::permissions_store::{self, Decision};
+use gettextrs::gettext;
+
+use crate::permissions_store::{self, Decision, Kind};
 
 #[derive(Clone, Default)]
 pub struct ShellPermissionHandler;
@@ -32,7 +34,7 @@ wrap_permission_handler! {
             let browser = browser.map(|b| b.clone());
 
             // Remembered decision short-circuits the dialog.
-            match permissions_store::get(&origin, mask) {
+            match permissions_store::get(&origin, Kind::Media, mask) {
                 Decision::Allow => {
                     mirror_media_content_setting(browser.as_ref(), &origin, mask, true);
                     cb.cont(mask);
@@ -51,8 +53,13 @@ wrap_permission_handler! {
             // under external_message_pump).
             let cb_clone = cb.clone();
             glib::MainContext::default().spawn_local(async move {
-                let allow = prompt_user(&origin, mask).await;
-                persist(&origin, mask, allow);
+                let choice = prompt_user(&origin, Kind::Media, mask).await;
+                // Dismissed: deny this one request, remember nothing.
+                let Some(allow) = choice else {
+                    cb_clone.cont(0);
+                    return;
+                };
+                persist(&origin, Kind::Media, mask, allow);
                 mirror_media_content_setting(browser.as_ref(), &origin, mask, allow);
                 cb_clone.cont(if allow { mask } else { 0 });
             });
@@ -83,7 +90,7 @@ wrap_permission_handler! {
 
             // Unstored origin → AskAll → falls through to `prompt_user` (default
             // = deny). Never auto-allow notifications on first visit (M14 1.1).
-            match permissions_store::get(&origin, mask) {
+            match permissions_store::get(&origin, Kind::Prompt, mask) {
                 Decision::Allow => {
                     cb.cont(PermissionRequestResult::ACCEPT);
                     return 1;
@@ -97,9 +104,12 @@ wrap_permission_handler! {
 
             let cb_clone = cb.clone();
             glib::MainContext::default().spawn_local(async move {
-                let allow = prompt_user(&origin, mask).await;
-                persist(&origin, mask, allow);
-                cb_clone.cont(if allow {
+                let choice = prompt_user(&origin, Kind::Prompt, mask).await;
+                // Dismissed: deny this one request, remember nothing.
+                if let Some(allow) = choice {
+                    persist(&origin, Kind::Prompt, mask, allow);
+                }
+                cb_clone.cont(if choice == Some(true) {
                     PermissionRequestResult::ACCEPT
                 } else {
                     PermissionRequestResult::DENY
@@ -164,34 +174,41 @@ fn mirror_media_content_setting(browser: Option<&Browser>, origin: &str, mask: u
     );
 }
 
-/// Record the user's choice. Always remembered (browser-style), so the prompt
-/// never re-fires for that origin + permission.
-fn persist(origin: &str, mask: u32, allow: bool) {
+/// Record an explicit Allow/Deny so the prompt never re-fires for that origin +
+/// permission.
+fn persist(origin: &str, kind: Kind, mask: u32, allow: bool) {
     let decision = if allow {
         Decision::Allow
     } else {
         Decision::Deny
     };
-    permissions_store::set(origin, mask, decision);
+    permissions_store::set(origin, kind, mask, decision);
 }
 
-/// Show the permission dialog. Returns whether the user allowed.
-async fn prompt_user(origin: &str, requested: u32) -> bool {
+/// Show the permission dialog. `Some(allow)` for an explicit choice, `None` when
+/// the dialog was dismissed (Escape / close) without choosing.
+async fn prompt_user(origin: &str, kind: Kind, requested: u32) -> Option<bool> {
     use libadwaita as adw;
     use libadwaita::prelude::*;
 
-    let perms = describe_permissions(requested);
-    let body = format!("{origin} is requesting access to {perms}.");
+    let perms = describe_permissions(kind, requested);
+    let body = gettext("{origin} is requesting access to {perms}.")
+        .replace("{origin}", origin)
+        .replace("{perms}", &perms);
 
-    let dialog = adw::AlertDialog::new(Some("Permission request"), Some(&body));
-    dialog.add_response("deny", "Deny");
-    dialog.add_response("allow", "Allow");
+    let dialog = adw::AlertDialog::new(Some(&gettext("Permission request")), Some(&body));
+    dialog.add_response("deny", &gettext("Deny"));
+    dialog.add_response("allow", &gettext("Allow"));
     dialog.set_response_appearance("allow", adw::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("deny"));
-    dialog.set_close_response("deny");
+    // No explicit close response: dismissal yields the default "close" id.
 
     let parent = active_window();
-    dialog.choose_future(parent.as_ref()).await == "allow"
+    match dialog.choose_future(parent.as_ref()).await.as_str() {
+        "allow" => Some(true),
+        "deny" => Some(false),
+        _ => None,
+    }
 }
 
 /// True when `mask` includes the notifications permission bit.
@@ -216,70 +233,149 @@ fn active_window() -> Option<gtk::Window> {
     app.active_window()
 }
 
-/// True when `mask` requests microphone access. Mic/cam arrive via the
-/// media-access bitset (a DIFFERENT enum from prompt types), so check both.
+/// Media-access bits (`cef_media_access_permission_types_t`).
+const MEDIA_MIC: u32 = 1;
+const MEDIA_CAMERA: u32 = 2;
+const MEDIA_DESKTOP_AUDIO: u32 = 4;
+const MEDIA_DESKTOP_VIDEO: u32 = 8;
+
+/// True when a media-access `mask` requests the microphone.
 fn requests_microphone(mask: u32) -> bool {
-    use cef::sys::{cef_media_access_permission_types_t as M, cef_permission_request_types_t as P};
+    use cef::sys::cef_media_access_permission_types_t as M;
     mask & (M::CEF_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE as u32) != 0
-        || mask & (P::CEF_PERMISSION_TYPE_MIC_STREAM as u32) != 0
 }
 
-/// True when `mask` requests camera access (media-access or prompt enum).
+/// True when a media-access `mask` requests the camera.
 fn requests_camera(mask: u32) -> bool {
-    use cef::sys::{cef_media_access_permission_types_t as M, cef_permission_request_types_t as P};
+    use cef::sys::cef_media_access_permission_types_t as M;
     mask & (M::CEF_MEDIA_PERMISSION_DEVICE_VIDEO_CAPTURE as u32) != 0
-        || mask & (P::CEF_PERMISSION_TYPE_CAMERA_STREAM as u32) != 0
 }
 
-pub(crate) fn describe_permissions(mask: u32) -> String {
+/// Human-readable list of what `mask` (of the given request `kind`) asks for.
+pub(crate) fn describe_permissions(kind: Kind, mask: u32) -> String {
     use cef::sys::cef_permission_request_types_t as P;
-    let mut parts = Vec::new();
-    if requests_microphone(mask) {
-        parts.push("microphone");
-    }
-    if requests_camera(mask) {
-        parts.push("camera");
-    }
-    if mask & (P::CEF_PERMISSION_TYPE_GEOLOCATION as u32) != 0 {
-        parts.push("location");
-    }
-    if mask & (P::CEF_PERMISSION_TYPE_NOTIFICATIONS as u32) != 0 {
-        parts.push("notifications");
-    }
-    if mask & (P::CEF_PERMISSION_TYPE_MIDI_SYSEX as u32) != 0 {
-        parts.push("MIDI devices");
-    }
-    if mask & (P::CEF_PERMISSION_TYPE_CLIPBOARD as u32) != 0 {
-        parts.push("clipboard");
+    let mut parts: Vec<String> = Vec::new();
+    match kind {
+        Kind::Media => {
+            if mask & MEDIA_MIC != 0 {
+                parts.push(gettext("microphone"));
+            }
+            if mask & MEDIA_CAMERA != 0 {
+                parts.push(gettext("camera"));
+            }
+            if mask & MEDIA_DESKTOP_AUDIO != 0 {
+                parts.push(gettext("screen audio"));
+            }
+            if mask & MEDIA_DESKTOP_VIDEO != 0 {
+                parts.push(gettext("screen sharing"));
+            }
+        }
+        Kind::Prompt => {
+            if mask & (P::CEF_PERMISSION_TYPE_MIC_STREAM as u32) != 0 {
+                parts.push(gettext("microphone"));
+            }
+            if mask & (P::CEF_PERMISSION_TYPE_CAMERA_STREAM as u32) != 0 {
+                parts.push(gettext("camera"));
+            }
+            if mask & (P::CEF_PERMISSION_TYPE_GEOLOCATION as u32) != 0 {
+                parts.push(gettext("location"));
+            }
+            if mask & (P::CEF_PERMISSION_TYPE_NOTIFICATIONS as u32) != 0 {
+                parts.push(gettext("notifications"));
+            }
+            if mask & (P::CEF_PERMISSION_TYPE_MIDI_SYSEX as u32) != 0 {
+                parts.push(gettext("MIDI devices"));
+            }
+            if mask & (P::CEF_PERMISSION_TYPE_CLIPBOARD as u32) != 0 {
+                parts.push(gettext("clipboard"));
+            }
+        }
     }
     if parts.is_empty() {
-        return "device access".into();
+        return gettext("device access");
     }
     parts.join(", ")
 }
 
-/// Friendly single-permission label for the Privacy preferences list (one row
-/// per stored bit). Distinguishes microphone vs camera (the media-access bits)
-/// instead of the generic "device access".
-pub(crate) fn permission_label(mask: u32) -> String {
+/// Friendly single-permission label for the Privacy preferences list. `key` is
+/// a stored key as returned by `permissions_store::entries` (kind flag + bit).
+pub(crate) fn permission_label(key: u32) -> String {
     use cef::sys::cef_permission_request_types_t as P;
-    if requests_microphone(mask) {
-        return "Microphone access".into();
+    let bit = key & !(permissions_store::MEDIA_FLAG | permissions_store::PROMPT_FLAG);
+    if key & permissions_store::MEDIA_FLAG != 0 {
+        return match bit {
+            MEDIA_MIC => gettext("Microphone access"),
+            MEDIA_CAMERA => gettext("Camera access"),
+            MEDIA_DESKTOP_AUDIO => gettext("Screen audio access"),
+            MEDIA_DESKTOP_VIDEO => gettext("Screen sharing"),
+            _ => gettext("Site access"),
+        };
     }
-    if requests_camera(mask) {
-        return "Camera access".into();
+    if bit == P::CEF_PERMISSION_TYPE_MIC_STREAM as u32 {
+        return gettext("Microphone access");
     }
-    if mask & (P::CEF_PERMISSION_TYPE_NOTIFICATIONS as u32) != 0 {
-        return "Notifications".into();
+    if bit == P::CEF_PERMISSION_TYPE_CAMERA_STREAM as u32 {
+        return gettext("Camera access");
     }
-    if mask & (P::CEF_PERMISSION_TYPE_GEOLOCATION as u32) != 0 {
-        return "Location access".into();
+    if bit == P::CEF_PERMISSION_TYPE_NOTIFICATIONS as u32 {
+        return gettext("Notifications");
     }
-    if mask & (P::CEF_PERMISSION_TYPE_CLIPBOARD as u32) != 0 {
-        return "Clipboard access".into();
+    if bit == P::CEF_PERMISSION_TYPE_GEOLOCATION as u32 {
+        return gettext("Location access");
     }
-    if mask & (P::CEF_PERMISSION_TYPE_MIDI_SYSEX as u32) != 0 {
-        return "MIDI device access".into();
+    if bit == P::CEF_PERMISSION_TYPE_CLIPBOARD as u32 {
+        return gettext("Clipboard access");
     }
-    "Site access".into()
+    if bit == P::CEF_PERMISSION_TYPE_MIDI_SYSEX as u32 {
+        return gettext("MIDI device access");
+    }
+    gettext("Site access")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::permissions_store::{MEDIA_FLAG, PROMPT_FLAG};
+
+    #[test]
+    fn media_bits_match_cef() {
+        use cef::sys::cef_media_access_permission_types_t as M;
+        assert_eq!(M::CEF_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE as u32, MEDIA_MIC);
+        assert_eq!(M::CEF_MEDIA_PERMISSION_DEVICE_VIDEO_CAPTURE as u32, MEDIA_CAMERA);
+        assert_eq!(M::CEF_MEDIA_PERMISSION_DESKTOP_AUDIO_CAPTURE as u32, MEDIA_DESKTOP_AUDIO);
+        assert_eq!(M::CEF_MEDIA_PERMISSION_DESKTOP_VIDEO_CAPTURE as u32, MEDIA_DESKTOP_VIDEO);
+    }
+
+    #[test]
+    fn describe_media() {
+        assert_eq!(describe_permissions(Kind::Media, 1), "microphone");
+        assert_eq!(describe_permissions(Kind::Media, 3), "microphone, camera");
+        assert_eq!(describe_permissions(Kind::Media, 12), "screen audio, screen sharing");
+    }
+
+    #[test]
+    fn describe_prompt_does_not_reuse_media_meaning() {
+        // Prompt bit 1 is AR_SESSION, not the microphone.
+        assert_eq!(describe_permissions(Kind::Prompt, 1), "device access");
+        assert_eq!(describe_permissions(Kind::Prompt, 32768), "notifications");
+        assert_eq!(describe_permissions(Kind::Prompt, 4), "camera");
+        assert_eq!(describe_permissions(Kind::Media, 0), "device access");
+    }
+
+    #[test]
+    fn labels_respect_kind() {
+        assert_eq!(permission_label(MEDIA_FLAG | 1), "Microphone access");
+        assert_eq!(permission_label(MEDIA_FLAG | 2), "Camera access");
+        assert_eq!(permission_label(MEDIA_FLAG | 4), "Screen audio access");
+        assert_eq!(permission_label(MEDIA_FLAG | 8), "Screen sharing");
+        assert_eq!(permission_label(PROMPT_FLAG | 1), "Site access");
+        assert_eq!(permission_label(PROMPT_FLAG | 32768), "Notifications");
+    }
+
+    #[test]
+    fn mirror_only_for_real_mic_camera() {
+        assert!(requests_microphone(1) && !requests_camera(1));
+        assert!(requests_camera(2) && !requests_microphone(2));
+        assert!(!requests_microphone(12) && !requests_camera(12));
+    }
 }
