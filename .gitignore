@@ -11,9 +11,11 @@
 **/build-dir-offline/
 # ostree repo produced by flatpak-builder --repo (e.g. packaging/repo)
 **/repo/
-# ignore personal/local state, but track shared workflow tooling
-# (skills, commands) so /opsx OpenSpec commands work in-repo.
-.claude/settings.local.json
+# local tooling and notes
+/.claude/
+/memory/
+/.worktrees/
+__pycache__/
 *.gresource
 /data/ui/*.ui
 /build-pot
