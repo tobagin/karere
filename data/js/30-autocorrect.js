@@ -142,12 +142,50 @@
 
   var applying = false;
 
+  // The typo list is English only ("adn" is a real word in es/pt/fr/it), so the
+  // feature additionally requires an English UI language. The host may override
+  // the detection via window.__karereAutocorrectSetEnabled(bool).
+  var langOverride = null;
+  window.__karereAutocorrectSetEnabled = function (on) {
+    langOverride = on === null || typeof on === "undefined" ? null : !!on;
+  };
+
+  function languageAllowed() {
+    if (langOverride !== null) {
+      return langOverride;
+    }
+    var lang = "";
+    try {
+      lang = document.documentElement.lang || navigator.language || "";
+    } catch (_err) {}
+    return /^en([-_]|$)/i.test(lang);
+  }
+
+  // Plain text/search inputs only — never password, email, number, url, etc.
+  function isCorrectable(t) {
+    if (t.tagName === "TEXTAREA") {
+      return true;
+    }
+    if (t.tagName === "INPUT") {
+      var type = (t.type || "text").toLowerCase();
+      return type === "text" || type === "search";
+    }
+    return !!t.isContentEditable;
+  }
+
   function onInput(e) {
-    if (applying || !window.__karereAutoCorrect) {
+    if (applying || !window.__karereAutoCorrect || !languageAllowed()) {
+      return;
+    }
+    // Only real typed characters: not undo/redo/paste/delete, not IME composition.
+    if (e.isComposing || e.inputType !== "insertText") {
+      return;
+    }
+    if (typeof e.data === "string" && !BOUNDARY.test(e.data)) {
       return;
     }
     var t = e.target;
-    if (!t) {
+    if (!t || !isCorrectable(t)) {
       return;
     }
     applying = true;

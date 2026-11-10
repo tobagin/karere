@@ -14,6 +14,9 @@
 (function () {
   "use strict";
 
+  if (window.__karereCopyBridgeInstalled) return;
+  window.__karereCopyBridgeInstalled = true;
+
   function send(name, payload) {
     try {
       if (typeof window.karere_send === "function") {
@@ -73,7 +76,9 @@
                   if (b64) send("SetClipboardImage", { base64_png: b64 });
                 })
                 .catch(function () {});
-            } else if (item && item.types && item.types.indexOf("text/plain") !== -1) {
+            }
+            // An image+text item mirrors both, not just the image.
+            if (item && item.types && item.types.indexOf("text/plain") !== -1) {
               item
                 .getType("text/plain")
                 .then(function (blob) { return blob.text(); })

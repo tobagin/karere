@@ -15,12 +15,17 @@
     if (!proto || proto.__karereSoundHooked) return;
     proto.__karereSoundHooked = true;
 
+    var warned = false;
     var origPlay = proto.play;
     proto.play = function () {
       try {
         if (window.__karereMuteNotifSound && !this.srcObject) {
           var s = this.currentSrc || this.src || "";
           if (s.indexOf("static.whatsapp.net") !== -1) {
+            if (!warned) {
+              warned = true;
+              console.warn("karere: muted a static-asset sound: " + s);
+            }
             // Swallow the tone; resolved promise so awaiters don't throw.
             return Promise.resolve();
           }

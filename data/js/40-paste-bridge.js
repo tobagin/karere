@@ -48,6 +48,19 @@
     return tag === "INPUT" || tag === "TEXTAREA";
   }
 
+  // The message composer, for file/image pastes when focus is elsewhere (e.g. on
+  // the chat pane after a click). Null when it is not on screen.
+  function findComposer() {
+    try {
+      return (
+        document.querySelector('footer [contenteditable="true"]') ||
+        document.querySelector('[contenteditable="true"][role="textbox"]')
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
   // Map an image MIME to a file extension for the synthesized `paste.<ext>`.
   function extFromMime(mime) {
     var map = {
@@ -164,6 +177,10 @@
         target = document.elementFromPoint(detail.x, detail.y);
       } else {
         target = document.activeElement;
+      }
+      if (!isEditable(target) && (detail.mime !== "text/plain" || detail.name)) {
+        // Files/images are not text: send them to the composer instead of dropping.
+        target = findComposer() || target;
       }
       if (!isEditable(target)) {
         if (detail.mime !== "text/plain") {

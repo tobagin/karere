@@ -9,6 +9,9 @@
 (function () {
   "use strict";
 
+  if (window.__karereSpellMenuInstalled) return;
+  window.__karereSpellMenuInstalled = true;
+
   try {
     window.addEventListener(
       "contextmenu",
@@ -18,7 +21,7 @@
           if (!t || typeof t.closest !== "function") {
             return;
           }
-          const editable = t.closest('[contenteditable="true"], input, textarea');
+          const editable = t.isContentEditable || t.closest("input, textarea");
           if (editable) {
             e.stopImmediatePropagation();
           }

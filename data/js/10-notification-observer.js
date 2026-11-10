@@ -13,6 +13,9 @@
 (function () {
   "use strict";
 
+  if (window.__karereNotifObserverInstalled) return;
+  window.__karereNotifObserverInstalled = true;
+
   // Reuse the bootstrap bridge; fall back to the raw native binding.
   function send(name, payload) {
     try {

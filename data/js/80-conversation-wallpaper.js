@@ -3,6 +3,9 @@
 (function () {
   "use strict";
 
+  if (window.__karereWallpaperInstalled) return;
+  window.__karereWallpaperInstalled = true;
+
   function install() {
     try {
       const id = "karere-conversation-wallpaper";
@@ -20,6 +23,14 @@
         }
       `;
       (document.head || document.documentElement).appendChild(style);
+      // Debug-only one-shot: report if the hint matched nothing while a chat is open.
+      setTimeout(function () {
+        try {
+          if (document.querySelector("#main") && !document.querySelector('#main > div:empty[style*="mask-image: url("]')) {
+            console.debug("karere: wallpaper hint selector matched nothing");
+          }
+        } catch (_e) {}
+      }, 30000);
     } catch (_err) {
       /* A rendering hint must never prevent the page from loading. */
     }

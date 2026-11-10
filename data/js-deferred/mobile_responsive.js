@@ -60,6 +60,10 @@
 //---------------------------------------------------------------
 
 
+// KARERE: the host never defines appConfig; default it so the Quick Copy listeners do not throw.
+var appConfig = window.appConfig = window.appConfig || { enableQuickCopy: false };
+var mainCompleted = false;
+
 var indexChatList=4;
 
 const My= {
@@ -68,16 +72,16 @@ const My= {
   
   //MainWrapper stuff (element class two)----------------------------------------------------
   mainWrapper: () => document.querySelector('.two'),  
-    unkownSection1: () => document.querySelector('.two').childNodes[indexChatList-2],
-      unkownSection2: () => document.querySelector('.two').childNodes[indexChatList-2].childNodes[0],  
-    overlayMenus: () => document.querySelector('.two').childNodes[indexChatList-1],
-      uploadPannel: () => document.querySelector('.two').childNodes[indexChatList-1].childNodes[1], //(to upload photos/videos/document)    
-      leftSettingPannel: () => document.querySelector('.two').childNodes[indexChatList-1].childNodes[0], // leftMenus (Settings, status, community, profile, ...)
-    chatList: () => document.querySelector('.two').childNodes[indexChatList],
-      chatListHeader: () => document.querySelector('.two').childNodes[indexChatList].querySelector('header').querySelector('header'),
-    chatWindow: () => document.querySelector('.two').childNodes[indexChatList+1],
-      chatHeader: () => document.querySelector('.two').childNodes[indexChatList+1].querySelector('header'),
-    contactInfo: () => document.querySelector('.two').childNodes[indexChatList+3],
+    unkownSection1: () => document.querySelector('.two').children[indexChatList-2],
+      unkownSection2: () => document.querySelector('.two').children[indexChatList-2].children[0],  
+    overlayMenus: () => document.querySelector('.two').children[indexChatList-1],
+      uploadPannel: () => document.querySelector('.two').children[indexChatList-1].children[1], //(to upload photos/videos/document)    
+      leftSettingPannel: () => document.querySelector('.two').children[indexChatList-1].children[0], // leftMenus (Settings, status, community, profile, ...)
+    chatList: () => document.querySelector('.two').children[indexChatList],
+      chatListHeader: () => document.querySelector('.two').children[indexChatList].querySelector('header').querySelector('header'),
+    chatWindow: () => document.querySelector('.two').children[indexChatList+1],
+      chatHeader: () => document.querySelector('.two').children[indexChatList+1].querySelector('header'),
+    contactInfo: () => document.querySelector('.two').children[indexChatList+3],
   //-------------------------------------------------------------------------------------------
 
   upperWrapper: () => document.querySelector('.three'),
@@ -316,17 +320,19 @@ document.addEventListener('keydown', (e) => {
       
     }
     
-    if ( lastFocusEl.isContentEditable  && (!lastClickEl || ! lastClickEl.isContentEditable ) )
+    var footerEl = document.querySelector('footer');
+    // KARERE: only on touch devices; on a desktop window focus without a click is a keyboard user.
+    if ( navigator.maxTouchPoints > 0 && lastFocusEl.isContentEditable  && (!lastClickEl || ! lastClickEl.isContentEditable ) )
     {
       lastFocusEl.blur();
       lastFocusEl.setAttribute('contenteditable', false);
       lastFocusEl.classList.add('contenteditableDisabled');
-      document.querySelector('footer').style.paddingBottom="0";      
+      if (footerEl) footerEl.style.paddingBottom="0";      
     }
     
-    if ( ! document.querySelector('footer').contains(lastFocusEl) )
+    if ( footerEl && ! footerEl.contains(lastFocusEl) )
       {
-        document.querySelector('footer').style.paddingBottom="0";
+        footerEl.style.paddingBottom="0";
       }
     
     if (My.chatWindow().contains(lastFocusEl))
@@ -419,7 +425,7 @@ window.addEventListener("click", function() {
     lastClickEl.closest('.contenteditableDisabled').setAttribute('contenteditable', true);
     lastClickEl.closest('.contenteditableDisabled').classList.remove('contenteditableDisabled') 
     editableEl.focus();
-     if ( document.querySelector('footer').contains(lastClickEl) )
+     if ( document.querySelector('footer') && document.querySelector('footer').contains(lastClickEl) )
       {
         console.log("Add margin");
         try
@@ -537,6 +543,7 @@ function showchatWindow(){
     }
   
     addBackButtonToChatViewWithTimeout();
+    mainCompleted = true;
 }
 
 function addBackButtonToChatViewWithTimeout()
@@ -612,7 +619,8 @@ function addLeftMenuButtonToChatList(){
 //----------------------------------------------------------------------------
 function addBackButtonToChatView(){
 
-    addCss(".back_button span { display:block; height: 100%; width: 100%;}.back_button {  z-index:200; width:37px; height:45px; } html[dir] .back_button { border-radius:50%; } html[dir=ltr] .back_button { right:11px } html[dir=rtl] .back_button { left:11px } .back_button path { fill:var(--panel-header-icon); fill-opacity:1 } .svg_back { transform: rotate(90deg); height: 100%;}");
+    if (!document.getElementById('karere-back-button-css'))
+    addCss(".back_button span { display:block; height: 100%; width: 100%;}.back_button {  z-index:200; width:37px; height:45px; } html[dir] .back_button { border-radius:50%; } html[dir=ltr] .back_button { right:11px } html[dir=rtl] .back_button { left:11px } .back_button path { fill:var(--panel-header-icon); fill-opacity:1 } .svg_back { transform: rotate(90deg); height: 100%;}", 'karere-back-button-css');
     
     var newHTML         = document.createElement('div');
     newHTML.className += "back_button";
@@ -682,7 +690,7 @@ var copiedMessage1;
 var copiedMessage2;
 
 document.addEventListener("touchend", () => {
-  if (window.appConfig.enableQuickCopy)
+  if (appConfig.enableQuickCopy)
   {
   const selection = window.getSelection();
   const selectedText = selection.toString().trim();
@@ -713,7 +721,7 @@ document.addEventListener("touchend", () => {
 });
    
 window.addEventListener("click", function() {
-  if (window.appConfig.enableQuickCopy)
+  if (appConfig.enableQuickCopy)
   {
   setTimeout(function() {
     // Handle events for Quick Copy to Clipboard
@@ -755,7 +763,7 @@ var checkExist = setInterval(function() {
       My.linkedDevicesInstructions().parentElement.parentElement.style.transform="scaleX(0.8) scaleY(0.8)";
       console.log("[HideAppControls]")
     }
-    if (My.mainWrapper().childNodes.length) {
+    if (My.mainWrapper() && My.mainWrapper().childNodes.length) {
       if ( check == 0 ) {
         clearInterval(checkExist);
         console.log("[HideAppControls]")
@@ -765,6 +773,14 @@ var checkExist = setInterval(function() {
     }
 }, 1000);
 
+
+// KARERE: one diagnostic line if WhatsApp renamed a class this script depends on.
+setTimeout(function () {
+  try {
+    if (!mainCompleted && document.querySelector('[role="grid"]'))
+      console.warn("karere mobile layout: chat list present but main() never completed; WhatsApp markup may have changed");
+  } catch (e) { /* safe */ }
+}, 20000);
 
 var mainWrapperExisted=false;
 
@@ -823,10 +839,11 @@ var lastClickEl=null;
 var lastFocusEl=null;
 var firstChatLoad=1;
 
-  function addCss(cssString) {
+  function addCss(cssString, cssId) {
       var head = document.getElementsByTagName('head')[0];
       var newCss = document.createElement('style');
       newCss.type = "text/css";
+      if (cssId) newCss.id = cssId;
       newCss.innerHTML = cssString;
       head.appendChild(newCss);
   }
