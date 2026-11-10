@@ -121,6 +121,11 @@ wrap_load_handler! {
                 // silences WhatsApp's ding when sounds are off (page `window`
                 // reset on navigation).
                 crate::web_view::apply_notif_sound_from_settings(browser);
+                // J2: English-only autocorrect follows the spellcheck language.
+                let (_, langs) = resolve_spellcheck_settings();
+                crate::web_view::apply_autocorrect_language(browser, &langs);
+                // F9: user stylesheet, re-injected on every load.
+                crate::web_view::apply_user_css(browser);
             }
         }
 

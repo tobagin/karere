@@ -33,6 +33,10 @@ pub struct Account {
     /// unread badge still shows). Per-account, persisted.
     #[serde(default)]
     pub muted: bool,
+    /// User-chosen order in the switcher (and Alt+N). Absent in older files;
+    /// [`load_from`] derives it from the `created_at` order.
+    #[serde(default)]
+    pub position: i64,
 }
 
 fn default_zoom() -> f64 {
@@ -61,6 +65,7 @@ impl Account {
             is_active: false,
             zoom_level: default_zoom(),
             muted: false,
+            position: 0,
         }
     }
 }
@@ -174,6 +179,10 @@ pub fn session_cache_path(id: &str) -> PathBuf {
 pub fn load_from(path: &std::path::Path) -> Result<Vec<Account>, AccountsError> {
     match std::fs::read(path) {
         Ok(bytes) => serde_json::from_slice::<Vec<Account>>(&bytes)
+            .map(|mut list| {
+                normalize_positions(&mut list);
+                list
+            })
             .map_err(|e| AccountsError::Parse(e.to_string())),
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Vec::new()),
         Err(e) => Err(AccountsError::Io(e.to_string())),
@@ -258,6 +267,7 @@ pub fn recover_from_sessions(sessions: &std::path::Path) -> Vec<Account> {
 /// failed), never something to delete. Returns the ids adopted.
 pub fn adopt_unlisted_sessions(sessions: &std::path::Path, list: &mut Vec<Account>) -> Vec<String> {
     let mut adopted = Vec::new();
+    let start = list.len();
     for (id, meta) in session_dir_ids(sessions) {
         if list.iter().any(|a| a.id == id) || is_tombstoned(&sessions.join(&id)) {
             continue;
@@ -269,15 +279,20 @@ pub fn adopt_unlisted_sessions(sessions: &std::path::Path, list: &mut Vec<Accoun
             .map(|d| d.as_secs() as i64)
             .unwrap_or_else(now);
         adopted.push(id.clone());
+        let position = next_position(list);
         list.push(Account {
             id,
             created_at: ts,
             last_used_at: ts,
+            position,
             ..Account::new()
         });
     }
-    if !adopted.is_empty() {
-        sort_stable(list);
+    // Adopted accounts follow the listed ones, oldest first.
+    let base = next_position(&list[..start]);
+    list[start..].sort_by(|a, b| a.created_at.cmp(&b.created_at).then_with(|| a.id.cmp(&b.id)));
+    for (i, a) in list[start..].iter_mut().enumerate() {
+        a.position = base + i as i64;
     }
     adopted
 }
@@ -404,14 +419,45 @@ pub fn lowest_unused_label(accounts: &[Account]) -> String {
     format!("Account {n}")
 }
 
-/// Sort in place by `created_at` ascending (id tiebreak): a stable order that
-/// never reshuffles on switch, so the switcher list and Alt+N stay put (#166).
+/// Sort in place by `position`, then `created_at` (id tiebreak): a stable order
+/// that never reshuffles on switch, so the switcher list and Alt+N stay put (#166).
 pub fn sort_stable(accounts: &mut [Account]) {
     accounts.sort_by(|a, b| {
-        a.created_at
-            .cmp(&b.created_at)
+        a.position
+            .cmp(&b.position)
+            .then_with(|| a.created_at.cmp(&b.created_at))
             .then_with(|| a.id.cmp(&b.id))
     });
+}
+
+/// Sort, then renumber `position` as 0..n. Legacy files (all positions 0) thus
+/// keep their `created_at` order.
+fn normalize_positions(accounts: &mut [Account]) {
+    sort_stable(accounts);
+    for (i, a) in accounts.iter_mut().enumerate() {
+        a.position = i as i64;
+    }
+}
+
+/// Position that places a new account after every existing one.
+fn next_position(accounts: &[Account]) -> i64 {
+    accounts.iter().map(|a| a.position + 1).max().unwrap_or(0)
+}
+
+/// Move `id` by `delta` (-1 up, +1 down) in display order. False when it is
+/// unknown or already at that end.
+fn move_account(accounts: &mut [Account], id: &str, delta: isize) -> bool {
+    normalize_positions(accounts);
+    let Some(i) = accounts.iter().position(|a| a.id == id) else {
+        return false;
+    };
+    let Some(j) = i.checked_add_signed(delta).filter(|&j| j < accounts.len()) else {
+        return false;
+    };
+    let (pi, pj) = (accounts[i].position, accounts[j].position);
+    accounts[i].position = pj;
+    accounts[j].position = pi;
+    true
 }
 
 mod imp {
@@ -466,8 +512,12 @@ impl AccountManager {
 
     /// Create, persist, and return a new account.
     pub fn add(&self) -> Account {
-        let account = Account::new();
-        self.imp().accounts.borrow_mut().push(account.clone());
+        let mut account = Account::new();
+        {
+            let mut list = self.imp().accounts.borrow_mut();
+            account.position = next_position(&list);
+            list.push(account.clone());
+        }
         self.save_logged();
         self.emit_changed();
         account
@@ -481,6 +531,7 @@ impl AccountManager {
             let mut list = self.imp().accounts.borrow_mut();
             account.user_label = Some(lowest_unused_label(&list));
             account.is_active = true;
+            account.position = next_position(&list);
             for a in list.iter_mut() {
                 a.is_active = false;
             }
@@ -531,6 +582,25 @@ impl AccountManager {
         self.emit_changed();
     }
 
+    /// Swap `id` with its predecessor in list order; no-op (no save, no
+    /// signal) at the top.
+    pub fn move_up(&self, id: &str) {
+        self.move_by(id, -1);
+    }
+
+    /// Swap `id` with its successor in list order; no-op at the bottom.
+    pub fn move_down(&self, id: &str) {
+        self.move_by(id, 1);
+    }
+
+    fn move_by(&self, id: &str, delta: isize) {
+        let moved = move_account(&mut self.imp().accounts.borrow_mut(), id, delta);
+        if moved {
+            self.save_logged();
+            self.emit_changed();
+        }
+    }
+
     /// Make `id` the active account and stamp `last_used_at = now`.
     pub fn activate(&self, id: &str) {
         {
@@ -546,7 +616,7 @@ impl AccountManager {
         self.emit_changed();
     }
 
-    /// Stable (creation-ordered) clone of the account list — the order the
+    /// Stable (user-ordered) clone of the account list — the order the
     /// switcher shows and Alt+1..9 index into (#166).
     pub fn get_accounts_sorted(&self) -> Vec<Account> {
         let mut out = self.imp().accounts.borrow().clone();
@@ -853,6 +923,75 @@ mod tests {
             list.iter().map(|x| x.id.clone()).collect::<Vec<_>>(),
             vec![aid, bid, cid],
         );
+    }
+
+    fn ids(list: &[Account]) -> Vec<String> {
+        list.iter().map(|a| a.id.clone()).collect()
+    }
+
+    fn three() -> Vec<Account> {
+        let mut v = vec![acct_with(100), acct_with(200), acct_with(300)];
+        normalize_positions(&mut v);
+        v
+    }
+
+    #[test]
+    fn legacy_file_without_positions_keeps_created_order() {
+        let dir = std::env::temp_dir().join(format!("karere-acct-{}", uuid::Uuid::new_v4()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("accounts.json");
+        let doc = r#"[
+        {"id":"c","created_at":300,"last_used_at":3},
+        {"id":"a","created_at":100,"last_used_at":1},
+        {"id":"b","created_at":200,"last_used_at":2}]"#;
+        std::fs::write(&path, doc).unwrap();
+        let list = load_from(&path).unwrap();
+        assert_eq!(ids(&list), vec!["a", "b", "c"]);
+        assert_eq!(list.iter().map(|a| a.position).collect::<Vec<_>>(), vec![0, 1, 2]);
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn move_up_and_down_swap_neighbours() {
+        let mut v = three();
+        let (a, b, c) = (v[0].id.clone(), v[1].id.clone(), v[2].id.clone());
+        assert!(move_account(&mut v, &c, -1));
+        sort_stable(&mut v);
+        assert_eq!(ids(&v), vec![a.clone(), c.clone(), b.clone()]);
+        assert!(move_account(&mut v, &a, 1));
+        sort_stable(&mut v);
+        assert_eq!(ids(&v), vec![c, a, b]);
+    }
+
+    #[test]
+    fn move_at_the_ends_is_a_noop() {
+        let mut v = three();
+        let (a, c) = (v[0].id.clone(), v[2].id.clone());
+        let before = ids(&v);
+        assert!(!move_account(&mut v, &a, -1));
+        assert!(!move_account(&mut v, &c, 1));
+        assert!(!move_account(&mut v, "missing", 1));
+        sort_stable(&mut v);
+        assert_eq!(ids(&v), before);
+    }
+
+    #[test]
+    fn order_survives_save_and_load() {
+        let mut v = three();
+        let (a, b, c) = (v[0].id.clone(), v[1].id.clone(), v[2].id.clone());
+        move_account(&mut v, &c, -1);
+        let dir = std::env::temp_dir().join(format!("karere-acct-{}", uuid::Uuid::new_v4()));
+        let path = dir.join("accounts.json");
+        save_to(&path, &v).unwrap();
+        assert_eq!(ids(&load_from(&path).unwrap()), vec![a, c, b]);
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn new_accounts_go_last() {
+        let v = three();
+        assert_eq!(next_position(&v), 3);
+        assert_eq!(next_position(&[]), 0);
     }
 
     #[test]

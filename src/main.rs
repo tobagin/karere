@@ -5,6 +5,7 @@ use gettextrs::{
 };
 use gtk::glib;
 use gtk::prelude::*;
+use std::io::Write as _;
 
 mod accounts;
 mod actions;
@@ -41,6 +42,7 @@ fn main() -> Result<()> {
     env_logger::Builder::from_env(
         env_logger::Env::default().default_filter_or(log_filter_from_args()),
     )
+    .target(env_logger::Target::Pipe(Box::new(TeeWriter)))
     .init();
 
     install_panic_hook();
@@ -104,6 +106,9 @@ fn main() -> Result<()> {
     app.register(gio::Cancellable::NONE)?;
     let is_primary = !app.is_remote();
     if is_primary {
+        // Only the primary browser process writes the log file; CEF children
+        // returned above and secondary instances never get here.
+        start_file_logging();
         // Delete leftover v3 (WebKitGTK) data once, before CEF starts.
         accounts::purge_legacy_v3_data();
         cef_runtime::initialize_browser_process(&args, &mut cef_app)?;
@@ -136,6 +141,93 @@ fn main() -> Result<()> {
         }
     }
     std::process::exit(code);
+}
+
+/// Directory holding `karere.log`; the crash dialog's "Open logs" opens it.
+pub(crate) fn log_dir() -> std::path::PathBuf {
+    glib::user_data_dir()
+        .join(application::APP_ID)
+        .join("logs")
+}
+
+const LOG_FILE_CAP: u64 = 2 * 1024 * 1024;
+
+struct LogFile {
+    file: std::fs::File,
+    written: u64,
+}
+
+/// Set only by `start_file_logging` in the primary browser process.
+static LOG_FILE: std::sync::Mutex<Option<LogFile>> = std::sync::Mutex::new(None);
+
+/// env_logger target: every record goes to stderr and, once a file is
+/// attached, to the log file until it reaches `LOG_FILE_CAP`.
+struct TeeWriter;
+
+impl std::io::Write for TeeWriter {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        let _ = std::io::stderr().write_all(buf);
+        if let Ok(mut guard) = LOG_FILE.lock()
+            && let Some(log) = guard.as_mut()
+            && log.written < LOG_FILE_CAP
+            && log.file.write_all(buf).is_ok()
+        {
+            log.written += buf.len() as u64;
+            if log.written >= LOG_FILE_CAP {
+                let _ = log
+                    .file
+                    .write_all(b"--- log size limit reached; file output stopped ---\n");
+            }
+        }
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        std::io::stderr().flush()
+    }
+}
+
+/// Keep the previous run as `karere.log.1`, create a fresh private
+/// `karere.log` and start teeing log output into it.
+fn start_file_logging() {
+    use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt};
+    let dir = log_dir();
+    if let Err(e) = std::fs::DirBuilder::new()
+        .recursive(true)
+        .mode(0o700)
+        .create(&dir)
+    {
+        log::warn!("log file disabled: cannot create {}: {e}", dir.display());
+        return;
+    }
+    let path = dir.join("karere.log");
+    let _ = std::fs::rename(&path, dir.join("karere.log.1"));
+    let mut file = match std::fs::OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .mode(0o600)
+        .open(&path)
+    {
+        Ok(f) => f,
+        Err(e) => {
+            log::warn!("log file disabled: cannot open {}: {e}", path.display());
+            return;
+        }
+    };
+    let header = format!(
+        "Karere {} log. When run with --debug or --debuglevel=debug this file may contain \
+         personal details (contact names, phone numbers, message text).\n",
+        env!("CARGO_PKG_VERSION")
+    );
+    if file.write_all(header.as_bytes()).is_ok()
+        && let Ok(mut guard) = LOG_FILE.lock()
+    {
+        *guard = Some(LogFile {
+            file,
+            written: header.len() as u64,
+        });
+    }
 }
 
 /// Log every Rust panic with file:line, message, and (when `RUST_BACKTRACE` is

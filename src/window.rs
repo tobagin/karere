@@ -941,6 +941,52 @@ mod imp {
             ));
             page.add(&group);
 
+            let order_row = adw::ActionRow::builder()
+                .title(gettextrs::gettext("Position"))
+                .build();
+            let up = gtk::Button::with_label(&gettextrs::gettext("Move Up"));
+            let down = gtk::Button::with_label(&gettextrs::gettext("Move Down"));
+            for b in [&up, &down] {
+                b.set_valign(gtk::Align::Center);
+                order_row.add_suffix(b);
+            }
+            let sync_order = clone!(
+                #[weak]
+                up,
+                #[weak]
+                down,
+                #[strong]
+                id,
+                move || {
+                    let list = crate::accounts::manager().get_accounts_sorted();
+                    let idx = list.iter().position(|a| a.id == id);
+                    up.set_sensitive(idx.is_some_and(|i| i > 0));
+                    down.set_sensitive(idx.is_some_and(|i| i + 1 < list.len()));
+                }
+            );
+            sync_order();
+            up.connect_clicked(clone!(
+                #[strong]
+                id,
+                #[strong]
+                sync_order,
+                move |_| {
+                    crate::accounts::manager().move_up(&id);
+                    sync_order();
+                }
+            ));
+            down.connect_clicked(clone!(
+                #[strong]
+                id,
+                #[strong]
+                sync_order,
+                move |_| {
+                    crate::accounts::manager().move_down(&id);
+                    sync_order();
+                }
+            ));
+            group.add(&order_row);
+
             let toolbar = adw::ToolbarView::new();
             let header = adw::HeaderBar::new();
             header.set_show_end_title_buttons(false);
@@ -995,7 +1041,7 @@ mod imp {
                 Some(&gettextrs::gettext("Remove account?")),
                 Some(
                     &gettextrs::gettext(
-                        "This removes the local session for {name}. The device stays linked on your phone until you remove it there.",
+                        "This removes the local session for {name}. To fully unlink the device, open WhatsApp on your phone, go to Linked devices, select this device and choose Log out.",
                     )
                     .replace("{name}", &name),
                 ),
@@ -1596,6 +1642,7 @@ mod imp {
     fn show_crash_dialog(win: &super::KarereWindow, req: CrashDialog, dialog_open: Rc<Cell<bool>>) {
         let dialog = adw::AlertDialog::new(Some(&req.title), Some(&req.body));
         dialog.add_response("cancel", &gettextrs::gettext("Cancel"));
+        dialog.add_response("diagnostics", &gettextrs::gettext("Copy Diagnostic Info"));
         dialog.add_response("logs", &gettextrs::gettext("Open logs"));
         dialog.set_response_appearance("logs", adw::ResponseAppearance::Suggested);
         dialog.set_default_response(Some("logs"));
@@ -1604,6 +1651,10 @@ mod imp {
             dialog_open.set(false);
             if response == "logs" {
                 open_logs();
+            } else if response == "diagnostics"
+                && let Some(app) = gio::Application::default()
+            {
+                app.activate_action("copy-diagnostics", None);
             }
         });
         dialog.present(Some(win));
@@ -1720,8 +1771,8 @@ mod imp {
 
     /// Best-effort: open the directory where logs are written.
     fn open_logs() {
-        let dir = glib::user_data_dir().join(APP_ID);
-        let uri = format!("file://{}", dir.display());
+        let dir = crate::log_dir();
+        let uri = gio::File::for_path(&dir).uri();
         if let Err(err) = gio::AppInfo::launch_default_for_uri(&uri, None::<&gio::AppLaunchContext>)
         {
             log::warn!("open-logs: could not open {uri}: {err}");

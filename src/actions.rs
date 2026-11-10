@@ -35,6 +35,8 @@ pub fn register_app_actions(app: &KarereApplication) {
     register_do_not_disturb(app);
     register_open_download(app);
     register_show_download(app);
+    register_copy_diagnostics(app);
+    register_open_user_css(app);
 }
 
 fn register_quit(app: &KarereApplication) {
@@ -104,6 +106,121 @@ fn register_help_overlay(app: &KarereApplication) {
                 return;
             };
             dialog.present(app.active_window().as_ref());
+        }
+    ));
+    app.add_action(&action);
+}
+
+/// Facts shown by "Copy Diagnostic Info". No account names, ids or paths.
+struct Diagnostics {
+    version: String,
+    chromium: String,
+    gtk: String,
+    adw: String,
+    session: String,
+    desktop: String,
+    flatpak: bool,
+    accounts: usize,
+    gpu_rendering: bool,
+    mobile_layout: String,
+}
+
+/// Plain-text block for bug reports (intentionally not translated).
+fn format_diagnostics(d: &Diagnostics) -> String {
+    let yn = |b: bool| if b { "yes" } else { "no" };
+    format!(
+        "Karere: {}\nChromium (CEF): {}\nGTK: {}\nlibadwaita: {}\nSession: {}\n\
+         Desktop: {}\nFlatpak: {}\nAccounts: {}\nGPU rendering: {}\nMobile layout: {}\n",
+        d.version,
+        d.chromium,
+        d.gtk,
+        d.adw,
+        d.session,
+        d.desktop,
+        yn(d.flatpak),
+        d.accounts,
+        yn(d.gpu_rendering),
+        d.mobile_layout,
+    )
+}
+
+fn collect_diagnostics() -> String {
+    let env = |k: &str| {
+        std::env::var(k)
+            .ok()
+            .filter(|v| !v.is_empty())
+            .unwrap_or_else(|| "unknown".to_owned())
+    };
+    let settings = gio::Settings::new(APP_ID);
+    format_diagnostics(&Diagnostics {
+        version: env!("CARGO_PKG_VERSION").to_owned(),
+        chromium: format!("{}.x", cef::sys::CHROME_VERSION_MAJOR),
+        gtk: format!(
+            "{}.{}.{}",
+            gtk::major_version(),
+            gtk::minor_version(),
+            gtk::micro_version()
+        ),
+        adw: format!(
+            "{}.{}.{}",
+            adw::major_version(),
+            adw::minor_version(),
+            adw::micro_version()
+        ),
+        session: env("XDG_SESSION_TYPE"),
+        desktop: env("XDG_CURRENT_DESKTOP"),
+        flatpak: std::env::var_os("FLATPAK_ID").is_some(),
+        accounts: crate::accounts::manager().get_accounts_sorted().len(),
+        gpu_rendering: settings.boolean("gpu-rendering"),
+        mobile_layout: settings.string("mobile-layout").to_string(),
+    })
+}
+
+/// `app.copy-diagnostics`: put the diagnostics block on the clipboard.
+fn register_copy_diagnostics(app: &KarereApplication) {
+    let action = gio::SimpleAction::new("copy-diagnostics", None);
+    action.connect_activate(|_, _| {
+        let Some(display) = gtk::gdk::Display::default() else {
+            log::warn!("copy-diagnostics: no display");
+            return;
+        };
+        display.clipboard().set_text(&collect_diagnostics());
+        if let Some(win) = gio::Application::default()
+            .and_then(|a| a.downcast::<gtk::Application>().ok())
+            .and_then(|a| a.active_window())
+            .and_then(|w| w.downcast::<crate::window::KarereWindow>().ok())
+        {
+            win.show_toast(&gettextrs::gettext("Diagnostic info copied"));
+        }
+    });
+    app.add_action(&action);
+}
+
+/// `app.open-user-css`: create `user.css` if missing (with a one-line comment)
+/// and open it through `app.open-download`, i.e. the OpenURI portal.
+fn register_open_user_css(app: &KarereApplication) {
+    let action = gio::SimpleAction::new("open-user-css", None);
+    action.connect_activate(glib::clone!(
+        #[weak]
+        app,
+        move |_, _| {
+            let path = crate::web_view::user_css_path();
+            if !path.exists() {
+                let created = path
+                    .parent()
+                    .map_or(Ok(()), std::fs::create_dir_all)
+                    .and_then(|()| {
+                        std::fs::write(
+                            &path,
+                            "/* Karere custom CSS: applied to WhatsApp Web after reloading. */\n",
+                        )
+                    });
+                if let Err(e) = created {
+                    log::warn!("open-user-css: cannot create {}: {e}", path.display());
+                    return;
+                }
+            }
+            app.activate_action("open-download", Some(&path.to_string_lossy().to_variant()));
         }
     ));
     app.add_action(&action);
@@ -564,7 +681,7 @@ fn strip_localized(desc: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::needs_open_confirmation;
+    use super::{Diagnostics, format_diagnostics, needs_open_confirmation};
 
     #[test]
     fn risky_types_ask() {
@@ -581,5 +698,27 @@ mod tests {
         for p in ["dl/a.pdf", "dl/a.txt", "dl/noext", "dl/.sh", "dl/a.sh.txt"] {
             assert!(!needs_open_confirmation(p), "{p}");
         }
+    }
+
+    #[test]
+    fn diagnostics_block_has_only_expected_fields() {
+        let text = format_diagnostics(&Diagnostics {
+            version: "4.1.0".into(),
+            chromium: "152.x".into(),
+            gtk: "4.22.0".into(),
+            adw: "1.9.0".into(),
+            session: "wayland".into(),
+            desktop: "GNOME".into(),
+            flatpak: true,
+            accounts: 2,
+            gpu_rendering: false,
+            mobile_layout: "auto".into(),
+        });
+        assert!(text.contains("Karere: 4.1.0\n"));
+        assert!(text.contains("Flatpak: yes\n"));
+        assert!(text.contains("Accounts: 2\n"));
+        assert!(text.contains("GPU rendering: no\n"));
+        assert!(text.contains("Mobile layout: auto\n"));
+        assert_eq!(text.lines().count(), 10);
     }
 }

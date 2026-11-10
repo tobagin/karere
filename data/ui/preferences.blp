@@ -105,6 +105,18 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
           valign: center;
         }
       }
+
+      Adw.ActionRow {
+        title: _("Custom CSS");
+        subtitle: _("Applied after reloading");
+        activatable-widget: btn_user_css;
+
+        [suffix]
+        Gtk.Button btn_user_css {
+          label: _("Open File");
+          valign: center;
+        }
+      }
     }
 
     Adw.PreferencesGroup {

@@ -475,6 +475,85 @@ pub(crate) fn apply_notif_sound_from_settings(browser: &cef::Browser) {
     );
 }
 
+/// Run `js` in `browser`'s main frame (no-op without one).
+fn run_page_script(browser: &cef::Browser, js: &str, name: &str) {
+    use cef::{CefString, ImplBrowser, ImplFrame};
+    if let Some(frame) = browser.main_frame() {
+        frame.execute_java_script(
+            Some(&CefString::from(js)),
+            Some(&CefString::from(name)),
+            0,
+        );
+    }
+}
+
+/// Script telling `30-autocorrect.js` whether English autocorrect applies:
+/// `true` when the first effective spellcheck language is English, `false`
+/// for any other language, `null` (page auto-detect) when there is none. (J2)
+pub(crate) fn autocorrect_language_script(langs: &[String]) -> String {
+    let v = match langs.first() {
+        None => "null",
+        Some(l) if l.split(['-', '_']).next().is_some_and(|p| p.eq_ignore_ascii_case("en")) => {
+            "true"
+        }
+        Some(_) => "false",
+    };
+    format!("if(window.__karereAutocorrectSetEnabled)window.__karereAutocorrectSetEnabled({v});")
+}
+
+/// Push the autocorrect language gate for `langs` (the resolved spellcheck
+/// languages) to `browser`.
+pub(crate) fn apply_autocorrect_language(browser: &cef::Browser, langs: &[String]) {
+    run_page_script(
+        browser,
+        &autocorrect_language_script(langs),
+        "karere://autocorrect-lang",
+    );
+}
+
+/// Largest `user.css` that is injected.
+const USER_CSS_MAX_BYTES: u64 = 256 * 1024;
+
+/// `<user config dir>/<app id>/user.css` (inside Flatpak: `~/.var/app/<id>/config/...`).
+pub(crate) fn user_css_path() -> std::path::PathBuf {
+    glib::user_config_dir()
+        .join(crate::application::APP_ID)
+        .join("user.css")
+}
+
+fn read_user_css() -> Option<String> {
+    use std::io::Read;
+    let file = std::fs::File::open(user_css_path()).ok()?;
+    if file.metadata().ok()?.len() > USER_CSS_MAX_BYTES {
+        log::warn!("user.css is larger than {USER_CSS_MAX_BYTES} bytes; ignoring it");
+        return None;
+    }
+    let mut css = String::new();
+    file.take(USER_CSS_MAX_BYTES).read_to_string(&mut css).ok()?;
+    Some(css)
+}
+
+/// Script creating/updating `<style id="karere-user-css">`. The CSS travels as
+/// a JSON string literal and is assigned via `textContent`, so nothing in it can
+/// break out of the literal or be parsed as markup. (F9)
+pub(crate) fn user_css_script(css: &str) -> String {
+    let lit = serde_json::to_string(css).unwrap_or_else(|_| "\"\"".to_owned());
+    format!(
+        "(function(){{var e=document.getElementById('karere-user-css');\
+         if(!e){{e=document.createElement('style');e.id='karere-user-css';\
+         (document.head||document.documentElement).appendChild(e);}}\
+         e.textContent={lit};}})();"
+    )
+}
+
+/// Inject the user stylesheet, if the file exists. Called from `on_load_end`,
+/// so it applies to every account and again after each reload. (F9)
+pub(crate) fn apply_user_css(browser: &cef::Browser) {
+    if let Some(css) = read_user_css() {
+        run_page_script(browser, &user_css_script(&css), "karere://user-css");
+    }
+}
+
 /// Apply the per-account persisted zoom (lifted to the accessibility floor) to
 /// `browser`, rewriting the persisted value if the floor lifted it. Called from
 /// `on_load_end` so each account restores its zoom on first paint and after
@@ -583,6 +662,8 @@ pub(crate) fn apply_spellcheck_to_browser(browser: &cef::Browser, langs: &[Strin
             log::warn!("set browser.enable_spellchecking failed: {}", err);
         }
     }
+
+    apply_autocorrect_language(browser, langs);
 
     if write_spellcheck_dictionaries(browser, langs) {
         log::info!("spellcheck.dictionaries = {langs:?} (direct)");
@@ -6257,5 +6338,33 @@ mod zoom_tests {
     fn clamp_above_max() {
         let back = cef_to_linear(linear_to_cef(5.0));
         assert!((back - ZOOM_MAX).abs() < 1e-9, "clamp 5.0 -> {back}");
+    }
+}
+
+#[cfg(test)]
+mod page_script_tests {
+    use super::{autocorrect_language_script, user_css_script};
+
+    #[test]
+    fn autocorrect_gate_follows_first_language() {
+        let s = |v: &[&str]| autocorrect_language_script(&v.iter().map(|x| x.to_string()).collect::<Vec<_>>());
+        assert!(s(&["en-US"]).contains("SetEnabled(true)"));
+        assert!(s(&["en_GB", "es"]).contains("SetEnabled(true)"));
+        assert!(s(&["es-ES", "en-US"]).contains("SetEnabled(false)"));
+        assert!(s(&["pt-BR"]).contains("SetEnabled(false)"));
+        assert!(s(&[]).contains("SetEnabled(null)"));
+    }
+
+    #[test]
+    fn user_css_is_a_single_json_literal() {
+        let css = "a::after{content:\"x'\\\"}\n</style><script>alert(1)</script>\u{2028}";
+        let js = user_css_script(css);
+        // Exactly one literal assigned; raw newline never reaches the source.
+        let lit = serde_json::to_string(css).unwrap();
+        assert!(js.contains(&format!("e.textContent={lit};")));
+        assert!(!lit.contains('\n'));
+        let back: String = serde_json::from_str(&lit).unwrap();
+        assert_eq!(back, css);
+        assert!(js.contains("karere-user-css"));
     }
 }
