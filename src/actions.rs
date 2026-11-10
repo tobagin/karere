@@ -197,12 +197,10 @@ fn register_copy_diagnostics(app: &KarereApplication) {
 }
 
 /// `app.open-user-css`: create `user.css` if missing (with a one-line comment)
-/// and open it through `app.open-download`, i.e. the OpenURI portal.
+/// and open it writable through the OpenURI portal.
 fn register_open_user_css(app: &KarereApplication) {
     let action = gio::SimpleAction::new("open-user-css", None);
-    action.connect_activate(glib::clone!(
-        #[weak]
-        app,
+    action.connect_activate(
         move |_, _| {
             let path = crate::web_view::user_css_path();
             if !path.exists() {
@@ -240,7 +238,7 @@ fn register_open_user_css(app: &KarereApplication) {
                 }
             });
         }
-    ));
+    );
     app.add_action(&action);
 }
 

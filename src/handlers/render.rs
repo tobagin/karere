@@ -141,7 +141,7 @@ wrap_render_handler! {
         /// (pin-`device_scale=1.0` model); no scale is re-applied.
         /// Wayland fallback is `origin = (0,0)` so `screen==view`; on X11
         /// origin is the physical window origin queried via `gdk4-x11` (see
-        /// `window_origin_for` in `src/web_view.rs`; xlib path returns
+        /// `window_origin_for` in `src/web_view/x11_origin.rs`; xlib path returns
         /// physical pixels and is not re-scaled), re-queried here so a moved
         /// window is not reported at its old position; the cached value is the
         /// fallback when the widget is gone. Returns `1` if at least one

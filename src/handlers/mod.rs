@@ -132,7 +132,7 @@ pub struct SharedState {
     /// always `(0,0)` because global position is compositor-private and must
     /// stay `(0,0)`. On X11 the value is the cached root-relative origin
     /// queried via `gdk4_x11::X11Surface` in `window_origin_for` (see
-    /// `src/web_view.rs`), converted to physical pixels (xlib physical results
+    /// `src/web_view/x11_origin.rs`), converted to physical pixels (xlib physical results
     /// passed through clamped; only logical/DIP results are scaled via
     /// `widget.scale_factor()`). Before realize or after unrealize the value
     /// is `(0,0)`. Updated on the GTK main thread when the viewport changes

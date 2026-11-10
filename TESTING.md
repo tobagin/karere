@@ -57,7 +57,7 @@ Production-widget contract and CPU-frame state tests run with:
 
 ```sh
 GSETTINGS_SCHEMA_DIR="$PWD/target/test-schemas" GSETTINGS_BACKEND=memory \
-  xvfb-run -a cargo test web_view::tests:: -- --nocapture
+  xvfb-run -a cargo test -- --nocapture web_view::tests:: web_view::gl::tests::
 ```
 
 Generate `target/test-schemas/gschemas.compiled` from `data/io.github.tobagin.karere.gschema.xml.in` (substituting the stable app ID/path) before that command; the integration test performs this setup automatically.
