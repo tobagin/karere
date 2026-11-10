@@ -155,15 +155,23 @@ async fn open_via_portal(path: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// `app.notification-clicked <tag>`: raise the window and call
-/// `__karereActivateNotif('<tag>')` so WhatsApp opens the originating chat.
+/// `app.notification-clicked (account_id, tag)`: raise the window, switch to
+/// the banner's account, and call `__karereActivateNotif('<tag>')` in that
+/// account's browser so WhatsApp opens the originating chat.
 fn register_notification_clicked(app: &KarereApplication) {
-    let action = gio::SimpleAction::new("notification-clicked", Some(glib::VariantTy::STRING));
+    let target_ty = glib::VariantTy::new(crate::notifications::ACTIVATE_TARGET_TYPE)
+        .expect("notification target type is a valid GVariant type");
+    let action = gio::SimpleAction::new("notification-clicked", Some(target_ty));
     action.connect_activate(glib::clone!(
         #[weak]
         app,
         move |_, param| {
-            let tag = param.and_then(|v| v.str()).unwrap_or_default().to_owned();
+            let Some((account_id, tag)) =
+                param.and_then(crate::notifications::parse_activate_target)
+            else {
+                log::warn!("notification-clicked: malformed target");
+                return;
+            };
             let Some(win) = app
                 .active_window()
                 .or_else(|| app.windows().into_iter().next())
@@ -172,12 +180,24 @@ fn register_notification_clicked(app: &KarereApplication) {
                 return;
             };
             win.present();
+            // Withdraw the clicked banner and drop it from the tracker before
+            // the switch, so the switch's withdraw pass does not close the stub
+            // the click is about to activate.
+            crate::notifications::tracker().on_activated(&account_id, &tag);
+            let mgr = crate::accounts::manager();
+            if mgr.get(&account_id).is_none() {
+                // Account removed since the banner was shown: just raise.
+                return;
+            }
             if let Some(kw) = win.downcast_ref::<crate::window::KarereWindow>() {
+                if mgr.active().is_none_or(|a| a.id != account_id) {
+                    kw.switch_account(&account_id);
+                }
                 let script = format!(
                     "window.__karereActivateNotif({})",
                     crate::notifications::js_string(&tag)
                 );
-                kw.run_page_js(&script);
+                kw.run_account_js(&account_id, &script);
             }
         }
     ));

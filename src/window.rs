@@ -64,11 +64,11 @@ impl KarereWindow {
         }
     }
 
-    /// Run `script` in the page's main frame (notification click routing
-    /// re-enters via `__karereActivateNotif`).
-    pub fn run_page_js(&self, script: &str) {
+    /// Run `script` in `account_id`'s browser, foreground or not (notification
+    /// click routing for a specific account).
+    pub fn run_account_js(&self, account_id: &str, script: &str) {
         if let Some(web) = self.imp().web_view.borrow().as_ref() {
-            web.run_js(script);
+            web.run_js_in_account(account_id, script);
         }
     }
 }
@@ -489,8 +489,14 @@ mod imp {
                             return;
                         };
                         let web = win.imp().web_view.borrow().clone();
-                        if let Some(web) = web {
-                            crate::notifications::tracker().on_focus_gained(|js| web.run_js(js));
+                        // Only the account in front of the user: background
+                        // accounts keep their banners.
+                        if let Some(web) = web
+                            && let Some(active) = crate::accounts::manager().active()
+                        {
+                            crate::notifications::tracker().on_account_viewed(&active.id, |js| {
+                                web.run_js_in_account(&active.id, js)
+                            });
                         }
                     },
                 );
@@ -789,6 +795,12 @@ mod imp {
                 let z = Self::load_zoom_for_active_account().max(Self::zoom_floor());
                 web.set_zoom_linear(z);
                 self.update_zoom_label(z);
+                // Viewing an account in a focused window withdraws its banners
+                // (an unfocused window is handled by the focus-gained path).
+                if self.obj().is_active() {
+                    crate::notifications::tracker()
+                        .on_account_viewed(id, |js| web.run_js_in_account(id, js));
+                }
             }
         }
 
@@ -806,13 +818,12 @@ mod imp {
                     )));
                 return;
             }
-            let n = count + 1;
-            let account = mgr.add();
-            mgr.update_user_label(&account.id, Some(format!("Account {n}")));
+            // One save + one switcher rebuild; label is the lowest unused
+            // "Account N" so removals never lead to duplicates.
+            let account = mgr.add_active_with_default_label();
             if let Some(web) = self.web_view.borrow().as_ref() {
                 web.spawn_account(&account.id, true);
             }
-            mgr.activate(&account.id);
             self.close_switcher();
         }
 
@@ -1290,20 +1301,34 @@ mod imp {
                 return; // teardown already in flight
             }
             self.closing.set(true);
+            // Held so the wait below also covers the DevTools browser.
+            let devtools = self.devtools_view.borrow().clone();
             self.close_devtools();
             let web_opt = self.web_view.borrow().clone();
             let Some(web) = web_opt else {
                 self.obj().destroy();
                 return;
             };
-            web.close_browser();
+            web.shutdown_browsers();
+            // Wait for every browser to report closed so CEF flushes cookies and
+            // IndexedDB before shutdown; never hang quit on a stuck browser.
+            const CLOSE_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(3);
+            let started = std::time::Instant::now();
             let win_weak = self.obj().downgrade();
             let web_weak = web.downgrade();
             glib::timeout_add_local(std::time::Duration::from_millis(50), move || {
-                let (Some(win), Some(web)) = (win_weak.upgrade(), web_weak.upgrade()) else {
+                let Some(win) = win_weak.upgrade() else {
                     return glib::ControlFlow::Break;
                 };
-                if web.is_browser_closed() {
+                let closed = web_weak.upgrade().is_none_or(|web| web.is_browser_closed())
+                    && devtools.as_ref().is_none_or(|dv| dv.is_browser_closed());
+                if closed {
+                    win.destroy();
+                    glib::ControlFlow::Break
+                } else if started.elapsed() >= CLOSE_TIMEOUT {
+                    log::warn!(
+                        "quit: browsers did not report closed within {CLOSE_TIMEOUT:?}; tearing down anyway"
+                    );
                     win.destroy();
                     glib::ControlFlow::Break
                 } else {

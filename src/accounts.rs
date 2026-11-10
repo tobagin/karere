@@ -185,10 +185,11 @@ pub fn delete_session_dir(id: &str) {
 
 /// Per-account CEF session cache dir. Must be a DIRECT child of `root_cache_path`: CEF treats each immediate subdir as a profile and rejects deeper nesting, silently falling back to the shared global profile.
 pub fn session_cache_path(id: &str) -> PathBuf {
-    accounts_root().join("sessions").join(id)
+    sessions_root().join(id)
 }
 
-/// Load accounts from `path`. Missing file → empty list; malformed → `Err` (never silently overwritten).
+/// Load accounts from `path`. Missing file → empty list; malformed → `Err`. Callers
+/// must not save over a malformed file; [`load_or_recover`] moves it aside first.
 pub fn load_from(path: &std::path::Path) -> Result<Vec<Account>, AccountsError> {
     match std::fs::read(path) {
         Ok(bytes) => serde_json::from_slice::<Vec<Account>>(&bytes)
@@ -221,8 +222,154 @@ pub fn save_to(path: &std::path::Path, accounts: &[Account]) -> Result<(), Accou
     f.write_all(&json)
         .map_err(|e| AccountsError::Io(e.to_string()))?;
     f.flush().map_err(|e| AccountsError::Io(e.to_string()))?;
+    // Data must be on disk before the rename publishes it, or a power cut can
+    // leave a renamed-but-empty accounts.json.
+    f.sync_all().map_err(|e| AccountsError::Io(e.to_string()))?;
+    drop(f);
     std::fs::rename(&tmp, path).map_err(|e| AccountsError::Io(e.to_string()))?;
     Ok(())
+}
+
+/// Root holding one CEF profile dir per account (`sessions/<account id>`).
+pub fn sessions_root() -> PathBuf {
+    accounts_root().join("sessions")
+}
+
+/// `name` is a canonical (lowercase, hyphenated) UUID, the only form
+/// [`Account::new`] produces. Anything else under `sessions/` is not ours.
+fn is_account_id(name: &str) -> bool {
+    uuid::Uuid::parse_str(name).is_ok_and(|u| u.hyphenated().to_string() == name)
+}
+
+/// Account ids of the real (non-symlink) directories directly under `sessions`.
+fn session_dir_ids(sessions: &std::path::Path) -> Vec<(String, std::fs::Metadata)> {
+    let Ok(entries) = std::fs::read_dir(sessions) else {
+        return Vec::new();
+    };
+    entries
+        .flatten()
+        .filter_map(|e| {
+            // DirEntry::file_type does not follow symlinks.
+            if !e.file_type().ok()?.is_dir() {
+                return None;
+            }
+            let name = e.file_name().into_string().ok()?;
+            if !is_account_id(&name) {
+                return None;
+            }
+            Some((name, e.metadata().ok()?))
+        })
+        .collect()
+}
+
+/// Rebuild a minimal account list from the session dirs under `sessions`, so a
+/// lost/corrupt accounts.json does not orphan logged-in sessions. Labels, mute
+/// and zoom are gone; identity re-fills from the Store hook on load.
+pub fn recover_from_sessions(sessions: &std::path::Path) -> Vec<Account> {
+    let mut out: Vec<Account> = session_dir_ids(sessions)
+        .into_iter()
+        .map(|(id, meta)| {
+            let ts = meta
+                .modified()
+                .ok()
+                .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
+                .map(|d| d.as_secs() as i64)
+                .unwrap_or_else(now);
+            Account {
+                id,
+                created_at: ts,
+                last_used_at: ts,
+                has_session: true,
+                ..Account::new()
+            }
+        })
+        .collect();
+    sort_stable(&mut out);
+    out
+}
+
+/// How [`load_or_recover`] produced its list.
+#[derive(Debug, PartialEq, Eq)]
+pub enum LoadOutcome {
+    /// accounts.json existed and parsed: the list is authoritative.
+    Loaded,
+    /// accounts.json was missing, unreadable or corrupt; the list was rebuilt
+    /// from session dirs (possibly empty). Not authoritative for cleanup.
+    Recovered,
+}
+
+/// Load `path`; when it is missing, unreadable or corrupt, rebuild the list from
+/// the session dirs under `sessions` instead of starting empty. A corrupt file
+/// is moved aside to `<path>.corrupt-<unix ts>` (never overwritten) and the
+/// recovered list is written in its place.
+pub fn load_or_recover(
+    path: &std::path::Path,
+    sessions: &std::path::Path,
+) -> (Vec<Account>, LoadOutcome) {
+    let err = match std::fs::metadata(path) {
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => None,
+        _ => match load_from(path) {
+            Ok(list) => return (list, LoadOutcome::Loaded),
+            Err(e) => Some(e),
+        },
+    };
+    if let Some(e) = &err {
+        log::error!("accounts: {e}; rebuilding the account list from session dirs");
+    }
+    if matches!(err, Some(AccountsError::Parse(_))) {
+        let mut aside = path.as_os_str().to_owned();
+        aside.push(format!(".corrupt-{}", now()));
+        let aside = PathBuf::from(aside);
+        match std::fs::rename(path, &aside) {
+            Ok(()) => log::warn!("accounts: moved corrupt file to {}", aside.display()),
+            Err(e) => {
+                log::error!("accounts: could not move corrupt file aside: {e}");
+                if let Err(e) = std::fs::copy(path, &aside) {
+                    log::error!("accounts: could not back up corrupt file: {e}");
+                }
+            }
+        }
+    }
+    let list = recover_from_sessions(sessions);
+    if !list.is_empty() {
+        log::warn!("accounts: recovered {} account(s) from session dirs", list.len());
+        if let Err(e) = save_to(path, &list) {
+            log::error!("accounts: failed to save recovered list: {e}");
+        }
+    }
+    (list, LoadOutcome::Recovered)
+}
+
+/// Delete session dirs directly under `sessions` whose name is a canonical
+/// account id not in `known` (left behind when removal's delayed wipe did not
+/// run). Only call with an authoritative list ([`LoadOutcome::Loaded`]) and
+/// before any CEF browser exists. Returns the ids removed.
+pub fn sweep_orphan_sessions(sessions: &std::path::Path, known: &[Account]) -> Vec<String> {
+    let mut removed = Vec::new();
+    for (id, _) in session_dir_ids(sessions) {
+        if known.iter().any(|a| a.id == id) {
+            continue;
+        }
+        let dir = sessions.join(&id);
+        match std::fs::remove_dir_all(&dir) {
+            Ok(()) => {
+                log::info!("accounts: removed orphan session dir {}", dir.display());
+                removed.push(id);
+            }
+            Err(e) => log::warn!("accounts: failed to remove orphan {}: {e}", dir.display()),
+        }
+    }
+    removed
+}
+
+/// Lowest unused default label `Account N` (N >= 1) among `accounts`.
+pub fn lowest_unused_label(accounts: &[Account]) -> String {
+    let used: std::collections::HashSet<u32> = accounts
+        .iter()
+        .filter_map(|a| a.user_label.as_deref()?.trim().strip_prefix("Account ")?.parse().ok())
+        .collect();
+    let n = (1..).find(|n| !used.contains(n)).unwrap_or(1);
+    format!("Account {n}")
 }
 
 /// Sort in place by `created_at` ascending (id tiebreak): a stable order that
@@ -264,17 +411,16 @@ glib::wrapper! {
 }
 
 impl AccountManager {
-    /// Build a manager and load `accounts.json`.
-    pub fn load() -> Result<Self, AccountsError> {
-        let obj: Self = glib::Object::new();
-        let accts = load_from(&accounts_file())?;
-        obj.imp().accounts.replace(accts);
-        Ok(obj)
-    }
-
     /// Persist the current list to `accounts.json`.
     pub fn save(&self) -> Result<(), AccountsError> {
         save_to(&accounts_file(), &self.imp().accounts.borrow())
+    }
+
+    /// [`save`](Self::save), logging instead of returning a failure.
+    fn save_logged(&self) {
+        if let Err(e) = self.save() {
+            log::error!("accounts: failed to save: {e}");
+        }
     }
 
     fn emit_changed(&self) {
@@ -285,7 +431,25 @@ impl AccountManager {
     pub fn add(&self) -> Account {
         let account = Account::new();
         self.imp().accounts.borrow_mut().push(account.clone());
-        let _ = self.save();
+        self.save_logged();
+        self.emit_changed();
+        account
+    }
+
+    /// Create a new account labelled with the lowest unused `Account N` and make
+    /// it the active one, with a single save and a single `accounts-changed`.
+    pub fn add_active_with_default_label(&self) -> Account {
+        let mut account = Account::new();
+        {
+            let mut list = self.imp().accounts.borrow_mut();
+            account.user_label = Some(lowest_unused_label(&list));
+            account.is_active = true;
+            for a in list.iter_mut() {
+                a.is_active = false;
+            }
+            list.push(account.clone());
+        }
+        self.save_logged();
         self.emit_changed();
         account
     }
@@ -314,7 +478,7 @@ impl AccountManager {
             }
         }
         if changed {
-            let _ = self.save();
+            self.save_logged();
             self.emit_changed();
         }
     }
@@ -322,7 +486,7 @@ impl AccountManager {
     /// Remove the account with `id`.
     pub fn remove(&self, id: &str) {
         self.imp().accounts.borrow_mut().retain(|a| a.id != id);
-        let _ = self.save();
+        self.save_logged();
         self.emit_changed();
     }
 
@@ -337,7 +501,7 @@ impl AccountManager {
                 }
             }
         }
-        let _ = self.save();
+        self.save_logged();
         self.emit_changed();
     }
 
@@ -373,7 +537,7 @@ impl AccountManager {
                 }
             }
         }
-        let _ = self.save();
+        self.save_logged();
         self.emit_changed();
     }
 
@@ -385,7 +549,7 @@ impl AccountManager {
                 a.user_label = label.filter(|s| !s.trim().is_empty());
             }
         }
-        let _ = self.save();
+        self.save_logged();
         self.emit_changed();
     }
 
@@ -402,7 +566,7 @@ impl AccountManager {
                 return;
             }
         }
-        let _ = self.save();
+        self.save_logged();
     }
 
     /// Set this account's notification mute flag and persist it. Deliberately
@@ -417,7 +581,7 @@ impl AccountManager {
             _ => return,
         }
         drop(list);
-        let _ = self.save();
+        self.save_logged();
     }
 
     /// Whether `id`'s notifications are muted (unknown id → not muted).
@@ -459,7 +623,7 @@ impl AccountManager {
                 a.avatar_png = Some(png);
             }
         }
-        let _ = self.save();
+        self.save_logged();
         self.emit_changed();
     }
 
@@ -475,7 +639,7 @@ impl AccountManager {
                 a.avatar_png = None;
             }
         }
-        let _ = self.save();
+        self.save_logged();
         self.emit_changed();
     }
 }
@@ -485,14 +649,29 @@ thread_local! {
     static MANAGER: RefCell<Option<AccountManager>> = const { RefCell::new(None) };
 }
 
-/// The process-wide [`AccountManager`], loading `accounts.json` on first use. A malformed file is reported (never discarded) and an empty manager returned so the app still launches.
+/// The process-wide [`AccountManager`], loading `accounts.json` on first use.
+/// A missing, unreadable or corrupt file never starts the app empty over live
+/// sessions: a corrupt file is moved aside and the list rebuilt from the session
+/// dirs ([`load_or_recover`]). Only after a clean load are session dirs of
+/// unknown accounts swept; the first call happens before any browser exists.
 pub fn manager() -> AccountManager {
     MANAGER.with(|cell| {
         if cell.borrow().is_none() {
-            let m = AccountManager::load().unwrap_or_else(|e| {
-                log::error!("accounts: {e}; starting with an empty account list");
-                glib::Object::new()
-            });
+            let m: AccountManager = glib::Object::new();
+            // Unit tests must never touch (rename, rewrite, sweep) the real
+            // user data dir.
+            if cfg!(test) {
+                if let Ok(list) = load_from(&accounts_file()) {
+                    m.imp().accounts.replace(list);
+                }
+            } else {
+                let sessions = sessions_root();
+                let (list, outcome) = load_or_recover(&accounts_file(), &sessions);
+                if outcome == LoadOutcome::Loaded {
+                    sweep_orphan_sessions(&sessions, &list);
+                }
+                m.imp().accounts.replace(list);
+            }
             *cell.borrow_mut() = Some(m);
         }
         cell.borrow().as_ref().unwrap().clone()
@@ -665,5 +844,98 @@ mod tests {
         assert_eq!(std::fs::read(&path).unwrap(), before);
         assert_eq!(load_from(&path).unwrap(), vec![good]);
         std::fs::remove_dir_all(&dir).ok();
+    }
+
+    fn temp_store() -> (PathBuf, PathBuf, PathBuf) {
+        let dir = std::env::temp_dir().join(format!("karere-acct-{}", uuid::Uuid::new_v4()));
+        let sessions = dir.join("sessions");
+        std::fs::create_dir_all(&sessions).unwrap();
+        let path = dir.join("accounts.json");
+        (dir, path, sessions)
+    }
+
+    #[test]
+    fn corrupt_file_is_moved_aside_and_sessions_adopted() {
+        let (dir, path, sessions) = temp_store();
+        std::fs::write(&path, b"{ not valid json ]").unwrap();
+        let a = Account::new().id;
+        let b = Account::new().id;
+        std::fs::create_dir(sessions.join(&a)).unwrap();
+        std::fs::create_dir(sessions.join(&b)).unwrap();
+        std::fs::create_dir(sessions.join("not-an-account")).unwrap();
+        std::fs::write(sessions.join(Account::new().id), b"a file, not a dir").unwrap();
+
+        let (list, outcome) = load_or_recover(&path, &sessions);
+        assert_eq!(outcome, LoadOutcome::Recovered);
+        let mut ids: Vec<_> = list.iter().map(|x| x.id.clone()).collect();
+        ids.sort();
+        let mut want = vec![a, b];
+        want.sort();
+        assert_eq!(ids, want);
+
+        // The bad bytes survive under a .corrupt-<ts> name; accounts.json now
+        // holds the recovered list.
+        let aside: Vec<_> = std::fs::read_dir(&dir)
+            .unwrap()
+            .flatten()
+            .filter(|e| {
+                e.file_name()
+                    .to_string_lossy()
+                    .starts_with("accounts.json.corrupt-")
+            })
+            .collect();
+        assert_eq!(aside.len(), 1);
+        assert_eq!(std::fs::read(aside[0].path()).unwrap(), b"{ not valid json ]");
+        assert_eq!(load_from(&path).unwrap(), list);
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn missing_file_adopts_sessions() {
+        let (dir, path, sessions) = temp_store();
+        let a = Account::new().id;
+        std::fs::create_dir(sessions.join(&a)).unwrap();
+        let (list, outcome) = load_or_recover(&path, &sessions);
+        assert_eq!(outcome, LoadOutcome::Recovered);
+        assert_eq!(list.len(), 1);
+        assert_eq!(list[0].id, a);
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn valid_file_loads_and_sweep_removes_only_orphan_account_dirs() {
+        let (dir, path, sessions) = temp_store();
+        let kept = Account::new();
+        save_to(&path, std::slice::from_ref(&kept)).unwrap();
+        let orphan = Account::new().id;
+        std::fs::create_dir(sessions.join(&kept.id)).unwrap();
+        std::fs::create_dir(sessions.join(&orphan)).unwrap();
+        std::fs::create_dir(sessions.join("Default")).unwrap();
+        std::fs::create_dir(sessions.join(orphan.to_uppercase())).unwrap();
+
+        let (list, outcome) = load_or_recover(&path, &sessions);
+        assert_eq!(outcome, LoadOutcome::Loaded);
+        assert_eq!(list, vec![kept.clone()]);
+        assert_eq!(sweep_orphan_sessions(&sessions, &list), vec![orphan.clone()]);
+        assert!(sessions.join(&kept.id).is_dir());
+        assert!(!sessions.join(&orphan).exists());
+        assert!(sessions.join("Default").is_dir());
+        assert!(sessions.join(orphan.to_uppercase()).is_dir());
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn default_label_is_lowest_unused() {
+        let mut a = Account::new();
+        a.user_label = Some("Account 1".into());
+        let mut b = Account::new();
+        b.user_label = Some("Account 3".into());
+        let mut c = Account::new();
+        c.user_label = Some("Work".into());
+        assert_eq!(lowest_unused_label(&[]), "Account 1");
+        assert_eq!(lowest_unused_label(&[a.clone(), b.clone(), c]), "Account 2");
+        let mut d = Account::new();
+        d.user_label = Some("Account 2".into());
+        assert_eq!(lowest_unused_label(&[a, b, d]), "Account 4");
     }
 }

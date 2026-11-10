@@ -101,20 +101,15 @@ fn prompt_restart(parent: gtk::Widget, body: &str) {
     dialog.present(Some(&parent));
 }
 
-/// Relaunch Karere. The app is single-instance, so a fresh launch would just
-/// activate the existing one — spawn a detached relauncher that waits for this
-/// instance to quit (releasing the D-Bus name) before re-exec'ing the same
-/// binary. Stays inside the sandbox (no host access / extra permission needed):
+/// Relaunch Karere: flag the restart and run the normal `app.quit` teardown
+/// (every browser closes, then `cef::shutdown()`); `main` then re-execs the
+/// same binary in-process, so the new instance only starts once the old one has
+/// released the D-Bus name and CEF profile. Stays inside the sandbox:
 /// `current_exe()` is `/app/bin/karere` under Flatpak.
 fn restart_app() {
-    if let Ok(exe) = std::env::current_exe() {
-        let _ = std::process::Command::new("sh")
-            .arg("-c")
-            .arg(format!("sleep 1; exec {exe:?}"))
-            .spawn();
-    }
+    crate::RESTART_REQUESTED.store(true, std::sync::atomic::Ordering::Release);
     if let Some(app) = gio::Application::default() {
-        app.quit();
+        app.activate_action("quit", None);
     }
 }
 

@@ -28,16 +28,21 @@ wrap_load_handler! {
     impl LoadHandler {
         fn on_load_start(
             &self,
-            _browser: Option<&mut Browser>,
+            browser: Option<&mut Browser>,
             frame: Option<&mut Frame>,
             _transition_type: TransitionType,
         ) {
-            // Main-frame navigation invalidates every cached notification tag:
-            // the page is rebuilt, so a pending withdrawal would hit a dead
-            // frame (M14 3.5).
+            // Main-frame navigation invalidates this account's cached
+            // notification tags: the page is rebuilt, so a pending withdrawal
+            // would hit a dead frame (M14 3.5). Other accounts (and the
+            // DevTools view, which owns no account) are untouched.
             let is_main = frame.is_none_or(|f| f.is_main() == 1);
             if is_main {
-                crate::notifications::tracker().on_load_start();
+                if let Some(account_id) =
+                    browser.and_then(|b| crate::accounts::account_for_browser(b.identifier()))
+                {
+                    crate::notifications::tracker().on_load_start(&account_id);
+                }
                 // New page → re-apply spellcheck on first editable-field focus.
                 self.handler.shared.lock().spellcheck_last = None;
             }

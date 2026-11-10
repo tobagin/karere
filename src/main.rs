@@ -29,6 +29,11 @@ mod window;
 
 use application::KarereApplication;
 
+/// Set by Preferences' "Restart Now": after the normal quit teardown and
+/// `cef::shutdown()`, `main` re-execs the same binary instead of exiting.
+pub static RESTART_REQUESTED: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+
 fn main() -> Result<()> {
     // `--debuglevel=LEVEL` sets the log level (`--debug` = debug alias; default
     // INFO; --debuglevel wins). RUST_LOG still overrides.
@@ -105,6 +110,20 @@ fn main() -> Result<()> {
     if is_primary {
         cef_pump::stop();
         cef::shutdown();
+        if RESTART_REQUESTED.load(std::sync::atomic::Ordering::Acquire) {
+            use std::os::unix::process::CommandExt;
+            // The D-Bus name and CEF profile lock went with the old instance,
+            // so the new image comes up as the primary.
+            match std::env::current_exe() {
+                Ok(exe) => {
+                    let err = std::process::Command::new(exe)
+                        .args(std::env::args_os().skip(1))
+                        .exec();
+                    log::error!("restart: exec failed: {err}");
+                }
+                Err(e) => log::error!("restart: cannot resolve own executable: {e}"),
+            }
+        }
     }
     std::process::exit(code);
 }

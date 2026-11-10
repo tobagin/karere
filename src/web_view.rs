@@ -123,6 +123,20 @@ impl KarereWebView {
         self.imp().run_js(script);
     }
 
+    /// Run `script` in the main frame of `account_id`'s browser (foreground or
+    /// background); no-op when that account has no live browser.
+    pub fn run_js_in_account(&self, account_id: &str, script: &str) {
+        use cef::{CefString, ImplBrowser, ImplFrame};
+        let browser = self.imp().browsers.lock().get(account_id).cloned();
+        if let Some(frame) = browser.and_then(|b| b.main_frame()) {
+            frame.execute_java_script(
+                Some(&CefString::from(script)),
+                Some(&CefString::from("karere://notify")),
+                0,
+            );
+        }
+    }
+
     /// Switch the live browser's spellcheck languages without recreating it, via the
     /// `spellcheck.dictionaries` / `browser.enable_spellchecking` request-context prefs;
     /// Chromium downloads missing `.bdic` dictionaries on demand. `langs` are BCP-47
@@ -155,11 +169,29 @@ impl KarereWebView {
         self.imp().close_account_browser(account_id);
     }
 
+    /// Quit path: close every browser for good. Unlike [`close_browser`](Self::close_browser)
+    /// (also used to recreate the pool), contexts still initialising will not
+    /// create a browser afterwards.
+    pub fn shutdown_browsers(&self) {
+        self.imp()
+            .shutting_down
+            .store(true, std::sync::atomic::Ordering::Release);
+        self.imp().close_browser();
+    }
+
+    /// True once every browser this view asked to close (pooled accounts, the
+    /// legacy/DevTools browser, removed accounts) has reported `on_before_close`,
+    /// and the current foreground handler, if any, is closed too.
     pub fn is_browser_closed(&self) -> bool {
-        match self.imp().life_span.lock().as_ref() {
-            Some(life) => life.state.lock().closed,
-            None => true, // no life-span handler yet → no browser to wait on
-        }
+        let imp = self.imp();
+        let mut closing = imp.closing_life_spans.lock();
+        closing.retain(|l| !l.state.lock().closed);
+        let current_open = imp
+            .life_span
+            .lock()
+            .as_ref()
+            .is_some_and(|l| !l.state.lock().closed);
+        closing.is_empty() && !current_open
     }
 }
 
@@ -539,6 +571,15 @@ mod imp {
         pub pending_contexts: Mutex<HashMap<String, RequestContext>>,
         /// The account id whose browser is currently foreground.
         pub foreground: Mutex<Option<String>>,
+        /// Account the user last asked to show while its context was still
+        /// initialising; consumed by `on_account_context_ready`.
+        pub wanted_foreground: Mutex<Option<String>>,
+        /// Life-span handlers of browsers asked to close, held until each reports
+        /// `closed` so quit can wait for every one of them.
+        pub closing_life_spans: Mutex<Vec<ShellLifeSpanHandler>>,
+        /// Set by quit: a context that finishes initialising afterwards must not
+        /// create a browser nobody will close.
+        pub shutting_down: AtomicBool,
         pub life_span: Mutex<Option<ShellLifeSpanHandler>>,
         pub pending_url: Mutex<Option<String>>,
         /// Set for the embedded DevTools view; selects the permissive client.
@@ -960,10 +1001,18 @@ mod imp {
             // Close every pooled account browser, then the legacy/DevTools single
             // browser if it's outside the pool.
             let pooled: Vec<Browser> = self.browsers.lock().drain().map(|(_, b)| b).collect();
-            self.life_spans.lock().clear();
+            {
+                // Keep every handler until it reports closed (`is_browser_closed`).
+                let mut closing = self.closing_life_spans.lock();
+                closing.extend(self.life_spans.lock().drain().map(|(_, l)| l));
+                if let Some(l) = self.life_span.lock().take() {
+                    closing.push(l);
+                }
+            }
             self.cdp_registrations.borrow_mut().clear();
             self.pending_contexts.lock().clear();
             *self.foreground.lock() = None;
+            *self.wanted_foreground.lock() = None;
             if let Some(shared) = self.shared.lock().as_ref() {
                 shared.lock().foreground_browser_id = 0;
             }
@@ -1380,7 +1429,16 @@ mod imp {
                 return;
             }
 
+            if self.shutting_down.load(Ordering::Acquire) {
+                return; // quitting: a late spawn would never be closed
+            }
+
             if let Some(id) = account_id.as_ref() {
+                if make_foreground {
+                    // Remembered until the browser exists (switch_to/adopt clears
+                    // it), so a still-initialising context still takes over.
+                    *self.wanted_foreground.lock() = Some(id.clone());
+                }
                 if self.browsers.lock().contains_key(id) {
                     if make_foreground {
                         self.switch_to(id);
@@ -1440,6 +1498,23 @@ mod imp {
             account_id: &str,
             make_foreground: bool,
         ) {
+            if self.shutting_down.load(Ordering::Acquire) {
+                log::info!("context ready for {account_id} during quit; not creating a browser");
+                self.pending_contexts.lock().remove(account_id);
+                return;
+            }
+            // The latest foreground request wins over the flag captured at spawn
+            // time: a switch to this account while it was initialising must show
+            // it, and a switch away from it must not be undone now.
+            let make_foreground = {
+                let mut wanted = self.wanted_foreground.lock();
+                if wanted.as_deref() == Some(account_id) {
+                    *wanted = None;
+                    true
+                } else {
+                    make_foreground && wanted.is_none() && self.foreground.lock().is_none()
+                }
+            };
             self.create_browser_now(
                 request_context,
                 Some(account_id.to_owned()),
@@ -1586,6 +1661,12 @@ mod imp {
             if let Some(shared) = self.shared.lock().as_ref() {
                 shared.lock().foreground_browser_id = id;
             }
+            {
+                let mut wanted = self.wanted_foreground.lock();
+                if wanted.is_some() && *wanted == account_id {
+                    *wanted = None;
+                }
+            }
             *self.foreground.lock() = account_id;
             *self.life_span.lock() = Some(life);
             *self.browser.lock() = Some(browser.clone());
@@ -1619,13 +1700,14 @@ mod imp {
         /// target has no spawned browser.
         pub fn switch_to(&self, new_id: &str) {
             if self.foreground.lock().as_deref() == Some(new_id) {
+                let mut wanted = self.wanted_foreground.lock();
+                if wanted.as_deref() == Some(new_id) {
+                    *wanted = None;
+                }
                 return;
             }
-            if let Some(prev) = self.browser.lock().as_ref()
-                && let Some(host) = prev.host()
-            {
-                host.was_hidden(1);
-            }
+            // Resolve the target before touching the current foreground, so a
+            // missing target leaves the visible account showing.
             let Some(browser) = self.browsers.lock().get(new_id).cloned() else {
                 log::warn!("switch_to: no spawned browser for account {new_id}");
                 return;
@@ -1635,13 +1717,28 @@ mod imp {
                 log::warn!("switch_to: no life-span handler for account {new_id}");
                 return;
             };
+            if let Some(prev) = self.browser.lock().as_ref()
+                && let Some(host) = prev.host()
+            {
+                host.was_hidden(1);
+            }
             self.adopt_foreground(Some(new_id.to_owned()), browser, life);
         }
 
         /// Close and drop the browser for `account_id` (the `remove(id)` path).
         pub fn close_account_browser(&self, account_id: &str) {
             let was_foreground = self.foreground.lock().as_deref() == Some(account_id);
-            self.life_spans.lock().remove(account_id);
+            {
+                let mut wanted = self.wanted_foreground.lock();
+                if wanted.as_deref() == Some(account_id) {
+                    *wanted = None;
+                }
+            }
+            // Quit still waits on this browser if it has not finished closing.
+            let life = self.life_spans.lock().remove(account_id);
+            if let Some(life) = life {
+                self.closing_life_spans.lock().push(life);
+            }
             // Detach the notification bridge (drop = remove observer).
             self.cdp_registrations.borrow_mut().remove(account_id);
             if let Some(browser) = self.browsers.lock().remove(account_id) {
@@ -3426,7 +3523,13 @@ mod imp {
         name: Option<String>,
         coords: Option<(f64, f64)>,
     ) {
-        let payload = crate::paste::make_blob(bytes);
+        let payload = match crate::paste::make_blob(bytes) {
+            Ok(p) => p,
+            Err(err) => {
+                log::warn!("paste: {err}");
+                return;
+            }
+        };
         let (x, y) = match coords {
             Some((x, y)) => (Some(x), Some(y)),
             None => (None, None),
@@ -4347,6 +4450,12 @@ mod input_tests {
 
     #[test]
     fn drag_then_immediate_keyboard_and_command_copy_use_foreground_pipeline() {
+        // The copy bridge runs under node; build environments without it (the
+        // GNOME SDK) skip instead of failing.
+        if Command::new("node").arg("--version").output().is_err() {
+            eprintln!("skipping: `node` not found on PATH");
+            return;
+        }
         let active = Cell::new(7);
         let observed = RefCell::new(Vec::new());
         let mut adapter = MouseButtonTracker::default();

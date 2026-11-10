@@ -11,7 +11,7 @@
 //! debug-only port (see `crate::devtools` / `cef_runtime::debug_enabled`).
 
 use std::cell::RefCell;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
@@ -132,27 +132,37 @@ const SW_PATCH: &str = r#"
 "#;
 
 /// Page-realm patch: WhatsApp raises message notifications via `new Notification()` in the page (not the SW). Replaces `window.Notification` with a Proxy whose `construct` trap suppresses the banner, forwards via `console.log`, and returns a Notification-shaped stub.
+///
+/// Installed both as a new-document script (runs before page scripts) and by
+/// `Runtime.evaluate` (already-loaded documents), so it is idempotent: it only
+/// (re)installs when `window.Notification` is not already its own proxy, which
+/// also lets it win over the renderer-injected fallback observer whichever of
+/// the two runs first. Page-initiated `close()` reports `{event:"close"}`.
 const PAGE_PATCH: &str = r#"
 (function () {
   var PREFIX = "__KARERE_NOTIF__:";
   try {
     var Orig = window.Notification;
     if (typeof Orig !== "function") return "no-notification-api";
-    if (window.__karereNotifPatched) return "already";
-    window.__karereNotifPatched = true;
+    if (window.__karereNotifProxy && Orig === window.__karereNotifProxy) return "already";
 
     var liveByTag = (window.__karereLive = window.__karereLive || new Map());
-    var seq = 0;
+    // tag -> time a real-body notification fired (see construct).
+    var bodyTags = (window.__karereBodyTags = window.__karereBodyTags || new Map());
+    var BODY_TTL_MS = 5000;
+    function emit(o) { try { console.log(PREFIX + JSON.stringify(o)); } catch (e) {} }
+    function nextSeq() { window.__karereSeq = (window.__karereSeq || 0) + 1; return window.__karereSeq; }
 
     function Stub(title, opts) {
       opts = opts || {};
       this.title = title == null ? "" : String(title);
       this.body = opts.body == null ? "" : String(opts.body);
       this.icon = opts.icon == null ? "" : String(opts.icon);
-      this.tag = opts.tag == null ? ("__k" + (++seq)) : String(opts.tag);
+      this.tag = opts.tag == null ? ("__k" + nextSeq()) : String(opts.tag);
       this.data = opts.data;
       this.onclick = null; this.onclose = null; this.onshow = null; this.onerror = null;
       this._l = { click: [], close: [], show: [], error: [] };
+      this._closed = false;
     }
     Stub.prototype.addEventListener = function (t, c) { if (this._l[t] && typeof c === "function") this._l[t].push(c); };
     Stub.prototype.removeEventListener = function (t, c) { var a = this._l[t]; if (!a) return; var i = a.indexOf(c); if (i >= 0) a.splice(i, 1); };
@@ -163,7 +173,22 @@ const PAGE_PATCH: &str = r#"
       return true;
     };
     Stub.prototype._fire = function (t) { var e; try { e = new Event(t); } catch (x) { e = { type: t, target: this }; } this.dispatchEvent(e); };
-    Stub.prototype.close = function () { liveByTag.delete(this.tag); this._fire("close"); };
+    // `report`: page-initiated close -> tell the host to withdraw the banner.
+    // Only the current stub for a tag counts, and the report is deferred so a
+    // close immediately followed by a same-tag replacement keeps the banner.
+    Stub.prototype._close = function (report) {
+      if (this._closed) return;
+      this._closed = true;
+      if (liveByTag.get(this.tag) === this) {
+        liveByTag.delete(this.tag);
+        if (report) {
+          var tag = this.tag;
+          setTimeout(function () { if (!liveByTag.has(tag)) emit({ event: "close", tag: tag }); }, 1000);
+        }
+      }
+      this._fire("close");
+    };
+    Stub.prototype.close = function () { this._close(true); };
 
     function iconAllowed(url) {
       if (/^blob:/i.test(url)) return true;
@@ -185,19 +210,17 @@ const PAGE_PATCH: &str = r#"
       }).catch(function () { return ""; });
     }
 
-    var bodyTags = (window.__karereBodyTags = window.__karereBodyTags || {});
     function construct(title, opts) {
       var stub = new Stub(title, opts);
       liveByTag.set(stub.tag, stub);
-      // WhatsApp fires twice per tag (real body, then empty); skip an empty body only if a real one already fired.
-      if (!stub.body && bodyTags[stub.tag]) return stub;
-      if (stub.body) bodyTags[stub.tag] = true;
+      // WhatsApp fires twice per tag (real body, then empty); skip an empty body
+      // only shortly after a real one for the same tag.
+      var now = Date.now();
+      bodyTags.forEach(function (t, k) { if (now - t > BODY_TTL_MS) bodyTags.delete(k); });
+      if (!stub.body && bodyTags.has(stub.tag)) return stub;
+      if (stub.body) bodyTags.set(stub.tag, now);
       resolveIcon(stub.icon).then(function (icon) {
-        try {
-          console.log(PREFIX + JSON.stringify({
-            title: stub.title, body: stub.body, tag: stub.tag, icon: icon,
-          }));
-        } catch (e) {}
+        emit({ title: stub.title, body: stub.body, tag: stub.tag, icon: icon });
       });
       return stub;
     }
@@ -211,8 +234,10 @@ const PAGE_PATCH: &str = r#"
     try {
       Object.defineProperty(window, "Notification", { configurable: true, writable: true, value: P });
     } catch (e) { window.Notification = P; }
+    window.__karereNotifProxy = P;
+    window.__karereNotifPatched = true;
 
-    window.__karereCloseNotif = function (tag) { var s = liveByTag.get(String(tag)); if (s) s.close(); };
+    window.__karereCloseNotif = function (tag) { var s = liveByTag.get(String(tag)); if (s) s._close(false); };
     window.__karereActivateNotif = function (tag) { var s = liveByTag.get(String(tag)); if (s) s._fire("click"); };
 
     return "patched-page";
@@ -237,6 +262,16 @@ struct State {
     desired_lang: Option<String>,
     lang_query_id: Option<u32>,
     lang_reloaded: bool,
+    /// PAGE_PATCH registered via `Page.addScriptToEvaluateOnNewDocument` for
+    /// the current DevTools session (reset on agent detach).
+    new_doc_script_added: bool,
+    /// Pending `Page.getFrameTree` request id (main-frame discovery).
+    frame_tree_query_id: Option<u32>,
+    /// Main frame id of the page; notification markers are accepted only from
+    /// its default execution context.
+    main_frame_id: Option<String>,
+    /// Page-session default (main-world) execution contexts: id -> frame id.
+    default_contexts: HashMap<i64, String>,
 }
 
 impl State {
@@ -250,6 +285,10 @@ impl State {
             desired_lang: crate::i18n::override_locale(),
             lang_query_id: None,
             lang_reloaded: false,
+            new_doc_script_added: false,
+            frame_tree_query_id: None,
+            main_frame_id: None,
+            default_contexts: HashMap::new(),
         }
     }
 
@@ -274,6 +313,15 @@ wrap_dev_tools_message_observer! {
             {
                 arm(&host, &self.state);
             }
+        }
+
+        // A new session starts with no new-document scripts and no contexts.
+        fn on_dev_tools_agent_detached(&self, _browser: Option<&mut Browser>) {
+            let mut st = self.state.borrow_mut();
+            st.new_doc_script_added = false;
+            st.frame_tree_query_id = None;
+            st.main_frame_id = None;
+            st.default_contexts.clear();
         }
 
         // Raw CDP frame (retains the flattened-session `sessionId`); mirrors the
@@ -310,8 +358,10 @@ pub fn attach(browser: &Browser, account_id: &str) -> Option<Registration> {
     reg
 }
 
-/// Enable Runtime + patch the page realm, and arm auto-attach so service-worker
-/// child sessions get patched as they appear. Idempotent (patches self-guard).
+/// Enable Runtime + Page, register the page patch for every new document and
+/// apply it to the current one, and arm auto-attach so service-worker child
+/// sessions get patched as they appear. Idempotent (patches self-guard; the
+/// new-document script is registered once per DevTools session).
 ///
 /// `send_dev_tools_message` delivers responses/events SYNCHRONOUSLY and can
 /// re-enter the observer (e.g. agent-attached, executionContextCreated), so the
@@ -319,19 +369,41 @@ pub fn attach(browser: &Browser, account_id: &str) -> Option<Registration> {
 fn arm(host: &BrowserHost, state: &Rc<RefCell<State>>) {
     let id = state.borrow_mut().bump();
     send(host, &json_msg(id, "Runtime.enable", "{}"));
+    // Page.enable: needed for addScriptToEvaluateOnNewDocument, frameNavigated
+    // (main-frame id) and loadEventFired — the reliable point to read the
+    // rendered language (document.documentElement.lang is unset this early).
+    let id = state.borrow_mut().bump();
+    send(host, &json_msg(id, "Page.enable", "{}"));
+    // Run the patch in every new document before any page script.
+    let register = {
+        let mut st = state.borrow_mut();
+        !std::mem::replace(&mut st.new_doc_script_added, true)
+    };
+    if register {
+        let id = state.borrow_mut().bump();
+        send(
+            host,
+            &json_msg(
+                id,
+                "Page.addScriptToEvaluateOnNewDocument",
+                &format!("{{\"source\":{}}}", json_string(PAGE_PATCH)),
+            ),
+        );
+    }
+    // And in the already-loaded document, if any.
     let id = state.borrow_mut().bump();
     send(
         host,
         &json_msg(id, "Runtime.evaluate", &eval_params(PAGE_PATCH)),
     );
+    // Learn the main frame id (notification markers are main-frame only).
+    let id = state.borrow_mut().bump();
+    state.borrow_mut().frame_tree_query_id = Some(id);
+    send(host, &json_msg(id, "Page.getFrameTree", "{}"));
     // Match the web content's color scheme to the Karere theme (#160).
     apply_color_scheme(host);
     // Read the current WhatsApp locale; `handle` reconciles it against the
     // override and reloads once if needed. Skip when no reload is pending.
-    // Page.enable so we get loadEventFired — the reliable point to read the
-    // rendered language (document.documentElement.lang is unset this early).
-    let id = state.borrow_mut().bump();
-    send(host, &json_msg(id, "Page.enable", "{}"));
     // Also probe now in case the page is already loaded (re-attach); the empty
     // `html_lang` guard in reconcile_lang makes a too-early probe a no-op.
     send_lang_probe(host, state);
@@ -387,6 +459,22 @@ fn handle(state: &Rc<RefCell<State>>, host: &BrowserHost, v: &serde_json::Value)
         return;
     }
 
+    // Response to the main-frame discovery request (see `arm`).
+    if let Some(id) = v.get("id").and_then(serde_json::Value::as_u64)
+        && state.borrow().frame_tree_query_id == Some(id as u32)
+    {
+        let frame = v
+            .pointer("/result/frameTree/frame/id")
+            .and_then(|f| f.as_str())
+            .map(str::to_owned);
+        let mut st = state.borrow_mut();
+        st.frame_tree_query_id = None;
+        if frame.is_some() {
+            st.main_frame_id = frame;
+        }
+        return;
+    }
+
     let method = v.get("method").and_then(|m| m.as_str()).unwrap_or("");
     let session = v.get("sessionId").and_then(|s| s.as_str());
 
@@ -428,6 +516,10 @@ fn handle(state: &Rc<RefCell<State>>, host: &BrowserHost, v: &serde_json::Value)
         // lost our patch; re-apply it.
         "Runtime.executionContextCreated" => match session {
             None => {
+                let ctx = params_context(v);
+                if let Some((ctx_id, frame_id)) = ctx {
+                    state.borrow_mut().default_contexts.insert(ctx_id, frame_id);
+                }
                 let id = state.borrow_mut().bump();
                 send(
                     host,
@@ -444,8 +536,33 @@ fn handle(state: &Rc<RefCell<State>>, host: &BrowserHost, v: &serde_json::Value)
             }
             _ => {}
         },
+        "Runtime.executionContextDestroyed" if session.is_none() => {
+            if let Some(ctx_id) = v
+                .pointer("/params/executionContextId")
+                .and_then(serde_json::Value::as_i64)
+            {
+                state.borrow_mut().default_contexts.remove(&ctx_id);
+            }
+        }
+        "Runtime.executionContextsCleared" if session.is_none() => {
+            state.borrow_mut().default_contexts.clear();
+        }
+        // A top-level navigation reports the main frame (no parentId).
+        "Page.frameNavigated" if session.is_none() => {
+            let frame = v.pointer("/params/frame");
+            let is_top = frame.is_some_and(|f| f.get("parentId").is_none());
+            if is_top
+                && let Some(id) = frame.and_then(|f| f.get("id")).and_then(|i| i.as_str())
+            {
+                state.borrow_mut().main_frame_id = Some(id.to_owned());
+            }
+        }
         "Runtime.consoleAPICalled" => {
             if let Some(payload) = console_payload(v) {
+                if !marker_trusted(&state.borrow(), session, v) {
+                    log::debug!("cdp: dropped notification marker from an untrusted context");
+                    return;
+                }
                 let account = state.borrow().account_id.clone();
                 dispatch(payload, account);
             }
@@ -453,6 +570,39 @@ fn handle(state: &Rc<RefCell<State>>, host: &BrowserHost, v: &serde_json::Value)
         _ => {
             if let Some(err) = v.get("error") {
                 log::debug!("cdp: cmd error -> {err}");
+            }
+        }
+    }
+}
+
+/// `(context id, frame id)` of an `executionContextCreated` event when it is a
+/// default (main-world) frame context; `None` for isolated worlds and workers.
+fn params_context(v: &serde_json::Value) -> Option<(i64, String)> {
+    let ctx = v.pointer("/params/context")?;
+    let aux = ctx.get("auxData")?;
+    if aux.get("isDefault").and_then(|d| d.as_bool()) != Some(true) {
+        return None;
+    }
+    let frame = aux.get("frameId")?.as_str()?.to_owned();
+    Some((ctx.get("id")?.as_i64()?, frame))
+}
+
+/// A notification marker is trusted only from the page's main-frame default
+/// context, or from a service-worker session we patched. Subframes, isolated
+/// worlds and other child sessions cannot raise or close banners.
+fn marker_trusted(st: &State, session: Option<&str>, v: &serde_json::Value) -> bool {
+    match session {
+        Some(s) => st.sw_sessions.contains(s),
+        None => {
+            let Some(ctx) = v
+                .pointer("/params/executionContextId")
+                .and_then(serde_json::Value::as_i64)
+            else {
+                return false;
+            };
+            match (st.default_contexts.get(&ctx), st.main_frame_id.as_deref()) {
+                (Some(frame), Some(main)) => frame == main,
+                _ => false,
             }
         }
     }
@@ -472,17 +622,17 @@ fn dispatch(payload_json: String, account_id: String) {
                 return;
             }
         };
+        if p.event == "close" {
+            log::debug!("cdp: notification closed by page (account={account_id})");
+            crate::notifications::tracker().on_closed_for(&account_id, &p.tag);
+            return;
+        }
         let icon = if p.icon.is_empty() {
             None
         } else {
             Some(p.icon.as_str())
         };
-        log::info!(
-            "cdp: notification tag={:?} title={:?} account={:?}",
-            p.tag,
-            p.title,
-            account_id
-        );
+        log::debug!("cdp: notification (account={account_id})");
         crate::notifications::tracker().on_seen(&p.tag, &p.title, &p.body, icon, &account_id);
     });
 }
@@ -497,6 +647,9 @@ struct NotifPayload {
     tag: String,
     #[serde(default)]
     icon: String,
+    /// Empty for a new notification; `"close"` when the page closed `tag`.
+    #[serde(default)]
+    event: String,
 }
 
 /// Extract our notification payload (a `NOTIF_PREFIX`-tagged string arg) from a `consoleAPICalled` event.
