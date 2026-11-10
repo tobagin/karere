@@ -125,7 +125,13 @@ wrap_load_handler! {
                 let (_, langs) = resolve_spellcheck_settings();
                 crate::web_view::apply_autocorrect_language(browser, &langs);
                 // F9: user stylesheet, re-injected on every load.
-                crate::web_view::apply_user_css(browser);
+                let on_whatsapp = browser
+                    .main_frame()
+                    .map(|f| CefString::from(&f.url()).to_string())
+                    .is_some_and(|u| super::request::is_whatsapp_web(&u));
+                if on_whatsapp {
+                    crate::web_view::apply_user_css(browser);
+                }
             }
         }
 

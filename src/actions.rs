@@ -220,7 +220,25 @@ fn register_open_user_css(app: &KarereApplication) {
                     return;
                 }
             }
-            app.activate_action("open-download", Some(&path.to_string_lossy().to_variant()));
+            // Not `open-download`: the editor needs a writable handle, and the
+            // default handler for CSS is often a browser, so always ask.
+            runtime().spawn(async move {
+                use ashpd::desktop::open_uri::OpenFileRequest;
+                use std::os::fd::AsFd;
+                let opened = match std::fs::OpenOptions::new().read(true).write(true).open(&path) {
+                    Ok(file) => OpenFileRequest::default()
+                        .writeable(true)
+                        .ask(true)
+                        .send_file(&file.as_fd())
+                        .await
+                        .map(|_| ())
+                        .map_err(anyhow::Error::from),
+                    Err(e) => Err(e.into()),
+                };
+                if let Err(err) = opened {
+                    log::warn!("open-user-css: cannot open {}: {err}", path.display());
+                }
+            });
         }
     ));
     app.add_action(&action);

@@ -159,9 +159,16 @@ pub fn accounts_file() -> PathBuf {
     accounts_root().join("accounts.json")
 }
 
+/// Name suffix of a session dir whose deletion has started.
+const REMOVED_SUFFIX: &str = ".removed";
+
 /// Best-effort delete of an account's CEF session dir (device stays linked on the phone).
 pub fn delete_session_dir(id: &str) {
-    let dir = session_cache_path(id);
+    // Rename first: if the wipe stops halfway, what is left no longer has an
+    // account-id name, so startup deletes it instead of adopting it.
+    let live = session_cache_path(id);
+    let dir = sessions_root().join(format!("{id}{REMOVED_SUFFIX}"));
+    let dir = if std::fs::rename(&live, &dir).is_ok() { dir } else { live };
     if let Err(e) = std::fs::remove_dir_all(&dir)
         && e.kind() != std::io::ErrorKind::NotFound
     {
@@ -326,6 +333,18 @@ pub fn write_tombstone(sessions: &std::path::Path, id: &str) {
 /// any CEF browser exists. Returns the ids removed.
 pub fn sweep_removed_sessions(sessions: &std::path::Path) -> Vec<String> {
     let mut removed = Vec::new();
+    // Leftovers of a wipe that did not finish (see `delete_session_dir`).
+    for e in std::fs::read_dir(sessions).into_iter().flatten().flatten() {
+        let is_dir = e.file_type().is_ok_and(|t| t.is_dir());
+        let name = e.file_name();
+        let stale = name
+            .to_str()
+            .and_then(|n| n.strip_suffix(REMOVED_SUFFIX))
+            .is_some_and(is_account_id);
+        if is_dir && stale {
+            let _ = std::fs::remove_dir_all(e.path());
+        }
+    }
     for (id, _) in session_dir_ids(sessions) {
         let dir = sessions.join(&id);
         if !is_tombstoned(&dir) {

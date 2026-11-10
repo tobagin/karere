@@ -523,7 +523,12 @@ pub(crate) fn user_css_path() -> std::path::PathBuf {
 
 fn read_user_css() -> Option<String> {
     use std::io::Read;
-    let file = std::fs::File::open(user_css_path()).ok()?;
+    let path = user_css_path();
+    // A FIFO or device here would block the main thread on open.
+    if !std::fs::metadata(&path).ok()?.is_file() {
+        return None;
+    }
+    let file = std::fs::File::open(path).ok()?;
     if file.metadata().ok()?.len() > USER_CSS_MAX_BYTES {
         log::warn!("user.css is larger than {USER_CSS_MAX_BYTES} bytes; ignoring it");
         return None;
@@ -1954,6 +1959,15 @@ mod imp {
                 self.cancel_context_menu();
                 // An open composition belongs to the outgoing page too. (I1)
                 reset_ime(&self.obj());
+            }
+
+            // A launch URL (deep link) that arrived while no foreground browser
+            // existed and was not consumed at creation.
+            if account_id.is_some()
+                && let Some(url) = self.pending_url.lock().take()
+                && let Some(frame) = browser.main_frame()
+            {
+                frame.load_url(Some(&CefString::from(url.as_str())));
             }
 
             // Pause the OUTGOING foreground. Required so a later switch back wakes
