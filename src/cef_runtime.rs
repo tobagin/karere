@@ -89,6 +89,14 @@ wrap_app! {
             // The port widens the attack surface, so it ships ONLY with --debug.
             // Release notifications use the in-process DevTools message API
             // (crate::cdp) — no port, no network.
+            // Karere's CEF build captures accelerated OSR frames into CPU-mappable
+            // buffers, as CEF did up to 152; upstream 156 asks for native-handle
+            // buffers, which fail to allocate on radeonsi. This opts back into
+            // upstream's choice for testing on drivers that need it (NVIDIA).
+            if std::env::var("KARERE_OSR_NATIVE_IMAGES").as_deref() == Ok("1") {
+                cmd.append_switch(Some(&"osr-native-shared-images".into()));
+            }
+
             if debug_enabled() {
                 cmd.append_switch_with_value(
                     Some(&"remote-debugging-port".into()),

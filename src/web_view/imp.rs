@@ -56,6 +56,8 @@ pub struct KarereWebView {
     /// resumes delivering CPU `on_paint` frames instead of repeatedly exporting
     /// accelerated frames that this GL context cannot import.
     pub software_osr_forced: AtomicBool,
+    /// Deadline for the first accelerated frame; see `watch_first_accel_frame`.
+    pub(super) first_accel_watch: RefCell<Option<glib::SourceId>>,
     /// Test-only observations at the real close/create boundaries. This lets the
     /// DMA-BUF regression execute the production deferred restart without
     /// requiring a live CEF subprocess inside the unit-test process.
@@ -557,6 +559,7 @@ impl KarereWebView {
             }
         }
         if visible {
+            self.watch_first_accel_frame();
             self.obj().queue_render();
         }
     }

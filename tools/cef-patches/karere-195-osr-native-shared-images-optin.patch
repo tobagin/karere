@@ -1,0 +1,38 @@
+Accelerated OSR on Linux: make native-handle capture buffers opt-in.
+
+CEF 156 selects kPreferSharedImageWithNativeHandle unconditionally on Linux
+(CEF PR #4238). On Mesa radeonsi (AMD Radeon 780M) that capture buffer fails
+to allocate ("Unable to allocate frame for first frame capture: OOM?") and
+shared-texture OSR delivers no frame at all. Keep the mappable preference CEF
+used up to 152 unless the embedder passes --osr-native-shared-images.
+Apply from Chromium src. Target: CEF 8ea0c73 / Chromium 156.0.8078.88.
+
+--- a/cef/libcef/browser/osr/video_consumer_osr.cc
++++ b/cef/libcef/browser/osr/video_consumer_osr.cc
+@@ -4,6 +4,7 @@
+ 
+ #include "cef/libcef/browser/osr/video_consumer_osr.h"
+ 
++#include "base/command_line.h"
+ #include "build/build_config.h"
+ #include "cef/libcef/browser/osr/render_widget_host_view_osr.h"
+ #include "media/base/video_frame_metadata.h"
+@@ -53,8 +54,16 @@
+         this,
+         use_shared_texture_
+ #if BUILDFLAG(IS_LINUX)
+-            ? viz::mojom::BufferFormatPreference::
+-                  kPreferSharedImageWithNativeHandle
++            // Opt-in (Karere). Native-handle capture buffers fail to allocate
++            // on Mesa radeonsi ("Unable to allocate frame for first frame
++            // capture"), so accelerated OSR delivers no frame; the mappable
++            // preference CEF used up to 152 works there. The embedder decides.
++            ? (base::CommandLine::ForCurrentProcess()->HasSwitch(
++                   "osr-native-shared-images")
++                   ? viz::mojom::BufferFormatPreference::
++                         kPreferSharedImageWithNativeHandle
++                   : viz::mojom::BufferFormatPreference::
++                         kPreferMappableSharedImage)
+ #else
+             ? viz::mojom::BufferFormatPreference::kPreferMappableSharedImage
+ #endif

@@ -14,6 +14,9 @@ use super::gl::accel_osr_enabled;
 use super::imp::KarereWebView;
 use super::input::keyboard::reset_ime;
 
+/// How long a visible accelerated browser may go without a first frame.
+const FIRST_ACCEL_FRAME_DEADLINE_SECS: u64 = 5;
+
 impl KarereWebView {
     pub fn close_browser(&self) {
         #[cfg(test)]
@@ -98,6 +101,48 @@ impl KarereWebView {
                 widget.imp().restart_with_software_osr();
             }
         });
+    }
+
+    /// Accelerated OSR can deliver no frame at all (CEF 156 on radeonsi: the
+    /// capturer's buffer fails to allocate), which no import error reports.
+    /// Arm a deadline whenever a visible foreground still has no accelerated
+    /// frame; when it passes, recreate the browsers for CPU paint.
+    pub(super) fn watch_first_accel_frame(&self) {
+        if let Some(watch) = self.first_accel_watch.borrow_mut().take() {
+            watch.remove();
+        }
+        if !self.no_accel_frame_yet() {
+            return;
+        }
+        let weak = self.obj().downgrade();
+        *self.first_accel_watch.borrow_mut() = Some(glib::timeout_add_local_once(
+            std::time::Duration::from_secs(FIRST_ACCEL_FRAME_DEADLINE_SECS),
+            move || {
+                let Some(view) = weak.upgrade() else { return };
+                let imp = view.imp();
+                imp.first_accel_watch.borrow_mut().take();
+                if !imp.no_accel_frame_yet() {
+                    return;
+                }
+                log::warn!(
+                    "accelerated OSR delivered no frame in {FIRST_ACCEL_FRAME_DEADLINE_SECS}s; falling back to CPU paint"
+                );
+                if let Some(window) = view.root().and_downcast::<crate::window::KarereWindow>() {
+                    window.show_toast(&gettextrs::gettext(
+                        "GPU rendering is not working on this system. Using software rendering.",
+                    ));
+                }
+                imp.schedule_software_osr_fallback();
+            },
+        ));
+    }
+
+    /// A visible, accelerated foreground browser that has painted nothing.
+    fn no_accel_frame_yet(&self) -> bool {
+        self.shared_texture_enabled_for_browser()
+            && self.window_visible.load(Ordering::Relaxed)
+            && self.browser_id.load(Ordering::Relaxed) != 0
+            && self.shared.lock().as_ref().is_some_and(|s| s.lock().accel.is_none())
     }
 
     pub(super) fn shared_texture_enabled_for_browser(&self) -> bool {
@@ -438,6 +483,7 @@ impl KarereWebView {
                 host.was_hidden(1);
             }
         }
+        self.watch_first_accel_frame();
         self.obj().queue_render();
         self.apply_audio_mute();
         // A background account may have loaded at another width; bring
