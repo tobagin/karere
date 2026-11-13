@@ -377,10 +377,61 @@ pub(crate) fn write_regular_clipboard(text: &str) {
     dispatch_clipboard_write(text, None, false, write_host_clipboard);
 }
 
+/// How long regular-clipboard writes are held so one gesture claims the
+/// selection once.
+const CLIPBOARD_COALESCE_MS: u64 = 40;
+
+thread_local! {
+    /// Regular-clipboard write waiting for its coalescing timer.
+    static PENDING_CLIPBOARD: std::cell::RefCell<Option<(String, Option<String>)>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+/// Fold `new` into the pending regular-clipboard write. The newest text wins;
+/// a text-only repeat of the same text keeps the HTML already queued. Returns
+/// true when no write was pending, i.e. the caller must arm the timer.
+fn queue_clipboard_write(
+    pending: &mut Option<(String, Option<String>)>,
+    text: &str,
+    html: Option<&str>,
+) -> bool {
+    let first = pending.is_none();
+    let html = match (pending.take(), html) {
+        (_, Some(html)) => Some(html.to_owned()),
+        (Some((old_text, old_html)), None) if old_text == text => old_html,
+        _ => None,
+    };
+    *pending = Some((text.to_owned(), html));
+    first
+}
+
 /// Mirror page-reported selection/copy text onto the host GDK clipboard. Runs on
 /// the CEF UI thread (= glib main thread under the external pump), so GDK access
 /// is safe here.
+///
+/// One Ctrl+C reports the copy twice (the host-requested live selection and the
+/// page's own `copy` event). Claiming the Wayland selection twice within a
+/// millisecond leaves other apps pasting stale content on GNOME 51 (#205), so
+/// regular-clipboard writes are coalesced into a single claim.
 fn write_host_clipboard(text: &str, html: Option<&str>, primary: bool) {
+    if primary {
+        set_host_clipboard(text, None, true);
+        return;
+    }
+    let arm = PENDING_CLIPBOARD.with_borrow_mut(|p| queue_clipboard_write(p, text, html));
+    if arm {
+        gtk::glib::timeout_add_local_once(
+            std::time::Duration::from_millis(CLIPBOARD_COALESCE_MS),
+            || {
+                if let Some((text, html)) = PENDING_CLIPBOARD.take() {
+                    set_host_clipboard(&text, html.as_deref(), false);
+                }
+            },
+        );
+    }
+}
+
+fn set_host_clipboard(text: &str, html: Option<&str>, primary: bool) {
     use gtk::prelude::*;
     let Some(display) = gtk::gdk::Display::default() else {
         return;
@@ -535,6 +586,18 @@ mod tests {
             "line1\nline2\tx\r\n"
         );
         assert_eq!(sanitize_clipboard("héllo 相片 🙂"), "héllo 相片 🙂");
+    }
+
+    #[test]
+    fn duplicate_copy_reports_coalesce_into_one_write() {
+        let mut pending = None;
+        assert!(super::queue_clipboard_write(&mut pending, "a", Some("<b>a</b>")));
+        // Same text again without HTML: one write, HTML kept.
+        assert!(!super::queue_clipboard_write(&mut pending, "a", None));
+        assert_eq!(pending, Some(("a".into(), Some("<b>a</b>".into()))));
+        // Different text: newest wins, stale HTML dropped.
+        assert!(!super::queue_clipboard_write(&mut pending, "b", None));
+        assert_eq!(pending, Some(("b".into(), None)));
     }
 
     #[test]
