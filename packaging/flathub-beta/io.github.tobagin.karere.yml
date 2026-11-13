@@ -76,12 +76,12 @@ modules:
       # archive.json cites the exact shipped tag so the crate's version check passes.
       - type: archive
         only-arches: [x86_64]
-        url: https://github.com/tobagin/karere/releases/download/cef-156.0.26-proprietary-codecs/cef_binary_156.0.26%2Bg8ea0c73%2Bchromium-156.0.8078.88_linux64_minimal.zip
-        sha256: f22f8074728792d93607f4c6b201f8ad07e3ffc1c433a45a19bc5399ade823ee
+        url: https://github.com/tobagin/karere/releases/download/cef-156.0.26-proprietary-codecs-2/cef_binary_156.0.26%2Bg8ea0c73%2Bchromium-156.0.8078.88_linux64_minimal.zip
+        sha256: 027473508ec25227972a8bc9182b15723f98cfa2e301746f8e2224c6a58517d5
       - type: archive
         only-arches: [aarch64]
-        url: https://github.com/tobagin/karere/releases/download/cef-156.0.26-proprietary-codecs/cef_binary_156.0.26%2Bg8ea0c73%2Bchromium-156.0.8078.88_linuxarm64_minimal.zip
-        sha256: 3b4860cb18556eff62a59c7e8031b25b1fce658ffd25d19bebd846d606dd7ca7
+        url: https://github.com/tobagin/karere/releases/download/cef-156.0.26-proprietary-codecs-2/cef_binary_156.0.26%2Bg8ea0c73%2Bchromium-156.0.8078.88_linuxarm64_minimal.zip
+        sha256: 9dd971ca62b3282b8b6b55da6490b5676550e6b6a25039c599cce9e69f4ccb76
       - type: inline
         only-arches: [x86_64]
         contents: |

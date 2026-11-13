@@ -225,7 +225,7 @@ fn register_open_user_css(app: &KarereApplication) {
                 use std::os::fd::AsFd;
                 let opened = match std::fs::OpenOptions::new().read(true).write(true).open(&path) {
                     Ok(file) => OpenFileRequest::default()
-                        .writeable(true)
+                        .writable(true)
                         .ask(true)
                         .send_file(&file.as_fd())
                         .await

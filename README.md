@@ -11,7 +11,7 @@ A fast, native WhatsApp client for Linux that feels right at home on your deskto
 
 </div>
 
-## 🎉 Version 4.3 — CEF/Chromium 156
+## 🎉 Version 4.4 — CEF/Chromium 156
 
 **Karere 4.0** is a ground-up rewrite that swaps the rendering backend from WebKitGTK to the
 **Chromium Embedded Framework (CEF/Chromium 156)** while keeping the same native
@@ -24,17 +24,21 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.3.5
+### 🆕 What's New in 4.4.0
 
-- **Spell checking works from launch (#203)**: it used to stay off until you picked another language
-  and switched back. This affected every language, not only Brazilian Portuguese.
-- **Cut reaches the system clipboard**: Ctrl+X and Cut from the right-click menu now put the text on
-  the clipboard, so it pastes into other apps. Fix by [@valnssh](https://github.com/valnssh).
-- **Tray menu dialogs bring the window back (#200)**: Preferences, Keyboard Shortcuts and About did
-  nothing while Karere ran in the background.
-- **A visible unread dot on HiDPI (#199)**: the tray dot is about three times larger.
-- **Spell check favourite stars toggle the right language**. Fix by
-  [@loxoron218](https://github.com/loxoron218).
+- **Chromium 156**: the browser engine is upgraded to CEF 156.0.26 / Chromium 156.0.8078.88.
+- **Chromium sandbox in the Flatpak**: WhatsApp Web's renderer processes run sandboxed again.
+- **Screen reader access to the page (#204)**: the page's accessibility tree reaches AT-SPI.
+- **`whatsapp://` and `wa.me` links** open the chat in the running app.
+- **Do Not Disturb**, real unread counts per account, and account reordering.
+- **Pinch zoom, kinetic scrolling**, and dragging text, links and images in and out of the page.
+- **Custom CSS** through a `user.css` file, a log file, and Copy Diagnostic Info.
+- **Copy Link Address (#205)**, and copied images reach the system clipboard (#196).
+- **Input fixes**: correct key codes, inline input-method composition, working page dropdowns.
+- **GPU rendering on AMD** no longer shows a blank window, and falls back to software rendering
+  if accelerated frames never arrive.
+- **Security hardening**: the native bridge is limited to `web.whatsapp.com`, permissions are
+  stored per request kind, and the DevTools port opens only with `--debug`.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the

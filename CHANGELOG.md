@@ -7,17 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **Copy Link Address in the context menu (#205)**: the right-click menu offers Copy Link Address.
-- **Page focus is announced to screen readers (#204)**: moving keyboard focus inside WhatsApp Web is announced. Browse mode is not supported yet.
+## [4.4.0] - 2026-11-13
 
-### Fixed
-- **Copied images reach the system clipboard (#196)**: copying an image also puts it on the system clipboard, so it pastes into other apps.
+### Added
+- **Chromium sandbox in the Flatpak**: WhatsApp Web's renderer processes run sandboxed again. The Flatpak ships zypak, which starts them in nested Flatpak sandboxes with Chromium's seccomp filter, instead of running every process with `--no-sandbox`.
+- **Screen reader access to the page (#204)**: with a screen reader running, WhatsApp Web's accessibility tree is mirrored as accessible objects under the web view, so roles, names, values, states and focus changes reach AT-SPI. Nothing is exported when no assistive technology is in use.
+- **`whatsapp://` and `wa.me` links**: a link given on the command line opens the chat in the running instance, and Karere registers as a handler for `whatsapp://`.
+- **Do Not Disturb**: from the tray menu or Ctrl+Shift+N. Notification banners also offer Mute Account when several accounts exist.
+- **Real unread counts**: per-account counts feed the account switcher badge and the tray total.
+- **Account reordering**: accounts can be moved up or down from the edit dialog; Alt+1..9 and the tray follow that order.
+- **Pinch zoom and kinetic scrolling**: pinch steps the per-account zoom, Ctrl+scroll does the same, and touchpad flicks glide.
+- **Drag and drop both ways**: text and links can be dropped onto the composer, and text, links and images can be dragged out to other applications.
+- **Custom CSS**: a `user.css` in the config directory is applied to every account, with a menu entry to open it.
+- **Log file and diagnostics**: Karere writes a capped log file, the crash dialog's Open Logs button points at it, and Copy Diagnostic Info puts an environment summary on the clipboard.
+- **Copy Link Address in the context menu (#205)**.
 
 ### Changed
 - **Browser engine upgraded to CEF 156.0.26 / Chromium 156.0.8078.88** (from CEF 152.0.6 / Chromium 152.0.7977.83): current Chromium security and rendering fixes.
-- **Chromium sandbox in the Flatpak**: WhatsApp Web's renderer processes now run sandboxed again. The Flatpak ships zypak, which starts them in nested Flatpak sandboxes with Chromium's seccomp filter, instead of running every process with `--no-sandbox`.
+- **Notifications are tracked per account**: clicking one switches to its account and opens the chat, and the account name is shown when more than one account exists.
+- **Preferences cleanup**: six switches that did nothing are gone, and spell checking gains an Automatic language entry.
+- **Start in Background** only hides launches that come from autostart.
+- **Lower idle CPU**: the view's 16 ms timer and the window's 100 ms poll are replaced by wakeups on demand.
+- **External links open in the system browser**; only WhatsApp's own pages load inside Karere.
 - **Flatpak permissions**: removed direct access to `org.freedesktop.Notifications`. Notifications already go through the notification portal.
+
+### Fixed
+- **Blank window with GPU rendering on AMD**: Chromium 156 changed how accelerated frames are captured, which delivered no frames on Mesa radeonsi. Karere's CEF build restores the previous behaviour, and if accelerated rendering still delivers nothing within five seconds Karere switches to software rendering and says so.
+- **Copied text not pasting in other apps on GNOME (#205)**: one Ctrl+C claimed the clipboard twice in a row, which could leave other apps pasting the previous content. A copy now claims it once.
+- **Keyboard input**: keys carry real key codes (Shift+Tab, Space, function keys, keypad, punctuation), and input-method composition shows inline with the candidate window at the caret.
+- **Copied images reach the system clipboard (#196)**, rich-text copies keep their formatting, and pasted images keep their original format.
+- **Dropdown menus in the page** are drawn over the page instead of replacing it.
+- **Several files dropped or pasted together** arrive as one attachment batch, and oversized attachments show a message instead of failing silently.
+- **Account data safety**: a corrupt account list is moved aside and rebuilt from the session directories instead of being overwritten, saves are flushed to disk, and removing an account can no longer leave a half-deleted session behind.
+- **Quit and restart** wait for every browser to close, so session data is written before the window goes away.
+- **Autocorrect** only acts on typed English text, never during composition or after undo.
+- **Removed profile pictures** clear the stored avatar.
+- **Inline video embeds** load again.
+
+### Security
+- **The native bridge is pinned to `https://web.whatsapp.com`**: it is injected only there, and messages from any other page are dropped.
+- **Permission decisions are stored per request kind**, so a microphone or camera grant cannot satisfy an unrelated prompt. Dismissing a prompt denies once without saving the answer.
+- **Downloads** require a WhatsApp origin, and control and bidirectional characters are stripped from file names.
+- **The DevTools port opens only with `--debug`** and accepts only its own loopback origin.
+- **Clipboard writes from the page** need recent user input.
 
 ## [4.3.5] - 2026-11-03
 

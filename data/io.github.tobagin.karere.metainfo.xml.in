@@ -102,6 +102,24 @@
   <translation type="gettext">karere</translation>
 
   <releases>
+    <release version="4.4.0" date="2026-11-13">
+      <description translate="no">
+        <ul>
+          <li>Browser engine upgraded to Chromium 156.</li>
+          <li>WhatsApp Web now runs inside the Chromium sandbox in the Flatpak.</li>
+          <li>Screen readers can read and navigate the page (#204).</li>
+          <li>whatsapp:// and wa.me links open the chat in the running app.</li>
+          <li>Do Not Disturb, real unread counts per account, and account reordering.</li>
+          <li>Pinch zoom, kinetic scrolling, and dragging text, links and images in and out of the page.</li>
+          <li>Custom CSS through a user.css file, a log file, and Copy Diagnostic Info.</li>
+          <li>Copy Link Address in the context menu (#205), and copied images reach the system clipboard (#196).</li>
+          <li>Fixed copied text not pasting in other apps on GNOME (#205).</li>
+          <li>Fixed keyboard and input-method handling, dropdown menus in the page, and a blank window with GPU rendering on AMD.</li>
+          <li>Account data is protected against corrupt files and interrupted removals.</li>
+          <li>Security hardening: the native bridge is limited to web.whatsapp.com and permissions are stored per request kind.</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.3.5" date="2026-11-03">
       <description translate="no">
         <ul>

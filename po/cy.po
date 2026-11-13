@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-10 10:44+0000\n"
+"POT-Creation-Date: 2026-11-12 19:27+0000\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -149,7 +149,7 @@ msgstr "Cau'r Ffenestr"
 msgid "Close the window"
 msgstr "Cau'r ffenestr"
 
-#: data/ui/window.ui:265 src/window.rs:1645
+#: data/ui/window.ui:265 src/window.rs:1652
 msgid "Copy Diagnostic Info"
 msgstr ""
 
@@ -443,7 +443,7 @@ msgstr "Hysbysiadau"
 msgid "Notify when a file download completes"
 msgstr "Hysbysu pan fydd lawrlwythiad ffeil yn cwblhau"
 
-#: data/ui/preferences.ui:123 src/window.rs:1685 src/window.rs:1741
+#: data/ui/preferences.ui:123 src/window.rs:1692 src/window.rs:1748
 msgid "Open"
 msgstr "Agor"
 
@@ -761,7 +761,8 @@ msgstr "whatsapp"
 msgid "whatsapp;chat;messaging;web;communication;"
 msgstr "whatsapp;sgwrs;negeseuon;gwe;cyfathrebu;"
 
-#: src/main.rs:51
+#. Logged here, not before the split, so CEF subprocesses stay quiet.
+#: src/main.rs:79
 msgid "Karere starting"
 msgstr "Karere yn cychwyn"
 
@@ -769,20 +770,20 @@ msgstr "Karere yn cychwyn"
 msgid "File is too large to attach (limit 48 MB)"
 msgstr ""
 
-#: src/web_view/clipboard_dnd.rs:445
+#: src/web_view/clipboard_dnd.rs:601
 msgid "Karere cannot read files from this folder"
 msgstr ""
 
-#: src/web_view/clipboard_dnd.rs:447
+#: src/web_view/clipboard_dnd.rs:603
 #, fuzzy
 msgid "Choose File…"
 msgstr "Dewis…"
 
-#: src/web_view/clipboard_dnd.rs:463
+#: src/web_view/clipboard_dnd.rs:619
 msgid "Select the File to Attach"
 msgstr ""
 
-#: src/web_view/clipboard_dnd.rs:464
+#: src/web_view/clipboard_dnd.rs:620
 msgid "Attach"
 msgstr ""
 
@@ -844,95 +845,95 @@ msgstr "Methu tynnu'r unig gyfrif"
 msgid "Maximum of 9 accounts reached"
 msgstr "Cyrhaeddwyd uchafswm o 9 cyfrif"
 
-#: src/window.rs:920
+#: src/window.rs:922
 msgid "Label"
 msgstr "Label"
 
-#: src/window.rs:935
+#: src/window.rs:937
 msgid "Name"
 msgstr "Enw"
 
-#: src/window.rs:939
+#: src/window.rs:941
 msgid "WhatsApp ID"
 msgstr "ID WhatsApp"
 
-#: src/window.rs:945
+#: src/window.rs:947
 #, fuzzy
 msgid "Position"
 msgstr "Lleoliad"
 
-#: src/window.rs:947
+#: src/window.rs:949
 msgid "Move Up"
 msgstr ""
 
-#: src/window.rs:948
+#: src/window.rs:950
 msgid "Move Down"
 msgstr ""
 
-#: src/window.rs:994 src/window.rs:1049 src/window.rs:1644
+#: src/window.rs:996 src/window.rs:1056 src/window.rs:1651
 msgid "Cancel"
 msgstr "Diddymu"
 
-#: src/window.rs:995
+#: src/window.rs:997
 msgid "Save"
 msgstr "Cadw"
 
-#: src/window.rs:1003
+#: src/window.rs:1005
 msgid "Edit Account"
 msgstr "Golygu Cyfrif"
 
-#: src/window.rs:1041
+#: src/window.rs:1048
 msgid "Remove account?"
 msgstr "Tynnu cyfrif?"
 
-#: src/window.rs:1044
+#: src/window.rs:1051
 msgid ""
 "This removes the local session for {name}. To fully unlink the device, open "
 "WhatsApp on your phone, go to Linked devices, select this device and choose "
 "Log out."
 msgstr ""
 
-#: src/window.rs:1050
+#: src/window.rs:1057
 msgid "Remove"
 msgstr "Tynnu"
 
-#: src/window.rs:1361
+#: src/window.rs:1368
 msgid "DevTools available only with --debug"
 msgstr ""
 
-#: src/window.rs:1404
+#: src/window.rs:1411
 msgid "DevTools unavailable: {error}"
 msgstr ""
 
-#: src/window.rs:1646
+#: src/window.rs:1653
 #, fuzzy
 msgid "Open logs"
 msgstr "Agor"
 
-#: src/window.rs:1680
+#: src/window.rs:1687
 msgid "{name} downloaded"
 msgstr ""
 
-#: src/window.rs:1687
+#: src/window.rs:1694
 #, fuzzy
 msgid "Show in Folder"
 msgstr "Dangos y Ffenestr"
 
-#: src/window.rs:1732
+#: src/window.rs:1739
 #, fuzzy
 msgid "Download complete"
 msgstr "Cyfeiriadur Lawrlwytho"
 
-#: src/window.rs:1759
+#: src/window.rs:1766
 #, fuzzy
 msgid "Download failed: {reason}"
 msgstr "Cyfeiriadur Lawrlwytho"
 
-#: src/window.rs:1763
+#: src/window.rs:1770
 msgid "“{name}” could not be saved."
 msgstr ""
 
-#: src/window.rs:1766
+#: src/window.rs:1773
 msgid "OK"
 msgstr ""
 

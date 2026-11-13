@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-10 10:44+0000\n"
+"POT-Creation-Date: 2026-11-12 19:27+0000\n"
 "PO-Revision-Date: 2026-06-06 21:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -150,7 +150,7 @@ msgstr "Isara ang Window"
 msgid "Close the window"
 msgstr "Isara ang window"
 
-#: data/ui/window.ui:265 src/window.rs:1645
+#: data/ui/window.ui:265 src/window.rs:1652
 msgid "Copy Diagnostic Info"
 msgstr ""
 
@@ -447,7 +447,7 @@ msgstr "Mga Abiso"
 msgid "Notify when a file download completes"
 msgstr "Mag-abiso kapag natapos ang isang file download"
 
-#: data/ui/preferences.ui:123 src/window.rs:1685 src/window.rs:1741
+#: data/ui/preferences.ui:123 src/window.rs:1692 src/window.rs:1748
 msgid "Open"
 msgstr "Buksan"
 
@@ -769,7 +769,8 @@ msgstr "whatsapp"
 msgid "whatsapp;chat;messaging;web;communication;"
 msgstr "whatsapp;chat;messaging;web;communication;"
 
-#: src/main.rs:51
+#. Logged here, not before the split, so CEF subprocesses stay quiet.
+#: src/main.rs:79
 msgid "Karere starting"
 msgstr "Nagsisimula ang Karere"
 
@@ -777,20 +778,20 @@ msgstr "Nagsisimula ang Karere"
 msgid "File is too large to attach (limit 48 MB)"
 msgstr ""
 
-#: src/web_view/clipboard_dnd.rs:445
+#: src/web_view/clipboard_dnd.rs:601
 msgid "Karere cannot read files from this folder"
 msgstr ""
 
-#: src/web_view/clipboard_dnd.rs:447
+#: src/web_view/clipboard_dnd.rs:603
 #, fuzzy
 msgid "Choose File…"
 msgstr "Pumili…"
 
-#: src/web_view/clipboard_dnd.rs:463
+#: src/web_view/clipboard_dnd.rs:619
 msgid "Select the File to Attach"
 msgstr ""
 
-#: src/web_view/clipboard_dnd.rs:464
+#: src/web_view/clipboard_dnd.rs:620
 msgid "Attach"
 msgstr ""
 
@@ -852,95 +853,95 @@ msgstr "Hindi maaalis ang tanging account"
 msgid "Maximum of 9 accounts reached"
 msgstr "Naabot na ang maksimum na 9 na account"
 
-#: src/window.rs:920
+#: src/window.rs:922
 msgid "Label"
 msgstr "Label"
 
-#: src/window.rs:935
+#: src/window.rs:937
 msgid "Name"
 msgstr "Pangalan"
 
-#: src/window.rs:939
+#: src/window.rs:941
 msgid "WhatsApp ID"
 msgstr "WhatsApp ID"
 
-#: src/window.rs:945
+#: src/window.rs:947
 #, fuzzy
 msgid "Position"
 msgstr "Lokasyon"
 
-#: src/window.rs:947
+#: src/window.rs:949
 msgid "Move Up"
 msgstr ""
 
-#: src/window.rs:948
+#: src/window.rs:950
 msgid "Move Down"
 msgstr ""
 
-#: src/window.rs:994 src/window.rs:1049 src/window.rs:1644
+#: src/window.rs:996 src/window.rs:1056 src/window.rs:1651
 msgid "Cancel"
 msgstr "Kanselahin"
 
-#: src/window.rs:995
+#: src/window.rs:997
 msgid "Save"
 msgstr "I-save"
 
-#: src/window.rs:1003
+#: src/window.rs:1005
 msgid "Edit Account"
 msgstr "I-edit ang Account"
 
-#: src/window.rs:1041
+#: src/window.rs:1048
 msgid "Remove account?"
 msgstr "Alisin ang account?"
 
-#: src/window.rs:1044
+#: src/window.rs:1051
 msgid ""
 "This removes the local session for {name}. To fully unlink the device, open "
 "WhatsApp on your phone, go to Linked devices, select this device and choose "
 "Log out."
 msgstr ""
 
-#: src/window.rs:1050
+#: src/window.rs:1057
 msgid "Remove"
 msgstr "Alisin"
 
-#: src/window.rs:1361
+#: src/window.rs:1368
 msgid "DevTools available only with --debug"
 msgstr ""
 
-#: src/window.rs:1404
+#: src/window.rs:1411
 msgid "DevTools unavailable: {error}"
 msgstr ""
 
-#: src/window.rs:1646
+#: src/window.rs:1653
 #, fuzzy
 msgid "Open logs"
 msgstr "Buksan"
 
-#: src/window.rs:1680
+#: src/window.rs:1687
 msgid "{name} downloaded"
 msgstr ""
 
-#: src/window.rs:1687
+#: src/window.rs:1694
 #, fuzzy
 msgid "Show in Folder"
 msgstr "Ipakita ang Window"
 
-#: src/window.rs:1732
+#: src/window.rs:1739
 #, fuzzy
 msgid "Download complete"
 msgstr "Direktoryo ng Download"
 
-#: src/window.rs:1759
+#: src/window.rs:1766
 #, fuzzy
 msgid "Download failed: {reason}"
 msgstr "Direktoryo ng Download"
 
-#: src/window.rs:1763
+#: src/window.rs:1770
 msgid "“{name}” could not be saved."
 msgstr ""
 
-#: src/window.rs:1766
+#: src/window.rs:1773
 msgid "OK"
 msgstr ""
 
