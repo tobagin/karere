@@ -181,6 +181,7 @@ impl KarereWebView {
                 log::warn!(
                     "accelerated OSR delivered no frame in {FIRST_ACCEL_FRAME_DEADLINE_SECS}s; falling back to CPU paint"
                 );
+                crate::accel_memo::record_failure();
                 if let Some(window) = view.root().and_downcast::<crate::window::KarereWindow>() {
                     window.show_toast(&gettextrs::gettext(
                         "GPU rendering is not working on this system. Using software rendering.",

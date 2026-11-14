@@ -7,6 +7,7 @@ use gtk::glib;
 use gtk::prelude::*;
 use std::io::Write as _;
 
+mod accel_memo;
 mod accounts;
 mod actions;
 mod application;

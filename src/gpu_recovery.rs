@@ -16,6 +16,32 @@ const GTK_GL: i32 = 89;
 const GTK_VULKAN: i32 = 90;
 const CEF_NATIVE_HANDLE: i32 = 91;
 const WORKER: &str = "_KARERE_RENDER_WORKER";
+/// Set on the worker when the user launched with a rendering override, so
+/// derived state (`accel_memo`) never generalises from an experiment.
+const USER_OVERRIDE: &str = "_KARERE_USER_RENDER_OVERRIDE";
+/// Variables a user sets to steer rendering. The supervisor sets some of them
+/// on its own retries, but only on the worker command, never in its own
+/// environment, so the supervisor's environment is the user's.
+const USER_OVERRIDES: [&str; 5] = [
+    "KARERE_GPU_OSR",
+    "KARERE_OSR_NATIVE_IMAGES",
+    "KARERE_CEF_GRAPHICS",
+    "KARERE_FRAME_TRANSFER",
+    "KARERE_CPU_PRESENTER",
+];
+
+/// Whether this launch carries a user rendering override.
+pub fn user_render_override() -> bool {
+    render_override_in(|key| std::env::var_os(key).is_some())
+}
+
+fn render_override_in(present: impl Fn(&str) -> bool) -> bool {
+    if present(WORKER) {
+        present(USER_OVERRIDE)
+    } else {
+        USER_OVERRIDES.iter().any(|key| present(key))
+    }
+}
 pub const FENCE_TIMEOUT_NS: u64 = 1_000_000_000;
 
 /// Runs before GTK, CEF or any threads. CEF children stay in their worker tree.
@@ -37,6 +63,9 @@ pub fn supervise() -> std::io::Result<Option<i32>> {
         std::env::args_os().skip(1),
         std::env::var_os("ZYPAK_BIN").as_deref(),
     );
+    if user_render_override() {
+        command.env(USER_OVERRIDE, "1");
+    }
     Ok(Some(run_supervised(&mut command)?))
 }
 
@@ -248,6 +277,23 @@ impl Drop for Deadline {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn only_user_overrides_count_as_overrides() {
+        let launch = |vars: &[&str]| render_override_in(|key| vars.contains(&key));
+        assert!(!launch(&[]));
+        assert!(launch(&["KARERE_OSR_NATIVE_IMAGES"]));
+        // A worker trusts only the supervisor's marker: the supervisor sets
+        // KARERE_OSR_NATIVE_IMAGES itself on its native-handle retry.
+        assert!(!launch(&[
+            WORKER,
+            "KARERE_OSR_NATIVE_IMAGES",
+            "GSK_RENDERER"
+        ]));
+        assert!(launch(&[WORKER, USER_OVERRIDE]));
+        // The manifest's GSK_RENDERER is not a user override.
+        assert!(!launch(&["GSK_RENDERER"]));
+    }
 
     #[test]
     fn worker_is_relaunched_through_zypak_when_started_by_it() {

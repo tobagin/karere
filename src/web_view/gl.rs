@@ -443,9 +443,23 @@ pub(super) fn probe_accel_osr() {
             // native-handle buffers (`graphics::osr_native_images`), and each
             // frame is copied into an allocation GTK can import before CEF
             // gets its buffer back. A saved opt-out is honoured.
-            super::with_app_settings(|s| s.boolean("gpu-rendering"))
+            let wanted = super::with_app_settings(|s| s.boolean("gpu-rendering"));
+            // A stack that already fell back to CPU paint starts there, without
+            // the first-frame wait; any GPU, driver, engine or app change retries.
+            if wanted && crate::accel_memo::previously_failed(crate::accel_memo::capture_identity())
+            {
+                log::info!(
+                    "accel_osr: GPU rendering delivered no frame earlier with this GPU, driver and \
+                     engine; using CPU paint (KARERE_GPU_OSR=1 retries)"
+                );
+                false
+            } else {
+                wanted
+            }
         }
     };
+    // Recorded with the GLArea context current, so a later fallback names it.
+    crate::accel_memo::capture_identity();
     // Whether a transfer backend can take the frames is checked per view
     // (`shared_texture_enabled_for_browser`); without one CEF keeps CPU paint.
     log::info!("accel_osr: requested={requested}");

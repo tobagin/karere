@@ -25,6 +25,7 @@ impl KarereWebView {
                     self.popup_gpu_frame.set(true);
                 } else {
                     self.gpu_frame.set(true);
+                    crate::accel_memo::clear_after_success();
                 }
                 if let Some(shared) = self.shared.lock().as_ref() {
                     let mut s = shared.lock();
