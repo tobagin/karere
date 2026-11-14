@@ -48,6 +48,27 @@ fn gles_contract_is_shared_by_main_and_devtools_views() {
         return;
     }
 
+    // GPU transfer defaults on for a fresh profile; a saved opt-out survives.
+    let settings = gtk::gio::Settings::new(crate::application::APP_ID);
+    assert!(settings.user_value("gpu-rendering").is_none());
+    assert!(
+        settings.boolean("gpu-rendering"),
+        "fresh profile defaults on"
+    );
+    settings.set_boolean("gpu-rendering", false).unwrap();
+    assert!(
+        !gtk::gio::Settings::new(crate::application::APP_ID).boolean("gpu-rendering"),
+        "an explicit saved opt-out survives another settings instance"
+    );
+    settings.reset("gpu-rendering");
+    assert!(settings.boolean("gpu-rendering"));
+
+    // Owned-copy presentation fixtures on this display's real renderers.
+    // Hardware-only parts print SKIP where no hardware GPU is available.
+    crate::presenter::verify_visible_crop();
+    crate::vulkan_frame::verify_hardware_ownership(&gtk::gdk::Display::default().unwrap());
+    crate::graphics::verify_frame_watch_lifecycle();
+
     for view in [KarereWebView::new(), KarereWebView::new_devtools()] {
         assert!(!view.is_realized());
         assert_eq!(view.allowed_apis(), gtk::gdk::GLAPI::GLES);
@@ -108,7 +129,7 @@ fn gles_contract_is_shared_by_main_and_devtools_views() {
 }
 
 fn assert_rejected_accelerated_frame_restarts_pool_then_renders_cpu_callback() {
-    use std::os::fd::OwnedFd;
+    use std::os::fd::AsRawFd;
     use std::sync::atomic::Ordering;
 
     crate::load_gl();
@@ -132,32 +153,27 @@ fn assert_rejected_accelerated_frame_restarts_pool_then_renders_cpu_callback() {
     );
     imp.fallback_test_events.borrow_mut().clear();
 
-    // An invalid DMA-BUF reaches the real import call from draw() and must be
-    // rejected deterministically by EGL. /dev/null supplies an owned, valid fd
-    // while fourcc=0 is intentionally not a DRM pixel format.
-    let fd: OwnedFd = std::fs::File::open("/dev/null").unwrap().into();
+    // An invalid external allocation goes through the same owned-copy
+    // presenter the CEF callback uses: /dev/null is a valid descriptor but
+    // not DMA-BUF storage, so every transfer backend must reject it.
+    let fd = std::fs::File::open("/dev/null").unwrap();
     let shared = imp.shared.lock().as_ref().unwrap().clone();
-    shared.lock().accel = Some(crate::gl_dmabuf::AccelFrame {
-        width: 1,
-        height: 1,
-        visible: (0, 0, 1, 1),
-        fourcc: 0,
-        modifier: 0,
-        planes: vec![crate::gl_dmabuf::Plane {
-            fd,
-            offset: 0,
-            stride: 4,
-        }],
-        dirty: true,
-    });
-    unsafe { imp.draw() };
-    assert!(
-        shared.lock().accel.is_none(),
-        "draw must discard rejected DMA-BUF"
-    );
+    let mut info = cef::AcceleratedPaintInfo {
+        plane_count: 1,
+        format: cef::ColorType::BGRA_8888,
+        ..Default::default()
+    };
+    info.extra.coded_size.width = 1;
+    info.extra.coded_size.height = 1;
+    info.planes[0].fd = fd.as_raw_fd();
+    info.planes[0].stride = 4;
+    imp.accept_accelerated(&info, false);
+    // A second callback before the deferred restart must not schedule another.
+    imp.accept_accelerated(&info, false);
+    assert!(!imp.gpu_frame.get(), "a rejected frame is never presented");
     assert!(imp.software_osr_forced.load(Ordering::Acquire));
 
-    // draw() schedules, rather than recursively performs, browser teardown.
+    // The callback schedules, rather than recursively performs, browser teardown.
     assert!(imp.fallback_test_events.borrow().is_empty());
     while gtk::glib::MainContext::default().iteration(false) {}
     assert_eq!(

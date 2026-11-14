@@ -56,7 +56,7 @@ pub struct KarereWebView {
     /// resumes delivering CPU `on_paint` frames instead of repeatedly exporting
     /// accelerated frames that this GL context cannot import.
     pub software_osr_forced: AtomicBool,
-    /// Deadline for the first accelerated frame; see `watch_first_accel_frame`.
+    /// Deadline for the first frame; see `watch_first_frame`.
     pub(super) first_accel_watch: RefCell<Option<glib::SourceId>>,
     /// Test-only observations at the real close/create boundaries. This lets the
     /// DMA-BUF regression execute the production deferred restart without
@@ -78,23 +78,29 @@ pub struct KarereWebView {
     pub(super) texture: AtomicU32,
     pub(super) tex_w: AtomicI32,
     pub(super) tex_h: AtomicI32,
-    /// GPU-OSR: dedicated texture the imported DMA-BUF EGLImage binds to, and
-    /// the live EGLImage kept alive while that texture is sampled. (gpu-osr)
-    pub(super) accel_tex: AtomicU32,
-    pub(super) imported: RefCell<Option<crate::gl_dmabuf::ImportedImage>>,
-    /// Popup layer (`<select>` dropdowns) textures: CPU upload target with
-    /// its current size, and the accelerated import target + live
-    /// EGLImage. Composited over the view in `draw`.
+    /// Popup layer (`<select>` dropdowns) CPU upload target with its current
+    /// size. Composited over the view in `draw`.
     pub(super) popup_tex: AtomicU32,
     pub(super) popup_tex_w: AtomicI32,
     pub(super) popup_tex_h: AtomicI32,
-    pub(super) accel_popup_tex: AtomicU32,
-    pub(super) imported_popup: RefCell<Option<crate::gl_dmabuf::ImportedImage>>,
+    /// GPU-OSR: owned copies of CEF's accelerated view and popup frames,
+    /// presented by `snapshot` while `gpu_frame` / `popup_gpu_frame` say the
+    /// latest frame of that layer was accelerated. (gpu-osr)
+    pub(super) presenter: RefCell<crate::presenter::Presenter>,
+    pub(super) popup_presenter: RefCell<crate::presenter::Presenter>,
+    pub(super) gpu_frame: std::cell::Cell<bool>,
+    pub(super) popup_gpu_frame: std::cell::Cell<bool>,
+    /// Monitor refresh tracking for CEF's windowless frame rate, and the last
+    /// rate sent to CEF.
+    pub(super) refresh_watch: RefCell<Option<crate::refresh_rate::Watch>>,
+    pub(super) target_fps: std::cell::Cell<i32>,
+    /// Bounds GTK's own GPU frame work (see `graphics::FrameWatch`).
+    pub(super) gtk_frame_watch: RefCell<Option<crate::graphics::FrameWatch>>,
     /// Software present path: textures built from the last view / popup
     /// frame, reused while CEF has not painted again so an unrelated
     /// redraw does not copy the whole frame into a new texture. (P6)
     sw_texture: RefCell<Option<gtk::gdk::MemoryTexture>>,
-    sw_popup_texture: RefCell<Option<gtk::gdk::MemoryTexture>>,
+    pub(super) sw_popup_texture: RefCell<Option<gtk::gdk::MemoryTexture>>,
     /// Surface whose `scale` we follow and the handler id, so a realize
     /// connects once per surface and unrealize disconnects. (I11)
     scale_notify: RefCell<Option<(gtk::gdk::Surface, glib::SignalHandlerId)>>,
@@ -235,6 +241,11 @@ impl WidgetImpl for KarereWebView {
     /// left to do; on every normal machine this defers to `GtkGLArea`,
     /// which drives `render` -> `draw` as before.
     fn snapshot(&self, snapshot: &gtk::Snapshot) {
+        self.log_draw();
+        if self.gpu_frame.get() {
+            self.snapshot_accelerated(snapshot);
+            return;
+        }
         if !self.software_present.load(Ordering::Relaxed) {
             self.parent_snapshot(snapshot);
             return;
@@ -305,6 +316,7 @@ impl WidgetImpl for KarereWebView {
             widget.set_error(None);
             self.software_present.store(true, Ordering::Relaxed);
             NO_GL.store(true, Ordering::Relaxed);
+            self.watch_refresh_rate();
             self.bootstrap_pool();
             return;
         }
@@ -326,11 +338,16 @@ impl WidgetImpl for KarereWebView {
         // The one point where this GLArea's context is known current and
         // before any browser of a visible start is created. (I6)
         probe_accel_osr();
+        *self.gtk_frame_watch.borrow_mut() = crate::graphics::FrameWatch::for_widget(&*widget);
+        self.watch_refresh_rate();
         self.bootstrap_pool();
     }
 
     fn unrealize(&self) {
         self.close_browser();
+        self.refresh_watch.borrow_mut().take();
+        self.gtk_frame_watch.borrow_mut().take();
+        self.drop_accelerated_frames();
         if let Some((surface, id)) = self.scale_notify.take() {
             surface.disconnect(id);
         }
@@ -365,6 +382,8 @@ impl WidgetImpl for KarereWebView {
         // by an equal page zoom applied to the browser (see host_zoom_level).
         // Mouse/wheel/menu coords are therefore physical too. (#158)
         self.sync_viewport(width, height, "size_allocate");
+        // The window may now sit mostly on another monitor.
+        self.refresh_frame_rate();
 
         // M21: gate the mobile single-pane layout on logical width. The v3
         // script can't un-apply its DOM/CSS, so a threshold crossing reloads
@@ -559,7 +578,8 @@ impl KarereWebView {
             }
         }
         if visible {
-            self.watch_first_accel_frame();
+            self.watch_refresh_rate();
+            self.watch_first_frame();
             self.obj().queue_render();
         }
     }
@@ -579,7 +599,7 @@ impl KarereWebView {
             if !debounce_tick {
                 s.view_wake_queued = false;
             }
-            let dirty = s.frame.dirty || s.accel.as_ref().is_some_and(|a| a.dirty);
+            let dirty = s.frame.dirty;
             let cursor = if s.cursor_dirty {
                 s.cursor_dirty = false;
                 Some(s.cursor_name)

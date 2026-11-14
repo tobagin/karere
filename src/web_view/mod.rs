@@ -2,6 +2,7 @@ use gtk::glib;
 use gtk::subclass::prelude::*;
 
 mod a11y_export;
+mod accelerated;
 mod clipboard_dnd;
 mod context_menu;
 mod gl;
@@ -16,7 +17,7 @@ pub(crate) use clipboard_dnd::recent_user_input;
 use clipboard_dnd::note_user_input;
 pub(crate) use context_menu::dispatch_context_menu;
 use context_menu::{register_context_menu_widget, unregister_context_menu_widget};
-use gl::{CpuUpload, cpu_upload, gl_viewport_for, page_background, texture_uv};
+use gl::{CpuUpload, cpu_upload, gl_viewport_for, page_background};
 pub(crate) use page_settings::{
     apply_autocorrect_language, apply_mobile_layout, apply_notif_sound_from_settings,
     apply_spellcheck_to_browser, apply_user_css, user_css_path,
@@ -229,6 +230,28 @@ pub(crate) fn flush_view_requests(area: &gtk::GLArea) {
     use gtk::prelude::Cast;
     if let Some(view) = area.downcast_ref::<KarereWebView>() {
         view.imp().flush_requests(false);
+    }
+}
+
+/// Take ownership of an accelerated CEF paint for `area`'s view: copy it
+/// before the CEF callback returns (the buffer is only lent for the call).
+/// Main-thread only.
+pub(crate) fn accept_accelerated(
+    area: &gtk::GLArea,
+    info: &cef::AcceleratedPaintInfo,
+    popup: bool,
+) {
+    use gtk::prelude::Cast;
+    if let Some(view) = area.downcast_ref::<KarereWebView>() {
+        view.imp().accept_accelerated(info, popup);
+    }
+}
+
+/// A CPU paint for `area`'s view or popup layer replaces its accelerated copy.
+pub(crate) fn accept_cpu(area: &gtk::GLArea, popup: bool) {
+    use gtk::prelude::Cast;
+    if let Some(view) = area.downcast_ref::<KarereWebView>() {
+        view.imp().accept_cpu(popup);
     }
 }
 

@@ -53,6 +53,10 @@ impl RunningApp {
             .env("MESA_GLES_VERSION_OVERRIDE", "3.2")
             .env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
             .env("KARERE_GPU_OSR", "0")
+            // Pin CEF's graphics backend: on X11 Karere would otherwise try
+            // ANGLE Vulkan first and restart onto GL when the software
+            // fixture has no hardware Vulkan device.
+            .env("KARERE_CEF_GRAPHICS", "gl")
             .env("GSETTINGS_BACKEND", "keyfile")
             .env("GSETTINGS_SCHEMA_DIR", fixture.join("schemas"))
             .env("XDG_CONFIG_HOME", fixture.join("config"))

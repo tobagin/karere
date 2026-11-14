@@ -35,10 +35,9 @@ pub struct PopupLayer {
     /// GL/snapshot clipping keeps any overhang off screen.
     pub rect: Option<(i32, i32, i32, i32)>,
     /// Latest CPU popup paint (BGRA). `damage` is unused: popups are small and
-    /// are always uploaded whole.
+    /// are always uploaded whole. Accelerated popup paints are copied into the
+    /// view's popup presenter instead.
     pub frame: FrameBuffer,
-    /// Latest accelerated popup paint, when shared-texture OSR is on.
-    pub accel: Option<crate::gl_dmabuf::AccelFrame>,
 }
 
 impl PopupLayer {
@@ -247,20 +246,23 @@ wrap_render_handler! {
                 // A popup paint is the popup's own pixels, never the view's.
                 let popup = &mut s.popup;
                 popup.browser_id = id;
-                popup.accel = None; // CPU frames now; drop any stale DMA-BUF
                 popup.frame.pixels.clear();
                 popup.frame.pixels.extend_from_slice(slice);
                 popup.frame.width = width;
                 popup.frame.height = height;
                 popup.frame.damage = None;
                 popup.frame.dirty = true;
+                s.frame_serial += 1;
+                // CPU popup frames now; drop any stale accelerated popup copy.
+                accept_cpu(&s, true);
                 request_redraw(s);
                 return;
             }
             // CPU frames after accelerated ones (CEF fell back mid-session):
-            // the last DMA-BUF must not keep shadowing them. `draw` releases
-            // the imported EGLImage once it sees `accel` gone.
-            s.accel = None;
+            // the last accelerated copy must not keep shadowing them.
+            accept_cpu(&s, false);
+            s.frame_serial += 1;
+            s.view_frame_serial += 1;
             let expected = s.size;
             let scale = s.scale_factor;
             // A resized frame invalidates every cached pixel: take the whole
@@ -299,8 +301,10 @@ wrap_render_handler! {
         }
 
         // GPU path: when shared-texture OSR is enabled, CEF delivers a DMA-BUF
-        // handle here instead of a CPU buffer via on_paint. Dup the plane fds and
-        // stash the frame for `draw` to import via EGL. (gpu-osr)
+        // here instead of a CPU buffer via on_paint. CEF lends the buffer only
+        // for this call and may reuse it for the next capture as soon as we
+        // return, so the view copies it into its own allocation before
+        // returning (see `presenter`); GTK only ever samples that copy.
         fn on_accelerated_paint(
             &self,
             browser: Option<&mut Browser>,
@@ -314,27 +318,26 @@ wrap_render_handler! {
             if !is_foreground(&self.handler.shared.lock(), id) {
                 return;
             }
-            let Some(frame) = accel_frame_from(info) else { return };
-            let mut s = self.handler.shared.lock();
+            let popup = type_ == PaintElementType::POPUP;
+            let redraw = {
+                let mut s = self.handler.shared.lock();
+                if popup {
+                    s.popup.browser_id = id;
+                }
+                s.redraw.clone()
+            };
             log::trace!(
-                "coord: J2 on_accelerated_paint popup={} delivered={}x{} visible={:?} expected_physical={}x{} scale={:.3} fourcc={:#x} mod={:#x}",
-                type_ == PaintElementType::POPUP,
-                frame.width,
-                frame.height,
-                frame.visible,
-                s.size.0,
-                s.size.1,
-                s.scale_factor,
-                frame.fourcc,
-                frame.modifier
+                "coord: J2 on_accelerated_paint popup={popup} delivered={}x{} fourcc={:?} mod={:#x}",
+                info.extra.coded_size.width,
+                info.extra.coded_size.height,
+                info.format,
+                info.modifier
             );
-            if type_ == PaintElementType::POPUP {
-                s.popup.browser_id = id;
-                s.popup.accel = Some(frame);
-            } else {
-                s.accel = Some(frame);
+            if let Some(area) = redraw.and_then(|w| w.upgrade()) {
+                crate::web_view::accept_accelerated(&area, info, popup);
             }
-            request_redraw(s);
+            // As in `request_redraw`: let remaining CEF work run after GTK draws.
+            crate::cef_pump::schedule(0);
         }
 
         // The page's IME composition moved. Keep the caret rect so the input
@@ -555,48 +558,6 @@ fn is_foreground(s: &SharedState, browser_id: i32) -> bool {
     s.foreground_browser_id == 0 || s.foreground_browser_id == browser_id
 }
 
-/// Take a DMA-BUF frame out of CEF's paint info: dup each plane fd (CEF's are
-/// valid only for this call) into an `OwnedFd`. `None` when the frame is
-/// unusable (empty, unsupported format, dup failure). (gpu-osr)
-fn accel_frame_from(info: &cef::AcceleratedPaintInfo) -> Option<crate::gl_dmabuf::AccelFrame> {
-    let (w, h) = (info.extra.coded_size.width, info.extra.coded_size.height);
-    if w <= 0 || h <= 0 {
-        return None;
-    }
-    let Some(fourcc) = crate::gl_dmabuf::cef_format_to_fourcc(info.format) else {
-        log::warn!("on_accelerated_paint: unsupported color format");
-        return None;
-    };
-    let mut planes = Vec::with_capacity(info.plane_count.max(0) as usize);
-    for p in info.planes.iter().take(info.plane_count.max(0) as usize) {
-        let owned = unsafe { std::os::fd::BorrowedFd::borrow_raw(p.fd) }.try_clone_to_owned();
-        match owned {
-            Ok(fd) => planes.push(crate::gl_dmabuf::Plane {
-                fd,
-                offset: p.offset,
-                stride: p.stride,
-            }),
-            Err(e) => {
-                log::warn!("on_accelerated_paint: dup plane fd failed: {e}");
-                return None;
-            }
-        }
-    }
-    if planes.is_empty() {
-        return None;
-    }
-    let v = &info.extra.visible_rect;
-    Some(crate::gl_dmabuf::AccelFrame {
-        width: w,
-        height: h,
-        visible: visible_or_coded((v.x, v.y, v.width, v.height), w, h),
-        fourcc,
-        modifier: info.modifier,
-        planes,
-        dirty: true,
-    })
-}
-
 /// CEF's `visible_rect` when it is a non-empty rect inside the coded buffer,
 /// else the whole buffer (older producers leave it zeroed).
 pub(crate) fn visible_or_coded(
@@ -617,6 +578,13 @@ pub(crate) fn visible_or_coded(
 impl ShellRenderHandlerBuilder {
     pub fn build(handler: ShellRenderHandler) -> RenderHandler {
         Self::new(handler)
+    }
+}
+
+/// A CPU paint replaces any accelerated copy the view still presents.
+fn accept_cpu(s: &SharedState, popup: bool) {
+    if let Some(area) = s.redraw.as_ref().and_then(|w| w.upgrade()) {
+        crate::web_view::accept_cpu(&area, popup);
     }
 }
 
@@ -964,23 +932,6 @@ mod tests {
         ImplRenderHandler::on_paint(&handler, None, type_, None, pixels.as_ptr(), w, h);
     }
 
-    fn null_accel_frame() -> crate::gl_dmabuf::AccelFrame {
-        let fd: std::os::fd::OwnedFd = std::fs::File::open("/dev/null").unwrap().into();
-        crate::gl_dmabuf::AccelFrame {
-            width: 1,
-            height: 1,
-            visible: (0, 0, 1, 1),
-            fourcc: 0,
-            modifier: 0,
-            planes: vec![crate::gl_dmabuf::Plane {
-                fd,
-                offset: 0,
-                stride: 4,
-            }],
-            dirty: false,
-        }
-    }
-
     #[test]
     fn popup_paint_never_replaces_the_view_frame() {
         let shared = new_shared((4, 4), 1.0);
@@ -1032,23 +983,21 @@ mod tests {
     }
 
     #[test]
-    fn cpu_paint_drops_a_stale_accelerated_frame() {
-        let shared = new_shared((1, 1), 1.0);
-        shared.lock().accel = Some(null_accel_frame());
-        shared.lock().popup.accel = Some(null_accel_frame());
-
-        paint(&shared, PaintElementType::VIEW, &[1, 2, 3, 255], 1, 1);
-        let s = shared.lock();
-        assert!(s.accel.is_none(), "CPU frames must not stay behind the last DMA-BUF");
-        assert!(s.frame.dirty);
-        assert!(
-            s.popup.accel.is_some(),
-            "a view paint says nothing about the popup"
-        );
-        drop(s);
-
-        paint(&shared, PaintElementType::POPUP, &[1, 2, 3, 255], 1, 1);
-        assert!(shared.lock().popup.accel.is_none());
+    fn popup_paints_do_not_satisfy_main_view_delivery() {
+        let shared = new_shared((2, 1), 1.0);
+        let pixels = [0_u8, 0, 255, 255, 255, 0, 0, 255];
+        paint(&shared, PaintElementType::POPUP, &pixels, 2, 1);
+        {
+            let state = shared.lock();
+            assert_eq!(state.frame_serial, 1, "popup remains fresh content");
+            assert_eq!(state.view_frame_serial, 0, "main view is still blank");
+            assert_eq!(state.frame.width, 0);
+        }
+        paint(&shared, PaintElementType::VIEW, &pixels, 2, 1);
+        let state = shared.lock();
+        assert_eq!(state.frame_serial, 2);
+        assert_eq!(state.view_frame_serial, 1);
+        assert_eq!(state.frame.width, 2);
     }
 
     #[test]

@@ -89,14 +89,6 @@ wrap_app! {
             // The port widens the attack surface, so it ships ONLY with --debug.
             // Release notifications use the in-process DevTools message API
             // (crate::cdp) — no port, no network.
-            // Karere's CEF build captures accelerated OSR frames into CPU-mappable
-            // buffers, as CEF did up to 152; upstream 156 asks for native-handle
-            // buffers, which fail to allocate on radeonsi. This opts back into
-            // upstream's choice for testing on drivers that need it (NVIDIA).
-            if std::env::var("KARERE_OSR_NATIVE_IMAGES").as_deref() == Ok("1") {
-                cmd.append_switch(Some(&"osr-native-shared-images".into()));
-            }
-
             if debug_enabled() {
                 cmd.append_switch_with_value(
                     Some(&"remote-debugging-port".into()),
@@ -109,10 +101,11 @@ wrap_app! {
                     Some(&origins.as_str().into()),
                 );
             }
-            cmd.append_switch_with_value(
-                Some(&"disable-features".into()),
-                Some(&disabled.as_str().into()),
-            );
+            append_features(cmd, "disable-features", &disabled);
+            // VA-API decoding on the NVIDIA driver (Chromium gates it behind
+            // this feature). Chromium still checks codec support per stream and
+            // falls back to software decoding. Merged with any inherited list.
+            append_features(cmd, "enable-features", "VaapiOnNvidiaGPUs");
             // ^ DocumentPictureInPictureAPI: WhatsApp's "open call in another
             // window" can't be hosted by the OSR shell (dropped call + blank
             // view); disabling keeps the call in the main webview.
@@ -126,24 +119,18 @@ wrap_app! {
             // `ozone-platform-hint=auto` let CEF resolve to X11/Xwayland (the
             // --socket=fallback-x11 path), which can't present onto the Wayland
             // GTK GLArea — a startup race that paints the window black on GNOME OS
-            // (#164). CEF inits before GTK opens its display, so detect from the
-            // env the same way GDK4 picks its backend.
-            let gdk_x11 = std::env::var("GDK_BACKEND")
-                .map(|b| b.split(',').next() == Some("x11"))
-                .unwrap_or(false);
-            let ozone = if gdk_x11 {
-                "x11"
-            } else if std::env::var_os("WAYLAND_DISPLAY").is_some() {
-                "wayland"
-            } else {
-                "x11"
-            };
-            cmd.append_switch_with_value(
-                Some(&"ozone-platform".into()),
-                Some(&ozone.into()),
-            );
+            // (#164). GTK has opened its display before CEF initializes, so use
+            // the backend it actually selected; children inherit the choice.
+            if is_browser_process || cmd.has_switch(Some(&"ozone-platform".into())) == 0 {
+                cmd.append_switch_with_value(
+                    Some(&"ozone-platform".into()),
+                    Some(&crate::graphics::display_backend().into()),
+                );
+            }
             cmd.append_switch(Some(&"enable-webrtc-vea-vda".into()));
             cmd.append_switch(Some(&"disable-smooth-scrolling".into()));
+            // ANGLE backend, recovery overrides and native-handle capture.
+            crate::graphics::configure_cef(cmd, is_browser_process);
             cmd.append_switch(Some(&"no-startup-window".into()));
             cmd.append_switch(Some(&"noerrdialogs".into()));
             cmd.append_switch(Some(&"hide-crash-restore-bubble".into()));
@@ -184,6 +171,58 @@ wrap_app! {
 
 pub fn build_app() -> App {
     ShellAppBuilder::new(ShellApp)
+}
+
+fn append_features(cmd: &mut CommandLine, switch: &str, required: &str) {
+    let existing = cef::CefString::from(&cmd.switch_value(Some(&switch.into()))).to_string();
+    let merged = merge_features(&existing, required);
+    cmd.append_switch_with_value(Some(&switch.into()), Some(&merged.as_str().into()));
+}
+
+/// Keep field-trial/parameter suffixes intact, and do not repeat inherited
+/// features when CEF invokes this hook again in a child process.
+fn merge_features(existing: &str, required: &str) -> String {
+    let mut result: Vec<&str> = existing
+        .split(',')
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .collect();
+    for feature in required.split(',').map(str::trim).filter(|s| !s.is_empty()) {
+        let name = |s: &str| s.split(['<', ':']).next().unwrap_or(s).to_owned();
+        if !result.iter().any(|value| name(value) == name(feature)) {
+            result.push(feature);
+        }
+    }
+    result.join(",")
+}
+
+#[cfg(test)]
+mod feature_tests {
+    use super::merge_features;
+
+    #[test]
+    fn feature_lists_keep_inherited_and_parameterized_entries() {
+        let actual = merge_features(
+            "AcceleratedVideoEncoder,UseOzonePlatform<Trial:Mode/value",
+            "VaapiOnNvidiaGPUs",
+        );
+        assert_eq!(
+            actual,
+            "AcceleratedVideoEncoder,UseOzonePlatform<Trial:Mode/value,VaapiOnNvidiaGPUs"
+        );
+        assert_eq!(merge_features(&actual, "VaapiOnNvidiaGPUs"), actual);
+    }
+
+    #[test]
+    fn karere_disables_do_not_erase_explicit_feature_disables() {
+        assert_eq!(
+            merge_features(
+                "AcceleratedVideoEncoder",
+                "DocumentPictureInPictureAPI,PersistentHistograms"
+            ),
+            "AcceleratedVideoEncoder,DocumentPictureInPictureAPI,PersistentHistograms"
+        );
+    }
 }
 
 /// Append `--enable-caret-browsing` when the `screen-reader-opts` GSetting is on

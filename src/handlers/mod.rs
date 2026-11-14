@@ -57,12 +57,11 @@ pub struct DownloadFailed {
 #[derive(Default)]
 pub struct SharedState {
     pub frame: FrameBuffer,
-    /// Latest GPU-accelerated frame (DMA-BUF) from `on_accelerated_paint`, when
-    /// shared-texture OSR is enabled; imported to a GL texture in `draw` and
-    /// kept (with `dirty` cleared) while it is the frame on screen. Cleared by a
-    /// CPU `on_paint`, so a mid-session fallback to CPU frames is not hidden
-    /// behind the last DMA-BUF. (gpu-osr)
-    pub accel: Option<crate::gl_dmabuf::AccelFrame>,
+    /// Count of frames (view or popup, CPU or accelerated) accepted for
+    /// presentation; logged with each GTK draw for frame-pacing diagnostics.
+    pub frame_serial: u64,
+    /// Main-view frames only: a popup must not satisfy the first-frame watchdog.
+    pub view_frame_serial: u64,
     /// Logical (DIP) viewport size — CEF's GetViewRect and GetScreenInfo rect.
     /// With non-empty screen rects Chromium honours device_scale_factor, so the
     /// physical paint buffer = this × `scale_factor` = the GLArea framebuffer

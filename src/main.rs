@@ -16,6 +16,8 @@ mod cef_runtime;
 mod deeplink;
 mod devtools;
 mod gl_dmabuf;
+mod gpu_recovery;
+mod graphics;
 mod handlers;
 mod i18n;
 mod ipc;
@@ -23,9 +25,12 @@ mod notifications;
 mod paste;
 mod permissions_store;
 mod preferences;
+mod presenter;
+mod refresh_rate;
 mod spellcheck;
 mod spellcheck_ui;
 mod tray;
+mod vulkan_frame;
 mod web_view;
 mod window;
 
@@ -37,6 +42,12 @@ pub static RESTART_REQUESTED: std::sync::atomic::AtomicBool =
     std::sync::atomic::AtomicBool::new(false);
 
 fn main() -> Result<()> {
+    // A small parent restarts the app once with a safer graphics choice when
+    // a GPU copy, CEF or GTK stops delivering frames (see gpu_recovery).
+    if let Some(code) = gpu_recovery::supervise()? {
+        std::process::exit(code);
+    }
+    graphics::startup_environment();
     // `--debuglevel=LEVEL` sets the log level (`--debug` = debug alias; default
     // INFO; --debuglevel wins). RUST_LOG still overrides.
     env_logger::Builder::from_env(
@@ -82,6 +93,9 @@ fn main() -> Result<()> {
 
     gio::resources_register_include!("karere.gresource").expect("failed to register gresource");
 
+    // GTK's display must be open before CEF initializes: the Ozone platform
+    // and the native-handle capture choice follow the GPU GTK renders on.
+    graphics::initialize_display()?;
     let app = KarereApplication::new();
 
     app.connect_command_line(move |app, cmd| {
@@ -125,6 +139,7 @@ fn main() -> Result<()> {
     if is_primary {
         cef_pump::stop();
         cef::shutdown();
+        graphics::restart_if_requested()?;
         if RESTART_REQUESTED.load(std::sync::atomic::Ordering::Acquire) {
             use std::os::unix::process::CommandExt;
             // The D-Bus name and CEF profile lock went with the old instance,
