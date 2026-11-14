@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.4.1] - 2026-11-14
+
+### Fixed
+- **Misleading message when Run on Startup cannot be enabled (#206)**: on desktops without a Background portal, such as Cinnamon on Linux Mint 21, Karere said to allow background running in the system settings, which those desktops do not offer. It now says to add Karere to the startup applications with the `--background` option, which keeps Start in Background working.
+
 ## [4.4.0] - 2026-11-13
 
 ### Added

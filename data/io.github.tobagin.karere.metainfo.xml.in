@@ -102,6 +102,13 @@
   <translation type="gettext">karere</translation>
 
   <releases>
+    <release version="4.4.1" date="2026-11-14">
+      <description translate="no">
+        <ul>
+          <li>Clearer message when Run on Startup cannot be enabled on desktops without a Background portal, such as Cinnamon on Linux Mint 21 (#206).</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.4.0" date="2026-11-13">
       <description translate="no">
         <ul>

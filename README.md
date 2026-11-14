@@ -24,21 +24,11 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.4.0
+### 🆕 What's New in 4.4.1
 
-- **Chromium 156**: the browser engine is upgraded to CEF 156.0.26 / Chromium 156.0.8078.88.
-- **Chromium sandbox in the Flatpak**: WhatsApp Web's renderer processes run sandboxed again.
-- **Screen reader access to the page (#204)**: the page's accessibility tree reaches AT-SPI.
-- **`whatsapp://` and `wa.me` links** open the chat in the running app.
-- **Do Not Disturb**, real unread counts per account, and account reordering.
-- **Pinch zoom, kinetic scrolling**, and dragging text, links and images in and out of the page.
-- **Custom CSS** through a `user.css` file, a log file, and Copy Diagnostic Info.
-- **Copy Link Address (#205)**, and copied images reach the system clipboard (#196).
-- **Input fixes**: correct key codes, inline input-method composition, working page dropdowns.
-- **GPU rendering on AMD** no longer shows a blank window, and falls back to software rendering
-  if accelerated frames never arrive.
-- **Security hardening**: the native bridge is limited to `web.whatsapp.com`, permissions are
-  stored per request kind, and the DevTools port opens only with `--debug`.
+- **Run on Startup message (#206)**: on desktops without a Background portal, such as Cinnamon
+  on Linux Mint 21, Karere now explains how to add it to the startup applications with
+  `--background` instead of pointing at a system setting that does not exist there.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
