@@ -597,13 +597,16 @@ fn register_sync_autostart(app: &KarereApplication) {
                         bg.auto_start()
                     );
                     if want && !bg.auto_start() {
-                        revert_autostart_setting();
+                        revert_autostart_setting(true);
                     }
                 }
                 Err(err) => {
                     log::warn!("ashpd Background::request failed: {err}");
                     if want {
-                        revert_autostart_setting();
+                        // A portal response is the user or system saying no.
+                        // Any other error means the desktop has no Background
+                        // portal (Cinnamon on Linux Mint 21, #206).
+                        revert_autostart_setting(matches!(err, ashpd::Error::Response(_)));
                     }
                 }
             }
@@ -613,9 +616,10 @@ fn register_sync_autostart(app: &KarereApplication) {
 }
 
 /// The portal refused (or could not register) autostart: turn the setting back
-/// off and tell the user. Runs on the main thread.
-fn revert_autostart_setting() {
-    glib::MainContext::default().invoke(|| {
+/// off and tell the user. `denied` is true when the portal answered "no", false
+/// when the desktop has no working Background portal. Runs on the main thread.
+fn revert_autostart_setting(denied: bool) {
+    glib::MainContext::default().invoke(move || {
         let settings = gio::Settings::new(APP_ID);
         if !settings.boolean("run-on-startup") {
             return;
@@ -628,9 +632,15 @@ fn revert_autostart_setting() {
             .and_then(|app| crate::application::any_window(&app))
             .and_downcast::<crate::window::KarereWindow>();
         if let Some(win) = win {
-            win.show_toast(&gettextrs::gettext(
-                "Could not enable running on startup. Allow Karere to run in the background in your system settings.",
-            ));
+            win.show_toast(&if denied {
+                gettextrs::gettext(
+                    "Could not enable running on startup. Allow Karere to run in the background in your system settings.",
+                )
+            } else {
+                gettextrs::gettext(
+                    "This desktop cannot register startup apps for Karere. Add it to your startup applications with the --background option instead.",
+                )
+            });
         }
     });
 }

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 19:27+0000\n"
+"POT-Creation-Date: 2026-11-14 11:43+0000\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
@@ -961,10 +961,16 @@ msgstr "Agradecimentos especiais"
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:632
+#: src/actions.rs:637
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
+msgstr ""
+
+#: src/actions.rs:641
+msgid ""
+"This desktop cannot register startup apps for Karere. Add it to your startup "
+"applications with the --background option instead."
 msgstr ""
 
 #: src/tray.rs:111
