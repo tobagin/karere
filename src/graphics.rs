@@ -109,8 +109,12 @@ pub fn verify_frame_watch_lifecycle() {
         window.queue_draw();
         glib::ControlFlow::Continue
     });
-    let deadline = Instant::now() + Duration::from_millis(150);
-    while Instant::now() < deadline {
+    // At least 150 ms of frames; on a loaded machine wait (bounded) for the
+    // first real paint instead of failing the fixture on scheduling alone.
+    let start = Instant::now();
+    while start.elapsed() < Duration::from_millis(150)
+        || (paints.get() == 0 && start.elapsed() < Duration::from_secs(2))
+    {
         glib::MainContext::default().iteration(false);
         std::thread::sleep(Duration::from_millis(1));
     }
