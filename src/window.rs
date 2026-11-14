@@ -339,8 +339,8 @@ mod imp {
             offline.append(
                 &adw::StatusPage::builder()
                     .icon_name("network-offline-symbolic")
-                    .title(&gettextrs::gettext("No connection"))
-                    .description(&gettextrs::gettext("Waiting for the network — retrying…"))
+                    .title(gettextrs::gettext("No connection"))
+                    .description(gettextrs::gettext("Waiting for the network — retrying…"))
                     .vexpand(true)
                     .build(),
             );

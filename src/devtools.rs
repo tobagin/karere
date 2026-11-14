@@ -139,10 +139,10 @@ fn loopback_frontend_url(front: &str, port: u16) -> Option<String> {
     }
     if let Some((_, query)) = full.split_once('?') {
         for kv in query.split('&') {
-            if let Some(ws) = kv.strip_prefix("ws=").or_else(|| kv.strip_prefix("wss=")) {
-                if !is_local(ws) {
-                    return None;
-                }
+            if let Some(ws) = kv.strip_prefix("ws=").or_else(|| kv.strip_prefix("wss="))
+                && !is_local(ws)
+            {
+                return None;
             }
         }
     }
