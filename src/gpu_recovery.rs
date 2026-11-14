@@ -32,9 +32,33 @@ pub fn supervise() -> std::io::Result<Option<i32>> {
     }
     // Adopt and reap grandchildren after a failed worker, before reopening CEF.
     unsafe { libc::prctl(libc::PR_SET_CHILD_SUBREAPER, 1) };
-    let mut command = Command::new(std::env::current_exe()?);
-    command.args(std::env::args_os().skip(1)).env(WORKER, "1");
+    let mut command = worker_command(
+        &std::env::current_exe()?,
+        std::env::args_os().skip(1),
+        std::env::var_os("ZYPAK_BIN").as_deref(),
+    );
     Ok(Some(run_supervised(&mut command)?))
+}
+
+/// The worker is the real application. Under Flatpak, zypak's host preload is
+/// set up by `zypak-wrapper` for the process it launches and is not inherited
+/// by a plain re-exec, so Chromium would abort at its setuid-sandbox check.
+/// Start the worker through the wrapper again whenever we were started by it.
+fn worker_command(
+    exe: &std::path::Path,
+    args: impl IntoIterator<Item = std::ffi::OsString>,
+    zypak_bin: Option<&std::ffi::OsStr>,
+) -> Command {
+    let mut command = match zypak_bin.filter(|bin| !bin.is_empty()) {
+        Some(bin) => {
+            let mut command = Command::new(std::path::Path::new(bin).join("zypak-wrapper"));
+            command.arg(exe);
+            command
+        }
+        None => Command::new(exe),
+    };
+    command.args(args).env(WORKER, "1");
+    command
 }
 
 fn run_supervised(command: &mut Command) -> std::io::Result<i32> {
@@ -224,6 +248,28 @@ impl Drop for Deadline {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn worker_is_relaunched_through_zypak_when_started_by_it() {
+        let exe = std::path::Path::new("/app/libexec/karere");
+        let args = || vec![std::ffi::OsString::from("--debug")];
+        let wrapped = worker_command(exe, args(), Some(std::ffi::OsStr::new("/app/bin")));
+        assert_eq!(wrapped.get_program(), "/app/bin/zypak-wrapper");
+        assert_eq!(
+            wrapped.get_args().collect::<Vec<_>>(),
+            ["/app/libexec/karere", "--debug"]
+        );
+        for zypak in [None, Some(std::ffi::OsStr::new(""))] {
+            let direct = worker_command(exe, args(), zypak);
+            assert_eq!(direct.get_program(), "/app/libexec/karere");
+            assert_eq!(direct.get_args().collect::<Vec<_>>(), ["--debug"]);
+        }
+        assert!(
+            wrapped
+                .get_envs()
+                .any(|(key, value)| key == WORKER && value == Some(std::ffi::OsStr::new("1")))
+        );
+    }
 
     #[test]
     fn supervisor_preserves_normal_exit() {
