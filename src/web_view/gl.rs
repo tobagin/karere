@@ -30,15 +30,6 @@ pub(super) fn cpu_upload(frame: &crate::handlers::FrameBuffer, texture_size: (i3
     }
 }
 
-/// UV transform `[x, y, w, h]` (fractions of the texture) that samples just
-/// `visible` out of a `coded`-sized buffer. Fed to the vertex shader's `u_uv`.
-pub(super) fn texture_uv(visible: (i32, i32, i32, i32), coded: (i32, i32)) -> [f32; 4] {
-    let cw = coded.0.max(1) as f32;
-    let ch = coded.1.max(1) as f32;
-    let (x, y, w, h) = visible;
-    [x as f32 / cw, y as f32 / ch, w as f32 / cw, h as f32 / ch]
-}
-
 /// GL viewport `(x, y, w, h)` that puts `rect` — top-left origin, in CEF view
 /// (physical) pixels — on a `framebuffer`-sized target while the view is
 /// `view` pixels (`SharedState::size`). GL counts y from the bottom. A frame
@@ -152,28 +143,21 @@ impl KarereWebView {
         self.tex_w.store(0, Ordering::Relaxed);
         self.tex_h.store(0, Ordering::Relaxed);
 
-        // GPU-OSR: a second texture the imported DMA-BUF EGLImage targets,
-        // plus the popup layer's CPU and DMA-BUF targets.
+        // The popup layer's CPU target. Accelerated frames never reach GL
+        // here: they are owned GTK textures drawn by `snapshot_accelerated`.
         unsafe {
-            self.accel_tex.store(new_texture(), Ordering::Relaxed);
             self.popup_tex.store(new_texture(), Ordering::Relaxed);
-            self.accel_popup_tex.store(new_texture(), Ordering::Relaxed);
         }
         self.popup_tex_w.store(0, Ordering::Relaxed);
         self.popup_tex_h.store(0, Ordering::Relaxed);
     }
 
     /// Drop every GL name without deleting it, for when our context cannot
-    /// be made current (the objects go with the context). EGLImages need
-    /// only their display, so they are still released properly. (I4)
+    /// be made current (the objects go with the context). (I4)
     pub(super) fn forget_gl_names(&self) {
-        *self.imported.borrow_mut() = None;
-        *self.imported_popup.borrow_mut() = None;
         for name in [
             &self.texture,
-            &self.accel_tex,
             &self.popup_tex,
-            &self.accel_popup_tex,
             &self.vbo,
             &self.vao,
             &self.program,
@@ -187,16 +171,8 @@ impl KarereWebView {
 
     /// Delete our GL objects. The GLArea context must be current.
     pub(super) unsafe fn teardown_gl(&self) {
-        // Release the live EGLImages while the GL context is still current.
-        *self.imported.borrow_mut() = None;
-        *self.imported_popup.borrow_mut() = None;
         unsafe {
-            for name in [
-                &self.texture,
-                &self.accel_tex,
-                &self.popup_tex,
-                &self.accel_popup_tex,
-            ] {
+            for name in [&self.texture, &self.popup_tex] {
                 let tex = name.swap(0, Ordering::Relaxed);
                 if tex != 0 {
                     gl::DeleteTextures(1, &tex);
@@ -240,142 +216,38 @@ impl KarereWebView {
             gl::ClearColor(r, g, b, 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT);
 
-            // A CPU paint drops the accelerated frame (render.rs on_paint);
-            // release its EGLImage here, with the context current, so the
-            // CPU frame is what gets drawn rather than the last DMA-BUF. A
-            // hidden popup drops its import the same way. (I5)
-            if s.accel.is_none() {
-                *self.imported.borrow_mut() = None;
+            // Software path: upload CEF's CPU BGRA buffer through the valid
+            // GLES context (software OSR does not eliminate GLArea).
+            let tex = self.texture.load(Ordering::Relaxed);
+            if !upload_cpu_frame(tex, &self.tex_w, &self.tex_h, &mut s.frame) {
+                return;
             }
-            if s.popup.accel.is_none() {
-                *self.imported_popup.borrow_mut() = None;
-            }
-
-            // GPU path: import the pending DMA-BUF to the accel texture. (gpu-osr)
-            let atex = self.accel_tex.load(Ordering::Relaxed);
-            let mut accel_failed = false;
-            if let Some(af) = s.accel.as_mut()
-                && af.dirty
-            {
-                if let Some(img) = crate::gl_dmabuf::import_to_texture(
-                    atex,
-                    af.width,
-                    af.height,
-                    af.fourcc,
-                    af.modifier,
-                    &af.planes,
-                ) {
-                    // Keep the EGLImage alive while the texture is sampled;
-                    // dropping the previous one releases it.
-                    *self.imported.borrow_mut() = Some(img);
-                    af.dirty = false;
-                } else {
-                    accel_failed = true;
-                }
-            }
-            if accel_failed {
-                // A rejected DMA-BUF must not pin draw() to a permanently
-                // blank/stale accelerated branch. Drop it so an existing or
-                // subsequent CEF CPU on_paint frame can become visible.
-                log::warn!("accelerated OSR import failed; falling back to CPU paint");
-                s.accel = None;
-                *self.imported.borrow_mut() = None;
-                // CEF's shared-texture choice is fixed at browser creation.
-                // Recreate the pool after this render callback so subsequent
-                // callbacks are CPU on_paint rather than more unusable DMA-BUFs.
-                self.schedule_software_osr_fallback();
-            }
-
-            // Popup DMA-BUF. A rejected one only costs the popup; the view
-            // import above is what decides the software fallback.
-            let aptex = self.accel_popup_tex.load(Ordering::Relaxed);
-            let mut popup_failed = false;
-            if let Some(pf) = s.popup.accel.as_mut()
-                && pf.dirty
-            {
-                if let Some(img) = crate::gl_dmabuf::import_to_texture(
-                    aptex,
-                    pf.width,
-                    pf.height,
-                    pf.fourcc,
-                    pf.modifier,
-                    &pf.planes,
-                ) {
-                    *self.imported_popup.borrow_mut() = Some(img);
-                    pf.dirty = false;
-                } else {
-                    popup_failed = true;
-                }
-            }
-            if popup_failed {
-                log::warn!("accelerated popup import failed; popup not shown");
-                s.popup.accel = None;
-                *self.imported_popup.borrow_mut() = None;
-            }
-
-            let accel_view = if self.imported.borrow().is_some() {
-                s.accel.as_ref().map(|af| {
-                    let layer = Layer {
-                        tex: atex,
-                        bgra: 0,
-                        uv: super::texture_uv(af.visible, (af.width, af.height)),
-                    };
-                    (layer, (af.visible.2, af.visible.3))
-                })
-            } else {
-                None
+            let view = Layer {
+                tex,
+                bgra: 1,
+                uv: FULL_UV,
             };
-            let (view, view_size) = match accel_view {
-                Some(v) => v,
-                None => {
-                    // Software path: upload CEF's CPU BGRA buffer through the
-                    // valid GLES context (software OSR does not eliminate GLArea).
-                    let tex = self.texture.load(Ordering::Relaxed);
-                    if !upload_cpu_frame(tex, &self.tex_w, &self.tex_h, &mut s.frame) {
-                        return;
-                    }
-                    let layer = Layer {
-                        tex,
-                        bgra: 1,
-                        uv: FULL_UV,
-                    };
-                    (layer, (s.frame.width, s.frame.height))
-                }
-            };
+            let view_size = (s.frame.width, s.frame.height);
 
-            // Popup layer (`<select>` dropdowns), CPU or DMA-BUF, drawn over
-            // the view at CEF's popup rect.
+            // Popup layer (`<select>` dropdowns) drawn over the view at CEF's
+            // popup rect.
             let mut popup = None;
             if let Some(rect) = s.popup.visible_rect(s.foreground_browser_id) {
-                let accel_popup = if self.imported_popup.borrow().is_some() {
-                    s.popup.accel.as_ref().map(|pf| Layer {
-                        tex: aptex,
-                        bgra: 0,
-                        uv: super::texture_uv(pf.visible, (pf.width, pf.height)),
-                    })
-                } else {
-                    None
-                };
-                popup = match accel_popup {
-                    Some(layer) => Some((layer, rect)),
-                    None => {
-                        let ptex = self.popup_tex.load(Ordering::Relaxed);
-                        upload_cpu_frame(
-                            ptex,
-                            &self.popup_tex_w,
-                            &self.popup_tex_h,
-                            &mut s.popup.frame,
-                        )
-                        .then_some((
-                            Layer {
-                                tex: ptex,
-                                bgra: 1,
-                                uv: FULL_UV,
-                            },
-                            rect,
-                        ))
-                    }
-                };
+                let ptex = self.popup_tex.load(Ordering::Relaxed);
+                popup = upload_cpu_frame(
+                    ptex,
+                    &self.popup_tex_w,
+                    &self.popup_tex_h,
+                    &mut s.popup.frame,
+                )
+                .then_some((
+                    Layer {
+                        tex: ptex,
+                        bgra: 1,
+                        uv: FULL_UV,
+                    },
+                    rect,
+                ));
             }
             let view_rect_size = s.size;
             drop(s);
@@ -410,7 +282,7 @@ impl KarereWebView {
 /// One textured quad of the GL present path.
 struct Layer {
     tex: GLuint,
-    /// `u_bgra`: 1 = CPU BGRA bytes uploaded as RGBA, 0 = DMA-BUF import.
+    /// `u_bgra`: 1 = CPU BGRA bytes uploaded as RGBA.
     bgra: GLint,
     /// `u_uv`: sampled sub-rect of the texture, `[x, y, w, h]` fractions.
     uv: [f32; 4],
@@ -550,13 +422,12 @@ pub(super) static NO_GL: AtomicBool = AtomicBool::new(false);
 /// context current. Unset until then. (gpu-osr, I6)
 static ACCEL_PROBE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
 
-/// Decide GPU-accelerated OSR: env `KARERE_GPU_OSR=1` (or the
-/// `gpu-rendering` setting) AND EGL dma-buf import on this context. Call
-/// only with the GLArea context current — `realize` after `init_gl`. An
-/// answer is cached only when it was actually measured: without a current
-/// EGL display the probe leaves the slot empty for the next realize.
-/// Restart-required once cached, as the shared-texture flag is fixed per
-/// browser anyway. (gpu-osr, I6)
+/// Decide whether GPU-accelerated OSR is requested: env `KARERE_GPU_OSR`
+/// (`1`/`0`) or the `gpu-rendering` setting (default on). Called from
+/// `realize` once a GL context exists; whether a frame-transfer backend is
+/// available is checked per view when a browser is created. Restart-required
+/// once cached, as the shared-texture flag is fixed per browser anyway.
+/// (gpu-osr, I6)
 pub(super) fn probe_accel_osr() {
     if ACCEL_PROBE.get().is_some() || NO_GL.load(Ordering::Relaxed) {
         return;
@@ -568,38 +439,31 @@ pub(super) fn probe_accel_osr() {
         Some("0") | Some("false") => false,
         _ => {
             use gtk::prelude::SettingsExt;
-            let want = super::with_app_settings(|s| s.boolean("gpu-rendering"));
-            // NVIDIA can't back CEF's exportable shared images — the GPU
-            // process fails SkSurface init and no accelerated frame ever
-            // arrives, leaving the chat area black (#167). Probe the GL
-            // context actually rendering (current here) instead of the PCI
-            // driver list, so hybrid setups rendering on another GPU keep
-            // the accel path (#173). KARERE_GPU_OSR=1 forces.
-            if want && gl_vendor_is_nvidia() {
-                log::warn!(
-                    "accel_osr: NVIDIA driver detected — GPU rendering is \
-                     unsupported (CEF shared-image export fails, #167); \
-                     using software rendering. KARERE_GPU_OSR=1 to force."
+            // On by default, NVIDIA included: CEF captures NVIDIA frames into
+            // native-handle buffers (`graphics::osr_native_images`), and each
+            // frame is copied into an allocation GTK can import before CEF
+            // gets its buffer back. A saved opt-out is honoured.
+            let wanted = super::with_app_settings(|s| s.boolean("gpu-rendering"));
+            // A stack that already fell back to CPU paint starts there, without
+            // the first-frame wait; any GPU, driver, engine or app change retries.
+            if wanted && crate::accel_memo::previously_failed(crate::accel_memo::capture_identity())
+            {
+                log::info!(
+                    "accel_osr: GPU rendering delivered no frame earlier with this GPU, driver and \
+                     engine; using CPU paint (KARERE_GPU_OSR=1 retries)"
                 );
                 false
             } else {
-                want
+                wanted
             }
         }
     };
-    // Do not ask CEF for shared textures unless this GL/EGL display can
-    // import them. Without this pre-browser fence CEF may never call CPU
-    // on_paint, leaving a blank first frame.
-    let enabled = if requested {
-        match crate::gl_dmabuf::dmabuf_import_supported() {
-            Some(ok) => ok,
-            None => return, // not measurable here; keep CPU OSR, retry later
-        }
-    } else {
-        false
-    };
-    log::info!("accel_osr: requested={requested} enabled={enabled}");
-    let _ = ACCEL_PROBE.set(enabled);
+    // Recorded with the GLArea context current, so a later fallback names it.
+    crate::accel_memo::capture_identity();
+    // Whether a transfer backend can take the frames is checked per view
+    // (`shared_texture_enabled_for_browser`); without one CEF keeps CPU paint.
+    log::info!("accel_osr: requested={requested}");
+    let _ = ACCEL_PROBE.set(requested);
 }
 
 /// Whether a browser created now should ask CEF for shared textures.
@@ -627,24 +491,6 @@ pub(super) fn accel_osr_enabled() -> bool {
     }
 }
 
-/// True when the current GL context is driven by the NVIDIA proprietary
-/// driver (GL_VENDOR contains "NVIDIA"; Mesa reports "Mesa"/"AMD" even on
-/// NVIDIA hardware via nouveau/NVK, where shared images are untested but
-/// not known-broken). Expects a current GL context; without one it falls
-/// back to whether the nvidia kernel driver is bound. (gpu-osr)
-fn gl_vendor_is_nvidia() -> bool {
-    let p = unsafe { gl::GetString(gl::VENDOR) };
-    if p.is_null() {
-        // No current GL context (should not happen from the realize
-        // probe). Fall back to the coarse driver-bound check so NVIDIA
-        // still gets software rendering instead of the broken accel path.
-        return std::path::Path::new("/sys/bus/pci/drivers/nvidia").exists();
-    }
-    let vendor = unsafe { std::ffi::CStr::from_ptr(p.cast()) }.to_string_lossy();
-    log::info!("accel_osr: GL_VENDOR={vendor}");
-    vendor.contains("NVIDIA")
-}
-
 pub(super) const VS: &str = r#"#version 300 es
 precision highp float;
 layout(location=0) in vec2 a_pos;
@@ -665,7 +511,7 @@ in vec2 v_uv;
 out vec4 frag;
 uniform sampler2D u_tex;
 // 1 = software path (CEF BGRA bytes uploaded as RGBA → swizzle back).
-// 0 = GPU dma-buf path (EGL imports the real format → sample as RGBA). (gpu-osr)
+// 0 = RGBA texture as-is.
 uniform int u_bgra;
 void main() {
     vec4 c = texture(u_tex, v_uv);
@@ -778,13 +624,6 @@ mod tests {
             super::gl_viewport_for((150, 75), (200, 100), (0, 0, 200, 100)),
             (0, 0, 150, 75)
         );
-    }
-
-    #[test]
-    fn accelerated_frames_sample_only_their_visible_rect() {
-        assert_eq!(super::texture_uv((0, 0, 4, 2), (4, 2)), [0.0, 0.0, 1.0, 1.0]);
-        assert_eq!(super::texture_uv((0, 0, 2, 1), (4, 2)), [0.0, 0.0, 0.5, 0.5]);
-        assert!(super::VS.contains("u_uv"));
     }
 
     #[test]

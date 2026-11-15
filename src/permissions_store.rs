@@ -94,7 +94,7 @@ fn migrate(store: Store) -> (Store, bool) {
             let migrated = match key {
                 1 | 2 => Some(MEDIA_FLAG | key),
                 4 | 8 if state == State::Deny as i32 => Some(MEDIA_FLAG | key),
-                k if k >= 16 && k <= VALUE_MASK => Some(PROMPT_FLAG | k),
+                k if (16..=VALUE_MASK).contains(&k) => Some(PROMPT_FLAG | k),
                 _ => None,
             };
             if let Some(nk) = migrated {

@@ -943,7 +943,7 @@ fn uri_list_drops_split_files_from_links() {
 #[test]
 fn clipboard_images_prefer_original_encodings() {
     fn offer(mimes: &'static [&'static str]) -> impl Fn(&str) -> bool {
-        move |m| mimes.iter().any(|x| *x == m)
+        move |m| mimes.contains(&m)
     }
     assert_eq!(preferred_image_mime(offer(&["image/png", "image/gif"])), Some("image/gif"));
     assert_eq!(

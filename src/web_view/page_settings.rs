@@ -390,7 +390,7 @@ impl KarereWebView {
             if let Some(widget) = weak.upgrade() {
                 let imp = widget.imp();
                 // Fired: the id is spent, never `remove()` it.
-                drop(imp.mobile_check.take());
+                imp.mobile_check.take();
                 imp.check_mobile_layout();
             }
         });

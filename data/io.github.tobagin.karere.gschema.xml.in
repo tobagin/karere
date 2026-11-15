@@ -22,9 +22,9 @@
       <description>Apply the user.css file from the configuration directory to WhatsApp Web.</description>
     </key>
     <key name="gpu-rendering" type="b">
-      <default>false</default>
-      <summary>GPU rendering (experimental)</summary>
-      <description>Render the WhatsApp view on the GPU via accelerated off-screen rendering (DMA-BUF import). Experimental; requires a restart. Disable if the chat area is blank.</description>
+      <default>true</default>
+      <summary>GPU rendering</summary>
+      <description>Transfer chat frames on the GPU when supported, falling back to software rendering automatically if accelerated frames are unavailable. Requires a restart.</description>
     </key>
     <key name="close-button-action" type="s">
       <default>'background'</default>

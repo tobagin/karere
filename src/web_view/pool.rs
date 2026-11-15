@@ -16,6 +16,10 @@ use super::input::keyboard::reset_ime;
 
 /// How long a visible accelerated browser may go without a first frame.
 const FIRST_ACCEL_FRAME_DEADLINE_SECS: u64 = 5;
+/// How long a visible CPU-paint browser may go without a first frame. CPU
+/// OSR always paints (even a blank page), so silence means the CEF graphics
+/// backend itself failed.
+const FIRST_CPU_FRAME_DEADLINE_SECS: u64 = 10;
 
 impl KarereWebView {
     pub fn close_browser(&self) {
@@ -70,6 +74,19 @@ impl KarereWebView {
     /// `shared_texture_enabled` is immutable after browser creation, so dropping
     /// only the failed accelerated frame cannot restore CPU `on_paint` delivery.
     fn restart_with_software_osr(&self) {
+        // Keep a custom URL or the DevTools frontend across the recreation;
+        // it must not silently become WhatsApp's start page.
+        if let Some(url) = self
+            .browser
+            .lock()
+            .as_ref()
+            .and_then(|browser| browser.main_frame())
+            .map(|frame| CefString::from(&frame.url()).to_string())
+            .filter(|url| !url.is_empty())
+        {
+            *self.pending_url.lock() = Some(url);
+        }
+        self.drop_accelerated_frames();
         log::warn!("accelerated OSR disabled for this view; recreating browsers for CPU paint");
         let is_devtools = self.devtools.load(Ordering::Relaxed);
         // Keep account contexts that were already initializing. Their callbacks
@@ -104,29 +121,67 @@ impl KarereWebView {
     }
 
     /// Accelerated OSR can deliver no frame at all (CEF 156 on radeonsi: the
-    /// capturer's buffer fails to allocate), which no import error reports.
-    /// Arm a deadline whenever a visible foreground still has no accelerated
-    /// frame; when it passes, recreate the browsers for CPU paint.
-    pub(super) fn watch_first_accel_frame(&self) {
+    /// capturer's buffer fails to allocate; NVIDIA with mappable buffers: the
+    /// GPU process cannot render into them), which no import error reports.
+    /// Arm a deadline whenever a visible foreground still has no frame. When
+    /// an accelerated one passes, first retry once with CEF's native-handle
+    /// buffers (unless already in use or explicitly chosen), else recreate the
+    /// browsers for CPU paint. A CPU browser that never paints means CEF's
+    /// graphics backend failed; restart once with the next backend.
+    pub(super) fn watch_first_frame(&self) {
         if let Some(watch) = self.first_accel_watch.borrow_mut().take() {
             watch.remove();
         }
-        if !self.no_accel_frame_yet() {
+        let Some(shared) = self.shared.lock().clone() else {
+            return;
+        };
+        let browser_id = self.browser_id.load(Ordering::Relaxed);
+        if browser_id == 0 || !self.window_visible.load(Ordering::Relaxed) {
             return;
         }
+        let accelerated = self.shared_texture_enabled_for_browser();
+        if accelerated && !self.no_accel_frame_yet() {
+            return;
+        }
+        let initial_serial = shared.lock().view_frame_serial;
+        let deadline = if accelerated {
+            FIRST_ACCEL_FRAME_DEADLINE_SECS
+        } else {
+            FIRST_CPU_FRAME_DEADLINE_SECS
+        };
         let weak = self.obj().downgrade();
         *self.first_accel_watch.borrow_mut() = Some(glib::timeout_add_local_once(
-            std::time::Duration::from_secs(FIRST_ACCEL_FRAME_DEADLINE_SECS),
+            std::time::Duration::from_secs(deadline),
             move || {
                 let Some(view) = weak.upgrade() else { return };
                 let imp = view.imp();
                 imp.first_accel_watch.borrow_mut().take();
+                if !imp.window_visible.load(Ordering::Relaxed)
+                    || imp.browser_id.load(Ordering::Relaxed) != browser_id
+                {
+                    return;
+                }
+                if !accelerated {
+                    let silent = imp
+                        .shared
+                        .lock()
+                        .as_ref()
+                        .is_some_and(|s| s.lock().view_frame_serial == initial_serial);
+                    if silent {
+                        crate::graphics::retry_cef_after_frame_failure();
+                    }
+                    return;
+                }
                 if !imp.no_accel_frame_yet() {
+                    return;
+                }
+                if crate::graphics::retry_native_handle_after_frame_failure() {
                     return;
                 }
                 log::warn!(
                     "accelerated OSR delivered no frame in {FIRST_ACCEL_FRAME_DEADLINE_SECS}s; falling back to CPU paint"
                 );
+                crate::accel_memo::record_failure();
                 if let Some(window) = view.root().and_downcast::<crate::window::KarereWindow>() {
                     window.show_toast(&gettextrs::gettext(
                         "GPU rendering is not working on this system. Using software rendering.",
@@ -137,16 +192,28 @@ impl KarereWebView {
         ));
     }
 
-    /// A visible, accelerated foreground browser that has painted nothing.
+    /// A visible, accelerated foreground browser that has presented nothing.
     fn no_accel_frame_yet(&self) -> bool {
         self.shared_texture_enabled_for_browser()
             && self.window_visible.load(Ordering::Relaxed)
             && self.browser_id.load(Ordering::Relaxed) != 0
-            && self.shared.lock().as_ref().is_some_and(|s| s.lock().accel.is_none())
+            && !self.gpu_frame.get()
     }
 
+    /// Whether a browser created now should ask CEF for shared textures:
+    /// GPU transfer requested (setting, `KARERE_GPU_OSR`), not forced off for
+    /// this view, and a transfer backend that can take ownership of CEF's
+    /// frames (GL or Vulkan copy into a GTK-importable allocation) exists.
     pub(super) fn shared_texture_enabled_for_browser(&self) -> bool {
-        !self.software_osr_forced.load(Ordering::Acquire) && accel_osr_enabled()
+        if self.software_osr_forced.load(Ordering::Acquire)
+            || std::env::var("KARERE_CEF_GRAPHICS").as_deref() == Ok("software")
+            || !accel_osr_enabled()
+        {
+            return false;
+        }
+        self.presenter
+            .borrow_mut()
+            .supports_acceleration(&*self.obj())
     }
 
     /// WhatsApp Web entry point; every account browser starts here.
@@ -339,13 +406,12 @@ impl KarereWebView {
             ..Default::default()
         };
         let settings = BrowserSettings {
-            // 60fps OSR: the old 30 cap read as scroll/typing lag next to a
-            // real browser (#173) — measured 29 vs 58fps under wheel load.
-            // Idle cost is nil (an idle chat paints ~0 frames; hidden windows
-            // are paused via was_hidden, #151), so this only spends CPU while
-            // content actually animates. Runtime set_windowless_frame_rate is
-            // a no-op in this CEF build, so the rate is fixed at creation.
-            windowless_frame_rate: 60,
+            // Follow the monitor's refresh rate (60 before the view knows its
+            // monitor). Idle cost is nil: an idle chat paints ~0 frames and
+            // hidden windows are paused via was_hidden (#151), so a higher
+            // rate only spends CPU while content actually animates. Monitor
+            // changes update live browsers (`refresh_frame_rate`).
+            windowless_frame_rate: crate::refresh_rate::for_widget(&*self.obj()),
             ..Default::default()
         };
 
@@ -371,6 +437,14 @@ impl KarereWebView {
             log::error!("browser_host_create_browser_sync returned None");
             return;
         };
+        log::info!(
+            "render cadence: CEF requested={} effective={} shared_texture={}",
+            settings.windowless_frame_rate,
+            b.host()
+                .map(|host| host.windowless_frame_rate())
+                .unwrap_or(0),
+            window_info.shared_texture_enabled
+        );
         log::info!("browser spawned (account={account_id:?}, foreground={make_foreground})");
 
         if let Some(id) = account_id.clone() {
@@ -484,7 +558,7 @@ impl KarereWebView {
                 host.was_hidden(1);
             }
         }
-        self.watch_first_accel_frame();
+        self.watch_first_frame();
         self.obj().queue_render();
         self.apply_audio_mute();
         // A background account may have loaded at another width; bring

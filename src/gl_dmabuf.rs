@@ -2,9 +2,10 @@
 //! texture via EGL (`EGL_EXT_image_dma_buf_import`), avoiding the per-frame CPU
 //! readback + `glTexImage2D` upload of the software `on_paint` path.
 //!
-//! The CEF crate ships a Vulkan/wgpu importer; Karere renders through a GTK
-//! `GLArea` (OpenGL/epoxy), so we do the EGL→GL import ourselves. All calls run
-//! on the glib main thread with the GLArea's GL context current (from `draw`).
+//! Used only while copying CEF's frame into an application-owned texture
+//! (`presenter`), inside the CEF callback: all calls run on the GTK main
+//! thread with the copying GL context current, and no borrowed CEF buffer is
+//! kept for a later draw.
 
 use std::ffi::{CStr, c_void};
 use std::os::raw::{c_char, c_int, c_uint};
@@ -43,6 +44,12 @@ type EglCreateImage = unsafe extern "C" fn(
 ) -> EglImage;
 type EglDestroyImage = unsafe extern "C" fn(EglDisplay, EglImage) -> c_uint;
 type GlImageTargetTexture2d = unsafe extern "C" fn(c_uint, EglImage);
+type EglQueryDisplayAttrib = unsafe extern "C" fn(EglDisplay, c_int, *mut isize) -> c_uint;
+type EglQueryDeviceString = unsafe extern "C" fn(*mut c_void, c_int) -> *const c_char;
+
+const EGL_DEVICE_EXT: c_int = 0x322C;
+const EGL_DRM_DEVICE_FILE_EXT: c_int = 0x3233;
+const EGL_DRM_RENDER_NODE_FILE_EXT: c_int = 0x3377;
 
 /// EGL/GL-OES entry points. Core EGL is dlsym'd from libEGL directly (the GL
 /// proc loader / `eglGetProcAddress` does NOT return core EGL functions);
@@ -54,6 +61,9 @@ struct Egl {
     create_image: EglCreateImage,
     destroy_image: EglDestroyImage,
     image_target_texture_2d: GlImageTargetTexture2d,
+    /// `EGL_EXT_device_query`; absent on drivers without it.
+    query_display_attrib: Option<EglQueryDisplayAttrib>,
+    query_device_string: Option<EglQueryDeviceString>,
     _lib: Library,
 }
 
@@ -98,7 +108,13 @@ fn load_egl() -> Option<Egl> {
             return None;
         }
 
+        let qda = get_proc(c"eglQueryDisplayAttribEXT".as_ptr());
+        let qds = get_proc(c"eglQueryDeviceStringEXT".as_ptr());
         Some(Egl {
+            query_display_attrib: (!qda.is_null())
+                .then(|| std::mem::transmute::<*const c_void, EglQueryDisplayAttrib>(qda)),
+            query_device_string: (!qds.is_null())
+                .then(|| std::mem::transmute::<*const c_void, EglQueryDeviceString>(qds)),
             get_current_display,
             query_string,
             create_image: std::mem::transmute::<*const c_void, EglCreateImage>(ci),
@@ -148,6 +164,39 @@ pub fn dmabuf_import_supported() -> Option<bool> {
 }
 
 /// One imported frame: the EGLImage kept alive while its texture is sampled.
+/// DRM nodes of the GPU behind the current EGL display, from
+/// `EGL_EXT_device_query` + `EGL_EXT_device_drm(_render_node)`. `None` when
+/// no EGL context is current or the driver does not expose its device.
+pub fn current_drm_device() -> Option<crate::vulkan_frame::GpuNode> {
+    let e = egl()?;
+    let (query_attrib, query_string) = (e.query_display_attrib?, e.query_device_string?);
+    unsafe {
+        let dpy = (e.get_current_display)();
+        if dpy.is_null() {
+            return None;
+        }
+        let mut device: isize = 0;
+        if query_attrib(dpy, EGL_DEVICE_EXT, &mut device) == 0 || device == 0 {
+            return None;
+        }
+        let node = |name| {
+            let path = query_string(device as *mut c_void, name);
+            if path.is_null() {
+                return None;
+            }
+            let path = CStr::from_ptr(path).to_str().ok()?;
+            use std::os::unix::fs::MetadataExt;
+            let rdev = std::fs::metadata(path).ok()?.rdev();
+            Some(crate::vulkan_frame::GpuNode::from_rdev(rdev))
+        };
+        let gpu = crate::vulkan_frame::GpuNode {
+            primary: node(EGL_DRM_DEVICE_FILE_EXT),
+            render: node(EGL_DRM_RENDER_NODE_FILE_EXT),
+        };
+        (gpu.primary.is_some() || gpu.render.is_some()).then_some(gpu)
+    }
+}
+
 pub struct ImportedImage {
     dpy: EglDisplay,
     image: EglImage,
@@ -173,22 +222,6 @@ pub struct Plane {
     pub stride: u32,
 }
 
-/// One pending accelerated frame handed off from `on_accelerated_paint` (CEF UI
-/// thread) to `draw` (GL context current). Owns the dup'd plane fds. (gpu-osr)
-pub struct AccelFrame {
-    /// Buffer (coded) size: what the EGLImage is created with.
-    pub width: i32,
-    pub height: i32,
-    /// Part of the buffer holding the picture, `(x, y, w, h)` in buffer
-    /// pixels. The coded size can be padded past the view; sampling only this
-    /// rect keeps the padding off screen.
-    pub visible: (i32, i32, i32, i32),
-    pub fourcc: u32,
-    pub modifier: u64,
-    pub planes: Vec<Plane>,
-    pub dirty: bool,
-}
-
 /// Import a DMA-BUF described by `planes`/`modifier`/`fourcc` and bind it to
 /// `texture` (a `GL_TEXTURE_2D`). Returns the EGLImage wrapper to keep alive
 /// until the next frame replaces it. Context must be current. (gpu-osr)
@@ -201,11 +234,21 @@ pub fn import_to_texture(
     planes: &[Plane],
 ) -> Option<ImportedImage> {
     use std::os::fd::AsRawFd;
+    // A DMA-BUF's size query does not move its file position. Some EGL drivers
+    // accept an image for an empty/non-buffer fd and fault only when it is
+    // read; reject that storage before submitting a copy to the driver.
+    for plane in planes {
+        let size = unsafe { libc::lseek(plane.fd.as_raw_fd(), 0, libc::SEEK_END) };
+        if size <= 0 || plane.offset >= size as u64 {
+            log::warn!("gl_dmabuf: plane has no accessible DMA-BUF storage");
+            return None;
+        }
+    }
     let e = egl()?;
     unsafe {
         let dpy = (e.get_current_display)();
         if dpy.is_null() {
-            log::warn!("gl_dmabuf: import skipped — no current EGL display in draw()");
+            log::warn!("gl_dmabuf: import skipped — no current EGL display");
             return None;
         }
         if planes.is_empty() {
@@ -259,9 +302,17 @@ pub fn import_to_texture(
             return None;
         }
 
+        let imported = ImportedImage { dpy, image };
+        let mut previous_texture = 0;
+        gl::GetIntegerv(gl::TEXTURE_BINDING_2D, &mut previous_texture);
         gl::BindTexture(GL_TEXTURE_2D, texture);
         (e.image_target_texture_2d)(GL_TEXTURE_2D, image);
-        gl::BindTexture(GL_TEXTURE_2D, 0);
+        let error = gl::GetError();
+        gl::BindTexture(GL_TEXTURE_2D, previous_texture as c_uint);
+        if error != gl::NO_ERROR {
+            log::warn!("gl_dmabuf: EGL image texture binding failed (GL error={error:#x})");
+            return None;
+        }
 
         static FIRST: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
         if FIRST.swap(false, std::sync::atomic::Ordering::Relaxed) {
@@ -270,7 +321,7 @@ pub fn import_to_texture(
             );
         }
 
-        Some(ImportedImage { dpy, image })
+        Some(imported)
     }
 }
 
