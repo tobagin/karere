@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.0] - 2026-11-15
+
+### Added
+- **Live reload for custom CSS (#207)**: saving `user.css` updates every account straight away, with no page reload. Deleting the file removes the styling, and an unreadable or oversized file leaves the last good styling in place. Contributed by [@riccardomarotti](https://github.com/riccardomarotti).
+- **Custom CSS switch**: the Custom CSS row in Preferences can turn the stylesheet off without deleting the file, and Copy Diagnostic Info reports whether custom CSS is in effect.
+
+### Changed
+- **Match WhatsApp Colors follows the page**: the window tint now uses the colour the page actually shows instead of two fixed colours, so it keeps matching under a custom `user.css` theme.
+
 ## [4.4.1] - 2026-11-14
 
 ### Fixed

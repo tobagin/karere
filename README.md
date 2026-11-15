@@ -24,11 +24,14 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.4.1
+### 🆕 What's New in 4.5.0
 
-- **Run on Startup message (#206)**: on desktops without a Background portal, such as Cinnamon
-  on Linux Mint 21, Karere now explains how to add it to the startup applications with
-  `--background` instead of pointing at a system setting that does not exist there.
+- **Live reload for custom CSS (#207)**: saving `user.css` restyles every account straight away,
+  with no page reload. Contributed by [@riccardomarotti](https://github.com/riccardomarotti).
+- **Custom CSS switch**: the Custom CSS row in Preferences turns the stylesheet off without
+  deleting the file.
+- **Match WhatsApp Colors follows the page**: the window tint uses the colour the page actually
+  shows, so it keeps matching under a custom theme.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
@@ -112,12 +115,13 @@ Access preferences through the application menu or keyboard shortcut (`Ctrl+,`) 
 
 ### Custom CSS
 
-Use the application menu to open `user.css`, stored at
+Open `user.css` from the Custom CSS row in Preferences. It is stored at
 `$XDG_CONFIG_HOME/io.github.tobagin.karere/user.css` (normally
 `~/.config/io.github.tobagin.karere/user.css`). In Flatpak, it is under
 `~/.var/app/io.github.tobagin.karere/config/io.github.tobagin.karere/`.
 Changes apply automatically to all accounts, including background accounts;
-no reload or restart is needed. Deleting the file removes custom styling.
+no reload or restart is needed. Deleting the file removes custom styling, and
+the switch on the same row turns it off without touching the file.
 The file must be UTF-8 and no larger than 256 KiB.
 
 ### Keyboard Shortcuts

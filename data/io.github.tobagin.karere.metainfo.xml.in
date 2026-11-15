@@ -102,6 +102,15 @@
   <translation type="gettext">karere</translation>
 
   <releases>
+    <release version="4.5.0" date="2026-11-15">
+      <description translate="no">
+        <ul>
+          <li>Custom CSS reloads live: saving user.css restyles every account without a page reload (#207).</li>
+          <li>A switch in Preferences turns custom CSS off without deleting the file.</li>
+          <li>Match WhatsApp Colors now follows the colours the page actually shows, including under a custom theme.</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.4.1" date="2026-11-14">
       <description translate="no">
         <ul>
