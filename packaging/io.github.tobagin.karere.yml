@@ -103,8 +103,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v4.4.1
-        commit: 44b462d33985bb0129dc0251dab600149cfee848
+        tag: v4.5.0
+        commit: 4b2976a6c98c5049e17a3d9eec6536f6f5fdb78b
       - cargo-sources.json
     post-install:
       - mkdir -p ${FLATPAK_DEST}/share/karere
