@@ -62,6 +62,16 @@ GSETTINGS_SCHEMA_DIR="$PWD/target/test-schemas" GSETTINGS_BACKEND=memory \
 
 Generate `target/test-schemas/gschemas.compiled` from `data/io.github.tobagin.karere.gschema.xml.in` (substituting the stable app ID/path) before that command; the integration test performs this setup automatically.
 
+### User GTK stylesheet live reload
+
+The `gtk_css` unit tests (event filtering, atomic-replacement detection) run in the normal `cargo test` suite. The behavior tests — reload on write/import change/atomic replace/delete, debouncing, and cleanup on drop — need a GTK display and are ignored by default; run them under Xvfb:
+
+```sh
+xvfb-run -a cargo test --bin karere -- --ignored gtk_css::tests
+```
+
+Manual check on Wayland: with Karere running, edit `$XDG_CONFIG_HOME/gtk-4.0/gtk.css` (or a file it `@import`s, e.g. Noctalia's `noctalia.css`) and confirm the native headerbar/window chrome changes within ~150 ms without restarting. Switching Noctalia themes repeatedly should track the generated CSS without accumulating providers or monitors.
+
 ### PinePhone / Mobian Flatpak smoke
 
 On a PinePhone running Mobian 13 under Phosh:

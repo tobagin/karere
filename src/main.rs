@@ -16,6 +16,7 @@ mod cef_runtime;
 mod deeplink;
 mod devtools;
 mod gl_dmabuf;
+mod gtk_css;
 mod handlers;
 mod i18n;
 mod ipc;
