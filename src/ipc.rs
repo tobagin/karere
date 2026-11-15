@@ -104,6 +104,10 @@ pub enum RendererMessage {
     SetClipboardImage {
         base64_png: String,
     },
+    /// Computed CSS background of the page's header, e.g. `rgb(29, 31, 31)`.
+    PageBackground {
+        color: String,
+    },
     #[cfg(debug_assertions)]
     Pong,
 }
@@ -209,6 +213,7 @@ impl RendererMessage {
         "PasteConsumed",
         "SetClipboard",
         "SetClipboardImage",
+        "PageBackground",
         #[cfg(debug_assertions)]
         "Pong",
     ];
@@ -224,6 +229,7 @@ impl RendererMessage {
             RendererMessage::PasteConsumed { .. } => "PasteConsumed",
             RendererMessage::SetClipboard { .. } => "SetClipboard",
             RendererMessage::SetClipboardImage { .. } => "SetClipboardImage",
+            RendererMessage::PageBackground { .. } => "PageBackground",
             #[cfg(debug_assertions)]
             RendererMessage::Pong => "Pong",
         }
@@ -348,6 +354,9 @@ mod tests {
             },
             RendererMessage::SetClipboardImage {
                 base64_png: "iVBOR".into(),
+            },
+            RendererMessage::PageBackground {
+                color: "rgb(29, 31, 31)".into(),
             },
             #[cfg(debug_assertions)]
             RendererMessage::Pong,

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 11:43+0000\n"
+"POT-Creation-Date: 2026-11-15 13:24+0000\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -30,11 +30,11 @@ msgstr "Giới thiệu"
 msgid "About dialog showing application information"
 msgstr "Hộp thoại giới thiệu hiển thị thông tin ứng dụng"
 
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:354
 msgid "Accessibility"
 msgstr "Trợ năng"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:378
 msgid "Accessibility Zoom"
 msgstr "Thu phóng trợ năng"
 
@@ -62,24 +62,24 @@ msgstr "Ngôn ngữ ứng dụng. Yêu cầu khởi động lại."
 msgid "Application preferences and settings dialog"
 msgstr "Hộp thoại tuỳ chọn và cài đặt ứng dụng"
 
-#: data/ui/preferences.ui:132
-msgid "Applied after reloading"
-msgstr ""
-
-#: data/ui/preferences.ui:386
+#: data/ui/preferences.ui:385
 msgid "Applied to all webviews"
 msgstr "Áp dụng cho mọi webview"
 
-#: data/ui/preferences.ui:192
+#: data/ui/preferences.ui:191
 #, fuzzy
 msgid "Applies to the notifications Karere shows for incoming messages"
 msgstr "Hiện thông báo cho tin nhắn đến"
+
+#: data/ui/preferences.ui:132
+msgid "Apply user.css to WhatsApp Web; changes take effect immediately"
+msgstr ""
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "Tự động"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:305
 msgid "Auto-Detect Language"
 msgstr "Tự động nhận diện ngôn ngữ"
 
@@ -87,7 +87,7 @@ msgstr "Tự động nhận diện ngôn ngữ"
 msgid "Auto: shown when a system tray is available"
 msgstr "Tự động: hiện khi có khay hệ thống"
 
-#: data/ui/preferences.ui:313
+#: data/ui/preferences.ui:312
 msgid "Automatically fix common spelling mistakes"
 msgstr "Tự động sửa các lỗi chính tả thường gặp"
 
@@ -95,7 +95,7 @@ msgstr "Tự động sửa các lỗi chính tả thường gặp"
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:281
+#: data/ui/preferences.ui:280
 msgid "Both"
 msgstr "Cả hai"
 
@@ -114,7 +114,7 @@ msgstr ""
 "từng tài khoản, và một bộ máy kết xuất nhanh hơn, tương thích hơn trong khi "
 "vẫn giữ vỏ GTK4/libadwaita gốc."
 
-#: data/ui/preferences.ui:183
+#: data/ui/preferences.ui:182
 msgid "Change Tray Icon on Message"
 msgstr "Đổi biểu tượng khay khi có tin nhắn"
 
@@ -122,7 +122,7 @@ msgstr "Đổi biểu tượng khay khi có tin nhắn"
 msgid "Chat on WhatsApp"
 msgstr "Trò chuyện trên WhatsApp"
 
-#: data/ui/preferences.ui:301
+#: data/ui/preferences.ui:300
 msgid "Check spelling as you type"
 msgstr "Kiểm tra chính tả khi bạn nhập"
 
@@ -130,11 +130,11 @@ msgstr "Kiểm tra chính tả khi bạn nhập"
 msgid "Choose the application color scheme"
 msgstr "Chọn phối màu của ứng dụng"
 
-#: data/ui/preferences.ui:248
+#: data/ui/preferences.ui:247
 msgid "Choose…"
 msgstr "Chọn…"
 
-#: data/ui/preferences.ui:342
+#: data/ui/preferences.ui:341
 msgid "Clear All"
 msgstr "Xoá tất cả"
 
@@ -150,7 +150,7 @@ msgstr "Đóng cửa sổ"
 msgid "Close the window"
 msgstr "Đóng cửa sổ"
 
-#: data/ui/window.ui:265 src/window.rs:1652
+#: data/ui/window.ui:265 src/window.rs:1662
 msgid "Copy Diagnostic Info"
 msgstr ""
 
@@ -166,11 +166,11 @@ msgstr "Tối"
 msgid "Decrease the zoom level"
 msgstr "Giảm mức thu phóng"
 
-#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
+#: data/ui/preferences.ui:244 src/preferences.rs:426 src/preferences.rs:434
 msgid "Default (Downloads)"
 msgstr "Mặc định (Tải xuống)"
 
-#: data/ui/preferences.ui:307
+#: data/ui/preferences.ui:306
 msgid "Detect the writing language automatically"
 msgstr "Tự động nhận diện ngôn ngữ đang viết"
 
@@ -187,11 +187,11 @@ msgstr "Công cụ nhà phát triển"
 msgid "Disabled"
 msgstr "Tắt"
 
-#: data/ui/preferences.ui:202
+#: data/ui/preferences.ui:201
 msgid "Display message content in notifications"
 msgstr "Hiển thị nội dung tin nhắn trong thông báo"
 
-#: data/ui/preferences.ui:196
+#: data/ui/preferences.ui:195
 msgid "Display the contact name in notifications"
 msgstr "Hiển thị tên liên hệ trong thông báo"
 
@@ -199,27 +199,27 @@ msgstr "Hiển thị tên liên hệ trong thông báo"
 msgid "Do Not Disturb"
 msgstr ""
 
-#: data/ui/preferences.ui:244
+#: data/ui/preferences.ui:243
 msgid "Download Directory"
 msgstr "Thư mục tải xuống"
 
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:267
 msgid "Download Notifications"
 msgstr "Thông báo tải xuống"
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:236
 msgid "Downloads"
 msgstr "Tải xuống"
 
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:311
 msgid "Enable Auto-Correct"
 msgstr "Bật tự động sửa"
 
-#: data/ui/preferences.ui:166
+#: data/ui/preferences.ui:165
 msgid "Enable Notifications"
 msgstr "Bật thông báo"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:299
 msgid "Enable Spell Checking"
 msgstr "Bật kiểm tra chính tả"
 
@@ -227,7 +227,7 @@ msgstr "Bật kiểm tra chính tả"
 msgid "Enabled"
 msgstr "Bật"
 
-#: data/ui/preferences.ui:146
+#: data/ui/preferences.ui:145
 msgid "Experimental"
 msgstr ""
 
@@ -239,7 +239,7 @@ msgstr "Tìm trong trang"
 msgid "Find in page"
 msgstr "Tìm trong trang"
 
-#: data/ui/preferences.ui:368
+#: data/ui/preferences.ui:367
 msgid "Focus Indicators"
 msgstr "Chỉ báo tiêu điểm"
 
@@ -255,7 +255,7 @@ msgstr "Buộc tải lại"
 msgid "Fullscreen"
 msgstr "Toàn màn hình"
 
-#: data/ui/preferences.ui:149
+#: data/ui/preferences.ui:148
 msgid "GPU Rendering"
 msgstr ""
 
@@ -263,31 +263,31 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "Trình khách WhatsApp Web GTK4"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:162
 msgid "General"
 msgstr "Chung"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:317
 msgid "Header Bar Language Control"
 msgstr "Điều khiển ngôn ngữ trên thanh tiêu đề"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:400
 msgid "Header Bar Zoom Controls"
 msgstr "Điều khiển thu phóng trên thanh tiêu đề"
 
-#: data/ui/preferences.ui:275
+#: data/ui/preferences.ui:274
 msgid "How download notifications are displayed"
 msgstr "Cách hiển thị thông báo tải xuống"
 
-#: data/ui/preferences.ui:208
+#: data/ui/preferences.ui:207
 msgid "How much of the message to show"
 msgstr "Hiển thị bao nhiêu nội dung tin nhắn"
 
-#: data/ui/preferences.ui:413
+#: data/ui/preferences.ui:412
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr "Cải thiện tương thích với công nghệ hỗ trợ — cần khởi động lại"
 
-#: data/ui/preferences.ui:279
+#: data/ui/preferences.ui:278
 msgid "In-app Toast"
 msgstr "Toast trong ứng dụng"
 
@@ -303,7 +303,7 @@ msgstr "Kiểm tra phần tử"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "Nhảy đến tài khoản 1–9 (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:531 src/tray.rs:60
 #: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
@@ -335,7 +335,7 @@ msgstr "Phím tắt"
 msgid "Keyboard shortcuts and productivity features"
 msgstr "Phím tắt và các tính năng nâng cao năng suất"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:323
 msgid "Language"
 msgstr "Ngôn ngữ"
 
@@ -347,11 +347,11 @@ msgstr "Tự động mở Karere khi bạn đăng nhập"
 msgid "Light"
 msgstr "Sáng"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:240
 msgid "Location"
 msgstr "Vị trí"
 
-#: data/ui/preferences.ui:214
+#: data/ui/preferences.ui:213
 msgid "Long"
 msgstr "Dài"
 
@@ -359,7 +359,7 @@ msgstr "Dài"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "Cửa sổ ứng dụng chính với tích hợp WhatsApp Web"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:166
 msgid "Master toggle for all notifications"
 msgstr "Công tắc chính cho mọi thông báo"
 
@@ -368,7 +368,7 @@ msgstr "Công tắc chính cho mọi thông báo"
 msgid "Match WhatsApp Colors"
 msgstr "Trình khách WhatsApp"
 
-#: data/ui/preferences.ui:213
+#: data/ui/preferences.ui:212
 msgid "Medium"
 msgstr "Vừa"
 
@@ -376,15 +376,15 @@ msgstr "Vừa"
 msgid "Menu"
 msgstr "Trình đơn"
 
-#: data/ui/preferences.ui:177
+#: data/ui/preferences.ui:176
 msgid "Message Notifications"
 msgstr "Thông báo tin nhắn"
 
-#: data/ui/preferences.ui:191
+#: data/ui/preferences.ui:190
 msgid "Message Preview"
 msgstr "Xem trước tin nhắn"
 
-#: data/ui/preferences.ui:174
+#: data/ui/preferences.ui:173
 msgid "Messages"
 msgstr "Tin nhắn"
 
@@ -392,7 +392,7 @@ msgstr "Tin nhắn"
 msgid "Minimize Window"
 msgstr "Thu nhỏ cửa sổ"
 
-#: data/ui/preferences.ui:363
+#: data/ui/preferences.ui:362
 msgid "Minimize animations and transitions"
 msgstr "Giảm thiểu hiệu ứng và chuyển cảnh"
 
@@ -400,7 +400,7 @@ msgstr "Giảm thiểu hiệu ứng và chuyển cảnh"
 msgid "Minimize the window"
 msgstr "Thu nhỏ cửa sổ"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:384
 msgid "Minimum Zoom Level"
 msgstr "Mức thu phóng tối thiểu"
 
@@ -408,7 +408,7 @@ msgstr "Mức thu phóng tối thiểu"
 msgid "Mobile Layout"
 msgstr "Bố cục di động"
 
-#: data/ui/preferences.ui:359
+#: data/ui/preferences.ui:358
 msgid "Motion and Focus"
 msgstr "Chuyển động và Tiêu điểm"
 
@@ -428,28 +428,28 @@ msgstr "Tài khoản tiếp theo"
 msgid "Next match"
 msgstr "Kết quả tiếp"
 
-#: data/ui/preferences.ui:227
+#: data/ui/preferences.ui:226
 msgid "Notification Sounds"
 msgstr "Âm thanh thông báo"
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:273
 msgid "Notification Type"
 msgstr "Loại thông báo"
 
-#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: data/ui/preferences.ui:158 data/ui/preferences.ui:264
 #: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "Thông báo"
 
-#: data/ui/preferences.ui:269
+#: data/ui/preferences.ui:268
 msgid "Notify when a file download completes"
 msgstr "Báo khi một tệp tải xuống hoàn tất"
 
-#: data/ui/preferences.ui:123 src/window.rs:1692 src/window.rs:1748
+#: data/ui/preferences.ui:123 src/window.rs:1702 src/window.rs:1758
 msgid "Open"
 msgstr "Mở"
 
-#: data/ui/preferences.ui:136
+#: data/ui/preferences.ui:135
 #, fuzzy
 msgid "Open File"
 msgstr "Mở"
@@ -475,7 +475,7 @@ msgstr "Phiên đăng nhập bền vững nên bạn không cần quét mã QR m
 msgid "Pick an element to inspect"
 msgstr "Chọn một phần tử để kiểm tra"
 
-#: data/ui/preferences.ui:228
+#: data/ui/preferences.ui:227
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "Phát âm thanh thông báo của WhatsApp cho tin nhắn mới"
 
@@ -484,7 +484,7 @@ msgstr "Phát âm thanh thông báo của WhatsApp cho tin nhắn mới"
 msgid "Preferences"
 msgstr "Tuỳ chọn"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:206
 msgid "Preview Length"
 msgstr "Độ dài xem trước"
 
@@ -496,7 +496,7 @@ msgstr "Tài khoản trước"
 msgid "Previous match"
 msgstr "Kết quả trước"
 
-#: data/ui/preferences.ui:334
+#: data/ui/preferences.ui:333
 msgid "Privacy"
 msgstr "Quyền riêng tư"
 
@@ -520,7 +520,7 @@ msgstr "Thoát ứng dụng"
 msgid "Quit Karere"
 msgstr "Thoát Karere"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:361
 msgid "Reduce Motion"
 msgstr "Giảm chuyển động"
 
@@ -540,7 +540,7 @@ msgstr "Tải lại trang hiện tại"
 msgid "Reload, bypassing the cache"
 msgstr "Tải lại, bỏ qua bộ nhớ đệm"
 
-#: data/ui/preferences.ui:150
+#: data/ui/preferences.ui:149
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
@@ -550,7 +550,7 @@ msgstr ""
 msgid "Reset Zoom"
 msgstr "Đặt lại cỡ"
 
-#: data/ui/preferences.ui:256
+#: data/ui/preferences.ui:255
 msgid "Reset to default"
 msgstr "Đặt lại về mặc định"
 
@@ -566,11 +566,11 @@ msgstr "Chạy ở chế độ nền"
 msgid "Run on Startup"
 msgstr "Chạy khi khởi động"
 
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:411
 msgid "Screen Reader Optimizations"
 msgstr "Tối ưu hoá trình đọc màn hình"
 
-#: data/ui/preferences.ui:409
+#: data/ui/preferences.ui:408
 msgid "Screen Reader Support"
 msgstr "Hỗ trợ trình đọc màn hình"
 
@@ -578,27 +578,27 @@ msgstr "Hỗ trợ trình đọc màn hình"
 msgid "Search the current page"
 msgstr "Tìm kiếm trang hiện tại"
 
-#: data/ui/preferences.ui:380
+#: data/ui/preferences.ui:379
 msgid "Set a minimum zoom level for all accounts"
 msgstr "Đặt mức thu phóng tối thiểu cho mọi tài khoản"
 
-#: data/ui/preferences.ui:212
+#: data/ui/preferences.ui:211
 msgid "Short"
 msgstr "Ngắn"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:200
 msgid "Show Message Text"
 msgstr "Hiện nội dung tin nhắn"
 
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:194
 msgid "Show Sender Name"
 msgstr "Hiện tên người gửi"
 
-#: data/ui/preferences.ui:178
+#: data/ui/preferences.ui:177
 msgid "Show notifications for incoming messages"
 msgstr "Hiện thông báo cho tin nhắn đến"
 
-#: data/ui/preferences.ui:319
+#: data/ui/preferences.ui:318
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr "Hiện danh sách ngôn ngữ kiểm tra chính tả trên thanh tiêu đề"
 
@@ -606,11 +606,11 @@ msgstr "Hiện danh sách ngôn ngữ kiểm tra chính tả trên thanh tiêu �
 msgid "Show this shortcuts dialog"
 msgstr "Hiện hộp thoại phím tắt này"
 
-#: data/ui/preferences.ui:369
+#: data/ui/preferences.ui:368
 msgid "Show visible outlines around focused elements"
 msgstr "Hiện đường viền rõ quanh phần tử đang chọn"
 
-#: data/ui/preferences.ui:402
+#: data/ui/preferences.ui:401
 msgid "Show zoom buttons in the header bar"
 msgstr "Hiện nút thu phóng trên thanh tiêu đề"
 
@@ -622,7 +622,7 @@ msgstr ""
 "Bố cục một khung. Tự động: trên vỏ di động hoặc cửa sổ hẹp; Bật/Tắt: ép bật "
 "hoặc tắt ở mọi kích thước"
 
-#: data/ui/preferences.ui:338
+#: data/ui/preferences.ui:337
 msgid "Site Permissions"
 msgstr "Quyền của trang web"
 
@@ -630,11 +630,11 @@ msgstr "Quyền của trang web"
 msgid "Smooth performance with hardware acceleration"
 msgstr "Hiệu năng mượt mà với tăng tốc phần cứng"
 
-#: data/ui/preferences.ui:224
+#: data/ui/preferences.ui:223
 msgid "Sounds"
 msgstr "Âm thanh"
 
-#: data/ui/preferences.ui:297
+#: data/ui/preferences.ui:296
 msgid "Spell Checking"
 msgstr "Kiểm tra chính tả"
 
@@ -642,11 +642,11 @@ msgstr "Kiểm tra chính tả"
 msgid "Spell Checking Language"
 msgstr "Ngôn ngữ kiểm tra chính tả"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:292
 msgid "Spellcheck"
 msgstr "Kiểm tra chính tả"
 
-#: data/ui/preferences.ui:325
+#: data/ui/preferences.ui:324
 msgid "Star a language to pin it to the top"
 msgstr "Gắn sao một ngôn ngữ để ghim nó lên đầu"
 
@@ -662,7 +662,7 @@ msgstr "Khởi động thu nhỏ mà không hiện cửa sổ"
 msgid "Startup"
 msgstr "Khởi động"
 
-#: data/ui/preferences.ui:339
+#: data/ui/preferences.ui:338
 msgid "Stored allow/deny decisions for websites"
 msgstr "Các quyết định cho phép/từ chối đã lưu cho trang web"
 
@@ -670,7 +670,7 @@ msgstr "Các quyết định cho phép/từ chối đã lưu cho trang web"
 msgid "Switch Account"
 msgstr "Chuyển tài khoản"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:183
 #, fuzzy
 msgid "Switch the tray icon to the unread variant when a new message arrives"
 msgstr "Tạo hiệu ứng cho biểu tượng khay khi có tin nhắn mới"
@@ -683,7 +683,7 @@ msgstr "Chuyển sang tài khoản tiếp theo"
 msgid "Switch to the previous account"
 msgstr "Chuyển sang tài khoản trước"
 
-#: data/ui/preferences.ui:280
+#: data/ui/preferences.ui:279
 msgid "System Notification"
 msgstr "Thông báo hệ thống"
 
@@ -727,7 +727,7 @@ msgstr "Cửa sổ"
 msgid "Window Close Behavior"
 msgstr "Hành vi khi đóng cửa sổ"
 
-#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "Thu phóng"
 
@@ -871,7 +871,7 @@ msgstr ""
 msgid "Move Down"
 msgstr ""
 
-#: src/window.rs:996 src/window.rs:1056 src/window.rs:1651
+#: src/window.rs:996 src/window.rs:1056 src/window.rs:1661
 msgid "Cancel"
 msgstr "Huỷ"
 
@@ -906,43 +906,43 @@ msgstr ""
 msgid "DevTools unavailable: {error}"
 msgstr ""
 
-#: src/window.rs:1653
+#: src/window.rs:1663
 #, fuzzy
 msgid "Open logs"
 msgstr "Mở"
 
-#: src/window.rs:1687
+#: src/window.rs:1697
 msgid "{name} downloaded"
 msgstr ""
 
-#: src/window.rs:1694
+#: src/window.rs:1704
 #, fuzzy
 msgid "Show in Folder"
 msgstr "Hiện cửa sổ"
 
-#: src/window.rs:1739
+#: src/window.rs:1749
 #, fuzzy
 msgid "Download complete"
 msgstr "Thư mục tải xuống"
 
-#: src/window.rs:1766
+#: src/window.rs:1776
 #, fuzzy
 msgid "Download failed: {reason}"
 msgstr "Thư mục tải xuống"
 
-#: src/window.rs:1770
+#: src/window.rs:1780
 msgid "“{name}” could not be saved."
 msgstr ""
 
-#: src/window.rs:1773
+#: src/window.rs:1783
 msgid "OK"
 msgstr ""
 
-#: src/actions.rs:193
+#: src/actions.rs:198
 msgid "Diagnostic info copied"
 msgstr ""
 
-#: src/actions.rs:531
+#: src/actions.rs:536
 #, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
@@ -952,25 +952,25 @@ msgstr ""
 "tích hợp máy tính để bàn liền mạch với khả năng ghi nhật ký và báo cáo sự cố "
 "toàn diện"
 
-#: src/actions.rs:550
+#: src/actions.rs:555
 msgid "Source"
 msgstr "Nguồn"
 
-#: src/actions.rs:553
+#: src/actions.rs:558
 msgid "Special Thanks"
 msgstr "Cảm ơn đặc biệt"
 
-#: src/actions.rs:584
+#: src/actions.rs:589
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:637
+#: src/actions.rs:642
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
 msgstr ""
 
-#: src/actions.rs:641
+#: src/actions.rs:646
 msgid ""
 "This desktop cannot register startup apps for Karere. Add it to your startup "
 "applications with the --background option instead."
@@ -1000,36 +1000,36 @@ msgstr "Để sau"
 msgid "Restart Now"
 msgstr "Khởi động lại ngay"
 
-#: src/preferences.rs:289
+#: src/preferences.rs:291
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "Thay đổi ngôn ngữ sẽ có hiệu lực sau khi Karere khởi động lại."
 
-#: src/preferences.rs:323
+#: src/preferences.rs:326
 msgid "System Default"
 msgstr "Mặc định hệ thống"
 
-#: src/preferences.rs:350
+#: src/preferences.rs:353
 msgid "The language change takes effect after Karere restarts."
 msgstr "Thay đổi ngôn ngữ sẽ có hiệu lực sau khi Karere khởi động lại."
 
-#: src/preferences.rs:396
+#: src/preferences.rs:399
 msgid "Select Download Folder"
 msgstr ""
 
-#: src/preferences.rs:506
+#: src/preferences.rs:509
 msgid "Allowed"
 msgstr ""
 
-#: src/preferences.rs:507
+#: src/preferences.rs:510
 msgid "Denied"
 msgstr ""
 
-#: src/preferences.rs:508
+#: src/preferences.rs:511
 msgid "Ask"
 msgstr ""
 
-#: src/preferences.rs:518
+#: src/preferences.rs:521
 msgid "Remove this decision"
 msgstr ""
 

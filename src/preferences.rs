@@ -155,6 +155,8 @@ mod imp {
         #[template_child]
         pub btn_dev_open: TemplateChild<gtk::Button>,
         #[template_child]
+        pub row_user_css: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub btn_user_css: TemplateChild<gtk::Button>,
         #[template_child]
         pub row_gpu_render: TemplateChild<adw::SwitchRow>,
@@ -300,6 +302,7 @@ mod imp {
             });
 
             // Present first so the OSR view is realized before DevTools attaches.
+            bind_switch(settings, "custom-css", &self.row_user_css);
             self.btn_user_css.connect_clicked(|_| {
                 if let Some(app) = gio::Application::default() {
                     app.activate_action("open-user-css", None);

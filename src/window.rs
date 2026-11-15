@@ -1518,6 +1518,16 @@ mod imp {
                 }
             });
 
+            // Live Custom CSS toggle: add or remove the stylesheet in place.
+            let win_css = self.obj().downgrade();
+            settings.connect_changed(Some("custom-css"), move |_, _| {
+                if let Some(win) = win_css.upgrade()
+                    && let Some(web) = win.imp().web_view.borrow().as_ref()
+                {
+                    web.reload_user_css();
+                }
+            });
+
             let binding = spellcheck_ui::SpellBinding::new(&settings);
 
             // Set both factories BEFORE assigning the model — a DropDown with a

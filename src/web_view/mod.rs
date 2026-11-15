@@ -88,6 +88,12 @@ impl KarereWebView {
         self.imp().apply_audio_mute();
     }
 
+    /// Re-apply or remove the user stylesheet in every account (call after a
+    /// `custom-css` change).
+    pub fn reload_user_css(&self) {
+        self.imp().reload_user_css();
+    }
+
     pub fn find(&self, text: &str, forward: bool, find_next: bool) {
         self.imp().find(text, forward, find_next);
     }

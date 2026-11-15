@@ -106,10 +106,9 @@ template $KarerePreferencesDialog: Adw.PreferencesDialog {
         }
       }
 
-      Adw.ActionRow {
+      Adw.SwitchRow row_user_css {
         title: _("Custom CSS");
-        subtitle: _("Applied after reloading");
-        activatable-widget: btn_user_css;
+        subtitle: _("Apply user.css to WhatsApp Web; changes take effect immediately");
 
         [suffix]
         Gtk.Button btn_user_css {

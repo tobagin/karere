@@ -156,6 +156,10 @@ mod generated_client {
                     write_host_clipboard_image(&base64_png);
                     1
                 }
+                Ok(RendererMessage::PageBackground { color }) => {
+                    crate::application::set_page_background(&color);
+                    1
+                }
                 Ok(RendererMessage::ProfileIdentity { wid, pushname, source: _ }) => {
                     if !identity_is_sane(wid.as_deref(), &pushname) {
                         log::warn!("ProfileIdentity: oversized or malformed fields, dropping");

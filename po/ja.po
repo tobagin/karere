@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 11:43+0000\n"
+"POT-Creation-Date: 2026-11-15 13:24+0000\n"
 "PO-Revision-Date: 2026-06-06 21:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -30,11 +30,11 @@ msgstr "情報"
 msgid "About dialog showing application information"
 msgstr "アプリケーション情報を表示する「情報」ダイアログ"
 
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:354
 msgid "Accessibility"
 msgstr "アクセシビリティ"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:378
 msgid "Accessibility Zoom"
 msgstr "アクセシビリティのズーム"
 
@@ -62,24 +62,24 @@ msgstr "アプリケーションの言語。再起動が必要です。"
 msgid "Application preferences and settings dialog"
 msgstr "アプリケーションの設定ダイアログ"
 
-#: data/ui/preferences.ui:132
-msgid "Applied after reloading"
-msgstr ""
-
-#: data/ui/preferences.ui:386
+#: data/ui/preferences.ui:385
 msgid "Applied to all webviews"
 msgstr "すべての WebView に適用されます"
 
-#: data/ui/preferences.ui:192
+#: data/ui/preferences.ui:191
 #, fuzzy
 msgid "Applies to the notifications Karere shows for incoming messages"
 msgstr "受信メッセージの通知を表示します"
+
+#: data/ui/preferences.ui:132
+msgid "Apply user.css to WhatsApp Web; changes take effect immediately"
+msgstr ""
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "自動"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:305
 msgid "Auto-Detect Language"
 msgstr "言語を自動検出"
 
@@ -87,7 +87,7 @@ msgstr "言語を自動検出"
 msgid "Auto: shown when a system tray is available"
 msgstr "自動: システムトレイが利用可能なときに表示"
 
-#: data/ui/preferences.ui:313
+#: data/ui/preferences.ui:312
 msgid "Automatically fix common spelling mistakes"
 msgstr "よくあるスペルミスを自動的に修正します"
 
@@ -95,7 +95,7 @@ msgstr "よくあるスペルミスを自動的に修正します"
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:281
+#: data/ui/preferences.ui:280
 msgid "Both"
 msgstr "両方"
 
@@ -114,7 +114,7 @@ msgstr ""
 "ズーム、より高速で互換性の高いレンダリングエンジンを実現しつつ、同じネイティ"
 "ブな GTK4/libadwaita シェルを維持しています。"
 
-#: data/ui/preferences.ui:183
+#: data/ui/preferences.ui:182
 msgid "Change Tray Icon on Message"
 msgstr "メッセージ受信時にトレイアイコンを変更"
 
@@ -122,7 +122,7 @@ msgstr "メッセージ受信時にトレイアイコンを変更"
 msgid "Chat on WhatsApp"
 msgstr "WhatsApp でチャット"
 
-#: data/ui/preferences.ui:301
+#: data/ui/preferences.ui:300
 msgid "Check spelling as you type"
 msgstr "入力中にスペルをチェックします"
 
@@ -130,11 +130,11 @@ msgstr "入力中にスペルをチェックします"
 msgid "Choose the application color scheme"
 msgstr "アプリケーションの配色を選択します"
 
-#: data/ui/preferences.ui:248
+#: data/ui/preferences.ui:247
 msgid "Choose…"
 msgstr "選択…"
 
-#: data/ui/preferences.ui:342
+#: data/ui/preferences.ui:341
 msgid "Clear All"
 msgstr "すべて消去"
 
@@ -150,7 +150,7 @@ msgstr "ウィンドウを閉じる"
 msgid "Close the window"
 msgstr "ウィンドウを閉じます"
 
-#: data/ui/window.ui:265 src/window.rs:1652
+#: data/ui/window.ui:265 src/window.rs:1662
 msgid "Copy Diagnostic Info"
 msgstr ""
 
@@ -166,11 +166,11 @@ msgstr "ダーク"
 msgid "Decrease the zoom level"
 msgstr "ズームレベルを下げます"
 
-#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
+#: data/ui/preferences.ui:244 src/preferences.rs:426 src/preferences.rs:434
 msgid "Default (Downloads)"
 msgstr "デフォルト (ダウンロード)"
 
-#: data/ui/preferences.ui:307
+#: data/ui/preferences.ui:306
 msgid "Detect the writing language automatically"
 msgstr "入力中の言語を自動的に検出します"
 
@@ -187,11 +187,11 @@ msgstr "開発者ツール"
 msgid "Disabled"
 msgstr "無効"
 
-#: data/ui/preferences.ui:202
+#: data/ui/preferences.ui:201
 msgid "Display message content in notifications"
 msgstr "通知にメッセージの内容を表示します"
 
-#: data/ui/preferences.ui:196
+#: data/ui/preferences.ui:195
 msgid "Display the contact name in notifications"
 msgstr "通知に連絡先の名前を表示します"
 
@@ -199,27 +199,27 @@ msgstr "通知に連絡先の名前を表示します"
 msgid "Do Not Disturb"
 msgstr ""
 
-#: data/ui/preferences.ui:244
+#: data/ui/preferences.ui:243
 msgid "Download Directory"
 msgstr "ダウンロードディレクトリ"
 
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:267
 msgid "Download Notifications"
 msgstr "ダウンロード通知"
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:236
 msgid "Downloads"
 msgstr "ダウンロード"
 
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:311
 msgid "Enable Auto-Correct"
 msgstr "オートコレクトを有効化"
 
-#: data/ui/preferences.ui:166
+#: data/ui/preferences.ui:165
 msgid "Enable Notifications"
 msgstr "通知を有効化"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:299
 msgid "Enable Spell Checking"
 msgstr "スペルチェックを有効化"
 
@@ -227,7 +227,7 @@ msgstr "スペルチェックを有効化"
 msgid "Enabled"
 msgstr "有効"
 
-#: data/ui/preferences.ui:146
+#: data/ui/preferences.ui:145
 msgid "Experimental"
 msgstr ""
 
@@ -239,7 +239,7 @@ msgstr "ページ内を検索"
 msgid "Find in page"
 msgstr "ページ内を検索"
 
-#: data/ui/preferences.ui:368
+#: data/ui/preferences.ui:367
 msgid "Focus Indicators"
 msgstr "フォーカスインジケーター"
 
@@ -255,7 +255,7 @@ msgstr "強制再読み込み"
 msgid "Fullscreen"
 msgstr "全画面表示"
 
-#: data/ui/preferences.ui:149
+#: data/ui/preferences.ui:148
 msgid "GPU Rendering"
 msgstr ""
 
@@ -263,31 +263,31 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "GTK4 WhatsApp Web クライアント"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:162
 msgid "General"
 msgstr "全般"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:317
 msgid "Header Bar Language Control"
 msgstr "ヘッダーバーの言語コントロール"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:400
 msgid "Header Bar Zoom Controls"
 msgstr "ヘッダーバーのズームコントロール"
 
-#: data/ui/preferences.ui:275
+#: data/ui/preferences.ui:274
 msgid "How download notifications are displayed"
 msgstr "ダウンロード通知の表示方法"
 
-#: data/ui/preferences.ui:208
+#: data/ui/preferences.ui:207
 msgid "How much of the message to show"
 msgstr "メッセージをどの程度表示するか"
 
-#: data/ui/preferences.ui:413
+#: data/ui/preferences.ui:412
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr "支援技術との互換性を向上させます — 再起動が必要です"
 
-#: data/ui/preferences.ui:279
+#: data/ui/preferences.ui:278
 msgid "In-app Toast"
 msgstr "アプリ内トースト"
 
@@ -303,7 +303,7 @@ msgstr "要素を検査"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "アカウント1〜9に移動 (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:531 src/tray.rs:60
 #: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
@@ -334,7 +334,7 @@ msgstr "キーボードショートカット"
 msgid "Keyboard shortcuts and productivity features"
 msgstr "キーボードショートカットと生産性向上機能"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:323
 msgid "Language"
 msgstr "言語"
 
@@ -346,11 +346,11 @@ msgstr "ログイン時にKarereを自動的に起動します"
 msgid "Light"
 msgstr "ライト"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:240
 msgid "Location"
 msgstr "保存場所"
 
-#: data/ui/preferences.ui:214
+#: data/ui/preferences.ui:213
 msgid "Long"
 msgstr "長い"
 
@@ -358,7 +358,7 @@ msgstr "長い"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "WhatsApp Web 統合のメインアプリケーションウィンドウ"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:166
 msgid "Master toggle for all notifications"
 msgstr "すべての通知のマスタースイッチ"
 
@@ -367,7 +367,7 @@ msgstr "すべての通知のマスタースイッチ"
 msgid "Match WhatsApp Colors"
 msgstr "WhatsApp クライアント"
 
-#: data/ui/preferences.ui:213
+#: data/ui/preferences.ui:212
 msgid "Medium"
 msgstr "中"
 
@@ -375,15 +375,15 @@ msgstr "中"
 msgid "Menu"
 msgstr "メニュー"
 
-#: data/ui/preferences.ui:177
+#: data/ui/preferences.ui:176
 msgid "Message Notifications"
 msgstr "メッセージ通知"
 
-#: data/ui/preferences.ui:191
+#: data/ui/preferences.ui:190
 msgid "Message Preview"
 msgstr "メッセージのプレビュー"
 
-#: data/ui/preferences.ui:174
+#: data/ui/preferences.ui:173
 msgid "Messages"
 msgstr "メッセージ"
 
@@ -391,7 +391,7 @@ msgstr "メッセージ"
 msgid "Minimize Window"
 msgstr "ウィンドウを最小化"
 
-#: data/ui/preferences.ui:363
+#: data/ui/preferences.ui:362
 msgid "Minimize animations and transitions"
 msgstr "アニメーションとトランジションを最小化します"
 
@@ -399,7 +399,7 @@ msgstr "アニメーションとトランジションを最小化します"
 msgid "Minimize the window"
 msgstr "ウィンドウを最小化します"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:384
 msgid "Minimum Zoom Level"
 msgstr "最小ズームレベル"
 
@@ -407,7 +407,7 @@ msgstr "最小ズームレベル"
 msgid "Mobile Layout"
 msgstr "モバイルレイアウト"
 
-#: data/ui/preferences.ui:359
+#: data/ui/preferences.ui:358
 msgid "Motion and Focus"
 msgstr "モーションとフォーカス"
 
@@ -427,28 +427,28 @@ msgstr "次のアカウント"
 msgid "Next match"
 msgstr "次を検索"
 
-#: data/ui/preferences.ui:227
+#: data/ui/preferences.ui:226
 msgid "Notification Sounds"
 msgstr "通知音"
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:273
 msgid "Notification Type"
 msgstr "通知の種類"
 
-#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: data/ui/preferences.ui:158 data/ui/preferences.ui:264
 #: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "通知"
 
-#: data/ui/preferences.ui:269
+#: data/ui/preferences.ui:268
 msgid "Notify when a file download completes"
 msgstr "ファイルのダウンロード完了時に通知します"
 
-#: data/ui/preferences.ui:123 src/window.rs:1692 src/window.rs:1748
+#: data/ui/preferences.ui:123 src/window.rs:1702 src/window.rs:1758
 msgid "Open"
 msgstr "開く"
 
-#: data/ui/preferences.ui:136
+#: data/ui/preferences.ui:135
 #, fuzzy
 msgid "Open File"
 msgstr "開く"
@@ -475,7 +475,7 @@ msgstr ""
 msgid "Pick an element to inspect"
 msgstr "検査する要素を選択します"
 
-#: data/ui/preferences.ui:228
+#: data/ui/preferences.ui:227
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "新しいメッセージにWhatsAppの通知音を再生します"
 
@@ -484,7 +484,7 @@ msgstr "新しいメッセージにWhatsAppの通知音を再生します"
 msgid "Preferences"
 msgstr "設定"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:206
 msgid "Preview Length"
 msgstr "プレビューの長さ"
 
@@ -496,7 +496,7 @@ msgstr "前のアカウント"
 msgid "Previous match"
 msgstr "前を検索"
 
-#: data/ui/preferences.ui:334
+#: data/ui/preferences.ui:333
 msgid "Privacy"
 msgstr "プライバシー"
 
@@ -520,7 +520,7 @@ msgstr "アプリケーションを終了"
 msgid "Quit Karere"
 msgstr "Karereを終了"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:361
 msgid "Reduce Motion"
 msgstr "視覚効果を減らす"
 
@@ -540,7 +540,7 @@ msgstr "現在のページを再読み込みします"
 msgid "Reload, bypassing the cache"
 msgstr "キャッシュを無視して再読み込みします"
 
-#: data/ui/preferences.ui:150
+#: data/ui/preferences.ui:149
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
@@ -550,7 +550,7 @@ msgstr ""
 msgid "Reset Zoom"
 msgstr "ズームをリセット"
 
-#: data/ui/preferences.ui:256
+#: data/ui/preferences.ui:255
 msgid "Reset to default"
 msgstr "デフォルトに戻す"
 
@@ -566,11 +566,11 @@ msgstr "バックグラウンドで実行"
 msgid "Run on Startup"
 msgstr "ログイン時に起動"
 
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:411
 msgid "Screen Reader Optimizations"
 msgstr "スクリーンリーダーの最適化"
 
-#: data/ui/preferences.ui:409
+#: data/ui/preferences.ui:408
 msgid "Screen Reader Support"
 msgstr "スクリーンリーダー対応"
 
@@ -578,27 +578,27 @@ msgstr "スクリーンリーダー対応"
 msgid "Search the current page"
 msgstr "現在のページを検索します"
 
-#: data/ui/preferences.ui:380
+#: data/ui/preferences.ui:379
 msgid "Set a minimum zoom level for all accounts"
 msgstr "すべてのアカウントに最小ズームレベルを設定します"
 
-#: data/ui/preferences.ui:212
+#: data/ui/preferences.ui:211
 msgid "Short"
 msgstr "短い"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:200
 msgid "Show Message Text"
 msgstr "メッセージ本文を表示"
 
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:194
 msgid "Show Sender Name"
 msgstr "送信者名を表示"
 
-#: data/ui/preferences.ui:178
+#: data/ui/preferences.ui:177
 msgid "Show notifications for incoming messages"
 msgstr "受信メッセージの通知を表示します"
 
-#: data/ui/preferences.ui:319
+#: data/ui/preferences.ui:318
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr "ヘッダーバーにスペルチェック言語のドロップダウンを表示します"
 
@@ -606,11 +606,11 @@ msgstr "ヘッダーバーにスペルチェック言語のドロップダウン
 msgid "Show this shortcuts dialog"
 msgstr "このショートカットダイアログを表示します"
 
-#: data/ui/preferences.ui:369
+#: data/ui/preferences.ui:368
 msgid "Show visible outlines around focused elements"
 msgstr "フォーカスされた要素の周囲に枠線を表示します"
 
-#: data/ui/preferences.ui:402
+#: data/ui/preferences.ui:401
 msgid "Show zoom buttons in the header bar"
 msgstr "ヘッダーバーにズームボタンを表示します"
 
@@ -622,7 +622,7 @@ msgstr ""
 "単一ペインのレイアウト。自動: モバイルシェルまたは狭いウィンドウで有効。有効/"
 "無効: サイズに関係なく強制的にオン/オフにします"
 
-#: data/ui/preferences.ui:338
+#: data/ui/preferences.ui:337
 msgid "Site Permissions"
 msgstr "サイトの権限"
 
@@ -630,11 +630,11 @@ msgstr "サイトの権限"
 msgid "Smooth performance with hardware acceleration"
 msgstr "ハードウェアアクセラレーションによる滑らかなパフォーマンス"
 
-#: data/ui/preferences.ui:224
+#: data/ui/preferences.ui:223
 msgid "Sounds"
 msgstr "サウンド"
 
-#: data/ui/preferences.ui:297
+#: data/ui/preferences.ui:296
 msgid "Spell Checking"
 msgstr "スペルチェック"
 
@@ -642,11 +642,11 @@ msgstr "スペルチェック"
 msgid "Spell Checking Language"
 msgstr "スペルチェックの言語"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:292
 msgid "Spellcheck"
 msgstr "スペルチェック"
 
-#: data/ui/preferences.ui:325
+#: data/ui/preferences.ui:324
 msgid "Star a language to pin it to the top"
 msgstr "言語にスターを付けると上部に固定されます"
 
@@ -662,7 +662,7 @@ msgstr "ウィンドウを表示せず最小化して起動します"
 msgid "Startup"
 msgstr "起動"
 
-#: data/ui/preferences.ui:339
+#: data/ui/preferences.ui:338
 msgid "Stored allow/deny decisions for websites"
 msgstr "ウェブサイトに対する許可/拒否の保存済み設定"
 
@@ -670,7 +670,7 @@ msgstr "ウェブサイトに対する許可/拒否の保存済み設定"
 msgid "Switch Account"
 msgstr "アカウントを切り替え"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:183
 #, fuzzy
 msgid "Switch the tray icon to the unread variant when a new message arrives"
 msgstr "新しいメッセージが届いたときにトレイアイコンをアニメーション表示します"
@@ -683,7 +683,7 @@ msgstr "次のアカウントに切り替えます"
 msgid "Switch to the previous account"
 msgstr "前のアカウントに切り替えます"
 
-#: data/ui/preferences.ui:280
+#: data/ui/preferences.ui:279
 msgid "System Notification"
 msgstr "システム通知"
 
@@ -727,7 +727,7 @@ msgstr "ウィンドウ"
 msgid "Window Close Behavior"
 msgstr "ウィンドウを閉じたときの動作"
 
-#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "ズーム"
 
@@ -872,7 +872,7 @@ msgstr ""
 msgid "Move Down"
 msgstr ""
 
-#: src/window.rs:996 src/window.rs:1056 src/window.rs:1651
+#: src/window.rs:996 src/window.rs:1056 src/window.rs:1661
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -907,43 +907,43 @@ msgstr ""
 msgid "DevTools unavailable: {error}"
 msgstr ""
 
-#: src/window.rs:1653
+#: src/window.rs:1663
 #, fuzzy
 msgid "Open logs"
 msgstr "開く"
 
-#: src/window.rs:1687
+#: src/window.rs:1697
 msgid "{name} downloaded"
 msgstr ""
 
-#: src/window.rs:1694
+#: src/window.rs:1704
 #, fuzzy
 msgid "Show in Folder"
 msgstr "ウィンドウを表示"
 
-#: src/window.rs:1739
+#: src/window.rs:1749
 #, fuzzy
 msgid "Download complete"
 msgstr "ダウンロードディレクトリ"
 
-#: src/window.rs:1766
+#: src/window.rs:1776
 #, fuzzy
 msgid "Download failed: {reason}"
 msgstr "ダウンロードディレクトリ"
 
-#: src/window.rs:1770
+#: src/window.rs:1780
 msgid "“{name}” could not be saved."
 msgstr ""
 
-#: src/window.rs:1773
+#: src/window.rs:1783
 msgid "OK"
 msgstr ""
 
-#: src/actions.rs:193
+#: src/actions.rs:198
 msgid "Diagnostic info copied"
 msgstr ""
 
-#: src/actions.rs:531
+#: src/actions.rs:536
 #, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
@@ -952,25 +952,25 @@ msgstr ""
 "包括的なロギングとクラッシュレポート機能を備え、シームレスなデスクトップ統合"
 "を提供する、モダンでネイティブな WhatsApp Web 用 GTK4/LibAdwaita ラッパー"
 
-#: src/actions.rs:550
+#: src/actions.rs:555
 msgid "Source"
 msgstr "ソース"
 
-#: src/actions.rs:553
+#: src/actions.rs:558
 msgid "Special Thanks"
 msgstr "謝辞"
 
-#: src/actions.rs:584
+#: src/actions.rs:589
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:637
+#: src/actions.rs:642
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
 msgstr ""
 
-#: src/actions.rs:641
+#: src/actions.rs:646
 msgid ""
 "This desktop cannot register startup apps for Karere. Add it to your startup "
 "applications with the --background option instead."
@@ -1000,36 +1000,36 @@ msgstr "後で"
 msgid "Restart Now"
 msgstr "今すぐ再起動"
 
-#: src/preferences.rs:289
+#: src/preferences.rs:291
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "言語の変更はKarereの再起動後に反映されます。"
 
-#: src/preferences.rs:323
+#: src/preferences.rs:326
 msgid "System Default"
 msgstr "システムのデフォルト"
 
-#: src/preferences.rs:350
+#: src/preferences.rs:353
 msgid "The language change takes effect after Karere restarts."
 msgstr "言語の変更はKarereの再起動後に反映されます。"
 
-#: src/preferences.rs:396
+#: src/preferences.rs:399
 msgid "Select Download Folder"
 msgstr ""
 
-#: src/preferences.rs:506
+#: src/preferences.rs:509
 msgid "Allowed"
 msgstr ""
 
-#: src/preferences.rs:507
+#: src/preferences.rs:510
 msgid "Denied"
 msgstr ""
 
-#: src/preferences.rs:508
+#: src/preferences.rs:511
 msgid "Ask"
 msgstr ""
 
-#: src/preferences.rs:518
+#: src/preferences.rs:521
 msgid "Remove this decision"
 msgstr ""
 

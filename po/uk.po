@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 11:43+0000\n"
+"POT-Creation-Date: 2026-11-15 13:24+0000\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -31,11 +31,11 @@ msgstr "Про програму"
 msgid "About dialog showing application information"
 msgstr "Вікно «Про програму» з інформацією про програму"
 
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:354
 msgid "Accessibility"
 msgstr "Доступність"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:378
 msgid "Accessibility Zoom"
 msgstr "Масштаб доступності"
 
@@ -63,24 +63,24 @@ msgstr "Мова застосунку. Потрібен перезапуск."
 msgid "Application preferences and settings dialog"
 msgstr "Вікно параметрів і налаштувань програми"
 
-#: data/ui/preferences.ui:132
-msgid "Applied after reloading"
-msgstr ""
-
-#: data/ui/preferences.ui:386
+#: data/ui/preferences.ui:385
 msgid "Applied to all webviews"
 msgstr "Застосовується до всіх вебвікон"
 
-#: data/ui/preferences.ui:192
+#: data/ui/preferences.ui:191
 #, fuzzy
 msgid "Applies to the notifications Karere shows for incoming messages"
 msgstr "Показувати сповіщення про вхідні повідомлення"
+
+#: data/ui/preferences.ui:132
+msgid "Apply user.css to WhatsApp Web; changes take effect immediately"
+msgstr ""
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "Авто"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:305
 msgid "Auto-Detect Language"
 msgstr "Автовизначення мови"
 
@@ -88,7 +88,7 @@ msgstr "Автовизначення мови"
 msgid "Auto: shown when a system tray is available"
 msgstr "Авто: показується, коли доступний системний лоток"
 
-#: data/ui/preferences.ui:313
+#: data/ui/preferences.ui:312
 msgid "Automatically fix common spelling mistakes"
 msgstr "Автоматично виправляти поширені орфографічні помилки"
 
@@ -96,7 +96,7 @@ msgstr "Автоматично виправляти поширені орфог�
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:281
+#: data/ui/preferences.ui:280
 msgid "Both"
 msgstr "Обидва"
 
@@ -115,7 +115,7 @@ msgstr ""
 "масштаб для кожного облікового запису та швидший, сумісніший рушій "
 "відтворення, зберігаючи при цьому ту саму нативну оболонку GTK4/libadwaita."
 
-#: data/ui/preferences.ui:183
+#: data/ui/preferences.ui:182
 msgid "Change Tray Icon on Message"
 msgstr "Змінювати значок у лотку при повідомленні"
 
@@ -123,7 +123,7 @@ msgstr "Змінювати значок у лотку при повідомле�
 msgid "Chat on WhatsApp"
 msgstr "Спілкуйтеся у WhatsApp"
 
-#: data/ui/preferences.ui:301
+#: data/ui/preferences.ui:300
 msgid "Check spelling as you type"
 msgstr "Перевіряти орфографію під час набору"
 
@@ -131,11 +131,11 @@ msgstr "Перевіряти орфографію під час набору"
 msgid "Choose the application color scheme"
 msgstr "Виберіть кольорову схему програми"
 
-#: data/ui/preferences.ui:248
+#: data/ui/preferences.ui:247
 msgid "Choose…"
 msgstr "Вибрати…"
 
-#: data/ui/preferences.ui:342
+#: data/ui/preferences.ui:341
 msgid "Clear All"
 msgstr "Очистити все"
 
@@ -151,7 +151,7 @@ msgstr "Закрити вікно"
 msgid "Close the window"
 msgstr "Закрити вікно"
 
-#: data/ui/window.ui:265 src/window.rs:1652
+#: data/ui/window.ui:265 src/window.rs:1662
 msgid "Copy Diagnostic Info"
 msgstr ""
 
@@ -167,11 +167,11 @@ msgstr "Темна"
 msgid "Decrease the zoom level"
 msgstr "Зменшити рівень масштабу"
 
-#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
+#: data/ui/preferences.ui:244 src/preferences.rs:426 src/preferences.rs:434
 msgid "Default (Downloads)"
 msgstr "Типова (Завантаження)"
 
-#: data/ui/preferences.ui:307
+#: data/ui/preferences.ui:306
 msgid "Detect the writing language automatically"
 msgstr "Автоматично визначати мову письма"
 
@@ -188,11 +188,11 @@ msgstr "Інструменти розробника"
 msgid "Disabled"
 msgstr "Вимкнено"
 
-#: data/ui/preferences.ui:202
+#: data/ui/preferences.ui:201
 msgid "Display message content in notifications"
 msgstr "Показувати вміст повідомлення у сповіщеннях"
 
-#: data/ui/preferences.ui:196
+#: data/ui/preferences.ui:195
 msgid "Display the contact name in notifications"
 msgstr "Показувати ім’я контакту у сповіщеннях"
 
@@ -200,27 +200,27 @@ msgstr "Показувати ім’я контакту у сповіщення�
 msgid "Do Not Disturb"
 msgstr ""
 
-#: data/ui/preferences.ui:244
+#: data/ui/preferences.ui:243
 msgid "Download Directory"
 msgstr "Тека завантажень"
 
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:267
 msgid "Download Notifications"
 msgstr "Сповіщення про завантаження"
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:236
 msgid "Downloads"
 msgstr "Завантаження"
 
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:311
 msgid "Enable Auto-Correct"
 msgstr "Увімкнути автовиправлення"
 
-#: data/ui/preferences.ui:166
+#: data/ui/preferences.ui:165
 msgid "Enable Notifications"
 msgstr "Увімкнути сповіщення"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:299
 msgid "Enable Spell Checking"
 msgstr "Увімкнути перевірку орфографії"
 
@@ -228,7 +228,7 @@ msgstr "Увімкнути перевірку орфографії"
 msgid "Enabled"
 msgstr "Увімкнено"
 
-#: data/ui/preferences.ui:146
+#: data/ui/preferences.ui:145
 msgid "Experimental"
 msgstr ""
 
@@ -240,7 +240,7 @@ msgstr "Знайти на сторінці"
 msgid "Find in page"
 msgstr "Знайти на сторінці"
 
-#: data/ui/preferences.ui:368
+#: data/ui/preferences.ui:367
 msgid "Focus Indicators"
 msgstr "Індикатори фокуса"
 
@@ -256,7 +256,7 @@ msgstr "Примусове перезавантаження"
 msgid "Fullscreen"
 msgstr "На весь екран"
 
-#: data/ui/preferences.ui:149
+#: data/ui/preferences.ui:148
 msgid "GPU Rendering"
 msgstr ""
 
@@ -264,31 +264,31 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "Клієнт WhatsApp Web на GTK4"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:162
 msgid "General"
 msgstr "Загальне"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:317
 msgid "Header Bar Language Control"
 msgstr "Керування мовою на панелі заголовка"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:400
 msgid "Header Bar Zoom Controls"
 msgstr "Керування масштабом на панелі заголовка"
 
-#: data/ui/preferences.ui:275
+#: data/ui/preferences.ui:274
 msgid "How download notifications are displayed"
 msgstr "Як показуються сповіщення про завантаження"
 
-#: data/ui/preferences.ui:208
+#: data/ui/preferences.ui:207
 msgid "How much of the message to show"
 msgstr "Скільки повідомлення показувати"
 
-#: data/ui/preferences.ui:413
+#: data/ui/preferences.ui:412
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr "Покращити сумісність із допоміжними технологіями — потрібен перезапуск"
 
-#: data/ui/preferences.ui:279
+#: data/ui/preferences.ui:278
 msgid "In-app Toast"
 msgstr "Спливаюче у програмі"
 
@@ -304,7 +304,7 @@ msgstr "Інспектувати елемент"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "Перейти до облікового запису 1–9 (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:531 src/tray.rs:60
 #: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
@@ -335,7 +335,7 @@ msgstr "Комбінації клавіш"
 msgid "Keyboard shortcuts and productivity features"
 msgstr "Комбінації клавіш і функції продуктивності"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:323
 msgid "Language"
 msgstr "Мова"
 
@@ -347,11 +347,11 @@ msgstr "Автоматично запускати Karere під час вход�
 msgid "Light"
 msgstr "Світла"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:240
 msgid "Location"
 msgstr "Розташування"
 
-#: data/ui/preferences.ui:214
+#: data/ui/preferences.ui:213
 msgid "Long"
 msgstr "Довгий"
 
@@ -359,7 +359,7 @@ msgstr "Довгий"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "Головне вікно програми з інтеграцією WhatsApp Web"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:166
 msgid "Master toggle for all notifications"
 msgstr "Головний перемикач для всіх сповіщень"
 
@@ -368,7 +368,7 @@ msgstr "Головний перемикач для всіх сповіщень"
 msgid "Match WhatsApp Colors"
 msgstr "Клієнт WhatsApp"
 
-#: data/ui/preferences.ui:213
+#: data/ui/preferences.ui:212
 msgid "Medium"
 msgstr "Середній"
 
@@ -376,15 +376,15 @@ msgstr "Середній"
 msgid "Menu"
 msgstr "Меню"
 
-#: data/ui/preferences.ui:177
+#: data/ui/preferences.ui:176
 msgid "Message Notifications"
 msgstr "Сповіщення про повідомлення"
 
-#: data/ui/preferences.ui:191
+#: data/ui/preferences.ui:190
 msgid "Message Preview"
 msgstr "Перегляд повідомлення"
 
-#: data/ui/preferences.ui:174
+#: data/ui/preferences.ui:173
 msgid "Messages"
 msgstr "Повідомлення"
 
@@ -392,7 +392,7 @@ msgstr "Повідомлення"
 msgid "Minimize Window"
 msgstr "Згорнути вікно"
 
-#: data/ui/preferences.ui:363
+#: data/ui/preferences.ui:362
 msgid "Minimize animations and transitions"
 msgstr "Мінімізувати анімації та переходи"
 
@@ -400,7 +400,7 @@ msgstr "Мінімізувати анімації та переходи"
 msgid "Minimize the window"
 msgstr "Згорнути вікно"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:384
 msgid "Minimum Zoom Level"
 msgstr "Мінімальний рівень масштабу"
 
@@ -408,7 +408,7 @@ msgstr "Мінімальний рівень масштабу"
 msgid "Mobile Layout"
 msgstr "Мобільний макет"
 
-#: data/ui/preferences.ui:359
+#: data/ui/preferences.ui:358
 msgid "Motion and Focus"
 msgstr "Рух і фокус"
 
@@ -428,28 +428,28 @@ msgstr "Наступний обліковий запис"
 msgid "Next match"
 msgstr "Наступний збіг"
 
-#: data/ui/preferences.ui:227
+#: data/ui/preferences.ui:226
 msgid "Notification Sounds"
 msgstr "Звуки сповіщень"
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:273
 msgid "Notification Type"
 msgstr "Тип сповіщення"
 
-#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: data/ui/preferences.ui:158 data/ui/preferences.ui:264
 #: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "Сповіщення"
 
-#: data/ui/preferences.ui:269
+#: data/ui/preferences.ui:268
 msgid "Notify when a file download completes"
 msgstr "Сповіщати про завершення завантаження файлу"
 
-#: data/ui/preferences.ui:123 src/window.rs:1692 src/window.rs:1748
+#: data/ui/preferences.ui:123 src/window.rs:1702 src/window.rs:1758
 msgid "Open"
 msgstr "Відкрити"
 
-#: data/ui/preferences.ui:136
+#: data/ui/preferences.ui:135
 #, fuzzy
 msgid "Open File"
 msgstr "Відкрити"
@@ -475,7 +475,7 @@ msgstr "Постійні сеанси входу, тож вам не потрі�
 msgid "Pick an element to inspect"
 msgstr "Виберіть елемент для інспектування"
 
-#: data/ui/preferences.ui:228
+#: data/ui/preferences.ui:227
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "Відтворювати звук сповіщення WhatsApp для нових повідомлень"
 
@@ -484,7 +484,7 @@ msgstr "Відтворювати звук сповіщення WhatsApp для �
 msgid "Preferences"
 msgstr "Параметри"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:206
 msgid "Preview Length"
 msgstr "Довжина перегляду"
 
@@ -496,7 +496,7 @@ msgstr "Попередній обліковий запис"
 msgid "Previous match"
 msgstr "Попередній збіг"
 
-#: data/ui/preferences.ui:334
+#: data/ui/preferences.ui:333
 msgid "Privacy"
 msgstr "Конфіденційність"
 
@@ -521,7 +521,7 @@ msgstr "Вийти з програми"
 msgid "Quit Karere"
 msgstr "Вийти з Karere"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:361
 msgid "Reduce Motion"
 msgstr "Зменшити рух"
 
@@ -541,7 +541,7 @@ msgstr "Перезавантажити поточну сторінку"
 msgid "Reload, bypassing the cache"
 msgstr "Перезавантажити в обхід кешу"
 
-#: data/ui/preferences.ui:150
+#: data/ui/preferences.ui:149
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
@@ -551,7 +551,7 @@ msgstr ""
 msgid "Reset Zoom"
 msgstr "Скинути масштаб"
 
-#: data/ui/preferences.ui:256
+#: data/ui/preferences.ui:255
 msgid "Reset to default"
 msgstr "Скинути до типового"
 
@@ -567,11 +567,11 @@ msgstr "Працювати у фоні"
 msgid "Run on Startup"
 msgstr "Запускати під час входу"
 
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:411
 msgid "Screen Reader Optimizations"
 msgstr "Оптимізація для зчитувача екрана"
 
-#: data/ui/preferences.ui:409
+#: data/ui/preferences.ui:408
 msgid "Screen Reader Support"
 msgstr "Підтримка зчитувача екрана"
 
@@ -579,27 +579,27 @@ msgstr "Підтримка зчитувача екрана"
 msgid "Search the current page"
 msgstr "Шукати на поточній сторінці"
 
-#: data/ui/preferences.ui:380
+#: data/ui/preferences.ui:379
 msgid "Set a minimum zoom level for all accounts"
 msgstr "Встановити мінімальний рівень масштабу для всіх облікових записів"
 
-#: data/ui/preferences.ui:212
+#: data/ui/preferences.ui:211
 msgid "Short"
 msgstr "Короткий"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:200
 msgid "Show Message Text"
 msgstr "Показувати текст повідомлення"
 
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:194
 msgid "Show Sender Name"
 msgstr "Показувати ім’я відправника"
 
-#: data/ui/preferences.ui:178
+#: data/ui/preferences.ui:177
 msgid "Show notifications for incoming messages"
 msgstr "Показувати сповіщення про вхідні повідомлення"
 
-#: data/ui/preferences.ui:319
+#: data/ui/preferences.ui:318
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr "Показувати спадне меню мови перевірки орфографії на панелі заголовка"
 
@@ -607,11 +607,11 @@ msgstr "Показувати спадне меню мови перевірки �
 msgid "Show this shortcuts dialog"
 msgstr "Показати це вікно комбінацій клавіш"
 
-#: data/ui/preferences.ui:369
+#: data/ui/preferences.ui:368
 msgid "Show visible outlines around focused elements"
 msgstr "Показувати видимі контури навколо сфокусованих елементів"
 
-#: data/ui/preferences.ui:402
+#: data/ui/preferences.ui:401
 msgid "Show zoom buttons in the header bar"
 msgstr "Показувати кнопки масштабу на панелі заголовка"
 
@@ -623,7 +623,7 @@ msgstr ""
 "Однопанельний макет. Авто: на мобільних оболонках або у вузьких вікнах; "
 "Увімкнено/Вимкнено: примусово ввімкнути чи вимкнути за будь-якого розміру"
 
-#: data/ui/preferences.ui:338
+#: data/ui/preferences.ui:337
 msgid "Site Permissions"
 msgstr "Дозволи сайтів"
 
@@ -631,11 +631,11 @@ msgstr "Дозволи сайтів"
 msgid "Smooth performance with hardware acceleration"
 msgstr "Плавна продуктивність з апаратним прискоренням"
 
-#: data/ui/preferences.ui:224
+#: data/ui/preferences.ui:223
 msgid "Sounds"
 msgstr "Звуки"
 
-#: data/ui/preferences.ui:297
+#: data/ui/preferences.ui:296
 msgid "Spell Checking"
 msgstr "Перевірка орфографії"
 
@@ -643,11 +643,11 @@ msgstr "Перевірка орфографії"
 msgid "Spell Checking Language"
 msgstr "Мова перевірки орфографії"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:292
 msgid "Spellcheck"
 msgstr "Орфографія"
 
-#: data/ui/preferences.ui:325
+#: data/ui/preferences.ui:324
 msgid "Star a language to pin it to the top"
 msgstr "Позначте мову зіркою, щоб закріпити її вгорі"
 
@@ -663,7 +663,7 @@ msgstr "Запускати згорнутим, не показуючи вікн�
 msgid "Startup"
 msgstr "Запуск"
 
-#: data/ui/preferences.ui:339
+#: data/ui/preferences.ui:338
 msgid "Stored allow/deny decisions for websites"
 msgstr "Збережені рішення про дозвіл/заборону для вебсайтів"
 
@@ -671,7 +671,7 @@ msgstr "Збережені рішення про дозвіл/заборону �
 msgid "Switch Account"
 msgstr "Перемкнути обліковий запис"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:183
 #, fuzzy
 msgid "Switch the tray icon to the unread variant when a new message arrives"
 msgstr "Анімувати значок у лотку, коли надходить нове повідомлення"
@@ -684,7 +684,7 @@ msgstr "Перемкнутися на наступний обліковий за
 msgid "Switch to the previous account"
 msgstr "Перемкнутися на попередній обліковий запис"
 
-#: data/ui/preferences.ui:280
+#: data/ui/preferences.ui:279
 msgid "System Notification"
 msgstr "Системне сповіщення"
 
@@ -728,7 +728,7 @@ msgstr "Вікно"
 msgid "Window Close Behavior"
 msgstr "Поведінка під час закриття вікна"
 
-#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "Масштаб"
 
@@ -874,7 +874,7 @@ msgstr ""
 msgid "Move Down"
 msgstr ""
 
-#: src/window.rs:996 src/window.rs:1056 src/window.rs:1651
+#: src/window.rs:996 src/window.rs:1056 src/window.rs:1661
 msgid "Cancel"
 msgstr "Скасувати"
 
@@ -909,43 +909,43 @@ msgstr ""
 msgid "DevTools unavailable: {error}"
 msgstr ""
 
-#: src/window.rs:1653
+#: src/window.rs:1663
 #, fuzzy
 msgid "Open logs"
 msgstr "Відкрити"
 
-#: src/window.rs:1687
+#: src/window.rs:1697
 msgid "{name} downloaded"
 msgstr ""
 
-#: src/window.rs:1694
+#: src/window.rs:1704
 #, fuzzy
 msgid "Show in Folder"
 msgstr "Показати вікно"
 
-#: src/window.rs:1739
+#: src/window.rs:1749
 #, fuzzy
 msgid "Download complete"
 msgstr "Тека завантажень"
 
-#: src/window.rs:1766
+#: src/window.rs:1776
 #, fuzzy
 msgid "Download failed: {reason}"
 msgstr "Тека завантажень"
 
-#: src/window.rs:1770
+#: src/window.rs:1780
 msgid "“{name}” could not be saved."
 msgstr ""
 
-#: src/window.rs:1773
+#: src/window.rs:1783
 msgid "OK"
 msgstr ""
 
-#: src/actions.rs:193
+#: src/actions.rs:198
 msgid "Diagnostic info copied"
 msgstr ""
 
-#: src/actions.rs:531
+#: src/actions.rs:536
 #, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
@@ -955,25 +955,25 @@ msgstr ""
 "бездоганну інтеграцію з робочим столом з повними можливостями журналювання "
 "та звітування про збої"
 
-#: src/actions.rs:550
+#: src/actions.rs:555
 msgid "Source"
 msgstr "Джерело"
 
-#: src/actions.rs:553
+#: src/actions.rs:558
 msgid "Special Thanks"
 msgstr "Особлива подяка"
 
-#: src/actions.rs:584
+#: src/actions.rs:589
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:637
+#: src/actions.rs:642
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
 msgstr ""
 
-#: src/actions.rs:641
+#: src/actions.rs:646
 msgid ""
 "This desktop cannot register startup apps for Karere. Add it to your startup "
 "applications with the --background option instead."
@@ -1003,36 +1003,36 @@ msgstr "Пізніше"
 msgid "Restart Now"
 msgstr "Перезапустити зараз"
 
-#: src/preferences.rs:289
+#: src/preferences.rs:291
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "Зміна мови набуде чинності після перезапуску Karere."
 
-#: src/preferences.rs:323
+#: src/preferences.rs:326
 msgid "System Default"
 msgstr "Системна за замовчуванням"
 
-#: src/preferences.rs:350
+#: src/preferences.rs:353
 msgid "The language change takes effect after Karere restarts."
 msgstr "Зміна мови набуде чинності після перезапуску Karere."
 
-#: src/preferences.rs:396
+#: src/preferences.rs:399
 msgid "Select Download Folder"
 msgstr ""
 
-#: src/preferences.rs:506
+#: src/preferences.rs:509
 msgid "Allowed"
 msgstr ""
 
-#: src/preferences.rs:507
+#: src/preferences.rs:510
 msgid "Denied"
 msgstr ""
 
-#: src/preferences.rs:508
+#: src/preferences.rs:511
 msgid "Ask"
 msgstr ""
 
-#: src/preferences.rs:518
+#: src/preferences.rs:521
 msgid "Remove this decision"
 msgstr ""
 

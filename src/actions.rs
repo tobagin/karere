@@ -123,6 +123,8 @@ struct Diagnostics {
     accounts: usize,
     gpu_rendering: bool,
     mobile_layout: String,
+    /// Switched on and a `user.css` exists, i.e. the page may be restyled.
+    custom_css: bool,
 }
 
 /// Plain-text block for bug reports (intentionally not translated).
@@ -130,7 +132,8 @@ fn format_diagnostics(d: &Diagnostics) -> String {
     let yn = |b: bool| if b { "yes" } else { "no" };
     format!(
         "Karere: {}\nChromium (CEF): {}\nGTK: {}\nlibadwaita: {}\nSession: {}\n\
-         Desktop: {}\nFlatpak: {}\nAccounts: {}\nGPU rendering: {}\nMobile layout: {}\n",
+         Desktop: {}\nFlatpak: {}\nAccounts: {}\nGPU rendering: {}\nMobile layout: {}\n\
+         Custom CSS: {}\n",
         d.version,
         d.chromium,
         d.gtk,
@@ -141,6 +144,7 @@ fn format_diagnostics(d: &Diagnostics) -> String {
         d.accounts,
         yn(d.gpu_rendering),
         d.mobile_layout,
+        yn(d.custom_css),
     )
 }
 
@@ -173,6 +177,7 @@ fn collect_diagnostics() -> String {
         accounts: crate::accounts::manager().get_accounts_sorted().len(),
         gpu_rendering: settings.boolean("gpu-rendering"),
         mobile_layout: settings.string("mobile-layout").to_string(),
+        custom_css: settings.boolean("custom-css") && crate::web_view::user_css_path().is_file(),
     })
 }
 
@@ -739,12 +744,14 @@ mod tests {
             accounts: 2,
             gpu_rendering: false,
             mobile_layout: "auto".into(),
+            custom_css: true,
         });
         assert!(text.contains("Karere: 4.1.0\n"));
         assert!(text.contains("Flatpak: yes\n"));
         assert!(text.contains("Accounts: 2\n"));
         assert!(text.contains("GPU rendering: no\n"));
         assert!(text.contains("Mobile layout: auto\n"));
-        assert_eq!(text.lines().count(), 10);
+        assert!(text.contains("Custom CSS: yes\n"));
+        assert_eq!(text.lines().count(), 11);
     }
 }

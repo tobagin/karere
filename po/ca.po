@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 11:43+0000\n"
+"POT-Creation-Date: 2026-11-15 13:24+0000\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -30,11 +30,11 @@ msgstr "Quant a"
 msgid "About dialog showing application information"
 msgstr "Diàleg «Quant a» que mostra informació de l'aplicació"
 
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:354
 msgid "Accessibility"
 msgstr "Accessibilitat"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:378
 msgid "Accessibility Zoom"
 msgstr "Zoom d'accessibilitat"
 
@@ -62,24 +62,24 @@ msgstr "Idioma de l'aplicació. Cal reiniciar."
 msgid "Application preferences and settings dialog"
 msgstr "Diàleg de preferències i opcions de l'aplicació"
 
-#: data/ui/preferences.ui:132
-msgid "Applied after reloading"
-msgstr ""
-
-#: data/ui/preferences.ui:386
+#: data/ui/preferences.ui:385
 msgid "Applied to all webviews"
 msgstr "S'aplica a totes les webviews"
 
-#: data/ui/preferences.ui:192
+#: data/ui/preferences.ui:191
 #, fuzzy
 msgid "Applies to the notifications Karere shows for incoming messages"
 msgstr "Mostra notificacions dels missatges entrants"
+
+#: data/ui/preferences.ui:132
+msgid "Apply user.css to WhatsApp Web; changes take effect immediately"
+msgstr ""
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "Auto"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:305
 msgid "Auto-Detect Language"
 msgstr "Detecta l'idioma automàticament"
 
@@ -87,7 +87,7 @@ msgstr "Detecta l'idioma automàticament"
 msgid "Auto: shown when a system tray is available"
 msgstr "Auto: es mostra quan hi ha una safata del sistema disponible"
 
-#: data/ui/preferences.ui:313
+#: data/ui/preferences.ui:312
 msgid "Automatically fix common spelling mistakes"
 msgstr "Corregeix automàticament les errades ortogràfiques habituals"
 
@@ -95,7 +95,7 @@ msgstr "Corregeix automàticament les errades ortogràfiques habituals"
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:281
+#: data/ui/preferences.ui:280
 msgid "Both"
 msgstr "Ambdues"
 
@@ -114,7 +114,7 @@ msgstr ""
 "sessions aïllades, zoom per compte i un motor de renderització més ràpid i "
 "compatible mantenint el mateix embolcall natiu de GTK4/libadwaita."
 
-#: data/ui/preferences.ui:183
+#: data/ui/preferences.ui:182
 msgid "Change Tray Icon on Message"
 msgstr "Canvia la icona de la safata en rebre un missatge"
 
@@ -122,7 +122,7 @@ msgstr "Canvia la icona de la safata en rebre un missatge"
 msgid "Chat on WhatsApp"
 msgstr "Xateja per WhatsApp"
 
-#: data/ui/preferences.ui:301
+#: data/ui/preferences.ui:300
 msgid "Check spelling as you type"
 msgstr "Comprova l'ortografia mentre escriviu"
 
@@ -130,11 +130,11 @@ msgstr "Comprova l'ortografia mentre escriviu"
 msgid "Choose the application color scheme"
 msgstr "Trieu l'esquema de colors de l'aplicació"
 
-#: data/ui/preferences.ui:248
+#: data/ui/preferences.ui:247
 msgid "Choose…"
 msgstr "Trieu…"
 
-#: data/ui/preferences.ui:342
+#: data/ui/preferences.ui:341
 msgid "Clear All"
 msgstr "Esborra-ho tot"
 
@@ -150,7 +150,7 @@ msgstr "Tanca la finestra"
 msgid "Close the window"
 msgstr "Tanca la finestra"
 
-#: data/ui/window.ui:265 src/window.rs:1652
+#: data/ui/window.ui:265 src/window.rs:1662
 msgid "Copy Diagnostic Info"
 msgstr ""
 
@@ -166,11 +166,11 @@ msgstr "Fosc"
 msgid "Decrease the zoom level"
 msgstr "Disminueix el nivell de zoom"
 
-#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
+#: data/ui/preferences.ui:244 src/preferences.rs:426 src/preferences.rs:434
 msgid "Default (Downloads)"
 msgstr "Per defecte (Baixades)"
 
-#: data/ui/preferences.ui:307
+#: data/ui/preferences.ui:306
 msgid "Detect the writing language automatically"
 msgstr "Detecta automàticament l'idioma d'escriptura"
 
@@ -187,11 +187,11 @@ msgstr "Eines de desenvolupament"
 msgid "Disabled"
 msgstr "Desactivat"
 
-#: data/ui/preferences.ui:202
+#: data/ui/preferences.ui:201
 msgid "Display message content in notifications"
 msgstr "Mostra el contingut del missatge a les notificacions"
 
-#: data/ui/preferences.ui:196
+#: data/ui/preferences.ui:195
 msgid "Display the contact name in notifications"
 msgstr "Mostra el nom del contacte a les notificacions"
 
@@ -199,27 +199,27 @@ msgstr "Mostra el nom del contacte a les notificacions"
 msgid "Do Not Disturb"
 msgstr ""
 
-#: data/ui/preferences.ui:244
+#: data/ui/preferences.ui:243
 msgid "Download Directory"
 msgstr "Directori de baixades"
 
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:267
 msgid "Download Notifications"
 msgstr "Notificacions de baixada"
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:236
 msgid "Downloads"
 msgstr "Baixades"
 
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:311
 msgid "Enable Auto-Correct"
 msgstr "Activa la correcció automàtica"
 
-#: data/ui/preferences.ui:166
+#: data/ui/preferences.ui:165
 msgid "Enable Notifications"
 msgstr "Activa les notificacions"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:299
 msgid "Enable Spell Checking"
 msgstr "Activa la correcció ortogràfica"
 
@@ -227,7 +227,7 @@ msgstr "Activa la correcció ortogràfica"
 msgid "Enabled"
 msgstr "Activat"
 
-#: data/ui/preferences.ui:146
+#: data/ui/preferences.ui:145
 msgid "Experimental"
 msgstr ""
 
@@ -239,7 +239,7 @@ msgstr "Cerca a la pàgina"
 msgid "Find in page"
 msgstr "Cerca a la pàgina"
 
-#: data/ui/preferences.ui:368
+#: data/ui/preferences.ui:367
 msgid "Focus Indicators"
 msgstr "Indicadors de focus"
 
@@ -255,7 +255,7 @@ msgstr "Força la recàrrega"
 msgid "Fullscreen"
 msgstr "Pantalla completa"
 
-#: data/ui/preferences.ui:149
+#: data/ui/preferences.ui:148
 msgid "GPU Rendering"
 msgstr ""
 
@@ -263,32 +263,32 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "Client de WhatsApp Web amb GTK4"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:162
 msgid "General"
 msgstr "General"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:317
 msgid "Header Bar Language Control"
 msgstr "Control d'idioma a la barra de capçalera"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:400
 msgid "Header Bar Zoom Controls"
 msgstr "Controls de zoom a la barra de capçalera"
 
-#: data/ui/preferences.ui:275
+#: data/ui/preferences.ui:274
 msgid "How download notifications are displayed"
 msgstr "Com es mostren les notificacions de baixada"
 
-#: data/ui/preferences.ui:208
+#: data/ui/preferences.ui:207
 msgid "How much of the message to show"
 msgstr "Quant del missatge cal mostrar"
 
-#: data/ui/preferences.ui:413
+#: data/ui/preferences.ui:412
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr ""
 "Millora la compatibilitat amb tecnologies d'assistència — cal reiniciar"
 
-#: data/ui/preferences.ui:279
+#: data/ui/preferences.ui:278
 msgid "In-app Toast"
 msgstr "Notificació dins l'aplicació"
 
@@ -304,7 +304,7 @@ msgstr "Inspecciona l'element"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "Salta al compte 1–9 (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:531 src/tray.rs:60
 #: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
@@ -336,7 +336,7 @@ msgstr "Dreceres de teclat"
 msgid "Keyboard shortcuts and productivity features"
 msgstr "Dreceres de teclat i funcions de productivitat"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:323
 msgid "Language"
 msgstr "Idioma"
 
@@ -348,11 +348,11 @@ msgstr "Inicia Karere automàticament quan inicieu la sessió"
 msgid "Light"
 msgstr "Clar"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:240
 msgid "Location"
 msgstr "Ubicació"
 
-#: data/ui/preferences.ui:214
+#: data/ui/preferences.ui:213
 msgid "Long"
 msgstr "Llarga"
 
@@ -360,7 +360,7 @@ msgstr "Llarga"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "Finestra principal de l'aplicació amb la integració de WhatsApp Web"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:166
 msgid "Master toggle for all notifications"
 msgstr "Interruptor principal de totes les notificacions"
 
@@ -369,7 +369,7 @@ msgstr "Interruptor principal de totes les notificacions"
 msgid "Match WhatsApp Colors"
 msgstr "Client de WhatsApp"
 
-#: data/ui/preferences.ui:213
+#: data/ui/preferences.ui:212
 msgid "Medium"
 msgstr "Mitjana"
 
@@ -377,15 +377,15 @@ msgstr "Mitjana"
 msgid "Menu"
 msgstr "Menú"
 
-#: data/ui/preferences.ui:177
+#: data/ui/preferences.ui:176
 msgid "Message Notifications"
 msgstr "Notificacions de missatges"
 
-#: data/ui/preferences.ui:191
+#: data/ui/preferences.ui:190
 msgid "Message Preview"
 msgstr "Vista prèvia del missatge"
 
-#: data/ui/preferences.ui:174
+#: data/ui/preferences.ui:173
 msgid "Messages"
 msgstr "Missatges"
 
@@ -393,7 +393,7 @@ msgstr "Missatges"
 msgid "Minimize Window"
 msgstr "Minimitza la finestra"
 
-#: data/ui/preferences.ui:363
+#: data/ui/preferences.ui:362
 msgid "Minimize animations and transitions"
 msgstr "Minimitza les animacions i transicions"
 
@@ -401,7 +401,7 @@ msgstr "Minimitza les animacions i transicions"
 msgid "Minimize the window"
 msgstr "Minimitza la finestra"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:384
 msgid "Minimum Zoom Level"
 msgstr "Nivell de zoom mínim"
 
@@ -409,7 +409,7 @@ msgstr "Nivell de zoom mínim"
 msgid "Mobile Layout"
 msgstr "Disposició mòbil"
 
-#: data/ui/preferences.ui:359
+#: data/ui/preferences.ui:358
 msgid "Motion and Focus"
 msgstr "Moviment i focus"
 
@@ -430,28 +430,28 @@ msgstr "Compte següent"
 msgid "Next match"
 msgstr "Coincidència següent"
 
-#: data/ui/preferences.ui:227
+#: data/ui/preferences.ui:226
 msgid "Notification Sounds"
 msgstr "Sons de notificació"
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:273
 msgid "Notification Type"
 msgstr "Tipus de notificació"
 
-#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: data/ui/preferences.ui:158 data/ui/preferences.ui:264
 #: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "Notificacions"
 
-#: data/ui/preferences.ui:269
+#: data/ui/preferences.ui:268
 msgid "Notify when a file download completes"
 msgstr "Notifica quan acaba una baixada"
 
-#: data/ui/preferences.ui:123 src/window.rs:1692 src/window.rs:1748
+#: data/ui/preferences.ui:123 src/window.rs:1702 src/window.rs:1758
 msgid "Open"
 msgstr "Obre"
 
-#: data/ui/preferences.ui:136
+#: data/ui/preferences.ui:135
 #, fuzzy
 msgid "Open File"
 msgstr "Obre"
@@ -479,7 +479,7 @@ msgstr ""
 msgid "Pick an element to inspect"
 msgstr "Trieu un element per inspeccionar"
 
-#: data/ui/preferences.ui:228
+#: data/ui/preferences.ui:227
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "Reprodueix el so de notificació de WhatsApp per als missatges nous"
 
@@ -488,7 +488,7 @@ msgstr "Reprodueix el so de notificació de WhatsApp per als missatges nous"
 msgid "Preferences"
 msgstr "Preferències"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:206
 msgid "Preview Length"
 msgstr "Longitud de la vista prèvia"
 
@@ -500,7 +500,7 @@ msgstr "Compte anterior"
 msgid "Previous match"
 msgstr "Coincidència anterior"
 
-#: data/ui/preferences.ui:334
+#: data/ui/preferences.ui:333
 msgid "Privacy"
 msgstr "Privadesa"
 
@@ -524,7 +524,7 @@ msgstr "Surt de l'aplicació"
 msgid "Quit Karere"
 msgstr "Surt de Karere"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:361
 msgid "Reduce Motion"
 msgstr "Redueix el moviment"
 
@@ -544,7 +544,7 @@ msgstr "Torna a carregar la pàgina actual"
 msgid "Reload, bypassing the cache"
 msgstr "Torna a carregar ignorant la memòria cau"
 
-#: data/ui/preferences.ui:150
+#: data/ui/preferences.ui:149
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
@@ -554,7 +554,7 @@ msgstr ""
 msgid "Reset Zoom"
 msgstr "Restableix el zoom"
 
-#: data/ui/preferences.ui:256
+#: data/ui/preferences.ui:255
 msgid "Reset to default"
 msgstr "Restableix el valor per defecte"
 
@@ -570,11 +570,11 @@ msgstr "Executa en segon pla"
 msgid "Run on Startup"
 msgstr "Executa en iniciar la sessió"
 
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:411
 msgid "Screen Reader Optimizations"
 msgstr "Optimitzacions per a lectors de pantalla"
 
-#: data/ui/preferences.ui:409
+#: data/ui/preferences.ui:408
 msgid "Screen Reader Support"
 msgstr "Compatibilitat amb lectors de pantalla"
 
@@ -582,27 +582,27 @@ msgstr "Compatibilitat amb lectors de pantalla"
 msgid "Search the current page"
 msgstr "Cerca a la pàgina actual"
 
-#: data/ui/preferences.ui:380
+#: data/ui/preferences.ui:379
 msgid "Set a minimum zoom level for all accounts"
 msgstr "Estableix un nivell de zoom mínim per a tots els comptes"
 
-#: data/ui/preferences.ui:212
+#: data/ui/preferences.ui:211
 msgid "Short"
 msgstr "Curta"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:200
 msgid "Show Message Text"
 msgstr "Mostra el text del missatge"
 
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:194
 msgid "Show Sender Name"
 msgstr "Mostra el nom del remitent"
 
-#: data/ui/preferences.ui:178
+#: data/ui/preferences.ui:177
 msgid "Show notifications for incoming messages"
 msgstr "Mostra notificacions dels missatges entrants"
 
-#: data/ui/preferences.ui:319
+#: data/ui/preferences.ui:318
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr "Mostra el desplegable d'idioma de correcció a la barra de capçalera"
 
@@ -610,11 +610,11 @@ msgstr "Mostra el desplegable d'idioma de correcció a la barra de capçalera"
 msgid "Show this shortcuts dialog"
 msgstr "Mostra aquest diàleg de dreceres"
 
-#: data/ui/preferences.ui:369
+#: data/ui/preferences.ui:368
 msgid "Show visible outlines around focused elements"
 msgstr "Mostra contorns visibles al voltant dels elements enfocats"
 
-#: data/ui/preferences.ui:402
+#: data/ui/preferences.ui:401
 msgid "Show zoom buttons in the header bar"
 msgstr "Mostra els botons de zoom a la barra de capçalera"
 
@@ -626,7 +626,7 @@ msgstr ""
 "Disposició d'un sol panell. Auto: en entorns mòbils o finestres estretes; "
 "Activat/Desactivat: força l'estat a qualsevol mida"
 
-#: data/ui/preferences.ui:338
+#: data/ui/preferences.ui:337
 msgid "Site Permissions"
 msgstr "Permisos de llocs"
 
@@ -634,11 +634,11 @@ msgstr "Permisos de llocs"
 msgid "Smooth performance with hardware acceleration"
 msgstr "Rendiment fluid amb acceleració per maquinari"
 
-#: data/ui/preferences.ui:224
+#: data/ui/preferences.ui:223
 msgid "Sounds"
 msgstr "Sons"
 
-#: data/ui/preferences.ui:297
+#: data/ui/preferences.ui:296
 msgid "Spell Checking"
 msgstr "Correcció ortogràfica"
 
@@ -646,11 +646,11 @@ msgstr "Correcció ortogràfica"
 msgid "Spell Checking Language"
 msgstr "Idioma de la correcció ortogràfica"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:292
 msgid "Spellcheck"
 msgstr "Correcció ortogràfica"
 
-#: data/ui/preferences.ui:325
+#: data/ui/preferences.ui:324
 msgid "Star a language to pin it to the top"
 msgstr "Marqueu un idioma amb una estrella per fixar-lo a dalt"
 
@@ -666,7 +666,7 @@ msgstr "Inicia minimitzat sense mostrar la finestra"
 msgid "Startup"
 msgstr "Inici"
 
-#: data/ui/preferences.ui:339
+#: data/ui/preferences.ui:338
 msgid "Stored allow/deny decisions for websites"
 msgstr "Decisions d'autorització/denegació desades per als llocs web"
 
@@ -674,7 +674,7 @@ msgstr "Decisions d'autorització/denegació desades per als llocs web"
 msgid "Switch Account"
 msgstr "Canvia de compte"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:183
 #, fuzzy
 msgid "Switch the tray icon to the unread variant when a new message arrives"
 msgstr "Anima la icona de la safata quan arriba un missatge nou"
@@ -687,7 +687,7 @@ msgstr "Canvia al compte següent"
 msgid "Switch to the previous account"
 msgstr "Canvia al compte anterior"
 
-#: data/ui/preferences.ui:280
+#: data/ui/preferences.ui:279
 msgid "System Notification"
 msgstr "Notificació del sistema"
 
@@ -731,7 +731,7 @@ msgstr "Finestra"
 msgid "Window Close Behavior"
 msgstr "Comportament en tancar la finestra"
 
-#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "Zoom"
 
@@ -876,7 +876,7 @@ msgstr ""
 msgid "Move Down"
 msgstr ""
 
-#: src/window.rs:996 src/window.rs:1056 src/window.rs:1651
+#: src/window.rs:996 src/window.rs:1056 src/window.rs:1661
 msgid "Cancel"
 msgstr "Cancel·la"
 
@@ -911,43 +911,43 @@ msgstr ""
 msgid "DevTools unavailable: {error}"
 msgstr ""
 
-#: src/window.rs:1653
+#: src/window.rs:1663
 #, fuzzy
 msgid "Open logs"
 msgstr "Obre"
 
-#: src/window.rs:1687
+#: src/window.rs:1697
 msgid "{name} downloaded"
 msgstr ""
 
-#: src/window.rs:1694
+#: src/window.rs:1704
 #, fuzzy
 msgid "Show in Folder"
 msgstr "Mostra la finestra"
 
-#: src/window.rs:1739
+#: src/window.rs:1749
 #, fuzzy
 msgid "Download complete"
 msgstr "Directori de baixades"
 
-#: src/window.rs:1766
+#: src/window.rs:1776
 #, fuzzy
 msgid "Download failed: {reason}"
 msgstr "Directori de baixades"
 
-#: src/window.rs:1770
+#: src/window.rs:1780
 msgid "“{name}” could not be saved."
 msgstr ""
 
-#: src/window.rs:1773
+#: src/window.rs:1783
 msgid "OK"
 msgstr ""
 
-#: src/actions.rs:193
+#: src/actions.rs:198
 msgid "Diagnostic info copied"
 msgstr ""
 
-#: src/actions.rs:531
+#: src/actions.rs:536
 #, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
@@ -957,25 +957,25 @@ msgstr ""
 "proporciona una integració d'escriptori perfecta amb capacitats completes de "
 "registre i d'informe de fallades"
 
-#: src/actions.rs:550
+#: src/actions.rs:555
 msgid "Source"
 msgstr "Codi font"
 
-#: src/actions.rs:553
+#: src/actions.rs:558
 msgid "Special Thanks"
 msgstr "Agraïments especials"
 
-#: src/actions.rs:584
+#: src/actions.rs:589
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:637
+#: src/actions.rs:642
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
 msgstr ""
 
-#: src/actions.rs:641
+#: src/actions.rs:646
 msgid ""
 "This desktop cannot register startup apps for Karere. Add it to your startup "
 "applications with the --background option instead."
@@ -1005,36 +1005,36 @@ msgstr "Més tard"
 msgid "Restart Now"
 msgstr "Reinicia ara"
 
-#: src/preferences.rs:289
+#: src/preferences.rs:291
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "El canvi d'idioma s'aplicarà després de reiniciar el Karere."
 
-#: src/preferences.rs:323
+#: src/preferences.rs:326
 msgid "System Default"
 msgstr "Per defecte del sistema"
 
-#: src/preferences.rs:350
+#: src/preferences.rs:353
 msgid "The language change takes effect after Karere restarts."
 msgstr "El canvi d'idioma s'aplicarà després de reiniciar el Karere."
 
-#: src/preferences.rs:396
+#: src/preferences.rs:399
 msgid "Select Download Folder"
 msgstr ""
 
-#: src/preferences.rs:506
+#: src/preferences.rs:509
 msgid "Allowed"
 msgstr ""
 
-#: src/preferences.rs:507
+#: src/preferences.rs:510
 msgid "Denied"
 msgstr ""
 
-#: src/preferences.rs:508
+#: src/preferences.rs:511
 msgid "Ask"
 msgstr ""
 
-#: src/preferences.rs:518
+#: src/preferences.rs:521
 msgid "Remove this decision"
 msgstr ""
 

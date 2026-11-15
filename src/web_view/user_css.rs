@@ -11,7 +11,7 @@ use gtk::subclass::prelude::*;
 use gtk::{gio, glib};
 
 use super::imp::KarereWebView;
-use super::page_settings::{apply_user_css_script, read_user_css_script, user_css_path};
+use super::page_settings::{apply_user_css_script, current_user_css_script, user_css_path};
 
 const DEBOUNCE_DELAY: Duration = Duration::from_millis(100);
 
@@ -115,8 +115,9 @@ impl KarereWebView {
         }
     }
 
-    fn reload_user_css(&self) {
-        let Some(script) = read_user_css_script(&user_css_path()) else {
+    /// Also called when the `custom-css` setting is toggled.
+    pub(super) fn reload_user_css(&self) {
+        let Some(script) = current_user_css_script() else {
             return;
         };
         // The foreground handle is already in this pool. Do not add it again,

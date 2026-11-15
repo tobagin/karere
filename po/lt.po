@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 11:43+0000\n"
+"POT-Creation-Date: 2026-11-15 13:24+0000\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -31,11 +31,11 @@ msgstr "Apie"
 msgid "About dialog showing application information"
 msgstr "Dialogas „Apie“, rodantis programos informaciją"
 
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:354
 msgid "Accessibility"
 msgstr "Pritaikymas neįgaliesiems"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:378
 msgid "Accessibility Zoom"
 msgstr "Pritaikymo neįgaliesiems mastelis"
 
@@ -63,24 +63,24 @@ msgstr "Programos kalba. Reikia paleisti iš naujo."
 msgid "Application preferences and settings dialog"
 msgstr "Programos nuostatų ir nustatymų dialogas"
 
-#: data/ui/preferences.ui:132
-msgid "Applied after reloading"
-msgstr ""
-
-#: data/ui/preferences.ui:386
+#: data/ui/preferences.ui:385
 msgid "Applied to all webviews"
 msgstr "Taikoma visiems žiniatinklio rodiniams"
 
-#: data/ui/preferences.ui:192
+#: data/ui/preferences.ui:191
 #, fuzzy
 msgid "Applies to the notifications Karere shows for incoming messages"
 msgstr "Rodyti pranešimus apie gaunamas žinutes"
+
+#: data/ui/preferences.ui:132
+msgid "Apply user.css to WhatsApp Web; changes take effect immediately"
+msgstr ""
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "Automatiškai"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:305
 msgid "Auto-Detect Language"
 msgstr "Automatiškai aptikti kalbą"
 
@@ -88,7 +88,7 @@ msgstr "Automatiškai aptikti kalbą"
 msgid "Auto: shown when a system tray is available"
 msgstr "Automatiškai: rodoma, kai prieinamas sistemos dėklas"
 
-#: data/ui/preferences.ui:313
+#: data/ui/preferences.ui:312
 msgid "Automatically fix common spelling mistakes"
 msgstr "Automatiškai taisyti dažnas rašybos klaidas"
 
@@ -96,7 +96,7 @@ msgstr "Automatiškai taisyti dažnas rašybos klaidas"
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:281
+#: data/ui/preferences.ui:280
 msgid "Both"
 msgstr "Abu"
 
@@ -115,7 +115,7 @@ msgstr ""
 "seansais, mastelį kiekvienai paskyrai ir greitesnį, suderinamesnį "
 "atvaizdavimo variklį, išlaikant tą patį savaimąjį GTK4/libadwaita apvalkalą."
 
-#: data/ui/preferences.ui:183
+#: data/ui/preferences.ui:182
 msgid "Change Tray Icon on Message"
 msgstr "Keisti dėklo piktogramą gavus žinutę"
 
@@ -123,7 +123,7 @@ msgstr "Keisti dėklo piktogramą gavus žinutę"
 msgid "Chat on WhatsApp"
 msgstr "Susirašinėkite WhatsApp"
 
-#: data/ui/preferences.ui:301
+#: data/ui/preferences.ui:300
 msgid "Check spelling as you type"
 msgstr "Tikrinti rašybą rašant"
 
@@ -131,11 +131,11 @@ msgstr "Tikrinti rašybą rašant"
 msgid "Choose the application color scheme"
 msgstr "Pasirinkite programos spalvų schemą"
 
-#: data/ui/preferences.ui:248
+#: data/ui/preferences.ui:247
 msgid "Choose…"
 msgstr "Pasirinkti…"
 
-#: data/ui/preferences.ui:342
+#: data/ui/preferences.ui:341
 msgid "Clear All"
 msgstr "Išvalyti viską"
 
@@ -151,7 +151,7 @@ msgstr "Užverti langą"
 msgid "Close the window"
 msgstr "Užverti langą"
 
-#: data/ui/window.ui:265 src/window.rs:1652
+#: data/ui/window.ui:265 src/window.rs:1662
 msgid "Copy Diagnostic Info"
 msgstr ""
 
@@ -167,11 +167,11 @@ msgstr "Tamsi"
 msgid "Decrease the zoom level"
 msgstr "Sumažinti mastelį"
 
-#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
+#: data/ui/preferences.ui:244 src/preferences.rs:426 src/preferences.rs:434
 msgid "Default (Downloads)"
 msgstr "Numatytasis (Atsiuntimai)"
 
-#: data/ui/preferences.ui:307
+#: data/ui/preferences.ui:306
 msgid "Detect the writing language automatically"
 msgstr "Automatiškai aptikti rašymo kalbą"
 
@@ -188,11 +188,11 @@ msgstr "Kūrėjo įrankiai"
 msgid "Disabled"
 msgstr "Išjungta"
 
-#: data/ui/preferences.ui:202
+#: data/ui/preferences.ui:201
 msgid "Display message content in notifications"
 msgstr "Rodyti žinutės turinį pranešimuose"
 
-#: data/ui/preferences.ui:196
+#: data/ui/preferences.ui:195
 msgid "Display the contact name in notifications"
 msgstr "Rodyti kontakto vardą pranešimuose"
 
@@ -200,27 +200,27 @@ msgstr "Rodyti kontakto vardą pranešimuose"
 msgid "Do Not Disturb"
 msgstr ""
 
-#: data/ui/preferences.ui:244
+#: data/ui/preferences.ui:243
 msgid "Download Directory"
 msgstr "Atsiuntimų katalogas"
 
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:267
 msgid "Download Notifications"
 msgstr "Atsiuntimų pranešimai"
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:236
 msgid "Downloads"
 msgstr "Atsiuntimai"
 
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:311
 msgid "Enable Auto-Correct"
 msgstr "Įjungti automatinį taisymą"
 
-#: data/ui/preferences.ui:166
+#: data/ui/preferences.ui:165
 msgid "Enable Notifications"
 msgstr "Įjungti pranešimus"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:299
 msgid "Enable Spell Checking"
 msgstr "Įjungti rašybos tikrinimą"
 
@@ -228,7 +228,7 @@ msgstr "Įjungti rašybos tikrinimą"
 msgid "Enabled"
 msgstr "Įjungta"
 
-#: data/ui/preferences.ui:146
+#: data/ui/preferences.ui:145
 msgid "Experimental"
 msgstr ""
 
@@ -240,7 +240,7 @@ msgstr "Ieškoti puslapyje"
 msgid "Find in page"
 msgstr "Ieškoti puslapyje"
 
-#: data/ui/preferences.ui:368
+#: data/ui/preferences.ui:367
 msgid "Focus Indicators"
 msgstr "Fokuso indikatoriai"
 
@@ -256,7 +256,7 @@ msgstr "Priverstinai įkelti iš naujo"
 msgid "Fullscreen"
 msgstr "Visas ekranas"
 
-#: data/ui/preferences.ui:149
+#: data/ui/preferences.ui:148
 msgid "GPU Rendering"
 msgstr ""
 
@@ -264,33 +264,33 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "GTK4 WhatsApp Web klientas"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:162
 msgid "General"
 msgstr "Bendra"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:317
 msgid "Header Bar Language Control"
 msgstr "Kalbos valdiklis antraštės juostoje"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:400
 msgid "Header Bar Zoom Controls"
 msgstr "Mastelio valdikliai antraštės juostoje"
 
-#: data/ui/preferences.ui:275
+#: data/ui/preferences.ui:274
 msgid "How download notifications are displayed"
 msgstr "Kaip rodomi atsiuntimų pranešimai"
 
-#: data/ui/preferences.ui:208
+#: data/ui/preferences.ui:207
 msgid "How much of the message to show"
 msgstr "Kiek žinutės rodyti"
 
-#: data/ui/preferences.ui:413
+#: data/ui/preferences.ui:412
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr ""
 "Pagerinti suderinamumą su pagalbinėmis technologijomis — reikia paleisti iš "
 "naujo"
 
-#: data/ui/preferences.ui:279
+#: data/ui/preferences.ui:278
 msgid "In-app Toast"
 msgstr "Iškylantysis pranešimas programoje"
 
@@ -306,7 +306,7 @@ msgstr "Tikrinti elementą"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "Pereiti prie paskyros 1–9 (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:531 src/tray.rs:60
 #: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
@@ -337,7 +337,7 @@ msgstr "Spartieji klavišai"
 msgid "Keyboard shortcuts and productivity features"
 msgstr "Spartieji klavišai ir produktyvumo funkcijos"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:323
 msgid "Language"
 msgstr "Kalba"
 
@@ -349,11 +349,11 @@ msgstr "Automatiškai paleisti Karere prisijungus"
 msgid "Light"
 msgstr "Šviesi"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:240
 msgid "Location"
 msgstr "Vieta"
 
-#: data/ui/preferences.ui:214
+#: data/ui/preferences.ui:213
 msgid "Long"
 msgstr "Ilgas"
 
@@ -361,7 +361,7 @@ msgstr "Ilgas"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "Pagrindinis programos langas su WhatsApp Web integracija"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:166
 msgid "Master toggle for all notifications"
 msgstr "Pagrindinis visų pranešimų jungiklis"
 
@@ -370,7 +370,7 @@ msgstr "Pagrindinis visų pranešimų jungiklis"
 msgid "Match WhatsApp Colors"
 msgstr "WhatsApp klientas"
 
-#: data/ui/preferences.ui:213
+#: data/ui/preferences.ui:212
 msgid "Medium"
 msgstr "Vidutinis"
 
@@ -378,15 +378,15 @@ msgstr "Vidutinis"
 msgid "Menu"
 msgstr "Meniu"
 
-#: data/ui/preferences.ui:177
+#: data/ui/preferences.ui:176
 msgid "Message Notifications"
 msgstr "Žinučių pranešimai"
 
-#: data/ui/preferences.ui:191
+#: data/ui/preferences.ui:190
 msgid "Message Preview"
 msgstr "Žinutės peržiūra"
 
-#: data/ui/preferences.ui:174
+#: data/ui/preferences.ui:173
 msgid "Messages"
 msgstr "Žinutės"
 
@@ -394,7 +394,7 @@ msgstr "Žinutės"
 msgid "Minimize Window"
 msgstr "Suskleisti langą"
 
-#: data/ui/preferences.ui:363
+#: data/ui/preferences.ui:362
 msgid "Minimize animations and transitions"
 msgstr "Sumažinti animacijas ir perėjimus"
 
@@ -402,7 +402,7 @@ msgstr "Sumažinti animacijas ir perėjimus"
 msgid "Minimize the window"
 msgstr "Suskleisti langą"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:384
 msgid "Minimum Zoom Level"
 msgstr "Mažiausias mastelio lygis"
 
@@ -410,7 +410,7 @@ msgstr "Mažiausias mastelio lygis"
 msgid "Mobile Layout"
 msgstr "Mobilus išdėstymas"
 
-#: data/ui/preferences.ui:359
+#: data/ui/preferences.ui:358
 msgid "Motion and Focus"
 msgstr "Judesys ir fokusas"
 
@@ -430,28 +430,28 @@ msgstr "Kita paskyra"
 msgid "Next match"
 msgstr "Kitas atitikmuo"
 
-#: data/ui/preferences.ui:227
+#: data/ui/preferences.ui:226
 msgid "Notification Sounds"
 msgstr "Pranešimų garsai"
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:273
 msgid "Notification Type"
 msgstr "Pranešimo tipas"
 
-#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: data/ui/preferences.ui:158 data/ui/preferences.ui:264
 #: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "Pranešimai"
 
-#: data/ui/preferences.ui:269
+#: data/ui/preferences.ui:268
 msgid "Notify when a file download completes"
 msgstr "Pranešti, kai failo atsiuntimas baigiamas"
 
-#: data/ui/preferences.ui:123 src/window.rs:1692 src/window.rs:1748
+#: data/ui/preferences.ui:123 src/window.rs:1702 src/window.rs:1758
 msgid "Open"
 msgstr "Atverti"
 
-#: data/ui/preferences.ui:136
+#: data/ui/preferences.ui:135
 #, fuzzy
 msgid "Open File"
 msgstr "Atverti"
@@ -478,7 +478,7 @@ msgstr ""
 msgid "Pick an element to inspect"
 msgstr "Pasirinkite tikrintiną elementą"
 
-#: data/ui/preferences.ui:228
+#: data/ui/preferences.ui:227
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "Groti WhatsApp pranešimų garsą naujoms žinutėms"
 
@@ -487,7 +487,7 @@ msgstr "Groti WhatsApp pranešimų garsą naujoms žinutėms"
 msgid "Preferences"
 msgstr "Nuostatos"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:206
 msgid "Preview Length"
 msgstr "Peržiūros ilgis"
 
@@ -499,7 +499,7 @@ msgstr "Ankstesnė paskyra"
 msgid "Previous match"
 msgstr "Ankstesnis atitikmuo"
 
-#: data/ui/preferences.ui:334
+#: data/ui/preferences.ui:333
 msgid "Privacy"
 msgstr "Privatumas"
 
@@ -523,7 +523,7 @@ msgstr "Išeiti iš programos"
 msgid "Quit Karere"
 msgstr "Išeiti iš Karere"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:361
 msgid "Reduce Motion"
 msgstr "Mažinti judesį"
 
@@ -543,7 +543,7 @@ msgstr "Įkelti dabartinį puslapį iš naujo"
 msgid "Reload, bypassing the cache"
 msgstr "Įkelti iš naujo, aplenkiant podėlį"
 
-#: data/ui/preferences.ui:150
+#: data/ui/preferences.ui:149
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
@@ -553,7 +553,7 @@ msgstr ""
 msgid "Reset Zoom"
 msgstr "Atstatyti mastelį"
 
-#: data/ui/preferences.ui:256
+#: data/ui/preferences.ui:255
 msgid "Reset to default"
 msgstr "Atstatyti numatytąjį"
 
@@ -569,11 +569,11 @@ msgstr "Veikti fone"
 msgid "Run on Startup"
 msgstr "Paleisti sistemai startavus"
 
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:411
 msgid "Screen Reader Optimizations"
 msgstr "Ekrano skaitytuvo optimizavimas"
 
-#: data/ui/preferences.ui:409
+#: data/ui/preferences.ui:408
 msgid "Screen Reader Support"
 msgstr "Ekrano skaitytuvo palaikymas"
 
@@ -581,27 +581,27 @@ msgstr "Ekrano skaitytuvo palaikymas"
 msgid "Search the current page"
 msgstr "Ieškoti dabartiniame puslapyje"
 
-#: data/ui/preferences.ui:380
+#: data/ui/preferences.ui:379
 msgid "Set a minimum zoom level for all accounts"
 msgstr "Nustatyti mažiausią mastelį visoms paskyroms"
 
-#: data/ui/preferences.ui:212
+#: data/ui/preferences.ui:211
 msgid "Short"
 msgstr "Trumpas"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:200
 msgid "Show Message Text"
 msgstr "Rodyti žinutės tekstą"
 
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:194
 msgid "Show Sender Name"
 msgstr "Rodyti siuntėjo vardą"
 
-#: data/ui/preferences.ui:178
+#: data/ui/preferences.ui:177
 msgid "Show notifications for incoming messages"
 msgstr "Rodyti pranešimus apie gaunamas žinutes"
 
-#: data/ui/preferences.ui:319
+#: data/ui/preferences.ui:318
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr ""
 "Rodyti rašybos tikrinimo kalbos išskleidžiamąjį sąrašą antraštės juostoje"
@@ -610,11 +610,11 @@ msgstr ""
 msgid "Show this shortcuts dialog"
 msgstr "Rodyti šį sparčiųjų klavišų dialogą"
 
-#: data/ui/preferences.ui:369
+#: data/ui/preferences.ui:368
 msgid "Show visible outlines around focused elements"
 msgstr "Rodyti matomus kontūrus aplink fokusuotus elementus"
 
-#: data/ui/preferences.ui:402
+#: data/ui/preferences.ui:401
 msgid "Show zoom buttons in the header bar"
 msgstr "Rodyti mastelio mygtukus antraštės juostoje"
 
@@ -627,7 +627,7 @@ msgstr ""
 "siauruose languose; Įjungta/Išjungta: priverstinai įjungti ar išjungti bet "
 "kokiame dydyje"
 
-#: data/ui/preferences.ui:338
+#: data/ui/preferences.ui:337
 msgid "Site Permissions"
 msgstr "Svetainių leidimai"
 
@@ -635,11 +635,11 @@ msgstr "Svetainių leidimai"
 msgid "Smooth performance with hardware acceleration"
 msgstr "Sklandus veikimas su aparatine spartinimu"
 
-#: data/ui/preferences.ui:224
+#: data/ui/preferences.ui:223
 msgid "Sounds"
 msgstr "Garsai"
 
-#: data/ui/preferences.ui:297
+#: data/ui/preferences.ui:296
 msgid "Spell Checking"
 msgstr "Rašybos tikrinimas"
 
@@ -647,11 +647,11 @@ msgstr "Rašybos tikrinimas"
 msgid "Spell Checking Language"
 msgstr "Rašybos tikrinimo kalba"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:292
 msgid "Spellcheck"
 msgstr "Rašybos tikrinimas"
 
-#: data/ui/preferences.ui:325
+#: data/ui/preferences.ui:324
 msgid "Star a language to pin it to the top"
 msgstr "Pažymėkite kalbą žvaigždute, kad ją prisegtumėte viršuje"
 
@@ -667,7 +667,7 @@ msgstr "Paleisti suskleistą, nerodant lango"
 msgid "Startup"
 msgstr "Paleidimas"
 
-#: data/ui/preferences.ui:339
+#: data/ui/preferences.ui:338
 msgid "Stored allow/deny decisions for websites"
 msgstr "Įrašyti svetainių leidimo / draudimo sprendimai"
 
@@ -675,7 +675,7 @@ msgstr "Įrašyti svetainių leidimo / draudimo sprendimai"
 msgid "Switch Account"
 msgstr "Perjungti paskyrą"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:183
 #, fuzzy
 msgid "Switch the tray icon to the unread variant when a new message arrives"
 msgstr "Animuoti dėklo piktogramą gavus naują žinutę"
@@ -688,7 +688,7 @@ msgstr "Perjungti į kitą paskyrą"
 msgid "Switch to the previous account"
 msgstr "Perjungti į ankstesnę paskyrą"
 
-#: data/ui/preferences.ui:280
+#: data/ui/preferences.ui:279
 msgid "System Notification"
 msgstr "Sistemos pranešimas"
 
@@ -732,7 +732,7 @@ msgstr "Langas"
 msgid "Window Close Behavior"
 msgstr "Lango užvėrimo elgsena"
 
-#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "Mastelis"
 
@@ -878,7 +878,7 @@ msgstr ""
 msgid "Move Down"
 msgstr ""
 
-#: src/window.rs:996 src/window.rs:1056 src/window.rs:1651
+#: src/window.rs:996 src/window.rs:1056 src/window.rs:1661
 msgid "Cancel"
 msgstr "Atsisakyti"
 
@@ -913,43 +913,43 @@ msgstr ""
 msgid "DevTools unavailable: {error}"
 msgstr ""
 
-#: src/window.rs:1653
+#: src/window.rs:1663
 #, fuzzy
 msgid "Open logs"
 msgstr "Atverti"
 
-#: src/window.rs:1687
+#: src/window.rs:1697
 msgid "{name} downloaded"
 msgstr ""
 
-#: src/window.rs:1694
+#: src/window.rs:1704
 #, fuzzy
 msgid "Show in Folder"
 msgstr "Rodyti langą"
 
-#: src/window.rs:1739
+#: src/window.rs:1749
 #, fuzzy
 msgid "Download complete"
 msgstr "Atsiuntimų katalogas"
 
-#: src/window.rs:1766
+#: src/window.rs:1776
 #, fuzzy
 msgid "Download failed: {reason}"
 msgstr "Atsiuntimų katalogas"
 
-#: src/window.rs:1770
+#: src/window.rs:1780
 msgid "“{name}” could not be saved."
 msgstr ""
 
-#: src/window.rs:1773
+#: src/window.rs:1783
 msgid "OK"
 msgstr ""
 
-#: src/actions.rs:193
+#: src/actions.rs:198
 msgid "Diagnostic info copied"
 msgstr ""
 
-#: src/actions.rs:531
+#: src/actions.rs:536
 #, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
@@ -959,25 +959,25 @@ msgstr ""
 "sklandžią darbalaukio integraciją su išsamiomis žurnalavimo ir strigčių "
 "pranešimų galimybėmis"
 
-#: src/actions.rs:550
+#: src/actions.rs:555
 msgid "Source"
 msgstr "Šaltinis"
 
-#: src/actions.rs:553
+#: src/actions.rs:558
 msgid "Special Thanks"
 msgstr "Ypatinga padėka"
 
-#: src/actions.rs:584
+#: src/actions.rs:589
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:637
+#: src/actions.rs:642
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
 msgstr ""
 
-#: src/actions.rs:641
+#: src/actions.rs:646
 msgid ""
 "This desktop cannot register startup apps for Karere. Add it to your startup "
 "applications with the --background option instead."
@@ -1007,36 +1007,36 @@ msgstr "Vėliau"
 msgid "Restart Now"
 msgstr "Paleisti iš naujo"
 
-#: src/preferences.rs:289
+#: src/preferences.rs:291
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "Kalbos pakeitimas įsigalios iš naujo paleidus Karere."
 
-#: src/preferences.rs:323
+#: src/preferences.rs:326
 msgid "System Default"
 msgstr "Sistemos numatytasis"
 
-#: src/preferences.rs:350
+#: src/preferences.rs:353
 msgid "The language change takes effect after Karere restarts."
 msgstr "Kalbos pakeitimas įsigalios iš naujo paleidus Karere."
 
-#: src/preferences.rs:396
+#: src/preferences.rs:399
 msgid "Select Download Folder"
 msgstr ""
 
-#: src/preferences.rs:506
+#: src/preferences.rs:509
 msgid "Allowed"
 msgstr ""
 
-#: src/preferences.rs:507
+#: src/preferences.rs:510
 msgid "Denied"
 msgstr ""
 
-#: src/preferences.rs:508
+#: src/preferences.rs:511
 msgid "Ask"
 msgstr ""
 
-#: src/preferences.rs:518
+#: src/preferences.rs:521
 msgid "Remove this decision"
 msgstr ""
 

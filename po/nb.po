@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 11:43+0000\n"
+"POT-Creation-Date: 2026-11-15 13:24+0000\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -30,11 +30,11 @@ msgstr "Om"
 msgid "About dialog showing application information"
 msgstr "Om-dialog som viser programinformasjon"
 
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:354
 msgid "Accessibility"
 msgstr "Tilgjengelighet"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:378
 msgid "Accessibility Zoom"
 msgstr "Tilgjengelighetszoom"
 
@@ -62,24 +62,24 @@ msgstr "Programspråk. Krever omstart."
 msgid "Application preferences and settings dialog"
 msgstr "Dialog for programinnstillinger og oppsett"
 
-#: data/ui/preferences.ui:132
-msgid "Applied after reloading"
-msgstr ""
-
-#: data/ui/preferences.ui:386
+#: data/ui/preferences.ui:385
 msgid "Applied to all webviews"
 msgstr "Brukes på alle webvisninger"
 
-#: data/ui/preferences.ui:192
+#: data/ui/preferences.ui:191
 #, fuzzy
 msgid "Applies to the notifications Karere shows for incoming messages"
 msgstr "Vis varsler for innkommende meldinger"
+
+#: data/ui/preferences.ui:132
+msgid "Apply user.css to WhatsApp Web; changes take effect immediately"
+msgstr ""
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "Auto"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:305
 msgid "Auto-Detect Language"
 msgstr "Oppdag språk automatisk"
 
@@ -87,7 +87,7 @@ msgstr "Oppdag språk automatisk"
 msgid "Auto: shown when a system tray is available"
 msgstr "Auto: vises når en systemkurv er tilgjengelig"
 
-#: data/ui/preferences.ui:313
+#: data/ui/preferences.ui:312
 msgid "Automatically fix common spelling mistakes"
 msgstr "Rett vanlige stavefeil automatisk"
 
@@ -95,7 +95,7 @@ msgstr "Rett vanlige stavefeil automatisk"
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:281
+#: data/ui/preferences.ui:280
 msgid "Both"
 msgstr "Begge"
 
@@ -114,7 +114,7 @@ msgstr ""
 "raskere, mer kompatibel gjengivelsesmotor samtidig som det beholder det "
 "samme innebygde GTK4/libadwaita-skallet."
 
-#: data/ui/preferences.ui:183
+#: data/ui/preferences.ui:182
 msgid "Change Tray Icon on Message"
 msgstr "Endre kurvikon ved melding"
 
@@ -122,7 +122,7 @@ msgstr "Endre kurvikon ved melding"
 msgid "Chat on WhatsApp"
 msgstr "Chat på WhatsApp"
 
-#: data/ui/preferences.ui:301
+#: data/ui/preferences.ui:300
 msgid "Check spelling as you type"
 msgstr "Sjekk staving mens du skriver"
 
@@ -130,11 +130,11 @@ msgstr "Sjekk staving mens du skriver"
 msgid "Choose the application color scheme"
 msgstr "Velg fargevalg for programmet"
 
-#: data/ui/preferences.ui:248
+#: data/ui/preferences.ui:247
 msgid "Choose…"
 msgstr "Velg…"
 
-#: data/ui/preferences.ui:342
+#: data/ui/preferences.ui:341
 msgid "Clear All"
 msgstr "Tøm alt"
 
@@ -150,7 +150,7 @@ msgstr "Lukk vindu"
 msgid "Close the window"
 msgstr "Lukk vinduet"
 
-#: data/ui/window.ui:265 src/window.rs:1652
+#: data/ui/window.ui:265 src/window.rs:1662
 msgid "Copy Diagnostic Info"
 msgstr ""
 
@@ -166,11 +166,11 @@ msgstr "Mørk"
 msgid "Decrease the zoom level"
 msgstr "Reduser zoomnivået"
 
-#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
+#: data/ui/preferences.ui:244 src/preferences.rs:426 src/preferences.rs:434
 msgid "Default (Downloads)"
 msgstr "Standard (Nedlastinger)"
 
-#: data/ui/preferences.ui:307
+#: data/ui/preferences.ui:306
 msgid "Detect the writing language automatically"
 msgstr "Oppdag skrivespråket automatisk"
 
@@ -187,11 +187,11 @@ msgstr "Utviklerverktøy"
 msgid "Disabled"
 msgstr "Deaktivert"
 
-#: data/ui/preferences.ui:202
+#: data/ui/preferences.ui:201
 msgid "Display message content in notifications"
 msgstr "Vis meldingsinnhold i varsler"
 
-#: data/ui/preferences.ui:196
+#: data/ui/preferences.ui:195
 msgid "Display the contact name in notifications"
 msgstr "Vis kontaktnavnet i varsler"
 
@@ -199,27 +199,27 @@ msgstr "Vis kontaktnavnet i varsler"
 msgid "Do Not Disturb"
 msgstr ""
 
-#: data/ui/preferences.ui:244
+#: data/ui/preferences.ui:243
 msgid "Download Directory"
 msgstr "Nedlastingsmappe"
 
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:267
 msgid "Download Notifications"
 msgstr "Nedlastingsvarsler"
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:236
 msgid "Downloads"
 msgstr "Nedlastinger"
 
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:311
 msgid "Enable Auto-Correct"
 msgstr "Aktiver autokorrektur"
 
-#: data/ui/preferences.ui:166
+#: data/ui/preferences.ui:165
 msgid "Enable Notifications"
 msgstr "Aktiver varsler"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:299
 msgid "Enable Spell Checking"
 msgstr "Aktiver stavekontroll"
 
@@ -227,7 +227,7 @@ msgstr "Aktiver stavekontroll"
 msgid "Enabled"
 msgstr "Aktivert"
 
-#: data/ui/preferences.ui:146
+#: data/ui/preferences.ui:145
 msgid "Experimental"
 msgstr ""
 
@@ -239,7 +239,7 @@ msgstr "Finn på siden"
 msgid "Find in page"
 msgstr "Finn på siden"
 
-#: data/ui/preferences.ui:368
+#: data/ui/preferences.ui:367
 msgid "Focus Indicators"
 msgstr "Fokusindikatorer"
 
@@ -255,7 +255,7 @@ msgstr "Tving innlasting"
 msgid "Fullscreen"
 msgstr "Fullskjerm"
 
-#: data/ui/preferences.ui:149
+#: data/ui/preferences.ui:148
 msgid "GPU Rendering"
 msgstr ""
 
@@ -263,31 +263,31 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "GTK4-klient for WhatsApp Web"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:162
 msgid "General"
 msgstr "Generelt"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:317
 msgid "Header Bar Language Control"
 msgstr "Språkkontroll i hodelinjen"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:400
 msgid "Header Bar Zoom Controls"
 msgstr "Zoomkontroller i hodelinjen"
 
-#: data/ui/preferences.ui:275
+#: data/ui/preferences.ui:274
 msgid "How download notifications are displayed"
 msgstr "Hvordan nedlastingsvarsler vises"
 
-#: data/ui/preferences.ui:208
+#: data/ui/preferences.ui:207
 msgid "How much of the message to show"
 msgstr "Hvor mye av meldingen som skal vises"
 
-#: data/ui/preferences.ui:413
+#: data/ui/preferences.ui:412
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr "Forbedre kompatibilitet med hjelpeteknologier — omstart kreves"
 
-#: data/ui/preferences.ui:279
+#: data/ui/preferences.ui:278
 msgid "In-app Toast"
 msgstr "Varsel i programmet"
 
@@ -303,7 +303,7 @@ msgstr "Inspiser element"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "Hopp til konto 1–9 (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:531 src/tray.rs:60
 #: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
@@ -334,7 +334,7 @@ msgstr "Tastatursnarveier"
 msgid "Keyboard shortcuts and productivity features"
 msgstr "Tastatursnarveier og produktivitetsfunksjoner"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:323
 msgid "Language"
 msgstr "Språk"
 
@@ -346,11 +346,11 @@ msgstr "Start Karere automatisk når du logger inn"
 msgid "Light"
 msgstr "Lys"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:240
 msgid "Location"
 msgstr "Plassering"
 
-#: data/ui/preferences.ui:214
+#: data/ui/preferences.ui:213
 msgid "Long"
 msgstr "Lang"
 
@@ -358,7 +358,7 @@ msgstr "Lang"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "Hovedvindu med WhatsApp Web-integrasjon"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:166
 msgid "Master toggle for all notifications"
 msgstr "Hovedbryter for alle varsler"
 
@@ -367,7 +367,7 @@ msgstr "Hovedbryter for alle varsler"
 msgid "Match WhatsApp Colors"
 msgstr "WhatsApp-klient"
 
-#: data/ui/preferences.ui:213
+#: data/ui/preferences.ui:212
 msgid "Medium"
 msgstr "Middels"
 
@@ -375,15 +375,15 @@ msgstr "Middels"
 msgid "Menu"
 msgstr "Meny"
 
-#: data/ui/preferences.ui:177
+#: data/ui/preferences.ui:176
 msgid "Message Notifications"
 msgstr "Meldingsvarsler"
 
-#: data/ui/preferences.ui:191
+#: data/ui/preferences.ui:190
 msgid "Message Preview"
 msgstr "Forhåndsvisning av melding"
 
-#: data/ui/preferences.ui:174
+#: data/ui/preferences.ui:173
 msgid "Messages"
 msgstr "Meldinger"
 
@@ -391,7 +391,7 @@ msgstr "Meldinger"
 msgid "Minimize Window"
 msgstr "Minimer vindu"
 
-#: data/ui/preferences.ui:363
+#: data/ui/preferences.ui:362
 msgid "Minimize animations and transitions"
 msgstr "Minimer animasjoner og overganger"
 
@@ -399,7 +399,7 @@ msgstr "Minimer animasjoner og overganger"
 msgid "Minimize the window"
 msgstr "Minimer vinduet"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:384
 msgid "Minimum Zoom Level"
 msgstr "Minste zoomnivå"
 
@@ -407,7 +407,7 @@ msgstr "Minste zoomnivå"
 msgid "Mobile Layout"
 msgstr "Mobiloppsett"
 
-#: data/ui/preferences.ui:359
+#: data/ui/preferences.ui:358
 msgid "Motion and Focus"
 msgstr "Bevegelse og fokus"
 
@@ -427,28 +427,28 @@ msgstr "Neste konto"
 msgid "Next match"
 msgstr "Neste treff"
 
-#: data/ui/preferences.ui:227
+#: data/ui/preferences.ui:226
 msgid "Notification Sounds"
 msgstr "Varslingslyder"
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:273
 msgid "Notification Type"
 msgstr "Varseltype"
 
-#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: data/ui/preferences.ui:158 data/ui/preferences.ui:264
 #: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "Varsler"
 
-#: data/ui/preferences.ui:269
+#: data/ui/preferences.ui:268
 msgid "Notify when a file download completes"
 msgstr "Varsle når en filnedlasting er fullført"
 
-#: data/ui/preferences.ui:123 src/window.rs:1692 src/window.rs:1748
+#: data/ui/preferences.ui:123 src/window.rs:1702 src/window.rs:1758
 msgid "Open"
 msgstr "Åpne"
 
-#: data/ui/preferences.ui:136
+#: data/ui/preferences.ui:135
 #, fuzzy
 msgid "Open File"
 msgstr "Åpne"
@@ -476,7 +476,7 @@ msgstr ""
 msgid "Pick an element to inspect"
 msgstr "Velg et element å inspisere"
 
-#: data/ui/preferences.ui:228
+#: data/ui/preferences.ui:227
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "Spill av WhatsApps varslingslyd for nye meldinger"
 
@@ -485,7 +485,7 @@ msgstr "Spill av WhatsApps varslingslyd for nye meldinger"
 msgid "Preferences"
 msgstr "Innstillinger"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:206
 msgid "Preview Length"
 msgstr "Lengde på forhåndsvisning"
 
@@ -497,7 +497,7 @@ msgstr "Forrige konto"
 msgid "Previous match"
 msgstr "Forrige treff"
 
-#: data/ui/preferences.ui:334
+#: data/ui/preferences.ui:333
 msgid "Privacy"
 msgstr "Personvern"
 
@@ -521,7 +521,7 @@ msgstr "Avslutt programmet"
 msgid "Quit Karere"
 msgstr "Avslutt Karere"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:361
 msgid "Reduce Motion"
 msgstr "Reduser bevegelse"
 
@@ -541,7 +541,7 @@ msgstr "Last inn gjeldende side på nytt"
 msgid "Reload, bypassing the cache"
 msgstr "Last inn på nytt og forbigå hurtigbufferen"
 
-#: data/ui/preferences.ui:150
+#: data/ui/preferences.ui:149
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
@@ -551,7 +551,7 @@ msgstr ""
 msgid "Reset Zoom"
 msgstr "Tilbakestill zoom"
 
-#: data/ui/preferences.ui:256
+#: data/ui/preferences.ui:255
 msgid "Reset to default"
 msgstr "Tilbakestill til standard"
 
@@ -567,11 +567,11 @@ msgstr "Kjør i bakgrunnen"
 msgid "Run on Startup"
 msgstr "Kjør ved oppstart"
 
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:411
 msgid "Screen Reader Optimizations"
 msgstr "Skjermleseroptimaliseringer"
 
-#: data/ui/preferences.ui:409
+#: data/ui/preferences.ui:408
 msgid "Screen Reader Support"
 msgstr "Skjermleserstøtte"
 
@@ -579,27 +579,27 @@ msgstr "Skjermleserstøtte"
 msgid "Search the current page"
 msgstr "Søk på gjeldende side"
 
-#: data/ui/preferences.ui:380
+#: data/ui/preferences.ui:379
 msgid "Set a minimum zoom level for all accounts"
 msgstr "Angi et minste zoomnivå for alle kontoer"
 
-#: data/ui/preferences.ui:212
+#: data/ui/preferences.ui:211
 msgid "Short"
 msgstr "Kort"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:200
 msgid "Show Message Text"
 msgstr "Vis meldingstekst"
 
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:194
 msgid "Show Sender Name"
 msgstr "Vis avsendernavn"
 
-#: data/ui/preferences.ui:178
+#: data/ui/preferences.ui:177
 msgid "Show notifications for incoming messages"
 msgstr "Vis varsler for innkommende meldinger"
 
-#: data/ui/preferences.ui:319
+#: data/ui/preferences.ui:318
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr "Vis rullegardinmenyen for stavekontrollspråk i hodelinjen"
 
@@ -607,11 +607,11 @@ msgstr "Vis rullegardinmenyen for stavekontrollspråk i hodelinjen"
 msgid "Show this shortcuts dialog"
 msgstr "Vis denne snarveidialogen"
 
-#: data/ui/preferences.ui:369
+#: data/ui/preferences.ui:368
 msgid "Show visible outlines around focused elements"
 msgstr "Vis synlige omriss rundt fokuserte elementer"
 
-#: data/ui/preferences.ui:402
+#: data/ui/preferences.ui:401
 msgid "Show zoom buttons in the header bar"
 msgstr "Vis zoomknapper i hodelinjen"
 
@@ -623,7 +623,7 @@ msgstr ""
 "Enkeltrutevisning. Auto: på mobilskall eller smale vinduer; Aktivert/"
 "Deaktivert: tving på eller av ved enhver størrelse"
 
-#: data/ui/preferences.ui:338
+#: data/ui/preferences.ui:337
 msgid "Site Permissions"
 msgstr "Nettstedstillatelser"
 
@@ -631,11 +631,11 @@ msgstr "Nettstedstillatelser"
 msgid "Smooth performance with hardware acceleration"
 msgstr "Jevn ytelse med maskinvareakselerasjon"
 
-#: data/ui/preferences.ui:224
+#: data/ui/preferences.ui:223
 msgid "Sounds"
 msgstr "Lyder"
 
-#: data/ui/preferences.ui:297
+#: data/ui/preferences.ui:296
 msgid "Spell Checking"
 msgstr "Stavekontroll"
 
@@ -643,11 +643,11 @@ msgstr "Stavekontroll"
 msgid "Spell Checking Language"
 msgstr "Språk for stavekontroll"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:292
 msgid "Spellcheck"
 msgstr "Stavekontroll"
 
-#: data/ui/preferences.ui:325
+#: data/ui/preferences.ui:324
 msgid "Star a language to pin it to the top"
 msgstr "Stjernemerk et språk for å feste det øverst"
 
@@ -663,7 +663,7 @@ msgstr "Start minimert uten å vise vinduet"
 msgid "Startup"
 msgstr "Oppstart"
 
-#: data/ui/preferences.ui:339
+#: data/ui/preferences.ui:338
 msgid "Stored allow/deny decisions for websites"
 msgstr "Lagrede tillat/avslå-valg for nettsteder"
 
@@ -671,7 +671,7 @@ msgstr "Lagrede tillat/avslå-valg for nettsteder"
 msgid "Switch Account"
 msgstr "Bytt konto"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:183
 #, fuzzy
 msgid "Switch the tray icon to the unread variant when a new message arrives"
 msgstr "Animer kurvikonet når en ny melding kommer"
@@ -684,7 +684,7 @@ msgstr "Bytt til neste konto"
 msgid "Switch to the previous account"
 msgstr "Bytt til forrige konto"
 
-#: data/ui/preferences.ui:280
+#: data/ui/preferences.ui:279
 msgid "System Notification"
 msgstr "Systemvarsel"
 
@@ -728,7 +728,7 @@ msgstr "Vindu"
 msgid "Window Close Behavior"
 msgstr "Oppførsel ved lukking av vindu"
 
-#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "Zoom"
 
@@ -873,7 +873,7 @@ msgstr ""
 msgid "Move Down"
 msgstr ""
 
-#: src/window.rs:996 src/window.rs:1056 src/window.rs:1651
+#: src/window.rs:996 src/window.rs:1056 src/window.rs:1661
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -908,43 +908,43 @@ msgstr ""
 msgid "DevTools unavailable: {error}"
 msgstr ""
 
-#: src/window.rs:1653
+#: src/window.rs:1663
 #, fuzzy
 msgid "Open logs"
 msgstr "Åpne"
 
-#: src/window.rs:1687
+#: src/window.rs:1697
 msgid "{name} downloaded"
 msgstr ""
 
-#: src/window.rs:1694
+#: src/window.rs:1704
 #, fuzzy
 msgid "Show in Folder"
 msgstr "Vis vindu"
 
-#: src/window.rs:1739
+#: src/window.rs:1749
 #, fuzzy
 msgid "Download complete"
 msgstr "Nedlastingsmappe"
 
-#: src/window.rs:1766
+#: src/window.rs:1776
 #, fuzzy
 msgid "Download failed: {reason}"
 msgstr "Nedlastingsmappe"
 
-#: src/window.rs:1770
+#: src/window.rs:1780
 msgid "“{name}” could not be saved."
 msgstr ""
 
-#: src/window.rs:1773
+#: src/window.rs:1783
 msgid "OK"
 msgstr ""
 
-#: src/actions.rs:193
+#: src/actions.rs:198
 msgid "Diagnostic info copied"
 msgstr ""
 
-#: src/actions.rs:531
+#: src/actions.rs:536
 #, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
@@ -954,25 +954,25 @@ msgstr ""
 "sømløs skrivebordsintegrasjon med omfattende logg- og "
 "krasjrapporteringsmuligheter"
 
-#: src/actions.rs:550
+#: src/actions.rs:555
 msgid "Source"
 msgstr "Kilde"
 
-#: src/actions.rs:553
+#: src/actions.rs:558
 msgid "Special Thanks"
 msgstr "Spesiell takk"
 
-#: src/actions.rs:584
+#: src/actions.rs:589
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:637
+#: src/actions.rs:642
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
 msgstr ""
 
-#: src/actions.rs:641
+#: src/actions.rs:646
 msgid ""
 "This desktop cannot register startup apps for Karere. Add it to your startup "
 "applications with the --background option instead."
@@ -1002,36 +1002,36 @@ msgstr "Senere"
 msgid "Restart Now"
 msgstr "Start på nytt nå"
 
-#: src/preferences.rs:289
+#: src/preferences.rs:291
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "Språkendringen trer i kraft etter at Karere startes på nytt."
 
-#: src/preferences.rs:323
+#: src/preferences.rs:326
 msgid "System Default"
 msgstr "Systemstandard"
 
-#: src/preferences.rs:350
+#: src/preferences.rs:353
 msgid "The language change takes effect after Karere restarts."
 msgstr "Språkendringen trer i kraft etter at Karere startes på nytt."
 
-#: src/preferences.rs:396
+#: src/preferences.rs:399
 msgid "Select Download Folder"
 msgstr ""
 
-#: src/preferences.rs:506
+#: src/preferences.rs:509
 msgid "Allowed"
 msgstr ""
 
-#: src/preferences.rs:507
+#: src/preferences.rs:510
 msgid "Denied"
 msgstr ""
 
-#: src/preferences.rs:508
+#: src/preferences.rs:511
 msgid "Ask"
 msgstr ""
 
-#: src/preferences.rs:518
+#: src/preferences.rs:521
 msgid "Remove this decision"
 msgstr ""
 

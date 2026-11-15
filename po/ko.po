@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 11:43+0000\n"
+"POT-Creation-Date: 2026-11-15 13:24+0000\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -30,11 +30,11 @@ msgstr "정보"
 msgid "About dialog showing application information"
 msgstr "애플리케이션 정보를 표시하는 정보 대화 상자"
 
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:354
 msgid "Accessibility"
 msgstr "접근성"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:378
 msgid "Accessibility Zoom"
 msgstr "접근성 확대/축소"
 
@@ -62,24 +62,24 @@ msgstr "애플리케이션 언어입니다. 다시 시작이 필요합니다."
 msgid "Application preferences and settings dialog"
 msgstr "애플리케이션 기본 설정 및 설정 대화 상자"
 
-#: data/ui/preferences.ui:132
-msgid "Applied after reloading"
-msgstr ""
-
-#: data/ui/preferences.ui:386
+#: data/ui/preferences.ui:385
 msgid "Applied to all webviews"
 msgstr "모든 웹뷰에 적용됨"
 
-#: data/ui/preferences.ui:192
+#: data/ui/preferences.ui:191
 #, fuzzy
 msgid "Applies to the notifications Karere shows for incoming messages"
 msgstr "수신 메시지에 대한 알림을 표시합니다"
+
+#: data/ui/preferences.ui:132
+msgid "Apply user.css to WhatsApp Web; changes take effect immediately"
+msgstr ""
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "자동"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:305
 msgid "Auto-Detect Language"
 msgstr "언어 자동 감지"
 
@@ -87,7 +87,7 @@ msgstr "언어 자동 감지"
 msgid "Auto: shown when a system tray is available"
 msgstr "자동: 시스템 트레이를 사용할 수 있을 때 표시"
 
-#: data/ui/preferences.ui:313
+#: data/ui/preferences.ui:312
 msgid "Automatically fix common spelling mistakes"
 msgstr "흔한 맞춤법 실수를 자동으로 수정합니다"
 
@@ -95,7 +95,7 @@ msgstr "흔한 맞춤법 실수를 자동으로 수정합니다"
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:281
+#: data/ui/preferences.ui:280
 msgid "Both"
 msgstr "둘 다"
 
@@ -114,7 +114,7 @@ msgstr ""
 "높은 렌더링 엔진을 제공하면서도 동일한 네이티브 GTK4/libadwaita 셸을 유지합니"
 "다."
 
-#: data/ui/preferences.ui:183
+#: data/ui/preferences.ui:182
 msgid "Change Tray Icon on Message"
 msgstr "메시지 수신 시 트레이 아이콘 변경"
 
@@ -122,7 +122,7 @@ msgstr "메시지 수신 시 트레이 아이콘 변경"
 msgid "Chat on WhatsApp"
 msgstr "WhatsApp에서 채팅"
 
-#: data/ui/preferences.ui:301
+#: data/ui/preferences.ui:300
 msgid "Check spelling as you type"
 msgstr "입력하는 동안 맞춤법을 검사합니다"
 
@@ -130,11 +130,11 @@ msgstr "입력하는 동안 맞춤법을 검사합니다"
 msgid "Choose the application color scheme"
 msgstr "애플리케이션 색 구성표를 선택합니다"
 
-#: data/ui/preferences.ui:248
+#: data/ui/preferences.ui:247
 msgid "Choose…"
 msgstr "선택…"
 
-#: data/ui/preferences.ui:342
+#: data/ui/preferences.ui:341
 msgid "Clear All"
 msgstr "모두 지우기"
 
@@ -150,7 +150,7 @@ msgstr "창 닫기"
 msgid "Close the window"
 msgstr "창을 닫습니다"
 
-#: data/ui/window.ui:265 src/window.rs:1652
+#: data/ui/window.ui:265 src/window.rs:1662
 msgid "Copy Diagnostic Info"
 msgstr ""
 
@@ -166,11 +166,11 @@ msgstr "어둡게"
 msgid "Decrease the zoom level"
 msgstr "확대/축소 수준을 낮춥니다"
 
-#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
+#: data/ui/preferences.ui:244 src/preferences.rs:426 src/preferences.rs:434
 msgid "Default (Downloads)"
 msgstr "기본값 (다운로드)"
 
-#: data/ui/preferences.ui:307
+#: data/ui/preferences.ui:306
 msgid "Detect the writing language automatically"
 msgstr "작성 언어를 자동으로 감지합니다"
 
@@ -187,11 +187,11 @@ msgstr "개발자 도구"
 msgid "Disabled"
 msgstr "사용 안 함"
 
-#: data/ui/preferences.ui:202
+#: data/ui/preferences.ui:201
 msgid "Display message content in notifications"
 msgstr "알림에 메시지 내용을 표시합니다"
 
-#: data/ui/preferences.ui:196
+#: data/ui/preferences.ui:195
 msgid "Display the contact name in notifications"
 msgstr "알림에 연락처 이름을 표시합니다"
 
@@ -199,27 +199,27 @@ msgstr "알림에 연락처 이름을 표시합니다"
 msgid "Do Not Disturb"
 msgstr ""
 
-#: data/ui/preferences.ui:244
+#: data/ui/preferences.ui:243
 msgid "Download Directory"
 msgstr "다운로드 디렉터리"
 
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:267
 msgid "Download Notifications"
 msgstr "다운로드 알림"
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:236
 msgid "Downloads"
 msgstr "다운로드"
 
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:311
 msgid "Enable Auto-Correct"
 msgstr "자동 교정 사용"
 
-#: data/ui/preferences.ui:166
+#: data/ui/preferences.ui:165
 msgid "Enable Notifications"
 msgstr "알림 사용"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:299
 msgid "Enable Spell Checking"
 msgstr "맞춤법 검사 사용"
 
@@ -227,7 +227,7 @@ msgstr "맞춤법 검사 사용"
 msgid "Enabled"
 msgstr "사용함"
 
-#: data/ui/preferences.ui:146
+#: data/ui/preferences.ui:145
 msgid "Experimental"
 msgstr ""
 
@@ -239,7 +239,7 @@ msgstr "페이지에서 찾기"
 msgid "Find in page"
 msgstr "페이지에서 찾기"
 
-#: data/ui/preferences.ui:368
+#: data/ui/preferences.ui:367
 msgid "Focus Indicators"
 msgstr "초점 표시기"
 
@@ -255,7 +255,7 @@ msgstr "강제로 다시 불러오기"
 msgid "Fullscreen"
 msgstr "전체 화면"
 
-#: data/ui/preferences.ui:149
+#: data/ui/preferences.ui:148
 msgid "GPU Rendering"
 msgstr ""
 
@@ -263,31 +263,31 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "GTK4 WhatsApp Web 클라이언트"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:162
 msgid "General"
 msgstr "일반"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:317
 msgid "Header Bar Language Control"
 msgstr "헤더 바 언어 컨트롤"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:400
 msgid "Header Bar Zoom Controls"
 msgstr "헤더 바 확대/축소 컨트롤"
 
-#: data/ui/preferences.ui:275
+#: data/ui/preferences.ui:274
 msgid "How download notifications are displayed"
 msgstr "다운로드 알림 표시 방식"
 
-#: data/ui/preferences.ui:208
+#: data/ui/preferences.ui:207
 msgid "How much of the message to show"
 msgstr "표시할 메시지 분량"
 
-#: data/ui/preferences.ui:413
+#: data/ui/preferences.ui:412
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr "보조 기술과의 호환성을 개선합니다 — 다시 시작해야 함"
 
-#: data/ui/preferences.ui:279
+#: data/ui/preferences.ui:278
 msgid "In-app Toast"
 msgstr "앱 내 알림"
 
@@ -303,7 +303,7 @@ msgstr "요소 검사"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "계정 1–9로 이동 (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:531 src/tray.rs:60
 #: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
@@ -333,7 +333,7 @@ msgstr "키보드 단축키"
 msgid "Keyboard shortcuts and productivity features"
 msgstr "키보드 단축키 및 생산성 기능"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:323
 msgid "Language"
 msgstr "언어"
 
@@ -345,11 +345,11 @@ msgstr "로그인할 때 Karere를 자동으로 실행합니다"
 msgid "Light"
 msgstr "밝게"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:240
 msgid "Location"
 msgstr "위치"
 
-#: data/ui/preferences.ui:214
+#: data/ui/preferences.ui:213
 msgid "Long"
 msgstr "길게"
 
@@ -357,7 +357,7 @@ msgstr "길게"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "WhatsApp Web이 통합된 기본 애플리케이션 창"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:166
 msgid "Master toggle for all notifications"
 msgstr "모든 알림의 기본 토글"
 
@@ -366,7 +366,7 @@ msgstr "모든 알림의 기본 토글"
 msgid "Match WhatsApp Colors"
 msgstr "WhatsApp 클라이언트"
 
-#: data/ui/preferences.ui:213
+#: data/ui/preferences.ui:212
 msgid "Medium"
 msgstr "보통"
 
@@ -374,15 +374,15 @@ msgstr "보통"
 msgid "Menu"
 msgstr "메뉴"
 
-#: data/ui/preferences.ui:177
+#: data/ui/preferences.ui:176
 msgid "Message Notifications"
 msgstr "메시지 알림"
 
-#: data/ui/preferences.ui:191
+#: data/ui/preferences.ui:190
 msgid "Message Preview"
 msgstr "메시지 미리 보기"
 
-#: data/ui/preferences.ui:174
+#: data/ui/preferences.ui:173
 msgid "Messages"
 msgstr "메시지"
 
@@ -390,7 +390,7 @@ msgstr "메시지"
 msgid "Minimize Window"
 msgstr "창 최소화"
 
-#: data/ui/preferences.ui:363
+#: data/ui/preferences.ui:362
 msgid "Minimize animations and transitions"
 msgstr "애니메이션과 전환을 최소화합니다"
 
@@ -398,7 +398,7 @@ msgstr "애니메이션과 전환을 최소화합니다"
 msgid "Minimize the window"
 msgstr "창을 최소화합니다"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:384
 msgid "Minimum Zoom Level"
 msgstr "최소 확대/축소 수준"
 
@@ -406,7 +406,7 @@ msgstr "최소 확대/축소 수준"
 msgid "Mobile Layout"
 msgstr "모바일 레이아웃"
 
-#: data/ui/preferences.ui:359
+#: data/ui/preferences.ui:358
 msgid "Motion and Focus"
 msgstr "모션 및 포커스"
 
@@ -426,28 +426,28 @@ msgstr "다음 계정"
 msgid "Next match"
 msgstr "다음 일치 항목"
 
-#: data/ui/preferences.ui:227
+#: data/ui/preferences.ui:226
 msgid "Notification Sounds"
 msgstr "알림 소리"
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:273
 msgid "Notification Type"
 msgstr "알림 유형"
 
-#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: data/ui/preferences.ui:158 data/ui/preferences.ui:264
 #: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "알림"
 
-#: data/ui/preferences.ui:269
+#: data/ui/preferences.ui:268
 msgid "Notify when a file download completes"
 msgstr "파일 다운로드가 완료되면 알립니다"
 
-#: data/ui/preferences.ui:123 src/window.rs:1692 src/window.rs:1748
+#: data/ui/preferences.ui:123 src/window.rs:1702 src/window.rs:1758
 msgid "Open"
 msgstr "열기"
 
-#: data/ui/preferences.ui:136
+#: data/ui/preferences.ui:135
 #, fuzzy
 msgid "Open File"
 msgstr "열기"
@@ -473,7 +473,7 @@ msgstr "매번 QR 코드를 스캔할 필요가 없도록 로그인 세션 유�
 msgid "Pick an element to inspect"
 msgstr "검사할 요소를 선택합니다"
 
-#: data/ui/preferences.ui:228
+#: data/ui/preferences.ui:227
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "새 메시지에 WhatsApp 알림 소리를 재생합니다"
 
@@ -482,7 +482,7 @@ msgstr "새 메시지에 WhatsApp 알림 소리를 재생합니다"
 msgid "Preferences"
 msgstr "기본 설정"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:206
 msgid "Preview Length"
 msgstr "미리 보기 길이"
 
@@ -494,7 +494,7 @@ msgstr "이전 계정"
 msgid "Previous match"
 msgstr "이전 일치 항목"
 
-#: data/ui/preferences.ui:334
+#: data/ui/preferences.ui:333
 msgid "Privacy"
 msgstr "개인 정보"
 
@@ -518,7 +518,7 @@ msgstr "애플리케이션 종료"
 msgid "Quit Karere"
 msgstr "Karere 종료"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:361
 msgid "Reduce Motion"
 msgstr "동작 줄이기"
 
@@ -538,7 +538,7 @@ msgstr "현재 페이지를 다시 불러옵니다"
 msgid "Reload, bypassing the cache"
 msgstr "캐시를 무시하고 다시 불러옵니다"
 
-#: data/ui/preferences.ui:150
+#: data/ui/preferences.ui:149
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
@@ -548,7 +548,7 @@ msgstr ""
 msgid "Reset Zoom"
 msgstr "확대/축소 초기화"
 
-#: data/ui/preferences.ui:256
+#: data/ui/preferences.ui:255
 msgid "Reset to default"
 msgstr "기본값으로 초기화"
 
@@ -564,11 +564,11 @@ msgstr "백그라운드에서 실행"
 msgid "Run on Startup"
 msgstr "시작 시 실행"
 
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:411
 msgid "Screen Reader Optimizations"
 msgstr "스크린 리더 최적화"
 
-#: data/ui/preferences.ui:409
+#: data/ui/preferences.ui:408
 msgid "Screen Reader Support"
 msgstr "스크린 리더 지원"
 
@@ -576,27 +576,27 @@ msgstr "스크린 리더 지원"
 msgid "Search the current page"
 msgstr "현재 페이지를 검색합니다"
 
-#: data/ui/preferences.ui:380
+#: data/ui/preferences.ui:379
 msgid "Set a minimum zoom level for all accounts"
 msgstr "모든 계정에 최소 확대/축소 수준을 설정합니다"
 
-#: data/ui/preferences.ui:212
+#: data/ui/preferences.ui:211
 msgid "Short"
 msgstr "짧게"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:200
 msgid "Show Message Text"
 msgstr "메시지 내용 표시"
 
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:194
 msgid "Show Sender Name"
 msgstr "보낸 사람 이름 표시"
 
-#: data/ui/preferences.ui:178
+#: data/ui/preferences.ui:177
 msgid "Show notifications for incoming messages"
 msgstr "수신 메시지에 대한 알림을 표시합니다"
 
-#: data/ui/preferences.ui:319
+#: data/ui/preferences.ui:318
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr "헤더 바에 맞춤법 검사 언어 드롭다운을 표시합니다"
 
@@ -604,11 +604,11 @@ msgstr "헤더 바에 맞춤법 검사 언어 드롭다운을 표시합니다"
 msgid "Show this shortcuts dialog"
 msgstr "이 단축키 대화 상자 표시"
 
-#: data/ui/preferences.ui:369
+#: data/ui/preferences.ui:368
 msgid "Show visible outlines around focused elements"
 msgstr "초점이 있는 요소 주위에 윤곽선을 표시합니다"
 
-#: data/ui/preferences.ui:402
+#: data/ui/preferences.ui:401
 msgid "Show zoom buttons in the header bar"
 msgstr "헤더 바에 확대/축소 버튼을 표시합니다"
 
@@ -620,7 +620,7 @@ msgstr ""
 "단일 창 레이아웃. 자동: 모바일 셸이나 좁은 창에서 적용; 사용함/사용 안 함: 크"
 "기와 관계없이 강제로 켜거나 끔"
 
-#: data/ui/preferences.ui:338
+#: data/ui/preferences.ui:337
 msgid "Site Permissions"
 msgstr "사이트 권한"
 
@@ -628,11 +628,11 @@ msgstr "사이트 권한"
 msgid "Smooth performance with hardware acceleration"
 msgstr "하드웨어 가속을 통한 부드러운 성능"
 
-#: data/ui/preferences.ui:224
+#: data/ui/preferences.ui:223
 msgid "Sounds"
 msgstr "소리"
 
-#: data/ui/preferences.ui:297
+#: data/ui/preferences.ui:296
 msgid "Spell Checking"
 msgstr "맞춤법 검사"
 
@@ -640,11 +640,11 @@ msgstr "맞춤법 검사"
 msgid "Spell Checking Language"
 msgstr "맞춤법 검사 언어"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:292
 msgid "Spellcheck"
 msgstr "맞춤법 검사"
 
-#: data/ui/preferences.ui:325
+#: data/ui/preferences.ui:324
 msgid "Star a language to pin it to the top"
 msgstr "언어를 즐겨찾기에 추가하여 맨 위에 고정합니다"
 
@@ -660,7 +660,7 @@ msgstr "창을 표시하지 않고 최소화된 상태로 시작합니다"
 msgid "Startup"
 msgstr "시작"
 
-#: data/ui/preferences.ui:339
+#: data/ui/preferences.ui:338
 msgid "Stored allow/deny decisions for websites"
 msgstr "웹사이트에 저장된 허용/거부 결정"
 
@@ -668,7 +668,7 @@ msgstr "웹사이트에 저장된 허용/거부 결정"
 msgid "Switch Account"
 msgstr "계정 전환"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:183
 #, fuzzy
 msgid "Switch the tray icon to the unread variant when a new message arrives"
 msgstr "새 메시지가 도착하면 트레이 아이콘에 애니메이션을 적용합니다"
@@ -681,7 +681,7 @@ msgstr "다음 계정으로 전환합니다"
 msgid "Switch to the previous account"
 msgstr "이전 계정으로 전환합니다"
 
-#: data/ui/preferences.ui:280
+#: data/ui/preferences.ui:279
 msgid "System Notification"
 msgstr "시스템 알림"
 
@@ -725,7 +725,7 @@ msgstr "창"
 msgid "Window Close Behavior"
 msgstr "창 닫기 동작"
 
-#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "확대/축소"
 
@@ -869,7 +869,7 @@ msgstr ""
 msgid "Move Down"
 msgstr ""
 
-#: src/window.rs:996 src/window.rs:1056 src/window.rs:1651
+#: src/window.rs:996 src/window.rs:1056 src/window.rs:1661
 msgid "Cancel"
 msgstr "취소"
 
@@ -904,43 +904,43 @@ msgstr ""
 msgid "DevTools unavailable: {error}"
 msgstr ""
 
-#: src/window.rs:1653
+#: src/window.rs:1663
 #, fuzzy
 msgid "Open logs"
 msgstr "열기"
 
-#: src/window.rs:1687
+#: src/window.rs:1697
 msgid "{name} downloaded"
 msgstr ""
 
-#: src/window.rs:1694
+#: src/window.rs:1704
 #, fuzzy
 msgid "Show in Folder"
 msgstr "창 표시"
 
-#: src/window.rs:1739
+#: src/window.rs:1749
 #, fuzzy
 msgid "Download complete"
 msgstr "다운로드 디렉터리"
 
-#: src/window.rs:1766
+#: src/window.rs:1776
 #, fuzzy
 msgid "Download failed: {reason}"
 msgstr "다운로드 디렉터리"
 
-#: src/window.rs:1770
+#: src/window.rs:1780
 msgid "“{name}” could not be saved."
 msgstr ""
 
-#: src/window.rs:1773
+#: src/window.rs:1783
 msgid "OK"
 msgstr ""
 
-#: src/actions.rs:193
+#: src/actions.rs:198
 msgid "Diagnostic info copied"
 msgstr ""
 
-#: src/actions.rs:531
+#: src/actions.rs:536
 #, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
@@ -949,25 +949,25 @@ msgstr ""
 "포괄적인 로깅 및 충돌 보고 기능과 함께 원활한 데스크톱 통합을 제공하는 현대적"
 "인 네이티브 GTK4/LibAdwaita WhatsApp Web 래퍼"
 
-#: src/actions.rs:550
+#: src/actions.rs:555
 msgid "Source"
 msgstr "소스"
 
-#: src/actions.rs:553
+#: src/actions.rs:558
 msgid "Special Thanks"
 msgstr "특별히 감사드립니다"
 
-#: src/actions.rs:584
+#: src/actions.rs:589
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:637
+#: src/actions.rs:642
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
 msgstr ""
 
-#: src/actions.rs:641
+#: src/actions.rs:646
 msgid ""
 "This desktop cannot register startup apps for Karere. Add it to your startup "
 "applications with the --background option instead."
@@ -997,36 +997,36 @@ msgstr "나중에"
 msgid "Restart Now"
 msgstr "지금 다시 시작"
 
-#: src/preferences.rs:289
+#: src/preferences.rs:291
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "언어 변경 사항은 Karere를 다시 시작한 후에 적용됩니다."
 
-#: src/preferences.rs:323
+#: src/preferences.rs:326
 msgid "System Default"
 msgstr "시스템 기본값"
 
-#: src/preferences.rs:350
+#: src/preferences.rs:353
 msgid "The language change takes effect after Karere restarts."
 msgstr "언어 변경 사항은 Karere를 다시 시작한 후에 적용됩니다."
 
-#: src/preferences.rs:396
+#: src/preferences.rs:399
 msgid "Select Download Folder"
 msgstr ""
 
-#: src/preferences.rs:506
+#: src/preferences.rs:509
 msgid "Allowed"
 msgstr ""
 
-#: src/preferences.rs:507
+#: src/preferences.rs:510
 msgid "Denied"
 msgstr ""
 
-#: src/preferences.rs:508
+#: src/preferences.rs:511
 msgid "Ask"
 msgstr ""
 
-#: src/preferences.rs:518
+#: src/preferences.rs:521
 msgid "Remove this decision"
 msgstr ""
 

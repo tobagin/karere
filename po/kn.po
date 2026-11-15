@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 11:43+0000\n"
+"POT-Creation-Date: 2026-11-15 13:24+0000\n"
 "PO-Revision-Date: 2026-06-06 21:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -30,11 +30,11 @@ msgstr "ಬಗ್ಗೆ"
 msgid "About dialog showing application information"
 msgstr "ಅಪ್ಲಿಕೇಶನ್ ಮಾಹಿತಿಯನ್ನು ತೋರಿಸುವ ಬಗ್ಗೆ ಸಂವಾದ"
 
-#: data/ui/preferences.ui:355
+#: data/ui/preferences.ui:354
 msgid "Accessibility"
 msgstr "ಪ್ರವೇಶಸಾಧ್ಯತೆ"
 
-#: data/ui/preferences.ui:379
+#: data/ui/preferences.ui:378
 msgid "Accessibility Zoom"
 msgstr "ಪ್ರವೇಶಸಾಧ್ಯತೆ ಜೂಮ್"
 
@@ -62,24 +62,24 @@ msgstr "ಅಪ್ಲಿಕೇಶನ್ ಭಾಷೆ. ಮರುಪ್ರಾರಂ
 msgid "Application preferences and settings dialog"
 msgstr "ಅಪ್ಲಿಕೇಶನ್ ಆದ್ಯತೆಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಸಂವಾದ"
 
-#: data/ui/preferences.ui:132
-msgid "Applied after reloading"
-msgstr ""
-
-#: data/ui/preferences.ui:386
+#: data/ui/preferences.ui:385
 msgid "Applied to all webviews"
 msgstr "ಎಲ್ಲಾ ವೆಬ್‌ವ್ಯೂಗಳಿಗೆ ಅನ್ವಯಿಸಲಾಗಿದೆ"
 
-#: data/ui/preferences.ui:192
+#: data/ui/preferences.ui:191
 #, fuzzy
 msgid "Applies to the notifications Karere shows for incoming messages"
 msgstr "ಒಳಬರುವ ಸಂದೇಶಗಳಿಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ತೋರಿಸಿ"
+
+#: data/ui/preferences.ui:132
+msgid "Apply user.css to WhatsApp Web; changes take effect immediately"
+msgstr ""
 
 #: data/ui/preferences.ui:56 data/ui/preferences.ui:103
 msgid "Auto"
 msgstr "ಸ್ವಯಂ"
 
-#: data/ui/preferences.ui:306
+#: data/ui/preferences.ui:305
 msgid "Auto-Detect Language"
 msgstr "ಭಾಷೆ ಸ್ವಯಂ-ಪತ್ತೆ ಮಾಡಿ"
 
@@ -87,7 +87,7 @@ msgstr "ಭಾಷೆ ಸ್ವಯಂ-ಪತ್ತೆ ಮಾಡಿ"
 msgid "Auto: shown when a system tray is available"
 msgstr "ಸ್ವಯಂ: ಸಿಸ್ಟಮ್ ಟ್ರೇ ಲಭ್ಯವಿದ್ದಾಗ ತೋರಿಸಲಾಗುತ್ತದೆ"
 
-#: data/ui/preferences.ui:313
+#: data/ui/preferences.ui:312
 msgid "Automatically fix common spelling mistakes"
 msgstr "ಸಾಮಾನ್ಯ ಕಾಗುಣಿತ ತಪ್ಪುಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸರಿಪಡಿಸಿ"
 
@@ -95,7 +95,7 @@ msgstr "ಸಾಮಾನ್ಯ ಕಾಗುಣಿತ ತಪ್ಪುಗಳನ್�
 msgid "Blend the window and header bar with WhatsApp Web's background"
 msgstr ""
 
-#: data/ui/preferences.ui:281
+#: data/ui/preferences.ui:280
 msgid "Both"
 msgstr "ಎರಡೂ"
 
@@ -114,7 +114,7 @@ msgstr ""
 "ಸ್ಥಳೀಯ GTK4/libadwaita ಶೆಲ್ ಅನ್ನು ಉಳಿಸಿಕೊಂಡು ವೇಗವಾದ, ಹೆಚ್ಚು ಹೊಂದಾಣಿಕೆಯ ರೆಂಡರಿಂಗ್ "
 "ಎಂಜಿನ್ ಅನ್ನು ತರುತ್ತದೆ."
 
-#: data/ui/preferences.ui:183
+#: data/ui/preferences.ui:182
 msgid "Change Tray Icon on Message"
 msgstr "ಸಂದೇಶದ ಮೇಲೆ ಟ್ರೇ ಐಕಾನ್ ಬದಲಾಯಿಸಿ"
 
@@ -122,7 +122,7 @@ msgstr "ಸಂದೇಶದ ಮೇಲೆ ಟ್ರೇ ಐಕಾನ್ ಬದಲ�
 msgid "Chat on WhatsApp"
 msgstr "WhatsApp ನಲ್ಲಿ ಚಾಟ್ ಮಾಡಿ"
 
-#: data/ui/preferences.ui:301
+#: data/ui/preferences.ui:300
 msgid "Check spelling as you type"
 msgstr "ನೀವು ಟೈಪ್ ಮಾಡುವಾಗ ಕಾಗುಣಿತ ಪರಿಶೀಲಿಸಿ"
 
@@ -130,11 +130,11 @@ msgstr "ನೀವು ಟೈಪ್ ಮಾಡುವಾಗ ಕಾಗುಣಿತ �
 msgid "Choose the application color scheme"
 msgstr "ಅಪ್ಲಿಕೇಶನ್ ಬಣ್ಣ ಯೋಜನೆ ಆಯ್ಕೆಮಾಡಿ"
 
-#: data/ui/preferences.ui:248
+#: data/ui/preferences.ui:247
 msgid "Choose…"
 msgstr "ಆಯ್ಕೆಮಾಡಿ…"
 
-#: data/ui/preferences.ui:342
+#: data/ui/preferences.ui:341
 msgid "Clear All"
 msgstr "ಎಲ್ಲವನ್ನೂ ತೆರವುಗೊಳಿಸಿ"
 
@@ -150,7 +150,7 @@ msgstr "ವಿಂಡೋ ಮುಚ್ಚಿ"
 msgid "Close the window"
 msgstr "ವಿಂಡೋವನ್ನು ಮುಚ್ಚಿ"
 
-#: data/ui/window.ui:265 src/window.rs:1652
+#: data/ui/window.ui:265 src/window.rs:1662
 msgid "Copy Diagnostic Info"
 msgstr ""
 
@@ -166,11 +166,11 @@ msgstr "ಗಾಢ"
 msgid "Decrease the zoom level"
 msgstr "ಜೂಮ್ ಮಟ್ಟ ಕಡಿಮೆ ಮಾಡಿ"
 
-#: data/ui/preferences.ui:245 src/preferences.rs:423 src/preferences.rs:431
+#: data/ui/preferences.ui:244 src/preferences.rs:426 src/preferences.rs:434
 msgid "Default (Downloads)"
 msgstr "ಡೀಫಾಲ್ಟ್ (ಡೌನ್‌ಲೋಡ್‌ಗಳು)"
 
-#: data/ui/preferences.ui:307
+#: data/ui/preferences.ui:306
 msgid "Detect the writing language automatically"
 msgstr "ಬರವಣಿಗೆ ಭಾಷೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆ ಮಾಡಿ"
 
@@ -187,11 +187,11 @@ msgstr "ಡೆವಲಪರ್ ಪರಿಕರಗಳು"
 msgid "Disabled"
 msgstr "ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ"
 
-#: data/ui/preferences.ui:202
+#: data/ui/preferences.ui:201
 msgid "Display message content in notifications"
 msgstr "ಅಧಿಸೂಚನೆಗಳಲ್ಲಿ ಸಂದೇಶದ ವಿಷಯವನ್ನು ತೋರಿಸಿ"
 
-#: data/ui/preferences.ui:196
+#: data/ui/preferences.ui:195
 msgid "Display the contact name in notifications"
 msgstr "ಅಧಿಸೂಚನೆಗಳಲ್ಲಿ ಸಂಪರ್ಕದ ಹೆಸರನ್ನು ತೋರಿಸಿ"
 
@@ -199,27 +199,27 @@ msgstr "ಅಧಿಸೂಚನೆಗಳಲ್ಲಿ ಸಂಪರ್ಕದ ಹೆ�
 msgid "Do Not Disturb"
 msgstr ""
 
-#: data/ui/preferences.ui:244
+#: data/ui/preferences.ui:243
 msgid "Download Directory"
 msgstr "ಡೌನ್‌ಲೋಡ್ ಡೈರೆಕ್ಟರಿ"
 
-#: data/ui/preferences.ui:268
+#: data/ui/preferences.ui:267
 msgid "Download Notifications"
 msgstr "ಡೌನ್‌ಲೋಡ್ ಅಧಿಸೂಚನೆಗಳು"
 
-#: data/ui/preferences.ui:237
+#: data/ui/preferences.ui:236
 msgid "Downloads"
 msgstr "ಡೌನ್‌ಲೋಡ್‌ಗಳು"
 
-#: data/ui/preferences.ui:312
+#: data/ui/preferences.ui:311
 msgid "Enable Auto-Correct"
 msgstr "ಸ್ವಯಂ-ತಿದ್ದುಪಡಿ ಸಕ್ರಿಯಗೊಳಿಸಿ"
 
-#: data/ui/preferences.ui:166
+#: data/ui/preferences.ui:165
 msgid "Enable Notifications"
 msgstr "ಅಧಿಸೂಚನೆಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ"
 
-#: data/ui/preferences.ui:300
+#: data/ui/preferences.ui:299
 msgid "Enable Spell Checking"
 msgstr "ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ ಸಕ್ರಿಯಗೊಳಿಸಿ"
 
@@ -227,7 +227,7 @@ msgstr "ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ ಸಕ್ರಿಯಗೊ�
 msgid "Enabled"
 msgstr "ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ"
 
-#: data/ui/preferences.ui:146
+#: data/ui/preferences.ui:145
 msgid "Experimental"
 msgstr ""
 
@@ -239,7 +239,7 @@ msgstr "ಪುಟದಲ್ಲಿ ಹುಡುಕಿ"
 msgid "Find in page"
 msgstr "ಪುಟದಲ್ಲಿ ಹುಡುಕಿ"
 
-#: data/ui/preferences.ui:368
+#: data/ui/preferences.ui:367
 msgid "Focus Indicators"
 msgstr "ಗಮನ ಸೂಚಕಗಳು"
 
@@ -255,7 +255,7 @@ msgstr "ಒತ್ತಾಯಪೂರ್ವಕ ಮರುಲೋಡ್"
 msgid "Fullscreen"
 msgstr "ಪೂರ್ಣಪರದೆ"
 
-#: data/ui/preferences.ui:149
+#: data/ui/preferences.ui:148
 msgid "GPU Rendering"
 msgstr ""
 
@@ -263,31 +263,31 @@ msgstr ""
 msgid "GTK4 WhatsApp Web Client"
 msgstr "GTK4 WhatsApp Web ಕ್ಲೈಂಟ್"
 
-#: data/ui/preferences.ui:13 data/ui/preferences.ui:163
+#: data/ui/preferences.ui:13 data/ui/preferences.ui:162
 msgid "General"
 msgstr "ಸಾಮಾನ್ಯ"
 
-#: data/ui/preferences.ui:318
+#: data/ui/preferences.ui:317
 msgid "Header Bar Language Control"
 msgstr "ಹೆಡರ್ ಬಾರ್ ಭಾಷೆ ನಿಯಂತ್ರಣ"
 
-#: data/ui/preferences.ui:401
+#: data/ui/preferences.ui:400
 msgid "Header Bar Zoom Controls"
 msgstr "ಹೆಡರ್ ಬಾರ್ ಜೂಮ್ ನಿಯಂತ್ರಣಗಳು"
 
-#: data/ui/preferences.ui:275
+#: data/ui/preferences.ui:274
 msgid "How download notifications are displayed"
 msgstr "ಡೌನ್‌ಲೋಡ್ ಅಧಿಸೂಚನೆಗಳನ್ನು ಹೇಗೆ ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತದೆ"
 
-#: data/ui/preferences.ui:208
+#: data/ui/preferences.ui:207
 msgid "How much of the message to show"
 msgstr "ಸಂದೇಶದ ಎಷ್ಟು ಭಾಗವನ್ನು ತೋರಿಸಬೇಕು"
 
-#: data/ui/preferences.ui:413
+#: data/ui/preferences.ui:412
 msgid "Improve compatibility with assistive technologies — restart required"
 msgstr "ಸಹಾಯಕ ತಂತ್ರಜ್ಞಾನಗಳೊಂದಿಗೆ ಹೊಂದಾಣಿಕೆಯನ್ನು ಸುಧಾರಿಸಿ — ಮರುಪ್ರಾರಂಭ ಅಗತ್ಯವಿದೆ"
 
-#: data/ui/preferences.ui:279
+#: data/ui/preferences.ui:278
 msgid "In-app Toast"
 msgstr "ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಟೋಸ್ಟ್"
 
@@ -303,7 +303,7 @@ msgstr "ಅಂಶ ಪರಿಶೀಲಿಸಿ"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "ಖಾತೆ 1–9 ಗೆ ಜಿಗಿಯಿರಿ (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:526 src/tray.rs:60
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:531 src/tray.rs:60
 #: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
@@ -334,7 +334,7 @@ msgstr "ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು"
 msgid "Keyboard shortcuts and productivity features"
 msgstr "ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು ಮತ್ತು ಉತ್ಪಾದಕತೆ ವೈಶಿಷ್ಟ್ಯಗಳು"
 
-#: data/ui/preferences.ui:71 data/ui/preferences.ui:324
+#: data/ui/preferences.ui:71 data/ui/preferences.ui:323
 msgid "Language"
 msgstr "ಭಾಷೆ"
 
@@ -346,11 +346,11 @@ msgstr "ನೀವು ಲಾಗಿನ್ ಆದಾಗ Karere ಸ್ವಯಂಚ�
 msgid "Light"
 msgstr "ತಿಳಿ"
 
-#: data/ui/preferences.ui:241
+#: data/ui/preferences.ui:240
 msgid "Location"
 msgstr "ಸ್ಥಳ"
 
-#: data/ui/preferences.ui:214
+#: data/ui/preferences.ui:213
 msgid "Long"
 msgstr "ಉದ್ದ"
 
@@ -358,7 +358,7 @@ msgstr "ಉದ್ದ"
 msgid "Main application window with WhatsApp Web integration"
 msgstr "WhatsApp Web ಸಂಯೋಜನೆಯೊಂದಿಗೆ ಮುಖ್ಯ ಅಪ್ಲಿಕೇಶನ್ ವಿಂಡೋ"
 
-#: data/ui/preferences.ui:167
+#: data/ui/preferences.ui:166
 msgid "Master toggle for all notifications"
 msgstr "ಎಲ್ಲಾ ಅಧಿಸೂಚನೆಗಳಿಗೆ ಮಾಸ್ಟರ್ ಟಾಗಲ್"
 
@@ -367,7 +367,7 @@ msgstr "ಎಲ್ಲಾ ಅಧಿಸೂಚನೆಗಳಿಗೆ ಮಾಸ್ಟ�
 msgid "Match WhatsApp Colors"
 msgstr "WhatsApp ಕ್ಲೈಂಟ್"
 
-#: data/ui/preferences.ui:213
+#: data/ui/preferences.ui:212
 msgid "Medium"
 msgstr "ಮಧ್ಯಮ"
 
@@ -375,15 +375,15 @@ msgstr "ಮಧ್ಯಮ"
 msgid "Menu"
 msgstr "ಮೆನು"
 
-#: data/ui/preferences.ui:177
+#: data/ui/preferences.ui:176
 msgid "Message Notifications"
 msgstr "ಸಂದೇಶ ಅಧಿಸೂಚನೆಗಳು"
 
-#: data/ui/preferences.ui:191
+#: data/ui/preferences.ui:190
 msgid "Message Preview"
 msgstr "ಸಂದೇಶ ಪೂರ್ವವೀಕ್ಷಣೆ"
 
-#: data/ui/preferences.ui:174
+#: data/ui/preferences.ui:173
 msgid "Messages"
 msgstr "ಸಂದೇಶಗಳು"
 
@@ -391,7 +391,7 @@ msgstr "ಸಂದೇಶಗಳು"
 msgid "Minimize Window"
 msgstr "ವಿಂಡೋ ಕಡಿಮೆಗೊಳಿಸಿ"
 
-#: data/ui/preferences.ui:363
+#: data/ui/preferences.ui:362
 msgid "Minimize animations and transitions"
 msgstr "ಅನಿಮೇಶನ್‌ಗಳು ಮತ್ತು ಪರಿವರ್ತನೆಗಳನ್ನು ಕಡಿಮೆಗೊಳಿಸಿ"
 
@@ -399,7 +399,7 @@ msgstr "ಅನಿಮೇಶನ್‌ಗಳು ಮತ್ತು ಪರಿವರ್�
 msgid "Minimize the window"
 msgstr "ವಿಂಡೋವನ್ನು ಕಡಿಮೆಗೊಳಿಸಿ"
 
-#: data/ui/preferences.ui:385
+#: data/ui/preferences.ui:384
 msgid "Minimum Zoom Level"
 msgstr "ಕನಿಷ್ಠ ಜೂಮ್ ಮಟ್ಟ"
 
@@ -407,7 +407,7 @@ msgstr "ಕನಿಷ್ಠ ಜೂಮ್ ಮಟ್ಟ"
 msgid "Mobile Layout"
 msgstr "ಮೊಬೈಲ್ ವಿನ್ಯಾಸ"
 
-#: data/ui/preferences.ui:359
+#: data/ui/preferences.ui:358
 msgid "Motion and Focus"
 msgstr "ಚಲನೆ ಮತ್ತು ಫೋಕಸ್"
 
@@ -427,28 +427,28 @@ msgstr "ಮುಂದಿನ ಖಾತೆ"
 msgid "Next match"
 msgstr "ಮುಂದಿನ ಹೊಂದಾಣಿಕೆ"
 
-#: data/ui/preferences.ui:227
+#: data/ui/preferences.ui:226
 msgid "Notification Sounds"
 msgstr "ಅಧಿಸೂಚನೆ ಶಬ್ದಗಳು"
 
-#: data/ui/preferences.ui:274
+#: data/ui/preferences.ui:273
 msgid "Notification Type"
 msgstr "ಅಧಿಸೂಚನೆ ಪ್ರಕಾರ"
 
-#: data/ui/preferences.ui:159 data/ui/preferences.ui:265
+#: data/ui/preferences.ui:158 data/ui/preferences.ui:264
 #: src/handlers/permission.rs:324
 msgid "Notifications"
 msgstr "ಅಧಿಸೂಚನೆಗಳು"
 
-#: data/ui/preferences.ui:269
+#: data/ui/preferences.ui:268
 msgid "Notify when a file download completes"
 msgstr "ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಾಗ ತಿಳಿಸಿ"
 
-#: data/ui/preferences.ui:123 src/window.rs:1692 src/window.rs:1748
+#: data/ui/preferences.ui:123 src/window.rs:1702 src/window.rs:1758
 msgid "Open"
 msgstr "ತೆರೆಯಿರಿ"
 
-#: data/ui/preferences.ui:136
+#: data/ui/preferences.ui:135
 #, fuzzy
 msgid "Open File"
 msgstr "ತೆರೆಯಿರಿ"
@@ -474,7 +474,7 @@ msgstr "ನಿರಂತರ ಲಾಗಿನ್ ಸೆಶನ್‌ಗಳು ಇದ
 msgid "Pick an element to inspect"
 msgstr "ಪರಿಶೀಲಿಸಲು ಒಂದು ಅಂಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ"
 
-#: data/ui/preferences.ui:228
+#: data/ui/preferences.ui:227
 msgid "Play WhatsApp's notification sound for new messages"
 msgstr "ಹೊಸ ಸಂದೇಶಗಳಿಗೆ WhatsApp ನ ಅಧಿಸೂಚನೆ ಶಬ್ದವನ್ನು ಪ್ಲೇ ಮಾಡಿ"
 
@@ -483,7 +483,7 @@ msgstr "ಹೊಸ ಸಂದೇಶಗಳಿಗೆ WhatsApp ನ ಅಧಿಸೂಚ
 msgid "Preferences"
 msgstr "ಆದ್ಯತೆಗಳು"
 
-#: data/ui/preferences.ui:207
+#: data/ui/preferences.ui:206
 msgid "Preview Length"
 msgstr "ಪೂರ್ವವೀಕ್ಷಣೆ ಉದ್ದ"
 
@@ -495,7 +495,7 @@ msgstr "ಹಿಂದಿನ ಖಾತೆ"
 msgid "Previous match"
 msgstr "ಹಿಂದಿನ ಹೊಂದಾಣಿಕೆ"
 
-#: data/ui/preferences.ui:334
+#: data/ui/preferences.ui:333
 msgid "Privacy"
 msgstr "ಗೌಪ್ಯತೆ"
 
@@ -519,7 +519,7 @@ msgstr "ಅಪ್ಲಿಕೇಶನ್ ತ್ಯಜಿಸಿ"
 msgid "Quit Karere"
 msgstr "Karere ತ್ಯಜಿಸಿ"
 
-#: data/ui/preferences.ui:362
+#: data/ui/preferences.ui:361
 msgid "Reduce Motion"
 msgstr "ಚಲನೆ ಕಡಿಮೆ ಮಾಡಿ"
 
@@ -539,7 +539,7 @@ msgstr "ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಮರುಲೋಡ್ 
 msgid "Reload, bypassing the cache"
 msgstr "ಕ್ಯಾಶ್ ಅನ್ನು ಬೈಪಾಸ್ ಮಾಡಿ ಮರುಲೋಡ್ ಮಾಡಿ"
 
-#: data/ui/preferences.ui:150
+#: data/ui/preferences.ui:149
 msgid ""
 "Render the chat view on the GPU. Requires a restart. Not supported on NVIDIA "
 "drivers. If the chat area is blank, turn this off and restart."
@@ -549,7 +549,7 @@ msgstr ""
 msgid "Reset Zoom"
 msgstr "ಜೂಮ್ ಮರುಹೊಂದಿಸಿ"
 
-#: data/ui/preferences.ui:256
+#: data/ui/preferences.ui:255
 msgid "Reset to default"
 msgstr "ಡೀಫಾಲ್ಟ್‌ಗೆ ಮರುಹೊಂದಿಸಿ"
 
@@ -565,11 +565,11 @@ msgstr "ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಚಲಾಯಿಸಿ"
 msgid "Run on Startup"
 msgstr "ಪ್ರಾರಂಭದಲ್ಲಿ ಚಲಾಯಿಸಿ"
 
-#: data/ui/preferences.ui:412
+#: data/ui/preferences.ui:411
 msgid "Screen Reader Optimizations"
 msgstr "ಸ್ಕ್ರೀನ್ ರೀಡರ್ ಆಪ್ಟಿಮೈಸೇಶನ್‌ಗಳು"
 
-#: data/ui/preferences.ui:409
+#: data/ui/preferences.ui:408
 msgid "Screen Reader Support"
 msgstr "ಸ್ಕ್ರೀನ್ ರೀಡರ್ ಬೆಂಬಲ"
 
@@ -577,27 +577,27 @@ msgstr "ಸ್ಕ್ರೀನ್ ರೀಡರ್ ಬೆಂಬಲ"
 msgid "Search the current page"
 msgstr "ಪ್ರಸ್ತುತ ಪುಟದಲ್ಲಿ ಹುಡುಕಿ"
 
-#: data/ui/preferences.ui:380
+#: data/ui/preferences.ui:379
 msgid "Set a minimum zoom level for all accounts"
 msgstr "ಎಲ್ಲಾ ಖಾತೆಗಳಿಗೆ ಕನಿಷ್ಠ ಜೂಮ್ ಮಟ್ಟವನ್ನು ಹೊಂದಿಸಿ"
 
-#: data/ui/preferences.ui:212
+#: data/ui/preferences.ui:211
 msgid "Short"
 msgstr "ಚಿಕ್ಕದು"
 
-#: data/ui/preferences.ui:201
+#: data/ui/preferences.ui:200
 msgid "Show Message Text"
 msgstr "ಸಂದೇಶ ಪಠ್ಯ ತೋರಿಸಿ"
 
-#: data/ui/preferences.ui:195
+#: data/ui/preferences.ui:194
 msgid "Show Sender Name"
 msgstr "ಕಳುಹಿಸಿದವರ ಹೆಸರು ತೋರಿಸಿ"
 
-#: data/ui/preferences.ui:178
+#: data/ui/preferences.ui:177
 msgid "Show notifications for incoming messages"
 msgstr "ಒಳಬರುವ ಸಂದೇಶಗಳಿಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ತೋರಿಸಿ"
 
-#: data/ui/preferences.ui:319
+#: data/ui/preferences.ui:318
 msgid "Show the spell-check language dropdown in the header bar"
 msgstr "ಹೆಡರ್ ಬಾರ್‌ನಲ್ಲಿ ಕಾಗುಣಿತ-ಪರಿಶೀಲನೆ ಭಾಷೆ ಡ್ರಾಪ್‌ಡೌನ್ ತೋರಿಸಿ"
 
@@ -605,11 +605,11 @@ msgstr "ಹೆಡರ್ ಬಾರ್‌ನಲ್ಲಿ ಕಾಗುಣಿತ-ಪ
 msgid "Show this shortcuts dialog"
 msgstr "ಈ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳ ಸಂವಾದವನ್ನು ತೋರಿಸಿ"
 
-#: data/ui/preferences.ui:369
+#: data/ui/preferences.ui:368
 msgid "Show visible outlines around focused elements"
 msgstr "ಗಮನಿತ ಅಂಶಗಳ ಸುತ್ತ ಗೋಚರ ರೂಪರೇಖೆಗಳನ್ನು ತೋರಿಸಿ"
 
-#: data/ui/preferences.ui:402
+#: data/ui/preferences.ui:401
 msgid "Show zoom buttons in the header bar"
 msgstr "ಹೆಡರ್ ಬಾರ್‌ನಲ್ಲಿ ಜೂಮ್ ಬಟನ್‌ಗಳನ್ನು ತೋರಿಸಿ"
 
@@ -621,7 +621,7 @@ msgstr ""
 "ಏಕ-ಫಲಕ ವಿನ್ಯಾಸ. ಸ್ವಯಂ: ಮೊಬೈಲ್ ಶೆಲ್‌ಗಳಲ್ಲಿ ಅಥವಾ ಕಿರಿದಾದ ವಿಂಡೋಗಳಲ್ಲಿ; ಸಕ್ರಿಯ/ನಿಷ್ಕ್ರಿಯ: "
 "ಯಾವುದೇ ಗಾತ್ರದಲ್ಲಿ ಒತ್ತಾಯಪೂರ್ವಕವಾಗಿ ಆನ್ ಅಥವಾ ಆಫ್"
 
-#: data/ui/preferences.ui:338
+#: data/ui/preferences.ui:337
 msgid "Site Permissions"
 msgstr "ಸೈಟ್ ಅನುಮತಿಗಳು"
 
@@ -629,11 +629,11 @@ msgstr "ಸೈಟ್ ಅನುಮತಿಗಳು"
 msgid "Smooth performance with hardware acceleration"
 msgstr "ಹಾರ್ಡ್‌ವೇರ್ ವೇಗವರ್ಧನೆಯೊಂದಿಗೆ ಸುಗಮ ಕಾರ್ಯಕ್ಷಮತೆ"
 
-#: data/ui/preferences.ui:224
+#: data/ui/preferences.ui:223
 msgid "Sounds"
 msgstr "ಶಬ್ದಗಳು"
 
-#: data/ui/preferences.ui:297
+#: data/ui/preferences.ui:296
 msgid "Spell Checking"
 msgstr "ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ"
 
@@ -641,11 +641,11 @@ msgstr "ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ"
 msgid "Spell Checking Language"
 msgstr "ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ ಭಾಷೆ"
 
-#: data/ui/preferences.ui:293
+#: data/ui/preferences.ui:292
 msgid "Spellcheck"
 msgstr "ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ"
 
-#: data/ui/preferences.ui:325
+#: data/ui/preferences.ui:324
 msgid "Star a language to pin it to the top"
 msgstr "ಭಾಷೆಯನ್ನು ಮೇಲ್ಭಾಗದಲ್ಲಿ ಪಿನ್ ಮಾಡಲು ನಕ್ಷತ್ರ ಹಾಕಿ"
 
@@ -661,7 +661,7 @@ msgstr "ವಿಂಡೋ ತೋರಿಸದೆ ಕಡಿಮೆಗೊಳಿಸಿ 
 msgid "Startup"
 msgstr "ಪ್ರಾರಂಭ"
 
-#: data/ui/preferences.ui:339
+#: data/ui/preferences.ui:338
 msgid "Stored allow/deny decisions for websites"
 msgstr "ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಸಂಗ್ರಹಿಸಿದ ಅನುಮತಿ/ನಿರಾಕರಣೆ ನಿರ್ಧಾರಗಳು"
 
@@ -669,7 +669,7 @@ msgstr "ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಸಂಗ್ರಹಿಸ�
 msgid "Switch Account"
 msgstr "ಖಾತೆ ಬದಲಾಯಿಸಿ"
 
-#: data/ui/preferences.ui:184
+#: data/ui/preferences.ui:183
 #, fuzzy
 msgid "Switch the tray icon to the unread variant when a new message arrives"
 msgstr "ಹೊಸ ಸಂದೇಶ ಬಂದಾಗ ಟ್ರೇ ಐಕಾನ್ ಅನ್ನು ಅನಿಮೇಟ್ ಮಾಡಿ"
@@ -682,7 +682,7 @@ msgstr "ಮುಂದಿನ ಖಾತೆಗೆ ಬದಲಾಯಿಸಿ"
 msgid "Switch to the previous account"
 msgstr "ಹಿಂದಿನ ಖಾತೆಗೆ ಬದಲಾಯಿಸಿ"
 
-#: data/ui/preferences.ui:280
+#: data/ui/preferences.ui:279
 msgid "System Notification"
 msgstr "ಸಿಸ್ಟಮ್ ಅಧಿಸೂಚನೆ"
 
@@ -726,7 +726,7 @@ msgstr "ವಿಂಡೋ"
 msgid "Window Close Behavior"
 msgstr "ವಿಂಡೋ ಮುಚ್ಚುವ ವರ್ತನೆ"
 
-#: data/ui/preferences.ui:376 data/ui/keyboard-shortcuts.ui:90
+#: data/ui/preferences.ui:375 data/ui/keyboard-shortcuts.ui:90
 msgid "Zoom"
 msgstr "ಜೂಮ್"
 
@@ -871,7 +871,7 @@ msgstr ""
 msgid "Move Down"
 msgstr ""
 
-#: src/window.rs:996 src/window.rs:1056 src/window.rs:1651
+#: src/window.rs:996 src/window.rs:1056 src/window.rs:1661
 msgid "Cancel"
 msgstr "ರದ್ದುಮಾಡಿ"
 
@@ -906,43 +906,43 @@ msgstr ""
 msgid "DevTools unavailable: {error}"
 msgstr ""
 
-#: src/window.rs:1653
+#: src/window.rs:1663
 #, fuzzy
 msgid "Open logs"
 msgstr "ತೆರೆಯಿರಿ"
 
-#: src/window.rs:1687
+#: src/window.rs:1697
 msgid "{name} downloaded"
 msgstr ""
 
-#: src/window.rs:1694
+#: src/window.rs:1704
 #, fuzzy
 msgid "Show in Folder"
 msgstr "ವಿಂಡೋ ತೋರಿಸಿ"
 
-#: src/window.rs:1739
+#: src/window.rs:1749
 #, fuzzy
 msgid "Download complete"
 msgstr "ಡೌನ್‌ಲೋಡ್ ಡೈರೆಕ್ಟರಿ"
 
-#: src/window.rs:1766
+#: src/window.rs:1776
 #, fuzzy
 msgid "Download failed: {reason}"
 msgstr "ಡೌನ್‌ಲೋಡ್ ಡೈರೆಕ್ಟರಿ"
 
-#: src/window.rs:1770
+#: src/window.rs:1780
 msgid "“{name}” could not be saved."
 msgstr ""
 
-#: src/window.rs:1773
+#: src/window.rs:1783
 msgid "OK"
 msgstr ""
 
-#: src/actions.rs:193
+#: src/actions.rs:198
 msgid "Diagnostic info copied"
 msgstr ""
 
-#: src/actions.rs:531
+#: src/actions.rs:536
 #, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
@@ -951,25 +951,25 @@ msgstr ""
 "WhatsApp Web ಗಾಗಿ ಆಧುನಿಕ, ಸ್ಥಳೀಯ GTK4/LibAdwaita ರ್ಯಾಪರ್, ಇದು ಸಮಗ್ರ ಲಾಗಿಂಗ್ ಮತ್ತು "
 "ಕ್ರ್ಯಾಶ್ ವರದಿ ಸಾಮರ್ಥ್ಯಗಳೊಂದಿಗೆ ತಡೆರಹಿತ ಡೆಸ್ಕ್‌ಟಾಪ್ ಸಂಯೋಜನೆಯನ್ನು ಒದಗಿಸುತ್ತದೆ"
 
-#: src/actions.rs:550
+#: src/actions.rs:555
 msgid "Source"
 msgstr "ಮೂಲ"
 
-#: src/actions.rs:553
+#: src/actions.rs:558
 msgid "Special Thanks"
 msgstr "ವಿಶೇಷ ಧನ್ಯವಾದಗಳು"
 
-#: src/actions.rs:584
+#: src/actions.rs:589
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:637
+#: src/actions.rs:642
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
 msgstr ""
 
-#: src/actions.rs:641
+#: src/actions.rs:646
 msgid ""
 "This desktop cannot register startup apps for Karere. Add it to your startup "
 "applications with the --background option instead."
@@ -999,36 +999,36 @@ msgstr "ನಂತರ"
 msgid "Restart Now"
 msgstr "ಈಗ ಮರುಪ್ರಾರಂಭಿಸಿ"
 
-#: src/preferences.rs:289
+#: src/preferences.rs:291
 #, fuzzy
 msgid "GPU rendering takes effect after Karere restarts."
 msgstr "Karere ಮರುಪ್ರಾರಂಭಗೊಂಡ ನಂತರ ಭಾಷೆಯ ಬದಲಾವಣೆ ಜಾರಿಗೆ ಬರುತ್ತದೆ."
 
-#: src/preferences.rs:323
+#: src/preferences.rs:326
 msgid "System Default"
 msgstr "ಸಿಸ್ಟಮ್ ಡೀಫಾಲ್ಟ್"
 
-#: src/preferences.rs:350
+#: src/preferences.rs:353
 msgid "The language change takes effect after Karere restarts."
 msgstr "Karere ಮರುಪ್ರಾರಂಭಗೊಂಡ ನಂತರ ಭಾಷೆಯ ಬದಲಾವಣೆ ಜಾರಿಗೆ ಬರುತ್ತದೆ."
 
-#: src/preferences.rs:396
+#: src/preferences.rs:399
 msgid "Select Download Folder"
 msgstr ""
 
-#: src/preferences.rs:506
+#: src/preferences.rs:509
 msgid "Allowed"
 msgstr ""
 
-#: src/preferences.rs:507
+#: src/preferences.rs:510
 msgid "Denied"
 msgstr ""
 
-#: src/preferences.rs:508
+#: src/preferences.rs:511
 msgid "Ask"
 msgstr ""
 
-#: src/preferences.rs:518
+#: src/preferences.rs:521
 msgid "Remove this decision"
 msgstr ""
 

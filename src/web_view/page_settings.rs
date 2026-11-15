@@ -256,6 +256,14 @@ pub(super) fn read_user_css_script(path: &std::path::Path) -> Option<String> {
     }
 }
 
+/// Script for the current state: removal while Custom CSS is switched off.
+pub(super) fn current_user_css_script() -> Option<String> {
+    if !with_app_settings(|s| s.boolean("custom-css")) {
+        return Some(user_css_removal_script().to_owned());
+    }
+    read_user_css_script(&user_css_path())
+}
+
 /// CEF UI / GTK main thread only. Never style DevTools or unrelated pages.
 pub(super) fn apply_user_css_script(browser: &cef::Browser, script: &str) {
     use cef::{CefString, ImplFrame};
@@ -272,7 +280,7 @@ pub(super) fn apply_user_css_script(browser: &cef::Browser, script: &str) {
 
 /// Apply on every page load as well as live updates, including new accounts. (F9)
 pub(crate) fn apply_user_css(browser: &cef::Browser) {
-    if let Some(script) = read_user_css_script(&user_css_path()) {
+    if let Some(script) = current_user_css_script() {
         apply_user_css_script(browser, &script);
     }
 }

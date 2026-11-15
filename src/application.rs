@@ -74,6 +74,73 @@ impl Default for KarereApplication {
     }
 }
 
+thread_local! {
+    /// CSS provider for the `match-whatsapp-colors` tint.
+    static WA_BG_PROVIDER: gtk::CssProvider = gtk::CssProvider::new();
+    /// The page's own header background as `#rrggbb`, once a page reported it.
+    static PAGE_BG: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
+}
+
+/// A computed opaque CSS colour, `rgb(r, g, b)`, as `#rrggbb`. Anything else
+/// (translucent, other syntaxes) is rejected, so page-supplied text never
+/// reaches GTK's CSS parser.
+fn opaque_css_rgb_to_hex(color: &str) -> Option<String> {
+    let inner = color.trim().strip_prefix("rgb(")?.strip_suffix(')')?;
+    let mut parts = inner.split(',').map(|part| part.trim().parse::<u8>());
+    let (r, g, b) = (
+        parts.next()?.ok()?,
+        parts.next()?.ok()?,
+        parts.next()?.ok()?,
+    );
+    parts
+        .next()
+        .is_none()
+        .then(|| format!("#{r:02x}{g:02x}{b:02x}"))
+}
+
+/// Tint the GTK chrome (window, header bar and dialog backgrounds) with the
+/// page's background when `match-whatsapp-colors` is on: the colour the page
+/// reported, so a user stylesheet is followed, else WhatsApp Web's stock one.
+/// Driven off AdwStyleManager, not a CSS media query, so the stock fallback
+/// follows Karere's theme setting and not just the desktop scheme. (#168)
+fn apply_wa_bg() {
+    let css = if gio::Settings::new(APP_ID).boolean("match-whatsapp-colors") {
+        let stock = if adw::StyleManager::default().is_dark() {
+            "#1d1f1f"
+        } else {
+            "#f7f5f3"
+        };
+        let bg = PAGE_BG
+            .with_borrow(Clone::clone)
+            .unwrap_or_else(|| stock.to_owned());
+        // Modern libadwaita styles via CSS variables; keep the legacy
+        // @define-color for older runtimes.
+        format!(
+            ":root {{ --window-bg-color: {bg}; }}\n\
+             @define-color window_bg_color {bg};"
+        )
+    } else {
+        String::new()
+    };
+    WA_BG_PROVIDER.with(|provider| provider.load_from_string(&css));
+}
+
+/// A page reported its header background (a computed CSS colour). GTK main
+/// thread only.
+pub(crate) fn set_page_background(computed: &str) {
+    let Some(hex) = opaque_css_rgb_to_hex(computed) else {
+        return;
+    };
+    let changed = PAGE_BG.with_borrow_mut(|current| {
+        let changed = current.as_deref() != Some(hex.as_str());
+        *current = Some(hex);
+        changed
+    });
+    if changed {
+        apply_wa_bg();
+    }
+}
+
 fn map_theme(value: &str) -> adw::ColorScheme {
     match value {
         "system" => adw::ColorScheme::Default,
@@ -198,46 +265,24 @@ mod imp {
                 );
             }
 
-            // Optional tint of the GTK chrome (window/headerbar/dialog
-            // backgrounds) with WhatsApp Web's own background so the shell
-            // blends with the page (`match-whatsapp-colors`). Driven off
-            // AdwStyleManager rather than a CSS media query so it follows
-            // Karere's theme setting, not just the desktop scheme. (#168)
+            // Optional tint of the GTK chrome; see `apply_wa_bg`. (#168)
             {
-                let wa_bg = gtk::CssProvider::new();
                 if let Some(display) = gtk::gdk::Display::default() {
-                    gtk::style_context_add_provider_for_display(
-                        &display,
-                        &wa_bg,
-                        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
-                    );
+                    WA_BG_PROVIDER.with(|provider| {
+                        gtk::style_context_add_provider_for_display(
+                            &display,
+                            provider,
+                            gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+                        );
+                    });
                 }
-                let apply_wa_bg = move || {
-                    let css = if gio::Settings::new(APP_ID).boolean("match-whatsapp-colors") {
-                        let bg = if adw::StyleManager::default().is_dark() {
-                            "#1d1f1f"
-                        } else {
-                            "#f7f5f3"
-                        };
-                        // Modern libadwaita styles via CSS variables; keep the
-                        // legacy @define-color for older runtimes.
-                        format!(
-                            ":root {{ --window-bg-color: {bg}; }}\n\
-                             @define-color window_bg_color {bg};"
-                        )
-                    } else {
-                        String::new()
-                    };
-                    wa_bg.load_from_string(&css);
-                };
                 apply_wa_bg();
-                let apply = apply_wa_bg.clone();
-                adw::StyleManager::default().connect_dark_notify(move |_| apply());
+                adw::StyleManager::default().connect_dark_notify(|_| apply_wa_bg());
                 // GSettings signals die with the object — keep this one alive
                 // for the app's lifetime or the toggle only applies on restart.
                 let settings_wa = gio::Settings::new(APP_ID);
                 settings_wa
-                    .connect_changed(Some("match-whatsapp-colors"), move |_, _| apply_wa_bg());
+                    .connect_changed(Some("match-whatsapp-colors"), |_, _| apply_wa_bg());
                 std::mem::forget(settings_wa);
             }
 
@@ -303,4 +348,33 @@ mod imp {
 
     impl GtkApplicationImpl for KarereApplication {}
     impl AdwApplicationImpl for KarereApplication {}
+}
+
+#[cfg(test)]
+mod tests {
+    use super::opaque_css_rgb_to_hex;
+
+    #[test]
+    fn only_opaque_computed_rgb_becomes_a_hex_colour() {
+        assert_eq!(
+            opaque_css_rgb_to_hex("rgb(46, 52, 64)").as_deref(),
+            Some("#2e3440")
+        );
+        assert_eq!(
+            opaque_css_rgb_to_hex(" rgb(0,0,255) ").as_deref(),
+            Some("#0000ff")
+        );
+        for rejected in [
+            "rgba(46, 52, 64, 0.5)",
+            "rgb(46, 52)",
+            "rgb(46, 52, 64, 1)",
+            "rgb(256, 0, 0)",
+            "#2e3440",
+            "red; } * { color: red",
+            "rgb(1, 2, 3); } window { background: red",
+            "",
+        ] {
+            assert_eq!(opaque_css_rgb_to_hex(rejected), None, "{rejected}");
+        }
+    }
 }
