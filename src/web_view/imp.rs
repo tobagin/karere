@@ -129,6 +129,8 @@ pub struct KarereWebView {
     /// foreground switch. When it fires, a foreground page loaded with the
     /// other layout is reloaded so `on_load_end` re-evaluates. (D5)
     pub(super) mobile_check: RefCell<Option<glib::SourceId>>,
+    /// Account-view directory monitor and its pending CSS debounce timer.
+    pub(super) user_css_monitor: RefCell<Option<super::user_css::UserCssMonitor>>,
     /// The GLArea's IM context, stored so `flush_requests` can focus it in/out
     /// in response to CEF's editable-focus signal (keyboard_request). Set once
     /// in `install_input_controllers`.
@@ -214,6 +216,10 @@ impl ObjectImpl for KarereWebView {
         widget.set_focusable(true);
         widget.set_can_focus(true);
         install_input_controllers(&widget);
+    }
+
+    fn dispose(&self) {
+        self.user_css_monitor.borrow_mut().take();
     }
 
     fn signals() -> &'static [Signal] {
