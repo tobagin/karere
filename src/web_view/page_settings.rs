@@ -189,21 +189,38 @@ pub(crate) fn user_css_path() -> std::path::PathBuf {
         .join("user.css")
 }
 
-fn read_user_css() -> Option<String> {
-    use std::io::Read;
-    let path = user_css_path();
+/// `None` means absent, not unreadable: failed reads must preserve live styling.
+fn read_user_css(path: &std::path::Path) -> std::io::Result<Option<String>> {
+    use std::io::{Error, ErrorKind, Read};
+    let metadata = match std::fs::metadata(path) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error),
+    };
     // A FIFO or device here would block the main thread on open.
-    if !std::fs::metadata(&path).ok()?.is_file() {
-        return None;
+    if !metadata.is_file() {
+        return Err(Error::new(
+            ErrorKind::InvalidInput,
+            "user.css is not a regular file",
+        ));
     }
-    let file = std::fs::File::open(path).ok()?;
-    if file.metadata().ok()?.len() > USER_CSS_MAX_BYTES {
-        log::warn!("user.css is larger than {USER_CSS_MAX_BYTES} bytes; ignoring it");
-        return None;
+    let file = std::fs::File::open(path)?;
+    if file.metadata()?.len() > USER_CSS_MAX_BYTES {
+        return Err(Error::new(
+            ErrorKind::InvalidData,
+            format!("user.css is larger than {USER_CSS_MAX_BYTES} bytes"),
+        ));
     }
     let mut css = String::new();
-    file.take(USER_CSS_MAX_BYTES).read_to_string(&mut css).ok()?;
-    Some(css)
+    // Read one extra byte to detect a file growing after the metadata check.
+    file.take(USER_CSS_MAX_BYTES + 1).read_to_string(&mut css)?;
+    if css.len() as u64 > USER_CSS_MAX_BYTES {
+        return Err(Error::new(
+            ErrorKind::InvalidData,
+            format!("user.css is larger than {USER_CSS_MAX_BYTES} bytes"),
+        ));
+    }
+    Ok(Some(css))
 }
 
 /// Script creating/updating `<style id="karere-user-css">`. The CSS travels as
@@ -219,11 +236,44 @@ pub(crate) fn user_css_script(css: &str) -> String {
     )
 }
 
-/// Inject the user stylesheet, if the file exists. Called from `on_load_end`,
-/// so it applies to every account and again after each reload. (F9)
+fn user_css_removal_script() -> &'static str {
+    "(function(){var e=document.getElementById('karere-user-css');if(e)e.remove();})();"
+}
+
+/// Read/encode once per refresh. Only an absent file removes the stylesheet;
+/// invalid, oversized or temporarily unreadable files leave the last good CSS.
+pub(super) fn read_user_css_script(path: &std::path::Path) -> Option<String> {
+    match read_user_css(path) {
+        Ok(Some(css)) => Some(user_css_script(&css)),
+        Ok(None) => Some(user_css_removal_script().to_owned()),
+        Err(error) => {
+            log::warn!(
+                "Could not read user stylesheet {}: {error}; keeping current styling",
+                path.display()
+            );
+            None
+        }
+    }
+}
+
+/// CEF UI / GTK main thread only. Never style DevTools or unrelated pages.
+pub(super) fn apply_user_css_script(browser: &cef::Browser, script: &str) {
+    use cef::{CefString, ImplFrame};
+    if let Some(frame) = browser.main_frame()
+        && crate::handlers::request::is_whatsapp_web(&CefString::from(&frame.url()).to_string())
+    {
+        frame.execute_java_script(
+            Some(&CefString::from(script)),
+            Some(&CefString::from("karere://user-css")),
+            0,
+        );
+    }
+}
+
+/// Apply on every page load as well as live updates, including new accounts. (F9)
 pub(crate) fn apply_user_css(browser: &cef::Browser) {
-    if let Some(css) = read_user_css() {
-        run_page_script(browser, &user_css_script(&css), "karere://user-css");
+    if let Some(script) = read_user_css_script(&user_css_path()) {
+        apply_user_css_script(browser, &script);
     }
 }
 
@@ -401,7 +451,10 @@ impl KarereWebView {
 
 #[cfg(test)]
 mod page_script_tests {
-    use super::{autocorrect_language_script, user_css_script};
+    use super::{
+        USER_CSS_MAX_BYTES, autocorrect_language_script, read_user_css, read_user_css_script,
+        user_css_removal_script, user_css_script,
+    };
 
     #[test]
     fn autocorrect_gate_follows_first_language() {
@@ -411,6 +464,105 @@ mod page_script_tests {
         assert!(s(&["es-ES", "en-US"]).contains("SetEnabled(false)"));
         assert!(s(&["pt-BR"]).contains("SetEnabled(false)"));
         assert!(s(&[]).contains("SetEnabled(null)"));
+    }
+
+    #[test]
+    fn user_css_reads_distinguish_absence_from_errors() {
+        use std::io::ErrorKind;
+        use std::os::unix::fs::PermissionsExt;
+
+        let directory =
+            std::env::temp_dir().join(format!("karere-css-read-{}", uuid::Uuid::new_v4()));
+        std::fs::create_dir_all(&directory).unwrap();
+        let path = directory.join("user.css");
+        assert_eq!(read_user_css(&path).unwrap(), None);
+        assert_eq!(
+            read_user_css_script(&path).unwrap(),
+            user_css_removal_script()
+        );
+
+        std::fs::write(&path, "body { color: red; }").unwrap();
+        assert_eq!(
+            read_user_css(&path).unwrap().as_deref(),
+            Some("body { color: red; }")
+        );
+        assert_eq!(
+            read_user_css_script(&path).unwrap(),
+            user_css_script("body { color: red; }")
+        );
+        std::fs::write(&path, "").unwrap();
+        assert_eq!(read_user_css(&path).unwrap(), Some(String::new()));
+        assert_ne!(
+            read_user_css_script(&path).unwrap(),
+            user_css_removal_script()
+        );
+
+        std::fs::write(&path, vec![b' '; USER_CSS_MAX_BYTES as usize]).unwrap();
+        assert_eq!(
+            read_user_css(&path).unwrap().unwrap().len() as u64,
+            USER_CSS_MAX_BYTES
+        );
+        std::fs::write(&path, vec![b' '; USER_CSS_MAX_BYTES as usize + 1]).unwrap();
+        assert_eq!(
+            read_user_css(&path).unwrap_err().kind(),
+            ErrorKind::InvalidData
+        );
+        assert!(
+            read_user_css_script(&path).is_none(),
+            "oversized CSS must not remove existing styling"
+        );
+        std::fs::write(&path, [0xff, 0xfe]).unwrap();
+        assert_eq!(
+            read_user_css(&path).unwrap_err().kind(),
+            ErrorKind::InvalidData
+        );
+        assert!(
+            read_user_css_script(&path).is_none(),
+            "invalid UTF-8 must preserve existing styling"
+        );
+
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o000)).unwrap();
+        match read_user_css(&path) {
+            Err(error) if error.kind() == ErrorKind::PermissionDenied => {
+                assert!(read_user_css_script(&path).is_none());
+            }
+            _ => eprintln!("permission-denied assertion skipped: process can read mode-000 files"),
+        }
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
+        assert!(
+            read_user_css_script(&directory).is_none(),
+            "non-regular files must not remove styling"
+        );
+        std::fs::remove_file(&path).unwrap();
+        assert_eq!(
+            read_user_css_script(&path).unwrap(),
+            user_css_removal_script()
+        );
+        std::fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[test]
+    fn generated_user_css_scripts_update_and_remove_without_duplicates() {
+        let css = "a::after{content:\"x'\\\"}\n</style><script>throw Error('unsafe')</script>\u{2028}\u{2029}\0";
+        let result = std::process::Command::new("node")
+            .arg("-e")
+            .arg(include_str!("../../tests/fixtures/user-css-scripts.js"))
+            .arg(user_css_script(css))
+            .arg(user_css_script("body { color: blue; }"))
+            .arg(user_css_removal_script())
+            .arg(serde_json::to_string(css).unwrap())
+            .output();
+        match result {
+            Ok(output) => assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            ),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                eprintln!("skipping generated CSS script execution: node is not installed");
+            }
+            Err(error) => panic!("could not run node: {error}"),
+        }
     }
 
     #[test]

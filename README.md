@@ -110,6 +110,16 @@ Access preferences through the application menu or keyboard shortcut (`Ctrl+,`) 
 - **Notifications**: Native notification preferences, preview settings, background notifications
 - **Spell Checking**: Multi-language spell checking with auto-detect
 
+### Custom CSS
+
+Use the application menu to open `user.css`, stored at
+`$XDG_CONFIG_HOME/io.github.tobagin.karere/user.css` (normally
+`~/.config/io.github.tobagin.karere/user.css`). In Flatpak, it is under
+`~/.var/app/io.github.tobagin.karere/config/io.github.tobagin.karere/`.
+Changes apply automatically to all accounts, including background accounts;
+no reload or restart is needed. Deleting the file removes custom styling.
+The file must be UTF-8 and no larger than 256 KiB.
+
 ### Keyboard Shortcuts
 
 #### Standard

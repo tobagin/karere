@@ -220,6 +220,7 @@ impl KarereWebView {
         }
 
         if let Some(id) = account_id.as_ref() {
+            self.ensure_user_css_monitor();
             if make_foreground {
                 // Remembered until the browser exists (switch_to/adopt clears
                 // it), so a still-initialising context still takes over.
