@@ -38,14 +38,10 @@ pub(crate) struct UserCss {
 }
 
 /// True when `event` describes a change that can affect the user stylesheet:
-/// any CSS file in the monitored directory, including the two names GIO
-/// reports for a move/rename (`file` and `other`), so atomic replacements are
-/// caught no matter which side is the CSS file.
-fn relevant_event(
-    file: &gio::File,
-    other: Option<&gio::File>,
-    event: gio::FileMonitorEvent,
-) -> bool {
+/// any change in the monitored directory may alter `gtk.css` or a file it
+/// `@import`s — imports are not required to carry a `.css` extension (e.g.
+/// `@import url("colors")`). Only non-change bookkeeping events are ignored.
+fn relevant_event(event: gio::FileMonitorEvent) -> bool {
     matches!(
         event,
         gio::FileMonitorEvent::Changed
@@ -57,10 +53,7 @@ fn relevant_event(
             | gio::FileMonitorEvent::Renamed
             | gio::FileMonitorEvent::MovedIn
             | gio::FileMonitorEvent::MovedOut
-    ) && std::iter::once(file).chain(other).any(|file| {
-        file.basename()
-            .is_some_and(|name| Path::new(&name).extension().is_some_and(|ext| ext == "css"))
-    })
+    )
 }
 
 impl UserCss {
@@ -114,8 +107,8 @@ impl UserCss {
             reload_count: std::cell::Cell::new(0),
         });
         let weak = Rc::downgrade(&state);
-        state.monitor.connect_changed(move |_, file, other, event| {
-            if !relevant_event(file, other, event) {
+        state.monitor.connect_changed(move |_, _, _, event| {
+            if !relevant_event(event) {
                 return;
             }
             let Some(state) = weak.upgrade() else { return };
@@ -203,78 +196,50 @@ mod tests {
     }
 
     #[test]
-    fn watches_entrypoint_and_imported_stylesheets() {
-        for name in ["gtk.css", "noctalia.css", "noctalia-extensions.css"] {
-            let file = gio::File::for_path(format!("/config/gtk-4.0/{name}"));
-            for event in [
-                gio::FileMonitorEvent::Changed,
-                gio::FileMonitorEvent::ChangesDoneHint,
-                gio::FileMonitorEvent::Created,
-                gio::FileMonitorEvent::Deleted,
-                gio::FileMonitorEvent::AttributeChanged,
-                gio::FileMonitorEvent::Moved,
-                gio::FileMonitorEvent::Renamed,
-                gio::FileMonitorEvent::MovedIn,
-                gio::FileMonitorEvent::MovedOut,
-            ] {
-                assert!(relevant_event(&file, None, event), "{name}: {event:?}");
-            }
-        }
-    }
-
-    #[test]
-    fn ignores_unrelated_files_and_events() {
-        for name in [
-            "gtk.css.bak",
-            "gtk.css~",
-            "settings.ini",
-            "noctalia.toml",
-            ".replacement",
-            "README.txt",
+    fn watches_all_filesystem_changes() {
+        // Any change may affect `gtk.css` or one of its `@import` targets;
+        // imported files are not required to carry a `.css` extension. The
+        // move/rename events also cover atomic replacements via `rename()`.
+        for event in [
+            gio::FileMonitorEvent::Changed,
+            gio::FileMonitorEvent::ChangesDoneHint,
+            gio::FileMonitorEvent::Created,
+            gio::FileMonitorEvent::Deleted,
+            gio::FileMonitorEvent::AttributeChanged,
+            gio::FileMonitorEvent::Moved,
+            gio::FileMonitorEvent::Renamed,
+            gio::FileMonitorEvent::MovedIn,
+            gio::FileMonitorEvent::MovedOut,
         ] {
-            let file = gio::File::for_path(format!("/config/gtk-4.0/{name}"));
-            for event in [
-                gio::FileMonitorEvent::Changed,
-                gio::FileMonitorEvent::Created,
-                gio::FileMonitorEvent::Deleted,
-                gio::FileMonitorEvent::Renamed,
-            ] {
-                assert!(!relevant_event(&file, None, event), "{name}: {event:?}");
-            }
+            assert!(relevant_event(event), "{event:?}");
         }
-        let css = gio::File::for_path("/config/gtk-4.0/gtk.css");
-        assert!(!relevant_event(
-            &css,
-            None,
-            gio::FileMonitorEvent::Unmounted
-        ));
     }
 
     #[test]
-    fn atomic_replacement_reports_both_paths() {
-        let temp = gio::File::for_path("/config/gtk-4.0/.tmp123");
-        let css = gio::File::for_path("/config/gtk-4.0/noctalia.css");
-        assert!(relevant_event(
-            &temp,
-            Some(&css),
-            gio::FileMonitorEvent::Renamed
-        ));
-        assert!(relevant_event(
-            &css,
-            Some(&temp),
-            gio::FileMonitorEvent::Renamed
-        ));
-        assert!(relevant_event(
-            &temp,
-            Some(&css),
-            gio::FileMonitorEvent::MovedIn
-        ));
-        assert!(!relevant_event(&temp, None, gio::FileMonitorEvent::Changed));
-        assert!(!relevant_event(
-            &css,
-            None,
-            gio::FileMonitorEvent::Unmounted
-        ));
+    fn ignores_non_change_bookkeeping_events() {
+        assert!(!relevant_event(gio::FileMonitorEvent::Unmounted));
+        assert!(!relevant_event(gio::FileMonitorEvent::PreUnmount));
+    }
+
+    /// Resolve the `karere_live_test` color the test stylesheets define.
+    fn lookup_test_color(label: &gtk::Label) -> Option<gtk::gdk::RGBA> {
+        #[allow(deprecated)]
+        label.style_context().lookup_color("karere_live_test")
+    }
+
+    /// Pump the GLib main context until `label` resolves `karere_live_test`
+    /// to `expected`, or fail after a short deadline.
+    fn wait_for_color(label: &gtk::Label, expected: Option<gtk::gdk::RGBA>, what: &str) {
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while lookup_test_color(label) != expected {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "GTK CSS did not reload ({what}): color={:?}, expected={expected:?}",
+                lookup_test_color(label)
+            );
+            while glib::MainContext::default().iteration(false) {}
+            std::thread::sleep(Duration::from_millis(10));
+        }
     }
 
     #[ignore = "requires a GTK display or the headless backend (GDK_BACKEND=headless)"]
@@ -287,44 +252,53 @@ mod tests {
         std::fs::write(&imported, "@define-color karere_live_test #ff0000;").unwrap();
 
         let label = gtk::Label::new(None);
-        let color = || {
-            #[allow(deprecated)]
-            label.style_context().lookup_color("karere_live_test")
-        };
-        let wait_for = |expected: Option<gtk::gdk::RGBA>| {
-            let deadline = std::time::Instant::now() + Duration::from_secs(5);
-            while color() != expected {
-                assert!(
-                    std::time::Instant::now() < deadline,
-                    "GTK CSS did not reload (color={:?}, expected={expected:?})",
-                    color()
-                );
-                while glib::MainContext::default().iteration(false) {}
-                std::thread::sleep(Duration::from_millis(10));
-            }
-        };
-
         let state = UserCss::start_in(gtk::gdk::Display::default().unwrap(), &dir).unwrap();
-        wait_for(Some(gtk::gdk::RGBA::RED));
+        wait_for_color(&label, Some(gtk::gdk::RGBA::RED), "initial load");
 
         // Change an imported stylesheet: the entrypoint must be reloaded so
         // the @import is re-evaluated.
         std::fs::write(&imported, "@define-color karere_live_test #0000ff;").unwrap();
-        wait_for(Some(gtk::gdk::RGBA::BLUE));
+        wait_for_color(&label, Some(gtk::gdk::RGBA::BLUE), "import change");
 
         // Atomic replacement of the imported file (rename over it).
         let replacement = dir.join(".noctalia.replacement");
         std::fs::write(&replacement, "@define-color karere_live_test #ff0000;").unwrap();
         std::fs::rename(&replacement, &imported).unwrap();
-        wait_for(Some(gtk::gdk::RGBA::RED));
+        wait_for_color(&label, Some(gtk::gdk::RGBA::RED), "atomic replacement");
 
         // Deletion of the entrypoint clears the reloadable provider.
         std::fs::remove_file(&entrypoint).unwrap();
-        wait_for(None);
+        wait_for_color(&label, None, "entrypoint deletion");
 
         // Recreating it restores the styles.
         std::fs::write(&entrypoint, "@import url(\"noctalia.css\");").unwrap();
-        wait_for(Some(gtk::gdk::RGBA::RED));
+        wait_for_color(&label, Some(gtk::gdk::RGBA::RED), "entrypoint recreation");
+
+        drop(state);
+    }
+
+    #[ignore = "requires a GTK display or the headless backend (GDK_BACKEND=headless)"]
+    #[gtk::test]
+    fn reloads_extensionless_import() {
+        let dir = TempDir::new("import-extensionless");
+        let entrypoint = dir.join("gtk.css");
+        // No `.css` extension, as in `@import url("colors")`.
+        let imported = dir.join("colors");
+        std::fs::write(&entrypoint, "@import url(\"colors\");").unwrap();
+        std::fs::write(&imported, "@define-color karere_live_test #ff0000;").unwrap();
+
+        let label = gtk::Label::new(None);
+        let state = UserCss::start_in(gtk::gdk::Display::default().unwrap(), &dir).unwrap();
+        wait_for_color(&label, Some(gtk::gdk::RGBA::RED), "extensionless import");
+
+        // Changes to the extensionless imported file must also reload the
+        // entrypoint (the watcher no longer filters by extension).
+        std::fs::write(&imported, "@define-color karere_live_test #0000ff;").unwrap();
+        wait_for_color(
+            &label,
+            Some(gtk::gdk::RGBA::BLUE),
+            "extensionless import change",
+        );
 
         drop(state);
     }
@@ -372,9 +346,23 @@ mod tests {
         std::fs::write(&entrypoint, "/* start */").unwrap();
         let state = UserCss::start_in(gtk::gdk::Display::default().unwrap(), &dir).unwrap();
 
-        // Trigger a pending (debounced) reload, then drop before it fires:
-        // neither the cancelled timer nor the monitor may panic afterwards.
+        // Trigger a debounced reload, then process the GLib main context until
+        // the debounce timeout is actually scheduled (GIO delivers filesystem
+        // notifications asynchronously). Only then is the drop below
+        // guaranteed to exercise cancellation of a live pending timer.
         std::fs::write(&entrypoint, "/* changed */").unwrap();
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while !state.pending.borrow().is_some() {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "debounced reload was never scheduled"
+            );
+            while glib::MainContext::default().iteration(false) {}
+            std::thread::sleep(Duration::from_millis(10));
+        }
+
+        // Drop while the timer is still pending: cancelling it must not panic,
+        // and the pending reload must not execute afterwards.
         drop(state);
         std::thread::sleep(Duration::from_millis(400));
         while glib::MainContext::default().iteration(false) {}
