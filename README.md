@@ -24,14 +24,15 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.5.0
+### 🆕 What's New in 4.6.0
 
-- **Live reload for custom CSS (#207)**: saving `user.css` restyles every account straight away,
-  with no page reload. Contributed by [@riccardomarotti](https://github.com/riccardomarotti).
-- **Custom CSS switch**: the Custom CSS row in Preferences turns the stylesheet off without
-  deleting the file.
-- **Match WhatsApp Colors follows the page**: the window tint uses the colour the page actually
-  shows, so it keeps matching under a custom theme.
+- **Live reload for the GTK stylesheet (#208)**: the window chrome follows changes to
+  `gtk-4.0/gtk.css` without a restart, so theme switchers restyle Karere straight away.
+  Contributed by [@riccardomarotti](https://github.com/riccardomarotti).
+- **Renderer crash loop fixed (#209)**: WhatsApp no longer restarts every few seconds on systems
+  with a large stack limit.
+- **Screen reader detection (#204)**: the page is exposed to a screen reader started while Karere
+  is running, and detection works again on current at-spi2-core.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the

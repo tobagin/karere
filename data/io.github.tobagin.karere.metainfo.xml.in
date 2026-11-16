@@ -102,6 +102,15 @@
   <translation type="gettext">karere</translation>
 
   <releases>
+    <release version="4.6.0" date="2026-11-16">
+      <description translate="no">
+        <ul>
+          <li>The window follows changes to the GTK stylesheet (gtk.css) without a restart, so theme switchers restyle Karere straight away (#208).</li>
+          <li>Fixed WhatsApp restarting every few seconds on systems with a large stack limit (#209).</li>
+          <li>A screen reader started while Karere is running is now detected, and detection works again on current systems (#204).</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.5.0" date="2026-11-15">
       <description translate="no">
         <ul>
