@@ -225,6 +225,7 @@ fn register_accels(app: &KarereApplication) {
 
 mod imp {
     use std::cell::OnceCell;
+    use std::rc::Rc;
 
     use super::*;
     use libadwaita::subclass::prelude::*;
@@ -232,6 +233,9 @@ mod imp {
     #[derive(Default)]
     pub struct KarereApplication {
         pub settings: OnceCell<gio::Settings>,
+        // Keeps the live user-stylesheet reloader alive for the app's lifetime;
+        // drops (and cleans up) with the application object.
+        user_css: OnceCell<Rc<crate::gtk_css::UserCss>>,
     }
 
     #[glib::object_subclass]
@@ -250,6 +254,14 @@ mod imp {
 
             crate::actions::register_app_actions(&app);
             register_accels(&app);
+
+            // Live-reload the user's GTK stylesheet (`gtk.css` in the user
+            // config directory) so Noctalia-style theme changes reach the
+            // native chrome immediately, without restarting. No-op (with a
+            // warning) when the directory cannot be monitored.
+            if let Some(user_css) = crate::gtk_css::UserCss::start() {
+                let _ = self.user_css.set(user_css);
+            }
 
             // Load the focus-indicator stylesheet once at APPLICATION priority
             // (user themes still win). Scoped under `.enhanced-focus`, which the
