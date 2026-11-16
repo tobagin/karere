@@ -173,6 +173,13 @@ impl ObjectImpl for KarereWebView {
     fn constructed(&self) {
         self.parent_constructed();
         let widget = self.obj();
+        // A screen reader started later turns the page tree on live (#204).
+        let weak = widget.downgrade();
+        crate::handlers::accessibility::watch(move || {
+            if let Some(view) = weak.upgrade() {
+                view.enable_accessibility();
+            }
+        });
         // The production shaders are GLSL ES 3.00. Negotiate that exact API
         // before realization instead of letting GtkGLArea prefer desktop GL;
         // GLES-only Mesa stacks (including PinePhone) otherwise fail context

@@ -119,6 +119,18 @@ impl KarereWebView {
         input::keyboard::send_inspect_shortcut(self);
     }
 
+    /// Turn the page accessibility tree on for every live browser: a screen
+    /// reader was started after they were created (#204).
+    pub fn enable_accessibility(&self) {
+        use cef::{ImplBrowser, ImplBrowserHost};
+        let imp = self.imp();
+        let mut hosts: Vec<_> = imp.browsers.lock().values().filter_map(|b| b.host()).collect();
+        hosts.extend(imp.browser.lock().as_ref().and_then(|b| b.host()));
+        for h in &hosts {
+            h.set_accessibility_state(cef::State::ENABLED);
+        }
+    }
+
     /// Re-emulate `prefers-color-scheme` on every live browser to match the
     /// current Karere theme (call after the theme changes). (#160)
     pub fn reapply_color_scheme(&self) {

@@ -9,7 +9,7 @@
 //! states, where they sit on screen, and which one has focus.
 
 use std::collections::{HashMap, HashSet};
-use std::sync::atomic::{AtomicI32, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicI32, Ordering};
 use std::sync::{Arc, OnceLock, Weak};
 
 use cef::{
@@ -22,47 +22,90 @@ use serde_json::{Map, Value as Json};
 
 use super::SharedRef;
 
+/// A screen reader was started after launch (see `watch`).
+static STARTED_LATER: AtomicBool = AtomicBool::new(false);
+
 /// Whether to turn on CEF's accessibility tree for new browsers. Building the
 /// tree costs CPU on a page as large as WhatsApp, so it's only on when a screen
 /// reader is running or the user asked for it.
 pub fn wanted() -> bool {
-    static WANTED: OnceLock<bool> = OnceLock::new();
-    *WANTED.get_or_init(|| {
-        use gtk::gio;
-        use gtk::prelude::SettingsExt;
-        let opted_in = gio::Settings::new(crate::application::APP_ID).boolean("screen-reader-opts");
-        let running = screen_reader_running();
-        log::info!(
-            "a11y: page tree {} (pref={opted_in}, screen reader={running})",
-            if opted_in || running { "on" } else { "off" }
-        );
-        opted_in || running
-    })
+    static AT_START: OnceLock<bool> = OnceLock::new();
+    STARTED_LATER.load(Ordering::Relaxed)
+        || *AT_START.get_or_init(|| {
+            use gtk::gio;
+            use gtk::prelude::SettingsExt;
+            let opted_in =
+                gio::Settings::new(crate::application::APP_ID).boolean("screen-reader-opts");
+            let running = screen_reader_running();
+            log::info!(
+                "a11y: page tree {} (pref={opted_in}, screen reader={running})",
+                if opted_in || running { "on" } else { "off" }
+            );
+            opted_in || running
+        })
 }
 
-/// `org.a11y.Status.ScreenReaderEnabled` from the a11y bus launcher. Flatpak
-/// allows this property read by default.
+/// Call `on_enabled` when a screen reader is started while Karere runs, so
+/// the page tree can be turned on for the browsers that already exist; no
+/// restart and no preference needed (#204). It stays on until exit.
+pub fn watch(on_enabled: impl Fn() + 'static) {
+    use gtk::gio;
+    use gtk::glib;
+    let Ok(bus) = gio::bus_get_sync(gio::BusType::Session, gio::Cancellable::NONE) else {
+        return;
+    };
+    let subscription = bus.subscribe_to_signal(
+        Some("org.a11y.Bus"),
+        Some("org.freedesktop.DBus.Properties"),
+        Some("PropertiesChanged"),
+        Some("/org/a11y/bus"),
+        Some("org.a11y.Status"),
+        gio::DBusSignalFlags::NONE,
+        move |signal| {
+            let changed = glib::VariantDict::new(Some(&signal.parameters.child_value(1)));
+            let enabled = AT_STATUS_PROPS
+                .iter()
+                .any(|prop| changed.lookup::<bool>(prop).ok().flatten().unwrap_or(false));
+            if enabled && !STARTED_LATER.swap(true, Ordering::Relaxed) {
+                log::info!("a11y: screen reader started, page tree on");
+                on_enabled();
+            }
+        },
+    );
+    // Dropping it would unsubscribe; it has to last for the rest of the run.
+    std::mem::forget(subscription);
+}
+
+/// `org.a11y.Status` properties that mean assistive technology is in use.
+/// at-spi2-core dropped `ScreenReaderEnabled` (gone by 2.62), leaving only
+/// `IsEnabled`, which Orca turns on when it starts; older launchers have both.
+const AT_STATUS_PROPS: [&str; 2] = ["ScreenReaderEnabled", "IsEnabled"];
+
+/// Whether the a11y bus launcher reports assistive technology in use.
+/// Flatpak allows these property reads by default.
 fn screen_reader_running() -> bool {
     use gtk::gio;
     use gtk::glib::{self, prelude::*};
     let Ok(bus) = gio::bus_get_sync(gio::BusType::Session, gio::Cancellable::NONE) else {
         return false;
     };
-    bus.call_sync(
-        Some("org.a11y.Bus"),
-        "/org/a11y/bus",
-        "org.freedesktop.DBus.Properties",
-        "Get",
-        Some(&("org.a11y.Status", "ScreenReaderEnabled").to_variant()),
-        Some(glib::VariantTy::new("(v)").unwrap()),
-        gio::DBusCallFlags::NONE,
-        500,
-        gio::Cancellable::NONE,
-    )
-    .ok()
-    .and_then(|v| v.child_value(0).as_variant())
-    .and_then(|v| v.get::<bool>())
-    .unwrap_or(false)
+    AT_STATUS_PROPS.iter().any(|prop| {
+        bus.call_sync(
+            Some("org.a11y.Bus"),
+            "/org/a11y/bus",
+            "org.freedesktop.DBus.Properties",
+            "Get",
+            Some(&("org.a11y.Status", *prop).to_variant()),
+            Some(glib::VariantTy::new("(v)").unwrap()),
+            gio::DBusCallFlags::NONE,
+            500,
+            gio::Cancellable::NONE,
+        )
+        .ok()
+        .and_then(|v| v.child_value(0).as_variant())
+        .and_then(|v| v.get::<bool>())
+        .unwrap_or(false)
+    })
 }
 
 /// Node rectangle `(x, y, width, height)` in CEF view (physical) pixels.

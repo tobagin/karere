@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Renderer crash loop on systems with a large stack limit (#209)**: with a stack limit of 64 MiB or more, every Chromium thread reserved that much memory and the sandboxed renderer ran into its memory cap, failing with `pthread_create: Resource temporarily unavailable` and V8 out-of-memory errors every few seconds. Karere now caps the default thread stack at 8 MiB.
+- **Screen reader detection (#204)**: the page is exposed to a screen reader that is started while Karere is already running, without a restart, and detection works again on current at-spi2-core, which no longer reports `ScreenReaderEnabled`.
 
 ## [4.5.0] - 2026-11-15
 
