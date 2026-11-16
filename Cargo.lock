@@ -1290,6 +1290,7 @@ dependencies = [
  "gtk4",
  "ksni",
  "libadwaita",
+ "libc",
  "libloading",
  "log",
  "parking_lot",

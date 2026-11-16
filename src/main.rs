@@ -36,7 +36,42 @@ use application::KarereApplication;
 pub static RESTART_REQUESTED: std::sync::atomic::AtomicBool =
     std::sync::atomic::AtomicBool::new(false);
 
+// glibc extensions the libc crate does not bind.
+unsafe extern "C" {
+    fn pthread_getattr_default_np(attr: *mut libc::pthread_attr_t) -> libc::c_int;
+    fn pthread_setattr_default_np(attr: *const libc::pthread_attr_t) -> libc::c_int;
+}
+
+/// Largest default stack a C++ (Chromium) thread may get.
+const MAX_DEFAULT_THREAD_STACK: usize = 8 * 1024 * 1024;
+
+/// Cap glibc's default thread stack size (#209). glibc seeds it from
+/// `RLIMIT_STACK`, and Chromium creates most threads with that default. On
+/// hosts with a large stack limit (64-256 MiB) every thread then maps that
+/// much writable memory, which the sandbox's `RLIMIT_DATA` cap on renderers
+/// counts: `pthread_create` fails with EAGAIN, V8 reports OOM, and the
+/// renderer dies in a loop. Runs first in every process, before any thread
+/// exists; renderers forked from the zygote inherit it.
+fn cap_default_thread_stack() {
+    // SAFETY: plain libc calls on a locally owned, initialised attr.
+    unsafe {
+        let mut attr: libc::pthread_attr_t = std::mem::zeroed();
+        if pthread_getattr_default_np(&mut attr) != 0 {
+            return;
+        }
+        let mut size = 0usize;
+        if libc::pthread_attr_getstacksize(&attr, &mut size) == 0 && size > MAX_DEFAULT_THREAD_STACK
+        {
+            libc::pthread_attr_setstacksize(&mut attr, MAX_DEFAULT_THREAD_STACK);
+            pthread_setattr_default_np(&attr);
+        }
+        libc::pthread_attr_destroy(&mut attr);
+    }
+}
+
 fn main() -> Result<()> {
+    cap_default_thread_stack();
+
     // `--debuglevel=LEVEL` sets the log level (`--debug` = debug alias; default
     // INFO; --debuglevel wins). RUST_LOG still overrides.
     env_logger::Builder::from_env(
@@ -466,5 +501,22 @@ mod tests {
         assert_eq!(normalize_log_level("Warning"), "warn");
         assert_eq!(normalize_log_level("INFO"), "info");
         assert_eq!(normalize_log_level("bogus"), "debug");
+    }
+}
+
+#[cfg(test)]
+mod thread_stack_tests {
+    /// Run under `ulimit -s 262144` to exercise the capping branch (#209).
+    #[test]
+    fn default_thread_stack_is_capped() {
+        super::cap_default_thread_stack();
+        unsafe {
+            let mut attr: libc::pthread_attr_t = std::mem::zeroed();
+            assert_eq!(super::pthread_getattr_default_np(&mut attr), 0);
+            let mut size = 0usize;
+            assert_eq!(libc::pthread_attr_getstacksize(&attr, &mut size), 0);
+            libc::pthread_attr_destroy(&mut attr);
+            assert!(size <= super::MAX_DEFAULT_THREAD_STACK, "default stack {size}");
+        }
     }
 }
