@@ -102,6 +102,14 @@
   <translation type="gettext">karere</translation>
 
   <releases>
+    <release version="4.6.1" date="2026-11-17">
+      <description translate="no">
+        <ul>
+          <li>Fixed a false "GPU rendering is not working" message, and the switch to software rendering that followed, when Karere was started in the background with GPU rendering on (#210).</li>
+          <li>The About dialog credits recent contributors.</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.6.0" date="2026-11-16">
       <description translate="no">
         <ul>

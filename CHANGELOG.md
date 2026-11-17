@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.6.1] - 2026-11-17
+
+### Fixed
+- **False "GPU rendering is not working" after a background start (#210)**: with GPU rendering and start in background both on, opening the window showed that message and switched to software rendering, because the browsers had been started on software rendering before GPU support was checked. The check now runs before a background start creates them, so they use GPU rendering from the start, and the watchdog only applies to browsers that were actually created for GPU rendering.
+
+### Changed
+- **About dialog credits**: added loxoron218, sknowledge1 and valen, and fixed Pascal Dietrich's link.
+
 ## [4.6.0] - 2026-11-16
 
 ### Added
