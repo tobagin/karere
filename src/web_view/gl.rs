@@ -602,10 +602,32 @@ pub(super) fn probe_accel_osr() {
     let _ = ACCEL_PROBE.set(enabled);
 }
 
+/// Probe before any GLArea is realized, on a throwaway GL context of the
+/// display. A background (tray) start prewarms every browser before the
+/// window exists; without this they would all be created on CPU OSR and
+/// stay there for the session (#210). Leaves the slot empty when the display
+/// cannot give a context, so the realize-time probe still runs.
+pub(super) fn probe_accel_osr_unrealized(display: &gtk::gdk::Display) {
+    use gtk::prelude::*;
+    if ACCEL_PROBE.get().is_some() {
+        return;
+    }
+    let Ok(context) = display.create_gl_context() else {
+        return;
+    };
+    if context.realize().is_err() {
+        return;
+    }
+    context.make_current();
+    probe_accel_osr();
+    gtk::gdk::GLContext::clear_current();
+}
+
 /// Whether a browser created now should ask CEF for shared textures.
 ///
 /// Before the first successful [`probe_accel_osr`] — a background (tray)
-/// start creates every account's browser before any GLArea is realized —
+/// start creates every account's browser before any GLArea is realized, and
+/// [`probe_accel_osr_unrealized`] may not get a context —
 /// this answers CPU OSR without caching it, so browsers created after the
 /// window first shows (new accounts, DevTools, a software restart) still
 /// get the probed answer. Pre-probe browsers stay on CPU paint for their

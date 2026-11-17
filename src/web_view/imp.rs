@@ -56,6 +56,10 @@ pub struct KarereWebView {
     /// resumes delivering CPU `on_paint` frames instead of repeatedly exporting
     /// accelerated frames that this GL context cannot import.
     pub software_osr_forced: AtomicBool,
+    /// Identifiers of the live browsers that were created with shared
+    /// textures. The flag is fixed per browser at creation, so the global
+    /// probe result says nothing about a browser created before it (#210).
+    pub(super) accel_browser_ids: parking_lot::Mutex<std::collections::HashSet<i32>>,
     /// Deadline for the first accelerated frame; see `watch_first_accel_frame`.
     pub(super) first_accel_watch: RefCell<Option<glib::SourceId>>,
     /// Test-only observations at the real close/create boundaries. This lets the

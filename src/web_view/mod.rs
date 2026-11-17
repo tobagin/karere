@@ -202,6 +202,7 @@ impl KarereWebView {
     /// background (tray) launch loads WhatsApp and notifications before the window
     /// shows. Idempotent — safe to call again on realize.
     pub fn prewarm(&self) {
+        gl::probe_accel_osr_unrealized(&gtk::prelude::WidgetExt::display(self));
         self.imp().spawn_all_accounts(false);
     }
 

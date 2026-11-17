@@ -57,6 +57,8 @@ fn gles_contract_is_shared_by_main_and_devtools_views() {
         );
     }
 
+    assert_first_frame_watchdog_ignores_cpu_browsers();
+
     // Force GTK's production create-context signal to fail. GDK cannot
     // produce a context below GLES 3.0, which is all a PinePhone's Mali-400
     // offers, so realize must fall back to software presentation rather
@@ -105,6 +107,29 @@ fn gles_contract_is_shared_by_main_and_devtools_views() {
     window.destroy();
 
     assert_rejected_accelerated_frame_restarts_pool_then_renders_cpu_callback();
+}
+
+/// A browser prewarmed on CPU OSR before the GPU probe never sends an
+/// accelerated frame; the first-frame watchdog must not count that as a
+/// failure and force software rendering (#210).
+fn assert_first_frame_watchdog_ignores_cpu_browsers() {
+    use std::sync::atomic::Ordering;
+
+    let view = KarereWebView::new();
+    let imp = view.imp();
+    imp.window_visible.store(true, Ordering::Relaxed);
+    imp.browser_id.store(7, Ordering::Relaxed);
+    assert!(
+        !imp.no_accel_frame_yet(),
+        "a CPU OSR foreground must not arm the accelerated-frame deadline"
+    );
+    imp.accel_browser_ids.lock().insert(7);
+    assert!(
+        imp.no_accel_frame_yet(),
+        "a shared-texture foreground with no frame yet must arm it"
+    );
+    imp.accel_browser_ids.lock().clear();
+    imp.browser_id.store(0, Ordering::Relaxed);
 }
 
 fn assert_rejected_accelerated_frame_restarts_pool_then_renders_cpu_callback() {

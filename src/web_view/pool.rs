@@ -44,6 +44,7 @@ impl KarereWebView {
             }
         }
         self.cdp_registrations.borrow_mut().clear();
+        self.accel_browser_ids.lock().clear();
         self.pending_contexts.lock().clear();
         *self.foreground.lock() = None;
         *self.wanted_foreground.lock() = None;
@@ -137,11 +138,14 @@ impl KarereWebView {
         ));
     }
 
-    /// A visible, accelerated foreground browser that has painted nothing.
-    fn no_accel_frame_yet(&self) -> bool {
-        self.shared_texture_enabled_for_browser()
+    /// A visible foreground browser that was created with shared textures
+    /// and has painted nothing. A browser prewarmed on CPU OSR before the
+    /// probe never sends an accelerated frame and is not a failure (#210).
+    pub(super) fn no_accel_frame_yet(&self) -> bool {
+        let id = self.browser_id.load(Ordering::Relaxed);
+        id != 0
+            && self.accel_browser_ids.lock().contains(&id)
             && self.window_visible.load(Ordering::Relaxed)
-            && self.browser_id.load(Ordering::Relaxed) != 0
             && self.shared.lock().as_ref().is_some_and(|s| s.lock().accel.is_none())
     }
 
@@ -331,11 +335,12 @@ impl KarereWebView {
             ClientBuilder::build_for(shared.clone())
         };
 
+        let shared_textures = self.shared_texture_enabled_for_browser();
         let window_info = WindowInfo {
             windowless_rendering_enabled: 1,
             // GPU-accelerated OSR: hand us a DMA-BUF via on_accelerated_paint
             // instead of a CPU buffer, when supported + opted in. (gpu-osr)
-            shared_texture_enabled: self.shared_texture_enabled_for_browser() as i32,
+            shared_texture_enabled: shared_textures as i32,
             ..Default::default()
         };
         let settings = BrowserSettings {
@@ -372,6 +377,9 @@ impl KarereWebView {
             return;
         };
         log::info!("browser spawned (account={account_id:?}, foreground={make_foreground})");
+        if shared_textures {
+            self.accel_browser_ids.lock().insert(b.identifier());
+        }
 
         if let Some(id) = account_id.clone() {
             crate::accounts::register_browser(b.identifier(), &id);
