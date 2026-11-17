@@ -511,7 +511,7 @@ fn register_about(app: &KarereApplication) {
             let developers = [
                 "Thiago Fernandes https://github.com/tobagin",
                 "Aman9Das https://github.com/Aman9das",
-                "Pascal Dietrich https://github.com/",
+                "Pascal Dietrich https://github.com/Cameo007",
                 "Sabri Ünal https://github.com/yakushabb",
                 "Enrico https://github.com/account1009",
                 "Leandro Marques https://github.com/leandromqrs",
@@ -520,6 +520,9 @@ fn register_about(app: &KarereApplication) {
                 "AnmiTaliDev https://github.com/AnmiTaliDev",
                 "Riccardo Marotti https://github.com/riccardomarotti",
                 "LeoXia https://github.com/hz-xiaxz",
+                "loxoron218 https://github.com/loxoron218",
+                "sknowledge1 https://github.com/sknowledge1",
+                "valen https://github.com/valenvives",
             ];
             let designers = ["Thiago Fernandes https://github.com/tobagin"];
             let artists = [
