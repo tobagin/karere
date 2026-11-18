@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.6.2] - 2026-11-18
+
+### Fixed
+- **Screen reader not detected in the Flatpak (#204)**: the sandbox could not reach the accessibility bus launcher, so Karere never saw that a screen reader was running and WhatsApp was only read with the screen reader preference turned on. The Flatpak now has access to `org.a11y.Bus`, so detection works at startup and when the screen reader is started later.
+
 ## [4.6.1] - 2026-11-17
 
 ### Fixed

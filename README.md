@@ -24,12 +24,10 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.6.1
+### 🆕 What's New in 4.6.2
 
-- **No false GPU fallback after a background start (#210)**: with GPU rendering and start in
-  background both on, opening the window no longer shows "GPU rendering is not working" and
-  switches to software rendering.
-- **About dialog credits**: recent contributors are now listed.
+- **Screen reader detection in the Flatpak (#204)**: Karere now notices a running screen reader
+  on its own, so WhatsApp is read without turning on the screen reader preference.
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the
