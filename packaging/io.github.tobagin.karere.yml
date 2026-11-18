@@ -46,6 +46,7 @@ finish-args:
   # Notifications use gio::Notification, i.e. the notification portal;
   # no org.freedesktop.Notifications access is needed.
   - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=org.a11y.Bus
   - --env=LD_LIBRARY_PATH=/app/lib/cef
   - --env=GSK_RENDERER=gl
 

@@ -82,7 +82,8 @@ pub fn watch(on_enabled: impl Fn() + 'static) {
 const AT_STATUS_PROPS: [&str; 2] = ["ScreenReaderEnabled", "IsEnabled"];
 
 /// Whether the a11y bus launcher reports assistive technology in use.
-/// Flatpak allows these property reads by default.
+/// Under Flatpak this (and the signal in `watch`) needs
+/// `--talk-name=org.a11y.Bus`; without it the proxy hides the launcher.
 fn screen_reader_running() -> bool {
     use gtk::gio;
     use gtk::glib::{self, prelude::*};

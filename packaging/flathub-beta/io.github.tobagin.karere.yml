@@ -52,6 +52,7 @@ finish-args:
   # Notifications use gio::Notification, i.e. the notification portal;
   # no org.freedesktop.Notifications access is needed.
   - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=org.a11y.Bus
   # Autostart goes through the XDG Background portal (ashpd) — no autostart
   # filesystem or portal.Desktop talk-name needed (portal busnames auto-granted).
   - --env=LD_LIBRARY_PATH=/app/lib/cef
