@@ -102,6 +102,13 @@
   <translation type="gettext">karere</translation>
 
   <releases>
+    <release version="4.6.3" date="2026-11-19">
+      <description translate="no">
+        <ul>
+          <li>Fixed screen reader detection in the Flatpak: WhatsApp is now read by a screen reader without turning on the screen reader preference (#204).</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.6.2" date="2026-11-18">
       <description translate="no">
         <ul>

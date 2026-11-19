@@ -24,7 +24,7 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.6.2
+### 🆕 What's New in 4.6.3
 
 - **Screen reader detection in the Flatpak (#204)**: Karere now notices a running screen reader
   on its own, so WhatsApp is read without turning on the screen reader preference.

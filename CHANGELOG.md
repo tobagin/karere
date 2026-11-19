@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.6.3] - 2026-11-19
+
+### Fixed
+- **Screen reader not detected in the Flatpak (#204)**: Karere asked the accessibility bus launcher on the session bus whether a screen reader was running, which the sandbox cannot reach, so WhatsApp was only read with the screen reader preference turned on. It now asks the AT-SPI registry on the accessibility bus the sandbox already has, the way GTK does, both at startup and when a screen reader is started later. This replaces the 4.6.2 approach and needs no extra permission.
+
 ## [4.6.2] - 2026-11-18
+
+Not published on Flathub: the permission it added was not accepted. Superseded by 4.6.3.
 
 ### Fixed
 - **Screen reader not detected in the Flatpak (#204)**: the sandbox could not reach the accessibility bus launcher, so Karere never saw that a screen reader was running and WhatsApp was only read with the screen reader preference turned on. The Flatpak now has access to `org.a11y.Bus`, so detection works at startup and when the screen reader is started later.
