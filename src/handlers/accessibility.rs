@@ -50,23 +50,18 @@ pub fn wanted() -> bool {
 /// restart and no preference needed (#204). It stays on until exit.
 pub fn watch(on_enabled: impl Fn() + 'static) {
     use gtk::gio;
-    use gtk::glib;
-    let Ok(bus) = gio::bus_get_sync(gio::BusType::Session, gio::Cancellable::NONE) else {
+    let Some(bus) = at_spi_bus() else {
         return;
     };
     let subscription = bus.subscribe_to_signal(
-        Some("org.a11y.Bus"),
-        Some("org.freedesktop.DBus.Properties"),
-        Some("PropertiesChanged"),
-        Some("/org/a11y/bus"),
-        Some("org.a11y.Status"),
+        Some(REGISTRY),
+        Some(REGISTRY),
+        Some("EventListenerRegistered"),
+        Some(REGISTRY_PATH),
+        None,
         gio::DBusSignalFlags::NONE,
-        move |signal| {
-            let changed = glib::VariantDict::new(Some(&signal.parameters.child_value(1)));
-            let enabled = AT_STATUS_PROPS
-                .iter()
-                .any(|prop| changed.lookup::<bool>(prop).ok().flatten().unwrap_or(false));
-            if enabled && !STARTED_LATER.swap(true, Ordering::Relaxed) {
+        move |_| {
+            if !STARTED_LATER.swap(true, Ordering::Relaxed) {
                 log::info!("a11y: screen reader started, page tree on");
                 on_enabled();
             }
@@ -76,37 +71,72 @@ pub fn watch(on_enabled: impl Fn() + 'static) {
     std::mem::forget(subscription);
 }
 
-/// `org.a11y.Status` properties that mean assistive technology is in use.
-/// at-spi2-core dropped `ScreenReaderEnabled` (gone by 2.62), leaving only
-/// `IsEnabled`, which Orca turns on when it starts; older launchers have both.
-const AT_STATUS_PROPS: [&str; 2] = ["ScreenReaderEnabled", "IsEnabled"];
+const REGISTRY: &str = "org.a11y.atspi.Registry";
+const REGISTRY_PATH: &str = "/org/a11y/atspi/registry";
 
-/// Whether the a11y bus launcher reports assistive technology in use.
-/// Under Flatpak this (and the signal in `watch`) needs
-/// `--talk-name=org.a11y.Bus`; without it the proxy hides the launcher.
-fn screen_reader_running() -> bool {
+/// The AT-SPI bus. Flatpak gives the sandbox its own filtered socket in
+/// `AT_SPI_BUS_ADDRESS` and hides the launcher (`org.a11y.Bus`, and with it
+/// `org.a11y.Status`) on the session bus; outside a sandbox the launcher
+/// hands out the address.
+fn at_spi_bus() -> Option<gtk::gio::DBusConnection> {
     use gtk::gio;
-    use gtk::glib::{self, prelude::*};
-    let Ok(bus) = gio::bus_get_sync(gio::BusType::Session, gio::Cancellable::NONE) else {
-        return false;
-    };
-    AT_STATUS_PROPS.iter().any(|prop| {
-        bus.call_sync(
-            Some("org.a11y.Bus"),
-            "/org/a11y/bus",
-            "org.freedesktop.DBus.Properties",
-            "Get",
-            Some(&("org.a11y.Status", *prop).to_variant()),
-            Some(glib::VariantTy::new("(v)").unwrap()),
-            gio::DBusCallFlags::NONE,
-            500,
+    use gtk::glib;
+    static BUS: OnceLock<Option<gio::DBusConnection>> = OnceLock::new();
+    BUS.get_or_init(|| {
+        let address = std::env::var("AT_SPI_BUS_ADDRESS")
+            .ok()
+            .filter(|address| !address.is_empty())
+            .or_else(|| {
+                gio::bus_get_sync(gio::BusType::Session, gio::Cancellable::NONE)
+                    .ok()?
+                    .call_sync(
+                        Some("org.a11y.Bus"),
+                        "/org/a11y/bus",
+                        "org.a11y.Bus",
+                        "GetAddress",
+                        None,
+                        Some(glib::VariantTy::new("(s)").unwrap()),
+                        gio::DBusCallFlags::NONE,
+                        500,
+                        gio::Cancellable::NONE,
+                    )
+                    .ok()?
+                    .child_value(0)
+                    .get::<String>()
+            })?;
+        gio::DBusConnection::for_address_sync(
+            &address,
+            gio::DBusConnectionFlags::AUTHENTICATION_CLIENT
+                | gio::DBusConnectionFlags::MESSAGE_BUS_CONNECTION,
+            None,
             gio::Cancellable::NONE,
         )
         .ok()
-        .and_then(|v| v.child_value(0).as_variant())
-        .and_then(|v| v.get::<bool>())
-        .unwrap_or(false)
     })
+    .clone()
+}
+
+/// Whether assistive technology is listening for AT-SPI events, which is how
+/// GTK itself decides. Any AT-SPI client counts, not only a screen reader.
+fn screen_reader_running() -> bool {
+    use gtk::gio;
+    use gtk::glib;
+    at_spi_bus()
+        .and_then(|bus| {
+            bus.call_sync(
+                Some(REGISTRY),
+                REGISTRY_PATH,
+                REGISTRY,
+                "GetRegisteredEvents",
+                None,
+                Some(glib::VariantTy::new("(a(ss))").unwrap()),
+                gio::DBusCallFlags::NONE,
+                500,
+                gio::Cancellable::NONE,
+            )
+            .ok()
+        })
+        .is_some_and(|reply| reply.child_value(0).n_children() > 0)
 }
 
 /// Node rectangle `(x, y, width, height)` in CEF view (physical) pixels.
