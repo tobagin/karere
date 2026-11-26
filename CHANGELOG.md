@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Oversized text in the narrow-window layout**: below 768 px the injected mobile layout raised the font size of every `span` to 107 % (and `.copyable-text` to 106 %). Percentages compound through nested spans, so chat text came out far larger than in WhatsApp Web in a browser. Those rules are gone and the text keeps WhatsApp Web's own size.
+- **Invisible sidebar button in the narrow-window layout**: the button that brings the account menu back drew nothing, because its icon was coloured with a WhatsApp variable that no longer exists. It now shows a sidebar icon that switches between "open" and "close" with the menu state, and follows the light and dark themes.
+- **Back button invisible on the dark theme**: the chevron that returns to the chat list was hard-coded black. It now takes the text colour, so it shows on both themes.
+
 ## [4.6.3] - 2026-11-19
 
 ### Fixed

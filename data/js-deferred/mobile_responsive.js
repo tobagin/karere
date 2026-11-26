@@ -222,9 +222,6 @@ function main(){
         addCss(".NavSidebar { transition: transform 0.25s ease-in-out !important }")
         addCss(".message-out {  padding-right: 20px !important; }");
         addCss(".message-in {  padding-left: 20px !important; }");  
-        addCss("span { font-size: "+107+"% !important; }");    
-        addCss(".copyable-text { font-size: "+106+"% !important; }");         
-        addCss(".html-span { font-size: 96% !important; }");
         addCss('[data-animate-dropdown-item="true"] { left: 2vw !important ; } ');
     } catch (e) { console.log("Error while applying css: "+e) }
 
@@ -595,13 +592,13 @@ function addLeftMenuButtonToChatList(){
   
     if (  My.chatListHeader() && My.chatListHeader().firstChild && ! My.chatListHeader().querySelector('.added_menu_button') )
     {
-    addCss(".added_menu_button span { display:block; height: 100%; width: 100%;}.added_menu_button {  z-index:500; width:50px; height:45px; } html[dir] .added_menu_button { border-radius:50%; } html[dir=ltr] .added_menu_button { right:11px } html[dir=rtl] .added_menu_button { left:11px } .added_menu_button path { fill:var(--panel-header-icon); fill-opacity:1 } .svg_back { transform: rotate(90deg); height: 100%;}");
+    addCss(".added_menu_button span { display:block; height: 100%; width: 100%;}.added_menu_button {  z-index:500; width:50px; height:45px; } html[dir] .added_menu_button { border-radius:50%; } html[dir=ltr] .added_menu_button { right:11px } html[dir=rtl] .added_menu_button { left:11px } .added_menu_button { color:inherit; cursor:pointer } .added_menu_button svg { display:block } .added_menu_button .karere-ico-collapse { display:none } .added_menu_button.karere-menu-open .karere-ico-expand { display:none } .added_menu_button.karere-menu-open .karere-ico-collapse { display:block } .svg_back { transform: rotate(90deg); height: 100%;}");
 
     var newHTML         = document.createElement('div');
     newHTML.className += "added_menu_button";
     newHTML.style = "";
     newHTML.addEventListener("click", toggleLeftMenu);    
-    newHTML.innerHTML   = '<a href="javascript:void(0);" ><span class="html-span" style="height:50px; width:60px;"><div class="html-div" style="padding:10px; --x-transform: none;"><div aria-expanded="false" aria-haspopup="menu" aria-label="MenuLeft" class=""><div class="html-div"><span aria-hidden="true" data-icon="more-refreshed" ><svg viewBox="0 0 24 24" height="24" width="24" preserveAspectRatio="xMidYMid meet" class="" fill="none"><title>more-refreshed</title><path d="M12 20C11.45 20 10.9792 19.8042 10.5875 19.4125C10.1958 19.0208 10 18.55 10 18C10 17.45 10.1958 16.9792 10.5875 16.5875C10.9792 16.1958 11.45 16 12 16C12.55 16 13.0208 16.1958 13.4125 16.5875C13.8042 16.9792 14 17.45 14 18C14 18.55 13.8042 19.0208 13.4125 19.4125C13.0208 19.8042 12.55 20 12 20ZM12 14C11.45 14 10.9792 13.8042 10.5875 13.4125C10.1958 13.0208 10 12.55 10 12C10 11.45 10.1958 10.9792 10.5875 10.5875C10.9792 10.1958 11.45 10 12 10C12.55 10 13.0208 10.1958 13.4125 10.5875C13.8042 10.9792 14 11.45 14 12C14 12.55 13.8042 13.0208 13.4125 13.4125C13.0208 13.8042 12.55 14 12 14ZM12 8C11.45 8 10.9792 7.80417 10.5875 7.4125C10.1958 7.02083 10 6.55 10 6C10 5.45 10.1958 4.97917 10.5875 4.5875C10.9792 4.19583 11.45 4 12 4C12.55 4 13.0208 4.19583 13.4125 4.5875C13.8042 4.97917 14 5.45 14 6C14 6.55 13.8042 7.02083 13.4125 7.4125C13.0208 7.80417 12.55 8 12 8Z" fill="currentColor"></path></svg></span></div><div class="html-div" role="none" data-visualcompletion="ignore" style="inset: 0px;"></div></div></div></span></a>';
+    newHTML.innerHTML   = '<a href="javascript:void(0);" ><span class="html-span" style="height:50px; width:60px;"><div class="html-div" style="padding:10px; --x-transform: none;"><div aria-expanded="false" aria-haspopup="menu" aria-label="MenuLeft" class=""><div class="html-div"><span aria-hidden="true" data-icon="karere-sidebar-toggle"><svg class="karere-ico-expand" viewBox="0 0 24 24" height="24" width="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16"></path><path d="M14 9l3 3-3 3"></path></svg><svg class="karere-ico-collapse" viewBox="0 0 24 24" height="24" width="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16"></path><path d="M17 9l-3 3 3 3"></path></svg></span></div><div class="html-div" role="none" data-visualcompletion="ignore" style="inset: 0px;"></div></div></div></span></a>';
     
     //Insert it, TODO improve the way it is inserted
           My.chatListHeader().firstChild.style.width="calc(100% - 40px)";
@@ -620,13 +617,13 @@ function addLeftMenuButtonToChatList(){
 function addBackButtonToChatView(){
 
     if (!document.getElementById('karere-back-button-css'))
-    addCss(".back_button span { display:block; height: 100%; width: 100%;}.back_button {  z-index:200; width:37px; height:45px; } html[dir] .back_button { border-radius:50%; } html[dir=ltr] .back_button { right:11px } html[dir=rtl] .back_button { left:11px } .back_button path { fill:var(--panel-header-icon); fill-opacity:1 } .svg_back { transform: rotate(90deg); height: 100%;}", 'karere-back-button-css');
+    addCss(".back_button span { display:block; height: 100%; width: 100%;}.back_button {  z-index:200; width:37px; height:45px; } html[dir] .back_button { border-radius:50%; } html[dir=ltr] .back_button { right:11px } html[dir=rtl] .back_button { left:11px } .back_button { color:inherit } .back_button path { fill:currentColor; fill-opacity:1 } .svg_back { transform: rotate(90deg); height: 100%;}", 'karere-back-button-css');
     
     var newHTML         = document.createElement('div');
     newHTML.className += "back_button";
     newHTML.style = "";
     newHTML.addEventListener("click", showchatlist);
-    newHTML.innerHTML   = "<span data-icon='left' id='back_button' ><svg class='svg_back' id='Layer_1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 21 21' width='21' height='21'><path fill='#000000' fill-opacity='1' d='M4.8 6.1l5.7 5.7 5.7-5.7 1.6 1.6-7.3 7.2-7.3-7.2 1.6-1.6z'></path></svg></span>";
+    newHTML.innerHTML   = "<span data-icon='left' id='back_button' ><svg class='svg_back' id='Layer_1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 21 21' width='21' height='21'><path fill='currentColor' fill-opacity='1' d='M4.8 6.1l5.7 5.7 5.7-5.7 1.6 1.6-7.3 7.2-7.3-7.2 1.6-1.6z'></path></svg></span>";
 
     if (! My.chatHeader().querySelector('#back_button') )
         My.chatHeader().prepend(newHTML);
@@ -637,10 +634,16 @@ function addBackButtonToChatView(){
 //  SECTION6:        Function To display or hide left menu
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //------------------------------------------------------------------------------------
+function setMenuButtonState(open){
+  var btn = document.querySelector('.added_menu_button');
+  if (btn) btn.classList.toggle('karere-menu-open', open);
+}
+
 function toggleLeftMenu(){
   if (My.leftMenu()) {
       if ( My.leftMenu().style.display == 'none' )
       {
+        setMenuButtonState(true);
         My.leftMenu().style.display = 'block';
         My.unkownSection2().style.minWidth = "90%"
         My.chatList().style.transform= '';
@@ -663,6 +666,7 @@ function toggleLeftMenu(){
       }
       else
       {
+        setMenuButtonState(false);
         My.chatWindow().style.position=""
         My.chatWindow().style.left=""
         My.chatList().style.position= 'absolute';
