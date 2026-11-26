@@ -33,6 +33,13 @@ wrap_render_process_handler! {
     }
 
     impl RenderProcessHandler {
+        // Renderers forked from the zygote skipped the trim thread `main`
+        // starts. This runs once in every renderer, including the service
+        // worker's, which never creates a main-frame context.
+        fn on_web_kit_initialized(&self) {
+            crate::malloc_trim::start();
+        }
+
         fn on_context_created(
             &self,
             _browser: Option<&mut Browser>,

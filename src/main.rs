@@ -20,6 +20,7 @@ mod gtk_css;
 mod handlers;
 mod i18n;
 mod ipc;
+mod malloc_trim;
 mod notifications;
 mod paste;
 mod permissions_store;
@@ -95,6 +96,13 @@ fn main() -> Result<()> {
 
     let type_switch = CefString::from("type");
     let is_browser_process = cmd.has_switch(Some(&type_switch)) != 1;
+
+    // Return glibc's freed heap pages periodically in every process. The
+    // zygote must stay single-threaded until it forks; renderers forked from
+    // it start their own trim thread in the render-process handler.
+    if !std::env::args().any(|a| a == "--type=zygote") {
+        malloc_trim::start();
+    }
 
     let mut cef_app = cef_runtime::build_app();
     let ret = cef::execute_process(
