@@ -524,6 +524,7 @@ function showchatWindow(){
    My.chatList().style.transform= "translateX(-100%)";
    
   //Hide left menu (in case it was oppened)
+   setMenuButtonState(false);
    My.leftMenu().style.display = 'none';
    My.unkownSection2().style.minWidth = "100%"    
    My.overlayMenus().style.minWidth = "100%"
