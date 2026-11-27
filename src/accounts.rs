@@ -124,6 +124,11 @@ pub fn accounts_root() -> PathBuf {
 
 /// One-time, marker-guarded purge of pre-v4 data; call before CEF init.
 pub fn purge_legacy_v3_data() {
+    // Generic WebKit/CEF directories are private to Karere only in Flatpak (#211).
+    if std::env::var_os("FLATPAK_ID").is_none() {
+        return;
+    }
+
     let data = glib::user_data_dir();
     let marker = data.join("karere").join(".v3-data-purged");
     if marker.exists() {
