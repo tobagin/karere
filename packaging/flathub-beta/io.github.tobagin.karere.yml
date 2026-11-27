@@ -120,8 +120,8 @@ modules:
       # commit when the Flathub beta branch is pushed.
       - type: git
         url: https://github.com/tobagin/karere
-        tag: v4.6.3
-        commit: aa9f6421bbfe9fc54468f8bcd5df103010a95030
+        tag: v4.6.4
+        commit: 71f5d105baf5f9def441251f1cd94e073130d9ed
       - cargo-sources.json
     # Move our gettext catalogs out of share/locale so flatpak's automatic
     # per-language .Locale extension (which only deploys the host's languages)
