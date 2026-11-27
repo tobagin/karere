@@ -1,10 +1,12 @@
 use std::os::raw::c_int;
 
 use cef::{
-    self, Browser, CefString, ContextMenuHandler, ContextMenuParams, Frame, ImplBrowser,
-    ImplContextMenuHandler, ImplContextMenuParams, ImplMenuModel, ImplRunContextMenuCallback,
-    MenuItemType, MenuModel, RunContextMenuCallback, WrapContextMenuHandler, rc::Rc,
-    wrap_context_menu_handler,
+    self, AlphaType, Browser, CefString, ColorType, ContextMenuHandler, ContextMenuMediaType,
+    ContextMenuParams, DownloadImageCallback, Frame, Image, ImplBinaryValue, ImplBrowser,
+    ImplBrowserHost, ImplContextMenuHandler, ImplContextMenuParams, ImplDownloadImageCallback,
+    ImplFrame, ImplImage, ImplMenuModel, ImplRunContextMenuCallback, MenuItemType, MenuModel,
+    ProcessId, RunContextMenuCallback, WrapContextMenuHandler, WrapDownloadImageCallback, rc::Rc,
+    wrap_context_menu_handler, wrap_download_image_callback,
 };
 
 /// Owned snapshot of a CEF `MenuModel` entry, decoupled from the non-`Send`
@@ -81,9 +83,42 @@ fn snapshot_model(model: &MenuModel) -> Vec<MenuEntry> {
 /// links were uncopyable (#205).
 pub(crate) const MENU_ID_COPY_LINK: i32 = cef::sys::cef_menu_id_t::MENU_ID_USER_FIRST as i32;
 
+/// Karere's own "Copy Image" entry. Chromium's image commands are stripped by
+/// the allowlist and CEF's OSR clipboard does not reach GDK (#215).
+pub(crate) const MENU_ID_COPY_IMAGE: i32 = cef::sys::cef_menu_id_t::MENU_ID_USER_FIRST as i32 + 1;
+
+/// Upper bound on raw BGRA pixel data accepted for a context-menu image copy
+/// (128 MiB ≈ 5792×5792 px).
+const MAX_CLIPBOARD_BITMAP_BYTES: usize = 128 * 1024 * 1024;
+
+/// Schemes we allow `BrowserHost::download_image` to fetch for Copy Image.
+/// Rejects local/internal schemes such as `file:`, `chrome:`, or `javascript:`.
+fn is_copyable_image_url(url: &str) -> bool {
+    let Some((scheme, rest)) = url.split_once(':') else {
+        return false;
+    };
+    if rest.is_empty() {
+        return false;
+    }
+    matches!(
+        scheme.to_ascii_lowercase().as_str(),
+        "https" | "http" | "blob" | "data"
+    )
+}
+
+/// Validate decoded bitmap dimensions and return `(stride, expected_bytes)`.
+fn validate_bitmap_layout(width: i32, height: i32) -> Option<(usize, usize)> {
+    let w = usize::try_from(width).ok().filter(|&w| w > 0)?;
+    let h = usize::try_from(height).ok().filter(|&h| h > 0)?;
+    let stride = w.checked_mul(4)?;
+    let total = stride.checked_mul(h)?;
+    (total <= MAX_CLIPBOARD_BITMAP_BYTES).then_some((stride, total))
+}
+
 /// Commands the host menu may run: editing, spellcheck and Karere's own Copy
-/// Link Address. Everything else CEF offers (navigation, print, view source,
-/// open link in new tab/window) is removed from the menu and refused.
+/// Link Address / Copy Image. Everything else CEF offers (navigation, print,
+/// view source, open link in new tab/window) is removed from the menu and
+/// refused.
 pub(crate) fn is_allowed_command(command_id: i32) -> bool {
     use cef::sys::cef_menu_id_t as M;
     let id = command_id;
@@ -91,6 +126,7 @@ pub(crate) fn is_allowed_command(command_id: i32) -> bool {
         || (M::MENU_ID_SPELLCHECK_SUGGESTION_0 as i32..=M::MENU_ID_ADD_TO_DICTIONARY as i32)
             .contains(&id)
         || id == MENU_ID_COPY_LINK
+        || id == MENU_ID_COPY_IMAGE
 }
 
 /// Classify Chromium's Copy command by stable CEF command id, never by its
@@ -122,20 +158,34 @@ wrap_context_menu_handler! {
         ) {
             let Some(model) = model else { return };
             strip_disallowed_entries(model);
-            let has_link = params.is_some_and(|p| !userfree_to_string(p.link_url()).is_empty());
+            let has_image = params.as_ref().is_some_and(|p| {
+                p.media_type() == ContextMenuMediaType::IMAGE
+                    && p.has_image_contents() != 0
+                    && is_copyable_image_url(&userfree_to_string(p.source_url()))
+            });
+            let has_link = params
+                .as_ref()
+                .is_some_and(|p| !userfree_to_string(p.link_url()).is_empty());
+            let had_items = model.count() > 0;
+            let mut pos = 0;
+            if has_image {
+                let label = CefString::from(gettextrs::gettext("Copy Image").as_str());
+                model.insert_item_at(pos, MENU_ID_COPY_IMAGE, Some(&label));
+                pos += 1;
+            }
             if has_link {
                 let label = CefString::from(gettextrs::gettext("Copy Link Address").as_str());
-                let had_items = model.count() > 0;
-                model.insert_item_at(0, MENU_ID_COPY_LINK, Some(&label));
-                if had_items {
-                    model.insert_separator_at(1);
-                }
+                model.insert_item_at(pos, MENU_ID_COPY_LINK, Some(&label));
+                pos += 1;
+            }
+            if pos > 0 && had_items {
+                model.insert_separator_at(pos);
             }
         }
 
         fn on_context_menu_command(
             &self,
-            _browser: Option<&mut Browser>,
+            browser: Option<&mut Browser>,
             _frame: Option<&mut Frame>,
             params: Option<&mut ContextMenuParams>,
             command_id: c_int,
@@ -145,13 +195,22 @@ wrap_context_menu_handler! {
                 log::debug!("context menu: refused command {command_id}");
                 return 1;
             }
-            if command_id != MENU_ID_COPY_LINK {
-                return 0;
+            if command_id == MENU_ID_COPY_LINK {
+                if let Some(p) = params {
+                    super::client::write_regular_clipboard(&userfree_to_string(p.link_url()));
+                }
+                return 1;
             }
-            if let Some(p) = params {
-                super::client::write_regular_clipboard(&userfree_to_string(p.link_url()));
+            if command_id == MENU_ID_COPY_IMAGE {
+                if let (Some(browser), Some(p)) = (browser, params) {
+                    let url = userfree_to_string(p.source_url());
+                    if is_copyable_image_url(&url) {
+                        download_image_to_clipboard(browser, &url);
+                    }
+                }
+                return 1;
             }
-            1
+            0
         }
 
         // OSR has no platform window for CEF to draw the menu, so the host
@@ -208,6 +267,122 @@ impl ShellContextMenuHandlerBuilder {
     pub fn build() -> ContextMenuHandler {
         Self::new(ShellContextMenuHandler)
     }
+}
+
+#[derive(Clone)]
+struct CopyImageCallback {
+    browser: Browser,
+    url: String,
+}
+
+wrap_download_image_callback! {
+    struct CopyImageCallbackBuilder {
+        inner: CopyImageCallback,
+    }
+
+    impl DownloadImageCallback {
+        fn on_download_image_finished(
+            &self,
+            _image_url: Option<&CefString>,
+            http_status_code: c_int,
+            image: Option<&mut Image>,
+        ) {
+            if let Some(image) = image.filter(|img| img.is_empty() == 0)
+                && copy_cef_image_to_clipboard(image)
+            {
+                return;
+            }
+            log::debug!(
+                "copy image: DownloadImage returned no usable bitmap (status {http_status_code}); falling back to renderer fetch"
+            );
+            send_renderer_copy_image(&self.inner.browser, &self.inner.url);
+        }
+    }
+}
+
+impl CopyImageCallbackBuilder {
+    fn build(browser: Browser, url: String) -> DownloadImageCallback {
+        Self::new(CopyImageCallback { browser, url })
+    }
+}
+
+/// Fetch `url` through Blink's frame-scoped image downloader and copy the
+/// decoded bitmap onto the GDK clipboard (#215). Falls back to renderer-side
+/// `fetch` IPC if `DownloadImage` cannot deliver a usable bitmap. Runs on the
+/// CEF UI thread.
+fn download_image_to_clipboard(browser: &Browser, url: &str) {
+    let Some(host) = browser.host() else {
+        log::warn!("copy image: browser has no host");
+        send_renderer_copy_image(browser, url);
+        return;
+    };
+    let mut callback = CopyImageCallbackBuilder::build(browser.clone(), url.to_owned());
+    host.download_image(
+        Some(&CefString::from(url)),
+        0, // is_favicon = false (keep session context)
+        0, // max_image_size = 0 (unlimited / full resolution)
+        0, // bypass_cache = false (reuse already-loaded image)
+        Some(&mut callback),
+    );
+}
+
+/// Fallback when `BrowserHost::download_image` does not return an image: ask
+/// the renderer copy bridge to fetch `url`, convert to PNG if needed, and
+/// return it via `RendererMessage::SetClipboardImage`.
+fn send_renderer_copy_image(browser: &Browser, url: &str) {
+    let Some(frame) = browser.main_frame() else {
+        log::warn!("copy image fallback: browser has no main frame");
+        return;
+    };
+    let msg = crate::ipc::BrowserMessage::CopyImage {
+        url: url.to_owned(),
+    };
+    if let Some(mut cef_msg) = msg.to_cef_message() {
+        frame.send_process_message(ProcessId::RENDERER, Some(&mut cef_msg));
+    }
+}
+
+/// Extract the decoded bitmap from `image` and place it on the GDK clipboard.
+/// Returns `true` when the texture was written to the clipboard.
+fn copy_cef_image_to_clipboard(image: &Image) -> bool {
+    use gtk::prelude::Cast;
+
+    let mut width: c_int = 0;
+    let mut height: c_int = 0;
+    let Some(binary) = image.as_bitmap(
+        1.0,
+        ColorType::BGRA_8888,
+        AlphaType::PREMULTIPLIED,
+        Some(&mut width),
+        Some(&mut height),
+    ) else {
+        log::warn!("copy image: failed to extract bitmap");
+        return false;
+    };
+    let Some((stride, expected_bytes)) = validate_bitmap_layout(width, height) else {
+        log::warn!("copy image: invalid or oversized dimensions ({width}x{height})");
+        return false;
+    };
+    let size = binary.size();
+    if size != expected_bytes {
+        log::warn!("copy image: unexpected bitmap size ({size} != {expected_bytes})");
+        return false;
+    }
+    let mut buf = vec![0u8; size];
+    let copied = binary.data(Some(&mut buf), 0);
+    if copied != size {
+        log::warn!("copy image: short bitmap read ({copied} != {size})");
+        return false;
+    }
+    let texture = gtk::gdk::MemoryTexture::new(
+        width,
+        height,
+        gtk::gdk::MemoryFormat::B8g8r8a8Premultiplied,
+        &gtk::glib::Bytes::from_owned(buf),
+        stride,
+    );
+    super::client::write_clipboard_texture(texture.upcast_ref());
+    true
 }
 
 /// Remove every entry whose command is not [`is_allowed_command`] (recursing
@@ -282,10 +457,13 @@ fn normalize_separators(types: &[MenuItemType], remove: &mut [bool]) {
 
 #[cfg(test)]
 mod tests {
-    use super::{MENU_ID_COPY_LINK, is_allowed_command, is_copy_command, is_paste_command};
+    use super::{
+        MAX_CLIPBOARD_BITMAP_BYTES, MENU_ID_COPY_IMAGE, MENU_ID_COPY_LINK, is_allowed_command,
+        is_copy_command, is_copyable_image_url, is_paste_command, validate_bitmap_layout,
+    };
 
     #[test]
-    fn only_edit_spellcheck_and_copy_link_commands_are_allowed() {
+    fn only_edit_spellcheck_and_copy_commands_are_allowed() {
         use cef::sys::cef_menu_id_t as M;
         for id in [
             M::MENU_ID_UNDO,
@@ -300,7 +478,9 @@ mod tests {
         ] {
             assert!(is_allowed_command(id as i32), "{id:?}");
         }
+        assert_ne!(MENU_ID_COPY_LINK, MENU_ID_COPY_IMAGE);
         assert!(is_allowed_command(MENU_ID_COPY_LINK));
+        assert!(is_allowed_command(MENU_ID_COPY_IMAGE));
         for id in [
             M::MENU_ID_BACK,
             M::MENU_ID_RELOAD,
@@ -310,10 +490,47 @@ mod tests {
         ] {
             assert!(!is_allowed_command(id as i32), "{id:?}");
         }
-        // Chromium's "Open link in new tab/window/incognito".
-        for id in [50100, 50101, 50102, 0, -1] {
+        // Chromium's "Open link in new tab/window/incognito" and native image commands.
+        for id in [50100, 50101, 50102, 50112, 50113, 50114, 0, -1] {
             assert!(!is_allowed_command(id));
         }
+    }
+
+    #[test]
+    fn copyable_image_url_scheme_allowlist() {
+        for ok in [
+            "blob:https://web.whatsapp.com/1234-abcd",
+            "BLOB:https://web.whatsapp.com/1234-abcd",
+            "data:image/png;base64,iVBORw0KGgo=",
+            "https://pps.whatsapp.net/v/t61.24694-24/avatar.jpg",
+            "http://127.0.0.1:8080/test.png",
+        ] {
+            assert!(is_copyable_image_url(ok), "{ok}");
+        }
+        for bad in [
+            "",
+            "blob:",
+            "data:",
+            "relative/image.png",
+            "file:///etc/passwd",
+            "chrome://settings",
+            "javascript:alert(1)",
+            "about:blank",
+        ] {
+            assert!(!is_copyable_image_url(bad), "{bad}");
+        }
+    }
+
+    #[test]
+    fn bitmap_layout_validation() {
+        assert_eq!(validate_bitmap_layout(10, 20), Some((40, 800)));
+        assert_eq!(validate_bitmap_layout(0, 10), None);
+        assert_eq!(validate_bitmap_layout(10, 0), None);
+        assert_eq!(validate_bitmap_layout(-1, 10), None);
+        assert_eq!(validate_bitmap_layout(i32::MAX, i32::MAX), None);
+        // 6000 * 6000 * 4 = 144 MiB > 128 MiB cap.
+        const { assert!(6000 * 6000 * 4 > MAX_CLIPBOARD_BITMAP_BYTES) };
+        assert_eq!(validate_bitmap_layout(6000, 6000), None);
     }
 
     #[test]

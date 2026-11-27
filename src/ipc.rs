@@ -27,6 +27,9 @@ pub enum BrowserMessage {
     /// Read the main frame's live selection and report it through SetClipboard.
     /// This is user-triggered (Ctrl+C or CEF's Copy menu command).
     CopySelection,
+    /// Fallback for context-menu Copy Image (#215): fetch `url` in the renderer,
+    /// convert to PNG if needed, and report it through SetClipboardImage.
+    CopyImage { url: String },
     /// Synthesize a paste/drop of one payload (image paste, middle-click text);
     /// x/y, when set, are page CSS px.
     DispatchPasteEvent {
@@ -173,6 +176,7 @@ fn decode_payload<T: for<'de> Deserialize<'de>>(
 impl BrowserMessage {
     const KNOWN_TAGS: &'static [&'static str] = &[
         "CopySelection",
+        "CopyImage",
         "DispatchPasteEvent",
         "DispatchPasteFiles",
         "DragHover",
@@ -183,6 +187,7 @@ impl BrowserMessage {
     pub fn variant_tag(&self) -> &'static str {
         match self {
             BrowserMessage::CopySelection => "CopySelection",
+            BrowserMessage::CopyImage { .. } => "CopyImage",
             BrowserMessage::DispatchPasteEvent { .. } => "DispatchPasteEvent",
             BrowserMessage::DispatchPasteFiles { .. } => "DispatchPasteFiles",
             BrowserMessage::DragHover { .. } => "DragHover",
@@ -258,6 +263,9 @@ mod tests {
     fn browser_roundtrip_every_variant() {
         let cases = vec![
             BrowserMessage::CopySelection,
+            BrowserMessage::CopyImage {
+                url: "blob:https://web.whatsapp.com/1234-abcd".into(),
+            },
             BrowserMessage::DispatchPasteEvent {
                 mime: "image/png".into(),
                 kind: "paste".into(),

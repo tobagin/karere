@@ -28,6 +28,73 @@
   }
 
   try {
+    function blobToBase64(blob) {
+      return new Promise(function (resolve, reject) {
+        var r = new FileReader();
+        r.onload = function () {
+          var url = String(r.result || "");
+          var comma = url.indexOf(",");
+          resolve(comma !== -1 ? url.slice(comma + 1) : "");
+        };
+        r.onerror = reject;
+        r.readAsDataURL(blob);
+      });
+    }
+
+    function blobToPng(blob) {
+      if (blob && blob.type === "image/png") {
+        return Promise.resolve(blob);
+      }
+      // Media-viewer blobs are typically JPEG/WebP, while SetClipboardImage
+      // only accepts PNG; transcode inside the renderer.
+      if (
+        typeof createImageBitmap === "function" &&
+        typeof document.createElement === "function"
+      ) {
+        return createImageBitmap(blob).then(function (bmp) {
+          try {
+            var canvas = document.createElement("canvas");
+            canvas.width = bmp.width;
+            canvas.height = bmp.height;
+            var ctx = canvas.getContext("2d");
+            if (!ctx) throw new Error("2d context unavailable");
+            ctx.drawImage(bmp, 0, 0);
+            return new Promise(function (resolve, reject) {
+              canvas.toBlob(function (png) {
+                if (png) resolve(png);
+                else reject(new Error("toBlob failed"));
+              }, "image/png");
+            });
+          } finally {
+            if (typeof bmp.close === "function") bmp.close();
+          }
+        });
+      }
+      return Promise.reject(new Error("canvas conversion unavailable"));
+    }
+
+    // Host-triggered Copy Image fallback (#215): fetch the image URL (e.g. a
+    // blob: URL) in the renderer, convert to PNG if needed, and ship it via
+    // SetClipboardImage.
+    function copyImageFromUrl(e) {
+      try {
+        var url = e && e.detail && typeof e.detail.url === "string" ? e.detail.url : "";
+        if (!url || typeof fetch !== "function") return;
+        fetch(url)
+          .then(function (resp) {
+            if (!resp || !resp.ok) throw new Error("fetch failed");
+            return resp.blob();
+          })
+          .then(blobToPng)
+          .then(blobToBase64)
+          .then(function (b64) {
+            if (b64) send("SetClipboardImage", { base64_png: b64 });
+          })
+          .catch(function () {});
+      } catch (_) {}
+    }
+    window.addEventListener("karere:copy-image", copyImageFromUrl, false);
+
     // Host-triggered explicit Copy reads selection synchronously in this renderer,
     // rather than racing the debounced PRIMARY mirror. Empty/collapsed selections
     // deliberately send nothing so an existing regular clipboard is preserved.
@@ -63,16 +130,8 @@
             if (item && item.types && item.types.indexOf("image/png") !== -1) {
               item
                 .getType("image/png")
-                .then(function (blob) {
-                  return new Promise(function (resolve, reject) {
-                    var r = new FileReader();
-                    r.onload = function () { resolve(String(r.result)); };
-                    r.onerror = reject;
-                    r.readAsDataURL(blob);
-                  });
-                })
-                .then(function (url) {
-                  var b64 = url.slice(url.indexOf(",") + 1);
+                .then(blobToBase64)
+                .then(function (b64) {
                   if (b64) send("SetClipboardImage", { base64_png: b64 });
                 })
                 .catch(function () {});

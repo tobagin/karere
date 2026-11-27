@@ -178,6 +178,13 @@ pub(crate) fn dispatch_browser_message_with(
         BrowserMessage::CopySelection => {
             sink.execute_java_script(COPY_SELECTION_SCRIPT, "karere://copy-selection");
         }
+        BrowserMessage::CopyImage { url } => {
+            let detail = serde_json::json!({ "url": url });
+            let script = format!(
+                "window.dispatchEvent(new CustomEvent('karere:copy-image',{{detail:{detail}}}))"
+            );
+            sink.execute_java_script(&script, "karere://copy-image");
+        }
         BrowserMessage::DispatchPasteEvent {
             mime,
             kind,

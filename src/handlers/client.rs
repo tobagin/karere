@@ -470,13 +470,23 @@ const CLIPBOARD_GESTURE_WINDOW_MS: i64 = 5_000;
 /// Cap on a page-supplied clipboard image, checked before decoding (≈48 MB raw).
 const MAX_CLIPBOARD_IMAGE_B64: usize = 64 * 1024 * 1024;
 
+/// Put a decoded image texture on the host GDK regular clipboard. Clears any
+/// pending text-coalescing write so a stale timer cannot overwrite the image.
+/// CEF UI thread (= glib main thread) only.
+pub(crate) fn write_clipboard_texture(texture: &gtk::gdk::Texture) {
+    use gtk::prelude::*;
+    PENDING_CLIPBOARD.take();
+    if let Some(display) = gtk::gdk::Display::default() {
+        display.clipboard().set_texture(texture);
+    }
+}
+
 /// Put a page-copied PNG on the host GDK clipboard (#196). CEF OSR keeps
 /// `navigator.clipboard.write` images in Chromium's internal clipboard, so the
 /// copy bridge forwards them. GDK decodes the bytes, so anything that isn't a
 /// valid image is dropped rather than offered to other apps.
 fn write_host_clipboard_image(base64_png: &str) {
     use base64::Engine;
-    use gtk::prelude::*;
     if base64_png.len() > MAX_CLIPBOARD_IMAGE_B64 {
         log::warn!(
             "SetClipboardImage: oversized base64 ({} bytes), dropping",
@@ -504,9 +514,7 @@ fn write_host_clipboard_image(base64_png: &str) {
             return;
         }
     };
-    if let Some(display) = gtk::gdk::Display::default() {
-        display.clipboard().set_texture(&texture);
-    }
+    write_clipboard_texture(&texture);
 }
 
 impl ClientBuilder {

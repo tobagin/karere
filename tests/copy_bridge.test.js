@@ -230,5 +230,82 @@ setImmediate(() => {
       payload: { base64_png: "iVBORw0KGgo=" },
     }]);
     console.log("copy bridge clipboard image: ok");
+
+    // Host-triggered Copy Image fallback (#215): direct PNG blob skips canvas.
+    sent.length = 0;
+    let bitmapClosed = false;
+    let canvasUsed = false;
+    context.fetch = (url) => {
+      if (url === "blob:https://web.whatsapp.com/png") {
+        return Promise.resolve({
+          ok: true,
+          blob: () => Promise.resolve({
+            type: "image/png",
+            dataUrl: "data:image/png;base64,UE5H",
+          }),
+        });
+      }
+      if (url === "blob:https://web.whatsapp.com/jpeg") {
+        return Promise.resolve({
+          ok: true,
+          blob: () => Promise.resolve({ type: "image/jpeg" }),
+        });
+      }
+      return Promise.resolve({ ok: false });
+    };
+    context.createImageBitmap = () => Promise.resolve({
+      width: 4,
+      height: 3,
+      close() { bitmapClosed = true; },
+    });
+    context.document.createElement = (tag) => {
+      assert.equal(tag, "canvas");
+      canvasUsed = true;
+      return {
+        width: 0,
+        height: 0,
+        getContext: () => ({ drawImage() {} }),
+        toBlob(cb, mime) {
+          assert.equal(mime, "image/png");
+          cb({ type: "image/png", dataUrl: "data:image/png;base64,SlBFRw==" });
+        },
+      };
+    };
+
+    hostListeners.get("karere:copy-image")({
+      detail: { url: "blob:https://web.whatsapp.com/png" },
+    });
+    setTimeout(() => {
+      assert.equal(canvasUsed, false);
+      assert.deepEqual(sent, [{
+        name: "SetClipboardImage",
+        payload: { base64_png: "UE5H" },
+      }]);
+
+      // Non-PNG (JPEG) blob is converted to PNG via canvas and closes bitmap.
+      sent.length = 0;
+      hostListeners.get("karere:copy-image")({
+        detail: { url: "blob:https://web.whatsapp.com/jpeg" },
+      });
+      setTimeout(() => {
+        assert.equal(canvasUsed, true);
+        assert.equal(bitmapClosed, true);
+        assert.deepEqual(sent, [{
+          name: "SetClipboardImage",
+          payload: { base64_png: "SlBFRw==" },
+        }]);
+
+        // Failed fetch and empty URL leave clipboard untouched.
+        sent.length = 0;
+        hostListeners.get("karere:copy-image")({
+          detail: { url: "blob:https://web.whatsapp.com/missing" },
+        });
+        hostListeners.get("karere:copy-image")({ detail: { url: "" } });
+        setTimeout(() => {
+          assert.deepEqual(sent, []);
+          console.log("copy bridge copy-image fallback: ok");
+        }, 0);
+      }, 0);
+    }, 0);
   }, 0);
 });
