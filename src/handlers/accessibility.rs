@@ -404,6 +404,21 @@ const DROP_ROLES: &[&str] = &[
     "iframePresentational",
 ];
 
+/// Focusable item containers that web apps (notably WhatsApp's chat message
+/// rows) leave unnamed, relying on browsers' web screen-reader scripts to read
+/// their descendants. When unnamed and focusable, synthesize a label from
+/// visible descendant text so keyboard navigation speaks the message (#204).
+const SYNTHESIZE_LABEL_ROLES: &[&str] = &["row", "layoutTableRow", "listItem", "article", "comment"];
+
+/// Cap on synthesized container labels (in bytes, truncated on a char boundary).
+const MAX_SYNTHESIZED_LABEL_BYTES: usize = 4096;
+
+fn needs_synthesized_label(n: &AxNode) -> bool {
+    n.name.is_empty()
+        && n.has_state("focusable")
+        && SYNTHESIZE_LABEL_ROLES.contains(&n.role.as_str())
+}
+
 fn disposition(n: &AxNode, ancestor_name: &str) -> Disposition {
     if n.has_state("invisible") || DROP_ROLES.contains(&n.role.as_str()) {
         return Disposition::Drop;
@@ -508,6 +523,7 @@ pub fn gtk_role(role: &str) -> gtk::AccessibleRole {
 pub struct AxProps {
     pub role: gtk::AccessibleRole,
     pub label: String,
+    pub value: String,
     pub description: String,
     pub placeholder: String,
     /// Heading level, 0 when not a heading.
@@ -636,10 +652,85 @@ impl AxTree {
         Vec::new()
     }
 
+    /// Nearest strict ancestor whose label is synthesized from descendants
+    /// (e.g. a focusable nameless message `row`), so descendant edits refresh
+    /// that ancestor's accessible label.
+    pub fn synthesizing_ancestor(&self, id: i64) -> Option<i64> {
+        let mut cur = id;
+        for _ in 0..64 {
+            cur = *self.parents.get(&cur)?;
+            if self.nodes.get(&cur).is_some_and(needs_synthesized_label) {
+                return Some(cur);
+            }
+        }
+        None
+    }
+
+    /// Assemble a spoken label for an unnamed focusable container from its
+    /// visible descendants in document order.
+    fn synthesized_label(&self, id: i64) -> String {
+        let Some(root) = self.nodes.get(&id) else {
+            return String::new();
+        };
+        let mut parts: Vec<&str> = Vec::new();
+        let mut bytes = 0usize;
+        self.collect_text_parts(root, "", &mut parts, &mut bytes, 0);
+        let joined = parts.join(" ");
+        if joined.len() <= MAX_SYNTHESIZED_LABEL_BYTES {
+            return joined;
+        }
+        let mut end = MAX_SYNTHESIZED_LABEL_BYTES;
+        while end > 0 && !joined.is_char_boundary(end) {
+            end -= 1;
+        }
+        joined[..end].to_owned()
+    }
+
+    fn collect_text_parts<'a>(
+        &'a self,
+        node: &'a AxNode,
+        ancestor_name: &'a str,
+        parts: &mut Vec<&'a str>,
+        bytes: &mut usize,
+        depth: u32,
+    ) {
+        if depth > 64 || *bytes >= MAX_SYNTHESIZED_LABEL_BYTES {
+            return;
+        }
+        for c in &node.children {
+            let Some(cn) = self.nodes.get(c) else {
+                continue;
+            };
+            if cn.has_state("invisible") || DROP_ROLES.contains(&cn.role.as_str()) {
+                continue;
+            }
+            let next_ancestor = if !cn.name.is_empty() {
+                let text = cn.name.as_str();
+                let redundant = (!ancestor_name.is_empty() && ancestor_name.contains(text))
+                    || parts.last().is_some_and(|&prev| prev == text);
+                if !redundant {
+                    *bytes = bytes.saturating_add(text.len() + 1);
+                    parts.push(text);
+                }
+                text
+            } else {
+                ancestor_name
+            };
+            if !LEAF_ROLES.contains(&cn.role.as_str()) {
+                self.collect_text_parts(cn, next_ancestor, parts, bytes, depth + 1);
+            }
+        }
+    }
+
     /// Role, name and states for `id`.
     pub fn props(&self, id: i64) -> Option<AxProps> {
         let n = self.nodes.get(&id)?;
         let role = gtk_role(&n.role);
+        let label = if needs_synthesized_label(n) {
+            self.synthesized_label(id)
+        } else {
+            n.name.clone()
+        };
         // A field's value is what the user typed; say it after any hint.
         let description = [n.value.as_str(), n.description.as_str()]
             .into_iter()
@@ -655,7 +746,8 @@ impl AxTree {
         };
         Some(AxProps {
             role,
-            label: n.name.clone(),
+            label,
+            value: n.value.clone(),
             description,
             placeholder: n.placeholder.clone(),
             level: if role == gtk::AccessibleRole::Heading {
@@ -1021,9 +1113,45 @@ mod tests {
         assert_eq!((p.selected, p.expanded), (Some(true), Some(false)));
         let p = t.props(14).unwrap();
         assert_eq!(
-            (p.description.as_str(), p.placeholder.as_str()),
-            ("+351", "Number")
+            (p.description.as_str(), p.placeholder.as_str(), p.value.as_str()),
+            ("+351", "Number", "+351")
         );
+    }
+
+    #[test]
+    fn focusable_nameless_message_rows_synthesize_label_from_descendants() {
+        let mut t = AxTree::default();
+        t.apply(&json!({ "updates": [{ "root_id": 1, "nodes": [
+            full(1, "rootWebArea", "WhatsApp", &[2, 9, 11], json!({})),
+            // Unnamed focusable message row like WhatsApp Web's chat bubbles.
+            full(2, "row", "", &[3, 4, 6, 7, 8], json!({ "state": ["focusable"] })),
+            full(3, "genericContainer", "You:", &[], json!({})),
+            full(4, "button", "Quoted message", &[5], json!({ "state": ["focusable"] })),
+            full(5, "staticText", "Quoted message", &[], json!({})),
+            full(6, "staticText", "Hello world", &[], json!({})),
+            full(7, "button", "10:21 Delivered", &[], json!({})),
+            full(8, "staticText", "Hidden text", &[], json!({ "state": ["invisible"] })),
+            // Already-named row (chat list) keeps its own name.
+            full(9, "row", "Alice 10:22 Hi", &[10], json!({ "state": ["focusable"] })),
+            full(10, "staticText", "Extra", &[], json!({})),
+            // Non-focusable nameless row stays unnamed.
+            full(11, "row", "", &[12], json!({})),
+            full(12, "staticText", "Not focusable", &[], json!({})),
+        ] }] }));
+
+        assert_eq!(
+            t.props(2).unwrap().label,
+            "You: Quoted message Hello world 10:21 Delivered"
+        );
+        // Interactive children of the message row remain exported.
+        assert!(t.exported_children(2).contains(&4));
+        assert!(t.exported_children(2).contains(&6));
+        assert_eq!(t.synthesizing_ancestor(6), Some(2));
+        assert_eq!(t.synthesizing_ancestor(7), Some(2));
+        assert_eq!(t.props(9).unwrap().label, "Alice 10:22 Hi");
+        assert_eq!(t.synthesizing_ancestor(10), None);
+        assert_eq!(t.props(11).unwrap().label, "");
+        assert_eq!(t.synthesizing_ancestor(12), None);
     }
 
     #[test]

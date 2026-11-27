@@ -73,6 +73,28 @@ mod imp {
         type Type = super::AxProxy;
         type ParentType = glib::Object;
         type Interfaces = (gtk::Accessible,);
+
+        fn type_init(_type_: &mut glib::subclass::InitializingType<Self>) {
+            // gtk4-rs's `AccessibleTextImpl` requires `WidgetImpl`, even though
+            // `GtkAccessibleText` in C only requires `GtkAccessible`. Keeping
+            // `AxProxy` a non-widget GObject is critical: an unrealized
+            // `GtkWidget` causes GTK 4.24 to drop all focus/state notifications
+            // and abort on `Action.NActions` (NULL action muxer).
+            use glib::translate::IntoGlib;
+            let ty = glib::Type::from_name(Self::NAME).expect("KarereAxNode type registered");
+            let iface_info = glib::gobject_ffi::GInterfaceInfo {
+                interface_init: Some(accessible_text_iface_init),
+                interface_finalize: None,
+                interface_data: std::ptr::null_mut(),
+            };
+            unsafe {
+                glib::gobject_ffi::g_type_add_interface_static(
+                    ty.into_glib(),
+                    gtk::AccessibleText::static_type().into_glib(),
+                    &iface_info,
+                );
+            }
+        }
     }
 
     impl ObjectImpl for AxProxy {
@@ -95,6 +117,149 @@ mod imp {
         fn dispose(&self) {
             // Unrealize (AT-SPI "defunct" + unregister) while we are alive.
             self.ctx.take();
+        }
+    }
+
+    impl AxProxy {
+        pub(super) fn text_contents(&self, start: u32, end: u32) -> glib::Bytes {
+            let props = self.props.borrow();
+            let text = props.as_ref().map(super::accessible_text_str).unwrap_or("");
+            super::text_bytes(text, start, end)
+        }
+
+        pub(super) fn text_is_editable(&self) -> bool {
+            matches!(
+                self.role.get(),
+                gtk::AccessibleRole::TextBox | gtk::AccessibleRole::SearchBox
+            ) && self.props.borrow().as_ref().is_none_or(|p| !p.read_only)
+        }
+    }
+
+    unsafe fn imp_from_text<'a>(ptr: *mut gtk::ffi::GtkAccessibleText) -> &'a AxProxy {
+        let instance = unsafe { &*(ptr as *mut <AxProxy as ObjectSubclass>::Instance) };
+        instance.imp()
+    }
+
+    unsafe extern "C" fn accessible_text_iface_init(
+        iface: glib::ffi::gpointer,
+        _data: glib::ffi::gpointer,
+    ) {
+        unsafe {
+            let iface = &mut *(iface as *mut gtk::ffi::GtkAccessibleTextInterface);
+            iface.get_contents = Some(ax_text_get_contents);
+            iface.get_contents_at = Some(ax_text_get_contents_at);
+            iface.get_caret_position = Some(ax_text_get_caret_position);
+            iface.get_selection = Some(ax_text_get_selection);
+            iface.get_attributes = Some(ax_text_get_attributes);
+            iface.get_default_attributes = Some(ax_text_get_default_attributes);
+        }
+    }
+
+    unsafe extern "C" fn ax_text_get_contents(
+        ptr: *mut gtk::ffi::GtkAccessibleText,
+        start: u32,
+        end: u32,
+    ) -> *mut glib::ffi::GBytes {
+        use glib::translate::IntoGlibPtr;
+        let imp = unsafe { imp_from_text(ptr) };
+        imp.text_contents(start, end).into_glib_ptr()
+    }
+
+    unsafe extern "C" fn ax_text_get_contents_at(
+        ptr: *mut gtk::ffi::GtkAccessibleText,
+        offset: u32,
+        granularity: gtk::ffi::GtkAccessibleTextGranularity,
+        start: *mut u32,
+        end: *mut u32,
+    ) -> *mut glib::ffi::GBytes {
+        use glib::translate::{FromGlib, IntoGlibPtr};
+        let imp = unsafe { imp_from_text(ptr) };
+        let props = imp.props.borrow();
+        let text = props.as_ref().map(super::accessible_text_str).unwrap_or("");
+        let gran = unsafe { gtk::AccessibleTextGranularity::from_glib(granularity) };
+        let (r_start, r_end) = super::text_range(text, offset, gran);
+        unsafe {
+            if !start.is_null() {
+                *start = r_start;
+            }
+            if !end.is_null() {
+                *end = r_end;
+            }
+        }
+        super::text_bytes(text, r_start, r_end).into_glib_ptr()
+    }
+
+    unsafe extern "C" fn ax_text_get_caret_position(
+        _ptr: *mut gtk::ffi::GtkAccessibleText,
+    ) -> u32 {
+        0
+    }
+
+    unsafe extern "C" fn ax_text_get_selection(
+        _ptr: *mut gtk::ffi::GtkAccessibleText,
+        n_ranges: *mut libc::size_t,
+        ranges: *mut *mut gtk::ffi::GtkAccessibleTextRange,
+    ) -> glib::ffi::gboolean {
+        use glib::translate::IntoGlib;
+        unsafe {
+            if !n_ranges.is_null() {
+                *n_ranges = 0;
+            }
+            if !ranges.is_null() {
+                *ranges = std::ptr::null_mut();
+            }
+        }
+        false.into_glib()
+    }
+
+    unsafe extern "C" fn ax_text_get_attributes(
+        _ptr: *mut gtk::ffi::GtkAccessibleText,
+        _offset: u32,
+        n_ranges: *mut libc::size_t,
+        ranges: *mut *mut gtk::ffi::GtkAccessibleTextRange,
+        attribute_names: *mut *mut *mut libc::c_char,
+        attribute_values: *mut *mut *mut libc::c_char,
+    ) -> glib::ffi::gboolean {
+        use glib::translate::IntoGlib;
+        unsafe {
+            if !n_ranges.is_null() {
+                *n_ranges = 0;
+            }
+            if !ranges.is_null() {
+                *ranges = std::ptr::null_mut();
+            }
+            if !attribute_names.is_null() {
+                *attribute_names = std::ptr::null_mut();
+            }
+            if !attribute_values.is_null() {
+                *attribute_values = std::ptr::null_mut();
+            }
+        }
+        false.into_glib()
+    }
+
+    unsafe extern "C" fn ax_text_get_default_attributes(
+        ptr: *mut gtk::ffi::GtkAccessibleText,
+        attribute_names: *mut *mut *mut libc::c_char,
+        attribute_values: *mut *mut *mut libc::c_char,
+    ) {
+        use glib::translate::IntoGlibPtr;
+        // Always return non-NULL NUL-terminated char** arrays: GTK 4.24's
+        // gtk_accessible_text_get_attributes_run dereferences attr_names[0]
+        // without checking attr_names != NULL.
+        let imp = unsafe { imp_from_text(ptr) };
+        let editable = imp.text_is_editable();
+        let mut names = glib::StrV::with_capacity(1);
+        let mut values = glib::StrV::with_capacity(1);
+        names.push(glib::GString::from("editable"));
+        values.push(glib::GString::from(if editable { "true" } else { "false" }));
+        unsafe {
+            if !attribute_names.is_null() {
+                *attribute_names = names.into_glib_ptr();
+            }
+            if !attribute_values.is_null() {
+                *attribute_values = values.into_glib_ptr();
+            }
         }
     }
 
@@ -134,7 +299,45 @@ mod imp {
 
 glib::wrapper! {
     /// One exposed page node.
-    pub struct AxProxy(ObjectSubclass<imp::AxProxy>) @implements gtk::Accessible;
+    pub struct AxProxy(ObjectSubclass<imp::AxProxy>)
+        @implements gtk::Accessible, gtk::AccessibleText;
+}
+
+// AT-SPI offsets count Unicode characters, not UTF-8 bytes. GTK requires
+// returned text to be NUL-terminated (the terminator is included in GBytes).
+fn text_bytes(text: &str, start: u32, end: u32) -> glib::Bytes {
+    let mut value: String = text
+        .chars()
+        .skip(start as usize)
+        .take(end.saturating_sub(start) as usize)
+        .collect();
+    value.push('\0');
+    glib::Bytes::from_owned(value.into_bytes())
+}
+
+fn text_range(text: &str, offset: u32, granularity: gtk::AccessibleTextGranularity) -> (u32, u32) {
+    let chars: Vec<char> = text.chars().collect();
+    let at = (offset as usize).min(chars.len());
+    if at == chars.len() {
+        return (at as u32, at as u32);
+    }
+    if granularity == gtk::AccessibleTextGranularity::Character {
+        return (at as u32, (at + 1) as u32);
+    }
+    let boundary = |c: char| match granularity {
+        gtk::AccessibleTextGranularity::Word => c.is_whitespace(),
+        gtk::AccessibleTextGranularity::Sentence => matches!(c, '.' | '!' | '?' | '\n'),
+        _ => c == '\n',
+    };
+    let mut start = at;
+    while start > 0 && !boundary(chars[start - 1]) {
+        start -= 1;
+    }
+    let mut end = at + 1;
+    while end < chars.len() && !boundary(chars[end - 1]) {
+        end += 1;
+    }
+    (start as u32, end as u32)
 }
 
 // gtk4-rs binds this only with the v4_18 feature; the Flatpak runtime ships
@@ -153,8 +356,48 @@ fn update_platform_state(a: &impl IsA<gtk::Accessible>, state: gtk::AccessiblePl
     }
 }
 
+/// Text exposed via `GtkAccessibleText`. Editable text inputs expose their
+/// current typed `value` (so Orca doesn't repeat the field's label twice and
+/// reads typed text); all other nodes expose their accessible `label`.
+fn accessible_text_str(p: &AxProps) -> &str {
+    if matches!(
+        p.role,
+        gtk::AccessibleRole::TextBox | gtk::AccessibleRole::SearchBox
+    ) {
+        p.value.as_str()
+    } else {
+        p.label.as_str()
+    }
+}
+
 /// Push `p` into the proxy's GTK accessible state.
 fn apply_props(obj: &AxProxy, p: &AxProps) {
+    let old_text = obj
+        .imp()
+        .props
+        .borrow()
+        .as_ref()
+        .map(|old| accessible_text_str(old).to_owned())
+        .unwrap_or_default();
+    let new_text = accessible_text_str(p);
+    if old_text != new_text {
+        if !old_text.is_empty() {
+            obj.update_contents(
+                gtk::AccessibleTextContentChange::Remove,
+                0,
+                old_text.chars().count() as u32,
+            );
+        }
+        *obj.imp().props.borrow_mut() = Some(p.clone());
+        if !new_text.is_empty() {
+            obj.update_contents(
+                gtk::AccessibleTextContentChange::Insert,
+                0,
+                new_text.chars().count() as u32,
+            );
+        }
+    }
+
     obj.update_property(&[
         Property::Label(&p.label),
         Property::ReadOnly(p.read_only),
@@ -651,14 +894,25 @@ impl Export {
     fn plan_changes(&self, t: &AxTree, changed: &HashSet<i64>, plan: &mut Plan) {
         let listed: HashSet<i64> = self.children.borrow().keys().copied().collect();
         let mut affected = HashSet::new();
+        let mut queued_props = HashSet::new();
         {
             let nodes = self.nodes.borrow();
             for &id in changed {
                 let key = self.key_of(id);
                 if (key == ROOT || nodes.contains_key(&id))
+                    && queued_props.insert(key)
                     && let Some(p) = t.props(id)
                 {
                     plan.props.push((key, p));
+                }
+                if let Some(row_id) = t.synthesizing_ancestor(id) {
+                    let row_key = self.key_of(row_id);
+                    if nodes.contains_key(&row_id)
+                        && queued_props.insert(row_key)
+                        && let Some(p) = t.props(row_id)
+                    {
+                        plan.props.push((row_key, p));
+                    }
                 }
                 if t.is_exported(id) {
                     affected.insert(key);
@@ -726,5 +980,39 @@ mod tests {
         assert_eq!(to_logical((10.0, 20.0, 300.0, 41.0), 1), (10, 20, 300, 41));
         assert_eq!(to_logical((10.0, 20.0, 300.0, 41.0), 2), (5, 10, 150, 21));
         assert_eq!(to_logical((10.0, 20.0, 30.0, 40.0), 0), (10, 20, 30, 40));
+    }
+}
+
+#[cfg(test)]
+mod text_tests {
+    use super::*;
+    #[test]
+    #[ignore = "requires a Wayland display; run explicitly with --include-ignored"]
+    fn gtk_text_proxy_smoke() {
+        gtk::init().expect("display required for accessible text smoke test");
+        let proxy: AxProxy = glib::Object::new();
+        assert!(proxy.is::<gtk::Accessible>());
+        assert!(proxy.is::<gtk::AccessibleText>());
+        assert!(!proxy.is::<gtk::Widget>());
+        assert_eq!(proxy.imp().text_contents(0, u32::MAX).as_ref(), b"\0");
+        assert!(!proxy.imp().text_is_editable());
+    }
+
+    #[test]
+    fn unicode_offsets_and_end_sentinel() {
+        assert_eq!(text_bytes("Olá 👋", 2, 5).as_ref(), "á 👋\0".as_bytes());
+        assert_eq!(
+            text_bytes("Olá 👋", 4, u32::MAX).as_ref(),
+            "👋\0".as_bytes()
+        );
+        assert_eq!(text_bytes("Olá", 99, u32::MAX).as_ref(), b"\0");
+    }
+    #[test]
+    fn message_ranges() {
+        use gtk::AccessibleTextGranularity as G;
+        assert_eq!(text_range("Olá mundo", 5, G::Word), (4, 9));
+        assert_eq!(text_range("Olá 👋", 4, G::Character), (4, 5));
+        assert_eq!(text_range("one\ntwo", 5, G::Line), (4, 7));
+        assert_eq!(text_range("", 0, G::Word), (0, 0));
     }
 }
