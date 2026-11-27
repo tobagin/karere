@@ -24,10 +24,12 @@ WebKitGTK could not play WhatsApp Web's video attachments (a platform-level limi
 by all WebKitGTK browsers). Chromium handles them natively. The CEF build ships with
 proprietary codecs (H.264/AAC), so **video attachments now play in-app**.
 
-### 🆕 What's New in 4.6.3
+### 🆕 What's New in 4.6.4
 
-- **Screen reader detection in the Flatpak (#204)**: Karere now notices a running screen reader
-  on its own, so WhatsApp is read without turning on the screen reader preference.
+- **Copy Image from the media viewer (#215)**: right-clicking an image now offers "Copy Image" and copies it to the system clipboard.
+- **Orca message reading (#204)**: page nodes now expose `GtkAccessibleText` and focusable message rows carry spoken labels so Orca reads messages via keyboard navigation and Flat Review.
+- Lower retained heap memory through periodic reclamation of unused glibc pages (#213).
+- Correct text sizes and visible navigation icons in narrow windows, including dark themes (#214).
 
 > **Migration from v3.** None. v3 stored sessions under WebKit's data manager; v4 uses CEF
 > `RequestContext` directories and a new account record format. On first v4 launch, re-scan the

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 13:24+0000\n"
+"POT-Creation-Date: 2026-11-27 11:30+0000\n"
 "PO-Revision-Date: 2026-06-06 21:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -303,7 +303,7 @@ msgstr "检查元素"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "跳转到账户 1–9（Alt+1 … Alt+9）"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:531 src/tray.rs:60
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:534 src/tray.rs:60
 #: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
@@ -761,7 +761,7 @@ msgid "whatsapp;chat;messaging;web;communication;"
 msgstr "whatsapp;chat;messaging;web;communication;聊天;消息;通讯;"
 
 #. Logged here, not before the split, so CEF subprocesses stay quiet.
-#: src/main.rs:79
+#: src/main.rs:123
 msgid "Karere starting"
 msgstr "Karere 正在启动"
 
@@ -786,7 +786,11 @@ msgstr ""
 msgid "Attach"
 msgstr ""
 
-#: src/handlers/context_menu.rs:127
+#: src/handlers/context_menu.rs:172
+msgid "Copy Image"
+msgstr ""
+
+#: src/handlers/context_menu.rs:177
 msgid "Copy Link Address"
 msgstr ""
 
@@ -939,7 +943,7 @@ msgstr ""
 msgid "Diagnostic info copied"
 msgstr ""
 
-#: src/actions.rs:536
+#: src/actions.rs:539
 #, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
@@ -948,25 +952,25 @@ msgstr ""
 "现代化的原生 GTK4/LibAdwaita WhatsApp Web 封装，提供无缝的桌面集成以及全面的"
 "日志记录和崩溃报告功能"
 
-#: src/actions.rs:555
+#: src/actions.rs:558
 msgid "Source"
 msgstr "源代码"
 
-#: src/actions.rs:558
+#: src/actions.rs:561
 msgid "Special Thanks"
 msgstr "特别鸣谢"
 
-#: src/actions.rs:589
+#: src/actions.rs:592
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:642
+#: src/actions.rs:645
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
 msgstr ""
 
-#: src/actions.rs:646
+#: src/actions.rs:649
 msgid ""
 "This desktop cannot register startup apps for Karere. Add it to your startup "
 "applications with the --background option instead."

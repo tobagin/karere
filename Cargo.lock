@@ -1273,7 +1273,7 @@ dependencies = [
 
 [[package]]
 name = "karere"
-version = "4.6.3"
+version = "4.6.4"
 dependencies = [
  "anyhow",
  "ashpd",

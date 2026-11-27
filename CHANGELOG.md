@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.6.4] - 2026-11-27
+
+### Added
+- **Copy Image in the context menu (#215)**: right-clicking a photo (including in the full-screen media viewer) now offers "Copy Image" and puts the image on the system clipboard, using CEF's `download_image` with a renderer-side `fetch` → PNG fallback.
+
+### Changed
+- **Screen reader message reading (#204)**: expose page node text through `GtkAccessibleText` (with Unicode offsets, text-change notifications, and typed values on text inputs) and synthesize spoken labels for unnamed focusable message rows so Orca reads individual chat messages via keyboard navigation and Flat Review.
+- **Lower retained heap memory (#213)**: periodically return unused glibc heap pages to the operating system in the browser and renderer processes. Contributed by @mendsec.
+
 ### Fixed
+- **Shared data deletion outside Flatpak (#211)**: skip the legacy-data purge on native launches, preserving shared WebKit and CEF directories.
+- Keep the sidebar toggle icon in sync when opening a chat hides the sidebar (#214).
 - **Oversized text in the narrow-window layout**: below 768 px the injected mobile layout raised the font size of every `span` to 107 % (and `.copyable-text` to 106 %). Percentages compound through nested spans, so chat text came out far larger than in WhatsApp Web in a browser. Those rules are gone and the text keeps WhatsApp Web's own size.
 - **Invisible sidebar button in the narrow-window layout**: the button that brings the account menu back drew nothing, because its icon was coloured with a WhatsApp variable that no longer exists. It now shows a sidebar icon that switches between "open" and "close" with the menu state, and follows the light and dark themes.
 - **Back button invisible on the dark theme**: the chevron that returns to the chat list was hard-coded black. It now takes the text colour, so it shows on both themes.

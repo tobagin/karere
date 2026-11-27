@@ -102,6 +102,17 @@
   <translation type="gettext">karere</translation>
 
   <releases>
+    <release version="4.6.4" date="2026-11-27">
+      <description translate="no">
+        <ul>
+          <li>Added "Copy Image" to the right-click context menu so photos can be copied directly from the media viewer to the system clipboard (#215).</li>
+          <li>Improved Orca screen reader support: page nodes expose AccessibleText and message rows now speak their sender, content, and timestamp during keyboard navigation and Flat Review (#204).</li>
+          <li>Return unused glibc heap pages periodically to reduce retained memory (#213).</li>
+          <li>Fixed oversized text, invisible navigation icons, and sidebar toggle sync in narrow windows (#214).</li>
+          <li>Skipped legacy v3 data cleanup outside Flatpak so native launches never touch shared WebKit or CEF directories (#211).</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.6.3" date="2026-11-19">
       <description translate="no">
         <ul>

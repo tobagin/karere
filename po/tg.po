@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: karere\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 13:24+0000\n"
+"POT-Creation-Date: 2026-11-27 11:30+0000\n"
 "PO-Revision-Date: 2026-06-06 20:03+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -302,7 +302,7 @@ msgstr "Тафтиши унсур"
 msgid "Jump to account 1–9 (Alt+1 … Alt+9)"
 msgstr "Ҷаҳидан ба ҳисоби 1–9 (Alt+1 … Alt+9)"
 
-#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:531 src/tray.rs:60
+#: data/ui/window.ui:12 data/ui/window.ui:23 src/actions.rs:534 src/tray.rs:60
 #: src/tray.rs:84 src/tray.rs:92 src/notifications.rs:306
 msgid "Karere"
 msgstr "Karere"
@@ -765,7 +765,7 @@ msgid "whatsapp;chat;messaging;web;communication;"
 msgstr "whatsapp;чат;паёмнависӣ;веб;иртибот;"
 
 #. Logged here, not before the split, so CEF subprocesses stay quiet.
-#: src/main.rs:79
+#: src/main.rs:123
 msgid "Karere starting"
 msgstr "Оғози Karere"
 
@@ -790,7 +790,11 @@ msgstr ""
 msgid "Attach"
 msgstr ""
 
-#: src/handlers/context_menu.rs:127
+#: src/handlers/context_menu.rs:172
+msgid "Copy Image"
+msgstr ""
+
+#: src/handlers/context_menu.rs:177
 msgid "Copy Link Address"
 msgstr ""
 
@@ -944,7 +948,7 @@ msgstr ""
 msgid "Diagnostic info copied"
 msgstr ""
 
-#: src/actions.rs:536
+#: src/actions.rs:539
 #, fuzzy
 msgid ""
 "A modern, native GTK4/LibAdwaita wrapper for WhatsApp Web that provides "
@@ -954,25 +958,25 @@ msgstr ""
 "бемонеаи мизи кориро бо қобилиятҳои ҳамаҷонибаи гузориш ва гузориши харобӣ "
 "таъмин мекунад"
 
-#: src/actions.rs:555
+#: src/actions.rs:558
 msgid "Source"
 msgstr "Манбаъ"
 
-#: src/actions.rs:558
+#: src/actions.rs:561
 msgid "Special Thanks"
 msgstr "Изҳори миннатдории махсус"
 
-#: src/actions.rs:589
+#: src/actions.rs:592
 msgid "Karere can keep running in the background to deliver messages."
 msgstr ""
 
-#: src/actions.rs:642
+#: src/actions.rs:645
 msgid ""
 "Could not enable running on startup. Allow Karere to run in the background "
 "in your system settings."
 msgstr ""
 
-#: src/actions.rs:646
+#: src/actions.rs:649
 msgid ""
 "This desktop cannot register startup apps for Karere. Add it to your startup "
 "applications with the --background option instead."
